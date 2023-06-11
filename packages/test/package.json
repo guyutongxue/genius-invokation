@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "type": "module",
+  "dependencies": {
+    "@jenshin-tcg/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^3.12.7"
+  }
+}
