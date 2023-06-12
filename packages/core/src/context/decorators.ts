@@ -1,17 +1,6 @@
 import { DiceType } from "@jenshin-tcg/typings";
-import { DescriptionContext } from ".";
+import { CharacterInfo, DescriptionContext, SkillInfo, SkillType } from ".";
 
-interface CharacterInfo {
-  health: number;
-  energy: number;
-  modifiers?: unknown[];
-}
-
-interface SkillInfo {
-  name: string;
-  type: SkillType;
-  costs: Record<DiceType, number>;
-}
 
 export interface CharacterConstructor {
   new(): any;
@@ -19,7 +8,7 @@ export interface CharacterConstructor {
   skill: (SkillInfo & { do: (c: DescriptionContext) => void })[];
 }
 
-export function CharacterDefinition(info: CharacterInfo) {
+export function Character(info: CharacterInfo) {
   return (target: any, ctx: ClassDecoratorContext): CharacterConstructor => {
     if (target.info) throw new Error("Decorating multiple times");
     target.info = info;
@@ -63,9 +52,7 @@ export const Anemo = cost(DiceType.ANEMO);
 export const Geo = cost(DiceType.GEO);
 export const Dendro = cost(DiceType.DENDRO);
 export const Omni = cost(DiceType.OMNI);
-export const Energy = cost(DiceType.ENERGY);
-
-export type SkillType = "normal" | "skill" | "burst";
+// export const Energy = cost(DiceType.ENERGY);
 
 function addType(type: SkillType) {
   return (target: any, ctx: ClassMethodDecoratorContext) => {
@@ -81,3 +68,19 @@ function addType(type: SkillType) {
 export const Normal = addType("normal");
 export const Skill = addType("skill");
 export const Burst = addType("burst");
+
+export interface StatusConfig {
+  duration?: number;
+  usage?: number;
+}
+
+function addStatus(combat: boolean) {
+  return (config: StatusConfig) => {
+    return (target: any, ctx: ClassDecoratorContext) => {
+
+    }
+  }
+}
+
+export const Status = addStatus(false);
+export const CombatStatus = addStatus(true);

@@ -1,4 +1,4 @@
-import { JSONSchema } from "json-schema-to-ts";
+import { FromSchema, JSONSchema } from "json-schema-to-ts";
 
 export const EVENT_SCHEMA = {
   oneOf: [
@@ -51,7 +51,7 @@ export const EVENT_SCHEMA = {
       additionalProperties: false,
       properties: {
         type: { const: "updateState" },
-        state: { type: "object" },
+        state: { /* type: "object" */ },
         damages: {
           type: "array",
           items: {

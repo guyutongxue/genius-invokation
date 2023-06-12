@@ -42,9 +42,11 @@ const props = defineProps<{
     :class="props.player === 'me' ? 'flex-col' : 'flex-col-reverse'"
   >
     <div class="flex flex-row">
+      <div class="bg-yellow-800 text-white">PILE</div>
       <div class="bg-blue-50">SUPPORTS</div>
       <div class="bg-white flex-grow">CHARACTERS</div>
       <div class="bg-red-50">SUMMONS</div>
+      <div class="bg-yellow-800 text-white">DICE</div>
     </div>
     <div>HANDS</div>
   </div>

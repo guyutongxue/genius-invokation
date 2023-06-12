@@ -1,4 +1,4 @@
-import { Application, MethodNames, ResponseType, CharacterFacade, verifyRequest, verifyResponse } from "@jenshin-tcg/typings";
+import { Aura, MethodNames, ResponseType, CharacterFacade, verifyRequest, verifyResponse } from "@jenshin-tcg/typings";
 import { Player } from ".";
 import { State, WithPlayersState } from "./states";
 import * as _ from "lodash-es";
@@ -11,7 +11,7 @@ export function initCharacter(id: number): CharacterFacade {
     health: constructor.info.health,
     energy: 0,
     equipments: [],
-    applied: Application.NONE,
+    applied: Aura.NONE,
     statuses: []
   };
 }

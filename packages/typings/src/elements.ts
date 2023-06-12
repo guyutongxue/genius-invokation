@@ -8,7 +8,8 @@ export enum DiceType {
   GEO,
   DENDRO,
   OMNI = 8,
-  ENERGY = 9
+  SAME = 8,
+  // ENERGY = 9
 }
 
 export enum DamageType {
@@ -20,10 +21,10 @@ export enum DamageType {
   ANEMO,
   GEO,
   DENDRO,
-  PLUNGING = 8,
+  PIERCING = 8,
 }
 
-export enum Application {
+export enum Aura {
   NONE = 0,
   CRYO,
   HYDRO,

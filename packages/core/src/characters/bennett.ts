@@ -1,16 +1,16 @@
-import { DescriptionContext } from "../context";
+import { DescriptionContext, IStatus, SkillContext } from "../context";
 import {
-  CharacterDefinition,
+  Character,
   Any,
-  Energy,
   Pyro,
   Normal,
   Skill,
   Burst,
+  CombatStatus,
 } from "../context/decorators";
 import { DamageType } from "@jenshin-tcg/typings";
 
-@CharacterDefinition({
+@Character({
   health: 10,
   energy: 3,
 })
@@ -30,10 +30,25 @@ class Bennett {
 
   @Burst
   @Pyro(3)
-  @Energy(3)
   fantasticVoyage(c: DescriptionContext) {
     c.damage(2, DamageType.PYRO);
-    c.createCombatStatus({ id: 666, how: void 0 });
+    c.createCombatStatus(InspirationField);
+  }
+}
+
+@CombatStatus({
+  duration: 2,
+})
+class InspirationField implements IStatus {
+  onBeforeSkill(c: SkillContext) {
+    if (c.character.health <= 7) {
+      c.additionalDamage += 2;
+    }
+  }
+  onSkill(c: SkillContext) {
+    if (c.character.health <= 6) {
+      c.character.heal(2);
+    }
   }
 }
 

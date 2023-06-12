@@ -1,4 +1,4 @@
-import { Application, DiceType } from "./elements";
+import { Aura, DiceType } from "./elements";
 
 export interface CharacterFacade {
   id: number;
@@ -8,7 +8,7 @@ export interface CharacterFacade {
   artifact?: number;
   equipments: [];
   statuses: StatusFacade[];
-  applied: Application;
+  applied: Aura;
 }
 
 export interface StatusFacade {

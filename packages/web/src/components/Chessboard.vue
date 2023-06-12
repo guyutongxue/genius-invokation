@@ -1,7 +1,10 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import PlayerArea from './PlayerArea.vue';
-import { MethodNames, Player, RequestType, createGame } from '@jenshin-tcg/core';
+import { onMounted, ref } from 'vue';
+import PlayerArea, { type PlayerAreaData } from './PlayerArea.vue';
+import { MethodNames, Player, RequestType, StateFacade, createGame } from '@jenshin-tcg/core';
+
+const data0 = ref<PlayerAreaData>();
+const data1 = ref<PlayerAreaData>();
 
 async function handle(
   this: Player,
@@ -27,9 +30,20 @@ async function handle(
       const r = req as RequestType<typeof method>;
       switch (r.event.type) {
         case "updateState": {
-          const { state } = r.event;
-          if (this.id === "A")
-          console.log(state);
+          const state = r.event.state;
+          if (this.id === "A") {
+            // @ts-expect-error no typing for this
+            data0.value = {
+              ...state,
+              type: "hidden"
+            };
+          } else {
+            // @ts-expect-error no typing for this
+            data1.value = {
+              ...state,
+              type: "hidden"
+            }
+          }
         }
       }
       return { success: true };
@@ -63,7 +77,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col gap-1">
-    <PlayerArea player="dbg"></PlayerArea>
-    <PlayerArea player="me"></PlayerArea>
+    <PlayerArea v-if="data1" player="dbg" :data="data1"></PlayerArea>
+    <PlayerArea v-if="data0" player="me" :data="data0"></PlayerArea>
   </div>
 </template>
