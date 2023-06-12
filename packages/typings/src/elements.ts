@@ -22,6 +22,7 @@ export enum DamageType {
   GEO,
   DENDRO,
   PIERCING = 8,
+  HEAL = 9,
 }
 
 export enum Aura {

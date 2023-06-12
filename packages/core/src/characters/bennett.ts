@@ -40,12 +40,13 @@ class Bennett {
   duration: 2,
 })
 class InspirationField implements IStatus {
-  onBeforeSkill(c: SkillContext) {
+  onBeforeUseSkill(c: SkillContext) {
     if (c.character.health <= 7) {
       c.additionalDamage += 2;
     }
+    return c;
   }
-  onSkill(c: SkillContext) {
+  onUseSkill(c: SkillContext) {
     if (c.character.health <= 6) {
       c.character.heal(2);
     }

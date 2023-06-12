@@ -3,93 +3,49 @@ import type { FromSchema, JSONSchema } from "json-schema-to-ts";
 export const ACTION_SCHEMA = {
   anyOf: [
     {
-      properties: {
-        cost: {
-          type: "object",
-          patternProperties: {
-            "/d": {
-              type: "integer"
-            }
-          }
-        },
-        name: {
-          type: "string",
-        },
-        type: {
-          const: "useSkill",
-          type: "string",
-        },
-      },
       type: "object",
+      additionalProperties: false,
+      properties: {
+        type: { const: "useSkill" },
+        cost: { type: "array", items: { type: "integer" } },
+        name: { type: "string" },
+      },
       required: ["type", "cost", "name"],
-      additionalProperties: false,
     },
     {
-      properties: {
-        available: {
-          items: {
-            type: "integer",
-          },
-          type: "array",
-        },
-        type: {
-          const: "switchCharacter",
-          type: "string",
-        },
-      },
       type: "object",
-      required: ["type", "available"],
       additionalProperties: false,
+      properties: {
+        type: { const: "switchCharacter" },
+        target: { type: "integer" },
+      },
+      required: ["type", "target"],
     },
     {
-      properties: {
-        card: {
-          type: "integer",
-        },
-        type: {
-          const: "playCard",
-          type: "string",
-        },
-      },
       type: "object",
+      additionalProperties: false,
+      properties: {
+        type: { const: "playCard" },
+        card: { type: "integer" },
+      },
       required: ["type", "card"],
-      additionalProperties: false,
     },
     {
-      properties: {
-        card: {
-          type: "integer",
-        },
-        type: {
-          const: "elementalTuning",
-          type: "string",
-        },
-      },
       type: "object",
+      additionalProperties: false,
+      properties: {
+        card: { type: "integer" },
+        type: { const: "elementalTuning" },
+      },
       required: ["type", "card"],
-      additionalProperties: false,
     },
     {
-      properties: {
-        type: {
-          const: "declareEnd",
-          type: "string",
-        },
-      },
       type: "object",
-      required: ["type"],
       additionalProperties: false,
-    },
-    {
       properties: {
-        type: {
-          const: "giveUp",
-          type: "string",
-        },
+        type: { const: "declareEnd" },
       },
-      type: "object",
       required: ["type"],
-      additionalProperties: false,
     },
   ],
 } as const satisfies JSONSchema;

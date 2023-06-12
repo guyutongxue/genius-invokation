@@ -2,6 +2,7 @@ import { GameOptions, Player } from ".";
 import { CharacterFacade, DiceType, StateFacade, StatusFacade, SummonFacade, SupportFacade } from "@jenshin-tcg/typings";
 import { initCharacter, requestPlayer } from "./operations";
 import * as _ from "lodash-es";
+import { Character } from "./character";
 
 export type Pair<T> = [T, T];
 
@@ -13,7 +14,7 @@ export interface WithPlayersState {
   players: Pair<any>;
   piles: Pair<number[]>;
   hands: Pair<number[]>;
-  characters: Pair<CharacterFacade[]>;
+  characters: Pair<Character[]>;
   nextTurn: 0 | 1;
   combatStatuses: Pair<StatusFacade[]>;
   supports: Pair<SupportFacade[]>;
@@ -195,9 +196,9 @@ export class StateManager {
     }
     return {
       pileNumber: this.state.piles[p].length,
-      hands: this.state.hands[p].map(id => ({ id })),
+      hands: this.state.hands[p],
       active: "actives" in this.state ? this.state.actives[p] : undefined,
-      characters: this.state.characters[p],
+      characters: this.state.characters[p].map(c => c.toFacade()),
       combatStatuses: this.state.combatStatuses[p],
       supports: this.state.supports[p],
       summons: this.state.summons[p],

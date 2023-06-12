@@ -39,7 +39,32 @@ export const API = {
     },
   },
   action: {
-    params: {},
+    params: {
+      skills: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            name: { type: "string" },
+            cost: { type: "array", items: { type: "integer" } },
+          },
+        },
+        required: ["name", "cost"],
+      },
+      cards: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            id: { type: "integer" },
+            cost: { type: "array", items: { type: "integer" } },
+          },
+        },
+        required: ["id", "cost"],
+      }
+    },
     result: {
       action: ACTION_SCHEMA,
     },
@@ -51,10 +76,10 @@ export const API = {
     result: {},
   },
   drawHands: {
-    params: {},
-    result: {
+    params: {
       hands: { type: "array", items: { type: "integer" } },
     },
+    result: {},
   },
   gameEnd: {
     params: {

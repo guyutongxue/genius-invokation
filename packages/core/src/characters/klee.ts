@@ -53,7 +53,7 @@ class ExplosiveSpark implements IStatus {
   usage: 2,
 })
 class SparksNSplash implements IStatus {
-  onSkill(c: SkillContext) {
+  onUseSkill(c: SkillContext) {
     // should be active character, but everything is OK now...
     c.character.damage(2, DamageType.PYRO);
   }

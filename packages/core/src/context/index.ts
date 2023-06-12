@@ -1,4 +1,5 @@
-import { DamageType, DiceType } from "@jenshin-tcg/typings";
+import { Aura, CharacterFacade, DamageType, DiceType } from "@jenshin-tcg/typings";
+import { Character } from "../character";
 
 export interface CharacterInfo {
   readonly health: number;
@@ -27,30 +28,9 @@ export interface DescriptionContext {
 }
 
 export interface IStatus {
-  onBeforeSkill?: (c: SkillContext) => void;
-  onSkill?: (c: SkillContext) => void;
-}
-
-class Character {
-  health: number;
-  energy: number;
-
-  constructor(private readonly info: CharacterInfo) {
-    this.health = info.health;
-    this.energy = 0;
-  }
-
-  heal(value: number) {
-    const newHealth = Math.max(this.info.health, this.health + value);
-    // TODO: FUCK
-    this.health = newHealth;
-  }
-
-  damage(value: number, type: DamageType) {
-    // TODO: FUCK
-    this.health -= value;
-    // ELEMENTAL blahblah
-  }
+  onBeforeUseSkill?: (c: SkillContext) => SkillContext;
+  onUseSkill?: (c: SkillContext) => void;
+  // onBeforeUseDice?: (c: DiceContext) => DiceContext;
 }
 
 export interface SkillContext {

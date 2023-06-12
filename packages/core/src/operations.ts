@@ -3,17 +3,14 @@ import { Player } from ".";
 import { State, WithPlayersState } from "./states";
 import * as _ from "lodash-es";
 import characterList from "./characters";
+import { Character } from "./character";
 
-export function initCharacter(id: number): CharacterFacade {
+export function initCharacter(id: number): Character {
   const constructor = characterList[id];
-  return {
-    id,
-    health: constructor.info.health,
-    energy: 0,
-    equipments: [],
-    applied: Aura.NONE,
-    statuses: []
-  };
+  if (typeof constructor === "undefined") {
+    throw new Error("Unknown id");
+  }
+  return new Character(id, constructor.info);
 }
 
 export async function requestPlayer<K extends MethodNames>(p: Player, method: K, params: unknown): Promise<ResponseType<K>> {

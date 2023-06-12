@@ -6,7 +6,7 @@ export interface CharacterFacade {
   energy: number;
   weapon?: number;
   artifact?: number;
-  equipments: [];
+  equipments: number[];
   statuses: StatusFacade[];
   applied: Aura;
 }
@@ -27,23 +27,16 @@ export interface SummonFacade {
 }
 
 export type GlobalEffect = {
-  type: "changeSwitchDice",
-  dice: DiceType[]
-} | {
   type: "fastSwitch"
 }
 
-export interface CardFacade {
-  id: number;
-  effect?: {
-    type: "changeDice",
-    dice: DiceType[]
-  }
-}
+// export interface CardFacade {
+//   id: number;
+// }
 
 export interface StateFacade {
   pileNumber: number;
-  hands: CardFacade[],
+  hands: number[],
   active?: number;
   characters: CharacterFacade[];
   combatStatuses: StatusFacade[];
