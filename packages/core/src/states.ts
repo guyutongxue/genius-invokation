@@ -1,5 +1,5 @@
 import { GameOptions, Player } from ".";
-import type { Character } from "./character";
+import { CharacterFacade, DiceType, StateFacade, StatusFacade, SummonFacade, SupportFacade } from "@jenshin-tcg/typings";
 import { initCharacter, requestPlayer } from "./operations";
 import * as _ from "lodash-es";
 
@@ -13,11 +13,12 @@ export interface WithPlayersState {
   players: Pair<any>;
   piles: Pair<number[]>;
   hands: Pair<number[]>;
-  characters: Pair<Character[]>;
+  characters: Pair<CharacterFacade[]>;
   nextTurn: 0 | 1;
-  combatStatuses: Pair<any[]>;
-  supports: Pair<any[]>;
-  summons: Pair<any[]>;
+  combatStatuses: Pair<StatusFacade[]>;
+  supports: Pair<SupportFacade[]>;
+  summons: Pair<SummonFacade[]>;
+  globalEffects: Pair<any[]>; // TODO
 }
 
 export interface InitHandsState extends WithPlayersState {
@@ -37,7 +38,7 @@ export interface RollPhaseState extends WithActivesState {
 }
 
 interface WithDiceState extends WithActivesState {
-  dice: Pair<number[]>; // todo
+  dice: Pair<DiceType[]>;
 }
 
 export interface ActionPhaseState extends WithDiceState {
@@ -109,6 +110,7 @@ export class StateManager {
           hands: [h0, h1],
           summons: [[], []],
           supports: [[], []],
+          globalEffects: [[], []],
           nextTurn: 0,
         };
         break;
@@ -157,7 +159,7 @@ export class StateManager {
       requestPlayer(p, "eventArrived", {
         event: {
           type: "updateState",
-          state: this.state, // TODO: filter
+          state: this.createFacade(i as (0 | 1))
         }
       })
     });
@@ -184,6 +186,31 @@ export class StateManager {
           addNum: news.length,
         }
       })
+    }
+  }
+
+  private createFacade(p: 0 | 1): StateFacade {
+    if (!("hands" in this.state)) {
+      throw new Error("bad state");
+    }
+    return {
+      pileNumber: this.state.piles[p].length,
+      hands: this.state.hands[p].map(id => ({ id })),
+      active: "actives" in this.state ? this.state.actives[p] : undefined,
+      characters: this.state.characters[p],
+      combatStatuses: this.state.combatStatuses[p],
+      supports: this.state.supports[p],
+      summons: this.state.summons[p],
+      dice: "dice" in this.state ? this.state.dice[p] : [],
+      globalEffects: this.state.globalEffects[p],
+      peerPileNumber: this.state.piles[1 - p].length,
+      peerHandsNumber: this.state.hands[1 - p].length,
+      peerActive: "actives" in this.state ? this.state.actives[1 - p] : undefined,
+      peerCharacters: this.state.characters[1 - p],
+      peerCombatStatuses: this.state.combatStatuses[1 - p],
+      peerSupports: this.state.supports[1 - p],
+      peerSummons: this.state.summons[1 - p],
+      peerDiceNumber: "dice" in this.state ? this.state.dice[1 - p].length : 0,
     }
   }
 

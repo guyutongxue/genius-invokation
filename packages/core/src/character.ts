@@ -1,13 +1,6 @@
-import { Application } from "@jenshin-tcg/typings";
+import { Application, StatusFacade } from "@jenshin-tcg/typings";
 
 export interface Status {
-  name: string;
+  id: number;
   how: any; // TODO
 };
-
-export interface Character {
-  id: number;
-  health: number;
-  applied: Application;
-  statuses: Status[];
-}

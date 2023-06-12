@@ -49,3 +49,5 @@ export function createGame(options: GameOptions): void {
   const m = new StateManager(options);
   m.run();
 }
+
+export type * from "@jenshin-tcg/typings";

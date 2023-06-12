@@ -1,5 +1,7 @@
-import { Player, createGame } from "@jenshin-tcg/core";
-import { MethodNames, RequestType, ResponseType } from "@jenshin-tcg/typings";
+<script lang="ts" setup>
+import { onMounted } from 'vue';
+import PlayerArea from './PlayerArea.vue';
+import { MethodNames, Player, RequestType, createGame } from '@jenshin-tcg/core';
 
 async function handle(
   this: Player,
@@ -36,13 +38,13 @@ async function handle(
       return { success: false };
   }
 }
-
 const player0: Player = {
   id: "A",
   characters: [0, 0, 0], //[0, 1, 2],
   piles: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   handle,
 };
+
 const player1: Player = {
   id: "B",
   characters: [0, 0, 0], //[3, 4, 5],
@@ -50,7 +52,18 @@ const player1: Player = {
   handle,
 };
 
-createGame({
-  pvp: true,
-  players: [player0, player1],
-});
+
+onMounted(() => {
+  createGame({
+    pvp: true,
+    players: [player0, player1],
+  })
+})
+</script>
+
+<template>
+  <div class="flex flex-col gap-1">
+    <PlayerArea player="dbg"></PlayerArea>
+    <PlayerArea player="me"></PlayerArea>
+  </div>
+</template>

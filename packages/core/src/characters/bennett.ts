@@ -33,7 +33,7 @@ class Bennett {
   @Energy(3)
   fantasticVoyage(c: DescriptionContext) {
     c.damage(2, DamageType.PYRO);
-    c.createCombatStatus({ name: "Inspiration Field", how: void 0 });
+    c.createCombatStatus({ id: 666, how: void 0 });
   }
 }
 

@@ -1,15 +1,16 @@
-import { Application, MethodNames, ResponseType, verifyRequest, verifyResponse } from "@jenshin-tcg/typings";
-import characterList from "./characters";
+import { Application, MethodNames, ResponseType, CharacterFacade, verifyRequest, verifyResponse } from "@jenshin-tcg/typings";
 import { Player } from ".";
-import { Character } from "./character";
 import { State, WithPlayersState } from "./states";
 import * as _ from "lodash-es";
+import characterList from "./characters";
 
-export function initCharacter(id: number): Character {
+export function initCharacter(id: number): CharacterFacade {
   const constructor = characterList[id];
   return {
     id,
     health: constructor.info.health,
+    energy: 0,
+    equipments: [],
     applied: Application.NONE,
     statuses: []
   };
