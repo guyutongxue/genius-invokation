@@ -1,4 +1,5 @@
-import { Status, DamageType } from "@jenshin-tcg/typings";
+import { DamageType } from "@jenshin-tcg/typings";
+import { Status } from "../character";
 
 
 export interface DescriptionContext {

@@ -2,7 +2,8 @@
   "name": "test",
   "type": "module",
   "dependencies": {
-    "@jenshin-tcg/core": "workspace:*"
+    "@jenshin-tcg/core": "workspace:*",
+    "@jenshin-tcg/typings": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^3.12.7"

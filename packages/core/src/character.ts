@@ -1,4 +1,4 @@
-import { Application } from "./elements.js";
+import { Application } from "@jenshin-tcg/typings";
 
 export interface Status {
   name: string;

@@ -20,6 +20,7 @@ export enum DamageType {
   ANEMO,
   GEO,
   DENDRO,
+  PLUNGING = 8,
 }
 
 export enum Application {

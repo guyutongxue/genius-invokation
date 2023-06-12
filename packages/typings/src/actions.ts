@@ -8,7 +8,7 @@ export const ACTION_SCHEMA = {
           type: "object",
           patternProperties: {
             "/d": {
-              type: "number"
+              type: "integer"
             }
           }
         },
@@ -28,7 +28,7 @@ export const ACTION_SCHEMA = {
       properties: {
         available: {
           items: {
-            type: "number",
+            type: "integer",
           },
           type: "array",
         },
@@ -44,7 +44,7 @@ export const ACTION_SCHEMA = {
     {
       properties: {
         card: {
-          type: "number",
+          type: "integer",
         },
         type: {
           const: "playCard",
@@ -58,7 +58,7 @@ export const ACTION_SCHEMA = {
     {
       properties: {
         card: {
-          type: "number",
+          type: "integer",
         },
         type: {
           const: "elementalTuning",

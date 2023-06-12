@@ -8,11 +8,19 @@
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "rollup -c"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.1",
     "json-schema-to-ts": "^2.9.1",
+    "rollup": "^3.25.0",
     "typescript": "^5.1.3",
     "typescript-json-schema": "^0.57.0"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0"
   }
 }

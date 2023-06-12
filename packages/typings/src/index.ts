@@ -1,5 +1,7 @@
 import type { JSONSchema, FromSchema } from "json-schema-to-ts";
+import Ajv from "ajv";
 import { ACTION_SCHEMA } from "./actions.js";
+import { EVENT_SCHEMA } from "./events.js";
 
 const SUCCESS_SCHEMA = {
   success: { type: "boolean" },
@@ -12,34 +14,28 @@ export const API = {
     },
     result: SUCCESS_SCHEMA,
   },
-  updateState: {
-    params: {
-      state: {},
-    },
-    result: SUCCESS_SCHEMA,
-  },
   switchHands: {
     params: {
-      hands: { type: "array", items: { type: "number" } },
+      hands: { type: "array", items: { type: "integer" } },
       canRemove: { type: "boolean" },
     },
     result: {
-      removedHands: { type: "array", items: { type: "number" } },
+      removedHands: { type: "array", items: { type: "integer" } },
     },
   },
   switchActive: {
     params: {},
     result: {
-      active: { type: "number", minimum: 0, maximum: 2 },
+      active: { type: "integer", minimum: 0, maximum: 2 },
     },
   },
   roll: {
     params: {
-      dice: { type: "array", items: { type: "number" } },
+      dice: { type: "array", items: { type: "integer" } },
       canRemove: { type: "boolean" },
     },
     result: {
-      removedDice: { type: "array", items: { type: "number" } },
+      removedDice: { type: "array", items: { type: "integer" } },
     },
   },
   action: {
@@ -48,10 +44,16 @@ export const API = {
       action: ACTION_SCHEMA,
     },
   },
+  eventArrived: {
+    params: {
+      event: EVENT_SCHEMA,
+    },
+    result: {},
+  },
   drawHands: {
     params: {},
     result: {
-      hands: { type: "array", items: { type: "number" } },
+      hands: { type: "array", items: { type: "integer" } },
     },
   },
   gameEnd: {
@@ -70,45 +72,64 @@ export type ApiEntries = Record<
   }
 >;
 
-type ApiType = typeof API;
+export type ApiType = typeof API;
 
-export type RequestType<K extends keyof ApiType> = {
-  jsonrpc: "2.0";
-  method: K;
-  params: {
-    [P in keyof ApiType[K]["params"]]: FromSchema<ApiType[K]["params"][P]>;
-  };
-} & (ApiType[K] extends { result: unknown }
-  ? { id: string | number }
-  : unknown);
+export type MethodNames = keyof ApiType;
 
-export type AllRequestTypes = {
-  [K in keyof ApiType]: RequestType<K>;
-}[keyof ApiType];
-
-export type ResponseType<K extends keyof ApiType> = {
-  jsonrpc: "2.0";
-  result: {} extends ApiType[K]["result"]
-    ? never
-    : {
-        [P in keyof ApiType[K]["result"]]: FromSchema<ApiType[K]["result"][P]>;
-      };
-  id: string | number;
+export type RequestType<K extends MethodNames> = {
+  [P in keyof ApiType[K]["params"]]: FromSchema<ApiType[K]["params"][P]>;
 };
 
-export type AllResponseTypes = {
-  [K in keyof ApiType]: ResponseType<K>;
-}[keyof ApiType];
+export type ResponseType<K extends MethodNames> = {
+  [P in keyof ApiType[K]["result"]]: FromSchema<ApiType[K]["result"][P]>;
+};
 
-export function getRequestSchema(method: string): JSONSchema | undefined {
-  return (API as ApiEntries)[method]?.params;
+const ajv = new Ajv();
+
+export function verifyRequest(
+  method: MethodNames,
+  request: unknown
+): string | undefined {
+  const m = API[method];
+  if (
+    ajv.validate(
+      {
+        type: "object",
+        required: Object.keys(m.params),
+        // additionalProperties: false,
+        properties: m.params,
+      },
+      request
+    )
+  ) {
+    return undefined;
+  } else {
+    return ajv.errorsText();
+  }
 }
 
-export function getResponseSchema(method: string): JSONSchema | undefined {
-  return (API as ApiEntries)[method]?.result;
+export function verifyResponse(
+  method: MethodNames,
+  response: unknown
+): string | undefined {
+  const m = API[method];
+  if (
+    ajv.validate(
+      {
+        type: "object",
+        required: Object.keys(m.result),
+        // additionalProperties: false,
+        properties: m.result,
+      },
+      response
+    )
+  ) {
+    return undefined;
+  } else {
+    return ajv.errorsText();
+  }
 }
 
-export type * from "./actions.js";
-export type * from "./character.js";
-export type * from "./states.js";
-export * from "./elements.js";
+export * from "./actions";
+export * from "./events";
+export * from "./elements";
