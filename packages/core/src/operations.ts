@@ -5,24 +5,18 @@ import * as _ from "lodash-es";
 import characterList from "./characters";
 import { Character } from "./character";
 
-export function initCharacter(id: number): Character {
-  const constructor = characterList[id];
+export function initCharacter(objectId: number, index: number): Character {
+  const constructor = characterList[objectId];
   if (typeof constructor === "undefined") {
     throw new Error("Unknown id");
   }
-  return new Character(id, constructor.info);
+  return new Character(index, objectId, constructor.info);
 }
 
 export async function requestPlayer<K extends MethodNames>(p: Player, method: K, params: unknown): Promise<ResponseType<K>> {
-  let e = verifyRequest(method, params);
-  if (e) {
-    throw new Error(`Invalid request: ${e})`);
-  }
+  verifyRequest(method, params);
   const response = await p.handle(method, params);
-  e = verifyResponse(method, response);
-  if (e) {
-    throw new Error(`Invalid response: ${e})`);
-  }
+  verifyResponse(method, response);
   return response as ResponseType<K>;
 }
 

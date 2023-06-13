@@ -1,5 +1,12 @@
 import { GameOptions, Player } from ".";
-import { CharacterFacade, DiceType, StateFacade, StatusFacade, SummonFacade, SupportFacade } from "@jenshin-tcg/typings";
+import {
+  CharacterFacade,
+  DiceType,
+  StateFacade,
+  StatusFacade,
+  SummonFacade,
+  SupportFacade,
+} from "@jenshin-tcg/typings";
 import { initCharacter, requestPlayer } from "./operations";
 import * as _ from "lodash-es";
 import { Character } from "./character";
@@ -19,7 +26,6 @@ export interface WithPlayersState {
   combatStatuses: Pair<StatusFacade[]>;
   supports: Pair<SupportFacade[]>;
   summons: Pair<SummonFacade[]>;
-  globalEffects: Pair<any[]>; // TODO
 }
 
 export interface InitHandsState extends WithPlayersState {
@@ -39,6 +45,7 @@ export interface RollPhaseState extends WithActivesState {
 }
 
 interface WithDiceState extends WithActivesState {
+  roundNumber: number;
   dice: Pair<DiceType[]>;
 }
 
@@ -51,16 +58,9 @@ export interface EndPhaseState extends WithDiceState {
   type: "endPhase";
 }
 
-export interface ForceSwitchPlayerState extends WithDiceState {
-  type: "forceSwitchPlayer";
-  activePlayer: 0 | 1;
-  nextState: "actionPhase" | "endPhase";
-}
-
 export interface GameEndState extends WithPlayersState {
   type: "gameEnd";
-  winner: 0 | 1;
-  winnerActive: number;
+  winner?: 0 | 1;
 }
 
 export type State =
@@ -69,7 +69,6 @@ export type State =
   | InitActiveState
   | RollPhaseState
   | ActionPhaseState
-  | ForceSwitchPlayerState
   | EndPhaseState
   | GameEndState;
 
@@ -111,16 +110,12 @@ export class StateManager {
           hands: [h0, h1],
           summons: [[], []],
           supports: [[], []],
-          globalEffects: [[], []],
           nextTurn: 0,
         };
         break;
       }
       case "initHands": {
-        await Promise.all([
-          this.switchHands(0),
-          this.switchHands(1),
-        ]);
+        await Promise.all([this.switchHands(0), this.switchHands(1)]);
         this.state = {
           ...this.state,
           type: "initActive",
@@ -132,7 +127,6 @@ export class StateManager {
           ...this.state,
           type: "gameEnd",
           winner: 0,
-          winnerActive: 0,
         };
         break;
       }
@@ -140,9 +134,6 @@ export class StateManager {
         break;
       }
       case "actionPhase": {
-        break;
-      }
-      case "forceSwitchPlayer": {
         break;
       }
       case "endPhase": {
@@ -160,9 +151,9 @@ export class StateManager {
       requestPlayer(p, "eventArrived", {
         event: {
           type: "updateState",
-          state: this.createFacade(i as (0 | 1))
-        }
-      })
+          state: this.createFacade(i as 0 | 1),
+        },
+      });
     });
   }
 
@@ -170,23 +161,32 @@ export class StateManager {
     if (!("hands" in this.state)) {
       throw new Error("bad state");
     }
-    const resp = await requestPlayer((p ? this.p1 : this.p0), "switchHands", {
+    const resp = await requestPlayer(p ? this.p1 : this.p0, "switchHands", {
       hands: this.state.hands[p],
-      canRemove
+      canRemove,
     });
     if (canRemove) {
-      const back = _.pullAt(this.state.hands[p], resp.removedHands);
-      this.state.piles[p] = _.shuffle([...this.state.piles[p], ...back]);
-      const news = this.state.piles[p].splice(0, back.length);
+      for (const c of resp.removedHands) {
+        const i = this.state.hands[p].indexOf(c);
+        if (i === -1) {
+          throw new Error("bad removed hands");
+        }
+        this.state.hands[p].splice(i, 1);
+      }
+      this.state.piles[p] = _.shuffle([
+        ...this.state.piles[p],
+        ...resp.removedHands,
+      ]);
+      const news = this.state.piles[p].splice(0, resp.removedHands.length);
       this.state.hands[p].push(...news);
       // notify other one
-      requestPlayer((p? this.p0 : this.p1), "eventArrived", {
+      requestPlayer(p ? this.p0 : this.p1, "eventArrived", {
         event: {
           type: "peerSwitchHands",
-          removeNum: back.length,
+          removeNum: resp.removedHands.length,
           addNum: news.length,
-        }
-      })
+        },
+      }).catch(console.error);
     }
   }
 
@@ -198,21 +198,21 @@ export class StateManager {
       pileNumber: this.state.piles[p].length,
       hands: this.state.hands[p],
       active: "actives" in this.state ? this.state.actives[p] : undefined,
-      characters: this.state.characters[p].map(c => c.toFacade()),
+      characters: this.state.characters[p].map((c) => c.toFacade()),
       combatStatuses: this.state.combatStatuses[p],
       supports: this.state.supports[p],
       summons: this.state.summons[p],
       dice: "dice" in this.state ? this.state.dice[p] : [],
-      globalEffects: this.state.globalEffects[p],
       peerPileNumber: this.state.piles[1 - p].length,
       peerHandsNumber: this.state.hands[1 - p].length,
-      peerActive: "actives" in this.state ? this.state.actives[1 - p] : undefined,
+      peerActive:
+        "actives" in this.state ? this.state.actives[1 - p] : undefined,
       peerCharacters: this.state.characters[1 - p],
       peerCombatStatuses: this.state.combatStatuses[1 - p],
       peerSupports: this.state.supports[1 - p],
       peerSummons: this.state.summons[1 - p],
       peerDiceNumber: "dice" in this.state ? this.state.dice[1 - p].length : 0,
-    }
+    };
   }
 
   public async run(): Promise<GameEndState> {

@@ -10,7 +10,11 @@ export class Character implements CharacterFacade {
   statuses = [];
   applied = Aura.NONE;
 
-  constructor(public id: number, private readonly info: CharacterInfo) {
+  constructor(
+    readonly id: number,
+    readonly objectId: number,
+    private readonly info: CharacterInfo
+  ) {
     this.health = info.health;
     this.energy = 0;
   }
@@ -18,6 +22,7 @@ export class Character implements CharacterFacade {
   toFacade(): CharacterFacade {
     return {
       id: this.id,
+      objectId: this.objectId,
       health: this.health,
       energy: this.energy,
       weapon: this.weapon,

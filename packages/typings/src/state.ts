@@ -1,7 +1,8 @@
 import { Aura, DiceType } from "./elements";
 
 export interface CharacterFacade {
-  id: number;
+  readonly id: number;
+  readonly objectId: number;
   health: number;
   energy: number;
   weapon?: number;
@@ -12,22 +13,21 @@ export interface CharacterFacade {
 }
 
 export interface StatusFacade {
-  id: number;
+  readonly id: number;
+  readonly objectId: number;
   value?: number;
 }
 
 export interface SupportFacade {
-  id: number;
+  readonly id: number;
+  readonly objectId: number;
   value?: number;
 }
 
 export interface SummonFacade {
-  id: number;
+  readonly id: number;
+  readonly typeId: number;
   value: number;
-}
-
-export type GlobalEffect = {
-  type: "fastSwitch"
 }
 
 // export interface CardFacade {
@@ -43,7 +43,6 @@ export interface StateFacade {
   supports: SupportFacade[];
   summons: SummonFacade[];
   dice: DiceType[];
-  globalEffects: GlobalEffect[],
   peerPileNumber: number;
   peerHandsNumber: number;
   peerActive?: number;

@@ -1,7 +1,7 @@
 import type { FromSchema, JSONSchema } from "json-schema-to-ts";
 
 export const ACTION_SCHEMA = {
-  anyOf: [
+  oneOf: [
     {
       type: "object",
       additionalProperties: false,
