@@ -21,7 +21,7 @@ const NAME: Record<DiceType, string> = {
   [DiceType.DENDRO ]: "草",
   [DiceType.HYDRO  ]: "水",
   [DiceType.PYRO   ]: "火",
-  [DiceType.CRYO   ]: "岩",
+  [DiceType.CRYO   ]: "冰",
   [DiceType.OMNI   ]: "万"
 }
 
