@@ -6,22 +6,22 @@ export const API = {
   initialize: {
     params: {
       first: { type: "boolean" },
+      state: {}
     },
     result: { success: { const: true } },
   },
-  switchHands: {
+  removeHands: {
     params: {
-      hands: { type: "array", items: { type: "integer" } },
-      canRemove: { type: "boolean" },
+      hands: { type: "array", items: { type: "number" } },
     },
     result: {
-      removedHands: { type: "array", items: { type: "integer" } },
+      remove: { type: "array", items: { type: "number" } },
     },
   },
   switchActive: {
     params: {},
     result: {
-      active: { type: "integer", minimum: 0, maximum: 2 },
+      target: { type: "integer", minimum: 0, maximum: 2 },
     },
   },
   roll: {
@@ -30,7 +30,7 @@ export const API = {
       canRemove: { type: "boolean" },
     },
     result: {
-      removedDice: { type: "array", items: { type: "integer" } },
+      remove: { type: "array", items: { type: "integer" } },
     },
   },
   action: {
@@ -54,7 +54,7 @@ export const API = {
           type: "object",
           additionalProperties: false,
           properties: {
-            id: { type: "integer" },
+            id: { type: "number" },
             cost: { type: "array", items: { type: "integer" } },
           },
         },
@@ -74,7 +74,7 @@ export const API = {
       action: ACTION_SCHEMA,
     },
   },
-  eventArrived: {
+  notify: {
     params: {
       event: EVENT_SCHEMA,
     },
@@ -82,8 +82,8 @@ export const API = {
   },
   drawHands: {
     params: {
-      hands: { type: "array", items: { type: "integer" } },
-      destroyed: { type: "array", items: { type: "integer" } },
+      hands: { type: "array", items: { type: "number" } },
+      discard: { type: "array", items: { type: "number" } },
     },
     result: {},
   },
@@ -112,11 +112,11 @@ type ReqOf<K extends MethodNames> = {
 };
 type RequestTypeCache = {
   initialize: ReqOf<"initialize">;
-  switchHands: ReqOf<"switchHands">;
+  removeHands: ReqOf<"removeHands">;
   switchActive: ReqOf<"switchActive">;
   roll: ReqOf<"roll">;
   action: ReqOf<"action">;
-  eventArrived: ReqOf<"eventArrived">;
+  notify: ReqOf<"notify">;
   drawHands: ReqOf<"drawHands">;
   gameEnd: ReqOf<"gameEnd">;
 };
@@ -127,11 +127,11 @@ type ResOf<K extends MethodNames> = {
 };
 type ResponseTypeCache = {
   initialize: ResOf<"initialize">;
-  switchHands: ResOf<"switchHands">;
+  removeHands: ResOf<"removeHands">;
   switchActive: ResOf<"switchActive">;
   roll: ResOf<"roll">;
   action: ResOf<"action">;
-  eventArrived: ResOf<"eventArrived">;
+  notify: ResOf<"notify">;
   drawHands: ResOf<"drawHands">;
   gameEnd: ResOf<"gameEnd">;
 };

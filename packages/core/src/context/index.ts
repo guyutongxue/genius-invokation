@@ -28,15 +28,23 @@ export interface DescriptionContext {
 }
 
 export interface IStatus {
-  onBeforeUseSkill?: (c: SkillContext) => SkillContext;
+  onBeforeUseSkill?: (c: SkillContext) => void;
   onUseSkill?: (c: SkillContext) => void;
-  // onBeforeUseDice?: (c: DiceContext) => DiceContext;
+  onBeforeUseDice?: (c: UseDiceContext) => void;
 }
 
-export interface SkillContext {
-  character: Character;
-  info: SkillInfo;
-  additionalDamage: number;
+export interface SkillContext extends DescriptionContext {
+  readonly character: Character;
+  readonly info: SkillInfo;
+  addDamage(value: number): void;
+  multiplyDamage(multiplier: number): void;
+}
+
+export interface UseDiceContext extends DescriptionContext {
+  readonly skill?: SkillContext;
+  readonly switch?: boolean;
+  readonly card?: unknown;
+  deductCost(type: DiceType, number?: number): void;
 }
 
 interface IStatusConstructor {

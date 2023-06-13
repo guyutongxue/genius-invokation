@@ -26,7 +26,7 @@ export const ACTION_SCHEMA = {
       additionalProperties: false,
       properties: {
         type: { const: "playCard" },
-        card: { type: "integer" },
+        card: { type: "number" },
       },
       required: ["type", "card"],
     },
@@ -34,7 +34,7 @@ export const ACTION_SCHEMA = {
       type: "object",
       additionalProperties: false,
       properties: {
-        card: { type: "integer" },
+        card: { type: "number" },
         type: { const: "elementalTuning" },
       },
       required: ["type", "card"],

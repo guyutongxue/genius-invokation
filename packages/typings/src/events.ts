@@ -34,7 +34,7 @@ export const EVENT_SCHEMA = {
             type: { const: "oppSwitchHands" },
             addNum: { type: "integer" },
             removeNum: { type: "integer" },
-            destroyNum: { type: "integer" },
+            discardNum: { type: "integer" },
           },
           required: ["type"],
         },
@@ -51,7 +51,7 @@ export const EVENT_SCHEMA = {
           additionalProperties: false,
           properties: {
             type: { const: "useSkill" },
-            id: { type: "integer" },
+            id: { type: "integer" }, // 0-3 me 4-6 opponent
             name: { type: "string" },
           },
           required: ["type", "id", "name"],
@@ -62,7 +62,7 @@ export const EVENT_SCHEMA = {
           properties: {
             type: { const: "playCard" },
             who: { enum: [0, 1] }, // me or opponent
-            card: { type: "integer" },
+            card: { type: "number" },
           },
           required: ["type", "who", "card"],
         },

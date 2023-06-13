@@ -1,4 +1,4 @@
-import { DescriptionContext, IStatus, SkillContext } from "../context";
+import { DescriptionContext, IStatus, SkillContext } from "../../context";
 import {
   Character,
   Any,
@@ -7,7 +7,7 @@ import {
   Skill,
   Burst,
   CombatStatus,
-} from "../context/decorators";
+} from "../../context/decorators";
 import { DamageType } from "@jenshin-tcg/typings";
 
 @Character({
@@ -42,9 +42,8 @@ class Bennett {
 class InspirationField implements IStatus {
   onBeforeUseSkill(c: SkillContext) {
     if (c.character.health <= 7) {
-      c.additionalDamage += 2;
+      c.addDamage(2);
     }
-    return c;
   }
   onUseSkill(c: SkillContext) {
     if (c.character.health <= 6) {

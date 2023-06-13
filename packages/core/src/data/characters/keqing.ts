@@ -1,4 +1,4 @@
-import { DamageTarget, DescriptionContext } from "../context";
+import { DamageTarget, DescriptionContext } from "../../context";
 import {
   Character,
   Any,
@@ -6,7 +6,7 @@ import {
   Normal,
   Skill,
   Burst,
-} from "../context/decorators";
+} from "../../context/decorators";
 import { DamageType } from "@jenshin-tcg/typings";
 
 @Character({

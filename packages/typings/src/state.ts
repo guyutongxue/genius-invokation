@@ -43,12 +43,12 @@ export interface StateFacade {
   supports: SupportFacade[];
   summons: SummonFacade[];
   dice: DiceType[];
-  peerPileNumber: number;
-  peerHandsNumber: number;
-  peerActive?: number;
-  peerCharacters: CharacterFacade[];
-  peerCombatStatuses: StatusFacade[];
-  peerSupports: SupportFacade[];
-  peerSummons: SummonFacade[];
-  peerDiceNumber: number;
+  oppPileNumber: number;
+  oppHandsNumber: number;
+  oppActive?: number;
+  oppCharacters: CharacterFacade[];
+  oppCombatStatuses: StatusFacade[];
+  oppSupports: SupportFacade[];
+  oppSummons: SummonFacade[];
+  oppDiceNumber: number;
 }

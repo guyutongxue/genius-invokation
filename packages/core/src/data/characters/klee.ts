@@ -1,4 +1,4 @@
-import { DescriptionContext, IStatus, SkillContext } from "../context";
+import { DescriptionContext, IStatus, SkillContext } from "../../context";
 import {
   Character,
   Any,
@@ -8,7 +8,7 @@ import {
   Burst,
   CombatStatus,
   Status,
-} from "../context/decorators";
+} from "../../context/decorators";
 import { DamageType } from "@jenshin-tcg/typings";
 
 @Character({

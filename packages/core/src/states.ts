@@ -1,15 +1,23 @@
 import { GameOptions, Player } from ".";
 import {
+  Event,
   CharacterFacade,
   DiceType,
   StateFacade,
   StatusFacade,
   SummonFacade,
   SupportFacade,
+  MethodNames,
+  ResponseType,
+  RequestType,
+  verifyRequest,
+  verifyResponse,
 } from "@jenshin-tcg/typings";
-import { initCharacter, requestPlayer } from "./operations";
+import { initCharacter, randomDice } from "./operations";
 import * as _ from "lodash-es";
 import { Character } from "./character";
+import { flip } from "./utils";
+import { INITIAL_HANDS, MAX_HANDS } from "./config";
 
 export type Pair<T> = [T, T];
 
@@ -36,17 +44,16 @@ interface WithActivesState extends WithPlayersState {
   actives: Pair<number>;
 }
 
-export interface InitActiveState extends WithPlayersState {
+export interface InitActiveState extends WithActivesState {
   type: "initActive";
-}
-
-export interface RollPhaseState extends WithActivesState {
-  type: "rollPhase";
 }
 
 interface WithDiceState extends WithActivesState {
   roundNumber: number;
   dice: Pair<DiceType[]>;
+}
+export interface RollPhaseState extends WithDiceState {
+  type: "rollPhase";
 }
 
 export interface ActionPhaseState extends WithDiceState {
@@ -90,14 +97,8 @@ export class StateManager {
         if (Math.random() < 0.5) {
           [this.p0, this.p1] = [this.p1, this.p0];
         }
-        await Promise.all([
-          requestPlayer(this.p0, "initialize", { first: true }),
-          requestPlayer(this.p1, "initialize", { first: false }),
-        ]);
         const p0 = _.shuffle(this.p0.piles);
         const p1 = _.shuffle(this.p1.piles);
-        const h0 = p0.splice(0, 5);
-        const h1 = p1.splice(0, 5);
         this.state = {
           type: "initHands",
           players: [this.p0.id, this.p1.id],
@@ -107,30 +108,59 @@ export class StateManager {
           ],
           combatStatuses: [[], []],
           piles: [p0, p1],
-          hands: [h0, h1],
+          hands: [[], []],
           summons: [[], []],
           supports: [[], []],
           nextTurn: 0,
         };
+        await Promise.all([
+          this.requestPlayer(0, "initialize", {
+            first: true,
+            state: this.createFacade(0),
+          }),
+          this.requestPlayer(1, "initialize", {
+            first: false,
+            state: this.createFacade(1),
+          }),
+        ]);
         break;
       }
       case "initHands": {
+        await Promise.all([
+          this.drawHands(0, INITIAL_HANDS),
+          this.drawHands(1, INITIAL_HANDS),
+        ]);
+
         await Promise.all([this.switchHands(0), this.switchHands(1)]);
         this.state = {
           ...this.state,
           type: "initActive",
+          actives: [0, 0],
         };
         break;
       }
       case "initActive": {
+        await Promise.all([
+          this.switchActive(0, "noNotify"),
+          this.switchActive(1, "noNotify"),
+        ]);
+        this.switchActive(0, "justNotify");
+        this.switchActive(1, "justNotify");
         this.state = {
           ...this.state,
-          type: "gameEnd",
-          winner: 0,
+          type: "rollPhase",
+          roundNumber: 1,
+          dice: [[], []],
         };
         break;
       }
       case "rollPhase": {
+        await Promise.all([this.rollDice(0), this.rollDice(1)]);
+        this.state = {
+          ...this.state,
+          // type: "actionPhase",
+          type: "gameEnd",
+        };
         break;
       }
       case "actionPhase": {
@@ -140,53 +170,194 @@ export class StateManager {
         break;
       }
       case "gameEnd": {
+        console.log("GAME END!");
+        this.requestPlayer(0, "gameEnd", { win: false });
+        this.requestPlayer(1, "gameEnd", { win: false });
         break;
       }
     }
-    this.sendUpdate();
   }
 
-  private sendUpdate() {
-    [this.p0, this.p1].forEach((p, i) => {
-      requestPlayer(p, "eventArrived", {
-        event: {
-          type: "updateState",
-          state: this.createFacade(i as 0 | 1),
-        },
-      });
+  private updatePhase(phase: "roll" | "action" | "end") {
+    this.notifyPlayer({
+      source: {
+        type: "phaseBegin",
+        phase,
+      },
     });
   }
 
-  private async switchHands(p: 0 | 1, canRemove = true) {
-    if (!("hands" in this.state)) {
-      throw new Error("bad state");
+  async requestPlayer<K extends MethodNames>(
+    p: 0 | 1,
+    method: K,
+    params: RequestType<K>
+  ): Promise<ResponseType<K>> {
+    const pl = p ? this.p1 : this.p0;
+    verifyRequest(method, params);
+    // @ts-ignore
+    const response = await pl.handler(method, params);
+    verifyResponse(method, response);
+    return response;
+  }
+
+  private notifyPlayer(event: Omit<Event, "state">, p?: 0 | 1) {
+    if (typeof p === "undefined" || p === 0) {
+      this.requestPlayer(0, "notify", {
+        event: {
+          ...event,
+          state: this.createFacade(0),
+        },
+      }).catch(() => {});
     }
-    const resp = await requestPlayer(p ? this.p1 : this.p0, "switchHands", {
-      hands: this.state.hands[p],
-      canRemove,
-    });
-    if (canRemove) {
-      for (const c of resp.removedHands) {
-        const i = this.state.hands[p].indexOf(c);
-        if (i === -1) {
-          throw new Error("bad removed hands");
-        }
-        this.state.hands[p].splice(i, 1);
-      }
-      this.state.piles[p] = _.shuffle([
-        ...this.state.piles[p],
-        ...resp.removedHands,
-      ]);
-      const news = this.state.piles[p].splice(0, resp.removedHands.length);
-      this.state.hands[p].push(...news);
-      // notify other one
-      requestPlayer(p ? this.p0 : this.p1, "eventArrived", {
+    if (typeof p === "undefined" || p === 1) {
+      this.requestPlayer(1, "notify", {
         event: {
-          type: "peerSwitchHands",
-          removeNum: resp.removedHands.length,
-          addNum: news.length,
+          ...event,
+          state: this.createFacade(1),
         },
-      }).catch(console.error);
+      }).catch(() => {});
+    }
+  }
+
+  private ensureHands(state: State): asserts state is InitHandsState {
+    if (!("hands" in state)) {
+      throw new Error("bad state (hands)");
+    }
+  }
+
+  private ensureActives(state: State): asserts state is InitActiveState {
+    if (!("actives" in state)) {
+      throw new Error("bad state (actives)");
+    }
+  }
+
+  private ensureDice(
+    state: State
+  ): asserts state is RollPhaseState | ActionPhaseState | EndPhaseState {
+    if (!("dice" in state)) {
+      throw new Error("bad state (dice)");
+    }
+  }
+
+  private sortHands(p: 0 | 1) {
+    this.ensureHands(this.state);
+    this.state.hands[p].sort((a, b) => a - b);
+  }
+
+  private async drawHands(p: 0 | 1, num = 2) {
+    if (num === 0) return;
+    this.ensureHands(this.state);
+    const news = this.state.piles[p].splice(0, num);
+    this.state.hands[p].push(...news);
+    let discard: number[] = [];
+    if (this.state.hands[p].length > MAX_HANDS) {
+      discard = this.state.hands[p].splice(MAX_HANDS);
+    }
+    await this.requestPlayer(p, "drawHands", {
+      hands: news,
+      discard,
+    });
+    // notify opponent
+    this.notifyPlayer(
+      {
+        source: {
+          type: "oppSwitchHands",
+          addNum: news.length,
+          discardNum: discard.length,
+        },
+      },
+      flip(p)
+    );
+    this.sortHands(p);
+  }
+
+  private async switchHands(p: 0 | 1) {
+    this.ensureHands(this.state);
+    const { remove } = await this.requestPlayer(p, "removeHands", {
+      hands: this.state.hands[p],
+    });
+    for (const c of remove) {
+      const i = this.state.hands[p].indexOf(c);
+      if (i === -1) {
+        throw new Error("bad removed hands");
+      }
+      this.state.hands[p].splice(i, 1);
+    }
+    this.state.piles[p] = _.shuffle([...this.state.piles[p], ...remove]);
+    // notify opponent
+    this.notifyPlayer(
+      {
+        source: {
+          type: "oppSwitchHands",
+          removeNum: remove.length,
+        },
+      },
+      flip(p)
+    );
+    this.drawHands(p, remove.length);
+  }
+
+  private async switchActive(
+    p: 0 | 1,
+    notify: "notify" | "noNotify" | "justNotify" = "notify"
+  ) {
+    this.ensureActives(this.state);
+    let target = this.state.actives[p];
+    if (notify !== "justNotify") {
+      ({ target } = await this.requestPlayer(p, "switchActive", {}));
+      this.state.actives[p] = target;
+    }
+    if (notify !== "noNotify") {
+      this.notifyPlayer(
+        {
+          source: {
+            type: "switchActive",
+            target: target,
+          },
+        },
+        p
+      );
+      this.notifyPlayer(
+        {
+          source: {
+            type: "switchActive",
+            target: target + 3,
+          },
+        },
+        flip(p)
+      );
+    }
+  }
+
+  private rerollRandomDice(original: number[], removed: number[]) {
+    for (const d of removed) {
+      const i = original.indexOf(d);
+      if (i === -1) {
+        throw new Error("bad removed dice");
+      }
+      original.splice(i, 1);
+    }
+    return randomDice(original);
+  }
+
+  private async rollDice(p: 0 | 1, rerollCount = 1) {
+    this.ensureDice(this.state);
+    let dice = this.state.dice[p];
+    if (this.state.type === "rollPhase") {
+      // TODO SCAN HOOKS
+      dice = randomDice();
+    }
+    let { remove } = await this.requestPlayer(p, "roll", {
+      dice,
+      canRemove: rerollCount !== 0,
+    });
+    for (let i = 1; i <= rerollCount; i++) {
+      if (remove.length === 0) break;
+      dice = this.rerollRandomDice(dice, remove);
+      ({ remove } = await this.requestPlayer(p, "roll", {
+        dice,
+        canRemove: i != rerollCount,
+      }));
     }
   }
 
@@ -196,29 +367,32 @@ export class StateManager {
     }
     return {
       pileNumber: this.state.piles[p].length,
-      hands: this.state.hands[p],
+      hands: [...this.state.hands[p]],
       active: "actives" in this.state ? this.state.actives[p] : undefined,
       characters: this.state.characters[p].map((c) => c.toFacade()),
       combatStatuses: this.state.combatStatuses[p],
-      supports: this.state.supports[p],
-      summons: this.state.summons[p],
+      supports: [...this.state.supports[p]],
+      summons: [...this.state.summons[p]],
       dice: "dice" in this.state ? this.state.dice[p] : [],
-      peerPileNumber: this.state.piles[1 - p].length,
-      peerHandsNumber: this.state.hands[1 - p].length,
-      peerActive:
+      oppPileNumber: this.state.piles[1 - p].length,
+      oppHandsNumber: this.state.hands[1 - p].length,
+      oppActive:
         "actives" in this.state ? this.state.actives[1 - p] : undefined,
-      peerCharacters: this.state.characters[1 - p],
-      peerCombatStatuses: this.state.combatStatuses[1 - p],
-      peerSupports: this.state.supports[1 - p],
-      peerSummons: this.state.summons[1 - p],
-      peerDiceNumber: "dice" in this.state ? this.state.dice[1 - p].length : 0,
+      oppCharacters: this.state.characters[1 - p].map((c) => c.toFacade()),
+      oppCombatStatuses: this.state.combatStatuses[1 - p],
+      oppSupports: [...this.state.supports[1 - p]],
+      oppSummons: [...this.state.summons[1 - p]],
+      oppDiceNumber: "dice" in this.state ? this.state.dice[1 - p].length : 0,
     };
   }
 
   public async run(): Promise<GameEndState> {
-    while (this.state.type !== "gameEnd") {
+    while (true) {
+      let isEnd = this.state.type === "gameEnd";
       await this.next();
+      if (isEnd && this.state.type === "gameEnd") {
+        return this.state;
+      }
     }
-    return this.state;
   }
 }
