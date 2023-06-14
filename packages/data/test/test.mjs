@@ -1,3 +1,4 @@
-import { characterList, statusList } from "../dist/index.js"
+// @ts-check
+import { cardList, characterList, statusList } from "../dist/index.js"
 
-console.log(statusList[1].actions.onUseSkill)
+console.log(cardList)

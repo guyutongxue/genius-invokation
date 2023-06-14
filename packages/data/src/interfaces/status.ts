@@ -1,18 +1,15 @@
-import { SkillContext, UseDiceContext } from "../contexts";
+import { IGlobalEvents } from "./global";
 
 export interface StatusInfo {
   readonly objectId: number;
   readonly duration?: number;
   readonly usage?: number;
+  readonly visibleProp?: string;
 }
 
-export interface IStatus {
-  onBeforeUseSkill?: (c: SkillContext) => void;
-  onUseSkill?: (c: SkillContext) => void;
-  onBeforeUseDice?: (c: UseDiceContext) => void;
+export interface IStatus extends IGlobalEvents {
 }
-
 
 export interface IStatusConstructor {
-  new (): IStatus;
+  new (...args: any[]): IStatus;
 }

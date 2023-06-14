@@ -9,7 +9,12 @@ import {
   Burst,
   DamageType,
   register,
+  Card,
+  ICard,
+  SwitchTarget,
+  SkillDescriptionContext
 } from "@jenshin-tcg";
+import { Infusion } from "../commons/status";
 
 @Character({
   objectId: 10013,
@@ -26,9 +31,13 @@ class Keqing {
 
   @Skill
   @Electro(3)
-  stellarRestoration(c: Context) {
+  stellarRestoration(c: SkillDescriptionContext) {
     c.damage(3, DamageType.PYRO);
-    // c.createCombatStatus()
+    if (typeof c.triggeredByCard !== "undefined") {
+      c.createCards(LightningStiletto);
+    } else {
+      c.createStatus(Infusion, [DamageType.ELECTRO]);
+    }
   }
 
   @Burst
@@ -36,6 +45,16 @@ class Keqing {
   starwardSword(c: Context) {
     c.damage(4, DamageType.PYRO);
     c.damage(3, DamageType.PIERCING, Target.OPP_STANDBY);
+  }
+}
+
+@Card({
+  objectId: 17013
+})
+class LightningStiletto implements ICard {
+  onUse(c: Context) {
+    c.switchActive(SwitchTarget.MANUAL, 10013);
+    c.useSkill("stellarRestoration");
   }
 }
 

@@ -1,9 +1,9 @@
 import { DiceType } from "@jenshin-tcg/typings";
 import { CharacterInfo } from "./interfaces/character";
 import { SkillInfo, SkillType } from "./interfaces/skill";
-import { Context } from "./contexts";
-import { IStatus, StatusInfo } from "./interfaces/status";
-import { CardInfo } from "./interfaces/card";
+import { Context, SkillDescriptionContext } from "./contexts";
+import { IStatusConstructor, StatusInfo } from "./interfaces/status";
+import { CardInfo, ICard } from "./interfaces/card";
 
 type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -14,7 +14,7 @@ export interface CharacterData {
   skill: SkillInfoWithSignature[];
 }
 
-type SkillSignature = (this: any, c: Context) => void;
+type SkillSignature = (this: any, c: SkillDescriptionContext) => void;
 type AttachedSkillInfo = Writable<SkillInfo>;
 type SkillInfoWithSignature = AttachedSkillInfo & { do: SkillSignature };
 
@@ -93,7 +93,11 @@ function cost(type: DiceType) {
         skill.costs.push(...new Array(value).fill(type));
         return target;
       } else {
-        throw new Error("Unimplemented");
+        if (!(cardSymbol in target)) {
+          target[cardSymbol] = { costs: [] };
+        }
+        target[cardSymbol].costs.push(...new Array(value).fill(type));
+        return target;
       }
     }
     return decorate;
@@ -113,24 +117,37 @@ export const Omni = cost(DiceType.OMNI);
 
 export const statusSymbol: unique symbol = Symbol("status");
 
+export interface StatusData {
+  info: StatusInfo;
+  constructor: IStatusConstructor;
+}
+
 export function Status(info: StatusInfo) {
   return (target: any, ctx: ClassDecoratorContext): any => {
     if (statusSymbol in target)
       throw new Error("Decorating multiple times");
     target[statusSymbol] = {
       info,
-      actions: new target(),
+      constructor: target,
     };
     return target;
   };
 }
 
-export interface StatusData {
-  info: StatusInfo;
-  actions: IStatus;
-}
-
+export const cardSymbol: unique symbol = Symbol("card");
 export interface CardData {
   info: CardInfo;
-  // do: unknown;
+  costs: number[];
+  instance: ICard;
+}
+
+export function Card(info: CardInfo) {
+  return (target: any, ctx: ClassDecoratorContext): any => {
+    if (!(cardSymbol in target)) {
+      target[cardSymbol] = { costs: [] };
+    }
+    target[cardSymbol].info = info;
+    target[cardSymbol].instance = new target();
+    return target;
+  };
 }

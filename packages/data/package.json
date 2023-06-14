@@ -1,6 +1,12 @@
 {
   "name": "@jenshin-tcg/data",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build:entry": "node ./scripts/generate_imports.mjs",
     "build:rollup": "rollup -c",

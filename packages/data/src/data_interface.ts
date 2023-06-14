@@ -2,13 +2,11 @@ export { DiceType, DamageType } from "@jenshin-tcg/typings";
 
 export * from "./decorators";
 
-export * from "./interfaces/character";
-export * from "./interfaces/skill";
-export * from "./interfaces/status";
+export * from "./interfaces/global";
 
 export * from "./contexts";
 
-import { characterSymbol, statusSymbol } from "./decorators";
+import { cardSymbol, characterSymbol, statusSymbol } from "./decorators";
 import { characterList, cardList, statusList } from "./list";
 
 export function register(...args: any[]) {
@@ -19,6 +17,9 @@ export function register(...args: any[]) {
     } else if (statusSymbol in arg) {
       const data = arg[statusSymbol];
       statusList.push(data);
+    } else if (cardSymbol in arg) {
+      const data = arg[cardSymbol];
+      cardList.push(data);
     }
   }
 }

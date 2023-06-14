@@ -1,5 +1,5 @@
 import { Aura, CharacterFacade, DamageType } from "@jenshin-tcg/typings";
-import type { CharacterInfo } from "@jenshin-tcg/data";
+import type { CharacterData } from "@jenshin-tcg/data";
 
 export class Character {
   health: number;
@@ -12,17 +12,16 @@ export class Character {
 
   constructor(
     readonly id: number,
-    readonly objectId: number,
-    private readonly info: CharacterInfo
+    readonly data: CharacterData
   ) {
-    this.health = info.health;
+    this.health = data.info.health;
     this.energy = 0;
   }
 
   toFacade(): CharacterFacade {
     return {
       id: this.id,
-      objectId: this.objectId,
+      objectId: this.data.info.objectId,
       health: this.health,
       energy: this.energy,
       weapon: this.weapon,
@@ -33,18 +32,18 @@ export class Character {
     };
   }
 
-  heal(value: number) {
-    return this.damage(value, DamageType.HEAL);
-  }
-  damage(value: number, type: DamageType) {
-    if (type === DamageType.HEAL) {
-      const newHealth = Math.max(this.info.health, this.health + value);
-      // TODO: FUCK
-      this.health = newHealth;
-    } else {
-      // TODO: FUCK
-      this.health -= value;
-      // ELEMENTAL blahblah
-    }
-  }
+  // heal(value: number) {
+  //   return this.damage(value, DamageType.HEAL);
+  // }
+  // damage(value: number, type: DamageType) {
+  //   if (type === DamageType.HEAL) {
+  //     const newHealth = Math.max(this.data.info.health, this.health + value);
+  //     // TODO: FUCK
+  //     this.health = newHealth;
+  //   } else {
+  //     // TODO: FUCK
+  //     this.health -= value;
+  //     // ELEMENTAL blahblah
+  //   }
+  // }
 }
