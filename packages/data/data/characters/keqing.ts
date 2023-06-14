@@ -50,7 +50,9 @@ class Keqing {
 }
 
 @Card({
-  objectId: 17013
+  objectId: 17013,
+  // type: "event",
+  tags: ["slow"]
 })
 class LightningStiletto implements ICard {
   onUse(c: Context) {

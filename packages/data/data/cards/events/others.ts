@@ -11,7 +11,8 @@ import {
 } from "@jenshin-tcg";
 
 @Card({
-  objectId: 110,
+  objectId: 332005,
+  type: "event",
 })
 class IHaventLostYet implements ICard {
   enabled = false;
@@ -33,7 +34,8 @@ class IHaventLostYet implements ICard {
 }
 
 @Card({
-  objectId: 111,
+  objectId: 331801,
+  type: "event"
 })
 @Omni(1)
 class WindAndFreedom implements ICard {

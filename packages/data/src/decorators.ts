@@ -113,6 +113,7 @@ export const Anemo = cost(DiceType.ANEMO);
 export const Geo = cost(DiceType.GEO);
 export const Dendro = cost(DiceType.DENDRO);
 export const Omni = cost(DiceType.OMNI);
+export const Same = cost(DiceType.SAME);
 export const Energy = cost(DiceType.ENERGY);
 
 export const statusSymbol: unique symbol = Symbol("status");

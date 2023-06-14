@@ -7,7 +7,7 @@ import { IStatus, Status, register } from "@jenshin-tcg";
 class Satiated implements IStatus { 
 }
 
-// @CardWithCharacter()
+// @CardWithCharacter() 333005
 // class SweetMadame implements ICardWithCharacter {
 
 //   enabledCharacter() {
