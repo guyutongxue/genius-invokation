@@ -12,6 +12,9 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
     devDependencies:
+      '@jenshin-tcg/data':
+        specifier: workspace:*
+        version: link:../data
       '@jenshin-tcg/typings':
         specifier: workspace:*
         version: link:../typings

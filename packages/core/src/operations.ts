@@ -1,16 +1,12 @@
-import { Aura, MethodNames, ResponseType, CharacterFacade, verifyRequest, verifyResponse, RequestType } from "@jenshin-tcg/typings";
-import { Player } from ".";
-import { State, WithPlayersState } from "./states";
-import * as _ from "lodash-es";
-import { characterList } from "./data";
+import { getCharacterData } from "@jenshin-tcg/data";
 import { Character } from "./character";
 
 export function initCharacter(objectId: number, index: number): Character {
-  const constructor = characterList[objectId];
-  if (typeof constructor === "undefined") {
-    throw new Error("Unknown id");
+  const data = getCharacterData(objectId);
+  if (typeof data === "undefined") {
+    throw new Error("Unknown objectId");
   }
-  return new Character(index, objectId, constructor.info);
+  return new Character(index, data);
 }
 
 export function randomDice(controlled?: number[]): number[] {

@@ -11,6 +11,7 @@
     "build": "rollup -c"
   },
   "devDependencies": {
+    "@jenshin-tcg/data": "workspace:*",
     "@jenshin-tcg/typings": "workspace:*",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-typescript": "^11.1.1",

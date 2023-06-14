@@ -1,8 +1,9 @@
 import { DiceType } from "@jenshin-tcg/typings";
 import { CharacterInfo } from "./interfaces/character";
 import { SkillInfo, SkillType } from "./interfaces/skill";
-import { Context, IStatus } from "./contexts";
-import { StatusInfo } from "./interfaces/status";
+import { Context } from "./contexts";
+import { IStatus, StatusInfo } from "./interfaces/status";
+import { CardInfo } from "./interfaces/card";
 
 type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -130,6 +131,6 @@ export interface StatusData {
 }
 
 export interface CardData {
-  info: unknown;
-  do: unknown;
+  info: CardInfo;
+  // do: unknown;
 }

@@ -1,6 +1,7 @@
 import { DiceType, DamageType } from "@jenshin-tcg/typings";
 import { ICharacter } from "./interfaces/character";
 import { SkillInfo } from "./interfaces/skill";
+import { IStatusConstructor } from "./interfaces/status";
 
 export enum Target {
   ACTIVE,
@@ -22,11 +23,6 @@ export interface Context {
   summon(summon: unknown): void;
 }
 
-export interface IStatus {
-  onBeforeUseSkill?: (c: SkillContext) => void;
-  onUseSkill?: (c: SkillContext) => void;
-  onBeforeUseDice?: (c: UseDiceContext) => void;
-}
 
 export interface SkillContext extends Context {
   readonly info: SkillInfo;
@@ -40,8 +36,4 @@ export interface UseDiceContext extends Context {
   readonly switch?: boolean;
   readonly card?: unknown;
   deductCost(type: DiceType, number?: number): void;
-}
-
-interface IStatusConstructor {
-  new (): IStatus;
 }

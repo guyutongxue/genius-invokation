@@ -1,7 +1,7 @@
 import { Aura, CharacterFacade, DamageType } from "@jenshin-tcg/typings";
-import { CharacterInfo } from "./context";
+import type { CharacterInfo } from "@jenshin-tcg/data";
 
-export class Character implements CharacterFacade {
+export class Character {
   health: number;
   energy: number;
   weapon?: number;
