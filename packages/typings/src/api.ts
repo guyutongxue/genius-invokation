@@ -56,6 +56,8 @@ export const API = {
           properties: {
             id: { type: "number" },
             cost: { type: "array", items: { type: "integer" } },
+            chooseCharacter: { type: "boolean" },
+            removeSupport: { type: "boolean" },
           },
         },
         required: ["id", "cost"],

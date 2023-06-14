@@ -18,7 +18,7 @@ const props = defineProps<{
   piles: number[];
 }>();
 
-const playerType = props.playerId === "A" ? "me" : "dbg";
+const playerType = "me" as const;
 
 const areaData = ref<PlayerAreaData>();
 

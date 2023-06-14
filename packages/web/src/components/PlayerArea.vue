@@ -35,10 +35,10 @@ const { player, name, data } = defineProps<{
   data: PlayerAreaData
 }>();
 
-defineEmits<{
-  clickCharacter: [id: number, objectId: number];
-  clickHand: [id: number, objectId: number];
-  clickEnd: [];
+const emit = defineEmits<{
+  (e: "clickCharacter", id: number, objectId: number): void;
+  (e: "clickHand", id: number, objectId: number): void;
+  (e: "clickEnd"): void;
 }>();
 </script>
 
@@ -61,7 +61,7 @@ defineEmits<{
       <div class="bg-yellow-800 text-white flex flex-col p-2 gap-2">
         <div v-if="data.type === 'visible'">
           <div v-for="d of data.dice">
-            <Dice :type="(d as DiceType)"></Dice>
+            <Dice :type="d"></Dice>
           </div>
         </div>
         <div v-else>
@@ -71,7 +71,7 @@ defineEmits<{
     </div>
     <div v-if="data.type === 'visible'" class="flex flex-wrap gap-2">
       <div v-for="hand of data.hands">
-        <div class="w-10 h-14" @click="$emit('clickHand', hand, Math.floor(hand))">
+        <div class="w-10 h-14" @click="emit('clickHand', hand, Math.floor(hand))">
           {{ hand }}
         </div>
       </div>

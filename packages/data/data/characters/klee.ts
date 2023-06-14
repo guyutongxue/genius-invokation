@@ -1,17 +1,21 @@
-import { DescriptionContext, IStatus, SkillContext } from "../../context";
 import {
+  Context,
+  IStatus,
+  SkillContext,
   Character,
   Any,
   Pyro,
   Normal,
   Skill,
   Burst,
-  CombatStatus,
   Status,
-} from "../../context/decorators";
-import { DamageType } from "@jenshin-tcg/typings";
+  DamageType,
+  Target,
+  register,
+} from "@jenshin-tcg";
 
 @Character({
+  objectId: 10032,
   health: 10,
   energy: 3,
 })
@@ -19,26 +23,27 @@ class Klee {
   @Normal
   @Pyro(1)
   @Any(2)
-  strikeOfFortune(c: DescriptionContext) {
+  strikeOfFortune(c: Context) {
     c.damage(1, DamageType.PYRO);
   }
 
   @Skill
   @Pyro(3)
-  passionOverload(c: DescriptionContext) {
+  passionOverload(c: Context) {
     c.damage(3, DamageType.PYRO);
     c.createStatus(ExplosiveSpark);
   }
 
   @Burst
   @Pyro(3)
-  fantasticVoyage(c: DescriptionContext) {
+  fantasticVoyage(c: Context) {
     c.damage(3, DamageType.PYRO);
     c.createCombatStatus(SparksNSplash, true);
   }
 }
 
 @Status({
+  objectId: 70032,
   usage: 1,
 })
 class ExplosiveSpark implements IStatus {
@@ -49,14 +54,14 @@ class ExplosiveSpark implements IStatus {
   // }
 }
 
-@CombatStatus({
+@Status({
+  objectId: 71032,
   usage: 2,
 })
 class SparksNSplash implements IStatus {
   onUseSkill(c: SkillContext) {
-    // should be active character, but everything is OK now...
-    c.character.damage(2, DamageType.PYRO);
+    c.damage(2, DamageType.PYRO, Target.MASTER_ACTIVE);
   }
 }
 
-export default Klee;
+register(Klee, ExplosiveSpark, SparksNSplash);

@@ -10,7 +10,7 @@ const { dice } = defineProps<{
 const removed = ref<number[]>([]);
 
 const emit = defineEmits<{
-  selected: [selected: number[]];
+  (e: "selected", selected: number[]): void;
 }>();
 
 function selected() {

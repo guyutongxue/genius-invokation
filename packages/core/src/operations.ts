@@ -2,7 +2,7 @@ import { Aura, MethodNames, ResponseType, CharacterFacade, verifyRequest, verify
 import { Player } from ".";
 import { State, WithPlayersState } from "./states";
 import * as _ from "lodash-es";
-import characterList from "./data/characters";
+import { characterList } from "./data";
 import { Character } from "./character";
 
 export function initCharacter(objectId: number, index: number): Character {

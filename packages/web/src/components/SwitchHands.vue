@@ -8,7 +8,7 @@ const props = defineProps<{
 const removed = ref<number[]>([]);
 
 const emit = defineEmits<{
-  selected: [selected: number[]];
+  (e: "selected", selected: number[]): void;
 }>();
 </script>
 
@@ -19,6 +19,6 @@ const emit = defineEmits<{
         <input type="checkbox" :value="hand" v-model="removed" />{{ hand }}
       </li>
     </ul>
-    <button @click="$emit('selected', removed)">Sounds good</button>
+    <button @click="emit('selected', removed)">Sounds good</button>
   </div>
 </template>
