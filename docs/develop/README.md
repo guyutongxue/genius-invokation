@@ -6,9 +6,10 @@
 
 - `@jenshin-tcg/core`：核心库，包括游戏流程和游戏逻辑
 - `@jenshin-tcg/typings`：类型与类型检查库
+- `@jenshin-tcg/data`：卡牌数据
 - `@jenshin-tcg/web`：（考虑重命名）基于 Vue 的前端界面
 
-`core` 和 `typings` 被设计为前后端通用。
+`core`、`typings`、`data` 被设计为前后端通用。
 
 所有的库都使用 ESM 接口。
 

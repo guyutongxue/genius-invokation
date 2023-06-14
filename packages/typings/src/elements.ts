@@ -1,5 +1,5 @@
 export enum DiceType {
-  ANY = 0,
+  VOID = 0,
   CRYO = 1,
   HYDRO,
   PYRO,
@@ -9,7 +9,7 @@ export enum DiceType {
   DENDRO,
   OMNI = 8,
   SAME = 8,
-  // ENERGY = 9
+  ENERGY = 9
 }
 
 export enum DamageType {

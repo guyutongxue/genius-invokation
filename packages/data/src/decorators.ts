@@ -104,7 +104,7 @@ function cost(type: DiceType) {
   };
 }
 
-export const Any = cost(DiceType.ANY);
+export const Void = cost(DiceType.VOID);
 export const Cryo = cost(DiceType.CRYO);
 export const Hydro = cost(DiceType.HYDRO);
 export const Pyro = cost(DiceType.PYRO);
@@ -113,7 +113,7 @@ export const Anemo = cost(DiceType.ANEMO);
 export const Geo = cost(DiceType.GEO);
 export const Dendro = cost(DiceType.DENDRO);
 export const Omni = cost(DiceType.OMNI);
-// export const Energy = cost(DiceType.ENERGY);
+export const Energy = cost(DiceType.ENERGY);
 
 export const statusSymbol: unique symbol = Symbol("status");
 

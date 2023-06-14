@@ -3,7 +3,7 @@ import {
   IStatus,
   SkillContext,
   Character,
-  Any,
+  Void,
   Pyro,
   Normal,
   Skill,
@@ -15,14 +15,15 @@ import {
 } from "@jenshin-tcg";
 
 @Character({
-  objectId: 10008,
+  objectId: 1303,
   health: 10,
   energy: 3,
+  tags: ["pyro", "sword", "mondstadt"]
 })
 class Bennett {
   @Normal
   @Pyro(1)
-  @Any(2)
+  @Void(2)
   strikeOfFortune(c: Context) {
     c.damage(2, DamageType.PHYSICAL);
   }

@@ -2,7 +2,7 @@ import {
   Target,
   Context,
   Character,
-  Any,
+  Void,
   Electro,
   Normal,
   Skill,
@@ -17,14 +17,15 @@ import {
 import { Infusion } from "../commons/status";
 
 @Character({
-  objectId: 10013,
+  objectId: 1403,
   health: 10,
   energy: 3,
+  tags: ["electro", "sword", "liyue"]
 })
 class Keqing {
   @Normal
   @Electro(1)
-  @Any(2)
+  @Void(2)
   yunlaiSwordsmanship(c: Context) {
     c.damage(2, DamageType.PHYSICAL);
   }
