@@ -56,7 +56,18 @@ export const API = {
           properties: {
             id: { type: "number" },
             cost: { type: "array", items: { type: "integer" } },
-            chooseCharacter: { type: "boolean" },
+            with: {
+              type: "array",
+              items: {
+                type: "object", 
+                additionalProperties: false,
+                properties: {
+                  type: { enum: ["character", "summon", "support"] },
+                  who: { enum: [0, 1] } 
+                },
+                required: ["type", "who"]
+              },
+            },
             removeSupport: { type: "boolean" },
           },
         },

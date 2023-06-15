@@ -8,6 +8,7 @@ import {
   Omni,
   Status,
   ICard,
+  Target,
 } from "@jenshin-tcg";
 
 @Card({
@@ -17,8 +18,8 @@ import {
 class IHaventLostYet implements ICard {
   enabled = false;
 
-  onDamage(c: DamageContext) {
-    if (c.isMyCharacter(c.target)) {
+  onDefeated(c: DamageContext) {
+    if (Target.isMine(c.target)) {
       this.enabled = true;
     }
   }
@@ -52,7 +53,7 @@ class WindAndFreedom implements ICard {
 class WindAndFreedomStatus implements IStatus {
   onDefeated(c: DamageContext) {
     if (
-      !c.isMyCharacter(c.target) &&
+      !Target.isMine(c.target) &&
       c.currentPhase === "action" &&
       c.isMyTurn()
     ) {

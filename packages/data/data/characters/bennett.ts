@@ -55,7 +55,7 @@ class InspirationField implements IStatus {
   }
   onUseSkill(c: SkillContext) {
     if (c.character.getHealth() <= 6) {
-      c.damage(2, DamageType.HEAL, Target.MASTER);
+      c.heal(2);
       return true;
     }
   }

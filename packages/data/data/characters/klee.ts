@@ -39,7 +39,7 @@ class Klee {
   @Pyro(3)
   fantasticVoyage(c: Context) {
     c.damage(3, DamageType.PYRO);
-    c.createCombatStatus(SparksNSplash, [], Target.OPP_ACTIVE);
+    c.createCombatStatus(SparksNSplash, [], Target.OPP);
   }
 }
 
@@ -61,7 +61,7 @@ class ExplosiveSpark implements IStatus {
 })
 class SparksNSplash implements IStatus {
   onUseSkill(c: SkillContext) {
-    c.damage(2, DamageType.PYRO, Target.MASTER_ACTIVE);
+    c.damage(2, DamageType.PYRO, Target.ME | Target.ACTIVE);
     return true;
   }
 }

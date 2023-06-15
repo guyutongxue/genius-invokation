@@ -10,9 +10,11 @@ export interface CharacterInfo {
 }
 
 export interface ICharacter {
+  toTarget(): number;
+
   getInfo(): CharacterInfo;
   getHealth(): number;
   getEnergy(): number;
 
-  
+  hasStatus(statusId: number): boolean;
 }

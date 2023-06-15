@@ -1,6 +1,7 @@
 export { DiceType, DamageType } from "@jenshin-tcg/typings";
 
 export * from "./decorators";
+export * from "./target";
 
 export * from "./interfaces/global";
 

@@ -11,7 +11,6 @@ import {
   register,
   Card,
   ICard,
-  SwitchTarget,
   SkillDescriptionContext
 } from "@jenshin-tcg";
 import { Infusion } from "../commons/status";
@@ -45,18 +44,18 @@ class Keqing {
   @Electro(4)
   starwardSword(c: Context) {
     c.damage(4, DamageType.PYRO);
-    c.damage(3, DamageType.PIERCING, Target.OPP_STANDBY);
+    c.damage(3, DamageType.PIERCING, Target.STANDBY);
   }
 }
 
 @Card({
   objectId: 17013,
-  // type: "event",
-  tags: ["slow"]
+  type: "event",
+  tags: ["action"]
 })
 class LightningStiletto implements ICard {
   onUse(c: Context) {
-    c.switchActive(SwitchTarget.MANUAL, 10013);
+    c.switchActive(Target.OF_ID(10013));
     c.useSkill("stellarRestoration");
   }
 }

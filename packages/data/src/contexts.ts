@@ -2,45 +2,27 @@ import { DiceType, DamageType } from "@jenshin-tcg/typings";
 import { ICharacter } from "./interfaces/character";
 import { SkillInfo } from "./interfaces/skill";
 import { IStatus } from "./interfaces/status";
-import { ICard } from ".";
+import { CardWith, ICard } from ".";
 
-export enum Target {
-  ACTIVE, // 我方出战角色
-  STANDBY, // 我方后台角色
-  OPP_ACTIVE, // 对方出战角色
-  OPP_STANDBY, // 对方后台角色
-  MASTER, // （状态）所在角色
-  MASTER_ACTIVE, // （状态）所在阵营出战角色
-  MASTER_STANDBY, // （状态）所在阵营后台角色
-}
-
-export enum SwitchTarget {
-  NEXT,
-  PREV,
-  MANUAL,
-  OPP_NEXT,
-  OPP_PREV,
-  OPP_MANUAL
-}
 
 export interface Context {
   readonly currentPhase: "action" | "end";
   readonly currentTurn: number;
   isMyTurn(): boolean;
 
-  damage(value: number, type: DamageType, target?: Target): void;
-  heal(value: number, target?: Target): void;
-  gainEnergy(value?: number, target?: Target): void;
+  damage(value: number, type: DamageType, target?: number): void;
+  heal(value: number, target?: number): void;
+  gainEnergy(value?: number, target?: number): void;
 
   createStatus<T extends IStatus, Args extends unknown[]>(
     status: new (...args: Args) => T,
     args?: Args,
-    target?: Target
+    target?: number
   ): void;
   createCombatStatus<T extends IStatus, Args extends unknown[]>(
     status: new (...args: Args) => T,
     args?: Args,
-    target?: Target
+    target?: number
   ): void;
 
   createSupport(support: unknown): void;
@@ -50,11 +32,11 @@ export interface Context {
   drawCards(count: number): void;
   createCards(...cards: (new () => ICard)[]): void;
 
-  switchActive(target: SwitchTarget, manualObjectId?: number): void;
+  switchActive(target: number): void;
   useSkill(skillName: string): void;
   flipNextTurn(): void;
-
-  isMyCharacter(target: Target): boolean;
+  
+  dispose(): void;
 }
 
 export interface SkillDescriptionContext extends Context {
@@ -79,5 +61,9 @@ export interface UseDiceContext extends Context {
 }
 
 export interface DamageContext extends Context {
-  readonly target: Target;
+  readonly target: number;
+}
+
+export interface UseCardContext extends Context {
+  readonly with: CardWith[];
 }
