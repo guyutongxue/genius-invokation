@@ -36,10 +36,15 @@ export interface CardInfo {
   readonly with?: CardWithInfo[];
 }
 
-export interface ICard extends IGlobalEvents {
-  enabled?: boolean;
+export interface CardEnableTester extends IGlobalEvents {
+  readonly enabled: boolean;
+}
 
-  enabledWith?(c: CardWith): boolean;
-
+export interface ICard {
   onUse(c: Context): void;
+}
+export interface ICardConstructor {
+  new (...args: (ICharacter | unknown)[]): ICard;
+  enableTester?: new () => CardEnableTester;
+  checkWith?(...args: (ICharacter | unknown)[]): boolean;
 }

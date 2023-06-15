@@ -27,6 +27,19 @@ export const ACTION_SCHEMA = {
       properties: {
         type: { const: "playCard" },
         card: { type: "number" },
+        with: {
+          type: "array",
+          items: {
+            type: "object", 
+            additionalProperties: false,
+            properties: {
+              type: { enum: ["character", "summon", "support"] },
+              id: { type: "number" }, 
+            },
+            required: ["type", "who"]
+          },
+        },
+        removeSupport: { type: "integer" },
       },
       required: ["type", "card"],
     },

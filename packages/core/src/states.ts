@@ -18,6 +18,7 @@ import * as _ from "lodash-es";
 import { Character } from "./character";
 import { flip } from "./utils";
 import { INITIAL_HANDS, MAX_HANDS } from "./config";
+import { Card } from "./card";
 
 export type Pair<T> = [T, T];
 
@@ -27,8 +28,8 @@ export interface CoinTossState {
 
 export interface WithPlayersState {
   players: Pair<any>;
-  piles: Pair<number[]>;
-  hands: Pair<number[]>;
+  piles: Pair<Card[]>;
+  hands: Pair<Card[]>;
   characters: Pair<Character[]>;
   nextTurn: 0 | 1;
   combatStatuses: Pair<StatusFacade[]>;
@@ -174,8 +175,8 @@ export class StateManager {
         await Promise.all([this.rollDice(0), this.rollDice(1)]);
         this.state = {
           ...this.state,
-          // type: "actionPhase",
-          type: "gameEnd",
+          type: "actionPhase",
+          turn: this.state.nextTurn,
         };
         break;
       }
@@ -183,18 +184,56 @@ export class StateManager {
         this.notifyPlayer({ source: { type: "phaseBegin", phase: "action" } });
         let declareEndNum = 0;
         while (declareEndNum < 2) {
-          const curPlayer = this.state.turn = this.state.nextTurn;
-          this.state.nextTurn = flip(this.state.turn);
+          const curPlayer = this.state.turn;
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
-          const action = await this.requestPlayer(curPlayer, "action", {
+          // check card "testEnabled"
+          const availableCards = this.state.hands[curPlayer]/* TODO */;
+          const { action } = await this.requestPlayer(curPlayer, "action", {
             skills: [],
-            cards: [],
+            cards: [],//availableCards,
             switchActive: {
-
+              cost: [0],   // TODO
+              fast: false, // TODO
             }
           });
+          switch (action.type) {
+            case "declareEnd": {
+              this.state.nextTurn = curPlayer;
+              this.state.turn = flip(curPlayer);
+              declareEndNum++;
+              this.notifyPlayer({
+                source: { type: "oppDeclareEnd" }
+              }, flip(curPlayer));
+              continue;
+            }
+            case "playCard": {
+              const { card, with, removeSupport } = action;
+              const cardObj = availableCards.find(c => c.id === card);
+              if (!cardObj) { throw new Error("Card not found"); }
+              // TODO
+              this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(c => c.id !== card);
+              continue;
+            }
+            case "elementalTuning": {
+              continue;
+            }
+            case "switchActive": {
+              break;
+            }
+            case "useSkill": {
+              break;
+            }
+          }
+          if (!declareEndNum) {
+            this.state.turn = flip(curPlayer);
+          }
         }
+        this.state = {
+          ...this.state,
+          // type: "endPhase",
+          type: "gameEnd",
+        };
         break;
       }
       case "endPhase": {
@@ -273,7 +312,7 @@ export class StateManager {
 
   private sortHands(p: 0 | 1) {
     this.ensureHands(this.state);
-    this.state.hands[p].sort((a, b) => a - b);
+    this.state.hands[p].sort((a, b) => a.id - b.id);
   }
 
   private async drawHands(p: 0 | 1, num = 2) {
@@ -281,21 +320,21 @@ export class StateManager {
     this.ensureHands(this.state);
     const news = this.state.piles[p].splice(0, num);
     this.state.hands[p].push(...news);
-    let discard: number[] = [];
+    let discard: Card[] = [];
     if (this.state.hands[p].length > MAX_HANDS) {
       discard = this.state.hands[p].splice(MAX_HANDS);
     }
     await this.requestPlayer(p, "drawHands", {
-      hands: news,
-      discard,
+      hands: news.map(c => c.id),
+      discard: discard.map(c => c.id),
     });
     // notify opponent
     this.notifyPlayer(
       {
         source: {
           type: "oppSwitchHands",
-          addNum: news.length,
-          discardNum: discard.length,
+          addNum: news.length as number,
+          discardNum: discard.length as number,
         },
       },
       flip(p)
@@ -306,16 +345,17 @@ export class StateManager {
   private async switchHands(p: 0 | 1) {
     this.ensureHands(this.state);
     const { remove } = await this.requestPlayer(p, "removeHands", {
-      hands: this.state.hands[p],
+      hands: this.state.hands[p].map(x => x.id),
     });
+    const removedCards: Card[] = [];
     for (const c of remove) {
-      const i = this.state.hands[p].indexOf(c);
+      const i = this.state.hands[p].findIndex(x => x.id === c);
       if (i === -1) {
         throw new Error("bad removed hands");
       }
-      this.state.hands[p].splice(i, 1);
+      removedCards.push(...this.state.hands[p].splice(i, 1));
     }
-    this.state.piles[p] = _.shuffle([...this.state.piles[p], ...remove]);
+    this.state.piles[p] = _.shuffle([...this.state.piles[p], ...removedCards]);
     // notify opponent
     this.notifyPlayer(
       {
@@ -399,7 +439,7 @@ export class StateManager {
     }
     return {
       pileNumber: this.state.piles[p].length,
-      hands: [...this.state.hands[p]],
+      hands: [...this.state.hands[p].map(c =>c.id)],
       active: "actives" in this.state ? this.state.actives[p] : undefined,
       characters: this.state.characters[p].map((c) => c.toFacade()),
       combatStatuses: this.state.combatStatuses[p],

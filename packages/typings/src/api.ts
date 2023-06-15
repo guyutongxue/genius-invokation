@@ -62,7 +62,7 @@ export const API = {
                 additionalProperties: false,
                 properties: {
                   type: { enum: ["character", "summon", "support"] },
-                  who: { enum: [0, 1] } 
+                  id: { type: "number" }, 
                 },
                 required: ["type", "who"]
               },

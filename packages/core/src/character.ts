@@ -2,17 +2,17 @@ import { Aura, CharacterFacade, DamageType } from "@jenshin-tcg/typings";
 import type { CharacterData } from "@jenshin-tcg/data";
 
 export class Character {
-  health: number;
-  energy: number;
-  weapon?: number;
-  artifact?: number;
-  equipments: number[] = [];
-  statuses = [];
-  applied = Aura.NONE;
+  private health: number;
+  private energy: number;
+  private weapon?: number;
+  private artifact?: number;
+  private equipments: number[] = [];
+  private statuses = [];
+  private applied = Aura.NONE;
 
   constructor(
-    readonly id: number,
-    readonly data: CharacterData
+    private readonly id: number,
+    private readonly data: CharacterData
   ) {
     this.health = data.info.health;
     this.energy = 0;

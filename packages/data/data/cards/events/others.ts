@@ -16,18 +16,17 @@ import {
   type: "event",
 })
 class IHaventLostYet implements ICard {
-  enabled = false;
-
-  onDefeated(c: DamageContext) {
-    if (Target.isMine(c.target.toTarget())) {
-      this.enabled = true;
+  static enableTester = class {
+    enabled = false;
+    onDefeated(c: DamageContext) {
+      if (Target.isMine(c.target.toTarget())) {
+        this.enabled = true;
+      }
+    }
+    onActionPhase(c: Context) {
+      this.enabled = false;
     }
   }
-
-  onActionPhase(c: Context) {
-    this.enabled = false;
-  }
-
   onUse(c: Context) {
     c.generateDice(DiceType.OMNI);
     c.gainEnergy(1);

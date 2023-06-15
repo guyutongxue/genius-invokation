@@ -1,6 +1,7 @@
 import { getCharacterData } from "@jenshin-tcg/data";
 import { Character } from "./character";
 import * as _ from "lodash-es";
+import { Card } from "./card";
 
 export function initCharacter(objectId: number, index: number): Character {
   const data = getCharacterData(objectId);
@@ -10,7 +11,7 @@ export function initCharacter(objectId: number, index: number): Character {
   return new Character(index, data);
 }
 
-export function makePilesUnique(piles: number[]): number[] {
+export function makePilesUnique(piles: number[]): Card[] {
   const mset = new Map<number, number>();
   const newPiles: number[] = [];
   for (const card of piles) {
@@ -18,7 +19,7 @@ export function makePilesUnique(piles: number[]): number[] {
     mset.set(card, count + 1);
     newPiles.push(card + count * 0.1);
   }
-  return _.shuffle(newPiles);
+  return _.shuffle(newPiles).map(id => new Card(id));
 }
 
 export function randomDice(controlled?: number[]): number[] {

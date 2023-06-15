@@ -3,7 +3,7 @@ import { CharacterInfo } from "./interfaces/character";
 import { SkillInfo, SkillType } from "./interfaces/skill";
 import { Context, SkillDescriptionContext } from "./contexts";
 import { IStatusConstructor, StatusInfo } from "./interfaces/status";
-import { CardInfo, ICard } from "./interfaces/card";
+import { CardInfo, ICard, ICardConstructor } from "./interfaces/card";
 
 type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -142,7 +142,7 @@ export const cardSymbol: unique symbol = Symbol("card");
 export interface CardData {
   info: CardInfo;
   costs: number[];
-  instance: ICard;
+  constructor: ICardConstructor;
 }
 
 export function Card(info: CardInfo) {
@@ -151,7 +151,7 @@ export function Card(info: CardInfo) {
       target[cardSymbol] = { costs: [] };
     }
     target[cardSymbol].info = info;
-    target[cardSymbol].instance = new target();
+    target[cardSymbol].instance = target;
     return target;
   };
 }

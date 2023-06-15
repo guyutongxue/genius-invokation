@@ -25,8 +25,12 @@ import {
 class Satiated implements IStatus {}
 
 class FoodCardBase implements ICard {
-  constructor(protected character: ICharacter) {}
-  static enabledWith(c: CardWith): boolean {
+  protected character: ICharacter;
+  constructor(c: CardWith) {
+    if (c.type !== "character") throw new Error("Invalid card with");
+    this.character = c.character;
+  }
+  static checkWith(c: CardWith): boolean {
     return (
       c.type === "character" &&
       c.character.getHealth() !== 0 &&
@@ -258,7 +262,7 @@ class TandooriRoastChickenStatus extends AddDamageBase {
 @FoodCard(333009)
 @Same(3)
 class TeyvatFriedEgg extends FoodCardBase {
-  enabledWith(c: CardWith): boolean {
+  static checkWith(c: CardWith): boolean {
     return (
       c.type === "character" &&
       c.character.getHealth() === 0 &&
