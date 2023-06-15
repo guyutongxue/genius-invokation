@@ -16,7 +16,7 @@ export const ACTION_SCHEMA = {
       type: "object",
       additionalProperties: false,
       properties: {
-        type: { const: "switchCharacter" },
+        type: { const: "switchActive" },
         target: { type: "integer" },
       },
       required: ["type", "target"],
