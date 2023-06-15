@@ -55,7 +55,7 @@ class Keqing {
 })
 class LightningStiletto implements ICard {
   onUse(c: Context) {
-    c.switchActive(Target.OF_ID(10013));
+    c.switchActive(Target.OF_OBJ_ID(10013));
     c.useSkill("stellarRestoration");
   }
 }

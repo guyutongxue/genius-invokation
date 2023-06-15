@@ -1,4 +1,5 @@
 import { DamageType } from "@jenshin-tcg/typings";
+import { IStatus } from "..";
 
 export type CharacterTag = "anemo" | "geo" | "electro" | "dendro" | "hydro" | "pyro" | "cryo" | "sword" | "bow" | "claymore" | "pole" | "catalyst" | "mondstadt" | "liyue" | "inazuma" | "sumeru" | "fatui" | "monster" | "hilichurl";
 
@@ -16,5 +17,5 @@ export interface ICharacter {
   getHealth(): number;
   getEnergy(): number;
 
-  hasStatus(statusId: number): boolean;
+  hasStatus(status: new (...args: unknown[]) => IStatus): boolean;
 }

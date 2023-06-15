@@ -62,8 +62,8 @@ export interface UseDiceContext extends Context {
 
 export interface DamageContext extends Context {
   readonly target: number;
+  decreaseDamage(value: number): void;
 }
 
 export interface UseCardContext extends Context {
-  readonly with: CardWith[];
 }

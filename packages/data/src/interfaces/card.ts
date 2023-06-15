@@ -39,7 +39,7 @@ export interface CardInfo {
 export interface ICard extends IGlobalEvents {
   enabled?: boolean;
 
-  disabledWith?(c: CardWith): boolean;
+  enabledWith?(c: CardWith): boolean;
 
   onUse(c: Context): void;
 }
