@@ -25,20 +25,20 @@ class Klee {
   @Pyro(1)
   @Void(2)
   strikeOfFortune(c: Context) {
-    c.damage(1, DamageType.PYRO);
+    c.dealDamage(1, DamageType.PYRO);
   }
 
   @Skill
   @Pyro(3)
   passionOverload(c: Context) {
-    c.damage(3, DamageType.PYRO);
+    c.dealDamage(3, DamageType.PYRO);
     c.createStatus(ExplosiveSpark);
   }
 
   @Burst
   @Pyro(3)
   fantasticVoyage(c: Context) {
-    c.damage(3, DamageType.PYRO);
+    c.dealDamage(3, DamageType.PYRO);
     c.createCombatStatus(SparksNSplash, [], Target.OPP);
   }
 }
@@ -61,7 +61,7 @@ class ExplosiveSpark implements IStatus {
 })
 class SparksNSplash implements IStatus {
   onUseSkill(c: SkillContext) {
-    c.damage(2, DamageType.PYRO, Target.ME | Target.ACTIVE);
+    c.dealDamage(2, DamageType.PYRO, Target.ME | Target.ACTIVE);
     return true;
   }
 }

@@ -2,7 +2,7 @@ import { DiceType, DamageType } from "@jenshin-tcg/typings";
 import { ICharacter } from "./interfaces/character";
 import { SkillInfo } from "./interfaces/skill";
 import { IStatus } from "./interfaces/status";
-import { CardWith, ICard } from ".";
+import { CardInfo, CardWith, ICard } from ".";
 
 
 export interface Context {
@@ -10,7 +10,7 @@ export interface Context {
   readonly currentTurn: number;
   isMyTurn(): boolean;
 
-  damage(value: number, type: DamageType, target?: number): void;
+  dealDamage(value: number, type: DamageType, target?: number): void;
   heal(value: number, target?: number): void;
   gainEnergy(value?: number, target?: number): void;
 
@@ -46,22 +46,23 @@ export interface SkillDescriptionContext extends Context {
 export interface SkillContext extends Context {
   readonly info: SkillInfo;
   readonly character: ICharacter;
-  readonly damageType: DamageType;
-
-  addDamage(value: number): void;
-  multiplyDamage(multiplier: number): void;
-  changeDamageType(type: DamageType): void;
+  readonly damage?: DamageContext;
 }
 
 export interface UseDiceContext extends Context {
   readonly skill?: SkillContext;
   readonly switch?: boolean;
-  readonly card?: unknown;
+  readonly card?: CardInfo;
   deductCost(type: DiceType, number?: number): void;
 }
 
 export interface DamageContext extends Context {
-  readonly target: number;
+  readonly target: ICharacter;
+  readonly damageType: DamageType;
+
+  addDamage(value: number): void;
+  multiplyDamage(multiplier: number): void;
+  changeDamageType(type: DamageType): void;
   decreaseDamage(value: number): void;
 }
 

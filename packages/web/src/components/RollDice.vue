@@ -7,6 +7,8 @@ const { dice } = defineProps<{
   dice: number[];
 }>();
 
+const rand = Math.random();
+
 const removed = ref<number[]>([]);
 
 const emit = defineEmits<{
@@ -25,8 +27,15 @@ function selected() {
   <div>
     <ul class="flex gap-2">
       <li v-for="(d, i) of dice">
-        <input type="checkbox" :value="i" v-model="removed" />
-        <Dice :type="(d as DiceType)"></Dice>
+        <input
+          type="checkbox"
+          :value="i"
+          :id="`rdInput${rand}-${i}`"
+          v-model="removed"
+        />
+        <label :for="`rdInput${rand}-${i}`">
+          <Dice :type="(d as DiceType)"></Dice>
+        </label>
       </li>
     </ul>
     <button @click="selected">Sounds good</button>

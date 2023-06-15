@@ -17,5 +17,7 @@
     },
 
     "strict": true,
+
+    // "noUnusedLocals": true
   }
 }

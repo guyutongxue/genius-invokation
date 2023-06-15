@@ -57,8 +57,8 @@ class AddDamageBase implements IStatus {
     this.kinds = kinds;
   }
   onBeforeUseSkill(c: SkillContext) {
-    if (this.kinds.includes(c.info.type)) {
-      c.addDamage(this.value);
+    if (this.kinds.includes(c.info.type) && c.damage) {
+      c.damage.addDamage(this.value);
       return true;
     }
   }
@@ -72,7 +72,7 @@ function ADStatus(objectId: number) {
 
 class DecreaseDamageBase implements IStatus {
   constructor(private value: number) {}
-  onDamage(c: DamageContext) {
+  onDamaged(c: DamageContext) {
     c.decreaseDamage(this.value);
     return true;
   }
@@ -178,8 +178,16 @@ class MushroomPizza extends FoodCardBase {
   onUse(c: Context) {
     super.onUse(c);
     c.heal(1, this.character.toTarget());
-    // 治疗目标角色1点，两回合内结束阶段再治疗此角色1点。
-    // （每回合每个角色最多食用1次「料理」）
+    c.createStatus(MushroomPizzaStatus, [], this.character.toTarget());
+  }
+}
+@Status({
+  objectId: 333007,
+  duration: 2,
+})
+class MushroomPizzaStatus implements IStatus {
+  onEndPhase(c: Context) {
+    c.heal(1);
   }
 }
 
@@ -187,19 +195,40 @@ class MushroomPizza extends FoodCardBase {
 class NorthernSmokedChicken extends FoodCardBase {
   onUse(c: Context) {
     super.onUse(c);
-    // 本回合中，目标角色下一次「普通攻击」少花费1个无色元素。
-    // （每回合每个角色最多食用1次「料理」）
+    c.createStatus(NorthernSmokedChickenStatus, [], this.character.toTarget());
   }
 }
-
+@Status({
+  objectId: 333008,
+  usage: 1,
+})
+class NorthernSmokedChickenStatus implements IStatus {
+  onBeforeUseDice(c: UseDiceContext) {
+    if (c.skill && c.skill.info.type === "normal") {
+      c.deductCost(DiceType.VOID, 1);
+      return true;
+    }
+  }
+}
 
 @FoodCard(333010)
 @Same(1)
 class SashimiPlatter extends FoodCardBase {
   onUse(c: Context) {
     super.onUse(c);
-    // 目标角色在本回合结束前，「普通攻击」造成的伤害+1。
-    // （每回合每个角色最多食用1次「料理」）
+    c.createStatus(SashimiPlatterStatus, [], this.character.toTarget());
+  }
+}
+@Status({
+  objectId: 333010,
+  duration: 1,
+})
+class SashimiPlatterStatus implements IStatus {
+  onBeforeUseSkill(c: SkillContext) {
+    if (c.info.type === "normal" && c.damage) {
+      c.damage.addDamage(1);
+      return true;
+    }
   }
 }
 
@@ -216,8 +245,13 @@ class SweetMadame extends FoodCardBase {
 class TandooriRoastChicken extends FoodCardBase {
   onUse(c: Context) {
     super.onUse(c);
-    // 本回合中，所有我方角色下一次「元素战技」造成的伤害+2。
-    // （每回合每个角色最多食用1次「料理」）
+    c.createStatus(TandooriRoastChickenStatus, [], this.character.toTarget());
+  }
+}
+@ADStatus(333011)
+class TandooriRoastChickenStatus extends AddDamageBase {
+  constructor() {
+    super(2, "skill");
   }
 }
 
@@ -237,4 +271,27 @@ class TeyvatFriedEgg extends FoodCardBase {
   }
 }
 
-register(Satiated, SweetMadame);
+register(
+  Satiated,
+  AdeptusTemptation,
+  AdeptusTemptationStatus,
+  ButterCrab,
+  ButterCrabStatus,
+  JueyunGuoba,
+  JueyunGuobaStatus,
+  LotusFlowerCrisp,
+  LotusFlowerCrispStatus,
+  MintyMeatRolls,
+  MintyMeatRollsStatus,
+  MondstadtHashBrown,
+  MushroomPizza,
+  MushroomPizzaStatus,
+  NorthernSmokedChicken,
+  NorthernSmokedChickenStatus,
+  SashimiPlatter,
+  SashimiPlatterStatus,
+  SweetMadame,
+  TandooriRoastChicken,
+  TandooriRoastChickenStatus,
+  TeyvatFriedEgg
+);

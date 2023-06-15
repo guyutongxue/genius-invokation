@@ -25,19 +25,19 @@ class Bennett {
   @Pyro(1)
   @Void(2)
   strikeOfFortune(c: Context) {
-    c.damage(2, DamageType.PHYSICAL);
+    c.dealDamage(2, DamageType.PHYSICAL);
   }
 
   @Skill
   @Pyro(3)
   passionOverload(c: Context) {
-    c.damage(3, DamageType.PYRO);
+    c.dealDamage(3, DamageType.PYRO);
   }
 
   @Burst
   @Pyro(3)
   fantasticVoyage(c: Context) {
-    c.damage(2, DamageType.PYRO);
+    c.dealDamage(2, DamageType.PYRO);
     c.createCombatStatus(InspirationField);
   }
 }
@@ -49,7 +49,7 @@ class Bennett {
 class InspirationField implements IStatus {
   onBeforeUseSkill(c: SkillContext) {
     if (c.character.getHealth() <= 7) {
-      c.addDamage(2);
+      if (c.damage) c.damage.addDamage(2);
       return true;
     }
   }

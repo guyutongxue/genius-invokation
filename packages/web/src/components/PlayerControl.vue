@@ -14,11 +14,10 @@ import RollDice from "./RollDice.vue";
 
 const props = defineProps<{
   playerId: any;
+  playerType?: "me" | "opp";
   characters: number[];
   piles: number[];
 }>();
-
-const playerType = "me" as const;
 
 const areaData = ref<PlayerAreaData>();
 
@@ -137,7 +136,7 @@ function characterChosen(id: number, objectId: number) {
 <template>
   <div v-if="areaData">
     <PlayerArea
-      :player="playerType"
+      :player="playerType ?? 'me'"
       :data="areaData"
       @clickCharacter="characterChosen"
       @clickHand="cardChosen"

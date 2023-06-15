@@ -14,7 +14,7 @@ export const EVENT_SCHEMA = {
             type: { const: "phaseBegin" },
             phase: { enum: ["roll", "action", "end"] },
             roundNumber: { type: "integer" }, // only show on roll phase
-            first: { enum: [0, 1] }, // me or opponent, only show on roll phase
+            isFirst: { type: "boolean" },     // only show on roll phase
           },
           required: ["type", "phase"],
         },

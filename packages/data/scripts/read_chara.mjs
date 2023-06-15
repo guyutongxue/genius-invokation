@@ -77,10 +77,10 @@ function nameToCamel(original, upper) {
 
 const images = data["image"];
 const result = {};
-for (const [key, value] of Object.entries(zh.tcgcharactercards)) {
+for (const [key, value] of Object.entries(zh.tcgactioncards/* tcgcharactercards */)) {
   const id = value.id;
-  const image = images.tcgcharactercards[key]["filename_cardface"];
+  const image = images.tcgactioncards/* tcgcharactercards */[key]["filename_cardface"];
   result[id] = `https://api.ambr.top/assets/UI/gcg/${image}.png`;
 }
-await writeFile("./images.json", JSON.stringify(result, undefined, 2));
+await writeFile("./images2.json", JSON.stringify(result, undefined, 2));
 

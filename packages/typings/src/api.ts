@@ -35,7 +35,6 @@ export const API = {
   },
   action: {
     params: {
-      state: {},
       skills: {
         type: "array",
         items: {

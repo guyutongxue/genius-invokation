@@ -7,13 +7,12 @@ export interface IGlobalEvents {
   onTurn?: (c: Context) => HandlerResult;
   onEndPhase?: (c: Context) => HandlerResult;
 
-  onBeforeUseSkill?: (c: SkillContext) => HandlerResult;
   onUseSkill?: (c: SkillContext) => HandlerResult;
-
+  onBeforeDealDamage?: (c: DamageContext) => HandlerResult;
   onBeforeUseDice?: (c: UseDiceContext) => HandlerResult;
+  onBeforeSwitchShouldFast?: () => boolean;
 
   onElementalReaction?: () => HandlerResult;
-  onDamage?: (c: DamageContext) => HandlerResult;
   onDefeated?: (c: DamageContext) => HandlerResult;
 }
 

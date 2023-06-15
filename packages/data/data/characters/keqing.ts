@@ -26,13 +26,13 @@ class Keqing {
   @Electro(1)
   @Void(2)
   yunlaiSwordsmanship(c: Context) {
-    c.damage(2, DamageType.PHYSICAL);
+    c.dealDamage(2, DamageType.PHYSICAL);
   }
 
   @Skill
   @Electro(3)
   stellarRestoration(c: SkillDescriptionContext) {
-    c.damage(3, DamageType.PYRO);
+    c.dealDamage(3, DamageType.PYRO);
     if (typeof c.triggeredByCard !== "undefined") {
       c.createCards(LightningStiletto);
     } else {
@@ -43,8 +43,8 @@ class Keqing {
   @Burst
   @Electro(4)
   starwardSword(c: Context) {
-    c.damage(4, DamageType.PYRO);
-    c.damage(3, DamageType.PIERCING, Target.STANDBY);
+    c.dealDamage(4, DamageType.PYRO);
+    c.dealDamage(3, DamageType.PIERCING, Target.STANDBY);
   }
 }
 

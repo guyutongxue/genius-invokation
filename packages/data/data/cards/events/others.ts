@@ -19,7 +19,7 @@ class IHaventLostYet implements ICard {
   enabled = false;
 
   onDefeated(c: DamageContext) {
-    if (Target.isMine(c.target)) {
+    if (Target.isMine(c.target.toTarget())) {
       this.enabled = true;
     }
   }
@@ -53,7 +53,7 @@ class WindAndFreedom implements ICard {
 class WindAndFreedomStatus implements IStatus {
   onDefeated(c: DamageContext) {
     if (
-      !Target.isMine(c.target) &&
+      !Target.isMine(c.target.toTarget()) &&
       c.currentPhase === "action" &&
       c.isMyTurn()
     ) {

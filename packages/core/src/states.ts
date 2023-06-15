@@ -13,7 +13,7 @@ import {
   verifyRequest,
   verifyResponse,
 } from "@jenshin-tcg/typings";
-import { initCharacter, randomDice } from "./operations";
+import { initCharacter, makePilesUnique, randomDice } from "./operations";
 import * as _ from "lodash-es";
 import { Character } from "./character";
 import { flip } from "./utils";
@@ -97,8 +97,8 @@ export class StateManager {
         if (Math.random() < 0.5) {
           [this.p0, this.p1] = [this.p1, this.p0];
         }
-        const p0 = _.shuffle(this.p0.piles);
-        const p1 = _.shuffle(this.p1.piles);
+        const p0 = makePilesUnique(this.p0.piles);
+        const p1 = makePilesUnique(this.p1.piles);
         this.state = {
           type: "initHands",
           players: [this.p0.id, this.p1.id],
@@ -155,6 +155,22 @@ export class StateManager {
         break;
       }
       case "rollPhase": {
+        this.notifyPlayer({
+          source: {
+            type: "phaseBegin",
+            phase: "roll",
+            roundNumber: this.state.roundNumber,
+            isFirst: this.state.nextTurn === 0,
+          }
+        }, 0);
+        this.notifyPlayer({
+          source: {
+            type: "phaseBegin",
+            phase: "roll",
+            roundNumber: this.state.roundNumber,
+            isFirst: this.state.nextTurn === 1,
+          }
+        }, 1);
         await Promise.all([this.rollDice(0), this.rollDice(1)]);
         this.state = {
           ...this.state,
@@ -164,9 +180,25 @@ export class StateManager {
         break;
       }
       case "actionPhase": {
+        this.notifyPlayer({ source: { type: "phaseBegin", phase: "action" } });
+        let declareEndNum = 0;
+        while (declareEndNum < 2) {
+          const curPlayer = this.state.turn = this.state.nextTurn;
+          this.state.nextTurn = flip(this.state.turn);
+          // check onBeforeUseDice
+          // check onBeforeSwitchShouldFast
+          const action = await this.requestPlayer(curPlayer, "action", {
+            skills: [],
+            cards: [],
+            switchActive: {
+
+            }
+          });
+        }
         break;
       }
       case "endPhase": {
+        this.notifyPlayer({ source: { type: "phaseBegin", phase: "end" } });
         break;
       }
       case "gameEnd": {

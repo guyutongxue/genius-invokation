@@ -18,4 +18,5 @@ export interface ICharacter {
   getEnergy(): number;
 
   hasStatus(status: new (...args: unknown[]) => IStatus): boolean;
+  isActive(): boolean;
 }

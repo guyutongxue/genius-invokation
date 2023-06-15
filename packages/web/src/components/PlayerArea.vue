@@ -6,7 +6,9 @@ import type {
   SupportFacade,
   DiceType,
 } from "@jenshin-tcg/typings";
+import images from "../assets/images.json";
 import Dice from "./Dice.vue";
+import HandCard from "./HandCard.vue";
 
 export type PlayerAreaData = {
   pileNumber: number;
@@ -28,11 +30,10 @@ export type PlayerAreaData = {
     }
 );
 
-
 const { player, name, data } = defineProps<{
   player: "me" | "opp";
   name?: string;
-  data: PlayerAreaData
+  data: PlayerAreaData;
 }>();
 
 const emit = defineEmits<{
@@ -45,15 +46,29 @@ const emit = defineEmits<{
 <template>
   <div
     class="flex border border-black gap-1"
-    :class="player === 'me' ? 'flex-col' : 'flex-col-reverse'"
+    :class="player === 'opp' ? 'flex-col-reverse' : 'flex-col'"
   >
     <div class="flex flex-row">
       <div class="bg-yellow-800 text-white p-2">{{ data.pileNumber }}</div>
       <div class="bg-blue-50">SUPPORTS</div>
-      <div class="bg-white flex-grow flex justify-center gap-4">
-        <div v-for="ch of data.characters">
-          <div class="w-20 h-30 border-4" @click="$emit('clickCharacter', ch.id, ch.objectId)" :class="data.active === ch.id ? 'border-red-500' : 'border-transparent'">
-            <img :src="`https://genshin.honeyhunterworld.com/img/i_n${320000 + ch.objectId}_gcg_high_resolution.webp`">
+      <div class="bg-white flex-grow flex justify-center gap-4 p-6">
+        <div
+          v-for="ch of data.characters"
+          :class="
+            data.active === ch.id
+              ? player === 'opp'
+                ? 'translate-y-6'
+                : '-translate-y-6'
+              : ''
+          "
+        >
+          <div class="w-20 h-30 relative">
+            <div class="absolute bg-white">{{ ch.health }}</div>
+            <div class="absolute right-0 bg-yellow-500">{{ ch.energy }}</div>
+            <img
+              :src="(images as any)[ch.objectId]"
+              @click="$emit('clickCharacter', ch.id, ch.objectId)"
+            />
           </div>
         </div>
       </div>
@@ -71,8 +86,8 @@ const emit = defineEmits<{
     </div>
     <div v-if="data.type === 'visible'" class="flex flex-wrap gap-2">
       <div v-for="hand of data.hands">
-        <div class="w-10 h-14" @click="emit('clickHand', hand, Math.floor(hand))">
-          {{ hand }}
+        <div class="w-10" @click="emit('clickHand', hand, Math.floor(hand))">
+          <HandCard :objectId="Math.floor(hand)"></HandCard>
         </div>
       </div>
     </div>

@@ -20,8 +20,7 @@ type SkillInfoWithSignature = AttachedSkillInfo & { do: SkillSignature };
 
 export function Character(info: CharacterInfo) {
   return (target: any, ctx: ClassDecoratorContext): any => {
-    if (characterSymbol in target)
-      throw new Error("Decorating multiple times");
+    if (characterSymbol in target) throw new Error("Decorating multiple times");
     const skills: SkillInfoWithSignature[] = [];
     target[characterSymbol] = {
       info,
@@ -118,17 +117,21 @@ export const Energy = cost(DiceType.ENERGY);
 
 export const statusSymbol: unique symbol = Symbol("status");
 
+export interface StatusInfoWithName extends StatusInfo {
+  name: string;
+}
 export interface StatusData {
-  info: StatusInfo;
+  info: StatusInfoWithName;
   constructor: IStatusConstructor;
 }
 
 export function Status(info: StatusInfo) {
   return (target: any, ctx: ClassDecoratorContext): any => {
-    if (statusSymbol in target)
+    if (statusSymbol in target) {
       throw new Error("Decorating multiple times");
+    }
     target[statusSymbol] = {
-      info,
+      info: { ...info, name: String(ctx.name) },
       constructor: target,
     };
     return target;
