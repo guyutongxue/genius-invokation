@@ -31,6 +31,7 @@ export interface Context {
   generateDice(...dice: DiceType[]): void;
   drawCards(count: number): void;
   createCards(...cards: (new () => ICard)[]): void;
+  switchCards(): void;
 
   switchActive(target: number): void;
   useSkill(skillName: string): void;

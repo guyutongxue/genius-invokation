@@ -26,7 +26,7 @@ export interface SupportFacade {
 
 export interface SummonFacade {
   readonly id: number;
-  readonly typeId: number;
+  readonly objectId: number;
   value: number;
 }
 

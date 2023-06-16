@@ -76,7 +76,7 @@ function ADStatus(objectId: number) {
 
 class DecreaseDamageBase implements IStatus {
   constructor(private value: number) {}
-  onDamaged(c: DamageContext) {
+  onBeforeDamaged(c: DamageContext) {
     c.decreaseDamage(this.value);
     return true;
   }
@@ -107,7 +107,8 @@ class AdeptusTemptationStatus extends AddDamageBase {
 @Void(2)
 class ButterCrab extends FoodCardBase {
   onUse(c: Context) {
-    super.onUse(c);
+    // super.onUse(c);
+    c.createStatus(Satiated, [], Target.ME | Target.ALL);
     c.createStatus(ButterCrabStatus, [], Target.ME | Target.ALL);
   }
 }
