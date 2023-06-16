@@ -19,6 +19,7 @@ import { Character } from "./character";
 import { flip } from "./utils";
 import { INITIAL_HANDS, MAX_HANDS } from "./config";
 import { Card } from "./card";
+import { Status } from "./status";
 
 export type Pair<T> = [T, T];
 
@@ -32,7 +33,7 @@ export interface WithPlayersState {
   hands: Pair<Card[]>;
   characters: Pair<Character[]>;
   nextTurn: 0 | 1;
-  combatStatuses: Pair<StatusFacade[]>;
+  combatStatuses: Pair<Status[]>;
   supports: Pair<SupportFacade[]>;
   summons: Pair<SummonFacade[]>;
 }
@@ -208,7 +209,7 @@ export class StateManager {
               continue;
             }
             case "playCard": {
-              const { card, with, removeSupport } = action;
+              const { card, with: w, removeSupport } = action;
               const cardObj = availableCards.find(c => c.id === card);
               if (!cardObj) { throw new Error("Card not found"); }
               // TODO
@@ -442,7 +443,7 @@ export class StateManager {
       hands: [...this.state.hands[p].map(c =>c.id)],
       active: "actives" in this.state ? this.state.actives[p] : undefined,
       characters: this.state.characters[p].map((c) => c.toFacade()),
-      combatStatuses: this.state.combatStatuses[p],
+      combatStatuses: this.state.combatStatuses[p].map((c) => c.toFacade()),
       supports: [...this.state.supports[p]],
       summons: [...this.state.summons[p]],
       dice: "dice" in this.state ? this.state.dice[p] : [],

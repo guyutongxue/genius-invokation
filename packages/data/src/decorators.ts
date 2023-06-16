@@ -120,20 +120,18 @@ export const statusSymbol: unique symbol = Symbol("status");
 export interface StatusInfoWithName extends StatusInfo {
   name: string;
 }
-export interface StatusData {
-  info: StatusInfoWithName;
-  constructor: IStatusConstructor;
-}
+// export interface StatusData {
+//   info: StatusInfoWithName;
+//   constructor: IStatusConstructor;
+// }
 
 export function Status(info: StatusInfo) {
   return (target: any, ctx: ClassDecoratorContext): any => {
     if (statusSymbol in target) {
       throw new Error("Decorating multiple times");
     }
-    target[statusSymbol] = {
-      info: { ...info, name: String(ctx.name) },
-      constructor: target,
-    };
+    target[statusSymbol] = { ...info, name: String(ctx.name) };
+      // constructor: target,
     return target;
   };
 }

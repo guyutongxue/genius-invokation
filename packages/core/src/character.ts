@@ -1,5 +1,6 @@
 import { Aura, CharacterFacade, DamageType } from "@jenshin-tcg/typings";
 import type { CharacterData } from "@jenshin-tcg/data";
+import { Status } from "./status";
 
 export class Character {
   private health: number;
@@ -7,7 +8,7 @@ export class Character {
   private weapon?: number;
   private artifact?: number;
   private equipments: number[] = [];
-  private statuses = [];
+  private statuses: Status[] = [];
   private applied = Aura.NONE;
 
   constructor(
@@ -27,9 +28,17 @@ export class Character {
       weapon: this.weapon,
       artifact: this.artifact,
       equipments: this.equipments,
-      statuses: this.statuses,
+      statuses: this.statuses.map((c) => c.toFacade()),
       applied: this.applied,
     };
+  }
+
+  getSkills() {
+    return this.data.skill;
+  }
+
+  getStatuses() {
+    return this.statuses;
   }
 
   // heal(value: number) {
