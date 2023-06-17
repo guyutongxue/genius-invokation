@@ -1,4 +1,4 @@
-import { UseDiceContext } from "@jenshin-tcg/data";
+import { SkillDescriptionContext, UseDiceContext } from "@jenshin-tcg/data";
 import { ActionPhaseState } from "./states";
 import { DiceType } from "@jenshin-tcg/typings";
 
@@ -16,12 +16,14 @@ function deductDice(original: DiceType[], deducted: DiceType[]) {
 interface SkillActionReq {
   name: string;
   cost: DiceType[];
-  finalizer: () => void; // Deduct status/support usage
+  action: (ctx: SkillDescriptionContext) => void;
 }
 
 export class ActionScanner {
-  constructor(private state: ActionPhaseState) {}
-  private curPlayer = this.state.turn;
+  private curPlayer;
+  constructor(private state: ActionPhaseState) {
+    this.curPlayer = state.turn;
+  }
 
   private getBeforeUseDiceHandlers() {
     const statuses = this.activeCharacter.getStatuses();
@@ -55,10 +57,11 @@ export class ActionScanner {
       results.push({
         name: skill.name,
         cost: finalCost,
-        finalizer: () => {
+        action: (ctx2: SkillDescriptionContext) => {
           for (const handler of diceHandlers) {
             handler(ctx, true);
           }
+          skill.do(ctx2);
         },
       });
     }

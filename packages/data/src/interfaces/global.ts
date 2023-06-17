@@ -1,4 +1,4 @@
-import { Context, DamageContext, SkillContext, UseDiceContext } from "../contexts";
+import { Context, DamageContext, SkillContext, SwitchActiveContext, UseDiceContext } from "../contexts";
 
 export type HandlerResult = boolean | void;
 
@@ -8,7 +8,7 @@ export interface IGlobalEvents {
   onEndPhase?: (c: Context) => HandlerResult;
 
   onUseSkill?: (c: SkillContext) => HandlerResult;
-  onSwitchActive?: (c: Context) => HandlerResult; // TODO
+  onSwitchActive?: (c: SwitchActiveContext) => HandlerResult;
   onBeforeDealDamage?: (c: DamageContext) => HandlerResult;
   onDealDamage?: (c: DamageContext) => HandlerResult;
   

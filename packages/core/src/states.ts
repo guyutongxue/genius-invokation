@@ -16,10 +16,11 @@ import {
 import { initCharacter, initPiles, randomDice, flip } from "./utils";
 import * as _ from "lodash-es";
 import { Character } from "./character";
-import { INITIAL_HANDS, MAX_HANDS } from "./config";
+import { INITIAL_HANDS, MAX_HANDS, MAX_ROUNDS } from "./config";
 import { Card } from "./card";
 import { Status } from "./status";
-import { ActionScanner } from "./use_dice";
+import { ActionScanner } from "./actions";
+import { Context } from "@jenshin-tcg/data";
 
 export type Pair<T> = [T, T];
 
@@ -99,6 +100,8 @@ export class StateManager {
         if (Math.random() < 0.5) {
           [this.p0, this.p1] = [this.p1, this.p0];
         }
+        console.log("Player 0 is", this.p0.id);
+        console.log("Player 1 is", this.p1.id);
         const p0 = initPiles(this.p0.piles);
         const p1 = initPiles(this.p1.piles);
         this.state = {
@@ -157,6 +160,13 @@ export class StateManager {
         break;
       }
       case "rollPhase": {
+        if (this.state.roundNumber > MAX_ROUNDS) {
+          this.state = {
+            ...this.state,
+            type: "gameEnd",
+          };
+          break;
+        }
         this.notifyPlayer(
           {
             source: {
@@ -193,12 +203,13 @@ export class StateManager {
         while (declareEndNum < 2) {
           const curPlayer = this.state.turn;
           const scanner = new ActionScanner(this.state);
+          const skills = scanner.scanSkills();
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
           // check card "testEnabled"
           const availableCards = this.state.hands[curPlayer]; /* TODO */
           const { action } = await this.requestPlayer(curPlayer, "action", {
-            skills: scanner.scanSkills(),
+            skills: skills.map(({ name, cost }) => ({ name, cost })),
             cards: [], //availableCards,
             switchActive: {
               cost: [0], // TODO
@@ -225,7 +236,7 @@ export class StateManager {
               if (!cardObj) {
                 throw new Error("Card not found");
               }
-              // TODO
+              // TODO play card
               this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
                 (c) => c.id !== card
               );
@@ -238,6 +249,16 @@ export class StateManager {
               break;
             }
             case "useSkill": {
+              const { name, cost } = action;
+              const skillReq = skills.find((s) => s.name === name);
+              if (!skillReq) {
+                throw new Error("Skill not found");
+              }
+              // TODO reduce cost
+              skillReq.action({
+                ...this.createGlobalContext(curPlayer),
+                triggeredByCard: undefined
+              });
               break;
             }
           }
@@ -473,6 +494,17 @@ export class StateManager {
       oppSummons: [...this.state.summons[1 - p]],
       oppDiceNumber: "dice" in this.state ? this.state.dice[1 - p].length : 0,
     };
+  }
+
+  // TODO working
+  private createGlobalContext(who?: 0 | 1): Context {
+    this.ensureDice(this.state);
+    if (typeof who === "undefined") {
+      if (!("turn" in this.state)) {
+        throw new Error(`creating state at roll phase, and no player selected`);
+      }
+      who = this.state.turn;
+    }
   }
 
   public async run(): Promise<GameEndState> {

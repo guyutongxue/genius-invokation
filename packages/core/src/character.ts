@@ -34,7 +34,7 @@ export class Character {
   }
 
   getSkills() {
-    return this.data.skill;
+    return this.data.skills;
   }
 
   getStatuses() {

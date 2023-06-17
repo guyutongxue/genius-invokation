@@ -20,6 +20,7 @@ const props = defineProps<{
 }>();
 
 const areaData = ref<PlayerAreaData>();
+const availableActions = ref<RequestType<"action">>();
 
 const showCardSwitch = ref<boolean>(false);
 const showRollDice = ref<boolean>(false);
@@ -108,6 +109,11 @@ async function handler(
         return { remove: [] };
       }
     }
+    case "action": {
+      const actions = req as RequestType<"action">;
+      availableActions.value = actions;
+      break;
+    }
     case "notify": {
       const r = req as RequestType<typeof method>;
       notificationHandler(this.id, r.event);
@@ -138,6 +144,7 @@ function characterChosen(id: number, objectId: number) {
     <PlayerArea
       :player="playerType ?? 'me'"
       :data="areaData"
+      :availableActions="availableActions"
       @clickCharacter="characterChosen"
       @clickHand="cardChosen"
     >

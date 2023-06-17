@@ -11,7 +11,7 @@ export const characterSymbol: unique symbol = Symbol("character");
 
 export interface CharacterData {
   info: CharacterInfo;
-  skill: SkillInfoWithSignature[];
+  skills: SkillInfoWithSignature[];
 }
 
 type SkillSignature = (this: any, c: SkillDescriptionContext) => void;

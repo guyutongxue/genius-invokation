@@ -31,7 +31,7 @@ export interface Context {
   generateDice(...dice: DiceType[]): void;
   drawCards(count: number): void;
   createCards(...cards: (new () => ICard)[]): void;
-  switchCards(): void;
+  switchCards(): Promise<void>;
 
   switchActive(target: number): void;
   useSkill(skillName: string): void;
@@ -69,4 +69,9 @@ export interface DamageContext extends Context {
 }
 
 export interface UseCardContext extends Context {
+}
+
+export interface SwitchActiveContext extends Context {
+  readonly from: ICharacter;
+  readonly to: ICharacter;
 }

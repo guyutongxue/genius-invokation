@@ -15,7 +15,7 @@ const COLOR: Record<DiceType, string> = {
 }
 
 const NAME: Record<DiceType, string> = {
-  [DiceType.VOID   ]: "任",
+  [DiceType.VOID   ]: "无",
   [DiceType.ANEMO  ]: "风",
   [DiceType.GEO    ]: "岩",
   [DiceType.ELECTRO]: "雷",
@@ -24,7 +24,7 @@ const NAME: Record<DiceType, string> = {
   [DiceType.PYRO   ]: "火",
   [DiceType.CRYO   ]: "冰",
   [DiceType.OMNI   ]: "万",
-  [DiceType.ENERGY ]: "",
+  [DiceType.ENERGY ]: "充",
 }
 
 const { type } = defineProps<{
