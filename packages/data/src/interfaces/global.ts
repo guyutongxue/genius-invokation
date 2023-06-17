@@ -20,6 +20,12 @@ export interface IGlobalEvents {
   onDefeated?: (c: DamageContext) => HandlerResult;
 }
 
+export const withOppSymbol = Symbol("withOpp");
+export function WithOpp(target: any, ctx: ClassMethodDecoratorContext) {
+  target[withOppSymbol] = true;
+  return target;
+}
+
 export * from "./character";
 export * from "./skill";
 export * from "./status";

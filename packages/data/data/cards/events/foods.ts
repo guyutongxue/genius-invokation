@@ -162,8 +162,8 @@ class MintyMeatRolls extends FoodCardBase {
 })
 class MintyMeatRollsStatus implements IStatus {
   onBeforeUseDice(c: UseDiceContext) {
-    if (c.skill && c.skill.info.type === "normal") {
-      c.deductCost(DiceType.VOID, 1);
+    if (c.skill && c.skill.type === "normal") {
+      c.deductCost(DiceType.VOID);
       return true;
     }
   }
@@ -209,8 +209,8 @@ class NorthernSmokedChicken extends FoodCardBase {
 })
 class NorthernSmokedChickenStatus implements IStatus {
   onBeforeUseDice(c: UseDiceContext) {
-    if (c.skill && c.skill.info.type === "normal") {
-      c.deductCost(DiceType.VOID, 1);
+    if (c.skill && c.skill.type === "normal") {
+      c.deductCost(DiceType.VOID);
       return true;
     }
   }

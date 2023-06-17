@@ -51,11 +51,11 @@ export interface SkillContext extends Context {
   readonly damage?: DamageContext;
 }
 
-export interface UseDiceContext extends Context {
-  readonly skill?: SkillContext;
+export interface UseDiceContext /* extends Context  */{
+  readonly skill?: SkillInfo;
   readonly switch?: boolean;
   readonly card?: CardInfo;
-  deductCost(type: DiceType, number?: number): void;
+  deductCost(...dice: DiceType[]): void;
 }
 
 export interface DamageContext extends Context {

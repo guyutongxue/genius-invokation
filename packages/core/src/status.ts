@@ -6,6 +6,9 @@ let nextStatusId = 6000000;
 export class Status {
   readonly objectId: number;
   readonly id: number;
+  private usage: number;
+  private duration: number;
+  private shouldDisposeBit = false;
   readonly handlers: IStatus;
 
   constructor(ctor: any, ...args: any[]) {
@@ -15,14 +18,22 @@ export class Status {
     }
     this.objectId = info.objectId;
     this.id = nextStatusId++;
+    this.usage = info.usage ?? Infinity;
+    this.duration = info.duration ?? Infinity;
     this.handlers = new ctor(...args);
   }
   
-  handle<K extends keyof IStatus>(event: K, ...c: Parameters<Required<IStatus>[K]>) {
+  handle<K extends keyof IStatus>(event: K, c: Parameters<Required<IStatus>[K]>[0], deductUsage = true) {
     const handler = this.handlers[event];
     if (handler) {
-      // @ts-expect-error Shamefully ignore the type check
-      handler(...c);
+      // @ts-ignore
+      const result = handler(c);
+      if (deductUsage && result) {
+        this.usage--;
+        if (this.usage <= 0) {
+          this.shouldDisposeBit = true;
+        }
+      }
     }
   }
 
@@ -32,5 +43,9 @@ export class Status {
       id: this.id,
       // TODO: value
     }
+  }
+
+  get shouldDispose() {
+    return this.shouldDisposeBit;
   }
 }

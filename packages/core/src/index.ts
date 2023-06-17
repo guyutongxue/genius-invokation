@@ -1,6 +1,4 @@
 import { MethodNames, RequestType, ResponseType } from "@jenshin-tcg/typings";
-import { flip } from "./utils";
-import { initCharacter, randomDice } from "./operations";
 import { GameEndState, Pair, StateManager } from "./states";
 
 export interface Player {

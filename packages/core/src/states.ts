@@ -13,13 +13,13 @@ import {
   verifyRequest,
   verifyResponse,
 } from "@jenshin-tcg/typings";
-import { initCharacter, makePilesUnique, randomDice } from "./operations";
+import { initCharacter, initPiles, randomDice, flip } from "./utils";
 import * as _ from "lodash-es";
 import { Character } from "./character";
-import { flip } from "./utils";
 import { INITIAL_HANDS, MAX_HANDS } from "./config";
 import { Card } from "./card";
 import { Status } from "./status";
+import { ActionScanner } from "./use_dice";
 
 export type Pair<T> = [T, T];
 
@@ -99,8 +99,8 @@ export class StateManager {
         if (Math.random() < 0.5) {
           [this.p0, this.p1] = [this.p1, this.p0];
         }
-        const p0 = makePilesUnique(this.p0.piles);
-        const p1 = makePilesUnique(this.p1.piles);
+        const p0 = initPiles(this.p0.piles);
+        const p1 = initPiles(this.p1.piles);
         this.state = {
           type: "initHands",
           players: [this.p0.id, this.p1.id],
@@ -192,18 +192,20 @@ export class StateManager {
         let declareEndNum = 0;
         while (declareEndNum < 2) {
           const curPlayer = this.state.turn;
+          const scanner = new ActionScanner(this.state);
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
           // check card "testEnabled"
           const availableCards = this.state.hands[curPlayer]; /* TODO */
           const { action } = await this.requestPlayer(curPlayer, "action", {
-            skills: [],
+            skills: scanner.scanSkills(),
             cards: [], //availableCards,
             switchActive: {
               cost: [0], // TODO
               fast: false, // TODO
             },
           });
+          // TODO: check onBeforeUseDice 2nd time; deduct usage count.
           switch (action.type) {
             case "declareEnd": {
               this.state.nextTurn = curPlayer;
@@ -227,10 +229,10 @@ export class StateManager {
               this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
                 (c) => c.id !== card
               );
-              continue;
+              continue; // fast action
             }
             case "elementalTuning": {
-              continue;
+              continue; // fast action
             }
             case "switchActive": {
               break;
