@@ -157,22 +157,28 @@ export class StateManager {
         break;
       }
       case "rollPhase": {
-        this.notifyPlayer({
-          source: {
-            type: "phaseBegin",
-            phase: "roll",
-            roundNumber: this.state.roundNumber,
-            isFirst: this.state.nextTurn === 0,
-          }
-        }, 0);
-        this.notifyPlayer({
-          source: {
-            type: "phaseBegin",
-            phase: "roll",
-            roundNumber: this.state.roundNumber,
-            isFirst: this.state.nextTurn === 1,
-          }
-        }, 1);
+        this.notifyPlayer(
+          {
+            source: {
+              type: "phaseBegin",
+              phase: "roll",
+              roundNumber: this.state.roundNumber,
+              isFirst: this.state.nextTurn === 0,
+            },
+          },
+          0
+        );
+        this.notifyPlayer(
+          {
+            source: {
+              type: "phaseBegin",
+              phase: "roll",
+              roundNumber: this.state.roundNumber,
+              isFirst: this.state.nextTurn === 1,
+            },
+          },
+          1
+        );
         await Promise.all([this.rollDice(0), this.rollDice(1)]);
         this.state = {
           ...this.state,
@@ -189,31 +195,38 @@ export class StateManager {
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
           // check card "testEnabled"
-          const availableCards = this.state.hands[curPlayer]/* TODO */;
+          const availableCards = this.state.hands[curPlayer]; /* TODO */
           const { action } = await this.requestPlayer(curPlayer, "action", {
             skills: [],
-            cards: [],//availableCards,
+            cards: [], //availableCards,
             switchActive: {
-              cost: [0],   // TODO
+              cost: [0], // TODO
               fast: false, // TODO
-            }
+            },
           });
           switch (action.type) {
             case "declareEnd": {
               this.state.nextTurn = curPlayer;
               this.state.turn = flip(curPlayer);
               declareEndNum++;
-              this.notifyPlayer({
-                source: { type: "oppDeclareEnd" }
-              }, flip(curPlayer));
+              this.notifyPlayer(
+                {
+                  source: { type: "oppDeclareEnd" },
+                },
+                flip(curPlayer)
+              );
               continue;
             }
             case "playCard": {
               const { card, with: w, removeSupport } = action;
-              const cardObj = availableCards.find(c => c.id === card);
-              if (!cardObj) { throw new Error("Card not found"); }
+              const cardObj = availableCards.find((c) => c.id === card);
+              if (!cardObj) {
+                throw new Error("Card not found");
+              }
               // TODO
-              this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(c => c.id !== card);
+              this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
+                (c) => c.id !== card
+              );
               continue;
             }
             case "elementalTuning": {
@@ -326,8 +339,8 @@ export class StateManager {
       discard = this.state.hands[p].splice(MAX_HANDS);
     }
     await this.requestPlayer(p, "drawHands", {
-      hands: news.map(c => c.id),
-      discard: discard.map(c => c.id),
+      hands: news.map((c) => c.id),
+      discard: discard.map((c) => c.id),
     });
     // notify opponent
     this.notifyPlayer(
@@ -346,11 +359,11 @@ export class StateManager {
   private async switchHands(p: 0 | 1) {
     this.ensureHands(this.state);
     const { remove } = await this.requestPlayer(p, "removeHands", {
-      hands: this.state.hands[p].map(x => x.id),
+      hands: this.state.hands[p].map((x) => x.id),
     });
     const removedCards: Card[] = [];
     for (const c of remove) {
-      const i = this.state.hands[p].findIndex(x => x.id === c);
+      const i = this.state.hands[p].findIndex((x) => x.id === c);
       if (i === -1) {
         throw new Error("bad removed hands");
       }
@@ -415,7 +428,7 @@ export class StateManager {
 
   private async rollDice(p: 0 | 1, rerollCount = 1) {
     this.ensureDice(this.state);
-    let dice = this.state.dice[p];
+    let dice = [...this.state.dice[p]];
     if (this.state.type === "rollPhase") {
       // TODO SCAN HOOKS
       dice = randomDice();
@@ -432,6 +445,7 @@ export class StateManager {
         canRemove: i != rerollCount,
       }));
     }
+    this.state.dice[p] = dice;
   }
 
   private createFacade(p: 0 | 1): StateFacade {
@@ -440,13 +454,13 @@ export class StateManager {
     }
     return {
       pileNumber: this.state.piles[p].length,
-      hands: [...this.state.hands[p].map(c =>c.id)],
+      hands: [...this.state.hands[p].map((c) => c.id)],
       active: "actives" in this.state ? this.state.actives[p] : undefined,
       characters: this.state.characters[p].map((c) => c.toFacade()),
       combatStatuses: this.state.combatStatuses[p].map((c) => c.toFacade()),
       supports: [...this.state.supports[p]],
       summons: [...this.state.summons[p]],
-      dice: "dice" in this.state ? this.state.dice[p] : [],
+      dice: "dice" in this.state ? [...this.state.dice[p]] : [],
       oppPileNumber: this.state.piles[1 - p].length,
       oppHandsNumber: this.state.hands[1 - p].length,
       oppActive:

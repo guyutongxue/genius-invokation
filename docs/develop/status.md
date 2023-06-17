@@ -33,6 +33,8 @@ export class InspirationField implements IStatus {
 
 - `onBeforeUseSkill`：当所**附着的角色** <sup>*</sup> 使用技能前，进行额外结算；
 - `onUseSkill`：当所**附着的角色**使用技能后；
+- `onSwitchActiveFrom`：当所**附着的角色**被切走后；
+- `onSwitchActive`：当切换到**附着的角色**后；
 - `onBeforeDamaged`：当所**附着的角色**受到伤害前，进行额外结算；
 - `onDamaged`：当所**附着的角色**受到伤害后；
 

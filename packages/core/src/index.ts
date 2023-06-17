@@ -15,20 +15,6 @@ export interface GameOptions {
   players: Pair<Player>;
 }
 
-// const state3: RollPhaseState = {
-//   ...state2,
-//   type: "rollPhase",
-//   actives: [0, 1],
-// };
-
-// const state4: ActionPhaseState = {
-//   ...state3,
-//   type: "actionPhase",
-//   dice: [randomDice(), randomDice()],
-//   turn: state3.nextTurn,
-//   nextTurn: flip(state3.nextTurn),
-// };
-
 export function createGame(options: GameOptions): Promise<GameEndState> {
   const m = new StateManager(options);
   return m.run();

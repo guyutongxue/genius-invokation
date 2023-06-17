@@ -36,6 +36,7 @@ export interface Context {
   switchActive(target: number): void;
   useSkill(skillName: string): void;
   flipNextTurn(): void;
+  passTurn(): void;
   
   dispose(): void;
 }

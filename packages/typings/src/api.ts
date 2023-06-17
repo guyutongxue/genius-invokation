@@ -44,8 +44,8 @@ export const API = {
             name: { type: "string" },
             cost: { type: "array", items: { type: "integer" } },
           },
+          required: ["name", "cost"],
         },
-        required: ["name", "cost"],
       },
       cards: {
         type: "array",
@@ -69,8 +69,8 @@ export const API = {
             },
             removeSupport: { type: "boolean" },
           },
+          required: ["id", "cost"],
         },
-        required: ["id", "cost"],
       },
       switchActive: {
         type: "object",

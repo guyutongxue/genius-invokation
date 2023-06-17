@@ -11,6 +11,8 @@ export interface StatusInfo {
 export interface IStatus extends IGlobalEvents {
   onBeforeUseSkill?: (c: SkillContext) => HandlerResult;
   onUseSkill?: (c: SkillContext) => HandlerResult;
+  onSwitchActiveFrom?: (c: Context) => HandlerResult; // TODO
+  onSwitchActive?: (c: Context) => HandlerResult; // TODO
   onBeforeDealDamage?: (c: DamageContext) => HandlerResult;
   onBeforeDamaged?: (c: DamageContext) => HandlerResult;
   onDamaged?: (c: DamageContext) => HandlerResult;

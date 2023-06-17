@@ -8,6 +8,7 @@ export interface IGlobalEvents {
   onEndPhase?: (c: Context) => HandlerResult;
 
   onUseSkill?: (c: SkillContext) => HandlerResult;
+  onSwitchActive?: (c: Context) => HandlerResult; // TODO
   onBeforeDealDamage?: (c: DamageContext) => HandlerResult;
   onDealDamage?: (c: DamageContext) => HandlerResult;
   

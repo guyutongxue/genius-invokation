@@ -7,14 +7,12 @@
 - `onActionPhase`：行动阶段开始时；
 - `onTurn`：轮到我方行动轮时；
 - `onEndPhase`：结束阶段开始时；
-
 - `onUseSkill`：当**我方角色**使用技能后；
+- `onSwitchActive`：当**我方**切换出战角色后；
 - `onBeforeDealDamage`：当**我方**造成伤害前，进行额外结算；
 - `onDealDamage`：当**我方**造成伤害后；
-
 - `onBeforeUseDice`：当使用骰子前，进行减费/增费结算；
 - `onBeforeSwitchShouldFast`：当切换出战角色前，是否视为快速行动；
-
 - `onDamaged`: 当**我方**角色受到伤害后；
 - `onDefeated`：当**我方**角色被击倒后；
 
@@ -38,6 +36,7 @@
 - `switchActive`：切换出战角色
 - `useSkill`：使用出战角色的技能
 - `flipNextTurn`：强制修改行动轮轮转（风与自由）
+- `pass`：跳过此回合（准备技能）
 - `dispose`：（状态、支援、召唤物）弃置
 
 ## 目标描述语法
