@@ -3,7 +3,7 @@ import { DiceType } from "@jenshin-tcg/typings";
 import Dice from "./Dice.vue";
 import { ref } from "vue";
 
-const { dice } = defineProps<{
+const props = defineProps<{
   dice: number[];
 }>();
 
@@ -18,7 +18,7 @@ const emit = defineEmits<{
 function selected() {
   emit(
     "selected",
-    removed.value.map((i) => dice[i])
+    removed.value.map((i) => props.dice[i])
   );
 }
 </script>

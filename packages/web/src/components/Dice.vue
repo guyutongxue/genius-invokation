@@ -27,7 +27,7 @@ const NAME: Record<DiceType, string> = {
   [DiceType.ENERGY ]: "充",
 }
 
-const { type } = defineProps<{
+const props = defineProps<{
   type: DiceType;
 }>();
 

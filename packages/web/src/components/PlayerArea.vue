@@ -31,18 +31,39 @@ export type PlayerAreaData = {
     }
 );
 
-const { player, name, data } = defineProps<{
+export type AreaAction = RequestType<"action"> & { myTurn: boolean };
+
+const props = defineProps<{
   player: "me" | "opp";
   name?: string;
   data: PlayerAreaData;
-  availableActions?: RequestType<"action">;
+  availableActions?: AreaAction;
 }>();
 
 const emit = defineEmits<{
-  (e: "clickCharacter", id: number, objectId: number): void;
-  (e: "clickHand", id: number, objectId: number): void;
+  (e: "clickCharacter", id: number): void;
+  (e: "clickMethod", name: string): void;
+  (e: "clickHand", id: number): void;
+  (e: "tuneHand", id: number): void;
   (e: "clickEnd"): void;
 }>();
+
+function clickHand(cardId: number) {
+  if (props.availableActions?.cards.find((c) => c.id === cardId)) {
+    emit("clickHand", cardId);
+  }
+}
+function tuneHand(cardId: number) {
+  if (props.availableActions?.myTurn) {
+    emit("tuneHand", cardId);
+  }
+}
+
+function clickCharacter(id: number) {
+  if (props.availableActions?.switchActive?.targets.includes(id)) {
+    emit("clickCharacter", id);
+  }
+}
 </script>
 
 <template>
@@ -64,13 +85,18 @@ const emit = defineEmits<{
               : ''
           "
         >
-          <div class="w-20 h-30 relative">
+          <div
+            class="w-20 h-30 relative"
+            :class="
+              availableActions?.switchActive?.targets.includes(ch.id)
+                ? 'border-4 border-green-400 cursor-pointer'
+                : ''
+            "
+            @click="clickCharacter(ch.id)"
+          >
             <div class="absolute bg-white">{{ ch.health }}</div>
             <div class="absolute right-0 bg-yellow-500">{{ ch.energy }}</div>
-            <img
-              :src="(images as any)[ch.objectId]"
-              @click="$emit('clickCharacter', ch.id, ch.objectId)"
-            />
+            <img :src="(images as any)[ch.objectId]" />
           </div>
         </div>
       </div>
@@ -90,28 +116,43 @@ const emit = defineEmits<{
       <div class="flex flex-wrap gap-2">
         <div v-for="hand of data.hands">
           <div
-            class="w-12"
-            @click="emit('clickHand', hand, Math.floor(hand))"
+            class="w-12 flex flex-col"
+            @click="clickHand(hand)"
             :class="
               availableActions &&
-              availableActions.cards.find((c) => c.id === Math.floor(hand))
-                ? 'border-4 border-green-400'
+              availableActions.cards.find((c) => c.id === hand)
+                ? 'border-4 border-green-400 cursor-pointer'
                 : ''
             "
           >
             <HandCard :objectId="Math.floor(hand)"></HandCard>
+            <button
+              v-if="availableActions?.myTurn"
+              class="text-green-400 font-bold"
+              @click="tuneHand(hand)"
+            >
+              Tuning
+            </button>
           </div>
         </div>
       </div>
       <div>
         <ul v-if="availableActions" class="flex gap-2">
-          <li v-for="skill of availableActions.skills" class="border-4 border-green-400">
+          <li
+            v-for="skill of availableActions.skills"
+            class="border-4 border-green-400 cursor-pointer"
+            @click="emit('clickMethod', skill.name)"
+          >
             {{ skill.name }}
           </li>
         </ul>
       </div>
     </div>
-    <div v-if="availableActions" class="absolute left-3 bg-yellow-300 border-4 border-green-400" :class="player === 'opp' ? 'bottom-3' : 'top-3'">
+    <div
+      v-if="availableActions?.myTurn"
+      class="absolute left-3 bg-yellow-300 border-4 border-green-400"
+      :class="player === 'opp' ? 'bottom-3' : 'top-3'"
+    >
       <button @click="emit('clickEnd')">End turn</button>
     </div>
   </div>

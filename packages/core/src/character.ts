@@ -12,7 +12,7 @@ export class Character {
   private applied = Aura.NONE;
 
   constructor(
-    private readonly id: number,
+    readonly id: number,
     private readonly data: CharacterData
   ) {
     this.health = data.info.health;
@@ -39,6 +39,10 @@ export class Character {
 
   getStatuses() {
     return this.statuses;
+  }
+
+  alive() {
+    return this.health > 0;
   }
 
   // heal(value: number) {

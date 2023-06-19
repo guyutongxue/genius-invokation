@@ -154,25 +154,18 @@ export class StateManager {
         this.state = {
           ...this.state,
           type: "rollPhase",
-          roundNumber: 1,
+          roundNumber: 0,
           dice: [[], []],
         };
         break;
       }
       case "rollPhase": {
-        if (this.state.roundNumber > MAX_ROUNDS) {
-          this.state = {
-            ...this.state,
-            type: "gameEnd",
-          };
-          break;
-        }
         this.notifyPlayer(
           {
             source: {
               type: "phaseBegin",
               phase: "roll",
-              roundNumber: this.state.roundNumber,
+              roundNumber: ++this.state.roundNumber,
               isFirst: this.state.nextTurn === 0,
             },
           },
@@ -202,6 +195,7 @@ export class StateManager {
         let declareEndNum = 0;
         while (declareEndNum < 2) {
           const curPlayer = this.state.turn;
+          const curActive = this.state.actives[curPlayer];
           const scanner = new ActionScanner(this.state);
           const skills = scanner.scanSkills();
           // check onBeforeUseDice
@@ -212,6 +206,9 @@ export class StateManager {
             skills: skills.map(({ name, cost }) => ({ name, cost })),
             cards: [], //availableCards,
             switchActive: {
+              targets: this.state.characters[curPlayer]
+                .filter((c) => c.id !== curActive && c.alive())
+                .map((c) => c.id),
               cost: [0], // TODO
               fast: false, // TODO
             },
@@ -257,7 +254,7 @@ export class StateManager {
               // TODO reduce cost
               skillReq.action({
                 ...this.createGlobalContext(curPlayer),
-                triggeredByCard: undefined
+                triggeredByCard: undefined,
               });
               break;
             }
@@ -268,14 +265,26 @@ export class StateManager {
         }
         this.state = {
           ...this.state,
-          // type: "endPhase",
-          type: "gameEnd",
+          type: "endPhase",
+          // type: "gameEnd",
         };
         break;
       }
       case "endPhase": {
         this.notifyPlayer({ source: { type: "phaseBegin", phase: "end" } });
-        break;
+        if (this.state.roundNumber === MAX_ROUNDS) {
+          this.state = {
+            ...this.state,
+            type: "gameEnd",
+          };
+          break;
+        } else {
+          this.state = {
+            ...this.state,
+            type: "rollPhase",
+          }
+          break;
+        }
       }
       case "gameEnd": {
         console.log("GAME END!");
@@ -413,7 +422,11 @@ export class StateManager {
     this.ensureActives(this.state);
     let target = this.state.actives[p];
     if (notify !== "justNotify") {
-      ({ target } = await this.requestPlayer(p, "switchActive", {}));
+      ({ target } = await this.requestPlayer(p, "switchActive", {
+        targets: this.state.characters[p]
+          .filter((x) => x.alive())
+          .map((x) => x.id),
+      }));
       this.state.actives[p] = target;
     }
     if (notify !== "noNotify") {

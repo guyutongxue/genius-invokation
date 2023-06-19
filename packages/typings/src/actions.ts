@@ -17,9 +17,10 @@ export const ACTION_SCHEMA = {
       additionalProperties: false,
       properties: {
         type: { const: "switchActive" },
+        cost: { type: "array", items: { type: "integer" } },
         target: { type: "integer" },
       },
-      required: ["type", "target"],
+      required: ["type", "target", "cost"],
     },
     {
       type: "object",
@@ -27,6 +28,7 @@ export const ACTION_SCHEMA = {
       properties: {
         type: { const: "playCard" },
         card: { type: "number" },
+        cost: { type: "array", items: { type: "integer" } },
         with: {
           type: "array",
           items: {
@@ -41,7 +43,7 @@ export const ACTION_SCHEMA = {
         },
         removeSupport: { type: "integer" },
       },
-      required: ["type", "card"],
+      required: ["type", "card", "cost"],
     },
     {
       type: "object",

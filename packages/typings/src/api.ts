@@ -19,7 +19,9 @@ export const API = {
     },
   },
   switchActive: {
-    params: {},
+    params: {
+      targets: { type: "array", items: { type: "integer" } },
+    },
     result: {
       target: { type: "integer", minimum: 0, maximum: 2 },
     },
@@ -76,10 +78,11 @@ export const API = {
         type: "object",
         additionalProperties: false,
         properties: {
+          targets: { type: "array", items: { type: "integer" } },
           fast: { type: "boolean" },
           cost: { type: "array", items: { type: "integer" } },
         },
-        required: ["fast", "cost"],
+        required: ["targets", "fast", "cost"],
       },
     },
     result: {

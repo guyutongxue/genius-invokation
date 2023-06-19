@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import PlayerArea, { type PlayerAreaData } from "./PlayerArea.vue";
+import PlayerArea, { AreaAction, type PlayerAreaData } from "./PlayerArea.vue";
 import SwitchHands from "./SwitchHands.vue";
 import type {
   MethodNames,
@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const areaData = ref<PlayerAreaData>();
-const availableActions = ref<RequestType<"action">>();
+const availableActions = ref<AreaAction>();
 
 const showCardSwitch = ref<boolean>(false);
 const showRollDice = ref<boolean>(false);
@@ -28,7 +28,10 @@ const showRollDice = ref<boolean>(false);
 const ee = new EventEmitter<{
   cardSwitched: [removed: number[]];
   diceSwitched: [removed: number[]];
+  endChosen: [];
   cardChosen: [id: number];
+  cardTuned: [id: number];
+  methodChosen: [string];
   characterChosen: [id: number];
 }>();
 
@@ -46,6 +49,14 @@ function notificationHandler(id: any, { source, state, damages }: Event) {
     }
   }
   areaData.value = stateToAreaData(state as StateFacade);
+}
+
+function removePlayAreaListeners() {
+  ee.removeAllListeners("endChosen");
+  ee.removeAllListeners("cardChosen");
+  ee.removeAllListeners("cardTuned");
+  ee.removeAllListeners("methodChosen");
+  ee.removeAllListeners("characterChosen");
 }
 
 async function handler(
@@ -85,9 +96,21 @@ async function handler(
       return { remove };
     }
     case "switchActive": {
+      const r = req as RequestType<typeof method>;
+      availableActions.value = {
+        cards: [],
+        skills: [],
+        switchActive: {
+          targets: r.targets,
+          cost: [],
+          fast: false,
+        },
+        myTurn: false
+      };
       const chosen = await new Promise<number>((resolve) => {
         ee.once("characterChosen", (d) => resolve(d));
       });
+      availableActions.value = undefined;
       if (areaData.value && areaData.value.type === "visible") {
         areaData.value.active = chosen;
       }
@@ -111,8 +134,54 @@ async function handler(
     }
     case "action": {
       const actions = req as RequestType<"action">;
-      availableActions.value = actions;
-      break;
+      availableActions.value = { ...actions, myTurn: true };
+      type AreaActionResponse =
+        | {
+            type: "character" | "card" | "elementalTuning";
+            id: number;
+          }
+        | {
+            type: "method";
+            name: string;
+          }
+        | {
+            type: "end";
+          };
+      const r = await new Promise<AreaActionResponse>((resolve) => {
+        ee.once("cardChosen", (id) => {
+          removePlayAreaListeners();
+          resolve({ type: "card", id });
+        });
+        ee.once("cardTuned", (id) => {
+          removePlayAreaListeners();
+          resolve({ type: "elementalTuning", id });
+        });
+        ee.once("characterChosen", (id) => {
+          removePlayAreaListeners();
+          resolve({ type: "character", id });
+        });
+        ee.once("methodChosen", (name) => {
+          removePlayAreaListeners();
+          resolve({ type: "method", name });
+        });
+        ee.once("endChosen", () => {
+          removePlayAreaListeners();
+          resolve({ type: "end" });
+        });
+      });
+      availableActions.value = undefined;
+      console.log(r);
+      let action = {};
+      switch (r.type) {
+        case "end": {
+          action = { type: "declareEnd" };
+          break;
+        }
+        case "character": {
+          action = { type: "switchActive", target: r.id };
+        }
+      }
+      return { action };
     }
     case "notify": {
       const r = req as RequestType<typeof method>;
@@ -131,12 +200,6 @@ const player: Player = {
 
 defineExpose({ player });
 
-function cardChosen(id: number, objectId: number) {
-  ee.emit("cardChosen", id);
-}
-function characterChosen(id: number, objectId: number) {
-  ee.emit("characterChosen", id);
-}
 </script>
 
 <template>
@@ -145,8 +208,11 @@ function characterChosen(id: number, objectId: number) {
       :player="playerType ?? 'me'"
       :data="areaData"
       :availableActions="availableActions"
-      @clickCharacter="characterChosen"
-      @clickHand="cardChosen"
+      @clickCharacter="ee.emit('characterChosen', $event)"
+      @clickMethod="ee.emit('methodChosen', $event)"
+      @clickEnd="ee.emit('endChosen')"
+      @tuneHand="ee.emit('cardTuned', $event)"
+      @clickHand="ee.emit('cardChosen', $event)"
     >
     </PlayerArea>
     <div v-if="areaData.type === 'visible'">
