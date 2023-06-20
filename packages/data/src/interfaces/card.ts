@@ -1,4 +1,4 @@
-import { Context } from "../contexts";
+import { Context, UseCardContext } from "../contexts";
 import { ICharacter, IGlobalEvents } from "./global";
 
 export type CardTag =
@@ -41,7 +41,7 @@ export interface CardEnableTester extends IGlobalEvents {
 }
 
 export interface ICard {
-  onUse(c: Context): void;
+  onUse(c: UseCardContext): void;
 }
 export interface ICardConstructor {
   new (...args: (ICharacter | unknown)[]): ICard;

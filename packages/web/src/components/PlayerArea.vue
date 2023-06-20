@@ -126,14 +126,14 @@ function clickCharacter(id: number) {
             "
           >
             <HandCard :objectId="Math.floor(hand)"></HandCard>
-            <button
-              v-if="availableActions?.myTurn"
-              class="text-green-400 font-bold"
-              @click="tuneHand(hand)"
-            >
-              Tuning
-            </button>
           </div>
+          <button
+            v-if="availableActions?.myTurn"
+            class="text-green-400 font-bold"
+            @click="tuneHand(hand)"
+          >
+            Tuning
+          </button>
         </div>
       </div>
       <div>

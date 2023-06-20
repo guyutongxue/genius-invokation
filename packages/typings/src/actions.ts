@@ -30,16 +30,16 @@ export const ACTION_SCHEMA = {
         card: { type: "number" },
         cost: { type: "array", items: { type: "integer" } },
         with: {
-          type: "array",
-          items: {
+          // type: "array",
+          // items: {
             type: "object", 
             additionalProperties: false,
             properties: {
               type: { enum: ["character", "summon", "support"] },
               id: { type: "number" }, 
             },
-            required: ["type", "who"]
-          },
+            required: ["type", "id"]
+          // },
         },
         removeSupport: { type: "integer" },
       },

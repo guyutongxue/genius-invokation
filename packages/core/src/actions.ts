@@ -1,6 +1,12 @@
-import { SkillDescriptionContext, UseDiceContext } from "@jenshin-tcg/data";
+import {
+  SkillDescriptionContext,
+  UseDiceContext,
+  UseCardContext,
+  CardWith,
+} from "@jenshin-tcg/data";
 import { ActionPhaseState } from "./states";
 import { DiceType } from "@jenshin-tcg/typings";
+import { flipByWho } from "./utils";
 
 function deductDice(original: DiceType[], deducted: DiceType[]) {
   const result = [...original];
@@ -17,6 +23,18 @@ interface SkillActionReq {
   name: string;
   cost: DiceType[];
   action: (ctx: SkillDescriptionContext) => void;
+}
+
+interface CardActionReq {
+  id: number;
+  cost: DiceType[];
+  with?: {
+    type: "character" | "summon" | "support";
+    id: number;
+    action?: (ctx: UseCardContext) => void;
+  }[];
+  removeSupport: boolean;
+  action?: (ctx: UseCardContext) => void;
 }
 
 export class ActionScanner {
@@ -66,5 +84,61 @@ export class ActionScanner {
       });
     }
     return results;
+  }
+
+  scanCards(): CardActionReq[] {
+    const cards = this.state.hands[this.curPlayer];
+    const result: CardActionReq[] = [];
+    for (const c of cards) {
+      // TODO DICE HANDLER HERE!
+      const wi = c.withInfo();
+      if (typeof wi === "undefined") {
+        const action = c.getAction();
+        if (action) {
+          result.push({
+            id: c.objectId,
+            cost: c.cost,
+            removeSupport: false, // TODO
+            action,
+          });
+        }
+      } else {
+        const { type, who } = wi;
+        let withes: (CardWith & { id: number })[];
+        if (type === "character") {
+          withes = this.state.characters[flipByWho(this.curPlayer, who)].map(c => ({
+            type: "character",
+            id: c.id,
+            character: c.toICharacter(/* TODO! */),
+          }));
+        } else if (type === "summon") {
+          withes = this.state.summons[flipByWho(this.curPlayer, who)].map(c => ({
+            type: "summon",
+            id: c.id,
+            summon: c,
+          }));
+        } else /* if (type === "support") */ {
+          throw new Error("Not implemented");
+        }
+        const filteredWithes = [];
+        for (const cw of withes) {
+          const action = c.getAction(cw);
+          if (action) {
+            filteredWithes.push({
+              type: cw.type,
+              id: cw.id,
+              action,
+            });
+          }
+        }
+        result.push({
+          id: c.id,
+          cost: c.cost,
+          with: filteredWithes,
+          removeSupport: false, // TODO
+        })
+      }
+    }
+    return result;
   }
 }

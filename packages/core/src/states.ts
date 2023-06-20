@@ -200,11 +200,15 @@ export class StateManager {
           const skills = scanner.scanSkills();
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
-          // check card "testEnabled"
-          const availableCards = this.state.hands[curPlayer]; /* TODO */
+          const cards = scanner.scanCards(); /* TODO */
           const { action } = await this.requestPlayer(curPlayer, "action", {
             skills: skills.map(({ name, cost }) => ({ name, cost })),
-            cards: [], //availableCards,
+            cards: cards.map(({ id, cost, with: w, removeSupport }) => ({
+              id,
+              cost,
+              with: w?.map(({ type, id }) => ({ type, id })),
+              removeSupport,
+            })),
             switchActive: {
               targets: this.state.characters[curPlayer]
                 .filter((c) => c.id !== curActive && c.alive())
@@ -229,7 +233,7 @@ export class StateManager {
             }
             case "playCard": {
               const { card, with: w, removeSupport } = action;
-              const cardObj = availableCards.find((c) => c.id === card);
+              const cardObj = cards.find((c) => c.id === card);
               if (!cardObj) {
                 throw new Error("Card not found");
               }
@@ -282,7 +286,7 @@ export class StateManager {
           this.state = {
             ...this.state,
             type: "rollPhase",
-          }
+          };
           break;
         }
       }
@@ -293,15 +297,6 @@ export class StateManager {
         break;
       }
     }
-  }
-
-  private updatePhase(phase: "roll" | "action" | "end") {
-    this.notifyPlayer({
-      source: {
-        type: "phaseBegin",
-        phase,
-      },
-    });
   }
 
   async requestPlayer<K extends MethodNames>(
@@ -468,6 +463,7 @@ export class StateManager {
     if (this.state.type === "rollPhase") {
       // TODO SCAN HOOKS
       dice = randomDice();
+      this.sortDice(p, dice);
     }
     let { remove } = await this.requestPlayer(p, "roll", {
       dice,
@@ -476,12 +472,28 @@ export class StateManager {
     for (let i = 1; i <= rerollCount; i++) {
       if (remove.length === 0) break;
       dice = this.rerollRandomDice(dice, remove);
+      this.sortDice(p, dice);
       ({ remove } = await this.requestPlayer(p, "roll", {
         dice,
         canRemove: i != rerollCount,
       }));
     }
     this.state.dice[p] = dice;
+  }
+
+  private sortDice(p: 0 | 1, dice: DiceType[]) {
+    const state = this.state;
+    this.ensureActives(state);
+    const k = (d: DiceType) => {
+      if (d === DiceType.OMNI) return 100;
+      if (d === state.characters[p][state.actives[p]].elementType())
+        return (d as number) + 50;
+      if (state.characters[p].map((ch) => ch.elementType()).includes(d))
+        return (d as number) + 20;
+      return d as number;
+    };
+    dice.sort((a, b) => k(b) - k(a));
+    console.log(dice.map((d) => k(d)));
   }
 
   private createFacade(p: 0 | 1): StateFacade {

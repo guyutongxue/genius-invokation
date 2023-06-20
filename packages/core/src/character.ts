@@ -1,8 +1,9 @@
-import { Aura, CharacterFacade, DamageType } from "@jenshin-tcg/typings";
-import type { CharacterData } from "@jenshin-tcg/data";
+import { Aura, CharacterFacade, DamageType, DiceType } from "@jenshin-tcg/typings";
+import type { CharacterData, ICharacter } from "@jenshin-tcg/data";
 import { Status } from "./status";
 
 export class Character {
+  readonly objectId: number;
   private health: number;
   private energy: number;
   private weapon?: number;
@@ -15,6 +16,7 @@ export class Character {
     readonly id: number,
     private readonly data: CharacterData
   ) {
+    this.objectId = data.info.objectId;
     this.health = data.info.health;
     this.energy = 0;
   }
@@ -22,7 +24,7 @@ export class Character {
   toFacade(): CharacterFacade {
     return {
       id: this.id,
-      objectId: this.data.info.objectId,
+      objectId: this.objectId,
       health: this.health,
       energy: this.energy,
       weapon: this.weapon,
@@ -31,6 +33,17 @@ export class Character {
       statuses: this.statuses.map((c) => c.toFacade()),
       applied: this.applied,
     };
+  }
+
+  toICharacter(): ICharacter {
+    return {
+      toTarget: () => 0, // TODO
+      getInfo: () => this.data.info,
+      getHealth: () => this.health,
+      getEnergy: () => this.energy,
+      hasStatus: (status: Function) => false, // TODO
+      isActive: () => false, // TODO
+    }
   }
 
   getSkills() {
@@ -43,6 +56,10 @@ export class Character {
 
   alive() {
     return this.health > 0;
+  }
+
+  elementType(): DiceType {
+    return Math.floor((this.objectId % 1000) / 100) as DiceType;
   }
 
   // heal(value: number) {

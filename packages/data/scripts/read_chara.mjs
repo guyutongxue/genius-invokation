@@ -75,12 +75,19 @@ function nameToCamel(original, upper) {
 
 
 
-const images = data["image"];
-const result = {};
-for (const [key, value] of Object.entries(zh.tcgactioncards/* tcgcharactercards */)) {
-  const id = value.id;
-  const image = images.tcgactioncards/* tcgcharactercards */[key]["filename_cardface"];
-  result[id] = `https://api.ambr.top/assets/UI/gcg/${image}.png`;
-}
-await writeFile("./images2.json", JSON.stringify(result, undefined, 2));
+// const images = data["image"];
+// const result = {};
+// for (const [key, value] of Object.entries(zh.tcgactioncards/* tcgcharactercards */)) {
+//   const id = value.id;
+//   const image = images.tcgactioncards/* tcgcharactercards */[key]["filename_cardface"];
+//   result[id] = `https://api.ambr.top/assets/UI/gcg/${image}.png`;
+// }
+// await writeFile("./images2.json", JSON.stringify(result, undefined, 2));
 
+
+const result = {};
+for (const [key, value] of Object.entries(zh.tcgcharactercards)) {
+  const id = value.id;
+  result[id] = value.tags[0];
+}
+await writeFile("./element.json", JSON.stringify(result, undefined, 2));

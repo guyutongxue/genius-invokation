@@ -24,20 +24,21 @@ function selected() {
 </script>
 
 <template>
-  <div>
-    <ul class="flex gap-2">
+  <div class="flex flex-col justify-center items-center">
+    <ul class="max-w-[20em] grid grid-cols-4 gap-8">
       <li v-for="(d, i) of dice">
         <input
           type="checkbox"
+          hidden
           :value="i"
           :id="`rdInput${rand}-${i}`"
           v-model="removed"
         />
         <label :for="`rdInput${rand}-${i}`">
-          <Dice :type="(d as DiceType)"></Dice>
+          <Dice :type="(d as DiceType)" :selected="removed.includes(i)" selectedColor="yellow"  class="scale-150"></Dice>
         </label>
       </li>
     </ul>
-    <button @click="selected">Sounds good</button>
+    <button class="mt-6 btn btn-primary" @click="selected">Sounds good</button>
   </div>
 </template>

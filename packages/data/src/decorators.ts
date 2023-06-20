@@ -140,7 +140,7 @@ export const cardSymbol: unique symbol = Symbol("card");
 export interface CardData {
   info: CardInfo;
   costs: number[];
-  constructor: ICardConstructor;
+  ctor: ICardConstructor;
 }
 
 export function Card(info: CardInfo) {
@@ -149,7 +149,7 @@ export function Card(info: CardInfo) {
       target[cardSymbol] = { costs: [] };
     }
     target[cardSymbol].info = info;
-    target[cardSymbol].instance = target;
+    target[cardSymbol].ctor = target;
     return target;
   };
 }

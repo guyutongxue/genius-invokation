@@ -66,7 +66,7 @@ export const API = {
                   type: { enum: ["character", "summon", "support"] },
                   id: { type: "number" }, 
                 },
-                required: ["type", "who"]
+                required: ["type", "id"]
               },
             },
             removeSupport: { type: "boolean" },
