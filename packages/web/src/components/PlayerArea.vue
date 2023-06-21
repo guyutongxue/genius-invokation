@@ -31,7 +31,7 @@ export type PlayerAreaData = {
     }
 );
 
-export type AreaAction = RequestType<"action"> & { myTurn: boolean };
+export type AreaAction = Omit<RequestType<"action">, "state"> & { myTurn: boolean };
 
 const props = defineProps<{
   player: "me" | "opp";

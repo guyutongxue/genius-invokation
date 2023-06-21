@@ -113,6 +113,7 @@ class ButterCrab extends FoodCardBase {
   }
 }
 @DDStatus(333012)
+@Void(2)
 class ButterCrabStatus extends DecreaseDamageBase {
   constructor() {
     super(2);
@@ -149,6 +150,7 @@ class LotusFlowerCrispStatus extends DecreaseDamageBase {
 }
 
 @FoodCard(333008)
+@Same(1)
 class MintyMeatRolls extends FoodCardBase {
   onUse(c: Context) {
     super.onUse(c);
@@ -170,6 +172,7 @@ class MintyMeatRollsStatus implements IStatus {
 }
 
 @FoodCard(333006)
+@Same(1)
 class MondstadtHashBrown extends FoodCardBase {
   onUse(c: Context) {
     super.onUse(c);

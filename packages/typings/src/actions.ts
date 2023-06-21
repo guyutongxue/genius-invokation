@@ -32,13 +32,13 @@ export const ACTION_SCHEMA = {
         with: {
           // type: "array",
           // items: {
-            type: "object", 
-            additionalProperties: false,
-            properties: {
-              type: { enum: ["character", "summon", "support"] },
-              id: { type: "number" }, 
-            },
-            required: ["type", "id"]
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            type: { enum: ["character", "summon", "support"] },
+            id: { type: "number" },
+          },
+          required: ["type", "id"],
           // },
         },
         removeSupport: { type: "integer" },
@@ -49,10 +49,16 @@ export const ACTION_SCHEMA = {
       type: "object",
       additionalProperties: false,
       properties: {
-        card: { type: "number" },
         type: { const: "elementalTuning" },
+        card: { type: "number" },
+        cost: {
+          type: "array",
+          items: { type: "integer" },
+          minItems: 1,
+          maxItems: 1,
+        },
       },
-      required: ["type", "card"],
+      required: ["type", "card", "cost"],
     },
     {
       type: "object",

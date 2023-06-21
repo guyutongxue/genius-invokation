@@ -13,7 +13,13 @@ import {
   verifyRequest,
   verifyResponse,
 } from "@jenshin-tcg/typings";
-import { initCharacter, initPiles, randomDice, flip } from "./utils";
+import {
+  initCharacter,
+  initPiles,
+  randomDice,
+  flip,
+  verifyDice,
+} from "./utils";
 import * as _ from "lodash-es";
 import { Character } from "./character";
 import { INITIAL_HANDS, MAX_HANDS, MAX_ROUNDS } from "./config";
@@ -216,6 +222,7 @@ export class StateManager {
               cost: [0], // TODO
               fast: false, // TODO
             },
+            state: this.createFacade(curPlayer),
           });
           switch (action.type) {
             case "declareEnd": {
@@ -231,19 +238,48 @@ export class StateManager {
               continue;
             }
             case "playCard": {
-              const { card, with: w, removeSupport } = action;
+              const { card, cost, with: w, removeSupport } = action;
               const cardObj = cards.find((c) => c.id === card);
               if (!cardObj) {
                 throw new Error("Card not found");
               }
-              // TODO consume cost
+              this.consumeDice(curPlayer, cost, cardObj.cost);
               // TODO play card
               this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
                 (c) => c.id !== card
               );
+              this.notifyPlayer(
+                {
+                  source: { type: "playCard", who: 0, card },
+                },
+                curPlayer
+              );
+              this.notifyPlayer(
+                {
+                  source: { type: "playCard", who: 1, card },
+                },
+                flip(curPlayer)
+              );
               continue; // fast action
             }
             case "elementalTuning": {
+              const { card, cost } = action;
+
+              this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
+                (c) => c.id !== card
+              );
+              const tgtDice =
+                this.state.characters[curPlayer][
+                  this.state.actives[curPlayer]
+                ].elementType();
+              this.state.dice[curPlayer].splice(cost[0], 1, tgtDice);
+              this.sortDice(curPlayer, this.state.dice[curPlayer]);
+              this.notifyPlayer(
+                {
+                  source: { type: "oppSwitchHands", discardNum: 1 },
+                },
+                flip(curPlayer)
+              );
               continue; // fast action
             }
             case "switchActive": {
@@ -255,11 +291,31 @@ export class StateManager {
               if (!skillReq) {
                 throw new Error("Skill not found");
               }
-              // TODO consume cost
+              this.consumeDice(curPlayer, cost, skillReq.cost);
               skillReq.action({
                 ...this.createGlobalContext(curPlayer),
                 triggeredByCard: undefined,
               });
+              this.notifyPlayer(
+                {
+                  source: {
+                    type: "useSkill",
+                    id: this.state.actives[curPlayer],
+                    name,
+                  },
+                },
+                curPlayer
+              );
+              this.notifyPlayer(
+                {
+                  source: {
+                    type: "useSkill",
+                    id: this.state.actives[curPlayer] + 3,
+                    name,
+                  },
+                },
+                flip(curPlayer)
+              );
               break;
             }
           }
@@ -496,6 +552,16 @@ export class StateManager {
     console.log(dice.map((d) => k(d)));
   }
 
+  private consumeDice(p: 0 | 1, cost: number[], required: DiceType[]) {
+    const state = this.state;
+    this.ensureDice(state);
+    const used = cost.map((c) => state.dice[p][c]);
+    if (!verifyDice(used, required)) {
+      throw new Error("bad dice consumed");
+    }
+    _.pullAt(state.dice[p], cost);
+  }
+
   private createFacade(p: 0 | 1): StateFacade {
     if (!("hands" in this.state)) {
       throw new Error("bad state");
@@ -530,7 +596,7 @@ export class StateManager {
       }
       who = this.state.turn;
     }
-    return ;
+    return;
   }
 
   public async run(): Promise<GameEndState> {

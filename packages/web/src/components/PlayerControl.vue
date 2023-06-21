@@ -2,15 +2,15 @@
 import { ref } from "vue";
 import PlayerArea, { AreaAction, type PlayerAreaData } from "./PlayerArea.vue";
 import SwitchHands from "./SwitchHands.vue";
-import type {
+import {
   MethodNames,
   RequestType,
   Player,
   StateFacade,
   Event,
-  DiceType,
   ResponseType,
 } from "@jenshin-tcg/core";
+import { DiceType } from "@jenshin-tcg/typings";
 import EventEmitter from "eventemitter3";
 import RollDice from "./RollDice.vue";
 import SelectDice from "./SelectDice.vue";
@@ -149,6 +149,7 @@ async function handler(
     }
     case "action": {
       const actions = req as RequestType<"action">;
+      areaData.value = stateToAreaData(actions.state as StateFacade);
       if (areaData.value?.type !== "visible") {
         throw new Error("I cannot make actions!");
       }
@@ -197,7 +198,14 @@ async function handler(
             break;
           }
           case "elementalTuning": {
-            resultAction = { type: "elementalTuning", card: r.id };
+            const cost = await useDice([DiceType.VOID]);
+            if (typeof cost === "undefined") continue;
+            resultAction = { type: "elementalTuning", card: r.id, cost };
+            // const tgtDice =
+            //   (areaData.value.characters[areaData.value.active ?? 0].objectId /
+            //     1000) %
+            //   100;
+            // areaData.value.dice.splice(cost[0], 1, tgtDice);
             break;
           }
           case "character": {
@@ -254,10 +262,13 @@ async function handler(
               cost: spent,
               with: withCard,
             };
-            areaData.value.hands.splice(
-              areaData.value.hands.findIndex((h) => h === r.id),
-              1
-            );
+            // areaData.value.hands.splice(
+            //   areaData.value.hands.findIndex((h) => h === r.id),
+            //   1
+            // );
+            // for (const c of spent) {
+            //   areaData.value.dice.splice(c, 1);
+            // }
             break;
           }
           case "method": {

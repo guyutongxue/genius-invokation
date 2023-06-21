@@ -84,6 +84,7 @@ export const API = {
         },
         required: ["targets", "fast", "cost"],
       },
+      state: {},
     },
     result: {
       action: ACTION_SCHEMA,
