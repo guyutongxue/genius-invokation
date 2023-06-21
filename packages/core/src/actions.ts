@@ -32,7 +32,7 @@ interface CardActionReq {
   with?: {
     type: "character" | "summon" | "support";
     id: number;
-    action?: (ctx: UseCardContext) => void;
+    action: (ctx: UseCardContext) => void;
   }[];
   removeSupport: boolean;
   action?: (ctx: UseCardContext) => void;
@@ -63,6 +63,7 @@ export class ActionScanner {
     const skills = this.activeCharacter.getSkills();
     const results: SkillActionReq[] = [];
     const diceHandlers = this.getBeforeUseDiceHandlers();
+    const curEnergy = this.state.characters[this.curPlayer][this.state.actives[this.curPlayer]].getEnergy();
     for (const skill of skills) {
       const deductedDice: DiceType[] = [];
       const ctx: UseDiceContext = {
@@ -73,12 +74,20 @@ export class ActionScanner {
         handler(ctx, false);
       }
       const finalCost = deductDice(skill.costs, deductedDice);
+      if (finalCost.filter(t => t === DiceType.ENERGY).length > curEnergy) {
+        continue;
+      }
       results.push({
         name: skill.name,
         cost: finalCost,
         action: (ctx2: SkillDescriptionContext) => {
           for (const handler of diceHandlers) {
             handler(ctx, true);
+          }
+          if (skill.type === "burst") {
+            // TODO clear energy
+          } else {
+            ctx2.gainEnergy();
           }
           skill.do(ctx2);
         },
@@ -91,6 +100,7 @@ export class ActionScanner {
     const cards = this.state.hands[this.curPlayer];
     const result: CardActionReq[] = [];
     const diceHandlers = this.getBeforeUseDiceHandlers();
+    const curEnergy = this.state.characters[this.curPlayer][this.state.actives[this.curPlayer]].getEnergy();
     for (const card of cards) {
 
       // Handle dice deductions
@@ -103,6 +113,18 @@ export class ActionScanner {
         handler(ctx, false);
       }
       const finalCost = deductDice(card.cost, deductedDice);
+      if (finalCost.filter(t => t === DiceType.ENERGY).length > curEnergy) {
+        continue;
+      }
+
+      function wrapAction(action: (ctx: UseCardContext) => void) {
+        return (ctx2: UseCardContext) => {
+          for (const handler of diceHandlers) {
+            handler(ctx, true);
+          }
+          action(ctx2);
+        };
+      }
 
       // Check "card with"es
       const wi = card.withInfo();
@@ -113,7 +135,7 @@ export class ActionScanner {
             id: card.objectId,
             cost: finalCost,
             removeSupport: this.state.summons[this.curPlayer].length === MAX_SUPPORTS,
-            action,
+            action: wrapAction(action),
           });
         }
       } else {
@@ -141,10 +163,11 @@ export class ActionScanner {
             filteredWithes.push({
               type: cw.type,
               id: cw.id,
-              action,
+              action: wrapAction(action),
             });
           }
         }
+        if (filteredWithes.length === 0) continue;
         result.push({
           id: card.id,
           cost: finalCost,

@@ -34,6 +34,7 @@ export function randomDice(controlled?: number[]): number[] {
 export function verifyDice(used: DiceType[], required: DiceType[]): boolean {
   const requiredMap = new Map<DiceType, number>();
   for (const r of required) {
+    if (r === DiceType.ENERGY) continue;
     requiredMap.set(r, (requiredMap.get(r) ?? 0) + 1);
   }
   if (requiredMap.has(DiceType.OMNI)) {
@@ -48,6 +49,7 @@ export function verifyDice(used: DiceType[], required: DiceType[]): boolean {
   const chosen2 = [...used];
   let voidCount = 0;
   for (const r of required) {
+    if (r === DiceType.ENERGY) continue;
     if (r === DiceType.VOID) {
       voidCount++;
       continue;

@@ -12,21 +12,24 @@ const rand = Math.random();
 function initChosen() {
   const requiredMap = new Map<DiceType, number>();
   for (const r of props.required) {
+    if (r === DiceType.ENERGY) continue;
     requiredMap.set(r, (requiredMap.get(r) ?? 0) + 1);
   }
   const OMNI_COUNT = props.dice.filter((d) => d === DiceType.OMNI).length;
   if (requiredMap.has(DiceType.OMNI)) {
     const requiredCount = requiredMap.get(DiceType.OMNI)!;
     for (let i = props.dice.length - 1; i >= 0; i--) {
+      if (props.dice[i] === DiceType.OMNI) continue;
       const thisCount = requiredMap.get(props.dice[i]) ?? 0;
       if (thisCount + OMNI_COUNT < requiredCount) continue;
       const result: number[] = [];
       for (
-        let j = 0;
-        result.length < requiredCount && j < props.dice.length;
-        j++
+        let j = props.dice.length - 1;
+        result.length < requiredCount && j >= 0;
+        j--
       ) {
-        if (j === DiceType.OMNI || j === props.dice[i]) result.push(j);
+        if (props.dice[j] === DiceType.OMNI || props.dice[j] === props.dice[i])
+          result.push(j);
       }
       return result;
     }
@@ -34,6 +37,7 @@ function initChosen() {
   }
   const result: number[] = [];
   next: for (const r of props.required) {
+    if (r === DiceType.ENERGY) continue;
     if (r === DiceType.VOID) {
       for (let j = props.dice.length - 1; j >= 0; j--) {
         if (!result.includes(j)) {
@@ -63,6 +67,7 @@ function initChosen() {
 const isOk = computed<boolean>(() => {
   const requiredMap = new Map<DiceType, number>();
   for (const r of props.required) {
+    if (r === DiceType.ENERGY) continue;
     requiredMap.set(r, (requiredMap.get(r) ?? 0) + 1);
   }
   if (requiredMap.has(DiceType.OMNI)) {
@@ -77,13 +82,16 @@ const isOk = computed<boolean>(() => {
   const chosen2 = [...chosen.value];
   let voidCount = 0;
   for (const r of props.required) {
+    if (r === DiceType.ENERGY) continue;
     if (r === DiceType.VOID) {
       voidCount++;
       continue;
     }
     const index = chosen2.findIndex((i) => props.dice[i] === r);
     if (index === -1) {
-      const omniIndex = chosen2.findIndex((i) => props.dice[i] === DiceType.OMNI);
+      const omniIndex = chosen2.findIndex(
+        (i) => props.dice[i] === DiceType.OMNI
+      );
       if (omniIndex === -1) return false;
       chosen2.splice(omniIndex, 1);
       continue;
@@ -125,12 +133,7 @@ const emit = defineEmits<{
       >
         Go
       </button>
-      <button
-        class="btn"
-        @click="$emit('cancelled')"
-      >
-        Cancel
-      </button>
+      <button class="btn" @click="$emit('cancelled')">Cancel</button>
     </div>
   </div>
 </template>

@@ -12,6 +12,7 @@ import {
   register,
   DamageType,
   Target,
+  Energy,
 } from "@jenshin-tcg";
 
 @Character({
@@ -36,6 +37,7 @@ class Bennett {
 
   @Burst
   @Pyro(3)
+  @Energy(3)
   fantasticVoyage(c: Context) {
     c.dealDamage(2, DamageType.PYRO);
     c.createCombatStatus(InspirationField);

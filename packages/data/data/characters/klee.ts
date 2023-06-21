@@ -12,6 +12,7 @@ import {
   DamageType,
   Target,
   register,
+  Energy,
 } from "@jenshin-tcg";
 
 @Character({
@@ -37,6 +38,7 @@ class Klee {
 
   @Burst
   @Pyro(3)
+  @Energy(3)
   sparksNSplash(c: Context) {
     c.dealDamage(3, DamageType.PYRO);
     c.createCombatStatus(SparksNSplash, [], Target.OPP);

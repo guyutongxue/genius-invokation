@@ -207,6 +207,7 @@ export class StateManager {
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
           const cards = scanner.scanCards();
+          const switchProps = { cost: [0], fast: false }; // TODO
           const { action } = await this.requestPlayer(curPlayer, "action", {
             skills: skills.map(({ name, cost }) => ({ name, cost })),
             cards: cards.map(({ id, cost, with: w, removeSupport }) => ({
@@ -219,8 +220,7 @@ export class StateManager {
               targets: this.state.characters[curPlayer]
                 .filter((c) => c.id !== curActive && c.alive())
                 .map((c) => c.id),
-              cost: [0], // TODO
-              fast: false, // TODO
+              ...switchProps,
             },
             state: this.createFacade(curPlayer),
           });
@@ -244,7 +244,18 @@ export class StateManager {
                 throw new Error("Card not found");
               }
               this.consumeDice(curPlayer, cost, cardObj.cost);
-              // TODO play card
+              if (cardObj.with && w) {
+                const tgtWith = cardObj.with.find(
+                  (w2) => w.id === w2.id && w.type === w2.type
+                );
+                if (!tgtWith) {
+                  throw new Error("Card-With not found");
+                }
+                tgtWith.action(this.createGlobalContext(curPlayer));
+              } else if (cardObj.action) {
+              } else {
+                throw new Error(`Need card-with for this card`);
+              }
               this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
                 (c) => c.id !== card
               );
@@ -283,6 +294,32 @@ export class StateManager {
               continue; // fast action
             }
             case "switchActive": {
+              const { target, cost } = action;
+              const targetCh = this.state.characters[curPlayer][target];
+              if (
+                !targetCh ||
+                !targetCh.alive() ||
+                target === this.state.actives[curPlayer]
+              ) {
+                throw new Error("Target invalid");
+              }
+              this.consumeDice(curPlayer, cost, switchProps.cost);
+              this.state.actives[curPlayer] = target;
+              this.sortDice(curPlayer, this.state.dice[curPlayer]);
+              this.notifyPlayer(
+                {
+                  source: { type: "switchActive", target },
+                },
+                curPlayer
+              );
+              this.notifyPlayer(
+                {
+                  source: { type: "switchActive", target: target + 3 },
+                },
+                flip(curPlayer)
+              );
+              if (switchProps.fast) continue;
+              // TODO: check flipTurn
               break;
             }
             case "useSkill": {
@@ -316,6 +353,7 @@ export class StateManager {
                 },
                 flip(curPlayer)
               );
+              // TODO: check flipTurn
               break;
             }
           }
@@ -558,6 +596,10 @@ export class StateManager {
     const used = cost.map((c) => state.dice[p][c]);
     if (!verifyDice(used, required)) {
       throw new Error("bad dice consumed");
+    }
+    const curEnergy = state.characters[p][state.actives[p]].getEnergy();
+    if (required.filter(c => c === DiceType.ENERGY).length > curEnergy) {
+      throw new Error("no enough energy");
     }
     _.pullAt(state.dice[p], cost);
   }

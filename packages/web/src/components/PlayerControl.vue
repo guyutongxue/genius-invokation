@@ -330,7 +330,7 @@ defineExpose({ player });
       >
       </RollDice>
       <SelectDice
-        class="absolute top-0 right-0 h-full bg-white border-4 border-green-500"
+        class="absolute top-0 right-0 h-full bg-white outline outline-4 outline-green-400"
         v-if="requireSelectedDice"
         :dice="areaData.dice"
         :required="requireSelectedDice"

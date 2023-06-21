@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type {
+import {
   CharacterFacade,
   StatusFacade,
   SummonFacade,
@@ -10,6 +10,7 @@ import type {
 import images from "../assets/images.json";
 import Dice from "./Dice.vue";
 import HandCard from "./HandCard.vue";
+import { computed } from "vue";
 
 export type PlayerAreaData = {
   pileNumber: number;
@@ -31,7 +32,9 @@ export type PlayerAreaData = {
     }
 );
 
-export type AreaAction = Omit<RequestType<"action">, "state"> & { myTurn: boolean };
+export type AreaAction = Omit<RequestType<"action">, "state"> & {
+  myTurn: boolean;
+};
 
 const props = defineProps<{
   player: "me" | "opp";
@@ -64,6 +67,21 @@ function clickCharacter(id: number) {
     emit("clickCharacter", id);
   }
 }
+
+function handCost(id: number): [DiceType, number][] {
+  const card = props.availableActions?.cards.find((c) => c.id === id);
+  if (!card) return [[DiceType.VOID, 0]]; // TODO
+  return toCostMap(card.cost);
+}
+
+function toCostMap(cost: number[]): [DiceType, number][] {
+  const costMap = new Map<DiceType, number>();
+  for (const c of cost ?? []) {
+    costMap.set(c, (costMap.get(c) ?? 0) + 1);
+  }
+  if (costMap.size === 0) return [[DiceType.VOID, 0]];
+  return [...costMap.entries()];
+}
 </script>
 
 <template>
@@ -89,7 +107,7 @@ function clickCharacter(id: number) {
             class="w-20 h-30 relative"
             :class="
               availableActions?.switchActive?.targets.includes(ch.id)
-                ? 'border-4 border-green-400 cursor-pointer'
+                ? 'outline outline-4 outline-green-400 cursor-pointer '
                 : ''
             "
             @click="clickCharacter(ch.id)"
@@ -113,7 +131,7 @@ function clickCharacter(id: number) {
       </div>
     </div>
     <div v-if="data.type === 'visible'" class="flex justify-between">
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-3">
         <div v-for="hand of data.hands">
           <div
             class="w-12 flex flex-col"
@@ -121,18 +139,21 @@ function clickCharacter(id: number) {
             :class="
               availableActions &&
               availableActions.cards.find((c) => c.id === hand)
-                ? 'border-4 border-green-400 cursor-pointer'
+                ? 'outline outline-4 outline-green-400 cursor-pointer'
                 : ''
             "
           >
-            <HandCard :objectId="Math.floor(hand)"></HandCard>
+            <HandCard
+              :objectId="Math.floor(hand)"
+              :cost="handCost(hand)"
+            ></HandCard>
           </div>
           <button
             v-if="availableActions?.myTurn"
             class="text-green-400 font-bold"
             @click="tuneHand(hand)"
           >
-            Tuning
+            Tune
           </button>
         </div>
       </div>
@@ -140,20 +161,28 @@ function clickCharacter(id: number) {
         <ul v-if="availableActions" class="flex gap-2">
           <li
             v-for="skill of availableActions.skills"
-            class="border-4 border-green-400 cursor-pointer"
+            class="outline outline-4 outline-green-400 cursor-pointer"
             @click="emit('clickMethod', skill.name)"
           >
             {{ skill.name }}
+            <div class="flex flex-row">
+              <Dice
+                v-for="[t, a] of toCostMap(skill.cost)"
+                :type="t"
+                :text="String(a)"
+                class="scale-75"
+              ></Dice>
+            </div>
           </li>
         </ul>
       </div>
     </div>
     <div
       v-if="availableActions?.myTurn"
-      class="absolute left-3 bg-yellow-300 border-4 border-green-400"
+      class="absolute left-3 bg-yellow-300 outline outline-4 outline-green-400"
       :class="player === 'opp' ? 'bottom-3' : 'top-3'"
     >
-      <button @click="emit('clickEnd')">End turn</button>
+      <button @click="emit('clickEnd')">End round</button>
     </div>
   </div>
 </template>

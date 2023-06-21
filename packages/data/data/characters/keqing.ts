@@ -11,7 +11,8 @@ import {
   register,
   Card,
   ICard,
-  SkillDescriptionContext
+  SkillDescriptionContext,
+  Energy
 } from "@jenshin-tcg";
 import { Infusion } from "../commons/status";
 
@@ -42,6 +43,7 @@ class Keqing {
 
   @Burst
   @Electro(4)
+  @Energy(3)
   starwardSword(c: Context) {
     c.dealDamage(4, DamageType.PYRO);
     c.dealDamage(3, DamageType.PIERCING, Target.STANDBY);

@@ -45,6 +45,9 @@ export class Character {
       isActive: () => false, // TODO
     }
   }
+  getEnergy() {
+    return this.energy;
+  }
 
   getSkills() {
     return this.data.skills;

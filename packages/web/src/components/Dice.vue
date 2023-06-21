@@ -10,8 +10,8 @@ const COLOR: Record<DiceType, string> = {
   [DiceType.HYDRO]: "#1c72fd",
   [DiceType.PYRO]: "#e2311d",
   [DiceType.CRYO]: "#98c8e8",
-  [DiceType.OMNI]: "#aaaaaa",
-  [DiceType.ENERGY]: "#f0f0f0",
+  [DiceType.OMNI]: "#ddddaa",
+  [DiceType.ENERGY]: "#eab308",
 };
 
 const NAME: Record<DiceType, string> = {
@@ -29,6 +29,7 @@ const NAME: Record<DiceType, string> = {
 
 const props = defineProps<{
   type: DiceType;
+  text?: string;
   selected?: boolean;
   selectedColor?: string;
 }>();
@@ -36,7 +37,8 @@ const props = defineProps<{
 <template>
   <div class="relative h-9 overflow-hidden select-none">
     <div
-      class="text-5xl text-center align-baseline -translate-y-3"
+      class="text-5xl text-center align-baseline "
+      :class="type === DiceType.ENERGY ? '-translate-y-2' : '-translate-y-3'"
       :style="{
         color: COLOR[type],
         ...(selected
@@ -44,12 +46,13 @@ const props = defineProps<{
           : {}),
       }"
     >
-      &#11042;
+      {{ type === DiceType.ENERGY ? '\u2726' : '\u2b22' }}
     </div>
     <div
-      class="absolute top-0 text-base w-full text-center text-white translate-y-1"
+      class="absolute top-0 text-base w-full text-center translate-y-1"
+      :class="[DiceType.OMNI, DiceType.ENERGY].includes(type) ? 'text-black' : 'text-white'"
     >
-      {{ NAME[type] }}
+      {{ text ?? NAME[type] }}
     </div>
   </div>
 </template>
