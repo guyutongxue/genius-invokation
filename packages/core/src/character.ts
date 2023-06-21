@@ -35,7 +35,7 @@ export class Character {
     };
   }
 
-  toICharacter(): ICharacter {
+  toContext(): ICharacter {
     return {
       toTarget: () => 0, // TODO
       getInfo: () => this.data.info,
@@ -61,19 +61,4 @@ export class Character {
   elementType(): DiceType {
     return Math.floor((this.objectId % 1000) / 100) as DiceType;
   }
-
-  // heal(value: number) {
-  //   return this.damage(value, DamageType.HEAL);
-  // }
-  // damage(value: number, type: DamageType) {
-  //   if (type === DamageType.HEAL) {
-  //     const newHealth = Math.max(this.data.info.health, this.health + value);
-  //     // TODO: FUCK
-  //     this.health = newHealth;
-  //   } else {
-  //     // TODO: FUCK
-  //     this.health -= value;
-  //     // ELEMENTAL blahblah
-  //   }
-  // }
 }

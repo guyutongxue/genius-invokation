@@ -7,6 +7,7 @@ import {
 import { ActionPhaseState } from "./states";
 import { DiceType } from "@jenshin-tcg/typings";
 import { flipByWho } from "./utils";
+import { MAX_SUPPORTS } from "./config";
 
 function deductDice(original: DiceType[], deducted: DiceType[]) {
   const result = [...original];
@@ -89,16 +90,29 @@ export class ActionScanner {
   scanCards(): CardActionReq[] {
     const cards = this.state.hands[this.curPlayer];
     const result: CardActionReq[] = [];
-    for (const c of cards) {
-      // TODO DICE HANDLER HERE!
-      const wi = c.withInfo();
+    const diceHandlers = this.getBeforeUseDiceHandlers();
+    for (const card of cards) {
+
+      // Handle dice deductions
+      const deductedDice: DiceType[] = [];
+      const ctx: UseDiceContext = {
+        card: card.info,
+        deductCost: (...args) => deductedDice.push(...args),
+      }
+      for (const handler of diceHandlers) {
+        handler(ctx, false);
+      }
+      const finalCost = deductDice(card.cost, deductedDice);
+
+      // Check "card with"es
+      const wi = card.withInfo();
       if (typeof wi === "undefined") {
-        const action = c.getAction();
+        const action = card.getAction();
         if (action) {
           result.push({
-            id: c.objectId,
-            cost: c.cost,
-            removeSupport: false, // TODO
+            id: card.objectId,
+            cost: finalCost,
+            removeSupport: this.state.summons[this.curPlayer].length === MAX_SUPPORTS,
             action,
           });
         }
@@ -109,7 +123,7 @@ export class ActionScanner {
           withes = this.state.characters[flipByWho(this.curPlayer, who)].map(c => ({
             type: "character",
             id: c.id,
-            character: c.toICharacter(/* TODO! */),
+            character: c.toContext(/* TODO! */),
           }));
         } else if (type === "summon") {
           withes = this.state.summons[flipByWho(this.curPlayer, who)].map(c => ({
@@ -122,7 +136,7 @@ export class ActionScanner {
         }
         const filteredWithes = [];
         for (const cw of withes) {
-          const action = c.getAction(cw);
+          const action = card.getAction(cw);
           if (action) {
             filteredWithes.push({
               type: cw.type,
@@ -132,10 +146,10 @@ export class ActionScanner {
           }
         }
         result.push({
-          id: c.id,
-          cost: c.cost,
+          id: card.id,
+          cost: finalCost,
           with: filteredWithes,
-          removeSupport: false, // TODO
+          removeSupport: this.state.summons[this.curPlayer].length === MAX_SUPPORTS,
         })
       }
     }

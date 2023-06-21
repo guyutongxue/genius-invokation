@@ -200,7 +200,7 @@ export class StateManager {
           const skills = scanner.scanSkills();
           // check onBeforeUseDice
           // check onBeforeSwitchShouldFast
-          const cards = scanner.scanCards(); /* TODO */
+          const cards = scanner.scanCards();
           const { action } = await this.requestPlayer(curPlayer, "action", {
             skills: skills.map(({ name, cost }) => ({ name, cost })),
             cards: cards.map(({ id, cost, with: w, removeSupport }) => ({
@@ -217,7 +217,6 @@ export class StateManager {
               fast: false, // TODO
             },
           });
-          // TODO: check onBeforeUseDice 2nd time; deduct usage count.
           switch (action.type) {
             case "declareEnd": {
               this.state.nextTurn = curPlayer;
@@ -237,6 +236,7 @@ export class StateManager {
               if (!cardObj) {
                 throw new Error("Card not found");
               }
+              // TODO consume cost
               // TODO play card
               this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
                 (c) => c.id !== card
@@ -255,7 +255,7 @@ export class StateManager {
               if (!skillReq) {
                 throw new Error("Skill not found");
               }
-              // TODO reduce cost
+              // TODO consume cost
               skillReq.action({
                 ...this.createGlobalContext(curPlayer),
                 triggeredByCard: undefined,
@@ -530,6 +530,7 @@ export class StateManager {
       }
       who = this.state.turn;
     }
+    return ;
   }
 
   public async run(): Promise<GameEndState> {

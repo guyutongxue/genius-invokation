@@ -1,7 +1,7 @@
 import { CardData, CardEnableTester, CardInfo, CardWith, CardWithInfo, Context, HandlerResult, ICard, ICardConstructor, IGlobalEvents, getCardData } from "@jenshin-tcg/data";
 
 export class Card {
-  private readonly info: CardInfo;
+  readonly info: CardInfo;
   readonly cost: number[];
   private readonly ctor: ICardConstructor;
   private readonly tester: CardEnableTester | undefined;
