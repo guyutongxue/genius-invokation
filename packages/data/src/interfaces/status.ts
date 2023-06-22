@@ -16,6 +16,7 @@ export interface IStatus extends IGlobalEvents {
   onBeforeDealDamage?: (c: DamageContext) => HandlerResult;
   onBeforeDamaged?: (c: DamageContext) => HandlerResult;
   onDamaged?: (c: DamageContext) => HandlerResult;
+  onDisposed?: (c: Context) => void;
 }
 
 export interface IStatusConstructor {

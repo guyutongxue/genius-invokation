@@ -68,6 +68,7 @@ export interface RollPhaseState extends WithDiceState {
 export interface ActionPhaseState extends WithDiceState {
   type: "actionPhase";
   turn: 0 | 1;
+  isPlunging: Pair<boolean>;
 }
 
 export interface EndPhaseState extends WithDiceState {
@@ -193,6 +194,7 @@ export class StateManager {
           ...this.state,
           type: "actionPhase",
           turn: this.state.nextTurn,
+          isPlunging: [false, false]
         };
         break;
       }
@@ -226,6 +228,7 @@ export class StateManager {
           });
           switch (action.type) {
             case "declareEnd": {
+              this.state.isPlunging[curPlayer] = false;
               this.state.nextTurn = curPlayer;
               this.state.turn = flip(curPlayer);
               declareEndNum++;
@@ -320,6 +323,7 @@ export class StateManager {
               );
               if (switchProps.fast) continue;
               // TODO: check flipTurn
+              this.state.isPlunging[curPlayer] = true;
               break;
             }
             case "useSkill": {
@@ -354,6 +358,7 @@ export class StateManager {
                 flip(curPlayer)
               );
               // TODO: check flipTurn
+              this.state.isPlunging[curPlayer] = false;
               break;
             }
           }

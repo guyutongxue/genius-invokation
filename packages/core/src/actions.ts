@@ -86,6 +86,7 @@ export class ActionScanner {
           }
           if (skill.type === "burst") {
             // TODO clear energy
+            // ctx2.lossEnergy(cost.filter(t => t === DiceType.ENERGY).length);
           } else {
             ctx2.gainEnergy();
           }

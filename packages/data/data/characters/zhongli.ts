@@ -5,6 +5,14 @@ import {
   Void, Pyro, Hydro, Dendro, Electro, Anemo, Cryo, Geo, Energy,
   Normal, Skill, Burst,
   register,
+  DamageType,
+  Target,
+  SkillContext,
+  IStatus,
+  Status,
+  ISummon,
+  Summon,
+  ShieldStatus,
 } from "@jenshin-tcg";
 
 @Character({
@@ -19,26 +27,57 @@ class Zhongli {
   @Geo(1)
   @Void(2)
   rainOfStone(c: Context) {
-    // 造成2点{SPRITE_PRESET#2100}<color=#FFFFFFFF>物理伤害</color>。
+    c.dealDamage(2, DamageType.PHYSICAL);
   }
   
   @Skill
   @Geo(3)
   dominusLapidis(c: Context) {
-    // 造成1点{SPRITE_PRESET#2106}<color=#FFE699FF>岩元素伤害</color>，召唤<color=#FFFFFFFF>岩脊</color>。
+    c.dealDamage(1, DamageType.GEO);
+    c.summon(StoneStele);
   }
   
   @Skill
   @Geo(5)
   dominusLapidisStrikingStone(c: Context) {
-    // 造成3点{SPRITE_PRESET#2106}<color=#FFE699FF>岩元素伤害</color>，召唤<color=#FFFFFFFF>岩脊</color>，生成<color=#FFFFFFFF>玉璋护盾</color>。
+    c.dealDamage(3, DamageType.GEO);
+    c.summon(StoneStele);
+    c.createCombatStatus(JadeShield);
   }
   
   @Burst
   @Geo(3)
   @Energy(3)
   planetBefall(c: Context) {
-    // 造成4点{SPRITE_PRESET#2106}<color=#FFE699FF>岩元素伤害</color>，目标角色附属<color=#FFFFFFFF>石化</color>。
+    c.dealDamage(4, DamageType.GEO);
+    c.createStatus(Petrification, [], Target.OPP | Target.ACTIVE);
+  }
+}
+
+@Summon({
+  objectId: 116031,
+  usage: 2
+})
+class StoneStele implements ISummon {
+  onEndPhase(c: Context) {
+    c.dealDamage(1, DamageType.GEO);
+    return true;
+  }
+}
+
+@ShieldStatus({
+  objectId: 116032,
+  // initialShield: 2,
+})
+class JadeShield {}
+
+@Status({
+  objectId: 116033,
+  duration: 1
+})
+class Petrification implements IStatus {
+  onBeforeUseSkill(c: SkillContext) {
+    c.disableSkill();
   }
 }
 

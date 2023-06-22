@@ -1,5 +1,5 @@
 import { DiceType } from "@jenshin-tcg/typings";
-import { CharacterInfo } from "./interfaces/character";
+import { CharacterInfo, PassiveSkill } from "./interfaces/character";
 import { SkillInfo, SkillType } from "./interfaces/skill";
 import { Context, SkillDescriptionContext } from "./contexts";
 import { IStatusConstructor, StatusInfo } from "./interfaces/status";
@@ -12,6 +12,7 @@ export const characterSymbol: unique symbol = Symbol("character");
 export interface CharacterData {
   info: CharacterInfo;
   skills: SkillInfoWithSignature[];
+  passives: PassiveSkill;
 }
 
 type SkillSignature = (this: any, c: SkillDescriptionContext) => void;
@@ -22,18 +23,23 @@ export function Character(info: CharacterInfo) {
   return (target: any, ctx: ClassDecoratorContext): any => {
     if (characterSymbol in target) throw new Error("Decorating multiple times");
     const skills: SkillInfoWithSignature[] = [];
+    const passives: PassiveSkill = {};
     target[characterSymbol] = {
       info,
       skills,
+      passives
     };
     for (const key of Object.getOwnPropertyNames(target.prototype)) {
-      const method = target.prototype[key];
-      if (hasSkill(method)) {
-        const skill = method[skillSymbol];
+      const mem = target.prototype[key];
+      if (hasSkill(mem)) {
+        const skill = mem[skillSymbol];
         skills.push({
           ...skill,
-          do: method,
+          do: mem,
         });
+      } else if (passiveSymbol in mem) {
+        // @ts-expect-error no typings for passiveskill key
+        passives[key] = mem;
       }
     }
     return target;
@@ -65,6 +71,7 @@ function addSkillType(type: SkillType) {
     if (skill?.type)
       throw new Error(`Cannot have multiple skill types for ${String(name)}`);
     skill.type = type;
+    skill.gainEnergy = skill.gainEnergy ?? type !== "burst";
     skill.name = String(ctx.name);
     return target;
   };
@@ -73,6 +80,17 @@ function addSkillType(type: SkillType) {
 export const Normal = addSkillType("normal");
 export const Skill = addSkillType("skill");
 export const Burst = addSkillType("burst");
+export function NoEnergy(target: SkillSignature, ctx: ClassMethodDecoratorContext) {
+  addSkill(target);
+  const skill = target[skillSymbol];
+  skill.gainEnergy = false;
+  return target;
+}
+const passiveSymbol: unique symbol = Symbol("passive");
+export function Passive(target: any, ctx: ClassMethodDecoratorContext) {
+  Object.defineProperty(target, passiveSymbol, { value: true });
+  return target;
+}
 
 function cost(type: DiceType) {
   return (value: number) => {
@@ -131,7 +149,21 @@ export function Status(info: StatusInfo) {
       throw new Error("Decorating multiple times");
     }
     target[statusSymbol] = { ...info, name: String(ctx.name) };
-      // constructor: target,
+    return target;
+  };
+}
+
+// TODO!!!
+export const ShieldStatus = Status;
+
+export const summonSymbol: unique symbol = Symbol("summon");
+
+export function Summon(info: StatusInfo) {
+  return (target: any, ctx: ClassDecoratorContext): any => {
+    if (statusSymbol in target) {
+      throw new Error("Decorating multiple times");
+    }
+    target[summonSymbol] = { ...info, name: String(ctx.name) };
     return target;
   };
 }
