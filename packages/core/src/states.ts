@@ -194,7 +194,7 @@ export class StateManager {
           ...this.state,
           type: "actionPhase",
           turn: this.state.nextTurn,
-          isPlunging: [false, false]
+          isPlunging: [false, false],
         };
         break;
       }
@@ -203,7 +203,7 @@ export class StateManager {
         let declareEndNum = 0;
         while (declareEndNum < 2) {
           const curPlayer = this.state.turn;
-          const curActive = this.state.actives[curPlayer];
+          const curActive = this.state.characters[curPlayer][this.state.actives[curPlayer]];
           const scanner = new ActionScanner(this.state);
           const skills = scanner.scanSkills();
           // check onBeforeUseDice
@@ -220,7 +220,7 @@ export class StateManager {
             })),
             switchActive: {
               targets: this.state.characters[curPlayer]
-                .filter((c) => c.id !== curActive && c.alive())
+                .filter((c) => c.id !== curActive.id && c.alive())
                 .map((c) => c.id),
               ...switchProps,
             },
@@ -282,10 +282,7 @@ export class StateManager {
               this.state.hands[curPlayer] = this.state.hands[curPlayer].filter(
                 (c) => c.id !== card
               );
-              const tgtDice =
-                this.state.characters[curPlayer][
-                  this.state.actives[curPlayer]
-                ].elementType();
+              const tgtDice = curActive.elementType();
               this.state.dice[curPlayer].splice(cost[0], 1, tgtDice);
               this.sortDice(curPlayer, this.state.dice[curPlayer]);
               this.notifyPlayer(
@@ -335,6 +332,7 @@ export class StateManager {
               this.consumeDice(curPlayer, cost, skillReq.cost);
               skillReq.action({
                 ...this.createGlobalContext(curPlayer),
+                character: curActive.toContext(),
                 triggeredByCard: undefined,
               });
               this.notifyPlayer(
@@ -603,7 +601,7 @@ export class StateManager {
       throw new Error("bad dice consumed");
     }
     const curEnergy = state.characters[p][state.actives[p]].getEnergy();
-    if (required.filter(c => c === DiceType.ENERGY).length > curEnergy) {
+    if (required.filter((c) => c === DiceType.ENERGY).length > curEnergy) {
       throw new Error("no enough energy");
     }
     _.pullAt(state.dice[p], cost);
