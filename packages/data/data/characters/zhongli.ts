@@ -12,7 +12,6 @@ import {
   Status,
   ISummon,
   Summon,
-  ShieldStatus,
 } from "@jenshin-tcg";
 
 @Character({
@@ -65,20 +64,18 @@ class StoneStele implements ISummon {
   }
 }
 
-@ShieldStatus({
+@Status({
   objectId: 116032,
-  // initialShield: 2,
+  shield: 2,
 })
 class JadeShield {}
 
 @Status({
   objectId: 116033,
-  duration: 1
+  duration: 1,
+  disableSkill: true,
 })
 class Petrification implements IStatus {
-  onBeforeUseSkill(c: SkillContext) {
-    c.disableSkill();
-  }
 }
 
 register(Zhongli);

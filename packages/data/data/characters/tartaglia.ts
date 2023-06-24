@@ -51,7 +51,7 @@ class Tartaglia {
     }
   }
   
-  @Passive
+  @Passive("tideWithholder")
   onBattleBegin(c: Context) {
     c.createStatus(RangedStance);
   }

@@ -55,7 +55,7 @@ export interface SkillContext extends Context {
   readonly damage?: DamageContext;
   isCharged(): boolean;
   isPlunging(): boolean;
-  disableSkill(): void;
+  // disableSkill(): void;
 }
 
 export interface UseDiceContext /* extends Context  */{

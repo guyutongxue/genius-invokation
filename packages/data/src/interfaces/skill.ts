@@ -1,11 +1,16 @@
 import { DiceType } from "@jenshin-tcg/typings";
 
-export type SkillType = "normal" | "skill" | "burst";
+export type ManualSkillType = "normal" | "skill" | "burst";
+export type SkillType = ManualSkillType | "prepared";
 
-export interface SkillInfo {
+export type SkillInfo = {
   readonly name: string;
-  readonly type: SkillType;
   readonly gainEnergy: boolean;
+} & ({
+  readonly type: ManualSkillType;
   readonly costs: DiceType[];
-}
+} | {
+  readonly type: "prepared";
+  readonly round: number;
+})
 
