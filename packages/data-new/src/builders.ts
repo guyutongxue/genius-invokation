@@ -1,33 +1,9 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import {
-  Context,
-  DamageContext,
-  SkillContext,
-  SkillDescriptionContext,
-  SwitchActiveContext,
-  PlayCardContext,
-  UseDiceContext,
-} from "./contexts";
+import { Context, SkillDescriptionContext, SwitchActiveContext, PlayCardContext } from "./contexts";
 import { Target } from "./target";
-import {
-  BurstSkillInfo,
-  NormalSkillInfo,
-  PassiveSkillEvents,
-  UseSkillAction,
-  registerSkill,
-} from "./skills";
+import { BurstSkillInfo, NormalSkillInfo, PassiveSkillEvents, UseSkillAction, registerSkill } from "./skills";
 import { EventHandlers } from "./events";
-import {
-  CardTag,
-  CardTargetDescriptor,
-  CardType,
-  ContextOfTarget,
-  PlayCardAction,
-  PlayCardFilter,
-  PlayCardTargetFilter,
-  ShownOption,
-  registerCard,
-} from "./cards";
+import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType } from "./equipments";
 import { CharacterTag, registerCharacter } from "./characters";
 import { StatusEventHandlers, StatusTag, registerStatus } from "./statuses";
@@ -53,7 +29,7 @@ type CommonAction = (c: Context) => void;
 class CharacterBuilder {
   private readonly tags: CharacterTag[] = [];
   private readonly skills: SkillHandle[] = [];
-  constructor(private readonly id: number) {}
+  constructor(private readonly id: number) { }
 
   addTags(...tags: CharacterTag[]) {
     this.tags.push(...tags);
@@ -472,7 +448,7 @@ class StatusBuilder extends TriggerBuilderBase {
   }
 
   build(): StatusHandle {
-    const ctor = this.handlerCtor ?? class {};
+    const ctor = this.handlerCtor ?? class { };
     if (this.handlers) {
       if (this.handlerCtor) {
         throw new Error("Cannot use both do() and on()");

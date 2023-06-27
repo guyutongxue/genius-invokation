@@ -12,7 +12,7 @@ createCard(333002, ["character"])
     c.createStatus(AdeptusTemptationStatus, this[0].asTarget())
   })
 const AdeptusTemptationStatus = createStatus(333002)
-  .on("useSkill", (c) => {
+  .on("beforeUseSkill", (c) => {
     if (c.info.type === "burst" && c.damage) {
       c.damage.addDamage(3);
       return true;

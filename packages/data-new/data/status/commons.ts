@@ -1,6 +1,4 @@
 import { DamageType, createStatus } from "@gi-tcg";
-import { EventHandlers } from "../../src/events";
-import { Context } from "../../src/contexts";
 
 const infusion = (id: number, type: DamageType, additional = 0) => {
   return createStatus(id).on("damaged", (c) => {
@@ -23,6 +21,6 @@ export const ElectroInfusion01 = infusion(114032, DamageType.Electro, 1)
 export const CryoElementalInfusion = infusion(111052, DamageType.Cryo)
   .withDuration(1)
   .build()
-  export const CryoElementalInfusion01 = infusion(111053, DamageType.Cryo, 1)
+export const CryoElementalInfusion01 = infusion(111053, DamageType.Cryo, 1)
   .withDuration(1)
   .build()

@@ -1,11 +1,31 @@
 import { EquipmentHandle, StatusHandle } from "./builders";
 import { Target } from "./target";
 
-export type ElementTag = "cryo" | "hydro" | "pyro" | "electro" | "anemo" | "geo" | "dendro";
+export type ElementTag =
+  | "cryo"
+  | "hydro"
+  | "pyro"
+  | "electro"
+  | "anemo"
+  | "geo"
+  | "dendro";
 
-export type WeaponTag = "sword" | "claymore" | "pole" | "catalyst" | "bow" | "other";
+export type WeaponTag =
+  | "sword"
+  | "claymore"
+  | "pole"
+  | "catalyst"
+  | "bow"
+  | "other";
 
-export type NationTag = "mondstadt" | "liyue" | "inazuma" | "sumeru" | "monster" | "fatui" | "hilichurl";
+export type NationTag =
+  | "mondstadt"
+  | "liyue"
+  | "inazuma"
+  | "sumeru"
+  | "monster"
+  | "fatui"
+  | "hilichurl";
 
 export type CharacterTag = ElementTag | WeaponTag | NationTag;
 

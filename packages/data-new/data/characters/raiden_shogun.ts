@@ -9,7 +9,7 @@ const Origin = createSkill(14071)
   .costElectro(1)
   .costVoid(2)
   .dealDamage(2, DamageType.Physical)
-  .build()
+  .build();
 
 /**
  * 雷罚恶曜之眼
@@ -26,7 +26,7 @@ const EyeOfStormyJudgement = createSummon(114071)
     }
     return false;
   })
-  .build()
+  .build();
 
 /**
  * 神变·恶曜开眼
@@ -36,7 +36,7 @@ const TranscendenceBalefulOmen = createSkill(14072)
   .setType("elemental")
   .costElectro(3)
   .summon(EyeOfStormyJudgement)
-  .build()
+  .build();
 
 /**
  * 奥义·梦想真说
@@ -48,7 +48,7 @@ const SecretArtMusouShinsetsu = createSkill(10473)
   .costEnergy(3)
   .dealDamage(3, DamageType.Electro)
   .gainEnergy(2, Target.myStandby())
-  .build()
+  .build();
 
 /**
  * 诸愿百眼之轮
@@ -68,22 +68,25 @@ const ChakraDesiderata = createSkill(14074)
  */
 const ChakraDesiderataStatus = createStatus(114072)
   .listenToOthers()
-  .do({
-    onBeforeUseSkill(c) {
-      if (c.info.type !== "burst") return;
-      if (c.character.info.id === 1) {
-        c.damage && c.damage.addDamage(this.resolve);
-        this.resolve = 0;
-      } else {
-        this.resolve = Math.min(3, this.resolve + 1);
-      }
+  .do(
+    {
+      onBeforeUseSkill(c) {
+        if (c.info.type !== "burst") return;
+        if (c.character.info.id === 1) {
+          c.damage && c.damage.addDamage(this.resolve);
+          this.resolve = 0;
+        } else {
+          this.resolve = Math.min(3, this.resolve + 1);
+        }
+      },
     },
-  }, {
-    resolve: 0
-  })
-  .build()
+    {
+      resolve: 0,
+    }
+  )
+  .build();
 
 export const RaidenShogun = createCharacter(1407)
   .addTags("electro", "inazuma", "pole")
   .addSkills(Origin, TranscendenceBalefulOmen, SecretArtMusouShinsetsu)
-  .build()
+  .build();

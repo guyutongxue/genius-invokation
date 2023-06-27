@@ -1,12 +1,4 @@
-import {
-  Context,
-  DamageContext,
-  ElementalReactionContext,
-  SkillContext,
-  SkillReadonlyContext,
-  SwitchActiveContext,
-  UseDiceContext,
-} from "./contexts";
+import { Context, DamageContext, ElementalReactionContext, SkillContext, SkillReadonlyContext, SwitchActiveContext, UseDiceContext } from "./contexts";
 
 export type HandlerResult = boolean | void;
 

@@ -74,4 +74,4 @@ const ThunderingPenance = createCard(214031, ["character"])
   .costElectro(3)
   .useSkill(StarwardSword)
   .buildToEquipment()
-  .build()
+  .build();
