@@ -45,7 +45,7 @@ class Keqing {
   @Electro(4)
   @Energy(3)
   starwardSword(c: Context) {
-    c.dealDamage(4, DamageType.PYRO);
+    c.dealDamage(4, DamageType.ELECTRO);
     c.dealDamage(3, DamageType.PIERCING, Target.STANDBY);
   }
 }

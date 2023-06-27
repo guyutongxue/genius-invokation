@@ -1,0 +1,22 @@
+{
+  "include": ["src/**/*.ts", "data/**/*.ts"],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+
+    "sourceMap": true, 
+    "outDir": "./dist",
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "paths": {
+      "@gi-tcg": ["./src/data_interface.ts"]
+    },
+
+    "strict": true,
+
+    // "noUnusedLocals": true
+  }
+}
