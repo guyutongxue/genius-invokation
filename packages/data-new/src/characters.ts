@@ -1,4 +1,5 @@
 import { EquipmentHandle, StatusHandle } from "./builders";
+import { StatusContext } from "./statuses";
 import { Target } from "./target";
 
 export type ElementTag =
@@ -43,7 +44,7 @@ export interface CharacterContext {
   readonly energy: number;
   hasEquipment(equipment: EquipmentHandle): boolean;
   equip(equipment: EquipmentHandle): void;
-  hasStatus(status: StatusHandle): boolean;
+  hasStatus(status: StatusHandle): StatusContext | null;
 
   isActive(): boolean;
   isMine(): boolean;

@@ -4,6 +4,7 @@ import { Target } from "./target";
 import { SkillInfoWithId } from "./skills";
 import { CharacterContext } from "./characters";
 import { CardInfoWithId } from "./cards";
+import { SummonContext } from ".";
 
 export enum SpecialBits {
   DefeatedMine = 0,
@@ -16,6 +17,7 @@ export interface Context {
   readonly currentTurn: number;
   isMyTurn(): boolean;
   hasCharacter(target: Target): CharacterContext | null;
+  hasSummon(summon: SummonHandle): SummonContext | null;
   checkSpecialBit(bit: SpecialBits): boolean;
 
   dealDamage(value: number, type: DamageType, target?: Target): void;
@@ -29,7 +31,7 @@ export interface Context {
   createCombatStatus(status: StatusHandle, opp?: boolean): void;
 
   summon(summon: SummonHandle): void;
-  // createSupport(support: SupportHandle): void;
+  createSupport(support: SupportHandle, opp?: boolean): void;
 
   generateDice(...dice: DiceType[]): void;
   drawCards(count: number): void;

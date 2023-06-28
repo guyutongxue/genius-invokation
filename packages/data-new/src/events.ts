@@ -7,9 +7,13 @@ export interface EventHandlers<This = {}> {
   onTurn?(this: This, c: Context): HandlerResult;
   onEndPhase?(this: This, c: Context): HandlerResult;
 
+  onBeforeAction?(this: This, c: Context): HandlerResult;
   onBeforeUseSkill?(this: This, c: SkillContext): HandlerResult;
   onUseSkill?(this: This, c: SkillReadonlyContext): HandlerResult;
   onSwitchActive?(this: This, c: SwitchActiveContext): HandlerResult;
+  // onSwitchActiveFrom?(this: This, c: SwitchActiveContext): HandlerResult;
+  onDeclareEnd?(this: This, c: Context): HandlerResult;
+  onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;
   onDealDamage?(this: This, c: DamageContext): HandlerResult;
 
   onBeforeUseDice?(this: This, c: UseDiceContext): HandlerResult;
@@ -19,3 +23,5 @@ export interface EventHandlers<This = {}> {
   onDamaged?(this: This, c: DamageContext): HandlerResult;
   onDefeated?(this: This, c: DamageContext): HandlerResult;
 }
+
+export type EventHandlerCtor = new () => EventHandlers;

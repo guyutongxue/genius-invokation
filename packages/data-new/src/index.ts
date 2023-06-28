@@ -8,6 +8,6 @@ export {
 export {
   CardInfoWithId, CardTag, CardTarget, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, getCard
 } from "./cards";
-export { StatusEventHandlers, StatusInfoWithId, getStatus } from "./statuses";
-export { SupportEventHandlers, SupportInfo, SupportType, getSupport } from "./supports";
-export { SummonContext, SummonInfoWithId, getSummons } from "./summons";
+export { StatusInfoWithId, getStatus } from "./statuses";
+export { SupportInfoWithId, SupportType, getSupport } from "./supports";
+export { SummonContext, SummonInfoWithId, getSummon } from "./summons";

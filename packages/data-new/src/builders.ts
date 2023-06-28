@@ -2,12 +2,13 @@ import { DamageType, DiceType } from "@gi-tcg/typings";
 import { Context, SkillDescriptionContext, SwitchActiveContext, PlayCardContext } from "./contexts";
 import { Target } from "./target";
 import { BurstSkillInfo, NormalSkillInfo, PassiveSkillEvents, UseSkillAction, registerSkill } from "./skills";
-import { EventHandlers } from "./events";
+import { EventHandlers, EventHandlerCtor } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
-import { EquipmentType } from "./equipments";
+import { EquipmentType, registerEquipment } from "./equipments";
 import { CharacterTag, registerCharacter } from "./characters";
-import { StatusEventHandlers, StatusTag, registerStatus } from "./statuses";
-import { SupportType } from "./supports";
+import { StatusTag, registerStatus } from "./statuses";
+import { SupportType, registerSupport } from "./supports";
+import { registerSummon } from "./summons";
 
 export type SkillType =
   | "normal"
@@ -82,6 +83,9 @@ class ActionBuilderBase {
   }
   costDendro(count: number) {
     return this.addCost(DiceType.Dendro, count);
+  }
+  costSame(count: number) {
+    return this.addCost(DiceType.Same, count);
   }
   costEnergy(count: number) {
     return this.addCost(DiceType.Energy, count);
@@ -250,7 +254,7 @@ class CardBuilder<
     this.actions.push(action);
   }
 
-  private setType(type: CardType) {
+  setType(type: CardType) {
     this.type = type;
     return this;
   }
@@ -293,7 +297,7 @@ class CardBuilder<
     this.targetFilters.push(filter);
     return this;
   }
-  doWith(action: (this: ContextOfTarget<T>, c: PlayCardContext) => void) {
+  do(action: (this: ContextOfTarget<T>, c: PlayCardContext) => void) {
     this.pushAction(action);
     return this;
   }
@@ -344,7 +348,7 @@ class CardBuilder<
     }
   }
 
-  buildToEquipment() {
+  buildToEquipment(): EquipmentBuilder {
     // Use a unknown version of this, then shrink to ["char"] target
     // Or TypeScript will keep this type as (this & ...)
     const cardBuilder: unknown = this;
@@ -362,19 +366,33 @@ class CardBuilder<
         cardBuilder.addFilter(function (c) {
           return this[0].info.tags.includes(weaponType);
         });
-
         eqBuilder.setType("weapon");
+        break;
       }
     }
-    cardBuilder.doWith(function (c) {
+    if (cardBuilder.tags.includes("artifact")) {
+      eqBuilder.setType("artifact");
+    }
+    cardBuilder.do(function (c) {
       this[0].equip(cardBuilder.id as EquipmentHandle);
-    });
-    cardBuilder.build();
+    }).build();
     return eqBuilder;
+  }
+
+  buildToSupport(): SupportBuilder {
+    const suppBuilder = createSupport(this.id);
+    for (const tag of ["ally", "item", "place"] as const) {
+      if (this.tags.includes(tag)) {
+        suppBuilder.setType(tag);
+        break;
+      }
+    }
+    this.do((c) => c.createSupport(this.id as SupportHandle)).build();
+    return suppBuilder;
   }
 }
 
-type RemovePrefix<T extends string> = T extends `on${infer U}`
+type RemovePrefix<T extends string | number | Symbol> = T extends `on${infer U}`
   ? Uncapitalize<U>
   : never;
 type AddPrefix<T extends string> = `on${Capitalize<T>}`;
@@ -385,8 +403,9 @@ function addPrefix<T extends string>(event: T): AddPrefix<T> {
   return `on${capitalize(event)}`;
 }
 
-class TriggerBuilderBase<EH extends EventHandlers = EventHandlers> {
-  protected handlers: EH = {} as EH;
+class TriggerBuilderBase {
+  private perEventHandler: EventHandlers = {};
+  private complexHandler: EventHandlerCtor | null = null;
   protected duration = Infinity;
   protected usage = Infinity;
   protected usagePerRound = Infinity;
@@ -406,21 +425,44 @@ class TriggerBuilderBase<EH extends EventHandlers = EventHandlers> {
 
   on<E extends RemovePrefix<keyof EventHandlers>>(
     event: E,
-    handler: EH[AddPrefix<E>]
+    handler: EventHandlers[AddPrefix<E>]
   ) {
     const handlerName = addPrefix(event);
-    if (this.handlers[handlerName]) {
+    if (this.perEventHandler[handlerName]) {
       throw new Error(`Handler for event ${event} already exists`);
     }
-    this.handlers[handlerName] = handler;
+    this.perEventHandler[handlerName] = handler;
     return this;
+  }
+
+  do<This extends {}>(handlers: EventHandlers<This>, data?: This) {
+    if (this.complexHandler) {
+      throw new Error("Multiple do() calls");
+    }
+    function ctor(this: any) {
+      Object.assign(this, data);
+    }
+    Object.assign(ctor.prototype, handlers);
+    this.complexHandler = ctor as any;
+    return this;
+  }
+
+  protected getHandlerCtor(): EventHandlerCtor {
+    const ctor = this.complexHandler ?? class { };
+    if (this.perEventHandler) {
+      if (this.complexHandler) {
+        throw new Error("Cannot use both do() and on()");
+      }
+      Object.assign(ctor.prototype, this.perEventHandler);
+    }
+    return ctor;
   }
 }
 
 class StatusBuilder extends TriggerBuilderBase {
   private tags: StatusTag[] = [];
   private shouldListenToOthers: boolean = false;
-  private handlerCtor?: new () => StatusEventHandlers;
+  private handlerCtor?: EventHandlerCtor;
 
   constructor(private readonly id: number) {
     super();
@@ -435,33 +477,14 @@ class StatusBuilder extends TriggerBuilderBase {
     return this;
   }
 
-  do<This extends {}>(handlers: StatusEventHandlers<This>, data?: This) {
-    if (this.handlerCtor) {
-      throw new Error("Multiple do() calls");
-    }
-    function ctor(this: any) {
-      Object.assign(this, data);
-    }
-    Object.assign(ctor.prototype, handlers);
-    this.handlerCtor = ctor as any;
-    return this;
-  }
-
   build(): StatusHandle {
-    const ctor = this.handlerCtor ?? class { };
-    if (this.handlers) {
-      if (this.handlerCtor) {
-        throw new Error("Cannot use both do() and on()");
-      }
-      Object.assign(ctor.prototype, this.handlers);
-    }
     registerStatus(this.id, {
       tags: this.tags,
       duration: this.duration,
       usage: this.usage,
       usagePerRound: this.usagePerRound,
       listenToOthers: this.shouldListenToOthers,
-      handlerCtor: ctor,
+      handlerCtor: this.getHandlerCtor(),
     });
     return this.id as StatusHandle;
   }
@@ -485,6 +508,14 @@ class SupportBuilder extends TriggerBuilderBase {
   }
 
   build(): SupportHandle {
+    registerSupport(this.id, {
+      type: this.type,
+      usage: this.usage,
+      usagePerRound: this.usagePerRound,
+      duration: this.duration,
+      listenToOpp: this.shouldListenToOpp,
+      handlerCtor: this.getHandlerCtor(),
+    })
     return this.id as SupportHandle;
   }
 }
@@ -500,18 +531,32 @@ class EquipmentBuilder extends TriggerBuilderBase {
   }
 
   build(): EquipmentHandle {
-    // TODO
+    registerEquipment(this.id, {
+      type: this.type,
+      handlerCtor: this.getHandlerCtor(),
+    });
     return this.id as EquipmentHandle;
   }
 }
 
 class SummonBuilder extends TriggerBuilderBase {
+  private maxUsage = Infinity;
   constructor(private readonly id: number) {
     super();
   }
 
+  override withUsage(usage: number, maxUsage = usage) {
+    this.usage = usage;
+    this.maxUsage = maxUsage;
+    return this;
+  }
+
   build(): SummonHandle {
-    // TODO
+    registerSummon(this.id, {
+      usage: this.usage,
+      maxUsage: this.maxUsage,
+      handlerCtor: this.getHandlerCtor(),
+    })
     return this.id as SummonHandle;
   }
 }

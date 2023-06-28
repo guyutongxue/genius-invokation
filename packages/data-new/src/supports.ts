@@ -1,16 +1,17 @@
-import { EventHandlers } from "./events";
+import { EventHandlerCtor } from "./events";
 
 export type SupportType = "ally" | "item" | "place" | "other"
 
-export interface SupportEventHandlers<T = {}> extends EventHandlers<T> {}
 
-export interface SupportInfo {
+interface SupportInfo {
+  type: SupportType;
   duration: number;
   usage: number;
   usagePerRound: number;
   listenToOpp: boolean;
-  handlerCtor: new () => SupportEventHandlers;
+  handlerCtor: EventHandlerCtor;
 }
+export type SupportInfoWithId = Readonly<SupportInfo & { id: number }>;
 
 const allStatuses = new Map<number, SupportInfo>();
 export function registerSupport(id: number, info: SupportInfo) {

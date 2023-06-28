@@ -1,10 +1,5 @@
-import { DamageContext, SkillContext, SwitchActiveContext } from "./contexts";
-import { EventHandlers, HandlerResult } from "./events";
-
-export interface StatusEventHandlers<This = {}> extends EventHandlers<This> {
-  onSwitchActiveFrom?(this: This, c: SwitchActiveContext): HandlerResult;
-  onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;
-}
+import { Context, DamageContext, SwitchActiveContext } from "./contexts";
+import { EventHandlerCtor } from "./events";
 
 export type StatusTag = "disableSkill";
 
@@ -14,10 +9,16 @@ interface StatusInfo {
   usage: number;
   usagePerRound: number;
   listenToOthers: boolean;
-  handlerCtor: new () => StatusEventHandlers;
+  handlerCtor: EventHandlerCtor;
 }
 
 export type StatusInfoWithId = Readonly<StatusInfo & { id: number }>;
+
+export interface StatusContext {
+  readonly entityId: number;
+  readonly info: StatusInfoWithId;
+  getVisibleValue(): number | null;
+}
 
 const allStatuses = new Map<number, StatusInfoWithId>();
 export function registerStatus(id: number, info: StatusInfo) {

@@ -21,6 +21,7 @@ export type ContextOfTarget<T extends CardTargetDescriptor> =
 export type CardTag =
   | "action" // 出战行动
   | "food"
+  | "resonance" // 元素共鸣
   | "talent"
   | "artifact"
   | "weaponBow"

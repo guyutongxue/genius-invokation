@@ -1,8 +1,8 @@
 import { createCard, createCharacter, createSkill, DamageType, Target } from "@gi-tcg";
-import { ElectroInfusion, ElectroInfusion01 } from "../status/commons";
+import { ElectroInfusion, ElectroInfusion01 } from "../../status/commons";
 
 /**
- * 云来剑法
+ * **云来剑法**
  * 造成2点物理伤害。
  */
 const YunlaiSwordsmanship = createSkill(14031)
@@ -13,7 +13,7 @@ const YunlaiSwordsmanship = createSkill(14031)
   .build();
 
 /**
- * 星斗归位
+ * **星斗归位**
  * 造成3点雷元素伤害，生成手牌雷楔。
  */
 const StellarRestoration = createSkill(14032)
@@ -33,22 +33,24 @@ const StellarRestoration = createSkill(14032)
   .build();
 
 /**
- * 天街巡游
+ * **天街巡游**
  * 造成4点雷元素伤害，对所有敌方后台角色造成3点穿透伤害。
  */
 const StarwardSword = createSkill(14033)
   .setType("burst")
   .costElectro(4)
   .costEnergy(3)
+  .dealDamage(4, DamageType.Electro)
+  .dealDamage(3, DamageType.Piercing, Target.oppStandby())
   .build();
 
-const Keqing = createCharacter(1403)
-  .addTags("electro", "liyue", "sword")
+export const Keqing = createCharacter(1403)
+  .addTags("electro", "sword", "liyue")
   .addSkills(YunlaiSwordsmanship, StellarRestoration, StarwardSword)
   .build();
 
 /**
- * 雷楔
+ * **雷楔**
  * 战斗行动：将刻晴切换到场上，立刻使用星斗归位。本次星斗归位会为刻晴附属雷元素附魔，但是不会再生成雷楔。
  * （刻晴使用星斗归位时，如果此牌在手中：不会再生成雷楔，而是改为弃置此牌，并为刻晴附属雷元素附魔）
  */
@@ -60,15 +62,16 @@ const LightningStiletto = createCard(114031)
   .build();
 
 /**
- * 抵天雷罚
+ * **抵天雷罚**
  * 战斗行动：我方出战角色为刻晴时，装备此牌。
  * 刻晴装备此牌后，立刻使用一次星斗归位。
  * 装备有此牌的刻晴生成的雷元素附魔获得以下效果：
  * 初始持续回合+1，并且会使所附属角色造成的雷元素伤害+1。
  * （牌组中包含刻晴，才能加入牌组）
  */
-const ThunderingPenance = createCard(214031, ["character"])
-  .addTags("action", "talent")
+export const ThunderingPenance = createCard(214031, ["character"])
+  .setType("equipment")
+  .addTags("talent", "action")
   .requireCharacter(Keqing)
   .addActiveCharacterFilter(Keqing)
   .costElectro(3)

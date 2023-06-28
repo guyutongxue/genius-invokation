@@ -1,14 +1,14 @@
-import { EventHandlers } from "./events";
+import { EventHandlerCtor } from "./events";
 
 export type EquipmentType = "weapon" | "artifact" | "other";
-export interface EquipmentEventHandlers<T = {}> extends EventHandlers<T> {}
 
 export interface EquipmentInfo {
-  duration: number;
-  usage: number;
-  usagePerRound: number;
-  listenToOthers: boolean;
-  handlerCtor: new () => EquipmentEventHandlers;
+  type: EquipmentType;
+  // duration: number;
+  // usage: number;
+  // usagePerRound: number;
+  // listenToOthers: boolean;
+  handlerCtor: EventHandlerCtor;
 }
 
 const allEquipments = new Map<number, EquipmentInfo>();

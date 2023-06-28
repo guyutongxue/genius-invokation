@@ -54,10 +54,24 @@ export class Target {
       opp: false
     });
   }
+  static myPrev() {
+    return new Target({
+      type: "byPos",
+      pos: "prev",
+      opp: false
+    });
+  }
   static myStandby() {
     return new Target({
       type: "byPos",
       pos: "standby",
+      opp: false
+    });
+  }
+  static myAll() {
+    return new Target({
+      type: "byPos",
+      pos: "all",
       opp: false
     });
   }
