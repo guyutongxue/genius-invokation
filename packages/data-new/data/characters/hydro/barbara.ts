@@ -44,7 +44,7 @@ export const Barbara = createCharacter(1201)
  * 装备有此牌的芭芭拉在场时，歌声之环会使我方执行「切换角色」行动时少花费1个元素骰。（每回合1次）
  * （牌组中包含芭芭拉，才能加入牌组）
  */
-export const GloriousSeason = createCard(212011, ["character"])
+export const GloriousSeason = createCard(212011)
   .setType("equipment")
   .addTags("talent", "action")
   .costHydro(4)

@@ -13,6 +13,7 @@ export interface SummonContext {
   readonly info: SummonInfoWithId;
 
   isMine(): boolean;
+  usage: number;
 
   emitEndPhaseEffect(deduceUsage?: boolean): void;
   dispose(): void;

@@ -9,6 +9,7 @@ export const ChinjuForest = createCard(321012)
   .setType("support")
   .addTags("place")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -20,6 +21,7 @@ export const DawnWinery = createCard(321004)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -32,6 +34,7 @@ export const FavoniusCathedral = createCard(321006)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -44,6 +47,7 @@ export const GrandNarukamiShrine = createCard(321008)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -55,6 +59,7 @@ export const JadeChamber = createCard(321003)
   .setType("support")
   .addTags("place")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -67,6 +72,7 @@ export const KnightsOfFavoniusLibrary = createCard(321002)
   .setType("support")
   .addTags("place")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -79,6 +85,7 @@ export const LiyueHarborWharf = createCard(321001)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -91,6 +98,7 @@ export const SangonomiyaShrine = createCard(321009)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -102,6 +110,7 @@ export const SumeruCity = createCard(321010)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -113,6 +122,7 @@ export const Tenshukaku = createCard(321007)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -124,7 +134,7 @@ export const Tenshukaku = createCard(321007)
 export const Vanarana = createCard(321011)
   .setType("support")
   .addTags("place")
-  
+  .buildToSupport()
   // TODO
   .build();
 
@@ -137,5 +147,6 @@ export const WangshuInn = createCard(321005)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();

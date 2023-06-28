@@ -1,4 +1,4 @@
-import { createCard } from '@gi-tcg';
+import { DiceType, createCard, SpecialBits, Target, DamageType } from '@gi-tcg';
 
 /**
  * **深渊的呼唤**
@@ -7,7 +7,7 @@ import { createCard } from '@gi-tcg';
  */
 export const AbyssalSummons = createCard(332015)
   .setType("event")
-  .addTags()
+  .requireDualCharacterTag("monster")
   .costSame(2)
   // TODO
   .build();
@@ -16,11 +16,16 @@ export const AbyssalSummons = createCard(332015)
  * **神宝迁宫祝词**
  * 将一个装备在我方角色的「圣遗物」装备牌，转移给另一个我方角色。
  */
-export const BlessingOfTheDivineRelicsInstallation = createCard(332011)
+export const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "character"])
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .filterTargets((ch0, ch1) => !!ch0.hasEquipment("artifact"))
+  .do(function () {
+    const from = this[0];
+    const to = this[1];
+    const weapon = from.hasEquipment("artifact")!;
+    from.removeEquipment(weapon);
+    to.equip(weapon);
+  })
   .build();
 
 /**
@@ -29,9 +34,11 @@ export const BlessingOfTheDivineRelicsInstallation = createCard(332011)
  */
 export const CalxsArts = createCard(332009)
   .setType("event")
-  .addTags()
   .costSame(1)
-  // TODO
+  .do((c) => {
+    const energyCount = c.lossEnergy(1, Target.myStandby());
+    c.gainEnergy(energyCount);
+  })
   .build();
 
 /**
@@ -40,9 +47,14 @@ export const CalxsArts = createCard(332009)
  */
 export const ChangingShifts = createCard(332002)
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .buildToStatus()
+  .on("beforeUseDice", (c) => {
+    if (c.switchActive) {
+      c.deductCost(DiceType.Void);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -53,8 +65,21 @@ export const ChangingShifts = createCard(332002)
 export const ElementalResonanceEnduringRock = createCard(331602)
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("geo")
   .costGeo(1)
-  // TODO
+  .buildToStatus()
+  .withUsage(1)
+  .withDuration(1)
+  .on("dealDamage", (c) => {
+    if (c.damageType === DamageType.Geo) {
+      const shield = c.hasCombatShield();
+      if (shield) {
+        shield.gainShield(3);
+      }
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -65,8 +90,18 @@ export const ElementalResonanceEnduringRock = createCard(331602)
 export const ElementalResonanceFerventFlames = createCard(331302)
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("pyro")
   .costPyro(1)
-  // TODO
+  .buildToStatus(false)
+  .withUsage(1)
+  .withDuration(1)
+  .on("beforeUseSkill", (c) => {
+    if (c.damage?.reaction?.relatedWith(DamageType.Pyro)) {
+      c.damage.addDamage(3);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -77,8 +112,9 @@ export const ElementalResonanceFerventFlames = createCard(331302)
 export const ElementalResonanceHighVoltage = createCard(331402)
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("electro")
   .costElectro(1)
-  // TODO
+  .gainEnergy(1, Target.oneEnergyNotFull())
   .build();
 
 /**
@@ -86,11 +122,15 @@ export const ElementalResonanceHighVoltage = createCard(331402)
  * 切换到目标角色，并生成1点万能元素。
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
-export const ElementalResonanceImpetuousWinds = createCard(331502)
+export const ElementalResonanceImpetuousWinds = createCard(331502, ["character"])
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("anemo")
   .costAnemo(1)
-  // TODO
+  .do(function (c) {
+    c.switchActive(Target.ofCharacter(this[0].info));
+    c.generateDice(DiceType.Omni);
+  })
   .build();
 
 /**
@@ -101,8 +141,14 @@ export const ElementalResonanceImpetuousWinds = createCard(331502)
 export const ElementalResonanceShatteringIce = createCard(331102)
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("cryo")
   .costCryo(1)
-  // TODO
+  .buildToStatus(false)
+  .withUsage(1)
+  .withDuration(1)
+  .on("dealDamage", (c) => {
+    c.addDamage(2);
+  })
   .build();
 
 /**
@@ -113,8 +159,10 @@ export const ElementalResonanceShatteringIce = createCard(331102)
 export const ElementalResonanceSoothingWater = createCard(331202)
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("hydro")
   .costHydro(1)
-  // TODO
+  .heal(2)
+  .heal(1, Target.myStandby())
   .build();
 
 /**
@@ -126,8 +174,21 @@ export const ElementalResonanceSoothingWater = createCard(331202)
 export const ElementalResonanceSprawlingGreenery = createCard(331702)
   .setType("event")
   .addTags("resonance")
+  .requireDualCharacterTag("dendro")
   .costDendro(1)
-  // TODO
+  .do((c) => {
+    // TODO
+  })
+  .buildToStatus()
+  .withUsage(1)
+  .withDuration(1)
+  .on("beforeDealDamage", (c) => {
+    if (c.reaction) {
+      c.addDamage(2);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -138,8 +199,8 @@ export const ElementalResonanceSprawlingGreenery = createCard(331702)
 export const ElementalResonanceWovenFlames = createCard(331301)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .requireDualCharacterTag("pyro")
+  .generateDice(DiceType.Pyro)
   .build();
 
 /**
@@ -150,8 +211,8 @@ export const ElementalResonanceWovenFlames = createCard(331301)
 export const ElementalResonanceWovenIce = createCard(331101)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .requireDualCharacterTag("cryo")
+  .generateDice(DiceType.Cryo)
   .build();
 
 /**
@@ -162,8 +223,8 @@ export const ElementalResonanceWovenIce = createCard(331101)
 export const ElementalResonanceWovenStone = createCard(331601)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .requireDualCharacterTag("geo")
+  .generateDice(DiceType.Geo)
   .build();
 
 /**
@@ -174,8 +235,8 @@ export const ElementalResonanceWovenStone = createCard(331601)
 export const ElementalResonanceWovenThunder = createCard(331401)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .requireDualCharacterTag("electro")
+  .generateDice(DiceType.Electro)
   .build();
 
 /**
@@ -186,8 +247,7 @@ export const ElementalResonanceWovenThunder = createCard(331401)
 export const ElementalResonanceWovenWaters = createCard(331201)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .generateDice(DiceType.Hydro)
   .build();
 
 /**
@@ -198,8 +258,8 @@ export const ElementalResonanceWovenWaters = createCard(331201)
 export const ElementalResonanceWovenWeeds = createCard(331701)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .requireDualCharacterTag("dendro")
+  .generateDice(DiceType.Dendro)
   .build();
 
 /**
@@ -210,8 +270,8 @@ export const ElementalResonanceWovenWeeds = createCard(331701)
 export const ElementalResonanceWovenWinds = createCard(331501)
   .setType("event")
   .addTags("resonance")
-  
-  // TODO
+  .requireDualCharacterTag("anemo")
+  .generateDice(DiceType.Anemo)
   .build();
 
 /**
@@ -221,7 +281,7 @@ export const ElementalResonanceWovenWinds = createCard(331501)
  */
 export const FatuiConspiracy = createCard(332016)
   .setType("event")
-  .addTags()
+  .requireDualCharacterTag("fatui")
   .costSame(2)
   // TODO
   .build();
@@ -232,9 +292,17 @@ export const FatuiConspiracy = createCard(332016)
  */
 export const FriendshipEternal = createCard(332020)
   .setType("event")
-  .addTags()
   .costSame(2)
-  // TODO
+  .do((c) => {
+    let cnt = c.getCardCount();
+    if (cnt < 4) {
+      c.drawCards(4 - cnt);
+    }
+    cnt = c.getCardCount(true);
+    if (cnt < 4) {
+      c.drawCards(4 - cnt, true);
+    }
+  })
   .build();
 
 /**
@@ -243,9 +311,8 @@ export const FriendshipEternal = createCard(332020)
  */
 export const GuardiansOath = createCard(332014)
   .setType("event")
-  .addTags()
   .costSame(4)
-  // TODO
+  .do((c) => { c.allSummons().map(s => s.dispose()); })
   .build();
 
 /**
@@ -255,9 +322,21 @@ export const GuardiansOath = createCard(332014)
  */
 export const HeavyStrike = createCard(332018)
   .setType("event")
-  .addTags()
   .costSame(1)
-  // TODO
+  .buildToStatus()
+  .withUsage(1)
+  .withDuration(1)
+  .on("beforeUseSkill", (c) => {
+    if (c.info.type === "normal") {
+      if (c.isCharged()) {
+        c.damage?.addDamage(2);
+      } else {
+        c.damage?.addDamage(1);
+      }
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -267,9 +346,9 @@ export const HeavyStrike = createCard(332018)
  */
 export const IHaventLostYet = createCard(332005)
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .addFilter(c => c.checkSpecialBit(SpecialBits.DefeatedMine))
+  .generateDice(DiceType.Omni)
+  .gainEnergy(1)
   .build();
 
 /**
@@ -278,20 +357,29 @@ export const IHaventLostYet = createCard(332005)
  */
 export const LeaveItToMe = createCard(332006)
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .buildToStatus()
+  .withUsage(1)
+  .on("requestFastSwitchActive", () => true)
   .build();
 
 /**
  * **诸武精通**
  * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色。
  */
-export const MasterOfWeaponry = createCard(332010)
+export const MasterOfWeaponry = createCard(332010, ["character", "character"])
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .filterTargets((ch0, ch1) => {
+    return ch0.hasEquipment("weapon") &&
+      (["bow", "catalyst", "claymore", "pole", "sword"] as const)
+        .filter(c => ch0.info.tags.includes(c) && ch1.info.tags.includes(c)).length > 0;
+  })
+  .do(function () {
+    const from = this[0];
+    const to = this[1];
+    const weapon = from.hasEquipment("weapon")!;
+    from.removeEquipment(weapon);
+    to.equip(weapon);
+  })
   .build();
 
 /**
@@ -301,42 +389,50 @@ export const MasterOfWeaponry = createCard(332010)
  */
 export const NatureAndWisdom = createCard(331804)
   .setType("event")
-  .addTags()
+  .requireDualCharacterTag("sumeru")
   .costSame(1)
-  // TODO
+  .drawCards(1)
+  .switchCards()
   .build();
 
 /**
  * **下落斩**
  * 战斗行动：切换到目标角色，然后该角色进行「普通攻击」。
  */
-export const PlungingStrike = createCard(332017)
+export const PlungingStrike = createCard(332017, ["character"])
   .setType("event")
   .addTags("action")
   .costSame(3)
-  // TODO
+  .do(function (c) {
+    c.switchActive(this[0].asTarget());
+    c.useSkill("normal");
+  })
   .build();
 
 /**
  * **快快缝补术**
  * 选择一个我方「召唤物」，使其「可用次数」+1。
  */
-export const QuickKnit = createCard(332012)
+export const QuickKnit = createCard(332012, ["summon"])
   .setType("event")
-  .addTags()
   .costSame(1)
-  // TODO
+  .filterTargets((t) => t.isMine())
+  .do(function () {
+    this[0].usage += 1;
+  })
   .build();
 
 /**
  * **送你一程**
  * 选择一个敌方「召唤物」，使其「可用次数」-2。
  */
-export const SendOff = createCard(332013)
+export const SendOff = createCard(332013, ["summon"])
   .setType("event")
-  .addTags()
   .costSame(2)
-  // TODO
+  .filterTargets((t) => !t.isMine())
+  .do(function () {
+    this[0].usage -= 2;
+  })
   .build();
 
 /**
@@ -345,9 +441,8 @@ export const SendOff = createCard(332013)
  */
 export const Starsigns = createCard(332008)
   .setType("event")
-  .addTags()
   .costVoid(2)
-  // TODO
+  .gainEnergy(1)
   .build();
 
 /**
@@ -357,9 +452,11 @@ export const Starsigns = createCard(332008)
  */
 export const StoneAndContracts = createCard(331802)
   .setType("event")
-  .addTags()
+  .requireDualCharacterTag("liyue")
   .costVoid(3)
-  // TODO
+  .buildToStatus()
+  .withUsage(1)
+  .on("actionPhase", (c) => c.generateDice(DiceType.Omni, DiceType.Omni, DiceType.Omni))
   .build();
 
 /**
@@ -368,9 +465,8 @@ export const StoneAndContracts = createCard(331802)
  */
 export const Strategize = createCard(332004)
   .setType("event")
-  .addTags()
   .costSame(1)
-  // TODO
+  .drawCards(2)
   .build();
 
 /**
@@ -379,9 +475,8 @@ export const Strategize = createCard(332004)
  */
 export const TheBestestTravelCompanion = createCard(332001)
   .setType("event")
-  .addTags()
   .costVoid(2)
-  // TODO
+  .generateDice(DiceType.Omni, DiceType.Omni)
   .build();
 
 /**
@@ -390,9 +485,17 @@ export const TheBestestTravelCompanion = createCard(332001)
  */
 export const TheLegendOfVennessa = createCard(332019)
   .setType("event")
-  .addTags()
   .costSame(3)
-  // TODO
+  .do((c) => {
+    const dice: DiceType[] = [];
+    while (dice.length < 4) {
+      const d: DiceType = Math.floor(Math.random() * 7) + 1;
+      if (!dice.includes(d)) {
+        dice.push(d);
+      }
+    }
+    c.generateDice(...dice);
+  })
   .build();
 
 /**
@@ -402,9 +505,11 @@ export const TheLegendOfVennessa = createCard(332019)
  */
 export const ThunderAndEternity = createCard(331803)
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .requireDualCharacterTag("inazuma")
+  .do(c => {
+    const count = c.removeAllDice().length;
+    c.generateDice(...Array(count).fill(c.getMaster().elementType()));
+  })
   .build();
 
 /**
@@ -413,9 +518,7 @@ export const ThunderAndEternity = createCard(331803)
  */
 export const TossUp = createCard(332003)
   .setType("event")
-  .addTags()
-  
-  // TODO
+  .rollDice(2)
   .build();
 
 /**
@@ -424,9 +527,10 @@ export const TossUp = createCard(332003)
  */
 export const WhenTheCraneReturned = createCard(332007)
   .setType("event")
-  .addTags()
   .costSame(1)
-  // TODO
+  .buildToStatus()
+  .withUsage(1)
+  .on("useSkill", (c) => c.switchActive(Target.myNext()))
   .build();
 
 /**
@@ -437,7 +541,16 @@ export const WhenTheCraneReturned = createCard(332007)
  */
 export const WindAndFreedom = createCard(331801)
   .setType("event")
-  .addTags()
+  .requireDualCharacterTag("mondstadt")
   .costSame(1)
-  // TODO
+  .buildToStatus()
+  .withUsage(1)
+  .withDuration(1)
+  .on("dealDamage", (c) => {
+    if (c.isMyTurn()) {
+      c.flipNextTurn();
+    } else {
+      return false;
+    }
+  })
   .build();

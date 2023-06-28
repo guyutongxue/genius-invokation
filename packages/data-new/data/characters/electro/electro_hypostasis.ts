@@ -38,7 +38,6 @@ const LightningLockdown = createSkill(24013)
  */
 const ElectroCrystalCore = createSkill(24014)
   .setType("passive")
-  
   // TODO
   .build();
 
@@ -48,7 +47,6 @@ const ElectroCrystalCore = createSkill(24014)
  */
 const RockpaperscissorsComboScissors = createSkill(24015)
   .setType("elemental")
-  
   // TODO
   .build();
 
@@ -58,7 +56,6 @@ const RockpaperscissorsComboScissors = createSkill(24015)
  */
 const RockpaperscissorsComboPaper = createSkill(24016)
   .setType("elemental")
-  
   // TODO
   .build();
 
@@ -72,7 +69,7 @@ export const ElectroHypostasis = createCharacter(2401)
  * 战斗行动：我方出战角色为无相之雷时，治疗该角色3点，并附属雷晶核心。
  * （牌组中包含无相之雷，才能加入牌组）
  */
-export const AbsorbingPrism = createCard(224011, ["character"])
+export const AbsorbingPrism = createCard(224011)
   .setType("event")
   .addTags("talent", "action")
   .costElectro(3)

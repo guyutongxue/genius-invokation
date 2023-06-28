@@ -1,14 +1,20 @@
 import { Context, DamageContext, SwitchActiveContext } from "./contexts";
-import { EventHandlerCtor } from "./events";
+import { EventHandlerCtor, ListenTarget } from "./events";
 
-export type StatusTag = "disableSkill";
+export type StatusTag = "disableSkill" | "shield";
+
+export type ShieldConfig = null | number | {
+  initial: number;
+  recreateMax: number;
+}
 
 interface StatusInfo {
   tags: StatusTag[];
   duration: number;
   usage: number;
+  shield: ShieldConfig;
   usagePerRound: number;
-  listenToOthers: boolean;
+  listenTo: ListenTarget;
   handlerCtor: EventHandlerCtor;
 }
 
@@ -18,6 +24,8 @@ export interface StatusContext {
   readonly entityId: number;
   readonly info: StatusInfoWithId;
   getVisibleValue(): number | null;
+  gainUsage(value: number): void;
+  gainShield(value: number): void;
 }
 
 const allStatuses = new Map<number, StatusInfoWithId>();

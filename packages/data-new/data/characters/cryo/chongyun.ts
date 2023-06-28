@@ -45,7 +45,7 @@ export const Chongyun = createCharacter(1104)
  * 初始持续回合+1，并且使我方单手剑、双手剑或长柄武器角色的普通攻击伤害+1。
  * （牌组中包含重云，才能加入牌组）
  */
-export const SteadyBreathing = createCard(211041, ["character"])
+export const SteadyBreathing = createCard(211041)
   .setType("equipment")
   .addTags("talent", "action")
   .costCryo(4)

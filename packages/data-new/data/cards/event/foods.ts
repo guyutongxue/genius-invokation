@@ -32,7 +32,6 @@ export const ButterCrab = createCard(333012)
 export const JueyunGuoba = createCard(333001)
   .setType("event")
   .addTags("food")
-  
   // TODO
   .build();
 
@@ -92,7 +91,6 @@ export const MushroomPizza = createCard(333007)
 export const NorthernSmokedChicken = createCard(333004)
   .setType("event")
   .addTags("food")
-  
   // TODO
   .build();
 
@@ -116,7 +114,6 @@ export const SashimiPlatter = createCard(333010)
 export const SweetMadame = createCard(333005)
   .setType("event")
   .addTags("food")
-  
   // TODO
   .build();
 

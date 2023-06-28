@@ -39,7 +39,6 @@ const Stormbreaker = createSkill(14053)
  */
 const Wavestrider = createSkill(14054)
   .setType("elemental")
-  
   // TODO
   .build();
 
@@ -55,7 +54,7 @@ export const Beidou = createCharacter(1405)
  * 装备有此牌的北斗使用踏潮时：如果准备技能期间受到过伤害，则使北斗本回合内「普通攻击」少花费1个无色元素。（最多触发2次）
  * （牌组中包含北斗，才能加入牌组）
  */
-export const LightningStorm = createCard(214051, ["character"])
+export const LightningStorm = createCard(214051)
   .setType("equipment")
   .addTags("talent", "action")
   .costElectro(3)

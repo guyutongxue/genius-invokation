@@ -38,7 +38,6 @@ const UpaShato = createSkill(26013)
  */
 const InfusedStonehide = createSkill(26014)
   .setType("passive")
-  
   // TODO
   .build();
 
@@ -54,7 +53,7 @@ export const StonehideLawachurl = createCharacter(2601)
  * 装备有此牌的丘丘岩盔王击倒敌方角色后；丘丘岩盔王重新附属岩盔和坚岩之力。
  * （牌组中包含丘丘岩盔王，才能加入牌组）
  */
-export const StonehideReforged = createCard(226011, ["character"])
+export const StonehideReforged = createCard(226011)
   .setType("equipment")
   .addTags("talent", "action")
   .costGeo(4)

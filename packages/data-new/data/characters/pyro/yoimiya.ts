@@ -18,6 +18,7 @@ const FireworkFlareup = createSkill(13051)
 const NiwabiFiredance = createSkill(13052)
   .setType("elemental")
   .costPyro(1)
+  .noEnergy()
   // TODO
   .build();
 
@@ -44,7 +45,7 @@ export const Yoimiya = createCharacter(1305)
  * 装备有此牌的宵宫触发庭火焰硝后：额外造成1点火元素伤害。
  * （牌组中包含宵宫，才能加入牌组）
  */
-export const NaganoharaMeteorSwarm = createCard(213051, ["character"])
+export const NaganoharaMeteorSwarm = createCard(213051)
   .setType("equipment")
   .addTags("talent", "action")
   .costPyro(2)

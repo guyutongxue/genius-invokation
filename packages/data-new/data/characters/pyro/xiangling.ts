@@ -44,7 +44,7 @@ export const Xiangling = createCharacter(1302)
  * 装备有此牌的香菱施放锅巴出击时，自身也会造成1点火元素伤害。
  * （牌组中包含香菱，才能加入牌组）
  */
-export const Crossfire = createCard(213021, ["character"])
+export const Crossfire = createCard(213021)
   .setType("equipment")
   .addTags("talent", "action")
   .costPyro(4)

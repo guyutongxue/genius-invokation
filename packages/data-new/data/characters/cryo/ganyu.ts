@@ -54,7 +54,7 @@ export const Ganyu = createCharacter(1101)
  * 装备有此牌的甘雨使用霜华矢时：如果此技能在本场对局中曾经被使用过，则其对敌方后台角色造成的穿透伤害改为3点。
  * （牌组中包含甘雨，才能加入牌组）
  */
-export const UndividedHeart = createCard(211011, ["character"])
+export const UndividedHeart = createCard(211011)
   .setType("equipment")
   .addTags("talent", "action")
   .costCryo(5)

@@ -1,3 +1,4 @@
+import { CharacterInfoWithId } from ".";
 import { CharacterHandle } from "./builders";
 
 type TargetInfo = {
@@ -14,15 +15,23 @@ type TargetInfo = {
 } | {
   type: "recentOpp",
   relativeTo: TargetInfo
-}
+} | {
+  type: "oneEnergyNotFull",
+};
 
 export class Target {
   private constructor(private readonly info: TargetInfo) {}
 
-  static ofCharacter(character: CharacterHandle, opp = false) {
+  static ofCharacter(character: CharacterHandle | CharacterInfoWithId, opp = false) {
+    let id: number;
+    if (typeof character === "number") {
+      id = character;
+    } else {
+      id = character.id;
+    }
     return new Target({
       type: "byId",
-      id: character,
+      id,
       opp
     });
   }
@@ -73,6 +82,11 @@ export class Target {
       type: "byPos",
       pos: "all",
       opp: false
+    });
+  }
+  static oneEnergyNotFull() {
+    return new Target({
+      type: "oneEnergyNotFull"
     });
   }
 }

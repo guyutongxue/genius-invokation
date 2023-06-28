@@ -76,7 +76,7 @@ export const Tartaglia = createCharacter(1204)
  * 结束阶段：对所有附属有断流的敌方角色造成1点穿透伤害。
  * （牌组中包含达达利亚，才能加入牌组）
  */
-export const AbyssalMayhemHydrospout = createCard(212041, ["character"])
+export const AbyssalMayhemHydrospout = createCard(212041)
   .setType("equipment")
   .addTags("talent", "action")
   .costHydro(4)

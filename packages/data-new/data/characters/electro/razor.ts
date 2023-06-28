@@ -44,7 +44,7 @@ export const Razor = createCharacter(1402)
  * 装备有此牌的雷泽使用利爪与苍雷后：使我方一个雷元素角色获得1点充能。（出战角色优先）
  * （牌组中包含雷泽，才能加入牌组）
  */
-export const Awakening = createCard(214021, ["character"])
+export const Awakening = createCard(214021)
   .setType("equipment")
   .addTags("talent", "action")
   .costElectro(4)

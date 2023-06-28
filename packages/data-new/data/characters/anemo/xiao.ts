@@ -44,7 +44,7 @@ export const Xiao = createCharacter(1504)
  * 装备有此牌的魈附属夜叉傩面期间，使用风轮两立时少花费1个风元素。（每附属1次夜叉傩面，可触发2次）
  * （牌组中包含魈，才能加入牌组）
  */
-export const ConquerorOfEvilGuardianYaksha = createCard(215041, ["character"])
+export const ConquerorOfEvilGuardianYaksha = createCard(215041)
   .setType("equipment")
   .addTags("talent", "action")
   .costAnemo(3)

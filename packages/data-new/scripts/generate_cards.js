@@ -89,7 +89,7 @@ function getTalentCardFor(enName) {
       enObj.description.includes(`You must have ${enName}`)
     ) {
       const zhObj = ChineseSimplified[cardKey][key];
-      return cardToCode(enObj, zhObj, ', ["character"]');
+      return cardToCode(enObj, zhObj);
     }
   }
 }

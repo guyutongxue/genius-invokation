@@ -9,6 +9,7 @@ export const Nre = createCard(323002)
   .setType("support")
   .addTags("item")
   .costVoid(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -21,6 +22,7 @@ export const ParametricTransformer = createCard(323001)
   .setType("support")
   .addTags("item")
   .costVoid(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -32,6 +34,7 @@ export const RedFeatherFan = createCard(323003)
   .setType("support")
   .addTags("item")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -44,5 +47,6 @@ export const TreasureseekingSeelie = createCard(323004)
   .setType("support")
   .addTags("item")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();

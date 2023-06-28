@@ -30,7 +30,8 @@ const GaleBlade = createSkill(15022)
 const DandelionField = createSummon(115021)
   .withUsage(2)
   .on("endPhase", (c) => {
-    if (c.hasCharacter(Target.ofCharacter(Jean))) {
+    const jean = c.hasCharacter(Jean);
+    if (jean && jean.hasEquipment(LandsOfDandelion)) {
       c.dealDamage(3, DamageType.Anemo)
     } else {
       c.dealDamage(2, DamageType.Anemo)
@@ -63,7 +64,7 @@ export const Jean = createCharacter(1502)
  * 装备有此牌的琴在场时，蒲公英领域会使我方造成的风元素伤害+1。
  * （牌组中包含琴，才能加入牌组）
  */
-export const LandsOfDandelion = createCard(215021, ["character"])
+export const LandsOfDandelion = createCard(215021)
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(Jean)

@@ -1,6 +1,6 @@
 import { DiceType } from "@gi-tcg/typings";
 import { CharacterContext, CharacterTag } from "./characters";
-import { PlayCardContext } from "./contexts";
+import { Context } from "./contexts";
 import { SummonContext } from "./summons";
 
 export type CardTarget = {
@@ -15,8 +15,8 @@ export type ContextOfTarget<T extends CardTargetDescriptor> =
     infer First extends keyof CardTarget,
     ...infer Rest extends CardTargetDescriptor
   ]
-    ? readonly [CardTarget[First], ...ContextOfTarget<Rest>]
-    : readonly [];
+  ? readonly [CardTarget[First], ...ContextOfTarget<Rest>]
+  : readonly [];
 
 export type CardTag =
   | "action" // 出战行动
@@ -56,12 +56,12 @@ export type CardInfoWithId = Readonly<CardInfo & { id: number }>;
 
 export type PlayCardFilter<T extends CardTargetDescriptor = readonly any[]> = (
   this: ContextOfTarget<T>,
-  c: PlayCardContext
+  c: Context
 ) => boolean;
 export type PlayCardTargetFilter<
   T extends CardTargetDescriptor = readonly any[]
 > = (...targets: ContextOfTarget<T>) => boolean;
-export type PlayCardAction = (this: readonly any[], c: PlayCardContext) => void;
+export type PlayCardAction = (this: readonly any[], c: Context) => void;
 
 const allCards = new Map<number, CardInfoWithId>();
 export function registerCard(id: number, info: CardInfo) {

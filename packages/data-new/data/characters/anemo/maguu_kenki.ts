@@ -79,7 +79,7 @@ export const MaguuKenki = createCharacter(2501)
  * 装备有此牌的魔偶剑鬼施放孤风刀势后，我方切换到后一个角色；施放霜驰影突后，我方切换到前一个角色。
  * （牌组中包含魔偶剑鬼，才能加入牌组）
  */
-export const TranscendentAutomaton = createCard(225011, ["character"])
+export const TranscendentAutomaton = createCard(225011)
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(MaguuKenki)

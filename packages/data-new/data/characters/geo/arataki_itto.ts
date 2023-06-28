@@ -44,7 +44,7 @@ export const AratakiItto = createCharacter(1605)
  * 装备有此牌的荒泷一斗每回合第2次及以后使用喧哗屋传说时：如果触发乱神之怪力，伤害额外+1。
  * （牌组中包含荒泷一斗，才能加入牌组）
  */
-export const AratakiIchiban = createCard(216051, ["character"])
+export const AratakiIchiban = createCard(216051)
   .setType("equipment")
   .addTags("talent", "action")
   .costGeo(1)

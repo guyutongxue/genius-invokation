@@ -44,7 +44,7 @@ export const Kaeya = createCharacter(1103)
  * 装备有此牌的凯亚使用霜袭后：治疗自身2点。（每回合1次）
  * （牌组中包含凯亚，才能加入牌组）
  */
-export const ColdbloodedStrike = createCard(211031, ["character"])
+export const ColdbloodedStrike = createCard(211031)
   .setType("equipment")
   .addTags("talent", "action")
   .costCryo(4)

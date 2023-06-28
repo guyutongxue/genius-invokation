@@ -44,7 +44,7 @@ export const KujouSara = createCharacter(1406)
  * 装备有此牌的九条裟罗在场时，我方附属有鸣煌护持的雷元素角色，元素战技和元素爆发造成的伤害额外+1。
  * （牌组中包含九条裟罗，才能加入牌组）
  */
-export const SinOfPride = createCard(214061, ["character"])
+export const SinOfPride = createCard(214061)
   .setType("equipment")
   .addTags("talent", "action")
   .costElectro(4)

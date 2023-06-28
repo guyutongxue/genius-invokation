@@ -1,19 +1,20 @@
-import { EventHandlerCtor } from "./events";
+import { EventHandlerCtor, ListenTarget } from "./events";
 
 export type EquipmentType = "weapon" | "artifact" | "other";
 
-export interface EquipmentInfo {
+interface EquipmentInfo {
   type: EquipmentType;
   // duration: number;
   // usage: number;
-  // usagePerRound: number;
-  // listenToOthers: boolean;
+  usagePerRound: number;
+  listenTo: ListenTarget;
   handlerCtor: EventHandlerCtor;
 }
+export type EquipmentInfoWithId = Readonly<EquipmentInfo & { id: number }>;
 
-const allEquipments = new Map<number, EquipmentInfo>();
+const allEquipments = new Map<number, EquipmentInfoWithId>();
 export function registerEquipment(id: number, info: EquipmentInfo) {
-  allEquipments.set(id, info);
+  allEquipments.set(id, { ...info, id });
 }
 export function getEquipment(id: number) {
   if (!allEquipments.has(id)) {

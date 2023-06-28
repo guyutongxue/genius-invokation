@@ -38,7 +38,6 @@ const OminousStar = createSkill(23023)
  */
 const FieryRebirth = createSkill(23024)
   .setType("passive")
-  
   // TODO
   .build();
 
@@ -53,7 +52,7 @@ export const AbyssLectorFathomlessFlames = createCharacter(2302)
  * 装备有此牌的深渊咏者·渊火触发火之新生时：弃置此牌，为角色附属渊火加护。
  * （牌组中包含深渊咏者·渊火，才能加入牌组）
  */
-export const EmbersRekindled = createCard(223021, ["character"])
+export const EmbersRekindled = createCard(223021)
   .setType("equipment")
   .addTags("talent")
   .costPyro(2)

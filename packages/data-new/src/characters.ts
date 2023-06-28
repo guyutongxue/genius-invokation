@@ -2,6 +2,7 @@ import { DiceType } from "@gi-tcg/typings";
 import { EquipmentHandle, StatusHandle } from "./builders";
 import { StatusContext } from "./statuses";
 import { Target } from "./target";
+import { EquipmentInfoWithId, EquipmentType } from "./equipments";
 
 export type ElementTag =
   | "cryo"
@@ -43,9 +44,13 @@ export interface CharacterContext {
 
   readonly health: number;
   readonly energy: number;
-  hasEquipment(equipment: EquipmentHandle): boolean;
-  equip(equipment: EquipmentHandle): void;
+  hasEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentInfoWithId;
+  equip(equipment: EquipmentHandle | EquipmentInfoWithId): void;
+  removeEquipment(equipment: EquipmentHandle | EquipmentInfoWithId): void;
+
+  gainEnergy(amount: number): void;
   hasStatus(status: StatusHandle): StatusContext | null;
+  hasShield(): StatusContext;
 
   isActive(): boolean;
   isMine(): boolean;

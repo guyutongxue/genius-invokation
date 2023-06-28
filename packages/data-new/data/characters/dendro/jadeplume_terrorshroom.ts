@@ -38,7 +38,6 @@ const FeatherSpreading = createSkill(27013)
  */
 const RadicalVitality = createSkill(27014)
   .setType("passive")
-  
   // TODO
   .build();
 
@@ -54,7 +53,7 @@ export const JadeplumeTerrorshroom = createCharacter(2701)
  * 装备有此牌的翠翎恐蕈，可累积的「活化激能」层数+1。
  * （牌组中包含翠翎恐蕈，才能加入牌组）
  */
-export const ProliferatingSpores = createCard(227011, ["character"])
+export const ProliferatingSpores = createCard(227011)
   .setType("equipment")
   .addTags("talent", "action")
   .costDendro(3)

@@ -1,4 +1,4 @@
-import { createCard } from '@gi-tcg';
+import { Target, createCard } from '@gi-tcg';
 
 /**
  * **常九爷**
@@ -8,7 +8,7 @@ import { createCard } from '@gi-tcg';
 export const ChangTheNinth = createCard(322009)
   .setType("support")
   .addTags("ally")
-  
+  .buildToSupport()
   // TODO
   .build();
 
@@ -20,6 +20,7 @@ export const ChefMao = createCard(322005)
   .setType("support")
   .addTags("ally")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -31,6 +32,7 @@ export const Dunyarzad = createCard(322016)
   .setType("support")
   .addTags("ally")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -42,6 +44,7 @@ export const Ellin = createCard(322010)
   .setType("support")
   .addTags("ally")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -53,7 +56,7 @@ export const Ellin = createCard(322010)
 export const Hanachirusato = createCard(322013)
   .setType("support")
   .addTags("ally")
-  
+  .buildToSupport()
   // TODO
   .build();
 
@@ -66,8 +69,11 @@ export const IronTongueTian = createCard(322011)
   .setType("support")
   .addTags("ally")
   .costVoid(2)
-  // TODO
+  .buildToSupport()
+  .withUsage(2)
+  .on("endPhase", (c) => !!c.gainEnergy(1, Target.oneEnergyNotFull()))
   .build();
+  // TODO: 确认：如果所有角色充能已满，是否扣除可用次数
 
 /**
  * **凯瑟琳**
@@ -77,7 +83,9 @@ export const Katheryne = createCard(322002)
   .setType("support")
   .addTags("ally")
   .costSame(1)
-  // TODO
+  .buildToSupport()
+  .withUsagePerRound(1)
+  .on("requestFastSwitchActive", () => true)
   .build();
 
 /**
@@ -87,7 +95,7 @@ export const Katheryne = createCard(322002)
 export const KidKujirai = createCard(322014)
   .setType("support")
   .addTags("ally")
-  
+  .buildToSupport()
   // TODO
   .build();
 
@@ -99,7 +107,7 @@ export const KidKujirai = createCard(322014)
 export const Liben = createCard(322008)
   .setType("support")
   .addTags("ally")
-  
+  .buildToSupport()
   // TODO
   .build();
 
@@ -112,6 +120,7 @@ export const LiuSu = createCard(322012)
   .setType("support")
   .addTags("ally")
   .costSame(1)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -124,6 +133,7 @@ export const Paimon = createCard(322001)
   .setType("support")
   .addTags("ally")
   .costSame(3)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -135,6 +145,7 @@ export const Rana = createCard(322017)
   .setType("support")
   .addTags("ally")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -148,6 +159,7 @@ export const Timaeus = createCard(322003)
   .setType("support")
   .addTags("ally")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -159,7 +171,7 @@ export const Timaeus = createCard(322003)
 export const Timmie = createCard(322007)
   .setType("support")
   .addTags("ally")
-  
+  .buildToSupport()
   // TODO
   .build();
 
@@ -171,6 +183,7 @@ export const Tubby = createCard(322006)
   .setType("support")
   .addTags("ally")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -184,6 +197,7 @@ export const Wagner = createCard(322004)
   .setType("support")
   .addTags("ally")
   .costSame(2)
+  .buildToSupport()
   // TODO
   .build();
 
@@ -195,5 +209,6 @@ export const Xudong = createCard(322015)
   .setType("support")
   .addTags("ally")
   .costVoid(2)
+  .buildToSupport()
   // TODO
   .build();

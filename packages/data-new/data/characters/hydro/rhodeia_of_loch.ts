@@ -54,7 +54,7 @@ export const RhodeiaOfLoch = createCharacter(2201)
  * 装备有此牌的纯水精灵·洛蒂娅施放潮涌与激流时，使我方所有召唤物可用次数+1。
  * （牌组中包含纯水精灵·洛蒂娅，才能加入牌组）
  */
-export const StreamingSurge = createCard(222011, ["character"])
+export const StreamingSurge = createCard(222011)
   .setType("equipment")
   .addTags("talent", "action")
   .costHydro(4)

@@ -44,7 +44,7 @@ export const Tighnari = createCharacter(1702)
  * 装备有此牌的提纳里在附属通塞识状态期间，进行重击时少花费1个无色元素。
  * （牌组中包含提纳里，才能加入牌组）
  */
-export const KeenSight = createCard(217021, ["character"])
+export const KeenSight = createCard(217021)
   .setType("equipment")
   .addTags("talent", "action")
   .costDendro(4)

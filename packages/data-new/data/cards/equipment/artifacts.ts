@@ -1,15 +1,23 @@
-import { createCard } from '@gi-tcg';
+import { DiceType, Target, createCard, createStatus } from '@gi-tcg';
 
 /**
  * **冒险家头带**
  * 角色使用「普通攻击」后：治疗自身1点。（每回合至多3次）
  * （角色最多装备1件「圣遗物」）
  */
-export const AdventurersBandana = createCard(312001)
+export const AdventurersBandana = createCard(312001, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(1)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(3)
+  .on("useSkill", (c) => {
+    if (c.info.type === "normal") {
+      c.heal(1);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -18,11 +26,20 @@ export const AdventurersBandana = createCard(312001)
  * 投掷阶段：2个元素骰初始总是投出岩元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const ArchaicPetra = createCard(312602)
+export const ArchaicPetra = createCard(312602, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Geo);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Geo, DiceType.Geo), false))
   .build();
 
 /**
@@ -31,11 +48,20 @@ export const ArchaicPetra = createCard(312602)
  * 投掷阶段：2个元素骰初始总是投出冰元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const BlizzardStrayer = createCard(312102)
+export const BlizzardStrayer = createCard(312102, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Cryo);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Cryo, DiceType.Cryo), false))
   .build();
 
 /**
@@ -43,11 +69,19 @@ export const BlizzardStrayer = createCard(312102)
  * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const BrokenRimesEcho = createCard(312101)
+export const BrokenRimesEcho = createCard(312101, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Cryo);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -55,11 +89,19 @@ export const BrokenRimesEcho = createCard(312101)
  * 角色使用「元素战技」或装备「天赋」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const CapriciousVisage = createCard(312013)
+export const CapriciousVisage = createCard(312013, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill?.type === "elemental" || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Omni);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -68,11 +110,20 @@ export const CapriciousVisage = createCard(312013)
  * 投掷阶段：2个元素骰初始总是投出火元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const CrimsonWitchOfFlames = createCard(312302)
+export const CrimsonWitchOfFlames = createCard(312302, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Pyro);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Pyro, DiceType.Pyro), false))
   .build();
 
 /**
@@ -81,11 +132,20 @@ export const CrimsonWitchOfFlames = createCard(312302)
  * 投掷阶段：2个元素骰初始总是投出草元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const DeepwoodMemories = createCard(312702)
+export const DeepwoodMemories = createCard(312702, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Dendro);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Dendro, DiceType.Dendro), false))
   .build();
 
 /**
@@ -94,11 +154,22 @@ export const DeepwoodMemories = createCard(312702)
  * 角色使用「元素爆发」造成的伤害+2。
  * （角色最多装备1件「圣遗物」）
  */
-export const EmblemOfSeveredFate = createCard(312008)
+export const EmblemOfSeveredFate = createCard(312008, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .listenToOther()
+  .on("useSkill", (c) => {
+    if (c.info.type !== "burst" && c.character.entityId !== c.getMaster().entityId) {
+      c.character.gainEnergy(1);
+    }
+  })
+  .on("beforeUseSkill", (c) => {
+    if (c.info.type === "burst" && c.character.entityId === c.getMaster().entityId) {
+      c.damage?.addDamage(2);
+    }
+  })
   .build();
 
 /**
@@ -106,11 +177,19 @@ export const EmblemOfSeveredFate = createCard(312008)
  * 角色使用「元素爆发」后：所有我方后台角色获得1点充能。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ExilesCirclet = createCard(312006)
+export const ExilesCirclet = createCard(312006, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("useSkill", (c) => {
+    if (c.info.type === "burst") {
+      c.gainEnergy(1, Target.myStandby());
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -118,11 +197,24 @@ export const ExilesCirclet = createCard(312006)
  * 敌方角色被击倒后：如果所附属角色为「出战角色」，则生成2个万能元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const GamblersEarrings = createCard(312004)
+export const GamblersEarrings = createCard(312004, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(1)
-  // TODO
+  .buildToEquipment()
+  .on("defeated", (c) => {
+    if (c.getMaster().isActive()) {
+      c.generateDice(DiceType.Omni, DiceType.Omni);
+    }
+  })
+  .build();
+
+/**
+ * **重嶂不移**
+ * 提供2点护盾，保护所附属的角色。
+ */
+const UnmovableMountain = createStatus(301201)
+  .shield(2)
   .build();
 
 /**
@@ -130,11 +222,12 @@ export const GamblersEarrings = createCard(312004)
  * 行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）
  * （角色最多装备1件「圣遗物」）
  */
-export const GeneralsAncientHelm = createCard(312009)
+export const GeneralsAncientHelm = createCard(312009, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .on("actionPhase", (c) => { c.createStatus(UnmovableMountain) })
   .build();
 
 /**
@@ -143,11 +236,20 @@ export const GeneralsAncientHelm = createCard(312009)
  * 投掷阶段：2个元素骰初始总是投出水元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const HeartOfDepth = createCard(312202)
+export const HeartOfDepth = createCard(312202, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Hydro);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Hydro, DiceType.Hydro), false))
   .build();
 
 /**
@@ -155,11 +257,15 @@ export const HeartOfDepth = createCard(312202)
  * 角色引发元素反应后：生成1个此角色元素类型的元素骰。（每回合至多3次）
  * （角色最多装备1件「圣遗物」）
  */
-export const InstructorsCap = createCard(312005)
+export const InstructorsCap = createCard(312005, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(3)
+  .on("elementalReaction", (c) => {
+    c.generateDice(c.getMaster().elementType());
+  })
   .build();
 
 /**
@@ -167,11 +273,19 @@ export const InstructorsCap = createCard(312005)
  * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const LaurelCoronet = createCard(312701)
+export const LaurelCoronet = createCard(312701, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Dendro);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -179,11 +293,19 @@ export const LaurelCoronet = createCard(312701)
  * 角色使用「元素战技」后：治疗自身2点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const LuckyDogsSilverCirclet = createCard(312002)
+export const LuckyDogsSilverCirclet = createCard(312002, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("useSkill", (c) => {
+    if (c.info.type === "elemental") {
+      c.heal(2);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -191,11 +313,19 @@ export const LuckyDogsSilverCirclet = createCard(312002)
  * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const MaskOfSolitudeBasalt = createCard(312601)
+export const MaskOfSolitudeBasalt = createCard(312601, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Geo);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -203,11 +333,17 @@ export const MaskOfSolitudeBasalt = createCard(312601)
  * 其他我方角色使用「元素爆发」后：所附属角色获得1点充能。
  * （角色最多装备1件「圣遗物」）
  */
-export const OrnateKabuto = createCard(312007)
+export const OrnateKabuto = createCard(312007, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
-  // TODO
+  .buildToEquipment()
+  .listenToOther()
+  .on("useSkill", (c) => {
+    if (c.info.type !== "burst" && c.character.entityId !== c.getMaster().entityId) {
+      c.gainEnergy(1);
+    }
+  })
   .build();
 
 /**
@@ -216,11 +352,27 @@ export const OrnateKabuto = createCard(312007)
  * 如果角色具有至少2点充能，就使角色「普通攻击」和「元素战技」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-export const ShimenawasReminiscence = createCard(312014)
+export const ShimenawasReminiscence = createCard(312014, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill?.type === "elemental" || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Void);
+    } else {
+      return false;
+    }
+  })
+  .on("beforeUseSkill", (c) => {
+    if (c.getMaster().energy >= 2) {
+      if (c.info.type === "normal" || c.info.type === "elemental") {
+        c.damage?.addDamage(1);
+      }
+    }
+    return false;
+  })
   .build();
 
 /**
@@ -229,11 +381,20 @@ export const ShimenawasReminiscence = createCard(312014)
  * 角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const TenacityOfTheMillelith = createCard(312010)
+export const TenacityOfTheMillelith = createCard(312010, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("actionPhase", (c) => (c.createStatus(UnmovableMountain), false))
+  .on("damaged", (c) => {
+    if (c.getMaster().isActive()) {
+      c.generateDice(c.getMaster().elementType());
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -242,11 +403,20 @@ export const TenacityOfTheMillelith = createCard(312010)
  * 投掷阶段：2个元素骰初始总是投出雷元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const ThunderingFury = createCard(312402)
+export const ThunderingFury = createCard(312402, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Electro);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Electro, DiceType.Electro), false))
   .build();
 
 /**
@@ -254,11 +424,19 @@ export const ThunderingFury = createCard(312402)
  * 角色使用「普通攻击」或装备「天赋」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ThunderingPoise = createCard(312011)
+export const ThunderingPoise = createCard(312011, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill?.type === "normal" || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Void);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -266,11 +444,19 @@ export const ThunderingPoise = createCard(312011)
  * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ThunderSummonersCrown = createCard(312401)
+export const ThunderSummonersCrown = createCard(312401, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Electro);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -278,12 +464,29 @@ export const ThunderSummonersCrown = createCard(312401)
  * 角色使用「元素爆发」后：治疗所有我方角色1点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const TravelingDoctorsHandkerchief = createCard(312003)
+export const TravelingDoctorsHandkerchief = createCard(312003, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(1)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("useSkill", (c) => {
+    if (c.info.type === "burst") {
+      c.heal(1, Target.myAll());
+    } else {
+      return false;
+    }
+  })
   .build();
+
+/**
+ * **辰砂往生录（生效中）**
+ * 本回合中，角色「普通攻击」造成的伤害+1。
+ */
+const VermillionHereafterStatus = createStatus(301203)
+  .withDuration(1)
+  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .build()
 
 /**
  * **辰砂往生录**
@@ -291,11 +494,20 @@ export const TravelingDoctorsHandkerchief = createCard(312003)
  * 角色被切换为「出战角色」后：本回合中，角色「普通攻击」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-export const VermillionHereafter = createCard(312012)
+export const VermillionHereafter = createCard(312012, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill?.type === "elemental" || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Void);
+    } else {
+      return false;
+    }
+  })
+  .on("switchActive", (c) => (c.createStatus(VermillionHereafterStatus), false))
   .build();
 
 /**
@@ -304,11 +516,20 @@ export const VermillionHereafter = createCard(312012)
  * 投掷阶段：2个元素骰初始总是投出风元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const ViridescentVenerer = createCard(312502)
+export const ViridescentVenerer = createCard(312502, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Anemo);
+    } else {
+      return false;
+    }
+  })
+  .on("rollPhase", (c) => (c.fixDice(DiceType.Anemo, DiceType.Anemo), false))
   .build();
 
 /**
@@ -316,11 +537,19 @@ export const ViridescentVenerer = createCard(312502)
  * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ViridescentVenerersDiadem = createCard(312501)
+export const ViridescentVenerersDiadem = createCard(312501, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Anemo);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -328,11 +557,19 @@ export const ViridescentVenerersDiadem = createCard(312501)
  * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const WinestainedTricorne = createCard(312201)
+export const WinestainedTricorne = createCard(312201, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Hydro);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -340,9 +577,16 @@ export const WinestainedTricorne = createCard(312201)
  * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const WitchsScorchingHat = createCard(312301)
+export const WitchsScorchingHat = createCard(312301, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .on("beforeUseDice", (c) => {
+    if (c.useSkill || c.playCard?.isTalentOf(c.getMaster().entityId)) {
+      c.deductCost(DiceType.Pyro);
+    } else {
+      return false;
+    }
+  })
   .build();

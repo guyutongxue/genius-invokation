@@ -38,7 +38,6 @@ const KamisatoArtSoumetsu = createSkill(11053)
  */
 const KamisatoArtSenho = createSkill(11054)
   .setType("passive")
-  
   // TODO
   .build();
 
@@ -53,7 +52,7 @@ export const KamisatoAyaka = createCharacter(1105)
  * 切换到装备有此牌的神里绫华时：少花费1个元素骰。（每回合1次）
  * （牌组中包含神里绫华，才能加入牌组）
  */
-export const KantenSenmyouBlessing = createCard(211051, ["character"])
+export const KantenSenmyouBlessing = createCard(211051)
   .setType("equipment")
   .addTags("talent")
   .costCryo(2)

@@ -57,7 +57,7 @@ export const Nahida = createCharacter(1703)
  * 水元素：装备有此牌的纳西妲所生成的摩耶之殿初始持续回合+1。
  * （牌组中包含纳西妲，才能加入牌组）
  */
-export const TheSeedOfStoredKnowledge = createCard(217031, ["character"])
+export const TheSeedOfStoredKnowledge = createCard(217031)
   .setType("equipment")
   .addTags("talent", "action")
   .costDendro(3)

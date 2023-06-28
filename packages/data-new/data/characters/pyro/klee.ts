@@ -44,7 +44,7 @@ export const Klee = createCharacter(1306)
  * 装备有此牌的可莉生成的爆裂火花的可用次数+1。
  * （牌组中包含可莉，才能加入牌组）
  */
-export const PoundingSurprise = createCard(213061, ["character"])
+export const PoundingSurprise = createCard(213061)
   .setType("equipment")
   .addTags("talent", "action")
   .costPyro(3)

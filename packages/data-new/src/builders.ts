@@ -1,12 +1,12 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { Context, SkillDescriptionContext, SwitchActiveContext, PlayCardContext } from "./contexts";
+import { Context, SkillDescriptionContext, SwitchActiveContext } from "./contexts";
 import { Target } from "./target";
 import { BurstSkillInfo, NormalSkillInfo, PassiveSkillEvents, UseSkillAction, registerSkill } from "./skills";
-import { EventHandlers, EventHandlerCtor } from "./events";
+import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType, registerEquipment } from "./equipments";
 import { CharacterTag, registerCharacter } from "./characters";
-import { StatusTag, registerStatus } from "./statuses";
+import { ShieldConfig, StatusTag, registerStatus } from "./statuses";
 import { SupportType, registerSupport } from "./supports";
 import { registerSummon } from "./summons";
 
@@ -20,7 +20,7 @@ export type SkillType =
 export type CharacterHandle = number & { readonly _never: unique symbol };
 export type SkillHandle = number & { readonly _never: unique symbol };
 export type CardHandle = number & { readonly _never: unique symbol };
-export type StatusHandle = number & { readonly _never: unique symbol };
+export type StatusHandle = number & { readonly _never2: unique symbol };
 export type SummonHandle = number & { readonly _never: unique symbol };
 export type SupportHandle = CardHandle & { readonly _never2: unique symbol };
 export type EquipmentHandle = CardHandle & { readonly _never2: unique symbol };
@@ -94,6 +94,7 @@ class ActionBuilderBase {
     this.pushAction((c) => c.dealDamage(value, type, target));
     return this;
   }
+  // applyElement
   heal(value: number, target?: Target) {
     this.pushAction((c) => c.heal(value, target));
     return this;
@@ -122,11 +123,21 @@ class ActionBuilderBase {
     this.pushAction((c) => c.summon(summon));
     return this;
   }
-  // createSupport(support: SupportHandle) {}
+  summonOneOf(...summons: SummonHandle[]) {
+    this.pushAction((c) => c.summonOneOf(...summons));
+    return this;
+  }
+  // createSupport
+  rollDice(count: number) {
+    this.pushAction((c) => c.rollDice(count));
+    return this;
+  }
   generateDice(...dice: DiceType[]) {
     this.pushAction((c) => c.generateDice(...dice));
     return this;
   }
+  // removeAllDice
+  // getCardCount
   drawCards(count: number) {
     this.pushAction((c) => c.drawCards(count));
     return this;
@@ -143,6 +154,11 @@ class ActionBuilderBase {
     this.pushAction((c) => c.switchActive(target));
     return this;
   }
+  useSkill(skill: SkillHandle | "normal") {
+    this.pushAction((c) => c.useSkill(skill));
+    return this;
+  }
+
 }
 
 class SkillBuilder extends ActionBuilderBase {
@@ -175,6 +191,11 @@ class SkillBuilder extends ActionBuilderBase {
       this.shouldGainEnergy = (opt ?? true) as boolean;
     }
     this.type = type;
+    return this;
+  }
+
+  noEnergy() {
+    this.shouldGainEnergy = false;
     return this;
   }
 
@@ -280,31 +301,27 @@ class CardBuilder<
     this.tags.push(...tags);
     return this;
   }
-  useSkill(skill: SkillHandle) {
-    this.pushAction((c) => c.useSkill(skill));
-    return this;
-  }
   addFilter(filter: PlayCardFilter<T>) {
     this.filters.push(filter);
     return this;
   }
   addActiveCharacterFilter(ch: CharacterHandle) {
     return this.addFilter(
-      (c) => !!c.hasCharacter(Target.ofCharacter(ch))?.isActive()
+      (c) => !!c.hasCharacter(ch)?.isActive()
     );
   }
   filterTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
     this.targetFilters.push(filter);
     return this;
   }
-  do(action: (this: ContextOfTarget<T>, c: PlayCardContext) => void) {
+  do(action: (this: ContextOfTarget<T>, c: Context) => void) {
     this.pushAction(action);
     return this;
   }
 
   build(): CardHandle {
     const outerThis = this;
-    function finalFilter(this: ContextOfTarget<T>, c: PlayCardContext) {
+    function finalFilter(this: ContextOfTarget<T>, c: Context) {
       for (const f of outerThis.filters) {
         if (!f.call(this, c)) {
           return false;
@@ -317,7 +334,7 @@ class CardBuilder<
       }
       return true;
     }
-    function action(this: ContextOfTarget<T>, c: PlayCardContext) {
+    function action(this: ContextOfTarget<T>, c: Context) {
       for (const a of outerThis.actions) {
         a.call(this, c);
       }
@@ -373,9 +390,11 @@ class CardBuilder<
     if (cardBuilder.tags.includes("artifact")) {
       eqBuilder.setType("artifact");
     }
-    cardBuilder.do(function (c) {
-      this[0].equip(cardBuilder.id as EquipmentHandle);
-    }).build();
+    cardBuilder.setType("equipment")
+      .do(function (c) {
+        this[0].equip(cardBuilder.id as EquipmentHandle);
+      })
+      .build();
     return eqBuilder;
   }
 
@@ -387,8 +406,18 @@ class CardBuilder<
         break;
       }
     }
-    this.do((c) => c.createSupport(this.id as SupportHandle)).build();
+    this.setType("support")
+      .do((c) => c.createSupport(this.id as SupportHandle))
+      .build();
     return suppBuilder;
+  }
+
+  buildToStatus(combat = true): StatusBuilder<true> {
+    const statusBuilder = createStatus<true>(this.id);
+    this.do((c) => {
+      c[combat ? "createCombatStatus" : "createStatus"](this.id as StatusHandle)
+    }).build();
+    return statusBuilder;
   }
 }
 
@@ -459,8 +488,9 @@ class TriggerBuilderBase {
   }
 }
 
-class StatusBuilder extends TriggerBuilderBase {
+class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilderBase {
   private tags: StatusTag[] = [];
+  private shieldConfig: ShieldConfig = null;
   private shouldListenToOthers: boolean = false;
   private handlerCtor?: EventHandlerCtor;
 
@@ -472,21 +502,27 @@ class StatusBuilder extends TriggerBuilderBase {
     this.shouldListenToOthers = true;
     return this;
   }
-  addTags(...tags: StatusTag[]) {
-    this.tags.push(...tags);
+  disableSkill() {
+    this.tags.push("disableSkill");
+    return this;
+  }
+  shield(shield: ShieldConfig) {
+    this.tags.push("shield");
+    this.shieldConfig = shield;
     return this;
   }
 
-  build(): StatusHandle {
+  build(): BuildFromCard extends true ? CardHandle & StatusHandle : StatusHandle {
     registerStatus(this.id, {
       tags: this.tags,
       duration: this.duration,
       usage: this.usage,
+      shield: this.shieldConfig,
       usagePerRound: this.usagePerRound,
-      listenToOthers: this.shouldListenToOthers,
+      listenTo: this.shouldListenToOthers ? "my" : "master",
       handlerCtor: this.getHandlerCtor(),
     });
-    return this.id as StatusHandle;
+    return this.id as CardHandle & StatusHandle;
   }
 }
 
@@ -513,7 +549,7 @@ class SupportBuilder extends TriggerBuilderBase {
       usage: this.usage,
       usagePerRound: this.usagePerRound,
       duration: this.duration,
-      listenToOpp: this.shouldListenToOpp,
+      listenTo: this.shouldListenToOpp ? "all" : "my",
       handlerCtor: this.getHandlerCtor(),
     })
     return this.id as SupportHandle;
@@ -522,6 +558,7 @@ class SupportBuilder extends TriggerBuilderBase {
 
 class EquipmentBuilder extends TriggerBuilderBase {
   private type: EquipmentType = "other";
+  private listenTo: ListenTarget = "master";
   constructor(private readonly id: number) {
     super();
   }
@@ -529,10 +566,26 @@ class EquipmentBuilder extends TriggerBuilderBase {
     this.type = type;
     return this;
   }
+  override withDuration(duration: number): never {
+    throw new Error("Cannot set duration for equipment");
+  }
+  override withUsage(usage: number): never {
+    throw new Error("Cannot set usage for equipment");
+  }
+  listenToOther() {
+    this.listenTo = "my";
+    return this;
+  }
+  listenToOpp() {
+    this.listenTo = "all";
+    return this;
+  }
 
   build(): EquipmentHandle {
     registerEquipment(this.id, {
       type: this.type,
+      usagePerRound: this.usagePerRound,
+      listenTo: this.listenTo,
       handlerCtor: this.getHandlerCtor(),
     });
     return this.id as EquipmentHandle;

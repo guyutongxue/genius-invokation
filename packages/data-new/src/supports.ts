@@ -1,4 +1,4 @@
-import { EventHandlerCtor } from "./events";
+import { EventHandlerCtor, ListenTarget } from "./events";
 
 export type SupportType = "ally" | "item" | "place" | "other"
 
@@ -8,7 +8,7 @@ interface SupportInfo {
   duration: number;
   usage: number;
   usagePerRound: number;
-  listenToOpp: boolean;
+  listenTo: Exclude<ListenTarget, "master">;
   handlerCtor: EventHandlerCtor;
 }
 export type SupportInfoWithId = Readonly<SupportInfo & { id: number }>;

@@ -44,7 +44,7 @@ export const Venti = createCharacter(1503)
  * 装备有此牌的温迪生成的风域触发后，会使本回合中我方角色下次「普通攻击」少花费1个无色元素。
  * （牌组中包含温迪，才能加入牌组）
  */
-export const EmbraceOfWinds = createCard(215031, ["character"])
+export const EmbraceOfWinds = createCard(215031)
   .setType("equipment")
   .addTags("talent", "action")
   .costAnemo(3)

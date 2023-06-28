@@ -91,7 +91,7 @@ export const YaeMiko = createCharacter(1408)
  * 装备有此牌的八重神子通过大密法·天狐显真消灭了杀生樱后，本回合下次使用野干役咒·杀生樱时少花费2个元素骰。
  * （牌组中包含八重神子，才能加入牌组）
  */
-export const TheShrinesSacredShade = createCard(214081, ["character"])
+export const TheShrinesSacredShade = createCard(214081)
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(YaeMiko)

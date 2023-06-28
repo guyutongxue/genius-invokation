@@ -44,7 +44,7 @@ export const Diona = createCharacter(1102)
  * 装备有此牌的迪奥娜生成的猫爪护盾，所提供的护盾值+1。
  * （牌组中包含迪奥娜，才能加入牌组）
  */
-export const ShakenNotPurred = createCard(211021, ["character"])
+export const ShakenNotPurred = createCard(211021)
   .setType("equipment")
   .addTags("talent", "action")
   .costCryo(4)
