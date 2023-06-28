@@ -1,4 +1,4 @@
-import { Context, DamageContext, ElementalReactionContext, RollContext, SkillContext, SkillReadonlyContext, SwitchActiveContext, UseDiceContext } from "./contexts";
+import { BeforeDamageCalculatedContext, Context, DamageContext, DamageReadonlyContext, ElementalReactionContext, PlayCardContext, RollContext, SkillContext, SkillReadonlyContext, SwitchActiveContext, UseDiceContext } from "./contexts";
 
 export type HandlerResult = boolean | void;
 
@@ -14,19 +14,22 @@ export interface EventHandlers<This = {}> {
   onUseSkill?(this: This, c: SkillReadonlyContext): HandlerResult;
 
   onRequestFastSwitchActive?(this: This): boolean;
+  onPlayCard?(this: This, c: PlayCardContext): HandlerResult;
   onSwitchActive?(this: This, c: SwitchActiveContext): HandlerResult;
   onDeclareEnd?(this: This, c: Context): HandlerResult;
 
+  onBeforeDamageCalculated?(this: This, c: BeforeDamageCalculatedContext): HandlerResult;
   onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;
   onDealDamage?(this: This, c: DamageContext): HandlerResult;
+  onBeforeDamaged?(this: This, c: DamageContext): HandlerResult;
+  onDamaged?(this: This, c: DamageReadonlyContext): HandlerResult;
+  onDefeated?(this: This, c: DamageReadonlyContext): HandlerResult;
 
   onBeforeUseDice?(this: This, c: UseDiceContext): HandlerResult;
   onBeforeSwitchShouldFast?(this: This): HandlerResult;
 
   onElementalReaction?(this: This, c: ElementalReactionContext): HandlerResult;
 
-  onDamaged?(this: This, c: DamageContext): HandlerResult;
-  onDefeated?(this: This, c: DamageContext): HandlerResult;
 }
 
 export type EventHandlerCtor = new () => EventHandlers;

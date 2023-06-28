@@ -19,8 +19,9 @@ export interface Context {
   isMyTurn(): boolean;
   checkSpecialBit(bit: SpecialBits): boolean;
 
-  hasCharacter(ch: CharacterHandle): CharacterContext | null;
-  allMyCharacters(onlyAlive?: boolean): CharacterContext[];
+  hasCharacter(ch: CharacterHandle | Target): CharacterContext | null;
+  allCharacters(opp?: boolean, includesDefeated?: boolean): CharacterContext[];
+  fullSupportArea(opp: boolean): boolean;
   hasSummon(summon: SummonHandle): SummonContext | null;
   allSummons(): SummonContext[];
   hasCombatStatus(status: StatusHandle): StatusContext | null;
@@ -70,6 +71,7 @@ export interface SkillDescriptionContext extends Context {
 export interface SkillReadonlyContext extends Context {
   readonly info: SkillInfoWithId;
   readonly character: CharacterContext;
+  readonly damage?: DamageReadonlyContext;
   isCharged(): boolean;
   isPlunging(): boolean;
 }
@@ -88,23 +90,37 @@ export interface UseDiceContext {
   addCost(...dice: DiceType[]): void;
   deductCost(...dice: DiceType[]): void;
 
+  isCharged(): boolean;
   getMaster(): CharacterContext;
   dispose(): void;
 }
 
-export interface DamageContext extends Context {
+export interface DamageReadonlyContext extends Context {
+  readonly sourceType: "character" | "summon" | "status";
   readonly target: CharacterContext;
   readonly damageType: DamageType;
   readonly reaction?: ElementalReactionContext;
+}
 
+export interface BeforeDamageCalculatedContext extends Context {
+  readonly target: CharacterContext;
+  readonly damageType: DamageType;
+  changeDamageType(type: DamageType): void;
   addDamage(value: number): void;
   multiplyDamage(multiplier: number): void;
-  changeDamageType(type: DamageType): void;
   decreaseDamage(value: number): void;
 }
 
-// export interface PlayCardContext extends Context {
-// }
+export interface DamageContext extends DamageReadonlyContext {
+  addDamage(value: number): void;
+  multiplyDamage(multiplier: number): void;
+  decreaseDamage(value: number): void;
+}
+
+export interface PlayCardContext extends Context {
+  readonly info: CardInfoWithId;
+  readonly target: CardTarget[keyof CardTarget][];
+}
 
 export interface SwitchActiveContext extends Context {
   readonly from: CharacterContext;

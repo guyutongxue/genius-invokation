@@ -5,7 +5,7 @@ import { DiceType, createCard, SpecialBits, Target, DamageType } from '@gi-tcg';
  * 召唤一个随机「丘丘人」召唤物！
  * （牌组包含至少2个「魔物」角色，才能加入牌组）
  */
-export const AbyssalSummons = createCard(332015)
+const AbyssalSummons = createCard(332015)
   .setType("event")
   .requireDualCharacterTag("monster")
   .costSame(2)
@@ -16,7 +16,7 @@ export const AbyssalSummons = createCard(332015)
  * **神宝迁宫祝词**
  * 将一个装备在我方角色的「圣遗物」装备牌，转移给另一个我方角色。
  */
-export const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "character"])
+const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "character"])
   .setType("event")
   .filterTargets((ch0, ch1) => !!ch0.hasEquipment("artifact"))
   .do(function () {
@@ -32,7 +32,7 @@ export const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["charac
  * **白垩之术**
  * 从最多2个我方后台角色身上，转移1点充能到我方出战角色。
  */
-export const CalxsArts = createCard(332009)
+const CalxsArts = createCard(332009)
   .setType("event")
   .costSame(1)
   .do((c) => {
@@ -45,9 +45,9 @@ export const CalxsArts = createCard(332009)
  * **换班时间**
  * 我方下次执行「切换角色」行动时：少花费1个元素骰。
  */
-export const ChangingShifts = createCard(332002)
+const ChangingShifts = createCard(332002)
   .setType("event")
-  .buildToStatus()
+  .buildToStatus("combat")
   .on("beforeUseDice", (c) => {
     if (c.switchActive) {
       c.deductCost(DiceType.Void);
@@ -62,12 +62,12 @@ export const ChangingShifts = createCard(332002)
  * 本回合中，我方角色下一次造成岩元素伤害后：如果我方存在提供「护盾」的出战状态，则为一个此类出战状态补充3点「护盾」。
  * （牌组包含至少2个岩元素角色，才能加入牌组）
  */
-export const ElementalResonanceEnduringRock = createCard(331602)
+const ElementalResonanceEnduringRock = createCard(331602)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("geo")
   .costGeo(1)
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
   .on("dealDamage", (c) => {
@@ -87,12 +87,12 @@ export const ElementalResonanceEnduringRock = createCard(331602)
  * 本回合中，我方当前出战角色下一次引发火元素相关反应时，造成的伤害+3。
  * （牌组包含至少2个火元素角色，才能加入牌组）
  */
-export const ElementalResonanceFerventFlames = createCard(331302)
+const ElementalResonanceFerventFlames = createCard(331302)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("pyro")
   .costPyro(1)
-  .buildToStatus(false)
+  .buildToStatus(undefined)
   .withUsage(1)
   .withDuration(1)
   .on("beforeUseSkill", (c) => {
@@ -109,7 +109,7 @@ export const ElementalResonanceFerventFlames = createCard(331302)
  * 我方一名充能未满的角色获得1点充能。（出战角色优先）
  * （牌组包含至少2个雷元素角色，才能加入牌组）
  */
-export const ElementalResonanceHighVoltage = createCard(331402)
+const ElementalResonanceHighVoltage = createCard(331402)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("electro")
@@ -122,7 +122,7 @@ export const ElementalResonanceHighVoltage = createCard(331402)
  * 切换到目标角色，并生成1点万能元素。
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
-export const ElementalResonanceImpetuousWinds = createCard(331502, ["character"])
+const ElementalResonanceImpetuousWinds = createCard(331502, ["character"])
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("anemo")
@@ -138,12 +138,12 @@ export const ElementalResonanceImpetuousWinds = createCard(331502, ["character"]
  * 本回合中，我方当前出战角色下一次造成的伤害+2。
  * （牌组包含至少2个冰元素角色，才能加入牌组）
  */
-export const ElementalResonanceShatteringIce = createCard(331102)
+const ElementalResonanceShatteringIce = createCard(331102)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("cryo")
   .costCryo(1)
-  .buildToStatus(false)
+  .buildToStatus(undefined)
   .withUsage(1)
   .withDuration(1)
   .on("dealDamage", (c) => {
@@ -156,7 +156,7 @@ export const ElementalResonanceShatteringIce = createCard(331102)
  * 治疗我方出战角色2点。然后，治疗所有我方后台角色1点。
  * （牌组包含至少2个水元素角色，才能加入牌组）
  */
-export const ElementalResonanceSoothingWater = createCard(331202)
+const ElementalResonanceSoothingWater = createCard(331202)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("hydro")
@@ -171,7 +171,7 @@ export const ElementalResonanceSoothingWater = createCard(331202)
  * 使我方场上的燃烧烈焰、草原核和激化领域「可用次数」+1。
  * （牌组包含至少2个草元素角色，才能加入牌组）
  */
-export const ElementalResonanceSprawlingGreenery = createCard(331702)
+const ElementalResonanceSprawlingGreenery = createCard(331702)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("dendro")
@@ -179,7 +179,7 @@ export const ElementalResonanceSprawlingGreenery = createCard(331702)
   .do((c) => {
     // TODO
   })
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
   .on("beforeDealDamage", (c) => {
@@ -196,7 +196,7 @@ export const ElementalResonanceSprawlingGreenery = createCard(331702)
  * 生成1个火元素骰。
  * （牌组包含至少2个火元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenFlames = createCard(331301)
+const ElementalResonanceWovenFlames = createCard(331301)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("pyro")
@@ -208,7 +208,7 @@ export const ElementalResonanceWovenFlames = createCard(331301)
  * 生成1个冰元素骰。
  * （牌组包含至少2个冰元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenIce = createCard(331101)
+const ElementalResonanceWovenIce = createCard(331101)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("cryo")
@@ -220,7 +220,7 @@ export const ElementalResonanceWovenIce = createCard(331101)
  * 生成1个岩元素骰。
  * （牌组包含至少2个岩元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenStone = createCard(331601)
+const ElementalResonanceWovenStone = createCard(331601)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("geo")
@@ -232,7 +232,7 @@ export const ElementalResonanceWovenStone = createCard(331601)
  * 生成1个雷元素骰。
  * （牌组包含至少2个雷元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenThunder = createCard(331401)
+const ElementalResonanceWovenThunder = createCard(331401)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("electro")
@@ -244,7 +244,7 @@ export const ElementalResonanceWovenThunder = createCard(331401)
  * 生成1个水元素骰。
  * （牌组包含至少2个水元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenWaters = createCard(331201)
+const ElementalResonanceWovenWaters = createCard(331201)
   .setType("event")
   .addTags("resonance")
   .generateDice(DiceType.Hydro)
@@ -255,7 +255,7 @@ export const ElementalResonanceWovenWaters = createCard(331201)
  * 生成1个草元素骰。
  * （牌组包含至少2个草元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenWeeds = createCard(331701)
+const ElementalResonanceWovenWeeds = createCard(331701)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("dendro")
@@ -267,7 +267,7 @@ export const ElementalResonanceWovenWeeds = createCard(331701)
  * 生成1个风元素骰。
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
-export const ElementalResonanceWovenWinds = createCard(331501)
+const ElementalResonanceWovenWinds = createCard(331501)
   .setType("event")
   .addTags("resonance")
   .requireDualCharacterTag("anemo")
@@ -279,7 +279,7 @@ export const ElementalResonanceWovenWinds = createCard(331501)
  * 在对方场上，生成1个随机类型的「愚人众伏兵」。
  * （牌组包含至少2个「愚人众」角色，才能加入牌组）
  */
-export const FatuiConspiracy = createCard(332016)
+const FatuiConspiracy = createCard(332016)
   .setType("event")
   .requireDualCharacterTag("fatui")
   .costSame(2)
@@ -290,7 +290,7 @@ export const FatuiConspiracy = createCard(332016)
  * **永远的友谊**
  * 手牌数小于4的牌手抓牌，直到手牌数各为4张。
  */
-export const FriendshipEternal = createCard(332020)
+const FriendshipEternal = createCard(332020)
   .setType("event")
   .costSame(2)
   .do((c) => {
@@ -309,7 +309,7 @@ export const FriendshipEternal = createCard(332020)
  * **护法之誓**
  * 消灭所有「召唤物」。（不分敌我！）
  */
-export const GuardiansOath = createCard(332014)
+const GuardiansOath = createCard(332014)
   .setType("event")
   .costSame(4)
   .do((c) => { c.allSummons().map(s => s.dispose()); })
@@ -320,10 +320,10 @@ export const GuardiansOath = createCard(332014)
  * 本回合中，当前我方出战角色下次「普通攻击」造成的伤害+1。
  * 此次「普通攻击」为重击时：伤害额外+1。
  */
-export const HeavyStrike = createCard(332018)
+const HeavyStrike = createCard(332018)
   .setType("event")
   .costSame(1)
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
   .on("beforeUseSkill", (c) => {
@@ -344,7 +344,7 @@ export const HeavyStrike = createCard(332018)
  * 本回合有我方角色被击倒，才能打出：
  * 生成1个万能元素，我方当前出战角色获得1点充能。
  */
-export const IHaventLostYet = createCard(332005)
+const IHaventLostYet = createCard(332005)
   .setType("event")
   .addFilter(c => c.checkSpecialBit(SpecialBits.DefeatedMine))
   .generateDice(DiceType.Omni)
@@ -355,9 +355,9 @@ export const IHaventLostYet = createCard(332005)
  * **交给我吧！**
  * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。
  */
-export const LeaveItToMe = createCard(332006)
+const LeaveItToMe = createCard(332006)
   .setType("event")
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .on("requestFastSwitchActive", () => true)
   .build();
@@ -366,7 +366,7 @@ export const LeaveItToMe = createCard(332006)
  * **诸武精通**
  * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色。
  */
-export const MasterOfWeaponry = createCard(332010, ["character", "character"])
+const MasterOfWeaponry = createCard(332010, ["character", "character"])
   .setType("event")
   .filterTargets((ch0, ch1) => {
     return ch0.hasEquipment("weapon") &&
@@ -387,7 +387,7 @@ export const MasterOfWeaponry = createCard(332010, ["character", "character"])
  * 抓1张牌。然后，选择任意手牌替换。
  * （牌组包含至少2个「须弥」角色，才能加入牌组）
  */
-export const NatureAndWisdom = createCard(331804)
+const NatureAndWisdom = createCard(331804)
   .setType("event")
   .requireDualCharacterTag("sumeru")
   .costSame(1)
@@ -399,7 +399,7 @@ export const NatureAndWisdom = createCard(331804)
  * **下落斩**
  * 战斗行动：切换到目标角色，然后该角色进行「普通攻击」。
  */
-export const PlungingStrike = createCard(332017, ["character"])
+const PlungingStrike = createCard(332017, ["character"])
   .setType("event")
   .addTags("action")
   .costSame(3)
@@ -413,7 +413,7 @@ export const PlungingStrike = createCard(332017, ["character"])
  * **快快缝补术**
  * 选择一个我方「召唤物」，使其「可用次数」+1。
  */
-export const QuickKnit = createCard(332012, ["summon"])
+const QuickKnit = createCard(332012, ["summon"])
   .setType("event")
   .costSame(1)
   .filterTargets((t) => t.isMine())
@@ -426,7 +426,7 @@ export const QuickKnit = createCard(332012, ["summon"])
  * **送你一程**
  * 选择一个敌方「召唤物」，使其「可用次数」-2。
  */
-export const SendOff = createCard(332013, ["summon"])
+const SendOff = createCard(332013, ["summon"])
   .setType("event")
   .costSame(2)
   .filterTargets((t) => !t.isMine())
@@ -439,7 +439,7 @@ export const SendOff = createCard(332013, ["summon"])
  * **星天之兆**
  * 我方当前出战角色获得1点充能。
  */
-export const Starsigns = createCard(332008)
+const Starsigns = createCard(332008)
   .setType("event")
   .costVoid(2)
   .gainEnergy(1)
@@ -450,11 +450,11 @@ export const Starsigns = createCard(332008)
  * 下回合行动阶段开始时：生成3点万能元素。
  * （牌组包含至少2个「璃月」角色，才能加入牌组）
  */
-export const StoneAndContracts = createCard(331802)
+const StoneAndContracts = createCard(331802)
   .setType("event")
   .requireDualCharacterTag("liyue")
   .costVoid(3)
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .on("actionPhase", (c) => c.generateDice(DiceType.Omni, DiceType.Omni, DiceType.Omni))
   .build();
@@ -463,7 +463,7 @@ export const StoneAndContracts = createCard(331802)
  * **运筹帷幄**
  * 抓2张牌。
  */
-export const Strategize = createCard(332004)
+const Strategize = createCard(332004)
   .setType("event")
   .costSame(1)
   .drawCards(2)
@@ -473,7 +473,7 @@ export const Strategize = createCard(332004)
  * **最好的伙伴！**
  * 将所花费的元素骰转换为2个万能元素。
  */
-export const TheBestestTravelCompanion = createCard(332001)
+const TheBestestTravelCompanion = createCard(332001)
   .setType("event")
   .costVoid(2)
   .generateDice(DiceType.Omni, DiceType.Omni)
@@ -483,7 +483,7 @@ export const TheBestestTravelCompanion = createCard(332001)
  * **温妮莎传奇**
  * 生成4个不同类型的基础元素骰。
  */
-export const TheLegendOfVennessa = createCard(332019)
+const TheLegendOfVennessa = createCard(332019)
   .setType("event")
   .costSame(3)
   .do((c) => {
@@ -503,7 +503,7 @@ export const TheLegendOfVennessa = createCard(332019)
  * 将我方所有元素骰转换为当前出战角色的类型。
  * （牌组包含至少2个「稻妻」角色，才能加入牌组）
  */
-export const ThunderAndEternity = createCard(331803)
+const ThunderAndEternity = createCard(331803)
   .setType("event")
   .requireDualCharacterTag("inazuma")
   .do(c => {
@@ -516,7 +516,7 @@ export const ThunderAndEternity = createCard(331803)
  * **一掷乾坤**
  * 选择任意元素骰重投，可重投2次。
  */
-export const TossUp = createCard(332003)
+const TossUp = createCard(332003)
   .setType("event")
   .rollDice(2)
   .build();
@@ -525,10 +525,10 @@ export const TossUp = createCard(332003)
  * **鹤归之时**
  * 我方下一次使用技能后：将下一个我方后台角色切换到场上。
  */
-export const WhenTheCraneReturned = createCard(332007)
+const WhenTheCraneReturned = createCard(332007)
   .setType("event")
   .costSame(1)
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .on("useSkill", (c) => c.switchActive(Target.myNext()))
   .build();
@@ -539,11 +539,11 @@ export const WhenTheCraneReturned = createCard(332007)
  * 可用次数：1
  * （牌组包含至少2个「蒙德」角色，才能加入牌组）
  */
-export const WindAndFreedom = createCard(331801)
+const WindAndFreedom = createCard(331801)
   .setType("event")
   .requireDualCharacterTag("mondstadt")
   .costSame(1)
-  .buildToStatus()
+  .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
   .on("dealDamage", (c) => {

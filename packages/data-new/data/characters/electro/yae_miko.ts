@@ -41,7 +41,7 @@ const RiteOfDispatch = createStatus(114082)
   .withDuration(1)
   .withUsage(1)
   .on("beforeUseDice", (c) => {
-    if (c.skill?.id === YakanEvocationSesshouSakura) {
+    if (c.useSkill?.id === YakanEvocationSesshouSakura) {
       c.deductCost(DiceType.Electro, DiceType.Electro);
     }
     return false;

@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType, Target } from "@gi-tcg";
 
 /**
  * **岩雨**
@@ -8,7 +8,17 @@ const RainOfStone = createSkill(16031)
   .setType("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
+  .build();
+
+/**
+ * **岩脊**
+ * 结束阶段：造成1点岩元素伤害。
+ * 可用次数：2
+ */
+const StoneStele = createSummon(116031)
+  .withUsage(2)
+  .on("endPhase", (c) => c.dealDamage(1, DamageType.Geo))
   .build();
 
 /**
@@ -18,7 +28,16 @@ const RainOfStone = createSkill(16031)
 const DominusLapidis = createSkill(16032)
   .setType("elemental")
   .costGeo(3)
-  // TODO
+  .dealDamage(1, DamageType.Geo)
+  .summon(StoneStele)
+  .build();
+
+/**
+ * **玉璋护盾**
+ * 为我方出战角色提供2点护盾。
+ */
+const JadeShield = createStatus(116032)
+  .shield(2)
   .build();
 
 /**
@@ -28,7 +47,18 @@ const DominusLapidis = createSkill(16032)
 const DominusLapidisStrikingStone = createSkill(16033)
   .setType("elemental")
   .costGeo(5)
-  // TODO
+  .dealDamage(3, DamageType.Geo)
+  .summon(StoneStele)
+  .createCombatStatus(JadeShield)
+  .build();
+
+/**
+ * **石化**
+ * 角色无法使用技能。（持续到回合结束）
+ */
+const Petrification = createStatus(116033)
+  .disableSkill()
+  .withDuration(1)
   .build();
 
 /**
@@ -39,7 +69,8 @@ const PlanetBefall = createSkill(16034)
   .setType("burst")
   .costGeo(3)
   .costEnergy(3)
-  // TODO
+  .dealDamage(4, DamageType.Geo)
+  .createStatus(Petrification, Target.oppActive())
   .build();
 
 export const Zhongli = createCharacter(1603)
@@ -57,6 +88,16 @@ export const Zhongli = createCharacter(1603)
 export const DominanceOfEarth = createCard(216031)
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Zhongli)
+  .addActiveCharacterFilter(Zhongli)
   .costGeo(5)
-  // TODO
+  .useSkill(DominusLapidisStrikingStone)
+  .buildToEquipment()
+  .listenToOther()
+  .on("beforeDealDamage", (c) => {
+    const active = c.hasCharacter(Target.myActive());
+    if (c.sourceType === "summon" && active?.hasShield()) {
+      c.addDamage(1);
+    }
+  })
   .build();

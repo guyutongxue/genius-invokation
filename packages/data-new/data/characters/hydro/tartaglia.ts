@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType, Target } from "@gi-tcg";
 
 /**
  * **断雨**
@@ -8,8 +8,50 @@ const CuttingTorrent = createSkill(12041)
   .setType("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
+
+/**
+ * **远程状态**
+ * 所附属角色进行重击后：目标角色附属断流。
+ */
+const RangedStance = createStatus(112041)
+  .on("useSkill", (c) => {
+    if (c.isCharged() && c.damage) {
+      c.createStatus(Riptide, c.damage.target.asTarget());
+    }
+  })
+  .build();
+
+/**
+ * **近战状态**
+ * 角色造成的物理伤害转换为水元素伤害。
+ * 角色进行重击后：目标角色附属断流。
+ * 角色对附属有断流的角色造成的伤害+1；
+ * 角色对已附属有断流的角色使用技能后：对下一个敌方后台角色造成1点穿透伤害。（每回合至多2次）
+ * 持续回合：2
+ */
+const MeleeStance = createStatus(112042)
+  .withDuration(2)
+  .do({
+    onBeforeDamageCalculated(c) {
+      c.changeDamageType(DamageType.Hydro);
+    },
+    onUseSkill(c) {
+      if (c.isCharged() && c.damage) {
+        c.createStatus(Riptide, c.damage.target.asTarget());
+      }
+      if (this.piercingCount && c.damage && c.damage.target.hasStatus(Riptide)) {
+        c.dealDamage(1, DamageType.Piercing, Target.oppNext());
+        this.piercingCount--;
+      }
+    },
+    onActionPhase() {
+      this.piercingCount = 2;
+    }
+  }, { piercingCount: 2 })
+  .build();
+
 
 /**
  * **魔王武装·狂澜**
@@ -18,7 +60,9 @@ const CuttingTorrent = createSkill(12041)
 const FoulLegacyRagingTide = createSkill(12042)
   .setType("elemental")
   .costHydro(3)
-  // TODO
+  .removeStatus(RangedStance)
+  .createStatus(MeleeStance)
+  .dealDamage(2, DamageType.Hydro)
   .build();
 
 /**
@@ -31,7 +75,15 @@ const HavocObliteration = createSkill(12043)
   .setType("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .do((c) => {
+    if (c.character.hasStatus(RangedStance)) {
+      c.dealDamage(4, DamageType.Hydro);
+      c.gainEnergy(2);
+      c.createStatus(Riptide, Target.oppActive());
+    } else if (c.character.hasStatus(MeleeStance)) {
+      c.dealDamage(7, DamageType.Hydro);
+    }
+  })
   .build();
 
 /**
@@ -41,32 +93,25 @@ const HavocObliteration = createSkill(12043)
  */
 const TideWithholder = createSkill(12044)
   .setType("passive")
-  // TODO
+  .onBattleBegin((c) => c.createStatus(RangedStance))
   .build();
-
-// /**
-//  * **远程状态**
-//  * 
-//  */
-// const RangedStance = createSkill(12045)
-//   .setType("passive")
-  
-//   // TODO
-//   .build();
-
-// /**
-//  * **遏浪**
-//  * 
-//  */
-// const TideWithholder = createSkill(12046)
-//   .setType("passive")
-  
-//   // TODO
-//   .build();
 
 export const Tartaglia = createCharacter(1204)
   .addTags("hydro", "bow", "fatui")
   .addSkills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder)
+  .build();
+
+/**
+ * **断流**
+ * 所附属角色被击倒后：对所在阵营的出战角色附属「断流」。
+ * （处于「近战状态」的达达利亚攻击所附属角色时，会造成额外伤害。）
+ * 持续回合：2
+ */
+const Riptide = createStatus(112043)
+  .withDuration(2)
+  .on("defeated", (c) => {
+    c.createStatus(Riptide, Target.oppActive());
+  })
   .build();
 
 /**
@@ -79,6 +124,16 @@ export const Tartaglia = createCharacter(1204)
 export const AbyssalMayhemHydrospout = createCard(212041)
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Tartaglia)
+  .addActiveCharacterFilter(Tartaglia)
   .costHydro(4)
-  // TODO
+  .useSkill(FoulLegacyRagingTide)
+  .buildToEquipment()
+  .on("endPhase", (c) => {
+    c.allCharacters(true)
+      .filter(c => c.hasStatus(Riptide))
+      .forEach((ch) => {
+        c.dealDamage(1, DamageType.Piercing, ch.asTarget());
+      });
+  })
   .build();

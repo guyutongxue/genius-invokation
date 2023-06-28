@@ -6,7 +6,7 @@ import { createCard, createStatus } from '@gi-tcg';
  * 角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const SacrificialGreatsword = createCard(311302, ["character"])
+const SacrificialGreatsword = createCard(311302, ["character"])
   .setType("equipment")
   .addTags("weaponClaymore")
   .costSame(3)
@@ -28,7 +28,7 @@ export const SacrificialGreatsword = createCard(311302, ["character"])
  * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const SkywardPride = createCard(311304, ["character"])
+const SkywardPride = createCard(311304, ["character"])
   .setType("equipment")
   .addTags("weaponClaymore")
   .costSame(3)
@@ -58,7 +58,7 @@ const RebelliousShield = createStatus(121013)
  * 角色使用技能后：为我方出战角色提供1点护盾。（每回合1次，可叠加到2点）
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const TheBell = createCard(311305, ["character"])
+const TheBell = createCard(311305, ["character"])
   .setType("equipment")
   .addTags("weaponClaymore")
   .costSame(3)
@@ -73,7 +73,7 @@ export const TheBell = createCard(311305, ["character"])
  * 角色造成的伤害+1。
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const WhiteIronGreatsword = createCard(311301, ["character"])
+const WhiteIronGreatsword = createCard(311301, ["character"])
   .setType("equipment")
   .addTags("weaponClaymore")
   .costSame(2)
@@ -87,7 +87,7 @@ export const WhiteIronGreatsword = createCard(311301, ["character"])
  * 攻击剩余生命值不多于6的目标时，伤害额外+2。
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const WolfsGravestone = createCard(311303, ["character"])
+const WolfsGravestone = createCard(311303, ["character"])
   .setType("equipment")
   .addTags("weaponClaymore")
   .costSame(3)

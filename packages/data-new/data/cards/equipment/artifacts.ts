@@ -5,7 +5,7 @@ import { DiceType, Target, createCard, createStatus } from '@gi-tcg';
  * 角色使用「普通攻击」后：治疗自身1点。（每回合至多3次）
  * （角色最多装备1件「圣遗物」）
  */
-export const AdventurersBandana = createCard(312001, ["character"])
+const AdventurersBandana = createCard(312001, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(1)
@@ -26,7 +26,7 @@ export const AdventurersBandana = createCard(312001, ["character"])
  * 投掷阶段：2个元素骰初始总是投出岩元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const ArchaicPetra = createCard(312602, ["character"])
+const ArchaicPetra = createCard(312602, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -48,7 +48,7 @@ export const ArchaicPetra = createCard(312602, ["character"])
  * 投掷阶段：2个元素骰初始总是投出冰元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const BlizzardStrayer = createCard(312102, ["character"])
+const BlizzardStrayer = createCard(312102, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -69,7 +69,7 @@ export const BlizzardStrayer = createCard(312102, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const BrokenRimesEcho = createCard(312101, ["character"])
+const BrokenRimesEcho = createCard(312101, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -89,7 +89,7 @@ export const BrokenRimesEcho = createCard(312101, ["character"])
  * 角色使用「元素战技」或装备「天赋」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const CapriciousVisage = createCard(312013, ["character"])
+const CapriciousVisage = createCard(312013, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -110,7 +110,7 @@ export const CapriciousVisage = createCard(312013, ["character"])
  * 投掷阶段：2个元素骰初始总是投出火元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const CrimsonWitchOfFlames = createCard(312302, ["character"])
+const CrimsonWitchOfFlames = createCard(312302, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -132,7 +132,7 @@ export const CrimsonWitchOfFlames = createCard(312302, ["character"])
  * 投掷阶段：2个元素骰初始总是投出草元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const DeepwoodMemories = createCard(312702, ["character"])
+const DeepwoodMemories = createCard(312702, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -154,7 +154,7 @@ export const DeepwoodMemories = createCard(312702, ["character"])
  * 角色使用「元素爆发」造成的伤害+2。
  * （角色最多装备1件「圣遗物」）
  */
-export const EmblemOfSeveredFate = createCard(312008, ["character"])
+const EmblemOfSeveredFate = createCard(312008, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -177,7 +177,7 @@ export const EmblemOfSeveredFate = createCard(312008, ["character"])
  * 角色使用「元素爆发」后：所有我方后台角色获得1点充能。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ExilesCirclet = createCard(312006, ["character"])
+const ExilesCirclet = createCard(312006, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
@@ -197,7 +197,7 @@ export const ExilesCirclet = createCard(312006, ["character"])
  * 敌方角色被击倒后：如果所附属角色为「出战角色」，则生成2个万能元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const GamblersEarrings = createCard(312004, ["character"])
+const GamblersEarrings = createCard(312004, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(1)
@@ -222,7 +222,7 @@ const UnmovableMountain = createStatus(301201)
  * 行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）
  * （角色最多装备1件「圣遗物」）
  */
-export const GeneralsAncientHelm = createCard(312009, ["character"])
+const GeneralsAncientHelm = createCard(312009, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -236,7 +236,7 @@ export const GeneralsAncientHelm = createCard(312009, ["character"])
  * 投掷阶段：2个元素骰初始总是投出水元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const HeartOfDepth = createCard(312202, ["character"])
+const HeartOfDepth = createCard(312202, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -257,7 +257,7 @@ export const HeartOfDepth = createCard(312202, ["character"])
  * 角色引发元素反应后：生成1个此角色元素类型的元素骰。（每回合至多3次）
  * （角色最多装备1件「圣遗物」）
  */
-export const InstructorsCap = createCard(312005, ["character"])
+const InstructorsCap = createCard(312005, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
@@ -273,7 +273,7 @@ export const InstructorsCap = createCard(312005, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const LaurelCoronet = createCard(312701, ["character"])
+const LaurelCoronet = createCard(312701, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -293,7 +293,7 @@ export const LaurelCoronet = createCard(312701, ["character"])
  * 角色使用「元素战技」后：治疗自身2点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const LuckyDogsSilverCirclet = createCard(312002, ["character"])
+const LuckyDogsSilverCirclet = createCard(312002, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
@@ -313,7 +313,7 @@ export const LuckyDogsSilverCirclet = createCard(312002, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const MaskOfSolitudeBasalt = createCard(312601, ["character"])
+const MaskOfSolitudeBasalt = createCard(312601, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -333,7 +333,7 @@ export const MaskOfSolitudeBasalt = createCard(312601, ["character"])
  * 其他我方角色使用「元素爆发」后：所附属角色获得1点充能。
  * （角色最多装备1件「圣遗物」）
  */
-export const OrnateKabuto = createCard(312007, ["character"])
+const OrnateKabuto = createCard(312007, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(2)
@@ -352,7 +352,7 @@ export const OrnateKabuto = createCard(312007, ["character"])
  * 如果角色具有至少2点充能，就使角色「普通攻击」和「元素战技」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-export const ShimenawasReminiscence = createCard(312014, ["character"])
+const ShimenawasReminiscence = createCard(312014, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(3)
@@ -381,7 +381,7 @@ export const ShimenawasReminiscence = createCard(312014, ["character"])
  * 角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const TenacityOfTheMillelith = createCard(312010, ["character"])
+const TenacityOfTheMillelith = createCard(312010, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(3)
@@ -403,7 +403,7 @@ export const TenacityOfTheMillelith = createCard(312010, ["character"])
  * 投掷阶段：2个元素骰初始总是投出雷元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const ThunderingFury = createCard(312402, ["character"])
+const ThunderingFury = createCard(312402, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -424,7 +424,7 @@ export const ThunderingFury = createCard(312402, ["character"])
  * 角色使用「普通攻击」或装备「天赋」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ThunderingPoise = createCard(312011, ["character"])
+const ThunderingPoise = createCard(312011, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -444,7 +444,7 @@ export const ThunderingPoise = createCard(312011, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ThunderSummonersCrown = createCard(312401, ["character"])
+const ThunderSummonersCrown = createCard(312401, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -464,7 +464,7 @@ export const ThunderSummonersCrown = createCard(312401, ["character"])
  * 角色使用「元素爆发」后：治疗所有我方角色1点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const TravelingDoctorsHandkerchief = createCard(312003, ["character"])
+const TravelingDoctorsHandkerchief = createCard(312003, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(1)
@@ -494,7 +494,7 @@ const VermillionHereafterStatus = createStatus(301203)
  * 角色被切换为「出战角色」后：本回合中，角色「普通攻击」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-export const VermillionHereafter = createCard(312012, ["character"])
+const VermillionHereafter = createCard(312012, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(3)
@@ -516,7 +516,7 @@ export const VermillionHereafter = createCard(312012, ["character"])
  * 投掷阶段：2个元素骰初始总是投出风元素。
  * （角色最多装备1件「圣遗物」）
  */
-export const ViridescentVenerer = createCard(312502, ["character"])
+const ViridescentVenerer = createCard(312502, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costVoid(3)
@@ -537,7 +537,7 @@ export const ViridescentVenerer = createCard(312502, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const ViridescentVenerersDiadem = createCard(312501, ["character"])
+const ViridescentVenerersDiadem = createCard(312501, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -557,7 +557,7 @@ export const ViridescentVenerersDiadem = createCard(312501, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const WinestainedTricorne = createCard(312201, ["character"])
+const WinestainedTricorne = createCard(312201, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)
@@ -577,7 +577,7 @@ export const WinestainedTricorne = createCard(312201, ["character"])
  * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const WitchsScorchingHat = createCard(312301, ["character"])
+const WitchsScorchingHat = createCard(312301, ["character"])
   .setType("equipment")
   .addTags("artifact")
   .costSame(2)

@@ -6,7 +6,7 @@ import { createCard } from '@gi-tcg';
  * 对方使用技能后：如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const AquilaFavonia = createCard(311503, ["character"])
+const AquilaFavonia = createCard(311503, ["character"])
   .setType("equipment")
   .addTags("weaponSword")
   .costSame(3)
@@ -29,7 +29,7 @@ export const AquilaFavonia = createCard(311503, ["character"])
  * 角色使用「元素战技」后：角色额外获得1点充能。（每回合1次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const FavoniusSword = createCard(311505, ["character"])
+const FavoniusSword = createCard(311505, ["character"])
   .setType("equipment")
   .addTags("weaponSword")
   .costSame(3)
@@ -51,7 +51,7 @@ export const FavoniusSword = createCard(311505, ["character"])
  * 角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const SacrificialSword = createCard(311502, ["character"])
+const SacrificialSword = createCard(311502, ["character"])
   .setType("equipment")
   .addTags("weaponSword")
   .costSame(3)
@@ -73,7 +73,7 @@ export const SacrificialSword = createCard(311502, ["character"])
  * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const SkywardBlade = createCard(311504, ["character"])
+const SkywardBlade = createCard(311504, ["character"])
   .setType("equipment")
   .addTags("weaponSword")
   .costSame(3)
@@ -94,7 +94,7 @@ export const SkywardBlade = createCard(311504, ["character"])
  * 角色造成的伤害+1。
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-export const TravelersHandySword = createCard(311501, ["character"])
+const TravelersHandySword = createCard(311501, ["character"])
   .setType("equipment")
   .addTags("weaponSword")
   .costSame(2)

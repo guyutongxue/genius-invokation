@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **好运剑**
@@ -8,7 +8,7 @@ const StrikeOfFortune = createSkill(13031)
   .setType("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,43 @@ const StrikeOfFortune = createSkill(13031)
 const PassionOverload = createSkill(13032)
   .setType("elemental")
   .costPyro(3)
-  // TODO
+  .dealDamage(3, DamageType.Pyro)
+  .build();
+
+/**
+ * **鼓舞领域**
+ * 我方角色使用技能时：如果该角色生命值至少为7，则使此伤害额外+2；技能结算后，如果该角色生命值不多于6，则治疗该角色2点。
+ * 持续回合：2
+ */
+const InspirationField = createStatus(113031)
+  .withDuration(2)
+  .on("beforeUseSkill", (c) => {
+    if (c.character.health <= 7) {
+      c.damage?.addDamage(2);
+    }
+  })
+  .on("useSkill", (c) => {
+    if (c.character.health <= 6) {
+      c.heal(2);
+    }
+  })
+  .build();
+
+/**
+ * **鼓舞领域**
+ * 我方角色使用技能时：此技能伤害+2；技能结算后，如果该角色生命值不多于6，则治疗该角色2点。
+ * 持续回合：2
+ */
+const InspirationField01 = createStatus(113032)
+  .withDuration(2)
+  .on("beforeUseSkill", (c) => {
+    c.damage?.addDamage(2);
+  })
+  .on("useSkill", (c) => {
+    if (c.character.health <= 6) {
+      c.heal(2);
+    }
+  })
   .build();
 
 /**
@@ -29,7 +65,15 @@ const FantasticVoyage = createSkill(13033)
   .setType("burst")
   .costPyro(4)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    c.dealDamage(2, DamageType.Pyro);
+    if (c.character.hasEquipment(GrandExpectation)) {
+      c.createCombatStatus(InspirationField01);
+    } else {
+      c.createCombatStatus(InspirationField);
+    }
+  })
+  .createCombatStatus(InspirationField)
   .build();
 
 export const Bennett = createCharacter(1303)
@@ -47,7 +91,10 @@ export const Bennett = createCharacter(1303)
 export const GrandExpectation = createCard(213031)
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Bennett)
+  .addActiveCharacterFilter(Bennett)
   .costPyro(4)
   .costEnergy(2)
-  // TODO
+  .useSkill(FantasticVoyage)
+  .buildToEquipment()
   .build();

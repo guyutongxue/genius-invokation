@@ -35,6 +35,13 @@ export class Target {
       opp
     });
   }
+  static oppActive() {
+    return new Target({
+      type: "byPos",
+      pos: "active",
+      opp: true
+    });
+  }
   static oppNext() {
     return new Target({
       type: "byPos",
@@ -54,6 +61,13 @@ export class Target {
       type: "byPos",
       pos: "standby",
       opp: true
+    });
+  }
+  static myActive() {
+    return new Target({
+      type: "byPos",
+      pos: "active",
+      opp: false
     });
   }
   static myNext() {

@@ -412,11 +412,19 @@ class CardBuilder<
     return suppBuilder;
   }
 
-  buildToStatus(combat = true): StatusBuilder<true> {
+  buildToStatus(combatOrTarget: Target | "combat" | "this0" | undefined): StatusBuilder<true> {
     const statusBuilder = createStatus<true>(this.id);
-    this.do((c) => {
-      c[combat ? "createCombatStatus" : "createStatus"](this.id as StatusHandle)
-    }).build();
+    if (combatOrTarget === "combat") {
+      this.do((c) => c.createCombatStatus(this.id as StatusHandle))
+    } else if (combatOrTarget === "this0") {
+      const id = this.id;
+      const s = this as any;
+      CardBuilder.ensureTargetDescriptor(s);
+      s.do(function (c) { c.createStatus(id as StatusHandle, this[0].asTarget()); });
+    } else {
+      this.do((c) => c.createStatus(this.id as StatusHandle, combatOrTarget))
+    }
+    this.build();
     return statusBuilder;
   }
 }
