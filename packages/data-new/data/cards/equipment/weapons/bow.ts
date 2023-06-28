@@ -11,6 +11,14 @@ export const AmosBow = createCard(311204)
   .addTags("weaponBow")
   .costSame(3)
   .buildToEquipment()
+  .on("beforeUseSkill", (c) => {
+    if (c.damage) {
+      c.damage.addDamage(1);
+      if ("costs" in c.info && c.info.costs.length >= 5) {
+        c.damage.addDamage(2);
+      }
+    }
+  })
   .build();
 
 /**
@@ -23,7 +31,13 @@ export const ElegyForTheEnd = createCard(311205)
   .setType("equipment")
   .addTags("weaponBow")
   .costSame(3)
-  // TODO
+  .buildToEquipment()
+  .on("beforeUseSkill", (c) => {
+    c.damage?.addDamage(1);
+    if (c.info.type === "burst") {
+      // TODO
+    }
+  })
   .build();
 
 /**
@@ -35,7 +49,8 @@ export const RavenBow = createCard(311201)
   .setType("equipment")
   .addTags("weaponBow")
   .costSame(2)
-  // TODO
+  .buildToEquipment()
+  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
   .build();
 
 /**

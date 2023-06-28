@@ -1,3 +1,4 @@
+import { DiceType } from "@gi-tcg/typings";
 import { EquipmentHandle, StatusHandle } from "./builders";
 import { StatusContext } from "./statuses";
 import { Target } from "./target";
@@ -50,6 +51,7 @@ export interface CharacterContext {
   isMine(): boolean;
 
   asTarget(): Target;
+  elementType(): DiceType;
 }
 // return Target.ofCharacter(this.info.id);
 
