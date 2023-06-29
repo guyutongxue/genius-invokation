@@ -24,6 +24,7 @@
     "dts-bundle-generator": "^8.0.1",
     "glob": "^10.2.7",
     "rollup": "^3.25.0",
+    "rollup-plugin-node-externals": "^6.1.1",
     "tsx": "^3.12.7"
   }
 }

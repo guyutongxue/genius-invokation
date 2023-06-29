@@ -203,8 +203,9 @@ const GamblersEarrings = createCard(312004, ["character"])
   .addTags("artifact")
   .costSame(1)
   .buildToEquipment()
+  .listenToOpp()
   .on("defeated", (c) => {
-    if (c.getMaster().isActive()) {
+    if (!c.target.isMine() && c.getMaster().isActive()) {
       c.generateDice(DiceType.Omni, DiceType.Omni);
     }
   })

@@ -2,7 +2,7 @@ import notifySchema from "./api/notification.json";
 import rpcSchema from "./api/rpc.json";
 import type { NotificationMessage } from "./api/notification";
 import type { RpcMethod, RpcRequest } from "./api/request";
-import type { Handler, RpcResponse } from "./api/response";
+import type { RpcResponse } from "./api/response";
 import Ajv from "ajv";
 
 const ajv = new Ajv();

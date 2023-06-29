@@ -15,7 +15,7 @@ const AquilaFavonia = createCard(311503, ["character"])
   .withUsagePerRound(2)
   .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
   .on("useSkill", (c) => {
-    if (c.character.isMine() && c.getMaster().isActive()) {
+    if (!c.character.isMine() && c.getMaster().isActive()) {
       c.getMaster().heal(1);
     } else {
       return false;

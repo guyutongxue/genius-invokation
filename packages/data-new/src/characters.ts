@@ -44,6 +44,8 @@ export interface CharacterContext {
 
   readonly health: number;
   readonly energy: number;
+  isAlive(): boolean;
+  
   hasEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentInfoWithId;
   equip(equipment: EquipmentHandle | EquipmentInfoWithId): void;
   removeEquipment(equipment: EquipmentHandle | EquipmentInfoWithId): void;

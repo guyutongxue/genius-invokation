@@ -10,13 +10,12 @@
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
 
     "paths": {
       "@gi-tcg": ["./src/data_interface.ts"]
     },
 
-    "strict": true,
-
-    // "noUnusedLocals": true
   }
 }

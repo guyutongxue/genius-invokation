@@ -204,7 +204,7 @@ const TandooriRoastChicken = createFood(333011)
 const TeyvatFriedEgg = createCard(333009, ["character"])
   .setType("event")
   .addTags("food")
-  .filterTargets((c) => c.health === 0)
+  .filterTargets((c) => !c.isAlive())
   .costSame(3)
   .do(function (c) {
     c.heal(1, this[0].asTarget());

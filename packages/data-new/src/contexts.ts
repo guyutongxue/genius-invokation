@@ -1,4 +1,4 @@
-import { DamageType, DiceType } from "@gi-tcg/typings";
+import type { DamageType, DiceType } from "@gi-tcg/typings";
 import { CardHandle, CharacterHandle, SkillHandle, StatusHandle, SummonHandle, SupportHandle } from "./builders";
 import { Target } from "./target";
 import { SkillInfoWithId } from "./skills";

@@ -12,12 +12,12 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
     devDependencies:
-      '@jenshin-tcg/data':
+      '@gi-tcg/data':
         specifier: workspace:*
-        version: link:../data
-      '@jenshin-tcg/typings':
+        version: link:../data-new
+      '@gi-tcg/typings':
         specifier: workspace:*
-        version: link:../typings
+        version: link:../typings-new
       '@rollup/plugin-node-resolve':
         specifier: ^15.1.0
         version: 15.1.0(rollup@3.25.0)
@@ -40,24 +40,30 @@ importers:
         specifier: ^5.1.3
         version: 5.1.3
 
-  packages/data:
+  packages/core-new:
     dependencies:
-      '@jenshin-tcg/typings':
-        specifier: workspace:*
-        version: link:../typings
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
     devDependencies:
+      '@gi-tcg/data':
+        specifier: workspace:*
+        version: link:../data-new
+      '@gi-tcg/typings':
+        specifier: workspace:*
+        version: link:../typings-new
       '@rollup/plugin-node-resolve':
         specifier: ^15.1.0
         version: 15.1.0(rollup@3.25.0)
       '@rollup/plugin-typescript':
         specifier: ^11.1.1
         version: 11.1.1(rollup@3.25.0)(tslib@2.5.3)(typescript@5.1.3)
-      dts-bundle-generator:
-        specifier: ^8.0.1
-        version: 8.0.1
-      glob:
-        specifier: ^10.2.7
-        version: 10.2.7
+      '@types/lodash-es':
+        specifier: ^4.17.7
+        version: 4.17.7
+      nodemon:
+        specifier: ^2.0.22
+        version: 2.0.22
       rollup:
         specifier: ^3.25.0
         version: 3.25.0
@@ -92,6 +98,9 @@ importers:
       rollup:
         specifier: ^3.25.0
         version: 3.25.0
+      rollup-plugin-node-externals:
+        specifier: ^6.1.1
+        version: 6.1.1(rollup@3.25.0)
       tsx:
         specifier: ^3.12.7
         version: 3.12.7
@@ -157,6 +166,9 @@ importers:
       rollup:
         specifier: ^3.25.0
         version: 3.25.0
+      rollup-plugin-node-externals:
+        specifier: ^6.1.1
+        version: 6.1.1(rollup@3.25.0)
       tslib:
         specifier: ^2.5.3
         version: 2.5.3
@@ -1727,6 +1739,15 @@ packages:
   /reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
+    dev: true
+
+  /rollup-plugin-node-externals@6.1.1(rollup@3.25.0):
+    resolution: {integrity: sha512-127OFMkpH5rBVlRHRBDUMk1m1sGuzbGy7so5aj/IkpUb2r3+wOWjR/erUzd2ChEQWPsxsyQG6xpYYvPBAdcBRA==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      rollup: ^3.0.0
+    dependencies:
+      rollup: 3.25.0
     dev: true
 
   /rollup@3.25.0:
