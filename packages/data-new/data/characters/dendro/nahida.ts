@@ -21,7 +21,14 @@ const SeedOfSkadha = createStatus(117031)
   .listenToOthers()
   .on("damaged", (c) => {
     if (c.target.hasStatus(SeedOfSkadha) && c.reaction) {
-      c.dealDamage(1, DamageType.Piercing, c.getMaster().asTarget());
+      // 摩耶之殿天赋（火）：受到元素反应伤害的对象的伤害是草元素伤害
+      if (c.allCharacters(true).some(c => c.hasEquipment(TheSeedOfStoredKnowledge))
+        && c.allCharacters(true).filter(c => c.info.tags.includes("pyro")).length
+        && c.target.info.id === c.getMaster().info.id) {
+        c.dealDamage(1, DamageType.Dendro, c.target.asTarget());
+      } else {
+        c.dealDamage(1, DamageType.Piercing, c.getMaster().asTarget());
+      }
     } else {
       return false;
     }
@@ -64,15 +71,28 @@ const ShrineOfMaya = createStatus(117032)
   .withDuration(2)
   .on("beforeDealDamage", (c) => {
     if (c.reaction) {
-      
+      c.addDamage(1);
+    } else {
+      return false;
     }
   })
+  .build();
 
 /**
  * **摩耶之殿**
  * 我方引发元素反应时：伤害额外+1。
  * 持续回合：3
  */
+const ShrineOfMaya01 = createStatus(117032)
+  .withDuration(3)
+  .on("beforeDealDamage", (c) => {
+    if (c.reaction) {
+      c.addDamage(1);
+    } else {
+      return false;
+    }
+  })
+  .build();
 
 /**
  * **心景幻成**
@@ -82,7 +102,25 @@ const IllusoryHeart = createSkill(17034)
   .setType("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    if (c.character.hasEquipment(TheSeedOfStoredKnowledge)) {
+      // 摩耶之殿天赋（水）：持续回合+1
+      if (c.allCharacters().filter(c => c.info.tags.includes("hydro")).length) {
+        c.createStatus(ShrineOfMaya01);
+      } else {
+        c.createStatus(ShrineOfMaya);
+      }
+      // 摩耶之殿天赋（雷）：蕴种印可用次数+1
+      if (c.allCharacters().filter(c => c.info.tags.includes("electro")).length) {
+        c.allCharacters(true).forEach(ch => {
+          const status = ch.hasStatus(SeedOfSkadha);
+          status?.gainUsage(1);
+        });
+      }
+    } else {
+      c.createStatus(ShrineOfMaya);
+    }
+  })
   .build();
 
 export const Nahida = createCharacter(1703)
@@ -103,7 +141,10 @@ export const Nahida = createCharacter(1703)
 export const TheSeedOfStoredKnowledge = createCard(217031)
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Nahida)
+  .addActiveCharacterFilter(Nahida)
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .useSkill(IllusoryHeart)
+  .buildToEquipment()
   .build();

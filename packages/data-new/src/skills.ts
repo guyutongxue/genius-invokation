@@ -6,7 +6,7 @@ import {
 } from "./contexts";
 import { EventHandlerCtor, EventHandlers } from "./events";
 
-export type UseSkillAction = (c: SkillDescriptionContext) => void;
+export type UseSkillAction = (c: SkillDescriptionContext) => void | Promise<void>;
 
 export interface NormalSkillInfo {
   type: "normal" | "elemental";

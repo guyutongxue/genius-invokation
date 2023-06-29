@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **简式风灵作成**
@@ -19,6 +19,12 @@ const AstableAnemohypostasisCreation6308 = createSkill(15012)
   .setType("elemental")
   .costAnemo(3)
   // TODO
+  .build();
+
+createSummon(-1)
+  .do({
+    
+  }, { type: DamageType.Anemo })
   .build();
 
 /**

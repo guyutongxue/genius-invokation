@@ -138,8 +138,8 @@ class ActionBuilderBase {
   }
   // removeAllDice
   // getCardCount
-  drawCards(count: number) {
-    this.pushAction((c) => c.drawCards(count));
+  drawCards(count: number, opp?: boolean, tag?: CardTag) {
+    this.pushAction((c) => c.drawCards(count, opp, tag));
     return this;
   }
   createCards(...cards: CardHandle[]) {
@@ -201,9 +201,9 @@ class SkillBuilder extends ActionBuilderBase {
   }
 
   build(): SkillHandle {
-    const action = (c: SkillDescriptionContext) => {
+    const action = async (c: SkillDescriptionContext) => {
       for (const a of this.actions) {
-        a(c);
+        await a(c);
       }
     };
     if (this.type === "prepare") {
@@ -303,9 +303,9 @@ class CardBuilder<
       }
       return true;
     }
-    function action(this: ContextOfTarget<T>, c: Context) {
+    async function action(this: ContextOfTarget<T>, c: Context) {
       for (const a of outerThis.actions) {
-        a.call(this, c);
+        await a.call(this, c);
       }
     }
     registerCard(this.id, {

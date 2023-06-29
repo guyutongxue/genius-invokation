@@ -3,7 +3,7 @@ import { CardHandle, CharacterHandle, SkillHandle, StatusHandle, SummonHandle, S
 import { Target } from "./target";
 import { SkillInfoWithId } from "./skills";
 import { CharacterContext, CharacterInfoWithId } from "./characters";
-import { CardInfoWithId, CardTarget, CardTargetDescriptor, ContextOfTarget } from "./cards";
+import { CardInfoWithId, CardTag, CardTarget, CardTargetDescriptor, ContextOfTarget } from "./cards";
 import { SummonContext } from ".";
 import { StatusContext } from "./statuses";
 
@@ -46,7 +46,7 @@ export interface Context {
   removeAllDice(): DiceType[];
 
   getCardCount(opp?: boolean): number;
-  drawCards(count: number, opp?: boolean): void;
+  drawCards(count: number, opp?: boolean, tag?: CardTag): void;
   createCards(...cards: CardHandle[]): void;
   switchCards(): Promise<void>;
 
@@ -74,6 +74,7 @@ export interface SkillReadonlyContext extends Context {
   readonly info: SkillInfoWithId;
   readonly character: CharacterContext;
   readonly damage?: DamageReadonlyContext;
+  hasReaction(relatedWith?: DamageType): boolean;
   isCharged(): boolean;
   isPlunging(): boolean;
 }

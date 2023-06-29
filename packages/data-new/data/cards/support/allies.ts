@@ -14,7 +14,7 @@ const ChangTheNinth = createCard(322009)
     onUseSkill(c) {
       if (c.damage?.damageType === DamageType.Physical ||
         c.damage?.damageType === DamageType.Piercing ||
-        c.damage?.reaction) {
+        c.hasReaction()) {
         this.inspiration++;
       }
       if (this.inspiration >= 3) {

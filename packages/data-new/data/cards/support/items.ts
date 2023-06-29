@@ -9,8 +9,16 @@ const Nre = createCard(323002)
   .setType("support")
   .addTags("item")
   .costVoid(2)
+  .drawCards(1, false, "food")
   .buildToSupport()
-  // TODO
+  .withUsagePerRound(1)
+  .on("playCard", (c) => {
+    if (c.info.tags.includes("food")) {
+      c.drawCards(1, false, "food");
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -35,7 +43,14 @@ const RedFeatherFan = createCard(323003)
   .addTags("item")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withUsagePerRound(1)
+  .on("requestFastSwitchActive", () => true)
+  .on("beforeUseDice", (c) => {
+    if (c.switchActive) {
+      c.deductCost(1);
+    }
+    return false; // deduct usage at requestFast
+  })
   .build();
 
 /**
@@ -48,5 +63,13 @@ const TreasureseekingSeelie = createCard(323004)
   .addTags("item")
   .costSame(1)
   .buildToSupport()
-  // TODO
+  .do({
+    onUseSkill(c) {
+      this.clue++;
+      if (this.clue === 3) {
+        c.drawCards(3);
+        c.dispose();
+      }
+    }
+  }, { clue: 0 })
   .build();
