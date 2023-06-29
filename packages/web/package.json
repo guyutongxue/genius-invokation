@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@jenshin-tcg/core": "workspace:*",
-    "@jenshin-tcg/typings": "workspace:*",
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
     "eventemitter3": "^5.0.1",
     "vue": "^3.3.4"
   },

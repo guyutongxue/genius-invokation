@@ -1,7 +1,6 @@
 // @ts-check
 import typescript from "@rollup/plugin-typescript";
-import nodeResolve from "@rollup/plugin-node-resolve";
-import commonJs from "@rollup/plugin-commonjs";
+import nodeExternals from "rollup-plugin-node-externals";
 import json from "@rollup/plugin-json";
 import { defineConfig } from "rollup";
 
@@ -13,11 +12,6 @@ export default defineConfig([
       format: "es",
       sourcemap: true,
     },
-    plugins: [
-      nodeResolve(),
-      commonJs(),
-      json(),
-      typescript(),
-    ],
+    plugins: [json(), typescript(), nodeExternals()],
   },
 ]);
