@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **因果点破**
@@ -8,7 +8,22 @@ const RippleOfFate = createSkill(12031)
   .setType("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(1, DamageType.Hydro)
+  .build();
+
+/**
+ * **虚影**
+ * 我方出战角色受到伤害时：抵消1点伤害。
+ * 可用次数：1，耗尽时不弃置此牌。
+ * 结束阶段：弃置此牌，造成1点水元素伤害。
+ */
+const Reflection = createSummon(112031)
+  .withUsage(1)
+  .noDispose()
+  .on("endPhase", (c) => {
+    c.dealDamage(1, DamageType.Hydro);
+    c.dispose();
+  })
   .build();
 
 /**
@@ -18,7 +33,23 @@ const RippleOfFate = createSkill(12031)
 const MirrorReflectionOfDoom = createSkill(12032)
   .setType("elemental")
   .costHydro(3)
-  // TODO
+  .dealDamage(1, DamageType.Hydro)
+  .summon(Reflection)
+  .build();
+
+/**
+ * **泡影**
+ * 我方造成技能伤害时：移除此状态，使本次伤害加倍。
+ */
+const IllusoryBubble = createStatus(112032)
+  .withUsage(1)
+  .on("beforeUseSkill", (c) => {
+    if (c.damage) {
+      c.damage.multiplyDamage(2, /* order: */ 6);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -29,7 +60,8 @@ const StellarisPhantasm = createSkill(12033)
   .setType("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .dealDamage(4, DamageType.Hydro)
+  .createCombatStatus(IllusoryBubble)
   .build();
 
 /**
@@ -38,7 +70,8 @@ const StellarisPhantasm = createSkill(12033)
  */
 const IllusoryTorrent = createSkill(12034)
   .setType("passive")
-  // TODO
+  .withUsagePerRound(1)
+  .on("requestFastSwitchActive", (c) => c.getMaster().isActive())
   .build();
 
 export const Mona = createCharacter(1203)
@@ -56,7 +89,16 @@ export const Mona = createCharacter(1203)
 export const ProphecyOfSubmersion = createCard(212031)
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Mona)
+  .addActiveCharacterFilter(Mona)
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .useSkill(StellarisPhantasm)
+  .buildToEquipment()
+  .listenToOther()
+  .on("beforeDealDamage", (c) => {
+    if (c.getMaster().isActive() && c.reaction?.relatedWith(DamageType.Hydro)) {
+      c.addDamage(2);
+    }
+  })
   .build();

@@ -1,4 +1,5 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType, DiceType } from "@gi-tcg";
+import { CryoElementalInfusion, CryoElementalInfusion01 } from "../../status/infusions";
 
 /**
  * **神里流·倾**
@@ -8,7 +9,7 @@ const KamisatoArtKabuki = createSkill(11051)
   .setType("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +19,17 @@ const KamisatoArtKabuki = createSkill(11051)
 const KamisatoArtHyouka = createSkill(11052)
   .setType("elemental")
   .costCryo(3)
-  // TODO
+  .dealDamage(3, DamageType.Cryo)
+  .build();
+
+/**
+ * **霜见雪关扉**
+ * 结束阶段：造成2点冰元素伤害。
+ * 可用次数：2
+ */
+const FrostflakeSekiNoTo = createSummon(111051)
+  .withUsage(2)
+  .on("endPhase", (c) => { c.dealDamage(2, DamageType.Cryo); })
   .build();
 
 /**
@@ -29,7 +40,8 @@ const KamisatoArtSoumetsu = createSkill(11053)
   .setType("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .dealDamage(4, DamageType.Cryo)
+  .summon(FrostflakeSekiNoTo)
   .build();
 
 /**
@@ -38,7 +50,15 @@ const KamisatoArtSoumetsu = createSkill(11053)
  */
 const KamisatoArtSenho = createSkill(11054)
   .setType("passive")
-  // TODO
+  .on("switchActive", (c) => {
+    if (c.to.entityId === KamisatoAyaka) {
+      if (c.to.hasEquipment(KantenSenmyouBlessing)) {
+        c.to.createStatus(CryoElementalInfusion01);
+      } else {
+        c.to.createStatus(CryoElementalInfusion);
+      }
+    }
+  })
   .build();
 
 export const KamisatoAyaka = createCharacter(1105)
@@ -55,6 +75,16 @@ export const KamisatoAyaka = createCharacter(1105)
 export const KantenSenmyouBlessing = createCard(211051)
   .setType("equipment")
   .addTags("talent")
+  .requireCharacter(KamisatoAyaka)
   .costCryo(2)
   // TODO
+  .buildToEquipment()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.switchActive?.to.entityId === KamisatoAyaka) {
+      c.deductCost(DiceType.Omni);
+    } else {
+      return false;
+    }
+  })
   .build();

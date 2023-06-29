@@ -1,4 +1,5 @@
 import { DiceType, createCard, SpecialBits, Target, DamageType } from '@gi-tcg';
+import { BurningFlame, CatalyzingField, DendroCore } from '../../status/reactions';
 
 /**
  * **深渊的呼唤**
@@ -161,7 +162,7 @@ const ElementalResonanceSoothingWater = createCard(331202)
   .addTags("resonance")
   .requireDualCharacterTag("hydro")
   .costHydro(1)
-  .heal(2)
+  .heal(2, Target.myActive())
   .heal(1, Target.myStandby())
   .build();
 
@@ -177,7 +178,18 @@ const ElementalResonanceSprawlingGreenery = createCard(331702)
   .requireDualCharacterTag("dendro")
   .costDendro(1)
   .do((c) => {
-    // TODO
+    const dp = c.hasSummon(BurningFlame);
+    if (dp) {
+      dp.usage++;
+    }
+    const dh = c.hasCombatStatus(DendroCore);
+    if (dh) {
+      dh.gainUsage(1);
+    }
+    const de = c.hasCombatStatus(CatalyzingField);
+    if (de) {
+      de.gainUsage(1);
+    }
   })
   .buildToStatus("combat")
   .withUsage(1)

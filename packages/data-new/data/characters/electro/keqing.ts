@@ -1,5 +1,5 @@
 import { createCard, createCharacter, createSkill, DamageType, Target } from "@gi-tcg";
-import { ElectroInfusion, ElectroInfusion01 } from "../../status/commons";
+import { ElectroInfusion, ElectroInfusion01 } from "../../status/infusions";
 
 /**
  * **云来剑法**

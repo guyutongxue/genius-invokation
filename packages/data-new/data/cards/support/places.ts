@@ -1,4 +1,4 @@
-import { createCard } from '@gi-tcg';
+import { Target, createCard } from '@gi-tcg';
 
 /**
  * **镇守之森**
@@ -72,8 +72,9 @@ const KnightsOfFavoniusLibrary = createCard(321002)
   .setType("support")
   .addTags("place")
   .costSame(1)
+  .rollDice(1)
   .buildToSupport()
-  // TODO
+  .on("rollPhase", (c) => c.addRerollCount(1))
   .build();
 
 /**
@@ -86,7 +87,8 @@ const LiyueHarborWharf = createCard(321001)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withUsage(2)
+  .on("endPhase", (c) => c.drawCards(2))
   .build();
 
 /**
@@ -99,7 +101,8 @@ const SangonomiyaShrine = createCard(321009)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withUsage(2)
+  .on("endPhase", (c) => c.heal(1, Target.myAll()))
   .build();
 
 /**

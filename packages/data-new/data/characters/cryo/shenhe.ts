@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **踏辰摄斗**
@@ -8,8 +8,23 @@ const DawnstarPiercer = createSkill(11071)
   .setType("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
+
+/**
+ * **冰翎**
+ * 我方角色造成的冰元素伤害+1。（包括角色引发的冰元素扩散的伤害）
+ * 可用次数：3
+ */
+const IceQuill = createStatus(111071)
+  .withUsage(3)
+  .on("beforeDealDamage", (c) => {
+    if (c.damageType === DamageType.Cryo) {
+      c.addDamage(1);
+    } else {
+      return false;
+    }
+  })
 
 /**
  * **仰灵威召将役咒**
@@ -18,7 +33,8 @@ const DawnstarPiercer = createSkill(11071)
 const SpringSpiritSummoning = createSkill(11072)
   .setType("elemental")
   .costCryo(3)
-  // TODO
+  .dealDamage(2, DamageType.Cryo)
+
   .build();
 
 /**

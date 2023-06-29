@@ -35,7 +35,7 @@ const InspirationField = createStatus(113031)
   })
   .on("useSkill", (c) => {
     if (c.character.health <= 6) {
-      c.heal(2);
+      c.getMaster().heal(2);
     }
   })
   .build();
@@ -52,7 +52,7 @@ const InspirationField01 = createStatus(113032)
   })
   .on("useSkill", (c) => {
     if (c.character.health <= 6) {
-      c.heal(2);
+      c.getMaster().heal(2);
     }
   })
   .build();

@@ -36,7 +36,7 @@ const DandelionField = createSummon(115021)
     } else {
       c.dealDamage(2, DamageType.Anemo)
     }
-    c.heal(1/* , Target.myActive() */)
+    c.heal(1, Target.myActive())
   })
   .build();
 

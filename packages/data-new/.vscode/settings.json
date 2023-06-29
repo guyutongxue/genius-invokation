@@ -1,5 +1,8 @@
 {
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "files.readonlyInclude": {
+    "temp/**/*.json": true
   }
 }

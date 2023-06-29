@@ -48,7 +48,9 @@ export interface CharacterContext {
   equip(equipment: EquipmentHandle | EquipmentInfoWithId): void;
   removeEquipment(equipment: EquipmentHandle | EquipmentInfoWithId): void;
 
+  heal(amount: number): void;
   gainEnergy(amount: number): void;
+  createStatus(status: StatusHandle): StatusContext;
   hasStatus(status: StatusHandle): StatusContext | null;
   hasShield(): StatusContext;
 

@@ -4,6 +4,7 @@ import {
   SkillDescriptionContext,
   SwitchActiveContext,
 } from "./contexts";
+import { EventHandlerCtor, EventHandlers } from "./events";
 
 export type UseSkillAction = (c: SkillDescriptionContext) => void;
 
@@ -27,15 +28,12 @@ export interface PrepareSkillInfo {
   action: UseSkillAction;
 }
 
-export interface PassiveSkillEvents {
-  onBattleBegin?: (c: Context) => void;
-  onSwitchActive?: (c: SwitchActiveContext) => void;
-  onSwitchActiveFrom?: (c: SwitchActiveContext) => void;
-}
-
 export interface PassiveSkillInfo {
   type: "passive";
-  actions: PassiveSkillEvents;
+  duration: number;
+  usage: number;
+  usagePerRound: number;
+  handlerCtor: EventHandlerCtor;
 }
 
 export type SkillInfo =

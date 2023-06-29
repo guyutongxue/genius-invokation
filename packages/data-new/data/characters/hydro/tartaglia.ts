@@ -34,7 +34,7 @@ const RangedStance = createStatus(112041)
 const MeleeStance = createStatus(112042)
   .withDuration(2)
   .do({
-    onBeforeDamageCalculated(c) {
+    onBeforeDealDamage(c) {
       c.changeDamageType(DamageType.Hydro);
     },
     onUseSkill(c) {
@@ -93,7 +93,7 @@ const HavocObliteration = createSkill(12043)
  */
 const TideWithholder = createSkill(12044)
   .setType("passive")
-  .onBattleBegin((c) => c.createStatus(RangedStance))
+  .on("battleBegin", (c) => { c.createStatus(RangedStance) })
   .build();
 
 export const Tartaglia = createCharacter(1204)

@@ -1,7 +1,7 @@
 import { DamageType, createStatus } from "@gi-tcg";
 
 const infusion = (id: number, type: DamageType, additional = 0) => {
-  return createStatus(id).on("beforeDamageCalculated", (c) => {
+  return createStatus(id).on("beforeDealDamage", (c) => {
     if (c.damageType === DamageType.Physical || c.damageType === type) {
       c.changeDamageType(type);
       if (additional) {

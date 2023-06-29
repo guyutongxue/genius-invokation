@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType, Target } from "@gi-tcg";
 
 /**
  * **行相**
@@ -8,7 +8,24 @@ const Akara = createSkill(17031)
   .setType("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(1, DamageType.Dendro)
+  .build();
+
+/**
+ * **蕴种印**
+ * 任意具有「蕴种印」的所在阵营角色受到元素反应伤害后：对所附属角色造成1点穿透伤害。
+ * 可用次数：2
+ */
+const SeedOfSkadha = createStatus(117031)
+  .withUsage(2)
+  .listenToOthers()
+  .on("damaged", (c) => {
+    if (c.target.hasStatus(SeedOfSkadha) && c.reaction) {
+      c.dealDamage(1, DamageType.Piercing, c.getMaster().asTarget());
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -18,7 +35,13 @@ const Akara = createSkill(17031)
 const AllSchemesToKnow = createSkill(17032)
   .setType("elemental")
   .costDendro(3)
-  // TODO
+  .do((c) => {
+    if (c.target.hasStatus(SeedOfSkadha)) {
+      c.createStatus(SeedOfSkadha, Target.oppAll());
+    } else {
+      c.createStatus(SeedOfSkadha, Target.oppActive());
+    }
+  })
   .build();
 
 /**
@@ -28,8 +51,28 @@ const AllSchemesToKnow = createSkill(17032)
 const AllSchemesToKnowTathata = createSkill(17033)
   .setType("elemental")
   .costDendro(5)
-  // TODO
+  .createStatus(SeedOfSkadha, Target.oppAll())
   .build();
+
+
+/**
+ * **摩耶之殿**
+ * 我方引发元素反应时：伤害额外+1。
+ * 持续回合：2
+ */
+const ShrineOfMaya = createStatus(117032)
+  .withDuration(2)
+  .on("beforeDealDamage", (c) => {
+    if (c.reaction) {
+      
+    }
+  })
+
+/**
+ * **摩耶之殿**
+ * 我方引发元素反应时：伤害额外+1。
+ * 持续回合：3
+ */
 
 /**
  * **心景幻成**

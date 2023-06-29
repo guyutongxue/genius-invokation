@@ -1,7 +1,7 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { Context, SkillDescriptionContext, SwitchActiveContext } from "./contexts";
 import { Target } from "./target";
-import { BurstSkillInfo, NormalSkillInfo, PassiveSkillEvents, UseSkillAction, registerSkill } from "./skills";
+import { BurstSkillInfo, NormalSkillInfo, UseSkillAction, registerSkill } from "./skills";
 import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType, registerEquipment } from "./equipments";
@@ -95,7 +95,7 @@ class ActionBuilderBase {
     return this;
   }
   // applyElement
-  heal(value: number, target?: Target) {
+  heal(value: number, target: Target) {
     this.pushAction((c) => c.heal(value, target));
     return this;
   }
@@ -162,14 +162,8 @@ class ActionBuilderBase {
 }
 
 class SkillBuilder extends ActionBuilderBase {
-  private type: SkillType = "normal";
+  private type: Exclude<SkillType, "passive"> = "normal";
   private actions: UseSkillAction[] = [];
-  private passiveActions: PassiveSkillEvents = {};
-  private currentEvent:
-    | "battleBegin"
-    | "switchActive"
-    | "switchActiveFrom"
-    | null = null;
   private prepareRound = 0;
   private shouldGainEnergy = false;
 
@@ -182,10 +176,12 @@ class SkillBuilder extends ActionBuilderBase {
 
   setType(type: "normal" | "elemental", gainEnergy?: boolean): this;
   setType(type: "burst"): this;
-  setType(type: "passive"): this;
+  setType(type: "passive"): PassiveSkillBuilder;
   setType(type: "prepare", prepareRound: number): this;
   setType(type: SkillType, opt?: unknown): any {
-    if (type === "prepare") {
+    if (type === "passive") {
+      return new PassiveSkillBuilder(this.id);
+    } else if (type === "prepare") {
       this.prepareRound = opt as number;
     } else if (type === "normal" || type === "elemental") {
       this.shouldGainEnergy = (opt ?? true) as boolean;
@@ -204,28 +200,6 @@ class SkillBuilder extends ActionBuilderBase {
     return this;
   }
 
-  onBattleBegin(action: CommonAction) {
-    if (this.type !== "passive") {
-      throw new Error("Only passive skill can use event handlers");
-    }
-    this.passiveActions.onBattleBegin = action;
-    return this;
-  }
-  onSwitchActive(action: (c: SwitchActiveContext) => void) {
-    if (this.type !== "passive") {
-      throw new Error("Only passive skill can use event handlers");
-    }
-    this.passiveActions.onSwitchActive = action;
-    return this;
-  }
-  onSwitchActiveFrom(action: (c: SwitchActiveContext) => void) {
-    if (this.type !== "passive") {
-      throw new Error("Only passive skill can use event handlers");
-    }
-    this.passiveActions.onSwitchActiveFrom = action;
-    return this;
-  }
-
   build(): SkillHandle {
     const action = (c: SkillDescriptionContext) => {
       for (const a of this.actions) {
@@ -237,11 +211,6 @@ class SkillBuilder extends ActionBuilderBase {
         type: "prepare",
         prepareRound: this.prepareRound,
         action,
-      });
-    } else if (this.type === "passive") {
-      registerSkill(this.id, {
-        type: "passive",
-        actions: this.passiveActions,
       });
     } else {
       registerSkill(this.id, {
@@ -496,11 +465,26 @@ class TriggerBuilderBase {
   }
 }
 
+class PassiveSkillBuilder extends TriggerBuilderBase {
+  constructor(private readonly id: number) {
+    super();
+  }
+  build(): SkillHandle {
+    registerSkill(this.id, {
+      type: "passive",
+      duration: this.duration,
+      usage: this.usage,
+      usagePerRound: this.usagePerRound,
+      handlerCtor: this.getHandlerCtor(),
+    });
+    return this.id as SkillHandle;
+  }
+}
+
 class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilderBase {
   private tags: StatusTag[] = [];
   private shieldConfig: ShieldConfig = null;
   private shouldListenToOthers: boolean = false;
-  private handlerCtor?: EventHandlerCtor;
 
   constructor(private readonly id: number) {
     super();
@@ -602,6 +586,7 @@ class EquipmentBuilder extends TriggerBuilderBase {
 
 class SummonBuilder extends TriggerBuilderBase {
   private maxUsage = Infinity;
+  private disposeWhenUsedUp = true;
   constructor(private readonly id: number) {
     super();
   }
@@ -611,11 +596,16 @@ class SummonBuilder extends TriggerBuilderBase {
     this.maxUsage = maxUsage;
     return this;
   }
+  noDispose() {
+    this.disposeWhenUsedUp = false;
+    return this;
+  }
 
   build(): SummonHandle {
     registerSummon(this.id, {
       usage: this.usage,
       maxUsage: this.maxUsage,
+      disposeWhenUsedUp: this.disposeWhenUsedUp,
       handlerCtor: this.getHandlerCtor(),
     })
     return this.id as SummonHandle;
@@ -632,6 +622,6 @@ export const createCharacter = factoryOf(CharacterBuilder);
 export const createSkill = factoryOf(SkillBuilder);
 export const createCard = factoryOf(CardBuilder);
 export const createStatus = factoryOf(StatusBuilder);
-const createEquipment = factoryOf(EquipmentBuilder);
-const createSupport = factoryOf(SupportBuilder);
+export const createEquipment = factoryOf(EquipmentBuilder);
+export const createSupport = factoryOf(SupportBuilder);
 export const createSummon = factoryOf(SummonBuilder);

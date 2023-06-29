@@ -129,7 +129,7 @@ const MushroomPizza = createFood(333007)
   .buildToStatus("this0")
   .withUsage(1)
   .withDuration(1)
-  .on("endPhase", (c) => { c.heal(1); })
+  .on("endPhase", function (c) { c.getMaster().heal(1); })
   .build();
 
 /**

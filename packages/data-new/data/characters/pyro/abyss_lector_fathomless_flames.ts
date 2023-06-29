@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createEquipment, createSkill, createStatus, createSummon, DamageType, Target } from "@gi-tcg";
 
 /**
  * **拯救之焰**
@@ -8,7 +8,7 @@ const FlameOfSalvation = createSkill(23021)
   .setType("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(1, DamageType.Pyro)
   .build();
 
 /**
@@ -18,7 +18,20 @@ const FlameOfSalvation = createSkill(23021)
 const SearingPrecept = createSkill(23022)
   .setType("elemental")
   .costPyro(3)
-  // TODO
+  .dealDamage(3, DamageType.Pyro)
+  .build();
+
+/**
+ * **黯火炉心**
+ * 结束阶段：造成1点火元素伤害，对所有敌方后台角色造成1点穿透伤害。
+ * 可用次数：2
+ */
+const DarkfireFurnace = createSummon(123021)
+  .withUsage(2)
+  .on("endPhase", (c) => {
+    c.dealDamage(1, DamageType.Pyro);
+    c.dealDamage(1, DamageType.Piercing, Target.oppStandby());
+  })
   .build();
 
 /**
@@ -29,7 +42,17 @@ const OminousStar = createSkill(23023)
   .setType("burst")
   .costPyro(4)
   .costEnergy(2)
-  // TODO
+  .dealDamage(3, DamageType.Pyro)
+  .summon(DarkfireFurnace)
+  .build();
+
+/**
+ * **火之新生**
+ * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到3点生命值。
+ */
+const FieryRebirthStaus = createStatus(123022)
+  .withUsage(1)
+  .on("beforeDefeated", (c) => c.immune(3))
   .build();
 
 /**
@@ -38,12 +61,26 @@ const OminousStar = createSkill(23023)
  */
 const FieryRebirth = createSkill(23024)
   .setType("passive")
-  // TODO
+  .on("battleBegin", (c) => { c.createStatus(FieryRebirthStaus); })
   .build();
 
 export const AbyssLectorFathomlessFlames = createCharacter(2302)
   .addTags("pyro", "monster")
   .addSkills(FlameOfSalvation, SearingPrecept, OminousStar, FieryRebirth)
+  .build();
+
+/**
+ * **渊火加护**
+ * 为所附属角色提供3点护盾。
+ * 此护盾耗尽前：所附属角色造成的火元素伤害+1。
+ */
+const AegisOfAbyssalFlame = createStatus(123024)
+  .shield(3)
+  .on("beforeDealDamage", (c) => {
+    if (c.damageType === DamageType.Pyro) {
+      c.addDamage(1);
+    }
+  })
   .build();
 
 /**
@@ -55,6 +92,22 @@ export const AbyssLectorFathomlessFlames = createCharacter(2302)
 export const EmbersRekindled = createCard(223021)
   .setType("equipment")
   .addTags("talent")
+  .requireCharacter(AbyssLectorFathomlessFlames)
   .costPyro(2)
-  // TODO
+  .do((c) => {
+    const ch = c.hasCharacter(AbyssLectorFathomlessFlames);
+    if (!ch) return;
+    if (!ch.hasStatus(FieryRebirthStaus)) {
+      ch.createStatus(AegisOfAbyssalFlame);
+    } else {
+      ch.equip(EmbersRekindledEquip);
+    }
+  })
+  .build();
+
+const EmbersRekindledEquip = createEquipment(EmbersRekindled)
+  .on("beforeDefeated", (c) => {
+    c.createStatus(AegisOfAbyssalFlame);
+    c.dispose();
+  })
   .build();

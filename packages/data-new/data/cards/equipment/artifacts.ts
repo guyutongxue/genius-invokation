@@ -13,7 +13,7 @@ const AdventurersBandana = createCard(312001, ["character"])
   .withUsagePerRound(3)
   .on("useSkill", (c) => {
     if (c.info.type === "normal") {
-      c.heal(1);
+      c.getMaster().heal(1);
     } else {
       return false;
     }
@@ -301,7 +301,7 @@ const LuckyDogsSilverCirclet = createCard(312002, ["character"])
   .withUsagePerRound(1)
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
-      c.heal(2);
+      c.getMaster().heal(2);
     } else {
       return false;
     }

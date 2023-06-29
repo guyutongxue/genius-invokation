@@ -63,6 +63,13 @@ export class Target {
       opp: true
     });
   }
+  static oppAll() {
+    return new Target({
+      type: "byPos",
+      pos: "all",
+      opp: true
+    });
+  }
   static myActive() {
     return new Target({
       type: "byPos",

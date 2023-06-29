@@ -3,6 +3,7 @@ import { EventHandlerCtor } from "./events";
 interface SummonInfo {
   usage: number;    // 释放时的可用次数
   maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
+  disposeWhenUsedUp: boolean; // 是否在使用完毕后销毁
   handlerCtor: EventHandlerCtor;
 }
 

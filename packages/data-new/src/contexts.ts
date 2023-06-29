@@ -29,7 +29,7 @@ export interface Context {
 
   dealDamage(value: number, type: DamageType, target?: Target): void;
   applyElement(type: DamageType, target?: Target): void;
-  heal(value: number, target?: Target): void;
+  heal(value: number, target: Target): void;
   gainEnergy(value?: number, target?: Target): number;
   lossEnergy(value?: number, target?: Target): number;
 
@@ -41,7 +41,7 @@ export interface Context {
   summonOneOf(...summons: SummonHandle[]): void;
   createSupport(support: SupportHandle, opp?: boolean): void;
 
-  rollDice(count: number): void;
+  rollDice(count: number): Promise<void>;
   generateDice(...dice: DiceType[]): void;
   removeAllDice(): DiceType[];
 
@@ -61,11 +61,13 @@ export interface Context {
 export interface RollContext {
   readonly activeCharacterElement: DiceType;
   fixDice(...dice: DiceType[]): void;
+  addRerollCount(count: number): void;
 }
 
 export interface SkillDescriptionContext extends Context {
-  triggeredByCard(card: unknown): boolean;
+  triggeredByCard(card: CardHandle): boolean;
   readonly character: CharacterContext;
+  readonly target: CharacterContext;
 }
 
 export interface SkillReadonlyContext extends Context {
@@ -82,7 +84,7 @@ export interface SkillContext extends SkillReadonlyContext {
 
 export interface UseDiceContext {
   readonly useSkill?: SkillInfoWithId;
-  readonly switchActive?: boolean;
+  readonly switchActive?: SwitchActiveContext;
   readonly playCard?: {
     info: CardInfoWithId;
     isTalentOf(entityId: number): boolean;
@@ -95,26 +97,31 @@ export interface UseDiceContext {
   dispose(): void;
 }
 
-export interface DamageReadonlyContext extends Context {
+interface DamageBaseContext extends Context {
   readonly sourceType: "character" | "summon" | "status";
   readonly target: CharacterContext;
   readonly damageType: DamageType;
+}
+
+export interface DamageReadonlyContext extends DamageBaseContext {
   readonly reaction?: ElementalReactionContext;
 }
 
-export interface BeforeDamageCalculatedContext extends Context {
-  readonly target: CharacterContext;
-  readonly damageType: DamageType;
-  changeDamageType(type: DamageType): void;
+export interface BeforeDamageCalculatedContext extends DamageBaseContext {
   addDamage(value: number): void;
   multiplyDamage(multiplier: number): void;
   decreaseDamage(value: number): void;
 }
 
 export interface DamageContext extends DamageReadonlyContext {
-  addDamage(value: number): void;
-  multiplyDamage(multiplier: number): void;
-  decreaseDamage(value: number): void;
+  changeDamageType(type: DamageType, order?: number): void;  // default order = 0
+  addDamage(value: number, order?: number): void;            // default order = 3
+  multiplyDamage(multiplier: number, order?: number): void;  // default order = 3
+  decreaseDamage(value: number, order?: number): void;       // default order = 10
+}
+
+export interface BeforeDefeatedContext extends Context {
+  immune(healTo: number): void;
 }
 
 export interface PlayCardContext extends Context {
