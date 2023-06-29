@@ -2,8 +2,8 @@ import { DamageType, DiceType } from "@gi-tcg/typings";
 import { CardHandle, CharacterHandle, SkillHandle, StatusHandle, SummonHandle, SupportHandle } from "./builders";
 import { Target } from "./target";
 import { SkillInfoWithId } from "./skills";
-import { CharacterContext, CharacterInfoWithId } from "./characters";
-import { CardInfoWithId, CardTag, CardTarget, CardTargetDescriptor, ContextOfTarget } from "./cards";
+import { CharacterContext } from "./characters";
+import { CardInfoWithId, CardTag, CardTarget } from "./cards";
 import { SummonContext } from ".";
 import { StatusContext } from "./statuses";
 
@@ -75,27 +75,20 @@ export interface SkillReadonlyContext extends Context {
   readonly character: CharacterContext;
   readonly damage?: DamageReadonlyContext;
   hasReaction(relatedWith?: DamageType): boolean;
-  isCharged(): boolean;
-  isPlunging(): boolean;
+  isCharged(): boolean;  // 重击
+  isPlunging(): boolean; // 下落攻击
 }
 
 export interface SkillContext extends SkillReadonlyContext {
   readonly damage?: DamageContext;
 }
 
-export interface UseDiceContext {
-  readonly useSkill?: SkillInfoWithId;
-  readonly switchActive?: SwitchActiveContext;
-  readonly playCard?: {
-    info: CardInfoWithId;
-    isTalentOf(entityId: number): boolean;
-  }
+export interface UseDiceContext extends Context {
+  readonly useSkillCtx?: SkillReadonlyContext;
+  readonly switchActiveCtx?: SwitchActiveContext;
+  readonly playCardCtx?: PlayCardContext;
   addCost(...dice: DiceType[]): void;
   deductCost(...dice: DiceType[]): void;
-
-  isCharged(): boolean;
-  getMaster(): CharacterContext;
-  dispose(): void;
 }
 
 interface DamageBaseContext extends Context {
@@ -105,17 +98,17 @@ interface DamageBaseContext extends Context {
 }
 
 export interface DamageReadonlyContext extends DamageBaseContext {
-  readonly reaction?: ElementalReactionContext;
+  readonly reaction: ElementalReactionContext | null;
 }
 
 export interface BeforeDamageCalculatedContext extends DamageBaseContext {
-  addDamage(value: number): void;
-  multiplyDamage(multiplier: number): void;
-  decreaseDamage(value: number): void;
+  changeDamageType(type: DamageType, order?: number): void;  // default order = 0
+  addDamage(value: number, order?: number): void;
+  multiplyDamage(multiplier: number, order?: number): void;
+  decreaseDamage(value: number, order?: number): void;
 }
 
 export interface DamageContext extends DamageReadonlyContext {
-  changeDamageType(type: DamageType, order?: number): void;  // default order = 0
   addDamage(value: number, order?: number): void;            // default order = 3
   multiplyDamage(multiplier: number, order?: number): void;  // default order = 3
   decreaseDamage(value: number, order?: number): void;       // default order = 10
@@ -128,6 +121,7 @@ export interface BeforeDefeatedContext extends Context {
 export interface PlayCardContext extends Context {
   readonly info: CardInfoWithId;
   readonly target: CardTarget[keyof CardTarget][];
+  isTalentOf(charId: number): boolean;
 }
 
 export interface SwitchActiveContext extends Context {

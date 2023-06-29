@@ -96,7 +96,7 @@ const MintyMeatRolls = createFood(333008)
   .withUsage(3)
   .withDuration(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkill?.type === "normal") {
+    if (c.useSkillCtx?.info.type === "normal") {
       c.deductCost(DiceType.Void);
     } else {
       return false;
@@ -142,7 +142,7 @@ const NorthernSmokedChicken = createFood(333004)
   .withUsage(1)
   .withDuration(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkill?.type === "normal") {
+    if (c.useSkillCtx?.info.type === "normal") {
       c.deductCost(DiceType.Void);
     } else {
       return false;

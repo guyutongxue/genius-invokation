@@ -34,7 +34,7 @@ const RangedStance = createStatus(112041)
 const MeleeStance = createStatus(112042)
   .withDuration(2)
   .do({
-    onBeforeDealDamage(c) {
+    onEarlyBeforeDealDamage(c) {
       c.changeDamageType(DamageType.Hydro);
     },
     onUseSkill(c) {

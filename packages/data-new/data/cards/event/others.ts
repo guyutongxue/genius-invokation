@@ -50,7 +50,7 @@ const ChangingShifts = createCard(332002)
   .setType("event")
   .buildToStatus("combat")
   .on("beforeUseDice", (c) => {
-    if (c.switchActive) {
+    if (c.switchActiveCtx) {
       c.deductCost(DiceType.Void);
     } else {
       return false;

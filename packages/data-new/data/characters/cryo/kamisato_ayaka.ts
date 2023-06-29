@@ -81,7 +81,7 @@ export const KantenSenmyouBlessing = createCard(211051)
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.switchActive?.to.entityId === KamisatoAyaka) {
+    if (c.switchActiveCtx?.to.entityId === KamisatoAyaka) {
       c.deductCost(DiceType.Omni);
     } else {
       return false;

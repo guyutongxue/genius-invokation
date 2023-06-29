@@ -24,7 +24,7 @@ const SeedOfSkadha = createStatus(117031)
       // 摩耶之殿天赋（火）：受到元素反应伤害的对象的伤害是草元素伤害
       if (c.allCharacters(true).some(c => c.hasEquipment(TheSeedOfStoredKnowledge))
         && c.allCharacters(true).filter(c => c.info.tags.includes("pyro")).length
-        && c.target.info.id === c.getMaster().info.id) {
+        && c.target.entityId === c.getMaster().entityId) {
         c.dealDamage(1, DamageType.Dendro, c.target.asTarget());
       } else {
         c.dealDamage(1, DamageType.Piercing, c.getMaster().asTarget());

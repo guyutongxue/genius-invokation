@@ -1,6 +1,6 @@
 import { BeforeDamageCalculatedContext, BeforeDefeatedContext, Context, DamageContext, DamageReadonlyContext, ElementalReactionContext, PlayCardContext, RollContext, SkillContext, SkillReadonlyContext, SwitchActiveContext, UseDiceContext } from "./contexts";
 
-export type HandlerResult = boolean | void;
+export type HandlerResult = boolean | void | Promise<boolean | void>;
 
 export interface EventHandlers<This = {}> {
   onBattleBegin?(this: This, c: Context): HandlerResult;
@@ -19,6 +19,7 @@ export interface EventHandlers<This = {}> {
   onSwitchActive?(this: This, c: SwitchActiveContext): HandlerResult;
   onDeclareEnd?(this: This, c: Context): HandlerResult;
 
+  onEarlyBeforeDealDamage?(this: This, c: BeforeDamageCalculatedContext): HandlerResult;
   onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;
   onBeforeDamaged?(this: This, c: DamageContext): HandlerResult;
   onDealDamage?(this: This, c: DamageContext): HandlerResult;

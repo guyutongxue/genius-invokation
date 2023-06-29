@@ -19,7 +19,8 @@ const Kaboom = createSkill(13061)
 const ExplosiveSpark = createStatus(113061)
   .withUsage(1)
   .on("beforeUseDice", (c) => {
-    if (c.isCharged() && c.useSkill?.type === "normal") {
+    const skillCtx = c.useSkillCtx;
+    if (skillCtx && skillCtx.isCharged()) {
       c.deductCost(DiceType.Pyro);
     }
     return false;
@@ -41,7 +42,8 @@ const ExplosiveSpark = createStatus(113061)
 const ExplosiveSpark01 = createStatus(113061)
   .withUsage(2)
   .on("beforeUseDice", (c) => {
-    if (c.isCharged() && c.useSkill?.type === "normal") {
+    const skillCtx = c.useSkillCtx;
+    if (skillCtx && skillCtx.isCharged()) {
       c.deductCost(DiceType.Pyro);
     }
     return false;

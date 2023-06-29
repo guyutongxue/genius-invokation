@@ -55,7 +55,7 @@ const Dunyarzad = createCard(322016)
   .buildToSupport()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.playCard && c.playCard.info.tags.includes("ally")) {
+    if (c.playCardCtx && c.playCardCtx.info.tags.includes("ally")) {
       c.deductCost(DiceType.Omni, 1);
     } else {
       return false;
@@ -74,7 +74,7 @@ const Ellin = createCard(322010)
   .buildToSupport()
   .do({
     onBeforeUseDice(c) {
-      if (c.useSkill && this.skills.includes(c.useSkill.id)) {
+      if (c.useSkillCtx && this.skills.includes(c.useSkillCtx.info.id)) {
         c.deductCost(DiceType.Omni);
       } else {
         return false;
@@ -256,7 +256,7 @@ const Tubby = createCard(322006)
   .buildToSupport()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.playCard && c.playCard.info.tags.includes("place")) {
+    if (c.playCardCtx && c.playCardCtx.info.tags.includes("place")) {
       c.deductCost(DiceType.Omni, 2);
     } else {
       return false;
@@ -289,7 +289,7 @@ const Xudong = createCard(322015)
   .buildToSupport()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.playCard && c.playCard.info.tags.includes("food")) {
+    if (c.playCardCtx && c.playCardCtx.info.tags.includes("food")) {
       c.deductCost(DiceType.Omni, 2);
     }
   })
