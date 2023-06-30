@@ -34,6 +34,7 @@ const GlacialWaltz = createSkill(11033)
 
 export const Kaeya = createCharacter(1103)
   .addTags("cryo", "sword", "mondstadt")
+  .maxEnergy(2)
   .addSkills(CeremonialBladework, Frostgnaw, GlacialWaltz)
   .build();
 

@@ -34,6 +34,7 @@ const SweepingTime = createSkill(16023)
 
 export const Noelle = createCharacter(1602)
   .addTags("geo", "claymore", "mondstadt")
+  .maxEnergy(2)
   .addSkills(FavoniusBladeworkMaid, Breastplate, SweepingTime)
   .build();
 

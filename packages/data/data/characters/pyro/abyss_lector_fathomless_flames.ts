@@ -66,6 +66,8 @@ const FieryRebirth = createSkill(23024)
 
 export const AbyssLectorFathomlessFlames = createCharacter(2302)
   .addTags("pyro", "monster")
+  .maxHealth(6)
+  .maxEnergy(2)
   .addSkills(FlameOfSalvation, SearingPrecept, OminousStar, FieryRebirth)
   .build();
 

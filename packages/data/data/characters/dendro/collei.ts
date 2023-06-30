@@ -34,6 +34,7 @@ const TrumpcardKitty = createSkill(17013)
 
 export const Collei = createCharacter(1701)
   .addTags("dendro", "bow", "sumeru")
+  .maxEnergy(2)
   .addSkills(SupplicantsBowmanship, FloralBrush, TrumpcardKitty)
   .build();
 

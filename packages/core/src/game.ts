@@ -1,4 +1,4 @@
-import { Handler, StateData } from "@gi-tcg/typings";
+import { Handler, NotificationMessage, StateData } from "@gi-tcg/typings";
 import { GameState } from "./state.js";
 
 export interface GameOptions {
@@ -7,6 +7,7 @@ export interface GameOptions {
   maxRounds: number;
   maxSupports: number;
   maxSummons: number;
+  pauser: (() => Promise<void>) | null;
 }
 
 const DEFAULT_GAME_OPTIONS: GameOptions = {
@@ -15,16 +16,24 @@ const DEFAULT_GAME_OPTIONS: GameOptions = {
   maxRounds: 15,
   maxSupports: 4,
   maxSummons: 4,
+  pauser: null,
 };
 
 export interface PlayerConfig {
+  deck: {
+    characters: [number, number, number];
+    actions: number[]; // should exactly 30 items
+  };
   handler: Handler;
+  onNotify?: (event: NotificationMessage) => void;
+  noShuffle?: boolean; // default: false
+  alwaysOmni?: boolean; // default: false
 }
 
 export interface GameController {
   ready(): void;
   giveUp(): void;
-  preview(): StateData;
+  preview(skillId: number): StateData;
 }
 
 export class Game {
@@ -51,12 +60,18 @@ export class Game {
     return {
       ready: () => this.#ready(who),
       giveUp: () => this.#giveUp(who),
-      preview: () => this.#preview(who),
+      preview: (skillId) => this.#preview(who, skillId),
     };
   }
-
+  #readyCount = 0;
   #ready(who: 0 | 1) {
-    
+    this.#readyCount++;
+    if (this.#readyCount === 2) {
+      this.state = new GameState(
+        this.options,
+        this.players as [PlayerConfig, PlayerConfig]
+      );
+    }
   }
   #giveUp(who: 0 | 1) {
     if (this.state === null) {
@@ -64,10 +79,14 @@ export class Game {
     }
     this.state.giveUp(who);
   }
-  #preview(who: 0 | 1): StateData {
+  #preview(who: 0 | 1, skillId: number): StateData {
     if (this.state === null) {
       throw new Error("Game not started");
     }
-    return this.state.preview(who);
+    return this.state.preview(who, skillId);
+  }
+
+  getHistory(): never {
+    throw new Error("Not implemented");
   }
 }

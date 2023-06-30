@@ -61,6 +61,8 @@ const RockpaperscissorsComboPaper = createSkill(24016)
 
 export const ElectroHypostasis = createCharacter(2401)
   .addTags("electro", "monster")
+  .maxHealth(8)
+  .maxEnergy(2)
   .addSkills(ElectroCrystalProjection, RockpaperscissorsCombo, LightningLockdown, ElectroCrystalCore, RockpaperscissorsComboScissors, RockpaperscissorsComboPaper)
   .build();
 

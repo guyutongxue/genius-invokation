@@ -125,6 +125,7 @@ const IllusoryHeart = createSkill(17034)
 
 export const Nahida = createCharacter(1703)
   .addTags("dendro", "catalyst", "sumeru")
+  .maxEnergy(2)
   .addSkills(Akara, AllSchemesToKnow, AllSchemesToKnowTathata, IllusoryHeart)
   .build();
 

@@ -27,32 +27,30 @@ export enum DamageType {
 
 export enum Aura {
   None = 0,
-  Cryo,
-  Hydro,
-  Pyro,
-  Electro,
-  Anemo,
-  Geo,
-  Dendro,
-  CryoDendro
+  Cryo = 1,
+  Hydro = 2,
+  Pyro = 3,
+  Electro = 4,
+  Dendro = 7,
+  CryoDendro = 8
 }
 
-// export enum Reaction {
-//   Melt = 1,
-//   Vaporize,
-//   Overloaded,
-//   Superconduct,
-//   ElectroCharged,
-//   Frozen,
-//   SwirlCryo,
-//   SwirlHydro,
-//   SwirlPyro,
-//   SwirlElectro,
-//   CrystallizeCryo,
-//   CrystallizeHydro,
-//   CrystallizePyro,
-//   CrystallizeElectro,
-//   Burning,
-//   Bloom,
-//   Quicken
-// }
+export enum Reaction {
+  Melt = 1,
+  Vaporize,
+  Overloaded,
+  Superconduct,
+  ElectroCharged,
+  Frozen,
+  SwirlCryo,
+  SwirlHydro,
+  SwirlPyro,
+  SwirlElectro,
+  CrystallizeCryo,
+  CrystallizeHydro,
+  CrystallizePyro,
+  CrystallizeElectro,
+  Burning,
+  Bloom,
+  Quicken
+}

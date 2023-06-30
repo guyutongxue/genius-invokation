@@ -34,6 +34,7 @@ const BaneOfAllEvil = createSkill(15043)
 
 export const Xiao = createCharacter(1504)
   .addTags("anemo", "pole", "liyue")
+  .maxEnergy(2)
   .addSkills(WhirlwindThrust, LemniscaticWindCycling, BaneOfAllEvil)
   .build();
 

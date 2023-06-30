@@ -2,7 +2,6 @@ import { EventHandlerCtor, ListenTarget } from "./events";
 
 export type SupportType = "ally" | "item" | "place" | "other"
 
-
 interface SupportInfo {
   type: SupportType;
   duration: number;

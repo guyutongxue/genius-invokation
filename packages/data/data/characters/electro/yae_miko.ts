@@ -81,6 +81,7 @@ const GreatSecretArtTenkoKenshin = createSkill(14083)
 
 export const YaeMiko = createCharacter(1408)
   .addTags("electro", "catalyst", "inazuma")
+  .maxEnergy(2)
   .addSkills(SpiritfoxSineater, YakanEvocationSesshouSakura, GreatSecretArtTenkoKenshin)
   .build();
 

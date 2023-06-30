@@ -34,6 +34,7 @@ const FashionersTanglevineShaft = createSkill(17023)
 
 export const Tighnari = createCharacter(1702)
   .addTags("dendro", "bow", "sumeru")
+  .maxEnergy(2)
   .addSkills(KhandaBarrierbuster, VijnanaphalaMine, FashionersTanglevineShaft)
   .build();
 

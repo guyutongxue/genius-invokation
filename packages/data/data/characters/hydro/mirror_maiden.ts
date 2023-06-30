@@ -34,6 +34,7 @@ const RippledReflection = createSkill(22023)
 
 export const MirrorMaiden = createCharacter(2202)
   .addTags("hydro", "fatui")
+  .maxEnergy(2)
   .addSkills(WaterBall, InfluxBlast, RippledReflection)
   .build();
 

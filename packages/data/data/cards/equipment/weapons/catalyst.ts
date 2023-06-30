@@ -85,7 +85,7 @@ const SkywardAtlas = createCard(311103, ["character"])
  * 入场时：抓2张牌。
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
-const FruitOfFulfillment = createCard(-37)
+const FruitOfFulfillment = createCard(-37, ["character"])
   .setType("equipment")
   .addTags("weaponCatalyst")
   .costVoid(3)

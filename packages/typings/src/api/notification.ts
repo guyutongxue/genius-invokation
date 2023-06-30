@@ -38,11 +38,16 @@ export interface SummonData {
   value: number;
 }
 
+export interface CardData {
+  id: number;
+  entityId: number;
+}
+
 export interface MyPlayerData {
   type: "my";
   pileNumber: number;
   active: number | null;
-  hands: number[];
+  hands: CardData[];
   characters: CharacterData[];
   combatStatuses: StatusData[];
   supports: SupportData[];
@@ -109,8 +114,12 @@ export interface SwitchActiveEvent {
   type: "switchActive";
   target: number;
 }
+export interface DeclareEndEvent {
+  type: "declareEnd";
+  opp: boolean;
+}
 export interface OtherEvent {
-  type: "declareEnd" | "oppChoosingActive";
+  type: "oppChoosingActive"
 }
 export type Event =
   | GamePhaseEvent
@@ -119,6 +128,7 @@ export type Event =
   | UseSkillEvent
   | OppChangeHandsEvent
   | SwitchActiveEvent
+  | DeclareEndEvent
   | OtherEvent;
 
 export type NotificationMessage = {

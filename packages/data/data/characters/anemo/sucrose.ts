@@ -40,6 +40,7 @@ const ForbiddenCreationIsomer75TypeIi = createSkill(15013)
 
 export const Sucrose = createCharacter(1501)
   .addTags("anemo", "catalyst", "mondstadt")
+  .maxEnergy(2)
   .addSkills(WindSpiritCreation, AstableAnemohypostasisCreation6308, ForbiddenCreationIsomer75TypeIi)
   .build();
 

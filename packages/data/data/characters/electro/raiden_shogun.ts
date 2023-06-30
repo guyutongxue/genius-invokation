@@ -92,6 +92,7 @@ const ChakraDesiderata = createSkill(14074)
 
 export const RaidenShogun = createCharacter(1407)
   .addTags("electro", "pole", "inazuma")
+  .maxEnergy(2)
   .addSkills(Origin, TranscendenceBalefulOmen, SecretArtMusouShinsetsu, ChakraDesiderata)
   .build();
 

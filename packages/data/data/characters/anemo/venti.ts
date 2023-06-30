@@ -34,6 +34,7 @@ const WindsGrandOde = createSkill(15033)
 
 export const Venti = createCharacter(1503)
   .addTags("anemo", "bow", "mondstadt")
+  .maxEnergy(2)
   .addSkills(DivineMarksmanship, SkywardSonnet, WindsGrandOde)
   .build();
 

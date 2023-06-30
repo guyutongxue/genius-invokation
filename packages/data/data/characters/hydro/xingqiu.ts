@@ -34,6 +34,7 @@ const Raincutter = createSkill(12023)
 
 export const Xingqiu = createCharacter(1202)
   .addTags("hydro", "sword", "liyue")
+  .maxEnergy(2)
   .addSkills(GuhuaStyle, FatalRainscreen, Raincutter)
   .build();
 

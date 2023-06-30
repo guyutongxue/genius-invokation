@@ -34,6 +34,7 @@ const GlacialIllumination = createSkill(11063)
 
 export const Eula = createCharacter(1106)
   .addTags("cryo", "claymore", "mondstadt")
+  .maxEnergy(2)
   .addSkills(FavoniusBladeworkEdel, IcetideVortex, GlacialIllumination)
   .build();
 

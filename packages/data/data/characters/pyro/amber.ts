@@ -34,6 +34,7 @@ const FieryRain = createSkill(13043)
 
 export const Amber = createCharacter(1304)
   .addTags("pyro", "bow", "mondstadt")
+  .maxEnergy(2)
   .addSkills(Sharpshooter, ExplosivePuppet, FieryRain)
   .build();
 

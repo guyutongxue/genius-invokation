@@ -79,6 +79,7 @@ const DoneDeal = createSkill(-25)
 
 const YanFei = createCharacter(-20)
   .addTags("pyro", "catalyst", "liyue")
+  .maxEnergy(2)
   .addSkills(SealOfApproval, SignedEdict, DoneDeal)
   .build()
 

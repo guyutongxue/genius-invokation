@@ -34,6 +34,7 @@ const Pyronado = createSkill(13023)
 
 export const Xiangling = createCharacter(1302)
   .addTags("pyro", "pole", "liyue")
+  .maxEnergy(2)
   .addSkills(DoughFu, GuobaAttack, Pyronado)
   .build();
 

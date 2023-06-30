@@ -34,6 +34,7 @@ const SubjugationKoukouSendou = createSkill(14063)
 
 export const KujouSara = createCharacter(1406)
   .addTags("electro", "bow", "inazuma")
+  .maxEnergy(2)
   .addSkills(TenguBowmanship, TenguStormcall, SubjugationKoukouSendou)
   .build();
 

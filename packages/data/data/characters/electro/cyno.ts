@@ -90,6 +90,7 @@ const LawfulEnforcer = createSkill(14044)
 
 export const Cyno = createCharacter(1404)
   .addTags("electro", "pole", "sumeru")
+  .maxEnergy(2)
   .addSkills(InvokersSpear, SecretRiteChasmicSoulfarer, SacredRiteWolfsSwiftness, LawfulEnforcer)
   .build();
 

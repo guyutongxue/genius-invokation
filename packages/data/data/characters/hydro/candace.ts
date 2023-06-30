@@ -66,6 +66,7 @@ const SacredRiteWagtailsTide = createSkill(-15)
 
 const Candace = createCharacter(-16)
   .addTags("hydro", "sword", "sumeru")
+  .maxEnergy(2)
   .addSkills(GleamingSpearGuardianStance, HeronStrike, SacredRiteHeronsSanctum, SacredRiteWagtailsTide)
   .build()
 

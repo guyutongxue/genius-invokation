@@ -34,6 +34,7 @@ const NereidsAscension = createSkill(12053)
 
 export const SangonomiyaKokomi = createCharacter(1205)
   .addTags("hydro", "catalyst", "inazuma")
+  .maxEnergy(2)
   .addSkills(TheShapeOfWater, KuragesOath, NereidsAscension)
   .build();
 

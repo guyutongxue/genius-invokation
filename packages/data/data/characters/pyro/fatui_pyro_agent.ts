@@ -43,6 +43,7 @@ const StealthMaster = createSkill(23014)
 
 export const FatuiPyroAgent = createCharacter(2301)
   .addTags("pyro", "fatui")
+  .maxEnergy(2)
   .addSkills(Thrust, Prowl, BladeAblaze, StealthMaster)
   .build();
 

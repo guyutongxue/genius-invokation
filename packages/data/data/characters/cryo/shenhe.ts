@@ -50,6 +50,7 @@ const DivineMaidensDeliverance = createSkill(11073)
 
 export const Shenhe = createCharacter(1107)
   .addTags("cryo", "pole", "liyue")
+  .maxEnergy(2)
   .addSkills(DawnstarPiercer, SpringSpiritSummoning, DivineMaidensDeliverance)
   .build();
 

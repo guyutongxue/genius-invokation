@@ -78,6 +78,7 @@ const FantasticVoyage = createSkill(13033)
 
 export const Bennett = createCharacter(1303)
   .addTags("pyro", "sword", "mondstadt")
+  .maxEnergy(2)
   .addSkills(StrikeOfFortune, PassionOverload, FantasticVoyage)
   .build();
 

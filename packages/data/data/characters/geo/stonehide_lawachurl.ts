@@ -43,6 +43,8 @@ const InfusedStonehide = createSkill(26014)
 
 export const StonehideLawachurl = createCharacter(2601)
   .addTags("geo", "monster", "hilichurl")
+  .maxHealth(8)
+  .maxEnergy(2)
   .addSkills(PlamaLawa, MovoLawa, UpaShato, InfusedStonehide)
   .build();
 

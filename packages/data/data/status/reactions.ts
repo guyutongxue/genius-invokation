@@ -47,3 +47,27 @@ export const BurningFlame = createSummon(115)
     c.dealDamage(1, DamageType.Pyro);
   })
   .build();
+
+/**
+ * **冻结**
+ * 角色无法使用技能。（持续到回合结束）
+ * 角色受到火元素伤害或物理伤害时，移除此效果，使该伤害+2。
+ */
+export const Frozen = createStatus(106)
+  .withDuration(1)
+  .disableSkill()
+  .on("beforeDamaged", (c) => {
+    if (c.damageType === DamageType.Pyro || c.damageType === DamageType.Physical) {
+      c.addDamage(2);
+      c.dispose();
+    }
+  })
+  .build();
+
+/**
+ * 结晶
+ * 为我方出战角色提供1点护盾。（可叠加，最多叠加到2点）
+ */
+export const Crystallize = createStatus(111)
+  .shield({ initial: 1, recreateMax: 2 })
+  .build();

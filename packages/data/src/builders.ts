@@ -29,6 +29,8 @@ type CommonAction = (c: Context) => void;
 
 class CharacterBuilder {
   private readonly tags: CharacterTag[] = [];
+  private _maxHealth = 10;
+  private _maxEnergy = 3;
   private readonly skills: SkillHandle[] = [];
   constructor(private readonly id: number) { }
 
@@ -42,9 +44,20 @@ class CharacterBuilder {
     return this;
   }
 
+  maxHealth(value: number) {
+    this._maxHealth = value;
+    return this;
+  }
+  maxEnergy(value: number) {
+    this._maxEnergy = value;
+    return this;
+  }
+
   build(): CharacterHandle {
     registerCharacter(this.id, {
       tags: this.tags,
+      maxHealth: this._maxHealth,
+      maxEnergy: this._maxEnergy,
       skills: this.skills,
     });
     return this.id as CharacterHandle;

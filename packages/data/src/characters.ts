@@ -1,4 +1,4 @@
-import { DiceType } from "@gi-tcg/typings";
+import { Aura, DiceType } from "@gi-tcg/typings";
 import { EquipmentHandle, StatusHandle } from "./builders";
 import { StatusContext } from "./statuses";
 import { Target } from "./target";
@@ -34,6 +34,8 @@ export type CharacterTag = ElementTag | WeaponTag | NationTag;
 
 interface CharacterInfo {
   tags: CharacterTag[];
+  maxHealth: number;
+  maxEnergy: number;
   skills: number[];
 }
 export type CharacterInfoWithId = Readonly<CharacterInfo & { id: number }>;
@@ -44,6 +46,7 @@ export interface CharacterContext {
 
   readonly health: number;
   readonly energy: number;
+  readonly aura: Aura;
   isAlive(): boolean;
   
   hasEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentInfoWithId;

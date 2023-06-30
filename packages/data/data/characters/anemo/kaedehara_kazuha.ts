@@ -58,6 +58,7 @@ const KazuhaSlash = createSkill(-5)
 
 const KaedeharaKazuha = createCharacter(-6)
   .addTags("anemo", "sword", "inazuma")
+  .maxEnergy(2)
   .addSkills(GaryuuBladework, Chihayaburu, KazuhaSlash)
   .build()
 
