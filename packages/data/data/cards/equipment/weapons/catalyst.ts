@@ -78,3 +78,18 @@ const SkywardAtlas = createCard(311103, ["character"])
     }
   })
   .build();
+
+/**
+ * **盈满之实**
+ * 角色造成的伤害+1。
+ * 入场时：抓2张牌。
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+const FruitOfFulfillment = createCard(-37)
+  .setType("equipment")
+  .addTags("weaponCatalyst")
+  .costVoid(3)
+  .drawCards(2)
+  .buildToEquipment()
+  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .build();

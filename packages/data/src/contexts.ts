@@ -41,6 +41,7 @@ export interface Context {
   summonOneOf(...summons: SummonHandle[]): void;
   createSupport(support: SupportHandle, opp?: boolean): void;
 
+  getDiceCount(): number;
   rollDice(count: number): Promise<void>;
   generateDice(...dice: DiceType[]): void;
   removeAllDice(): DiceType[];
@@ -121,6 +122,7 @@ export interface PlayCardContext extends Context {
   readonly info: CardInfoWithId;
   readonly target: CardTarget[keyof CardTarget][];
   isTalentOf(charId: number): boolean;
+  isWeapon(type?: unknown): boolean;
 }
 
 export interface SwitchActiveContext extends Context {

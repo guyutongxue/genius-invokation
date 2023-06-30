@@ -566,3 +566,21 @@ const WindAndFreedom = createCard(331801)
     }
   })
   .build();
+
+
+/**
+ * **大梦的曲调**
+ * 我方下次打出「武器」或「圣遗物」手牌时，少花费1个元素骰。
+ */
+const RhythmOfTheGreatDream = createCard(-35)
+  .setType("event")
+  .buildToStatus("combat")
+  .withUsage(1)
+  .on("beforeUseDice", (c) => {
+    if (c.playCardCtx?.isWeapon() || c.playCardCtx?.info.tags.includes("artifact")) {
+      c.deductCost(DiceType.Omni);
+    } else {
+      return false;
+    }
+  })
+  .build();

@@ -294,3 +294,25 @@ const Xudong = createCard(322015)
     }
   })
   .build();
+
+/** 
+ * **老章** 
+ * 我方打出「武器」手牌时：少花费1个元素骰；我方场上每有一个已装备「武器」的角色，就额外少花费1个元素骰。（每回合1次）
+ */
+const MasterZhang = createCard(-33)
+  .setType("support")
+  .addTags("ally")
+  .costVoid(1)
+  .buildToSupport()
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.playCardCtx?.isWeapon()) {
+      const hasWeaponChar = c.allCharacters().filter(ch => ch.hasEquipment("weapon")).length;
+      const deduct = new Array(hasWeaponChar + 1).fill(DiceType.Omni);
+      c.deductCost(...deduct);
+    } else {
+      return false;
+    }
+  })
+  .build();
+
