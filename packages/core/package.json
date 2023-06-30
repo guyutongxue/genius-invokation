@@ -1,5 +1,5 @@
 {
-  "name": "@jenshin-tcg/core",
+  "name": "@gi-tcg/core",
   "type": "module",
   "exports": {
     ".": {
@@ -8,7 +8,7 @@
     }
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "tsc"
   },
   "devDependencies": {
     "@gi-tcg/data": "workspace:*",
