@@ -1,11 +1,21 @@
 import { CardInfoWithId, getCard } from "@gi-tcg/data";
-import { newEntityId } from "./entity_id.js";
+import { Entity } from "./entity.js";
 
-export class Card {
-  private readonly entityId: number;
+export class Card extends Entity {
   private readonly info: CardInfoWithId;
-  constructor(private readonly id: number) {
-    this.entityId = newEntityId();
+  constructor(id: number) {
+    super(id);
     this.info = getCard(id);
+  }
+
+  isArcane() {
+    return this.info.tags.includes("arcane");
+  }
+
+  getData() {
+    return {
+      entityId: this.entityId,
+      id: this.id,
+    };
   }
 }

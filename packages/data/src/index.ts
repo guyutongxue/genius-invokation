@@ -1,6 +1,7 @@
 import "../data/index";
 
 export * from "./contexts";
+export * from "./events";
 export { CharacterContext, CharacterInfoWithId, CharacterTag, ElementTag, NationTag, WeaponTag, getCharacter } from "./characters";
 export {
   BurstSkillInfo, NormalSkillInfo, PassiveSkillInfo, SkillInfo, SkillInfoWithId, UseSkillAction, getSkill
@@ -11,4 +12,5 @@ export {
 export { StatusContext, StatusTag, ShieldConfig, StatusInfoWithId, getStatus } from "./statuses";
 export { SupportType, SupportInfoWithId, getSupport } from "./supports";
 export { SummonContext, SummonInfoWithId, getSummon } from "./summons";
+export { EquipmentInfoWithId, getEquipment } from "./equipments";
 export * from "./reactions";

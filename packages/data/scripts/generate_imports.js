@@ -6,7 +6,7 @@ const TARGET = "data/index.ts";
 
 const files = await glob("data/**/*.ts", {
   ignore: TARGET
-});
+}).then((files) => files.sort());
 
 /**
  * @param {string} path 

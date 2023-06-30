@@ -12,9 +12,9 @@ interface SupportInfo {
 }
 export type SupportInfoWithId = Readonly<SupportInfo & { id: number }>;
 
-const allStatuses = new Map<number, SupportInfo>();
+const allStatuses = new Map<number, SupportInfoWithId>();
 export function registerSupport(id: number, info: SupportInfo) {
-  allStatuses.set(id, info);
+  allStatuses.set(id, { ...info, id });
 }
 export function getSupport(id: number) {
   if (!allStatuses.has(id)) {
