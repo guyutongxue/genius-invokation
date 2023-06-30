@@ -95,5 +95,9 @@ const RightOfFinalInterpretation = createCard(-26, ["character"])
   .addCharacterFilter(YanFei)
   .useSkill(SealOfApproval)
   .buildToEquipment()
-  // TODO
+  .on("beforeUseSkill", (c) => {
+    if (c.isCharged() && c.target.health <= 6) {
+      c.damage?.addDamage(1);
+    }
+  })
   .build()

@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **七圣枪术**
@@ -8,7 +8,7 @@ const InvokersSpear = createSkill(14041)
   .setType("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,18 @@ const InvokersSpear = createSkill(14041)
 const SecretRiteChasmicSoulfarer = createSkill(14042)
   .setType("elemental")
   .costElectro(3)
-  // TODO
+  .do((c) => {
+    if (c.character.hasEquipment(FeatherfallJudgment)) {
+      const indwelling = c.character.hasStatus(PactswornPathclearer)?.getVisibleValue();
+      if (indwelling === 3 || indwelling === 5) {
+        c.dealDamage(4, DamageType.Electro);
+      } else {
+        c.dealDamage(3, DamageType.Electro);
+      }
+    } else {
+      c.dealDamage(3, DamageType.Electro);
+    }
+  })
   .build();
 
 /**
@@ -30,7 +41,42 @@ const SacredRiteWolfsSwiftness = createSkill(14043)
   .setType("burst")
   .costElectro(4)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    c.dealDamage(4, DamageType.Electro);
+    const status = c.character.hasStatus(PactswornPathclearer);
+    if (!status) return;
+    status.addVisibleValue(2);
+    if (status.getVisibleValue()! >= 6) {
+      status.addVisibleValue(-4);
+    }
+  })
+  .build();
+
+/**
+ * **启途誓使**
+ * 结束阶段：累积1级「凭依」。
+ * 根据「凭依」级数，提供效果：
+ * 大于等于2级：物理伤害转化为雷元素伤害；
+ * 大于等于4级：造成的伤害+2；
+ * 大于等于6级时：「凭依」级数-4。
+ */
+const PactswornPathclearer = createStatus(114041)
+  .do({
+    onEndPhase(c) {
+      this.indwelling++;
+      if (this.indwelling >= 6) {
+        this.indwelling -= 4;
+      }
+    },
+    onEarlyBeforeDealDamage(c) {
+      if (this.indwelling >= 2 && c.damageType === DamageType.Physical) {
+        c.changeDamageType(DamageType.Electro);
+      }
+      if (this.indwelling >= 4) {
+        c.addDamage(2);
+      }
+    },
+  }, { indwelling: 0 })
   .build();
 
 /**
@@ -39,7 +85,7 @@ const SacredRiteWolfsSwiftness = createSkill(14043)
  */
 const LawfulEnforcer = createSkill(14044)
   .setType("passive")
-  // TODO
+  .on("battleBegin", (c) => { c.createStatus(PactswornPathclearer); })
   .build();
 
 export const Cyno = createCharacter(1404)
@@ -57,6 +103,9 @@ export const Cyno = createCharacter(1404)
 export const FeatherfallJudgment = createCard(214041, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Cyno)
+  .addCharacterFilter(Cyno)
   .costElectro(3)
-  // TODO
+  .useSkill(SecretRiteChasmicSoulfarer)
+  .buildToEquipment()
   .build();

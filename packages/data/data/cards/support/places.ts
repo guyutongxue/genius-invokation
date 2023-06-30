@@ -1,4 +1,4 @@
-import { Target, createCard } from '@gi-tcg';
+import { DiceType, Target, createCard } from '@gi-tcg';
 
 /**
  * **镇守之森**
@@ -22,7 +22,14 @@ const DawnWinery = createCard(321004)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withUsagePerRound(1)
+  .on("beforeUseDice", (c) => {
+    if (c.switchActiveCtx) {
+      c.deductCost(DiceType.Omni, 1);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -35,7 +42,10 @@ const FavoniusCathedral = createCard(321006)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withUsage(2)
+  .on("endPhase", (c) => {
+    c.heal(2, Target.myActive());
+  })
   .build();
 
 /**
@@ -47,8 +57,16 @@ const GrandNarukamiShrine = createCard(321008)
   .setType("support")
   .addTags("place")
   .costSame(2)
+  .do((c) => {
+    const r = Math.floor(Math.random() * 7) + 1;
+    c.generateDice(r);
+  })
   .buildToSupport()
-  // TODO
+  .withUsage(2)
+  .on("actionPhase", (c) => {
+    const r = Math.floor(Math.random() * 7) + 1;
+    c.generateDice(r);
+  })
   .build();
 
 /**
@@ -60,7 +78,10 @@ const JadeChamber = createCard(321003)
   .addTags("place")
   .costSame(1)
   .buildToSupport()
-  // TODO
+  .on("rollPhase", (c) => {
+    const d = c.activeCharacterElement;
+    c.fixDice(d, d);
+  })
   .build();
 
 /**
@@ -126,7 +147,12 @@ const Tenshukaku = createCard(321007)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .on("actionPhase", (c) => {
+    const diceTypeCount = new Set(c.getDice()).size;
+    if (diceTypeCount >= 5) {
+      c.generateDice(DiceType.Omni);
+    }
+  })
   .build();
 
 /**
@@ -138,7 +164,18 @@ const Vanarana = createCard(321011)
   .setType("support")
   .addTags("place")
   .buildToSupport()
-  // TODO
+  .do({
+    onEndPhase(c) {
+      const a = c.getDice().shift();
+      const b = c.getDice().shift();
+      a && this.collected.push(a);
+      b && this.collected.push(b);
+    },
+    onActionPhase(c) {
+      c.generateDice(...this.collected);
+      this.collected = [];
+    }
+  }, { collected: [] as DiceType[] })
   .build();
 
 /**

@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType, DiceType } from "@gi-tcg";
 
 /**
  * **征涛**
@@ -8,7 +8,28 @@ const Oceanborne = createSkill(14051)
   .setType("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
+  .build();
+
+
+/**
+ * **踏潮**
+ * （需准备1个行动轮）
+ * 造成2点雷元素伤害。
+ */
+const Wavestrider = createSkill(14054)
+  .setType("elemental")
+  .dealDamage(2, DamageType.Electro)
+  .build();
+
+/**
+ * **捉浪·涛拥之守**
+ * 本角色将在下次行动时，直接使用技能：踏潮。
+ * 准备技能期间：提供2点护盾，保护所附属的角色。
+ */
+const TidecallerSurfEmbrace = createStatus(114051)
+  .prepare(Wavestrider)
+  .shield(2)
   .build();
 
 /**
@@ -18,7 +39,27 @@ const Oceanborne = createSkill(14051)
 const Tidecaller = createSkill(14052)
   .setType("elemental")
   .costElectro(3)
-  // TODO
+  .createStatus(TidecallerSurfEmbrace)
+  .build();
+
+/**
+ * **雷兽之盾**
+ * 我方角色普通攻击后：造成1点雷元素伤害。
+ * 我方角色受到至少为3的伤害时：抵消其中1点伤害。
+ * 持续回合：2
+ */
+const ThunderbeastsTarge = createStatus(114053)
+  .withDuration(2)
+  .on("useSkill", (c) => {
+    if (c.info.type === "normal") {
+      c.dealDamage(1, DamageType.Electro);
+    }
+  })
+  .on("beforeDamaged", (c) => {
+    if (c.value >= 3) {
+      c.decreaseDamage(1);
+    }
+  })
   .build();
 
 /**
@@ -29,22 +70,30 @@ const Stormbreaker = createSkill(14053)
   .setType("burst")
   .costElectro(4)
   .costEnergy(3)
-  // TODO
-  .build();
-
-/**
- * **踏潮**
- * （需准备1个行动轮）
- * 造成2点雷元素伤害。
- */
-const Wavestrider = createSkill(14054)
-  .setType("elemental")
-  // TODO
+  .dealDamage(3, DamageType.Electro)
+  .createCombatStatus(ThunderbeastsTarge)
   .build();
 
 export const Beidou = createCharacter(1405)
   .addTags("electro", "claymore", "liyue")
   .addSkills(Oceanborne, Tidecaller, Stormbreaker, Wavestrider)
+  .build();
+
+/**
+ * **奔潮引电**
+ * 本回合内，所附属的角色普通攻击少花费1个无色元素。
+ * 可用次数：2
+ */
+const SummonerOfLightning = createStatus(114052)
+  .withDuration(1)
+  .withUsage(2)
+  .on("beforeUseDice", (c) => {
+    if (c.useSkillCtx?.info.type === "normal") {
+      c.deductCost(DiceType.Void);
+    } else {
+      return false;
+    }
+  })
   .build();
 
 /**
@@ -57,6 +106,20 @@ export const Beidou = createCharacter(1405)
 export const LightningStorm = createCard(214051, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Beidou)
+  .addCharacterFilter(Beidou)
   .costElectro(3)
-  // TODO
+  .useSkill(Tidecaller)
+  .buildToEquipment()
+  .do({
+    onBeforeUseSkill(c) {
+      if (c.info.id === Wavestrider) {
+        const status = c.character.hasStatus(TidecallerSurfEmbrace);
+        const shield = status?.getVisibleValue() ?? 0;
+        if (shield !== 2) {
+          c.createStatus(SummonerOfLightning);
+        }
+      }
+    },
+  })
   .build();

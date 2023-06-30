@@ -10,7 +10,8 @@ import { StatusContext } from "./statuses";
 export enum SpecialBits {
   DefeatedMine = 0,
   DefeatedOpp = 1,
-  Plunging = 2
+  Plunging = 2,
+  ArcaneUsed = 3,
 }
 
 export interface Context {
@@ -41,7 +42,7 @@ export interface Context {
   summonOneOf(...summons: SummonHandle[]): void;
   createSupport(support: SupportHandle, opp?: boolean): void;
 
-  getDiceCount(): number;
+  getDice(): DiceType[];
   rollDice(count: number): Promise<void>;
   generateDice(...dice: DiceType[]): void;
   removeAllDice(): DiceType[];
@@ -66,7 +67,8 @@ export interface RollContext {
 }
 
 export interface SkillDescriptionContext extends Context {
-  triggeredByCard(card: CardHandle): boolean;
+  triggeredByCard(card: CardHandle): PlayCardContext;
+  triggeredByStatus(status: StatusHandle): StatusContext;
   readonly character: CharacterContext;
   readonly target: CharacterContext;
   isCharged(): boolean;  // 重击
@@ -99,6 +101,7 @@ interface DamageBaseContext extends Context {
 
 export interface DamageReadonlyContext extends DamageBaseContext {
   readonly reaction: ElementalReactionContext | null;
+  readonly value: number;
 }
 
 export interface BeforeDamageCalculatedContext extends DamageBaseContext {

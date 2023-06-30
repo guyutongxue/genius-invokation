@@ -16,9 +16,8 @@ const FireworkFlareup = createSkill(13051)
  * 本角色附属庭火焰硝。（此技能不产生充能）
  */
 const NiwabiFiredance = createSkill(13052)
-  .setType("elemental")
+  .setType("elemental", false)
   .costPyro(1)
-  .noEnergy()
   // TODO
   .build();
 

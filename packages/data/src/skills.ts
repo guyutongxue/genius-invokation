@@ -22,12 +22,6 @@ export interface BurstSkillInfo {
   action: UseSkillAction;
 }
 
-export interface PrepareSkillInfo {
-  type: "prepare";
-  prepareRound: number;
-  action: UseSkillAction;
-}
-
 export interface PassiveSkillInfo {
   type: "passive";
   duration: number;
@@ -39,7 +33,6 @@ export interface PassiveSkillInfo {
 export type SkillInfo =
   | NormalSkillInfo
   | BurstSkillInfo
-  | PrepareSkillInfo
   | PassiveSkillInfo;
 export type SkillInfoWithId = Readonly<SkillInfo & { id: number; }>;
 

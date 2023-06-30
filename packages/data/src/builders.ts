@@ -6,7 +6,7 @@ import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType, registerEquipment } from "./equipments";
 import { CharacterTag, registerCharacter } from "./characters";
-import { ShieldConfig, StatusTag, registerStatus } from "./statuses";
+import { PrepareConfig, ShieldConfig, StatusTag, registerStatus } from "./statuses";
 import { SupportType, registerSupport } from "./supports";
 import { registerSummon } from "./summons";
 
@@ -164,7 +164,6 @@ class ActionBuilderBase {
 class SkillBuilder extends ActionBuilderBase {
   private type: Exclude<SkillType, "passive"> = "normal";
   private actions: UseSkillAction[] = [];
-  private prepareRound = 0;
   private shouldGainEnergy = false;
 
   constructor(private readonly id: number) {
@@ -177,21 +176,13 @@ class SkillBuilder extends ActionBuilderBase {
   setType(type: "normal" | "elemental", gainEnergy?: boolean): this;
   setType(type: "burst"): this;
   setType(type: "passive"): PassiveSkillBuilder;
-  setType(type: "prepare", prepareRound: number): this;
-  setType(type: SkillType, opt?: unknown): any {
+  setType(type: SkillType, opt?: boolean): any {
     if (type === "passive") {
       return new PassiveSkillBuilder(this.id);
-    } else if (type === "prepare") {
-      this.prepareRound = opt as number;
     } else if (type === "normal" || type === "elemental") {
       this.shouldGainEnergy = (opt ?? true) as boolean;
     }
     this.type = type;
-    return this;
-  }
-
-  noEnergy() {
-    this.shouldGainEnergy = false;
     return this;
   }
 
@@ -206,19 +197,11 @@ class SkillBuilder extends ActionBuilderBase {
         await a(c);
       }
     };
-    if (this.type === "prepare") {
-      registerSkill(this.id, {
-        type: "prepare",
-        prepareRound: this.prepareRound,
-        action,
-      });
-    } else {
-      registerSkill(this.id, {
-        type: this.type,
-        gainEnergy: this.shouldGainEnergy,
-        action,
-      } as NormalSkillInfo | BurstSkillInfo);
-    }
+    registerSkill(this.id, {
+      type: this.type,
+      gainEnergy: this.shouldGainEnergy,
+      action,
+    } as NormalSkillInfo | BurstSkillInfo);
     return this.id as SkillHandle;
   }
 }
@@ -489,6 +472,7 @@ class PassiveSkillBuilder extends TriggerBuilderBase {
 
 class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilderBase {
   private tags: StatusTag[] = [];
+  private prepareConfig: PrepareConfig = null;
   private shieldConfig: ShieldConfig = null;
   private shouldListenToOthers: boolean = false;
 
@@ -507,6 +491,10 @@ class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilde
   shield(shield: ShieldConfig) {
     this.tags.push("shield");
     this.shieldConfig = shield;
+    return this;
+  }
+  prepare(skill: SkillHandle, round = 1) {
+    this.prepareConfig = { skill, round };
     return this;
   }
 

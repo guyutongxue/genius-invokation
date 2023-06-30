@@ -12,25 +12,23 @@ const GleamingSpearGuardianStance = createSkill(-10)
   .build()
 
 /**
- * **苍鹭护盾**
- * 本角色将在下次行动时，直接使用技能：苍鹭震击。
- * 准备技能期间：提供2点护盾，保护所附属的角色。
- */
-const HeronShield = createStatus(-11)
-  .shield(2)
-  // TODO
-  .build()
-
-/**
  * **苍鹭震击**
  * （需准备1个行动轮）
  * 造成3点水元素伤害。
  */
 const HeronStrike = createSkill(-12)
-  // TODO
-  .setType("prepare", 1)
-  // .setType("elemental")
+  .setType("elemental", false)
   .dealDamage(3, DamageType.Hydro)
+  .build()
+
+/**
+ * **苍鹭护盾**
+ * 本角色将在下次行动时，直接使用技能：苍鹭震击。
+ * 准备技能期间：提供2点护盾，保护所附属的角色。
+ */
+const HeronShield = createStatus(-11)
+  .prepare(HeronStrike)
+  .shield(2)
   .build()
 
 /**
