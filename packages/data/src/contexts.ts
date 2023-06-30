@@ -68,15 +68,14 @@ export interface SkillDescriptionContext extends Context {
   triggeredByCard(card: CardHandle): boolean;
   readonly character: CharacterContext;
   readonly target: CharacterContext;
-}
-
-export interface SkillReadonlyContext extends Context {
-  readonly info: SkillInfoWithId;
-  readonly character: CharacterContext;
-  readonly damage?: DamageReadonlyContext;
-  hasReaction(relatedWith?: DamageType): boolean;
   isCharged(): boolean;  // 重击
   isPlunging(): boolean; // 下落攻击
+}
+
+export interface SkillReadonlyContext extends SkillDescriptionContext {
+  readonly info: SkillInfoWithId;
+  readonly damage?: DamageReadonlyContext;
+  hasReaction(relatedWith?: DamageType): boolean;
 }
 
 export interface SkillContext extends SkillReadonlyContext {

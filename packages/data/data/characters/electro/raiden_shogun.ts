@@ -102,11 +102,11 @@ export const RaidenShogun = createCharacter(1407)
  * 装备有此牌的雷电将军使用奥义·梦想真说时每消耗1点「愿力」，都使造成的伤害额外+1。
  * （牌组中包含雷电将军，才能加入牌组）
  */
-export const WishesUnnumbered = createCard(214071)
+export const WishesUnnumbered = createCard(214071, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(RaidenShogun)
-  .addActiveCharacterFilter(RaidenShogun)
+  .addCharacterFilter(RaidenShogun)
   .costElectro(4)
   .costEnergy(2)
   .useSkill(SecretArtMusouShinsetsu)

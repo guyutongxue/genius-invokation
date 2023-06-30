@@ -44,7 +44,7 @@ export const Collei = createCharacter(1701)
  * 装备有此牌的柯莱使用了拂花偈叶的回合中，我方角色的技能引发草元素相关反应后：造成1点草元素伤害。（每回合1次）
  * （牌组中包含柯莱，才能加入牌组）
  */
-export const FloralSidewinder = createCard(217011)
+export const FloralSidewinder = createCard(217011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costDendro(4)

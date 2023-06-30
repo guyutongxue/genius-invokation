@@ -44,7 +44,7 @@ export const HuTao = createCharacter(1307)
  * 装备有此牌的胡桃在生命值不多于6时，造成的火元素伤害+1。
  * （牌组中包含胡桃，才能加入牌组）
  */
-export const SanguineRouge = createCard(213071)
+export const SanguineRouge = createCard(213071, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costPyro(2)

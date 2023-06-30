@@ -44,7 +44,7 @@ export const Noelle = createCharacter(1602)
  * 装备有此牌的诺艾尔生成的护体岩铠，会在诺艾尔使用普通攻击后，治疗我方所有角色1点。（每回合1次）
  * （牌组中包含诺艾尔，才能加入牌组）
  */
-export const IGotYourBack = createCard(216021)
+export const IGotYourBack = createCard(216021, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costGeo(3)

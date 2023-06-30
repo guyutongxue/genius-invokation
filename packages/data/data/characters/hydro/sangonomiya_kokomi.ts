@@ -45,7 +45,7 @@ export const SangonomiyaKokomi = createCharacter(1205)
  * 仪来羽衣存在期间，化海月造成的伤害+1。
  * （牌组中包含珊瑚宫心海，才能加入牌组）
  */
-export const TamakushiCasket = createCard(212051)
+export const TamakushiCasket = createCard(212051, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costHydro(3)

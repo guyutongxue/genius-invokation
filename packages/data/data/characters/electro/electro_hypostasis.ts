@@ -69,7 +69,7 @@ export const ElectroHypostasis = createCharacter(2401)
  * 战斗行动：我方出战角色为无相之雷时，治疗该角色3点，并附属雷晶核心。
  * （牌组中包含无相之雷，才能加入牌组）
  */
-export const AbsorbingPrism = createCard(224011)
+export const AbsorbingPrism = createCard(224011, ["character"])
   .setType("event")
   .addTags("talent", "action")
   .costElectro(3)

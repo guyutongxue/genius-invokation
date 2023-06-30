@@ -274,9 +274,15 @@ class CardBuilder<
     this.filters.push(filter);
     return this;
   }
-  addActiveCharacterFilter(ch: CharacterHandle) {
-    return this.addFilter(
-      (c) => !!c.hasCharacter(ch)?.isActive()
+  addCharacterFilter(ch: CharacterHandle, requireActive = true) {
+    const self: unknown = this;
+    CardBuilder.ensureTargetDescriptor(self);
+    return self.addFilter(
+      function (c) {
+        return this[0].info.id === ch && (
+          requireActive ? this[0].isActive() : true
+        );
+      }
     );
   }
   filterTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
@@ -455,7 +461,7 @@ class TriggerBuilderBase {
 
   protected getHandlerCtor(): EventHandlerCtor {
     const ctor = this.complexHandler ?? class { };
-    if (this.perEventHandler) {
+    if (Object.keys(this.perEventHandler).length) {
       if (this.complexHandler) {
         throw new Error("Cannot use both do() and on()");
       }

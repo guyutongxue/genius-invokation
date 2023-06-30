@@ -53,7 +53,7 @@ export const JadeplumeTerrorshroom = createCharacter(2701)
  * 装备有此牌的翠翎恐蕈，可累积的「活化激能」层数+1。
  * （牌组中包含翠翎恐蕈，才能加入牌组）
  */
-export const ProliferatingSpores = createCard(227011)
+export const ProliferatingSpores = createCard(227011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costDendro(3)

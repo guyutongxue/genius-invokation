@@ -78,6 +78,10 @@ export interface DamageData {
   type: DamageType;
   value: number;
   target: number;
+  log: {
+    source: number | string; // id or "elementalReaction" or ...
+    what: string;
+  }[];
 }
 export interface StateUpdatedEvent {
   type: "stateUpdated";

@@ -85,11 +85,11 @@ export const Zhongli = createCharacter(1603)
  * 我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。
  * （牌组中包含钟离，才能加入牌组）
  */
-export const DominanceOfEarth = createCard(216031)
+export const DominanceOfEarth = createCard(216031, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(Zhongli)
-  .addActiveCharacterFilter(Zhongli)
+  .addCharacterFilter(Zhongli)
   .costGeo(5)
   .useSkill(DominusLapidisStrikingStone)
   .buildToEquipment()

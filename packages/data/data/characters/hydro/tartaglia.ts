@@ -8,19 +8,30 @@ const CuttingTorrent = createSkill(12041)
   .setType("normal")
   .costHydro(1)
   .costVoid(2)
+  .do((c) => {
+    c.dealDamage(2, DamageType.Physical);
+    if (c.isCharged()) {
+      c.createStatus(Riptide, c.target.asTarget());
+    }
+  })
   .dealDamage(2, DamageType.Physical)
   .build();
+
+// 注：“重击对目标角色附属断流”这一效果的触发，移到了普通攻击的描述里。
+// 原因：当重击击倒对方角色后，可观察到断流先被附属，随后再触发断流的“角色倒下”效果
+// 规则书说：倒下的结算是在（导致角色生命值为 0 的）技能或效果结算完毕后触发
+// 这里是普通攻击技能触发倒下，所以结算时间点是在普通攻击结束后；而不是在状态生效的时刻。
 
 /**
  * **远程状态**
  * 所附属角色进行重击后：目标角色附属断流。
  */
 const RangedStance = createStatus(112041)
-  .on("useSkill", (c) => {
-    if (c.isCharged() && c.damage) {
-      c.createStatus(Riptide, c.damage.target.asTarget());
-    }
-  })
+  // .on("useSkill", (c) => {
+  //   if (c.isCharged() && c.damage) {
+  //     c.createStatus(Riptide, c.damage.target.asTarget());
+  //   }
+  // })
   .build();
 
 /**
@@ -37,10 +48,15 @@ const MeleeStance = createStatus(112042)
     onEarlyBeforeDealDamage(c) {
       c.changeDamageType(DamageType.Hydro);
     },
-    onUseSkill(c) {
-      if (c.isCharged() && c.damage) {
-        c.createStatus(Riptide, c.damage.target.asTarget());
+    onBeforeDealDamage(c) {
+      if (c.target.hasStatus(Riptide)) {
+        c.addDamage(1);
       }
+    },
+    onUseSkill(c) {
+      // if (c.isCharged() && c.damage) {
+      //   c.createStatus(Riptide, c.damage.target.asTarget());
+      // }
       if (this.piercingCount && c.damage && c.damage.target.hasStatus(Riptide)) {
         c.dealDamage(1, DamageType.Piercing, Target.oppNext());
         this.piercingCount--;
@@ -121,11 +137,11 @@ const Riptide = createStatus(112043)
  * 结束阶段：对所有附属有断流的敌方角色造成1点穿透伤害。
  * （牌组中包含达达利亚，才能加入牌组）
  */
-export const AbyssalMayhemHydrospout = createCard(212041)
+export const AbyssalMayhemHydrospout = createCard(212041, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(Tartaglia)
-  .addActiveCharacterFilter(Tartaglia)
+  .addCharacterFilter(Tartaglia)
   .costHydro(4)
   .useSkill(FoulLegacyRagingTide)
   .buildToEquipment()

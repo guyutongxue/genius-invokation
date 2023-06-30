@@ -88,11 +88,11 @@ export const Bennett = createCharacter(1303)
  * 装备有此牌的班尼特生成的鼓舞领域，其伤害提升效果改为总是生效，不再具有生命值限制。
  * （牌组中包含班尼特，才能加入牌组）
  */
-export const GrandExpectation = createCard(213031)
+export const GrandExpectation = createCard(213031, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(Bennett)
-  .addActiveCharacterFilter(Bennett)
+  .addCharacterFilter(Bennett)
   .costPyro(4)
   .costEnergy(2)
   .useSkill(FantasticVoyage)

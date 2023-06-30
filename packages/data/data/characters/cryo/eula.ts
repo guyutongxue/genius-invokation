@@ -44,7 +44,7 @@ export const Eula = createCharacter(1106)
  * 装备有此牌的优菈使用冰潮的涡旋时，会额外为光降之剑累积1点「能量层数」。
  * （牌组中包含优菈，才能加入牌组）
  */
-export const WellspringOfWarlust = createCard(211061)
+export const WellspringOfWarlust = createCard(211061, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costCryo(3)

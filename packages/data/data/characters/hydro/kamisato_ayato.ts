@@ -44,7 +44,7 @@ export const KamisatoAyato = createCharacter(1206)
  * 装备有此牌的神里绫人触发泷廻鉴花的效果时，对于生命值不多于6的敌人伤害额外+1。
  * （牌组中包含神里绫人，才能加入牌组）
  */
-export const KyoukaFuushi = createCard(212061)
+export const KyoukaFuushi = createCard(212061, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costHydro(3)

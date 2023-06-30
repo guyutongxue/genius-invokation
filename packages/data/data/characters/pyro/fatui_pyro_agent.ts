@@ -54,7 +54,7 @@ export const FatuiPyroAgent = createCharacter(2301)
  * 初始可用次数+1，并且使所附属角色造成的物理伤害变为火元素伤害。
  * （牌组中包含愚人众·火之债务处理人，才能加入牌组）
  */
-export const PaidInFull = createCard(223011)
+export const PaidInFull = createCard(223011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costPyro(3)

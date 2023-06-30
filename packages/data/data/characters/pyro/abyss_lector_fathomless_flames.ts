@@ -89,10 +89,11 @@ const AegisOfAbyssalFlame = createStatus(123024)
  * 装备有此牌的深渊咏者·渊火触发火之新生时：弃置此牌，为角色附属渊火加护。
  * （牌组中包含深渊咏者·渊火，才能加入牌组）
  */
-export const EmbersRekindled = createCard(223021)
+export const EmbersRekindled = createCard(223021, ["character"])
   .setType("equipment")
   .addTags("talent")
   .requireCharacter(AbyssLectorFathomlessFlames)
+  .addCharacterFilter(AbyssLectorFathomlessFlames, false)
   .costPyro(2)
   .do((c) => {
     const ch = c.hasCharacter(AbyssLectorFathomlessFlames);

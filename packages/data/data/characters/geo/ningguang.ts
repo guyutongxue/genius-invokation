@@ -44,7 +44,7 @@ export const Ningguang = createCharacter(1601)
  * 装备有此牌的凝光在场时，璇玑屏会使我方造成的岩元素伤害+1。
  * （牌组中包含凝光，才能加入牌组）
  */
-export const StrategicReserve = createCard(216011)
+export const StrategicReserve = createCard(216011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costGeo(4)

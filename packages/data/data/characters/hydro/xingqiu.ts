@@ -44,7 +44,7 @@ export const Xingqiu = createCharacter(1202)
  * 装备有此牌的行秋生成的雨帘剑，初始可用次数+1。
  * （牌组中包含行秋，才能加入牌组）
  */
-export const TheScentRemained = createCard(212021)
+export const TheScentRemained = createCard(212021, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costHydro(4)

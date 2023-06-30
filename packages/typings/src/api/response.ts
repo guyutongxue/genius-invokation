@@ -57,4 +57,4 @@ export type RpcResponse = {
 }
 
 export type Response = RpcResponse[RpcMethod];
-export type Handler<M extends RpcMethod> = (method: M, request: RpcRequest[M]) => Promise<RpcResponse[M]>;
+export type Handler = <M extends RpcMethod>(method: M, request: RpcRequest[M]) => Promise<RpcResponse[M]>;

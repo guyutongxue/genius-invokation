@@ -69,11 +69,11 @@ const LightningStiletto = createCard(114031)
  * 初始持续回合+1，并且会使所附属角色造成的雷元素伤害+1。
  * （牌组中包含刻晴，才能加入牌组）
  */
-export const ThunderingPenance = createCard(214031)
+export const ThunderingPenance = createCard(214031, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(Keqing)
-  .addActiveCharacterFilter(Keqing)
+  .addCharacterFilter(Keqing)
   .costElectro(3)
   .useSkill(StarwardSword)
   .buildToEquipment()

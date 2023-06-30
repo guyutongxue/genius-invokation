@@ -10,7 +10,6 @@ const EngulfingLightning = createCard(311405, ["character"])
   .setType("equipment")
   .addTags("weaponPole")
   .costSame(3)
-  // TODO：确认：刚刚装备上时，是否增加充能？
   .do(function (c) {
     if (this[0].energy === 0) {
       this[0].gainEnergy(1);

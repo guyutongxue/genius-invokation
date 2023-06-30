@@ -86,11 +86,11 @@ export const Mona = createCharacter(1203)
  * 装备有此牌的莫娜出战期间，我方引发的水元素相关反应伤害额外+2。
  * （牌组中包含莫娜，才能加入牌组）
  */
-export const ProphecyOfSubmersion = createCard(212031)
+export const ProphecyOfSubmersion = createCard(212031, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .requireCharacter(Mona)
-  .addActiveCharacterFilter(Mona)
+  .addCharacterFilter(Mona)
   .costHydro(3)
   .costEnergy(3)
   .useSkill(StellarisPhantasm)

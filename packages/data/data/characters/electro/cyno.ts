@@ -54,7 +54,7 @@ export const Cyno = createCharacter(1404)
  * 装备有此牌的赛诺在启途誓使的「凭依」级数为3或5时使用秘仪·律渊渡魂时，造成的伤害额外+1。
  * （牌组中包含赛诺，才能加入牌组）
  */
-export const FeatherfallJudgment = createCard(214041)
+export const FeatherfallJudgment = createCard(214041, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
   .costElectro(3)
