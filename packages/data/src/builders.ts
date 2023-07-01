@@ -9,6 +9,7 @@ import { CharacterTag, registerCharacter } from "./characters";
 import { PrepareConfig, ShieldConfig, StatusTag, registerStatus } from "./statuses";
 import { SupportType, registerSupport } from "./supports";
 import { registerSummon } from "./summons";
+import { AddPrefix, RemovePrefix, addPrefix, capitalize } from "./utils";
 
 export type SkillType =
   | "normal"
@@ -397,17 +398,6 @@ class CardBuilder<
     this.build();
     return statusBuilder;
   }
-}
-
-type RemovePrefix<T extends string | number | Symbol> = T extends `on${infer U}`
-  ? Uncapitalize<U>
-  : never;
-type AddPrefix<T extends string> = `on${Capitalize<T>}`;
-function capitalize<T extends string>(s: T): Capitalize<T> {
-  return (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<T>;
-}
-function addPrefix<T extends string>(event: T): AddPrefix<T> {
-  return `on${capitalize(event)}`;
 }
 
 class TriggerBuilderBase {

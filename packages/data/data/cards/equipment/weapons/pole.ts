@@ -30,7 +30,7 @@ const EngulfingLightning = createCard(311405, ["character"])
  * 根据「璃月」角色的数量提供护盾，保护所附属的角色。
  */
 const LithicGuard = createStatus(301101)
-  .shield(0)
+  .shield({ initial: 0, recreateMax: Infinity })
   .build();
 
 /**

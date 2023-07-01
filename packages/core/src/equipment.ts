@@ -1,14 +1,17 @@
-import { getEquipment, EquipmentInfoWithId, EventHandlers } from "@gi-tcg/data";
+import { getEquipment, EquipmentInfoWithId, EventHandlers, ContextOfEvent } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
+import { ContextFactory } from "./context.js";
 
 export class Equipment extends Entity {
   private readonly info: EquipmentInfoWithId;
   private handler: EventHandlers;
+  private usagePerRound: number;
 
   constructor(id: number) {
     super(id);
     this.info = getEquipment(id);
     this.handler = new this.info.handlerCtor();
+    this.usagePerRound = this.info.usagePerRound;
   }
 
   isWeapon() {
@@ -16,6 +19,23 @@ export class Equipment extends Entity {
   }
   isArtifact() {
     return this.info.type === "artifact";
+  }
+
+  handleEvent<E extends keyof EventHandlers>(
+    e: E,
+    cf: ContextFactory<ContextOfEvent<E>>
+  ) {
+    if (e === "onRollPhase") {
+      this.usagePerRound = this.info.usagePerRound;
+    }
+    const ctx = cf(this.entityId);
+    if (ctx && this.usagePerRound > 0 && typeof this.handler[e] === "function") {
+      // @ts-ignore
+      const result = await this.handler[e](ctx);
+      if (result !== false) {
+        this.usagePerRound--;
+      }
+    }
   }
 
   getData(): number {

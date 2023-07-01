@@ -18,6 +18,8 @@ import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { shallowClone } from "./entity.js";
 import { Notifier } from "./state.js";
+import { ContextOfEvent, EventHandlers, RollContext } from "@gi-tcg/data";
+import { ContextFactory } from "./context.js";
 
 export class Player {
   piles: Card[];
@@ -101,11 +103,36 @@ export class Player {
         opp: true,
         target: active,
       });
-    }
+    };
     if (delayNotify) {
       return oppNotify;
     } else {
       oppNotify();
+    }
+  }
+
+  async rollDice(times = 2) {}
+
+  handleEvent<E extends keyof EventHandlers>(
+    event: E,
+    cf: ContextFactory<ContextOfEvent<E>>
+  ) {
+    const activeIndex = this.characters.findIndex(
+      (c) => c.entityId === this.active
+    );
+    for (let i = 0; i < this.characters.length; i++) {
+      const character =
+        this.characters[(activeIndex + i) % this.characters.length];
+      character.handleEvent(event, cf);
+    }
+    for (const status of this.combatStatuses) {
+      status.handleEvent(event, cf);
+    }
+    for (const summon of this.summons) {
+      summon.handleEvent(event, cf);
+    }
+    for (const support of this.supports) {
+      support.handleEvent(event, cf);
     }
   }
 
@@ -157,4 +184,12 @@ export class Player {
     clone.summons = this.summons.map((s) => s.clone());
     return clone;
   }
+}
+
+class RollContextImpl implements RollContext {
+  private rollCount = 2;
+  constructor(readonly activeCharacterElement: DiceType) {}
+  fixDice(...dice: DiceType[]): void {}
+  addRerollCount(count: number): void {}
+  roll() {}
 }

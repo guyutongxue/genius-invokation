@@ -75,7 +75,6 @@ export interface StateData {
 
 export interface GamePhaseEvent {
   type: "newGamePhase";
-  phase: "roll" | "action" | "end";
   roundNumber: number;
   isFirst: boolean;
 }

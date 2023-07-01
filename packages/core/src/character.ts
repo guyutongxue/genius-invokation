@@ -1,9 +1,10 @@
-import { CharacterInfoWithId, getCharacter, getSkill } from "@gi-tcg/data";
+import { CharacterInfoWithId, ContextOfEvent, EventHandlers, getCharacter, getSkill } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
+import { ContextFactory } from "./context.js";
 
 export class Character extends Entity {
   private readonly info: CharacterInfoWithId;
@@ -29,6 +30,21 @@ export class Character extends Entity {
 
   isAlive() {
     return !this.defeated;
+  }
+  
+  handleEvent<E extends keyof EventHandlers>(
+    event: E,
+    cf: ContextFactory<ContextOfEvent<E>>
+  ) {
+    for (const sk of this.passiveSkills) {
+      sk.handleEvent(event, cf);
+    }
+    for (const eq of this.equipments) {
+      eq.handleEvent(event, cf);
+    }
+    for (const st of this.statuses) {
+      st.handleEvent(event, cf);
+    }
   }
 
   getData(): CharacterData {

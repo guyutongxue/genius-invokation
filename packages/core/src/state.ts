@@ -1,15 +1,17 @@
 import {
   Event,
+  GamePhaseEvent,
   NotificationMessage,
   PhaseType,
   StateData,
   verifyNotificationMessage,
 } from "@gi-tcg/typings";
-import type { Context } from "@gi-tcg/data";
+import { Context, ContextOfEvent, EventHandlers } from "@gi-tcg/data";
 
 import { GameOptions, PlayerConfig } from "./game.js";
 import { Player } from "./player.js";
 import { shallowClone } from "./entity.js";
+import { ContextFactory } from "./context.js";
 
 function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
@@ -23,8 +25,9 @@ export interface Notifier {
 export class GameState {
   private phase: PhaseType = "initHands";
   private roundNumber = 0;
-  private currentTurn = 0;
-  private nextTurn = 0;
+  private currentTurn: 0 | 1 = 0;
+  private nextTurn: 0 | 1 = 0;
+  private winner: 0 | 1 | null = null;
   private players: [Player, Player];
 
   constructor(
@@ -39,6 +42,16 @@ export class GameState {
   }
 
   private async start() {
+    this.notifyPlayer(0, {
+      type: "newGamePhase",
+      roundNumber: this.roundNumber,
+      isFirst: this.nextTurn === 0,
+    });
+    this.notifyPlayer(1, {
+      type: "newGamePhase",
+      roundNumber: this.roundNumber,
+      isFirst: this.nextTurn === 1,
+    });
     switch (this.phase) {
       case "initHands":
         await this.initHands();
@@ -55,8 +68,6 @@ export class GameState {
       case "end":
         await this.endPhase();
         break;
-      default:
-        return;
     }
     await this.options.pauser();
   }
@@ -73,16 +84,21 @@ export class GameState {
     const [n0, n1] = await Promise.all([
       this.players[0].chooseActive(true),
       this.players[1].chooseActive(true),
-    ])
+    ]);
     n0();
     n1();
     this.phase = "roll";
   }
-  private async rollPhase() {
-    
-  }
+  private async rollPhase() {}
   private async actionPhase() {}
-  private async endPhase() {}
+  private async endPhase() {
+    this.roundNumber++;
+    if (this.roundNumber > this.options.maxRounds) {
+      this.phase = "gameEnd";
+    } else {
+      this.phase = "roll";
+    }
+  }
 
   private getData(who: 0 | 1): StateData {
     const playerData = this.players[who].getData();
@@ -92,6 +108,14 @@ export class GameState {
       turn: this.currentTurn,
       players: [playerData, oppPlayerData],
     };
+  }
+
+  handleEvent<E extends keyof EventHandlers>(
+    event: E,
+    cf: ContextFactory<ContextOfEvent<E>>
+  ) {
+    this.players[this.currentTurn].handleEvent(event, cf);
+    this.players[flip(this.currentTurn)].handleEvent(event, cf);
   }
 
   private createNotifier(who: 0 | 1) {
@@ -120,5 +144,3 @@ export class GameState {
     return clone;
   }
 }
-
-class ContextImpl implements Context {}

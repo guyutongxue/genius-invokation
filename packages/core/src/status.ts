@@ -1,4 +1,5 @@
 import {
+  ContextOfEvent,
   EventHandlers,
   getStatus,
   PrepareConfig,
@@ -6,6 +7,7 @@ import {
 } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { StatusData } from "@gi-tcg/typings";
+import { ContextFactory } from "./context.js";
 
 export class Status extends Entity {
   private readonly info: StatusInfoWithId;
@@ -41,6 +43,31 @@ export class Status extends Entity {
       return this.duration;
     }
     return null;
+  }
+
+  handleEvent<E extends keyof EventHandlers>(
+    e: E,
+    cf: ContextFactory<ContextOfEvent<E>>
+  ) {
+    if (e === "onRollPhase") {
+      this.usagePerRound = this.info.usagePerRound;
+      this.duration--;
+      if (this.duration === 0) {
+        this.shouldDispose = true;
+      }
+    }
+    const ctx = cf(this.entityId);
+    if (ctx && this.usagePerRound > 0 && typeof this.handler[e] === "function") {
+      // @ts-ignore
+      const result = await this.handler[e](ctx);
+      if (result !== false) {
+        this.usagePerRound--;
+        this.usage--;
+        if (this.usage === 0) {
+          this.shouldDispose = true;
+        }
+      }
+    }
   }
 
   getData(): StatusData {
