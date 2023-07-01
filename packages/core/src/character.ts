@@ -8,6 +8,7 @@ import { PassiveSkill } from "./passive_skill.js";
 export class Character extends Entity {
   private readonly info: CharacterInfoWithId;
   private health: number;
+  private defeated = false;
   private energy: number = 0;
   private equipments: Equipment[] = [];
   private statuses: Status[] = [];
@@ -24,6 +25,10 @@ export class Character extends Entity {
         this.passiveSkills.push(new PassiveSkill(skill));
       }
     }
+  }
+
+  isAlive() {
+    return !this.defeated;
   }
 
   getData(): CharacterData {

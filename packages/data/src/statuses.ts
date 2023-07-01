@@ -18,9 +18,11 @@ interface StatusInfo {
   tags: StatusTag[];
   duration: number;
   usage: number;
-  shield: ShieldConfig;
+  maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
   usagePerRound: number;
   listenTo: ListenTarget;
+  shield: ShieldConfig;
+  prepare: PrepareConfig;
   handlerCtor: EventHandlerCtor;
 }
 

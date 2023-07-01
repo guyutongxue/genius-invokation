@@ -105,6 +105,12 @@ export class Target {
       opp: false
     });
   }
+  static oppRecentFrom(target: Target) {
+    return new Target({
+      type: "recentOpp",
+      relativeTo: target.info
+    });
+  }
   static oneEnergyNotFull() {
     return new Target({
       type: "oneEnergyNotFull"

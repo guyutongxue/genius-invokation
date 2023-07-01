@@ -361,11 +361,10 @@ class CardBuilder<
     if (cardBuilder.tags.includes("artifact")) {
       eqBuilder.setType("artifact");
     }
-    cardBuilder.setType("equipment")
-      .do(function (c) {
-        this[0].equip(cardBuilder.id as EquipmentHandle);
-      })
-      .build();
+    cardBuilder.actions.unshift(function (c) {
+      this[0].equip(cardBuilder.id as EquipmentHandle);
+    });
+    cardBuilder.setType("equipment").build();
     return eqBuilder;
   }
 
@@ -416,14 +415,16 @@ class TriggerBuilderBase {
   private complexHandler: EventHandlerCtor | null = null;
   protected duration = Infinity;
   protected usage = Infinity;
+  protected maxUsage = Infinity;
   protected usagePerRound = Infinity;
 
   withDuration(duration: number) {
     this.duration = duration;
     return this;
   }
-  withUsage(usage: number) {
+  withUsage(usage: number, maxUsage?: number) {
     this.usage = usage;
+    this.maxUsage = maxUsage ?? usage;
     return this;
   }
   withUsagePerRound(usage: number) {
@@ -471,11 +472,17 @@ class PassiveSkillBuilder extends TriggerBuilderBase {
   constructor(private readonly id: number) {
     super();
   }
+  override withDuration(duration: number): never {
+    throw new Error("Cannot set duration for passive skill");
+  }
+  override withUsage(usage: number): never {
+    throw new Error("Cannot set usage for passive skill");
+  }
   build(): SkillHandle {
     registerSkill(this.id, {
       type: "passive",
       duration: this.duration,
-      usage: this.usage,
+      // usage: this.usage,
       usagePerRound: this.usagePerRound,
       handlerCtor: this.getHandlerCtor(),
     });
@@ -516,9 +523,11 @@ class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilde
       tags: this.tags,
       duration: this.duration,
       usage: this.usage,
-      shield: this.shieldConfig,
+      maxUsage: this.maxUsage,
       usagePerRound: this.usagePerRound,
       listenTo: this.shouldListenToOthers ? "my" : "master",
+      shield: this.shieldConfig,
+      prepare: this.prepareConfig,
       handlerCtor: this.getHandlerCtor(),
     });
     return this.id as CardHandle & StatusHandle;
@@ -568,7 +577,7 @@ class EquipmentBuilder extends TriggerBuilderBase {
   override withDuration(duration: number): never {
     throw new Error("Cannot set duration for equipment");
   }
-  override withUsage(usage: number): never {
+  override withUsage(usage: number, maxUsage?: number): never {
     throw new Error("Cannot set usage for equipment");
   }
   listenToOther() {
@@ -592,17 +601,11 @@ class EquipmentBuilder extends TriggerBuilderBase {
 }
 
 class SummonBuilder extends TriggerBuilderBase {
-  private maxUsage = Infinity;
   private disposeWhenUsedUp = true;
   constructor(private readonly id: number) {
     super();
   }
 
-  override withUsage(usage: number, maxUsage = usage) {
-    this.usage = usage;
-    this.maxUsage = maxUsage;
-    return this;
-  }
   noDispose() {
     this.disposeWhenUsedUp = false;
     return this;

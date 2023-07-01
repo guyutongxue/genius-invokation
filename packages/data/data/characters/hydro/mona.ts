@@ -20,6 +20,13 @@ const RippleOfFate = createSkill(12031)
 const Reflection = createSummon(112031)
   .withUsage(1)
   .noDispose()
+  .on("beforeDamaged", (c) => {
+    if (c.target.isActive()) {
+      c.decreaseDamage(1);
+    } else {
+      return false;
+    }
+  })
   .on("endPhase", (c) => {
     c.dealDamage(1, DamageType.Hydro);
     c.dispose();

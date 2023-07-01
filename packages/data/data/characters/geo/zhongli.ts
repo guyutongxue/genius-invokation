@@ -96,7 +96,7 @@ export const DominanceOfEarth = createCard(216031, ["character"])
   .listenToOther()
   .on("beforeDealDamage", (c) => {
     const active = c.hasCharacter(Target.myActive());
-    if (c.sourceType === "summon" && active?.hasShield()) {
+    if (c.sourceSummon && active?.hasShield()) {
       c.addDamage(1);
     }
   })

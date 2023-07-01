@@ -9,7 +9,7 @@ export {
 export {
   CardInfoWithId, CardTag, CardTarget, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, getCard
 } from "./cards";
-export { StatusContext, StatusTag, ShieldConfig, StatusInfoWithId, getStatus } from "./statuses";
+export { StatusContext, StatusTag, ShieldConfig, PrepareConfig, StatusInfoWithId, getStatus } from "./statuses";
 export { SupportType, SupportInfoWithId, getSupport } from "./supports";
 export { SummonContext, SummonInfoWithId, getSummon } from "./summons";
 export { EquipmentInfoWithId, getEquipment } from "./equipments";

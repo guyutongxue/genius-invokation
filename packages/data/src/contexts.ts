@@ -57,6 +57,7 @@ export interface Context {
   flipNextTurn(): void;
 
   getMaster(): CharacterContext;
+  asStatus(): StatusContext;
   dispose(): void;
 }
 
@@ -94,7 +95,8 @@ export interface UseDiceContext extends Context {
 }
 
 interface DamageBaseContext extends Context {
-  readonly sourceType: "character" | "summon" | "status";
+  readonly sourceSummon?: SummonContext;
+  readonly sourceSkill?: SkillReadonlyContext;
   readonly target: CharacterContext;
   readonly damageType: DamageType;
 }
@@ -136,5 +138,6 @@ export interface SwitchActiveContext extends Context {
 export interface ElementalReactionContext extends Context {
   readonly reactionType: unknown;
   relatedWith(d: DamageType): boolean;
+  swirledElement(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null;
   readonly damage: DamageContext | null;
 }

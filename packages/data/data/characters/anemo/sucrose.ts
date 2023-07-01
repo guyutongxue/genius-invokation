@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createSummon, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType, Target } from "@gi-tcg";
 
 /**
  * **简式风灵作成**
@@ -8,7 +8,7 @@ const WindSpiritCreation = createSkill(15011)
   .setType("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(1, DamageType.Anemo)
   .build();
 
 /**
@@ -18,12 +18,30 @@ const WindSpiritCreation = createSkill(15011)
 const AstableAnemohypostasisCreation6308 = createSkill(15012)
   .setType("elemental")
   .costAnemo(3)
-  // TODO
+  .dealDamage(3, DamageType.Anemo)
+  .switchActive(Target.oppPrev())
   .build();
 
-createSummon(-1)
+/**
+ * **大型风灵**
+ * 结束阶段：造成2点风元素伤害。
+ * 可用次数：3
+ * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
+ */
+const LargeWindSpirit = createSummon(115011)
   .do({
-    
+    onEndPhase(c) {
+      c.dealDamage(2, this.type);
+    },
+    onDealDamage(c) {
+      if ((c.sourceSkill || c.sourceSummon) && c.damageType !== DamageType.Anemo) {
+        const newType = c.reaction?.swirledElement() ?? null;
+        if (newType !== null) {
+          this.type = newType;
+        }
+      }
+      return false;
+    }
   }, { type: DamageType.Anemo })
   .build();
 
@@ -35,7 +53,8 @@ const ForbiddenCreationIsomer75TypeIi = createSkill(15013)
   .setType("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .dealDamage(1, DamageType.Anemo)
+  .summon(LargeWindSpirit)
   .build();
 
 export const Sucrose = createCharacter(1501)

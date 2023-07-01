@@ -25,7 +25,7 @@ export interface BurstSkillInfo {
 export interface PassiveSkillInfo {
   type: "passive";
   duration: number;
-  usage: number;
+  // usage: number;
   usagePerRound: number;
   handlerCtor: EventHandlerCtor;
 }

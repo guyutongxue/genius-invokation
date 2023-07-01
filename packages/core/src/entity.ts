@@ -6,7 +6,7 @@ function newEntityId(): number {
 }
 
 export class Entity {
-  protected readonly entityId: number;
+  public readonly entityId: number;
   constructor(protected readonly id: number) {
     this.entityId = newEntityId();
   }

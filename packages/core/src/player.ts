@@ -1,4 +1,13 @@
-import { DiceType, Event, MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
+import {
+  DiceType,
+  Event,
+  MyPlayerData,
+  OppPlayerData,
+  RpcMethod,
+  RpcRequest,
+  RpcResponse,
+} from "@gi-tcg/typings";
+import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 
 import { Card } from "./card.js";
@@ -46,6 +55,68 @@ export class Player {
     if (this.hands.length < count) {
       this.hands.push(...this.piles.splice(0, count - this.hands.length));
     }
+  }
+
+  async switchHands() {
+    const { removedHands } = await this.rpc("switchHands", {});
+    const removed: Card[] = [];
+    for (let i = 0; i < this.hands.length; i++) {
+      if (removedHands.includes(this.hands[i].entityId)) {
+        removed.push(this.hands[i]);
+        this.hands.splice(i, 1);
+        i--;
+      }
+    }
+    this.piles.push(...removed);
+    if (!this.config.noShuffle) {
+      this.piles = _.shuffle(this.piles);
+    }
+    this.notifier.opp({
+      type: "oppChangeHands",
+      removed: removed.length,
+      added: 0,
+      discarded: 0,
+    });
+  }
+
+  async chooseActive(delayNotify: false): Promise<void>;
+  async chooseActive(delayNotify: true): Promise<() => void>;
+  async chooseActive(delayNotify = false): Promise<any> {
+    const { active } = await this.rpc("chooseActive", {
+      candidates: this.characters
+        .filter((c) => {
+          return c.isAlive() && c.entityId !== this.active;
+        })
+        .map((c) => c.entityId),
+    });
+    this.active = active;
+    this.notifier.me({
+      type: "switchActive",
+      opp: false,
+      target: active,
+    });
+    const oppNotify = () => {
+      this.notifier.opp({
+        type: "switchActive",
+        opp: true,
+        target: active,
+      });
+    }
+    if (delayNotify) {
+      return oppNotify;
+    } else {
+      oppNotify();
+    }
+  }
+
+  private async rpc<M extends RpcMethod>(
+    method: M,
+    data: RpcRequest[M]
+  ): Promise<RpcResponse[M]> {
+    verifyRpcRequest(method, data);
+    const resp = await this.config.handler(method, data);
+    verifyRpcResponse(method, resp);
+    return resp;
   }
 
   private getDataBase() {

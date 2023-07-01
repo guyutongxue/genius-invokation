@@ -17,8 +17,16 @@ const GaryuuBladework = createSkill(-1)
  * 角色使用技能后：移除此效果。
  */
 const MidareRanzan = createStatus(-2)
-  // TODO
+  .on("earlyBeforeDealDamage", (c) => {
+    if (c.sourceSkill?.isPlunging() && c.damageType === DamageType.Physical) {
+      c.changeDamageType(DamageType.Anemo);
+      c.addDamage(1);
+    }
+  })
+  .on("useSkill", (c) => c.dispose())
   .build()
+
+// TODO: MAYBE 5 status here? wait for next update data
 
 /**
  * **千早振**
@@ -41,8 +49,22 @@ const Chihayaburu = createSkill(-3)
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
 const AutumnWhirlwind = createSummon(-4)
-  // TODO
-  .build()
+  .withUsage(3)
+  .do({
+    onEndPhase(c) {
+      c.dealDamage(1, this.type);
+    },
+    onDealDamage(c) {
+      if ((c.sourceSkill || c.sourceSummon) && c.damageType !== DamageType.Anemo) {
+        const newType = c.reaction?.swirledElement() ?? null;
+        if (newType !== null) {
+          this.type = newType;
+        }
+      }
+      return false;
+    }
+  }, { type: DamageType.Anemo })
+  .build();
 
 /**
  * **万叶之一刀**

@@ -7,7 +7,7 @@ export interface GameOptions {
   maxRounds: number;
   maxSupports: number;
   maxSummons: number;
-  pauser: (() => Promise<void>) | null;
+  pauser: (() => Promise<void>);
 }
 
 const DEFAULT_GAME_OPTIONS: GameOptions = {
@@ -16,7 +16,7 @@ const DEFAULT_GAME_OPTIONS: GameOptions = {
   maxRounds: 15,
   maxSupports: 4,
   maxSummons: 4,
-  pauser: null,
+  pauser: () => Promise.resolve(),
 };
 
 export interface PlayerConfig {

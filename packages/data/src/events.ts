@@ -38,3 +38,5 @@ export interface EventHandlers<This = {}> {
 export type EventHandlerCtor = new () => EventHandlers;
 
 export type ListenTarget = "master" | "my" | "all";
+
+export type ContextOfEvent<E extends keyof EventHandlers> = Parameters<Required<EventHandlers>[E]>[0];

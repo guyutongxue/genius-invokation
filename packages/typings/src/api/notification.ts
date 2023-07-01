@@ -105,13 +105,13 @@ export interface UseSkillEvent {
 }
 export interface OppChangeHandsEvent {
   type: "oppChangeHands";
-  opp: boolean;
   removed: number;
   added: number;
   discarded: number;
 }
 export interface SwitchActiveEvent {
   type: "switchActive";
+  opp: boolean;
   target: number;
 }
 export interface DeclareEndEvent {
