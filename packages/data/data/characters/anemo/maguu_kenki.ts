@@ -1,5 +1,7 @@
 import { createCard, createCharacter, createSkill, createSummon, DamageType, Target } from "@gi-tcg";
 
+// 重要：修改了元素爆发的逻辑。
+
 /**
  * **一文字**
  * 造成2点物理伤害。
@@ -19,6 +21,12 @@ const Ichimonji = createSkill(25011)
 const shadowswordLoneGale = createSummon(125011)
   .withUsage(2)
   .on("endPhase", (c) =>  c.dealDamage(1, DamageType.Anemo))
+  .on("useSkill", (c) => {
+    if (c.info.id === PseudoTenguSweeper) {
+      c.dealDamage(1, DamageType.Anemo);
+    }
+    return false;
+  })
   .build();
 
 /**
@@ -39,6 +47,12 @@ const BlusteringBlade = createSkill(25012)
 const shadowswordGallopingFrost = createSummon(125012)
   .withUsage(2)
   .on("endPhase", (c) =>  c.dealDamage(1, DamageType.Cryo))
+  .on("useSkill", (c) => {
+    if (c.info.id === PseudoTenguSweeper) {
+      c.dealDamage(1, DamageType.Cryo);
+    }
+    return false;
+  })
   .build();
 
 /**
@@ -59,12 +73,7 @@ const PseudoTenguSweeper = createSkill(25014)
   .setType("burst")
   .costAnemo(3)
   .costEnergy(3)
-  .do((c) => {
-    const a = c.hasSummon(shadowswordLoneGale);
-    if (a) { a.emitEndPhaseEffect(false); }
-    const b = c.hasSummon(shadowswordGallopingFrost);
-    if (b) { b.emitEndPhaseEffect(false); }
-  })
+  .dealDamage(4, DamageType.Anemo)
   .build();
 
 export const MaguuKenki = createCharacter(2501)

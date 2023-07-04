@@ -11,18 +11,33 @@ const ChangTheNinth = createCard(322009)
   .buildToSupport()
   .listenToOpp()
   .do({
-    onUseSkill(c) {
-      if (c.damage?.damageType === DamageType.Physical ||
-        c.damage?.damageType === DamageType.Piercing ||
-        c.hasReaction()) {
+    onBeforeUseSkill(c) {
+      this.listening = true;
+    },
+    onElementalReaction(c) {
+      if (this.listening) {
         this.inspiration++;
       }
+    },
+    onDealDamage(c) {
+      if (this.listening) {
+        if (c.damageType === DamageType.Physical ||
+          c.damageType === DamageType.Piercing) {
+          this.inspiration++;
+        }
+      }
+    },
+    onUseSkill(c) {
       if (this.inspiration >= 3) {
         c.dispose();
         c.drawCards(2);
       }
+      this.listening = false;
     }
-  }, { inspiration: 0 })
+  }, {
+    inspiration: 0,
+    listening: false
+  })
   .build();
 
 /**
