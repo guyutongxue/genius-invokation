@@ -14,6 +14,7 @@ const FavoniusBladeworkEdel = createSkill(11061)
 /**
  * **冰潮的涡旋**
  * 造成2点冰元素伤害，如果本角色未附属冷酷之心，则使其附属冷酷之心。
+ * TODO 3.8 ”使本次伤害+2“效果调整为”使本次伤害+3“
  */
 const IcetideVortex = createSkill(11062)
   .setType("elemental")
@@ -24,6 +25,7 @@ const IcetideVortex = createSkill(11062)
 /**
  * **凝浪之光剑**
  * 造成2点冰元素伤害，召唤光降之剑。
+ * TODO 3.8 ”结束阶段：弃置此牌，造成3点物理伤害“
  */
 const GlacialIllumination = createSkill(11063)
   .setType("burst")

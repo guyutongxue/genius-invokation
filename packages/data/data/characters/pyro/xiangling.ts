@@ -23,7 +23,7 @@ const GuobaAttack = createSkill(13022)
 
 /**
  * **旋火轮**
- * 造成2点火元素伤害，生成旋火轮。
+ * 造成3点火元素伤害，生成旋火轮。
  */
 const Pyronado = createSkill(13023)
   .setType("burst")

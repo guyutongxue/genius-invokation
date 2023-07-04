@@ -197,6 +197,7 @@ const ExilesCirclet = createCard(312006, ["character"])
  * **赌徒的耳环**
  * 敌方角色被击倒后：如果所附属角色为「出战角色」，则生成2个万能元素。
  * （角色最多装备1件「圣遗物」）
+ * TODO 3.8 更新：该装备牌的效果整场牌局限制3次；
  */
 const GamblersEarrings = createCard(312004, ["character"])
   .setType("equipment")

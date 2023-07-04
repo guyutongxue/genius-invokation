@@ -15,11 +15,11 @@ const Oceanborne = createSkill(14051)
 /**
  * **踏潮**
  * （需准备1个行动轮）
- * 造成2点雷元素伤害。
+ * 造成3点雷元素伤害。
  */
 const Wavestrider = createSkill(14054)
   .setType("elemental")
-  .dealDamage(2, DamageType.Electro)
+  .dealDamage(3, DamageType.Electro)
   .build();
 
 /**
@@ -64,11 +64,11 @@ const ThunderbeastsTarge = createStatus(114053)
 
 /**
  * **斫雷**
- * 造成3点雷元素伤害，生成雷兽之盾。
+ * 造成2点雷元素伤害，生成雷兽之盾。
  */
 const Stormbreaker = createSkill(14053)
   .setType("burst")
-  .costElectro(4)
+  .costElectro(3)
   .costEnergy(3)
   .dealDamage(3, DamageType.Electro)
   .createCombatStatus(ThunderbeastsTarge)

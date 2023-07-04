@@ -23,17 +23,18 @@ const ClawAndThunder = createSkill(14022)
 
 /**
  * **雷牙**
- * 造成5点雷元素伤害，本角色附属雷狼。
+ * 造成3点雷元素伤害，本角色附属雷狼。
  */
 const LightningFang = createSkill(14023)
   .setType("burst")
   .costElectro(3)
-  .costEnergy(3)
+  .costEnergy(2)
   // TODO
   .build();
 
 export const Razor = createCharacter(1402)
   .addTags("electro", "claymore", "mondstadt")
+  .maxEnergy(2)
   .addSkills(SteelFang, ClawAndThunder, LightningFang)
   .build();
 

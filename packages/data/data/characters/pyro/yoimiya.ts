@@ -23,11 +23,11 @@ const NiwabiFiredance = createSkill(13052)
 
 /**
  * **琉金云间草**
- * 造成4点火元素伤害，生成琉金火光。
+ * 造成3点火元素伤害，生成琉金火光。
  */
 const RyuukinSaxifrage = createSkill(13053)
   .setType("burst")
-  .costPyro(4)
+  .costPyro(3)
   .costEnergy(3)
   // TODO
   .build();
