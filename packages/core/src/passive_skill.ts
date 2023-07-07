@@ -14,7 +14,7 @@ export class PassiveSkill extends Entity {
     this.usagePerRound = this.info.usagePerRound;
   }
 
-  handleEvent<E extends keyof EventHandlers>(
+  async handleEvent<E extends keyof EventHandlers>(
     e: E,
     cf: ContextFactory<ContextOfEvent<E>>
   ) {
@@ -22,10 +22,9 @@ export class PassiveSkill extends Entity {
       this.usagePerRound = this.info.usagePerRound;
     }
     const ctx = cf(this.entityId);
-    if (ctx && this.usagePerRound > 0 && typeof this.handler[e] === "function") {
-      // @ts-ignore
-      const result = await this.handler[e](ctx);
-      if (result !== false) {
+    if (ctx && this.usagePerRound > 0) {
+      const result = await Entity.handleEvent(this.handler, e, ctx);
+      if (result) {
         this.usagePerRound--;
       }
     }

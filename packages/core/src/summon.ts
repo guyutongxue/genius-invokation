@@ -24,15 +24,14 @@ export class Summon extends Entity {
     };
   }
 
-  handleEvent<E extends keyof EventHandlers>(
+  async handleEvent<E extends keyof EventHandlers>(
     e: E,
     cf: ContextFactory<ContextOfEvent<E>>
   ) {
     const ctx = cf(this.entityId);
-    if (ctx && typeof this.handler[e] === "function") {
-      // @ts-ignore
-      const result = await this.handler[e](c);
-      if (result !== false) {
+    if (ctx) {
+      const result = await Entity.handleEvent(this.handler, e, ctx);
+      if (result) {
         this.usage--;
         if (this.usage === 0) {
           this.shouldDispose = true;

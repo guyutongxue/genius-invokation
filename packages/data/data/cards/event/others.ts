@@ -144,10 +144,10 @@ const ElementalResonanceShatteringIce = createCard(331102)
   .addTags("resonance")
   .requireDualCharacterTag("cryo")
   .costCryo(1)
-  .buildToStatus(undefined)
+  .buildToStatus(undefined) // active character status
   .withUsage(1)
   .withDuration(1)
-  .on("dealDamage", (c) => {
+  .on("beforeDealDamage", (c) => {
     c.addDamage(2);
   })
   .build();

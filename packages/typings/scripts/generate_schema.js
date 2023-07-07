@@ -9,7 +9,9 @@ import { pascalCase } from "case-anything";
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const basePath = path.join(dirname, "../src/api");
-const apiTypingFiles = await glob(path.join(basePath, "*.ts"));
+const apiTypingFiles = await glob(path.join(basePath, "*.ts"), {
+  windowsPathsNoEscape: true,
+});
 
 const program = TJS.getProgramFromFiles(apiTypingFiles, {
   strictNullChecks: true,

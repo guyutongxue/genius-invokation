@@ -22,7 +22,7 @@ export interface EventHandlers<This = {}> {
   onEarlyBeforeDealDamage?(this: This, c: BeforeDamageCalculatedContext): HandlerResult;
   onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;
   onBeforeDamaged?(this: This, c: DamageContext): HandlerResult;
-  onDealDamage?(this: This, c: DamageContext): HandlerResult;
+  onDealDamage?(this: This, c: DamageReadonlyContext): HandlerResult;
   onDamaged?(this: This, c: DamageReadonlyContext): HandlerResult;
 
   onBeforeDefeated?(this: This, c: BeforeDefeatedContext): HandlerResult;

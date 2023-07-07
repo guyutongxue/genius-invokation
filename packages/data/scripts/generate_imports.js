@@ -5,14 +5,15 @@ import { writeFile } from "node:fs/promises";
 const TARGET = "data/index.ts";
 
 const files = await glob("data/**/*.ts", {
-  ignore: TARGET
+  ignore: TARGET,
+  windowsPathsNoEscape: true,
 }).then((files) => files.sort());
 
 /**
  * @param {string} path 
  */
 function pathToImport(path) {
-  return path.replace(/\.ts$/, "").replace(/^data\//, "./");
+  return path.replace(/\.ts$/, "").replace(/\\/g, "/").replace(/^data\//, "./");
 }
 
 const imports = files.map((f) => `import "${pathToImport(f)}";`).join("\n");
