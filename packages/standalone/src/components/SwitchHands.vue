@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import HandCard from "./HandCard.vue";
+import { CardData } from "@gi-tcg/typings";
 
 const props = defineProps<{
-  hands: number[];
+  hands: CardData[];
 }>();
 
 const removed = ref<number[]>([]);
@@ -17,7 +18,7 @@ const emit = defineEmits<{
 <template>
   <div class="flex flex-col justify-center items-center">
     <ul class="flex gap-4">
-      <li v-for="(hand, i) of props.hands" :key="hand">
+      <li v-for="hand of props.hands" :key="hand.entityId">
         <input
           type="checkbox"
           hidden

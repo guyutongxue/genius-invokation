@@ -22,24 +22,8 @@ export interface SwitchActiveAction {
   active: number;
 }
 
-// export interface PlayCardCharacterTarget {
-//   type: "character";
-//   id: number;
-//   opp?: boolean;
-//   hint?: string;
-// }
-
-// export interface PlayCardSummonTarget {
-//   type: "summon";
-//   id: number;
-//   opp?: boolean;
-//   hint?: string;
-// }
-
-export type PlayCardTarget = /* PlayCardCharacterTarget | PlayCardSummonTarget */ {
-  type: "character" | "summon";
+export interface PlayCardTarget {
   id: number;
-  opp?: boolean;
   hint?: string;
 };
 
@@ -49,7 +33,20 @@ export interface PlayCardAction {
   target?: PlayCardTarget[][];
 }
 
-export type Action = {};
+export interface UseSkillAction {
+  type: "useSkill";
+  skill: number;
+}
+
+export interface ElementalTuningAction {
+  type: "elementalTuning";
+}
+
+export interface DeclareEndAction {
+  type: "declareEnd";
+}
+
+export type Action = SwitchActiveAction | PlayCardAction | UseSkillAction | ElementalTuningAction | DeclareEndAction;
 
 export type RpcRequest = {
   rerollDice: RerollDiceRequest;

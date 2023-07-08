@@ -40,6 +40,7 @@ export interface UseSkillActionResponse {
 
 export interface ElementalTuningActionResponse {
   type: "elementalTuning";
+  discardedCard: number;
   dice: [DiceType];
 }
 
@@ -47,14 +48,22 @@ export interface DeclareEndActionResponse {
   type: "declareEnd";
 }
 
-export type ActionResponse = SwitchActiveActionResponse | PlayCardActionResponse | UseSkillActionResponse | ElementalTuningActionResponse | DeclareEndActionResponse;
+export type ActionResponse =
+  | SwitchActiveActionResponse
+  | PlayCardActionResponse
+  | UseSkillActionResponse
+  | ElementalTuningActionResponse
+  | DeclareEndActionResponse;
 
 export type RpcResponse = {
   rerollDice: RerollDiceResponse;
   switchHands: SwitchHandsResponse;
   chooseActive: ChooseActiveResponse;
   action: ActionResponse;
-}
+};
 
 export type Response = RpcResponse[RpcMethod];
-export type Handler = <M extends RpcMethod>(method: M, request: RpcRequest[M]) => Promise<RpcResponse[M]>;
+export type Handler = <M extends RpcMethod>(
+  method: M,
+  request: RpcRequest[M]
+) => Promise<RpcResponse[M]>;

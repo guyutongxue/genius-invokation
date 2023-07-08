@@ -8,23 +8,17 @@
     }
   },
   "scripts": {
-    "generate-schema": "node scripts/generate_schema.js",
-    "build:rollup": "rollup -c",
-    "build:types": "dts-bundle-generator src/index.ts -o dist/index.d.ts --export-referenced-types=false --no-check",
-    "build": "pnpm generate-schema && pnpm build:rollup && pnpm build:types"
+    "build:schema": "node scripts/generate_schema.js",
+    "build:ts": "tsup src/index.ts --format esm --dts --sourcemap",
+    "build": "pnpm build:schema && pnpm build:ts"
   },
   "devDependencies": {
-    "@rollup/plugin-json": "^6.0.0",
-    "@rollup/plugin-typescript": "^11.1.1",
     "@types/node": "^20.3.1",
     "case-anything": "^2.1.13",
-    "dts-bundle-generator": "^8.0.1",
     "glob": "^10.2.7",
-    "rollup": "^3.25.0",
-    "rollup-plugin-node-externals": "^6.1.1",
-    "tslib": "^2.5.3",
+    "tsup": "^7.1.0",
     "tsx": "^3.12.7",
-    "typescript": "^5.1.3",
+    "typescript": "^5.1.6",
     "typescript-json-schema": "^0.57.0"
   },
   "dependencies": {

@@ -1,16 +1,21 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-import PlayerArea, { AreaAction, type PlayerAreaData } from "./PlayerArea.vue";
+import { onMounted, ref } from "vue";
+import PlayerArea from "./PlayerArea.vue";
 import SwitchHands from "./SwitchHands.vue";
+import { PlayerConfig } from "@gi-tcg/core";
 import {
-  MethodNames,
-  RequestType,
-  Player,
-  StateFacade,
-  Event,
-  ResponseType,
-} from "@jenshin-tcg/core";
-import { DiceType } from "@jenshin-tcg/typings";
+  DiceType,
+  Request,
+  StateData,
+  Response,
+  NotificationMessage,
+  RpcMethod,
+  RpcResponse,
+  RpcRequest,
+  MyPlayerData,
+  Action,
+Handler,
+} from "@gi-tcg/typings";
 import EventEmitter from "eventemitter3";
 import RollDice from "./RollDice.vue";
 import SelectDice from "./SelectDice.vue";
@@ -22,8 +27,8 @@ const props = defineProps<{
   piles: number[];
 }>();
 
-const areaData = ref<PlayerAreaData>();
-const availableActions = ref<AreaAction>();
+const areaData = ref<MyPlayerData>();
+const availableActions = ref<Action[]>([]);
 
 const showCardSwitch = ref<boolean>(false);
 const showRollDice = ref<boolean>(false);
@@ -39,20 +44,17 @@ const ee = new EventEmitter<{
   characterChosen: [id: number];
 }>();
 
-function stateToAreaData(state: StateFacade): PlayerAreaData {
-  return {
-    ...state,
-    type: "visible",
-  };
+function stateToAreaData(state: StateData): MyPlayerData {
+  return state.players[0];
 }
 
-function notificationHandler(id: any, { source, state, damages }: Event) {
+function onNotify({ event, state }: NotificationMessage) {
   // console.log({ id, source, state, damages });
-  switch (source.type) {
-    case "phaseBegin": {
+  switch (event.type) {
+    case "newGamePhase": {
     }
   }
-  areaData.value = stateToAreaData(state as StateFacade);
+  areaData.value = stateToAreaData(state);
 }
 
 function removePlayAreaListeners() {
@@ -75,86 +77,46 @@ async function useDice(needed: DiceType[]): Promise<DiceType[] | undefined> {
   return selected;
 }
 
-async function handler(
-  this: Player,
-  method: MethodNames,
-  req: object
-): Promise<object> {
+async function handler(method: RpcMethod, req: Request): Promise<Response> {
   console.log({ method, req });
+  if (areaData.value) {
+    throw new Error("This controller cannot am");
+  }
   switch (method) {
-    case "initialize": {
-      const { state } = { ...req } as RequestType<"initialize">;
-      areaData.value = stateToAreaData(state as StateFacade);
-      break;
-    }
-    case "drawHands": {
-      const { hands } = req as RequestType<"drawHands">;
-      if (areaData.value && areaData.value.type === "visible") {
-        areaData.value.hands = [...areaData.value.hands, ...hands].sort(
-          (a, b) => a - b
-        );
-      }
-      break;
-    }
-    case "removeHands": {
-      // const r = req as RequestType<typeof method>;
-      const remove = await new Promise<number[]>((resolve) => {
+    case "switchHands": {
+      showCardSwitch.value = true;
+      const removedHands = await new Promise<number[]>((resolve) => {
         ee.once("cardSwitched", (d) => resolve(d));
-        showCardSwitch.value = true;
       });
       showCardSwitch.value = false;
-      if (areaData.value && areaData.value.type === "visible") {
-        areaData.value.hands = areaData.value.hands.filter(
-          (h) => !remove.includes(h)
-        );
-      }
-      return { remove };
+      return { removedHands } as RpcResponse["switchHands"];
     }
-    case "switchActive": {
-      const r = req as RequestType<typeof method>;
-      availableActions.value = {
-        cards: [],
-        skills: [],
-        switchActive: {
-          targets: r.targets,
-          cost: [],
-          fast: false,
-        },
-        myTurn: false,
-      };
-      const chosen = await new Promise<number>((resolve) => {
+    case "chooseActive": {
+      const { candidates } = req as RpcRequest["chooseActive"];
+      availableActions.value = candidates.map(
+        (c): Action => ({
+          type: "switchActive",
+          active: c,
+        })
+      );
+      const active = await new Promise<number>((resolve) => {
         ee.once("characterChosen", (d) => resolve(d));
       });
-      availableActions.value = undefined;
-      if (areaData.value && areaData.value.type === "visible") {
-        areaData.value.active = chosen;
-      }
-      return { target: chosen };
+      availableActions.value = [];
+      return { active } as RpcResponse["chooseActive"];
     }
-    case "roll": {
-      const { dice, canRemove } = req as RequestType<"roll">;
-      if (areaData.value && areaData.value.type === "visible") {
-        areaData.value.dice = dice;
-      }
-      if (canRemove) {
-        showRollDice.value = true;
-        const remove = await new Promise<number[]>((resolve) => {
-          ee.once("diceSwitched", (d) => resolve(d));
-        });
-        showRollDice.value = false;
-        return { remove };
-      } else {
-        return { remove: [] };
-      }
+    case "rerollDice": {
+      showRollDice.value = true;
+      const rerollIndexes = await new Promise<number[]>((resolve) => {
+        ee.once("diceSwitched", (d) => resolve(d));
+      });
+      showRollDice.value = false;
+      return { rerollIndexes } as RpcResponse["rerollDice"];
     }
     case "action": {
-      const actions = req as RequestType<"action">;
-      areaData.value = stateToAreaData(actions.state as StateFacade);
-      if (areaData.value?.type !== "visible") {
-        throw new Error("I cannot make actions!");
-      }
+      const { candidates } = req as RpcRequest["action"];
       while (true) {
-        availableActions.value = { ...actions, myTurn: true };
+        availableActions.value = candidates;
         type AreaActionResponse =
           | {
               type: "character" | "card" | "elementalTuning";
@@ -189,18 +151,22 @@ async function handler(
             resolve({ type: "end" });
           });
         });
-        availableActions.value = undefined;
+        availableActions.value = [];
         console.log(r);
-        let resultAction: ResponseType<"action">["action"];
+        let resultAction: RpcResponse["action"];
         switch (r.type) {
           case "end": {
             resultAction = { type: "declareEnd" };
             break;
           }
           case "elementalTuning": {
-            const cost = await useDice([DiceType.VOID]);
+            const cost = await useDice([DiceType.Void]);
             if (typeof cost === "undefined") continue;
-            resultAction = { type: "elementalTuning", card: r.id, cost };
+            resultAction = {
+              type: "elementalTuning",
+              discardedCard: r.id,
+              dice: cost as [DiceType],
+            };
             // const tgtDice =
             //   (areaData.value.characters[areaData.value.active ?? 0].objectId /
             //     1000) %
@@ -259,8 +225,8 @@ async function handler(
             resultAction = {
               type: "playCard",
               card: r.id,
-              cost: spent,
-              with: withCard,
+              dice: spent,
+              target: withCard,
             };
             // areaData.value.hands.splice(
             //   areaData.value.hands.findIndex((h) => h === r.id),
@@ -280,25 +246,28 @@ async function handler(
             break;
           }
         }
-        return { action: resultAction };
+        return resultAction;
       }
     }
-    case "notify": {
-      const r = req as RequestType<typeof method>;
-      notificationHandler(this.id, r.event);
-    }
   }
-  return { success: true };
 }
 
-const player: Player = {
-  id: props.playerId,
-  characters: props.characters,
-  piles: props.piles,
-  handler,
+const player: PlayerConfig = {
+  deck: {
+    characters: props.characters,
+    actions: props.piles,
+  },
+  handler: handler as Handler,
+  onNotify,
 };
 
-defineExpose({ player });
+const emit = defineEmits<{
+  (e: "initialized", config: PlayerConfig): void;
+}>();
+
+onMounted(() => {
+  emit("initialized", player);
+});
 </script>
 
 <template>
@@ -314,7 +283,7 @@ defineExpose({ player });
       @clickHand="ee.emit('cardChosen', $event)"
     >
     </PlayerArea>
-    <div v-if="areaData.type === 'visible'">
+    <div v-if="areaData.type === 'my'">
       <SwitchHands
         class="absolute top-0 left-0 bottom-0 right-0 bg-black bg-opacity-70"
         v-if="showCardSwitch"

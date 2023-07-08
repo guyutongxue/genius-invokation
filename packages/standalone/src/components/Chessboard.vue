@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import PlayerControl from "./PlayerControl.vue";
-import { createGame } from "@jenshin-tcg/core";
+import { Game } from "@gi-tcg/core";
 
-const c0 = ref<InstanceType<typeof PlayerControl> | null>(null);
-const c1 = ref<InstanceType<typeof PlayerControl> | null>(null);
 
 const player0 = {
   characters: [1303, 1306, 1403],
@@ -16,36 +14,29 @@ const player1 = {
   piles: [333002, 333012, 333001, 333003, 333008, 333006, 333007, 333004, 333010, 333005, 333011, 333009, 333002, 333012, 333001, 333003, 333008, 333006, 333007, 333004, 333010, 333005, 333011, 333009],
 };
 
-function startGame() {
-  if (!c0.value || !c1.value) {
-    alert("c0 or c1 is not ready");
-    return;
-  }
-  createGame({
-    pvp: true,
-    players: [c0.value.player, c1.value.player],
-  });
-}
+const game = ref<Game | null>(null);
 
-onMounted(() => {});
+
 </script>
 
 <template>
-  <button class="btn btn-primary" @click="startGame()">START</button>
-  <div class="flex flex-col gap-1">
-    <PlayerControl
-      ref="c1"
-      playerId="B"
-      playerType="opp"
-      :characters="player1.characters"
-      :piles="player1.piles"
-    ></PlayerControl>
+  <button class="btn btn-primary" @click="game = new Game()">START</button>
+  <div class="flex flex-col-reverse gap-1" v-if="game">
     <PlayerControl
       ref="c0"
       playerId="A"
       playerType="me"
       :characters="player0.characters"
       :piles="player0.piles"
+      @initialized="game.registerPlayer(0, $event)"
+    ></PlayerControl>
+    <PlayerControl
+      ref="c1"
+      playerId="B"
+      playerType="opp"
+      :characters="player1.characters"
+      :piles="player1.piles"
+      @initialized="game.registerPlayer(1, $event)"
     ></PlayerControl>
   </div>
 </template>

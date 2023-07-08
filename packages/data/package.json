@@ -10,21 +10,18 @@
   },
   "scripts": {
     "build:entry": "node ./scripts/generate_imports.js",
-    "build:rollup": "rollup -c",
-    "build:types": "dts-bundle-generator ./src/index.ts -o ./dist/index.d.ts --export-referenced-types=false --no-check",
-    "build": "pnpm build:entry && pnpm build:rollup && pnpm build:types"
+    "build:ts": "tsup src/index.ts --format esm --dts --sourcemap",
+    "build": "pnpm build:entry && pnpm build:ts"
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*"
   },
   "devDependencies": {
     "@genshin-db/tcg": "^4.3.10",
-    "@rollup/plugin-typescript": "^11.1.1",
     "case-anything": "^2.1.13",
-    "dts-bundle-generator": "^8.0.1",
     "glob": "^10.2.7",
-    "rollup": "^3.25.0",
-    "rollup-plugin-node-externals": "^6.1.1",
-    "tsx": "^3.12.7"
+    "tsup": "^7.1.0",
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.6"
   }
 }

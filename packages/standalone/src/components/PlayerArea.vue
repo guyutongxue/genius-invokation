@@ -1,46 +1,16 @@
 <script lang="ts" setup>
-import {
-  CharacterFacade,
-  StatusFacade,
-  SummonFacade,
-  SupportFacade,
-  DiceType,
-  RequestType,
-} from "@jenshin-tcg/typings";
+import { Action, DiceType, RpcRequest } from "@gi-tcg/typings";
 import images from "../assets/images.json";
 import Dice from "./Dice.vue";
 import HandCard from "./HandCard.vue";
 import { computed } from "vue";
-
-export type PlayerAreaData = {
-  pileNumber: number;
-  active?: number;
-  characters: CharacterFacade[];
-  combatStatuses: StatusFacade[];
-  supports: SupportFacade[];
-  summons: SummonFacade[];
-} & (
-  | {
-      type: "hidden";
-      handsNumber: number;
-      diceNumber: number;
-    }
-  | {
-      type: "visible";
-      hands: number[];
-      dice: DiceType[];
-    }
-);
-
-export type AreaAction = Omit<RequestType<"action">, "state"> & {
-  myTurn: boolean;
-};
+import { MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
 
 const props = defineProps<{
   player: "me" | "opp";
   name?: string;
-  data: PlayerAreaData;
-  availableActions?: AreaAction;
+  data: MyPlayerData | OppPlayerData;
+  availableActions: Action[];
 }>();
 
 const emit = defineEmits<{
@@ -52,12 +22,16 @@ const emit = defineEmits<{
 }>();
 
 function clickHand(cardId: number) {
-  if (props.availableActions?.cards.find((c) => c.id === cardId)) {
+  if (
+    props.availableActions.find(
+      (c) => c.type === "playCard" && c.card === cardId
+    )
+  ) {
     emit("clickHand", cardId);
   }
 }
 function tuneHand(cardId: number) {
-  if (props.availableActions?.myTurn) {
+  if (props.availableActions.find((c) => c.type === "elementalTuning")) {
     emit("tuneHand", cardId);
   }
 }
@@ -70,7 +44,7 @@ function clickCharacter(id: number) {
 
 function handCost(id: number): [DiceType, number][] {
   const card = props.availableActions?.cards.find((c) => c.id === id);
-  if (!card) return [[DiceType.VOID, 0]]; // TODO
+  if (!card) return [[DiceType.Void, 0]]; // TODO
   return toCostMap(card.cost);
 }
 
@@ -79,7 +53,7 @@ function toCostMap(cost: number[]): [DiceType, number][] {
   for (const c of cost ?? []) {
     costMap.set(c, (costMap.get(c) ?? 0) + 1);
   }
-  if (costMap.size === 0) return [[DiceType.VOID, 0]];
+  if (costMap.size === 0) return [[DiceType.Void, 0]];
   return [...costMap.entries()];
 }
 </script>

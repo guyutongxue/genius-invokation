@@ -23,7 +23,7 @@ const DEFAULT_GAME_OPTIONS: GameOptions = {
 
 export interface PlayerConfig {
   deck: {
-    characters: [number, number, number];
+    characters: number[]; // should exactly 3 items
     actions: number[]; // should exactly 30 items
   };
   handler: Handler;
