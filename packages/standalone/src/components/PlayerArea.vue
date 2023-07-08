@@ -3,10 +3,8 @@ import {
   Action,
   CardData,
   CharacterData,
-  DeclareEndAction,
   DiceType,
   PlayCardAction,
-  RpcRequest,
   SwitchActiveAction,
   UseSkillAction,
 } from "@gi-tcg/typings";

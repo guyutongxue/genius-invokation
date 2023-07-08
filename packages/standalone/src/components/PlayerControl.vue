@@ -110,43 +110,32 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
         availableActions.value = [];
         const selectedAction = candidates[actionIdx];
         console.log(selectedAction);
-        let resultAction: RpcResponse["action"];
+        let r: RpcResponse["action"]; // type check only
         switch (selectedAction.type) {
           case "declareEnd": {
-            resultAction = { type: "declareEnd" };
-            break;
+            return r = { type: "declareEnd" };
           }
           case "elementalTuning": {
             const cost = await useDice([DiceType.Void]);
             if (typeof cost === "undefined") continue;
-            resultAction = {
+            return r = {
               type: "elementalTuning",
-              discardedCard: r.id,
+              discardedCard: selectedAction.discardedCard,
               dice: cost as [DiceType],
             };
-            // const tgtDice =
-            //   (areaData.value.characters[areaData.value.active ?? 0].objectId /
-            //     1000) %
-            //   100;
-            // areaData.value.dice.splice(cost[0], 1, tgtDice);
-            break;
           }
-          case "character": {
-            const spent = await useDice(actions.switchActive.cost);
+          case "switchActive": {
+            const spent = await useDice(selectedAction.cost);
             if (typeof spent === "undefined") continue;
-            resultAction = { type: "switchActive", target: r.id, cost: spent };
-            break;
+            return r = {
+              type: "switchActive",
+              active: selectedAction.active,
+              dice: spent
+            };
           }
-          case "card": {
-            const card = actions.cards.find((c) => c.id === r.id);
-            if (!card) throw new Error("card not found");
-            let withCard:
-              | {
-                  type: "character" | "support" | "summon";
-                  id: number;
-                }
-              | undefined = undefined;
-            if (card.with) {
+          case "playCard": {
+            const cardTarget = selectedAction.target;
+            if (cardTarget) {
               const choseWithAction: AreaAction = {
                 skills: [],
                 cards: [],
