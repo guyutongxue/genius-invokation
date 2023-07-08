@@ -37,11 +37,7 @@ const ee = new EventEmitter<{
   cardSwitched: [removed: number[]];
   diceSwitched: [removed: number[]];
   diceSelected: [number[] | undefined];
-  endChosen: [];
-  cardChosen: [id: number];
-  cardTuned: [id: number];
-  methodChosen: [string];
-  characterChosen: [id: number];
+  acted: [selectedActionIndex: number];
 }>();
 
 function stateToAreaData(state: StateData): MyPlayerData {
@@ -49,20 +45,12 @@ function stateToAreaData(state: StateData): MyPlayerData {
 }
 
 function onNotify({ event, state }: NotificationMessage) {
-  // console.log({ id, source, state, damages });
+  console.log({ event, state });
   switch (event.type) {
     case "newGamePhase": {
     }
   }
   areaData.value = stateToAreaData(state);
-}
-
-function removePlayAreaListeners() {
-  ee.removeAllListeners("endChosen");
-  ee.removeAllListeners("cardChosen");
-  ee.removeAllListeners("cardTuned");
-  ee.removeAllListeners("methodChosen");
-  ee.removeAllListeners("characterChosen");
 }
 
 const requireSelectedDice = ref<number[]>();
@@ -79,9 +67,6 @@ async function useDice(needed: DiceType[]): Promise<DiceType[] | undefined> {
 
 async function handler(method: RpcMethod, req: Request): Promise<Response> {
   console.log({ method, req });
-  if (areaData.value) {
-    throw new Error("This controller cannot am");
-  }
   switch (method) {
     case "switchHands": {
       showCardSwitch.value = true;
@@ -97,13 +82,15 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
         (c): Action => ({
           type: "switchActive",
           active: c,
+          cost: []
         })
       );
-      const active = await new Promise<number>((resolve) => {
-        ee.once("characterChosen", (d) => resolve(d));
+      const idx = await new Promise<number>((resolve) => {
+        ee.once("acted", resolve);
       });
       availableActions.value = [];
-      return { active } as RpcResponse["chooseActive"];
+      const target = candidates[idx];
+      return { active: target } as RpcResponse["chooseActive"];
     }
     case "rerollDice": {
       showRollDice.value = true;
@@ -117,45 +104,15 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
       const { candidates } = req as RpcRequest["action"];
       while (true) {
         availableActions.value = candidates;
-        type AreaActionResponse =
-          | {
-              type: "character" | "card" | "elementalTuning";
-              id: number;
-            }
-          | {
-              type: "method";
-              name: string;
-            }
-          | {
-              type: "end";
-            };
-        const r = await new Promise<AreaActionResponse>((resolve) => {
-          ee.once("cardChosen", (id) => {
-            removePlayAreaListeners();
-            resolve({ type: "card", id });
-          });
-          ee.once("cardTuned", (id) => {
-            removePlayAreaListeners();
-            resolve({ type: "elementalTuning", id });
-          });
-          ee.once("characterChosen", (id) => {
-            removePlayAreaListeners();
-            resolve({ type: "character", id });
-          });
-          ee.once("methodChosen", (name) => {
-            removePlayAreaListeners();
-            resolve({ type: "method", name });
-          });
-          ee.once("endChosen", () => {
-            removePlayAreaListeners();
-            resolve({ type: "end" });
-          });
+        const actionIdx = await new Promise<number>((resolve) => {
+          ee.once("acted", resolve);
         });
         availableActions.value = [];
-        console.log(r);
+        const selectedAction = candidates[actionIdx];
+        console.log(selectedAction);
         let resultAction: RpcResponse["action"];
-        switch (r.type) {
-          case "end": {
+        switch (selectedAction.type) {
+          case "declareEnd": {
             resultAction = { type: "declareEnd" };
             break;
           }
@@ -276,11 +233,7 @@ onMounted(() => {
       :player="playerType ?? 'me'"
       :data="areaData"
       :availableActions="availableActions"
-      @clickCharacter="ee.emit('characterChosen', $event)"
-      @clickMethod="ee.emit('methodChosen', $event)"
-      @clickEnd="ee.emit('endChosen')"
-      @tuneHand="ee.emit('cardTuned', $event)"
-      @clickHand="ee.emit('cardChosen', $event)"
+      @click="ee.emit('acted', $event)"
     >
     </PlayerArea>
     <div v-if="areaData.type === 'my'">

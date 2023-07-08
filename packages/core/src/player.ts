@@ -11,7 +11,7 @@ import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 
 import { Card } from "./card.js";
-import { PlayerConfig } from "./game.js";
+import { GameOptions, PlayerConfig } from "./game.js";
 import { Character } from "./character.js";
 import { Status } from "./status.js";
 import { Support } from "./support.js";
@@ -20,6 +20,10 @@ import { shallowClone } from "./entity.js";
 import { Notifier } from "./state.js";
 import { ContextOfEvent, EventHandlers, RollContext } from "@gi-tcg/data";
 import { ContextFactory } from "./context.js";
+
+interface PlayerConfigWithGame extends PlayerConfig {
+  game: GameOptions
+}
 
 export class Player {
   piles: Card[];
@@ -33,7 +37,7 @@ export class Player {
   specialBits: number = 0;
 
   constructor(
-    private readonly config: PlayerConfig,
+    private readonly config: PlayerConfigWithGame,
     private readonly notifier: Notifier
   ) {
     this.piles = config.deck.actions.map((id) => new Card(id));
@@ -43,20 +47,37 @@ export class Player {
     }
   }
 
-  initHands(count: number) {
-    for (let i = 0; i < this.piles.length; i++) {
-      if (this.piles[i].isArcane()) {
-        this.hands.push(this.piles[i]);
-        this.piles.splice(i, 1);
-        i--;
-        if (this.hands.length === count) {
-          break;
-        }
+  initHands() {
+    const legends = this.piles
+      .map((c, i) => [c, i] as const)
+      .filter(([c]) => c.isLegend())
+      .map(([c, i]) => i);
+    this.drawHands(this.config.game.initialHands, legends);
+  }
+
+  async drawHands(count: number, controlled: number[] = []) {
+    const drawn: Card[] = [];
+    for (const cardIdx of controlled) {
+      drawn.push(...this.piles.splice(cardIdx, 1));
+      if (drawn.length === count) {
+        break;
       }
     }
-    if (this.hands.length < count) {
-      this.hands.push(...this.piles.splice(0, count - this.hands.length));
+    if (drawn.length < count) {
+      drawn.push(...this.piles.splice(0, count - drawn.length));
     }
+    this.hands.push(...drawn);
+    // "爆牌"
+    const discardedCount = this.hands.length - this.config.game.maxHands;
+    this.hands.splice(this.config.game.maxHands, discardedCount);
+
+    this.notifier.me({ type: "stateUpdated", damages: [] });
+    this.notifier.opp({
+      type: "oppChangeHands",
+      removed: 0,
+      added: this.hands.length,
+      discarded: discardedCount,
+    });
   }
 
   async switchHands() {
@@ -79,6 +100,7 @@ export class Player {
       added: 0,
       discarded: 0,
     });
+    this.drawHands(removed.length);
   }
 
   async chooseActive(delayNotify: false): Promise<void>;

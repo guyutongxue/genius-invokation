@@ -5,6 +5,8 @@
 //   id: number;
 // };
 
+import { DiceType } from "../enums";
+
 export interface RerollDiceRequest {}
 
 export interface SwitchHandsRequest {}
@@ -20,6 +22,7 @@ export interface ActionRequest {
 export interface SwitchActiveAction {
   type: "switchActive";
   active: number;
+  cost: DiceType[];
 }
 
 export interface PlayCardTarget {
@@ -30,16 +33,19 @@ export interface PlayCardTarget {
 export interface PlayCardAction {
   type: "playCard";
   card: number;
+  cost: DiceType[];
   target?: PlayCardTarget[][];
 }
 
 export interface UseSkillAction {
   type: "useSkill";
   skill: number;
+  cost: DiceType[];
 }
 
 export interface ElementalTuningAction {
   type: "elementalTuning";
+  discardedCard: number;
 }
 
 export interface DeclareEndAction {

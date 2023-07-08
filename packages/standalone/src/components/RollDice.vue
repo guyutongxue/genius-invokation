@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DiceType } from "@jenshin-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 import Dice from "./Dice.vue";
 import { ref } from "vue";
 

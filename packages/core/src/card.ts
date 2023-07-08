@@ -8,7 +8,7 @@ export class Card extends Entity {
     this.info = getCard(id);
   }
 
-  isArcane() {
+  isLegend() {
     return this.info.tags.includes("arcane");
   }
 

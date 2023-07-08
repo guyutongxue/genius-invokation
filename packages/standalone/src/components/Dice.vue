@@ -1,30 +1,30 @@
 <script lang="ts" setup>
-import { DiceType } from "@jenshin-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 
 const COLOR: Record<DiceType, string> = {
-  [DiceType.VOID]: "#222222",
-  [DiceType.ANEMO]: "#33ccb3",
-  [DiceType.GEO]: "#cfa726",
-  [DiceType.ELECTRO]: "#d376f0",
-  [DiceType.DENDRO]: "#7bb42d",
-  [DiceType.HYDRO]: "#1c72fd",
-  [DiceType.PYRO]: "#e2311d",
-  [DiceType.CRYO]: "#98c8e8",
-  [DiceType.OMNI]: "#ddddaa",
-  [DiceType.ENERGY]: "#eab308",
+  [DiceType.Void]: "#222222",
+  [DiceType.Anemo]: "#33ccb3",
+  [DiceType.Geo]: "#cfa726",
+  [DiceType.Electro]: "#d376f0",
+  [DiceType.Dendro]: "#7bb42d",
+  [DiceType.Hydro]: "#1c72fd",
+  [DiceType.Pyro]: "#e2311d",
+  [DiceType.Cryo]: "#98c8e8",
+  [DiceType.Omni]: "#ddddaa",
+  [DiceType.Energy]: "#eab308",
 };
 
 const NAME: Record<DiceType, string> = {
-  [DiceType.VOID]: "无",
-  [DiceType.ANEMO]: "风",
-  [DiceType.GEO]: "岩",
-  [DiceType.ELECTRO]: "雷",
-  [DiceType.DENDRO]: "草",
-  [DiceType.HYDRO]: "水",
-  [DiceType.PYRO]: "火",
-  [DiceType.CRYO]: "冰",
-  [DiceType.OMNI]: "万",
-  [DiceType.ENERGY]: "充",
+  [DiceType.Void]: "无",
+  [DiceType.Anemo]: "风",
+  [DiceType.Geo]: "岩",
+  [DiceType.Electro]: "雷",
+  [DiceType.Dendro]: "草",
+  [DiceType.Hydro]: "水",
+  [DiceType.Pyro]: "火",
+  [DiceType.Cryo]: "冰",
+  [DiceType.Omni]: "万",
+  [DiceType.Energy]: "充",
 };
 
 const props = defineProps<{
@@ -37,8 +37,8 @@ const props = defineProps<{
 <template>
   <div class="relative h-9 overflow-hidden select-none">
     <div
-      class="text-5xl text-center align-baseline "
-      :class="type === DiceType.ENERGY ? '-translate-y-2' : '-translate-y-3'"
+      class="text-5xl text-center align-baseline"
+      :class="type === DiceType.Energy ? '-translate-y-2' : '-translate-y-3'"
       :style="{
         color: COLOR[type],
         ...(selected
@@ -46,11 +46,15 @@ const props = defineProps<{
           : {}),
       }"
     >
-      {{ type === DiceType.ENERGY ? '\u2726' : '\u2b22' }}
+      {{ type === DiceType.Energy ? "\u2726" : "\u2b22" }}
     </div>
     <div
       class="absolute top-0 text-base w-full text-center translate-y-1"
-      :class="[DiceType.OMNI, DiceType.ENERGY].includes(type) ? 'text-black' : 'text-white'"
+      :class="
+        [DiceType.Omni, DiceType.Energy].includes(type)
+          ? 'text-black'
+          : 'text-white'
+      "
     >
       {{ text ?? NAME[type] }}
     </div>

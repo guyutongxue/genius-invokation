@@ -34,14 +34,27 @@ export class GameState {
     private readonly options: GameOptions,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig]
   ) {
-    this.players = [
-      new Player(playerConfigs[0], this.createNotifier(0)),
-      new Player(playerConfigs[1], this.createNotifier(1)),
-    ];
+    this.players = [this.createPlayer(0), this.createPlayer(1)];
     this.start();
   }
 
+  private createPlayer(who: 0 | 1) {
+    return new Player(
+      {
+        ...this.playerConfigs[who],
+        game: this.options,
+      },
+      this.createNotifier(who)
+    );
+  }
+
   private async start() {
+    while (this.phase !== "gameEnd") {
+      await this.step();
+    }
+  }
+
+  private async step() {
     this.notifyPlayer(0, {
       type: "newGamePhase",
       roundNumber: this.roundNumber,
@@ -72,8 +85,8 @@ export class GameState {
     await this.options.pauser();
   }
   private async initHands() {
-    this.players[0].initHands(this.options.initialHands);
-    this.players[1].initHands(this.options.initialHands);
+    this.players[0].initHands();
+    this.players[1].initHands();
     await Promise.all([
       this.players[0].switchHands(),
       this.players[1].switchHands(),
@@ -89,7 +102,9 @@ export class GameState {
     n1();
     this.phase = "roll";
   }
-  private async rollPhase() {}
+  private async rollPhase() {
+    this.phase = "gameEnd"
+  }
   private async actionPhase() {}
   private async endPhase() {
     this.roundNumber++;

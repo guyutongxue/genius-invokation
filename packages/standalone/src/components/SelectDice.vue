@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DiceType } from "@jenshin-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 import { computed, ref } from "vue";
 import Dice from "./Dice.vue";
 
@@ -12,14 +12,14 @@ const rand = Math.random();
 function initChosen() {
   const requiredMap = new Map<DiceType, number>();
   for (const r of props.required) {
-    if (r === DiceType.ENERGY) continue;
+    if (r === DiceType.Energy) continue;
     requiredMap.set(r, (requiredMap.get(r) ?? 0) + 1);
   }
-  const OMNI_COUNT = props.dice.filter((d) => d === DiceType.OMNI).length;
-  if (requiredMap.has(DiceType.OMNI)) {
-    const requiredCount = requiredMap.get(DiceType.OMNI)!;
+  const OMNI_COUNT = props.dice.filter((d) => d === DiceType.Omni).length;
+  if (requiredMap.has(DiceType.Omni)) {
+    const requiredCount = requiredMap.get(DiceType.Omni)!;
     for (let i = props.dice.length - 1; i >= 0; i--) {
-      if (props.dice[i] === DiceType.OMNI) continue;
+      if (props.dice[i] === DiceType.Omni) continue;
       const thisCount = requiredMap.get(props.dice[i]) ?? 0;
       if (thisCount + OMNI_COUNT < requiredCount) continue;
       const result: number[] = [];
@@ -28,7 +28,7 @@ function initChosen() {
         result.length < requiredCount && j >= 0;
         j--
       ) {
-        if (props.dice[j] === DiceType.OMNI || props.dice[j] === props.dice[i])
+        if (props.dice[j] === DiceType.Omni || props.dice[j] === props.dice[i])
           result.push(j);
       }
       return result;
@@ -37,8 +37,8 @@ function initChosen() {
   }
   const result: number[] = [];
   next: for (const r of props.required) {
-    if (r === DiceType.ENERGY) continue;
-    if (r === DiceType.VOID) {
+    if (r === DiceType.Energy) continue;
+    if (r === DiceType.Void) {
       for (let j = props.dice.length - 1; j >= 0; j--) {
         if (!result.includes(j)) {
           result.push(j);
@@ -53,7 +53,7 @@ function initChosen() {
         }
       }
       for (let j = 0; j < props.dice.length; j++) {
-        if (!result.includes(j) && props.dice[j] === DiceType.OMNI) {
+        if (!result.includes(j) && props.dice[j] === DiceType.Omni) {
           result.push(j);
           continue next;
         }
@@ -67,30 +67,30 @@ function initChosen() {
 const isOk = computed<boolean>(() => {
   const requiredMap = new Map<DiceType, number>();
   for (const r of props.required) {
-    if (r === DiceType.ENERGY) continue;
+    if (r === DiceType.Energy) continue;
     requiredMap.set(r, (requiredMap.get(r) ?? 0) + 1);
   }
-  if (requiredMap.has(DiceType.OMNI)) {
-    const requiredCount = requiredMap.get(DiceType.OMNI)!;
+  if (requiredMap.has(DiceType.Omni)) {
+    const requiredCount = requiredMap.get(DiceType.Omni)!;
     if (requiredCount !== chosen.value.length) return false;
     const chosenMap = new Set<DiceType>(chosen.value.map((i) => props.dice[i]));
     return (
       chosenMap.size === 1 ||
-      (chosenMap.size === 2 && chosenMap.has(DiceType.OMNI))
+      (chosenMap.size === 2 && chosenMap.has(DiceType.Omni))
     );
   }
   const chosen2 = [...chosen.value];
   let voidCount = 0;
   for (const r of props.required) {
-    if (r === DiceType.ENERGY) continue;
-    if (r === DiceType.VOID) {
+    if (r === DiceType.Energy) continue;
+    if (r === DiceType.Void) {
       voidCount++;
       continue;
     }
     const index = chosen2.findIndex((i) => props.dice[i] === r);
     if (index === -1) {
       const omniIndex = chosen2.findIndex(
-        (i) => props.dice[i] === DiceType.OMNI
+        (i) => props.dice[i] === DiceType.Omni
       );
       if (omniIndex === -1) return false;
       chosen2.splice(omniIndex, 1);
