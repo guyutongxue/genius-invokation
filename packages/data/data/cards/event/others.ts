@@ -358,7 +358,7 @@ const HeavyStrike = createCard(332018)
  */
 const IHaventLostYet = createCard(332005)
   .setType("event")
-  .addFilter(c => c.checkSpecialBit(SpecialBits.DefeatedMine))
+  .addFilter(c => c.checkSpecialBit(SpecialBits.Defeated))
   .generateDice(DiceType.Omni)
   .gainEnergy(1)
   .build();

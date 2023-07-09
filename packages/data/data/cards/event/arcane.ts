@@ -8,8 +8,8 @@ import { createCard, DiceType, SpecialBits } from "@gi-tcg";
  */
 const AncientCourtyard = createCard(-31)
   .setType("event")
-  .addTags("arcane")
-  .addFilter((c) => !c.checkSpecialBit(SpecialBits.ArcaneUsed))
+  .addTags("legend")
+  .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))
   .addFilter((c) => {
     return c.allCharacters().filter(ch =>
       ch.hasEquipment("weapon") ||
@@ -34,8 +34,8 @@ const AncientCourtyard = createCard(-31)
  */
 const CovenantOfRock = createCard(-32)
   .setType("event")
-  .addTags("arcane")
-  .addFilter((c) => !c.checkSpecialBit(SpecialBits.ArcaneUsed))
+  .addTags("legend")
+  .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))
   .addFilter((c) => c.getDice().length === 0)
   .do((c) => {
     const newDice: DiceType[] = [];

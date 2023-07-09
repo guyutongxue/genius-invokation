@@ -3,6 +3,7 @@ import {
   Event,
   MyPlayerData,
   OppPlayerData,
+  PlayerDataBase,
   RpcMethod,
   RpcRequest,
   RpcResponse,
@@ -18,11 +19,16 @@ import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { shallowClone } from "./entity.js";
 import { Notifier } from "./state.js";
-import { ContextOfEvent, EventHandlers, RollContext } from "@gi-tcg/data";
+import {
+  ContextOfEvent,
+  EventHandlers,
+  RollContext,
+  SpecialBits,
+} from "@gi-tcg/data";
 import { ContextFactory } from "./context.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
-  game: GameOptions
+  game: GameOptions;
 }
 
 export class Player {
@@ -168,7 +174,11 @@ export class Player {
     return resp;
   }
 
-  private getDataBase() {
+  private getSpecialBit(bit: SpecialBits): boolean {
+    return (this.specialBits & (1 << bit)) !== 0;
+  }
+
+  private getDataBase(): PlayerDataBase {
     return {
       pileNumber: this.piles.length,
       active: this.active,
@@ -176,6 +186,7 @@ export class Player {
       combatStatuses: this.combatStatuses.map((s) => s.getData()),
       supports: this.supports.map((s) => s.getData()),
       summons: this.summons.map((s) => s.getData()),
+      legendUsed: this.getSpecialBit(SpecialBits.LegendUsed),
     };
   }
   getData(): MyPlayerData {

@@ -53,6 +53,7 @@ export class Character extends Entity {
     return {
       id: this.id,
       entityId: this.entityId,
+      defeated: this.defeated,
       health: this.health,
       energy: this.energy,
       weapon: weapon?.getData() ?? null,

@@ -9,7 +9,7 @@ export class Card extends Entity {
   }
 
   isLegend() {
-    return this.info.tags.includes("arcane");
+    return this.info.tags.includes("legend");
   }
 
   getData() {

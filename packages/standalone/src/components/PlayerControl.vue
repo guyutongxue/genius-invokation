@@ -178,6 +178,10 @@ const player: PlayerConfig = {
   onNotify,
 };
 
+function diceSelected(dice: DiceType[], targetIdx?: number) {
+  ee.emit("diceSelected", dice, targetIdx ?? 0);
+}
+
 const emit = defineEmits<{
   (e: "initialized", config: PlayerConfig): void;
 }>();
@@ -217,7 +221,7 @@ onMounted(() => {
         :dice="areaData.dice"
         :required="requireSelectedDice"
         :targets="requireTargets"
-        @selected="(dice, target) => ee.emit('diceSelected', dice, target ?? 0)"
+        @selected="diceSelected"
         @cancelled="ee.emit('diceSelected', undefined, 0)"
       >
       </SelectDice>

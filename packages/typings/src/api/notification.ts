@@ -11,6 +11,7 @@ export type PhaseType =
 export interface CharacterData {
   id: number;
   entityId: number;
+  defeated: boolean;
   health: number;
   energy: number;
   weapon: number | null;
@@ -43,27 +44,25 @@ export interface CardData {
   entityId: number;
 }
 
-export interface MyPlayerData {
-  type: "my";
+export interface PlayerDataBase {
   pileNumber: number;
   active: number | null;
-  hands: CardData[];
   characters: CharacterData[];
   combatStatuses: StatusData[];
   supports: SupportData[];
   summons: SummonData[];
+  legendUsed: boolean;
+}
+
+export interface MyPlayerData extends PlayerDataBase {
+  type: "my";
+  hands: CardData[];
   dice: DiceType[];
 }
 
-export interface OppPlayerData {
+export interface OppPlayerData extends PlayerDataBase {
   type: "opp";
-  pileNumber: number;
-  active: number | null;
   hands: number;
-  characters: CharacterData[];
-  combatStatuses: StatusData[];
-  supports: SupportData[];
-  summons: SummonData[];
   dice: number;
 }
 

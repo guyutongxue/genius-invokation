@@ -19,7 +19,7 @@ export type ContextOfTarget<T extends CardTargetDescriptor> =
   : readonly [];
 
 export type CardTag =
-  | "arcane" // 秘传
+  | "legend" // 秘传
   | "action" // 出战行动
   | "food"
   | "resonance" // 元素共鸣
