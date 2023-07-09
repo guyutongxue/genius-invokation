@@ -14,7 +14,8 @@ import {
   RpcRequest,
   MyPlayerData,
   Action,
-Handler,
+  Handler,
+  PlayCardTargets,
 } from "@gi-tcg/typings";
 import EventEmitter from "eventemitter3";
 import RollDice from "./RollDice.vue";
@@ -36,7 +37,7 @@ const showRollDice = ref<boolean>(false);
 const ee = new EventEmitter<{
   cardSwitched: [removed: number[]];
   diceSwitched: [removed: number[]];
-  diceSelected: [number[] | undefined];
+  diceSelected: [dice: number[] | undefined, targets: number];
   acted: [selectedActionIndex: number];
 }>();
 
@@ -54,14 +55,23 @@ function onNotify({ event, state }: NotificationMessage) {
 }
 
 const requireSelectedDice = ref<number[]>();
-async function useDice(needed: DiceType[]): Promise<DiceType[] | undefined> {
+const requireTargets = ref<PlayCardTargets>();
+async function useDice(
+  needed: DiceType[],
+  target?: PlayCardTargets
+): Promise<[DiceType[], number] | undefined> {
   requireSelectedDice.value = needed;
-  const selected = await new Promise<number[] | undefined>((resolve) => {
-    ee.once("diceSelected", (selected) => {
-      resolve(selected);
-    });
-  });
+  requireTargets.value = target;
+  const selected = await new Promise<[number[], number] | undefined>(
+    (resolve) => {
+      ee.once("diceSelected", (selected, target) => {
+        if (typeof selected === "undefined") return resolve(undefined);
+        resolve([selected, target]);
+      });
+    }
+  );
   requireSelectedDice.value = undefined;
+  requireTargets.value = undefined;
   return selected;
 }
 
@@ -82,7 +92,7 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
         (c): Action => ({
           type: "switchActive",
           active: c,
-          cost: []
+          cost: [],
         })
       );
       const idx = await new Promise<number>((resolve) => {
@@ -113,86 +123,47 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
         let r: RpcResponse["action"]; // type check only
         switch (selectedAction.type) {
           case "declareEnd": {
-            return r = { type: "declareEnd" };
+            return (r = { type: "declareEnd" });
           }
           case "elementalTuning": {
             const cost = await useDice([DiceType.Void]);
             if (typeof cost === "undefined") continue;
-            return r = {
+            return (r = {
               type: "elementalTuning",
               discardedCard: selectedAction.discardedCard,
-              dice: cost as [DiceType],
-            };
+              dice: cost[0] as [DiceType],
+            });
           }
           case "switchActive": {
             const spent = await useDice(selectedAction.cost);
             if (typeof spent === "undefined") continue;
-            return r = {
+            return (r = {
               type: "switchActive",
               active: selectedAction.active,
-              dice: spent
-            };
+              dice: spent[0],
+            });
           }
           case "playCard": {
             const cardTarget = selectedAction.target;
-            if (cardTarget) {
-              const choseWithAction: AreaAction = {
-                skills: [],
-                cards: [],
-                switchActive: {
-                  targets: [],
-                  cost: [],
-                  fast: false,
-                },
-                myTurn: false,
-              };
-              for (const cw of card.with) {
-                if (cw.type === "character") {
-                  choseWithAction.switchActive.targets.push(cw.id);
-                } else {
-                  throw new Error("not implemented");
-                }
-              }
-              availableActions.value = choseWithAction;
-              withCard = await new Promise<{
-                type: "character" | "support" | "summon";
-                id: number;
-              }>((resolve) => {
-                ee.once("characterChosen", (id) =>
-                  resolve({
-                    type: "character",
-                    id,
-                  })
-                );
-              });
-            }
-            const spent = await useDice(card.cost);
+            const spent = await useDice(selectedAction.cost, cardTarget);
             if (typeof spent === "undefined") continue;
-            resultAction = {
+            return r = {
               type: "playCard",
-              card: r.id,
-              dice: spent,
-              target: withCard,
+              card: selectedAction.card,
+              dice: spent[0],
+              targetIndex: spent[1],
             };
-            // areaData.value.hands.splice(
-            //   areaData.value.hands.findIndex((h) => h === r.id),
-            //   1
-            // );
-            // for (const c of spent) {
-            //   areaData.value.dice.splice(c, 1);
-            // }
-            break;
           }
-          case "method": {
-            const cost =
-              actions.skills.find((c) => c.name === r.name)?.cost ?? [];
-            const spent = await useDice(cost);
+          case "useSkill": {
+            const spent = await useDice(selectedAction.cost);
             if (typeof spent === "undefined") continue;
-            resultAction = { type: "useSkill", name: r.name, cost: spent };
-            break;
+            return r = {
+              type: "useSkill",
+              skill: selectedAction.skill,
+              dice: spent[0]
+            };
           }
         }
-        return resultAction;
       }
     }
   }
@@ -245,8 +216,9 @@ onMounted(() => {
         v-if="requireSelectedDice"
         :dice="areaData.dice"
         :required="requireSelectedDice"
-        @selected="ee.emit('diceSelected', $event)"
-        @cancelled="ee.emit('diceSelected', undefined)"
+        :targets="requireTargets"
+        @selected="(dice, target) => ee.emit('diceSelected', dice, target ?? 0)"
+        @cancelled="ee.emit('diceSelected', undefined, 0)"
       >
       </SelectDice>
     </div>

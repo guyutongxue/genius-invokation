@@ -29,7 +29,7 @@ export interface PlayCardActionResponse {
   type: "playCard";
   card: number;
   dice: DiceType[];
-  target?: number[];
+  targetIndex: number;
 }
 
 export interface UseSkillActionResponse {

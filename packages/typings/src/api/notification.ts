@@ -78,6 +78,10 @@ export interface GamePhaseEvent {
   roundNumber: number;
   isFirst: boolean;
 }
+export interface GameEndEvent {
+  type: "gameEnd";
+  win?: boolean; // undefined for tie
+}
 export interface DamageData {
   type: DamageType;
   value: number;
@@ -112,6 +116,7 @@ export interface SwitchActiveEvent {
   type: "switchActive";
   opp: boolean;
   target: number;
+  source?: number | string; // id or "elementalReaction" or ...
 }
 export interface DeclareEndEvent {
   type: "declareEnd";
@@ -122,6 +127,7 @@ export interface OtherEvent {
 }
 export type Event =
   | GamePhaseEvent
+  | GameEndEvent
   | StateUpdatedEvent
   | PlayCardEvent
   | UseSkillEvent

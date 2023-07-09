@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { DiceType } from "@gi-tcg/typings";
+import { DiceType, PlayCardTargets } from "@gi-tcg/typings";
 import { computed, ref } from "vue";
 import Dice from "./Dice.vue";
+import SelectTarget from "./SelectTarget.vue";
 
 const props = defineProps<{
   dice: DiceType[];
   required: DiceType[];
+  targets?: PlayCardTargets;
 }>();
 const rand = Math.random();
 
@@ -104,36 +106,43 @@ const isOk = computed<boolean>(() => {
 const chosen = ref<number[]>(initChosen());
 
 const emit = defineEmits<{
-  (e: "selected", selected: number[]): void;
+  (e: "selected", selected: number[], target?: number): void;
   (e: "cancelled"): void;
 }>();
 </script>
 
 <template>
-  <div class="p-3 flex flex-col justify-between items-center">
-    <ul class="grid grid-cols-2 scale-125 origin-top">
-      <li v-for="(d, i) of dice">
-        <input
-          type="checkbox"
-          hidden
-          :value="i"
-          :id="`rdInput${rand}-${i}`"
-          v-model="chosen"
-        />
-        <label :for="`rdInput${rand}-${i}`">
-          <Dice :type="(d as DiceType)" :selected="chosen.includes(i)"></Dice>
-        </label>
-      </li>
-    </ul>
-    <div>
-      <button
-        class="btn btn-primary"
-        :disabled="!isOk"
-        @click="$emit('selected', chosen)"
-      >
-        Go
-      </button>
-      <button class="btn" @click="$emit('cancelled')">Cancel</button>
+  <div>
+    <div class="p-3 flex flex-col justify-between items-center">
+      <ul class="grid grid-cols-2 scale-125 origin-top">
+        <li v-for="(d, i) of dice">
+          <input
+            type="checkbox"
+            hidden
+            :value="i"
+            :id="`rdInput${rand}-${i}`"
+            v-model="chosen"
+          />
+          <label :for="`rdInput${rand}-${i}`">
+            <Dice :type="(d as DiceType)" :selected="chosen.includes(i)"></Dice>
+          </label>
+        </li>
+      </ul>
+      <div>
+        <button
+          class="btn btn-primary"
+          :disabled="!isOk"
+          @click="$emit('selected', chosen)"
+        >
+          Go
+        </button>
+        <button class="btn" @click="$emit('cancelled')">Cancel</button>
+      </div>
+    </div>
+    <div v-if="targets">
+      <SelectTarget
+        :targets="targets"
+      ></SelectTarget>
     </div>
   </div>
 </template>

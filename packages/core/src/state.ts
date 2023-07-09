@@ -52,6 +52,14 @@ export class GameState {
     while (this.phase !== "gameEnd") {
       await this.step();
     }
+    this.notifyPlayer(0, {
+      type: "gameEnd",
+      win: this.winner === null ? undefined : this.winner === 0,
+    });
+    this.notifyPlayer(1, {
+      type: "gameEnd",
+      win: this.winner === null ? undefined : this.winner === 1,
+    });
   }
 
   private async step() {

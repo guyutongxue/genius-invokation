@@ -25,16 +25,21 @@ export interface SwitchActiveAction {
   cost: DiceType[];
 }
 
-export interface PlayCardTarget {
+export interface PlayCardSingleTarget {
   id: number;
-  hint?: string;
+  entityId: number;
+}
+
+export interface PlayCardTargets {
+  hint?: string[];
+  candidates: PlayCardSingleTarget[][];
 };
 
 export interface PlayCardAction {
   type: "playCard";
   card: number;
   cost: DiceType[];
-  target?: PlayCardTarget[][];
+  target?: PlayCardTargets;
 }
 
 export interface UseSkillAction {
