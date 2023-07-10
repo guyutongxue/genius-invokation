@@ -96,6 +96,7 @@ export interface UseDiceContext extends Context {
 interface DamageBaseContext extends Context {
   readonly sourceSummon?: SummonContext;
   readonly sourceSkill?: SkillReadonlyContext;
+  readonly sourceReaction?: ElementalReactionContext;
   readonly target: CharacterContext;
   readonly damageType: DamageType;
 }
@@ -138,7 +139,6 @@ export interface ElementalReactionContext extends Context {
   readonly reactionType: unknown;
   relatedWith(d: DamageType): boolean;
   swirledElement(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null;
-  readonly damage: DamageContext | null;
 }
 
 export { Target, TargetInfo, getTargetInfo } from "./target";

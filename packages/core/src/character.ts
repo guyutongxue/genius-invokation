@@ -2,18 +2,18 @@ import { CharacterInfoWithId, ContextOfEvent, EventHandlers, getCharacter, getSk
 import { Entity, shallowClone } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
-import { Aura, CharacterData } from "@gi-tcg/typings";
+import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
 import { ContextFactory } from "./context.js";
 
 export class Character extends Entity {
   public readonly info: CharacterInfoWithId;
-  private health: number;
+  public health: number;
   private defeated = false;
-  private energy: number = 0;
-  private equipments: Equipment[] = [];
-  private statuses: Status[] = [];
-  private applied: Aura = Aura.None;
+  public energy: number = 0;
+  public equipments: Equipment[] = [];
+  public statuses: Status[] = [];
+  public applied: Aura = Aura.None;
   private passiveSkills: PassiveSkill[] = [];
 
   constructor(id: number) {

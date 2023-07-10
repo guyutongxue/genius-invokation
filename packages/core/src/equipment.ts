@@ -3,7 +3,7 @@ import { Entity, shallowClone } from "./entity.js";
 import { ContextFactory } from "./context.js";
 
 export class Equipment extends Entity {
-  private readonly info: EquipmentInfoWithId;
+  public readonly info: EquipmentInfoWithId;
   private handler: EventHandlers;
   private usagePerRound: number;
 

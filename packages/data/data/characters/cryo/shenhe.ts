@@ -19,7 +19,7 @@ const DawnstarPiercer = createSkill(11071)
 const IceQuill = createStatus(111071)
   .withUsage(3)
   .on("beforeDealDamage", (c) => {
-    if (c.damageType === DamageType.Cryo) {
+    if (c.sourceSkill && c.damageType === DamageType.Cryo) {
       c.addDamage(1);
     } else {
       return false;

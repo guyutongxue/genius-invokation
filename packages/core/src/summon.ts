@@ -4,7 +4,7 @@ import { SummonData } from "@gi-tcg/typings";
 import { ContextFactory } from "./context.js";
 
 export class Summon extends Entity {
-  private readonly info: SummonInfoWithId;
+  public readonly info: SummonInfoWithId;
   private handler: EventHandlers;
   private usage: number;
   shouldDispose = false;

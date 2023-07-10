@@ -1,4 +1,5 @@
 import {
+  DamageData,
   Event,
   GamePhaseEvent,
   NotificationMessage,
@@ -173,6 +174,11 @@ export class GameState {
   giveUp(who: 0 | 1) {}
   preview(who: 0 | 1, skillId: number): StateData {
     throw new Error("Not implemented");
+  }
+
+  private damageLogs: DamageData[] = [];
+  addDamageLog(damage: DamageData) {
+    this.damageLogs.push(damage);
   }
 
   clone() {

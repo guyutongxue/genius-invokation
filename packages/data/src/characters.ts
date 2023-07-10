@@ -49,7 +49,7 @@ export interface CharacterContext {
   readonly aura: Aura;
   isAlive(): boolean;
   
-  hasEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentInfoWithId;
+  hasEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentInfoWithId | null;
   equip(equipment: EquipmentHandle | EquipmentInfoWithId): void;
   removeEquipment(equipment: EquipmentHandle | EquipmentInfoWithId): void;
 

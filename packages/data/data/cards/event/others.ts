@@ -381,7 +381,7 @@ const LeaveItToMe = createCard(332006)
 const MasterOfWeaponry = createCard(332010, ["character", "character"])
   .setType("event")
   .filterTargets((ch0, ch1) => {
-    return ch0.hasEquipment("weapon") &&
+    return !!ch0.hasEquipment("weapon") &&
       (["bow", "catalyst", "claymore", "pole", "sword"] as const)
         .filter(c => ch0.info.tags.includes(c) && ch1.info.tags.includes(c)).length > 0;
   })
