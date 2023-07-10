@@ -14,7 +14,7 @@ export enum SpecialBits {
 }
 
 export interface Context {
-  readonly currentPhase: "action" | "end";
+  readonly currentPhase: "action" | "end" | "other";
   readonly currentTurn: number;
   isMyTurn(): boolean;
   checkSpecialBit(bit: SpecialBits): boolean;
@@ -31,7 +31,7 @@ export interface Context {
   applyElement(type: DamageType, target?: Target): void;
   heal(value: number, target: Target): void;
   gainEnergy(value?: number, target?: Target): number;
-  lossEnergy(value?: number, target?: Target): number;
+  loseEnergy(value?: number, target?: Target): number;
 
   createStatus(status: StatusHandle, target?: Target): StatusContext;
   removeStatus(status: StatusHandle, target?: Target): boolean;
@@ -140,3 +140,5 @@ export interface ElementalReactionContext extends Context {
   swirledElement(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null;
   readonly damage: DamageContext | null;
 }
+
+export { Target, TargetInfo, getTargetInfo } from "./target";

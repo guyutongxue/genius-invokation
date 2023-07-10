@@ -37,7 +37,7 @@ const CalxsArts = createCard(332009)
   .setType("event")
   .costSame(1)
   .do((c) => {
-    const energyCount = c.lossEnergy(1, Target.myStandby());
+    const energyCount = c.loseEnergy(1, Target.myStandby());
     c.gainEnergy(energyCount);
   })
   .build();

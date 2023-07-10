@@ -1,7 +1,7 @@
 import { CharacterInfoWithId } from ".";
 import { CharacterHandle } from "./builders";
 
-type TargetInfo = {
+export type TargetInfo = {
   type: "byPos",
   pos: "active" | "standby" | "prev" | "next" | "all",
   opp: boolean
@@ -116,4 +116,9 @@ export class Target {
       type: "oneEnergyNotFull"
     });
   }
+}
+
+export function getTargetInfo(target: Target): TargetInfo {
+  // @ts-expect-error Accessing private field
+  return target.info;
 }

@@ -13,7 +13,7 @@ import { Player } from "./player.js";
 import { shallowClone } from "./entity.js";
 import { ContextFactory } from "./context.js";
 
-function flip(who: 0 | 1): 0 | 1 {
+export function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
 }
 
@@ -26,7 +26,7 @@ export class GameState {
   private phase: PhaseType = "initHands";
   private roundNumber = 0;
   private currentTurn: 0 | 1 = 0;
-  private nextTurn: 0 | 1 = 0;
+  public nextTurn: 0 | 1 = 0;
   private winner: 0 | 1 | null = null;
   private players: [Player, Player];
 
@@ -36,6 +36,19 @@ export class GameState {
   ) {
     this.players = [this.createPlayer(0), this.createPlayer(1)];
     this.start();
+  }
+
+  public getPhase() {
+    return this.phase;
+  }
+  public getRoundNumber() {
+    return this.roundNumber;
+  }
+  public getCurrentTurn() {
+    return this.currentTurn;
+  }
+  public getPlayer(who: 0 | 1) {
+    return this.players[who];
   }
 
   private createPlayer(who: 0 | 1) {
@@ -111,6 +124,7 @@ export class GameState {
     this.phase = "roll";
   }
   private async rollPhase() {
+
     this.phase = "gameEnd"
   }
   private async actionPhase() {}

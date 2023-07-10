@@ -31,9 +31,11 @@ interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
 }
 
+export type CharacterPosition = "active" | "prev" | "next";
+
 export class Player {
   piles: Card[];
-  active: number | null = null;
+  activeIndex: number | null = null;
   hands: Card[] = [];
   characters: Character[];
   combatStatuses: Status[] = [];
@@ -112,24 +114,71 @@ export class Player {
   async chooseActive(delayNotify: false): Promise<void>;
   async chooseActive(delayNotify: true): Promise<() => void>;
   async chooseActive(delayNotify = false): Promise<any> {
+    const activeId =
+      this.activeIndex === null
+        ? null
+        : this.characters[this.activeIndex].entityId;
     const { active } = await this.rpc("chooseActive", {
       candidates: this.characters
         .filter((c) => {
-          return c.isAlive() && c.entityId !== this.active;
+          return c.isAlive() && c.entityId !== activeId;
         })
         .map((c) => c.entityId),
     });
-    this.active = active;
+    return this.switchActive(active, delayNotify);
+  }
+
+  async rollDice(times = 2) {}
+
+  getCharacter(target: CharacterPosition): Character {
+    let chIndex = this.activeIndex ?? 0;
+    while (true) {
+      switch (target) {
+        case "next": {
+          chIndex++;
+          const ch = this.characters[chIndex % this.characters.length];
+          if (!ch.isAlive()) continue;
+          return ch;
+        }
+        case "prev":{
+          chIndex--;
+          const ch = this.characters[(chIndex) % this.characters.length];
+          if (!ch.isAlive()) continue;
+          return ch;
+        }
+        case "active":
+          return this.characters[chIndex];
+      }
+    }
+  }
+  getCharacterById(id: number, useStaticId = false): Character | undefined {
+    return this.characters.find((c) =>
+      useStaticId ? c.info.id === id : c.entityId === id
+    );
+  }
+  getCharacterByPos(posIndex: number): Character {
+    const ch = this.characters[posIndex % 3];
+    if (!ch.isAlive()) {
+      return this.getCharacterByPos(posIndex + 1);
+    } else {
+      return ch;
+    }
+  }
+
+  switchActive(targetEntityId: number, delayNotify = false): any {
+    this.activeIndex = this.characters.findIndex(
+      (c) => c.entityId === targetEntityId
+    );
     this.notifier.me({
       type: "switchActive",
       opp: false,
-      target: active,
+      target: targetEntityId,
     });
     const oppNotify = () => {
       this.notifier.opp({
         type: "switchActive",
         opp: true,
-        target: active,
+        target: targetEntityId,
       });
     };
     if (delayNotify) {
@@ -139,19 +188,17 @@ export class Player {
     }
   }
 
-  async rollDice(times = 2) {}
-
   handleEvent<E extends keyof EventHandlers>(
     event: E,
     cf: ContextFactory<ContextOfEvent<E>>
   ) {
-    const activeIndex = this.characters.findIndex(
-      (c) => c.entityId === this.active
-    );
+    const activeIndex = this.activeIndex ?? 0;
     for (let i = 0; i < this.characters.length; i++) {
       const character =
         this.characters[(activeIndex + i) % this.characters.length];
-      character.handleEvent(event, cf);
+      if (character.isAlive()) {
+        character.handleEvent(event, cf);
+      }
     }
     for (const status of this.combatStatuses) {
       status.handleEvent(event, cf);
@@ -174,14 +221,17 @@ export class Player {
     return resp;
   }
 
-  private getSpecialBit(bit: SpecialBits): boolean {
+  public getSpecialBit(bit: SpecialBits): boolean {
     return (this.specialBits & (1 << bit)) !== 0;
   }
 
   private getDataBase(): PlayerDataBase {
     return {
       pileNumber: this.piles.length,
-      active: this.active,
+      active:
+        this.activeIndex === null
+          ? null
+          : this.characters[this.activeIndex].entityId,
       characters: this.characters.map((c) => c.getData()),
       combatStatuses: this.combatStatuses.map((s) => s.getData()),
       supports: this.supports.map((s) => s.getData()),

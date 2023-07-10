@@ -118,7 +118,7 @@ class ActionBuilderBase {
     return this;
   }
   lossEnergy(value?: number, target?: Target) {
-    this.pushAction((c) => c.lossEnergy(value, target));
+    this.pushAction((c) => c.loseEnergy(value, target));
     return this;
   }
   createStatus(status: StatusHandle, target?: Target) {

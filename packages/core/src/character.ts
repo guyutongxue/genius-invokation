@@ -7,7 +7,7 @@ import { PassiveSkill } from "./passive_skill.js";
 import { ContextFactory } from "./context.js";
 
 export class Character extends Entity {
-  private readonly info: CharacterInfoWithId;
+  public readonly info: CharacterInfoWithId;
   private health: number;
   private defeated = false;
   private energy: number = 0;
@@ -30,6 +30,9 @@ export class Character extends Entity {
 
   isAlive() {
     return !this.defeated;
+  }
+  fullEnergy() {
+    return this.energy === this.info.maxEnergy;
   }
   
   handleEvent<E extends keyof EventHandlers>(
