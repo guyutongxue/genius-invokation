@@ -32,6 +32,11 @@ export class Support extends Entity {
     if (this.info.duration !== 1 && isFinite(this.duration)) {
       return this.duration;
     }
+    for (const prop of Object.values(this.handler)) {
+      if (typeof prop === "number" && isFinite(prop)) {
+        return prop;
+      }
+    }
     return null;
   }
 

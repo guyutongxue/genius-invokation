@@ -16,6 +16,13 @@ export class Summon extends Entity {
     this.usage = this.info.usage;
   }
 
+  getUsage() {
+    return this.usage;
+  }
+  setUsage(value: number) {
+    this.usage = Math.min(this.info.maxUsage, value);
+  }
+
   getData(): SummonData {
     return {
       entityId: this.entityId,

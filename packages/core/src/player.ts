@@ -20,6 +20,7 @@ import { Summon } from "./summon.js";
 import { shallowClone } from "./entity.js";
 import { Notifier } from "./state.js";
 import {
+  CardTag,
   ContextOfEvent,
   EventHandlers,
   RollContext,
@@ -46,7 +47,7 @@ export class Player {
 
   constructor(
     private readonly config: PlayerConfigWithGame,
-    private readonly notifier: Notifier
+    private notifier: Notifier
   ) {
     this.piles = config.deck.actions.map((id) => new Card(id));
     this.characters = config.deck.characters.map((id) => new Character(id));
@@ -61,6 +62,12 @@ export class Player {
       .filter(([c]) => c.isLegend())
       .map(([c, i]) => i);
     this.drawHands(this.config.game.initialHands, legends);
+  }
+
+  cardsWithTagFromPile(tag: CardTag): number[] {
+    return this.piles
+      .filter((c) => c.info.tags.includes(tag))
+      .map((c) => c.entityId);
   }
 
   async drawHands(count: number, controlled: number[] = []) {
@@ -140,9 +147,9 @@ export class Player {
           if (!ch.isAlive()) continue;
           return ch;
         }
-        case "prev":{
+        case "prev": {
           chIndex--;
-          const ch = this.characters[(chIndex) % this.characters.length];
+          const ch = this.characters[chIndex % this.characters.length];
           if (!ch.isAlive()) continue;
           return ch;
         }
@@ -186,6 +193,10 @@ export class Player {
     } else {
       oppNotify();
     }
+  }
+
+  fullSupportArea(): boolean {
+    return this.supports.length >= this.config.game.maxSupports;
   }
 
   handleEvent<E extends keyof EventHandlers>(
@@ -261,6 +272,11 @@ export class Player {
     // Card is not stateful, no need to deep clone (FOR NOW)
     // clone.piles = this.piles.map(c => c.clone());
     // clone.hands = this.hands.map(c => c.clone());
+    // Cloned object shouldn't have side effects
+    clone.notifier = {
+      me: () => {},
+      opp: () => {},
+    };
     clone.characters = this.characters.map((c) => c.clone());
     clone.combatStatuses = this.combatStatuses.map((s) => s.clone());
     clone.supports = this.supports.map((s) => s.clone());

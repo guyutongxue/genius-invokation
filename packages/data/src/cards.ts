@@ -62,7 +62,7 @@ export type PlayCardFilter<T extends CardTargetDescriptor = readonly any[]> = (
 export type PlayCardTargetFilter<
   T extends CardTargetDescriptor = readonly any[]
 > = (...targets: ContextOfTarget<T>) => boolean;
-export type PlayCardAction = (this: readonly any[], c: Context) => void | Promise<void>;
+export type PlayCardAction = (this: readonly any[], c: Context) => AsyncGenerator<void>;
 
 const allCards = new Map<number, CardInfoWithId>();
 export function registerCard(id: number, info: CardInfo) {

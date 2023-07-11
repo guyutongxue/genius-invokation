@@ -43,5 +43,18 @@ export class Entity {
 // 因此，需要调用所有成员的 clone 方法
 // 如果有基类的话同理！
 export function shallowClone<T extends object>(obj: T): T {
-  return Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
+  if (Object.hasOwn(obj, ClonedObj)) {
+    console.warn("shallowClone: object has been cloned");
+  }
+  const cloned = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
+  Object.defineProperty(cloned, ClonedObj, {
+    value: true,
+    enumerable: false,
+    writable: false,
+    configurable: false,
+  });
+  return cloned;
 }
+
+// 已克隆对象的标记符号：防止不必要的重复克隆
+export const ClonedObj: unique symbol = Symbol("ClonedObj");

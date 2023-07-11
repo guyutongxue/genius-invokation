@@ -10,7 +10,7 @@ import { StatusData } from "@gi-tcg/typings";
 import { ContextFactory } from "./context.js";
 
 export class Status extends Entity {
-  private readonly info: StatusInfoWithId;
+  public readonly info: StatusInfoWithId;
   private handler: EventHandlers;
   usagePerRound: number;
   usage: number;
@@ -32,17 +32,32 @@ export class Status extends Entity {
         : this.info.shield?.initial ?? null;
   }
 
-  getVisibleValue(): number | null {
+  private getVisibleValueProp(): "shield" | "usage" | "duration" | null {
     if (this.shield !== null) {
-      return this.shield;
+      return "shield";
     }
     if (this.info.usage !== 1 && isFinite(this.usage)) {
-      return this.usage;
+      return "usage";
     }
     if (this.info.duration !== 1 && isFinite(this.duration)) {
-      return this.duration;
+      return "duration";
     }
     return null;
+  }
+
+  get visibleValue(): number | null {
+    const prop = this.getVisibleValueProp();
+    if (prop === null) {
+      return null;
+    } else {
+      return this[prop];
+    }
+  }
+  set visibleValue(value: number) {
+    const prop = this.getVisibleValueProp();
+    if (prop !== null) {
+      this[prop] = value;
+    }
   }
 
   async handleEvent<E extends keyof EventHandlers>(
@@ -73,7 +88,7 @@ export class Status extends Entity {
     return {
       entityId: this.entityId,
       id: this.id,
-      value: this.getVisibleValue() ?? undefined,
+      value: this.visibleValue ?? undefined,
     };
   }
 

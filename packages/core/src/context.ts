@@ -2,12 +2,15 @@
 import {
   CardTag,
   CharacterContext,
+  CharacterInfoWithId,
   Context,
   ElementTag,
   EquipmentInfoWithId,
   SpecialBits,
   StatusContext,
+  StatusInfoWithId,
   SummonContext,
+  SummonInfoWithId,
   Target,
   TargetInfo,
   UseDiceContext,
@@ -18,6 +21,9 @@ import { DamageType, DiceType } from "@gi-tcg/typings";
 import { CharacterPosition } from "./player.js";
 import { Character } from "./character.js";
 import { Equipment } from "./equipment.js";
+import { Status } from "./status.js";
+import { Summon } from "./summon.js";
+import { Card } from "./card.js";
 
 export type ContextFactory<T> = (entityId: number) => T | null;
 
@@ -46,11 +52,11 @@ export class ContextImpl implements Context {
     return this.state.getPlayer(this.who).getSpecialBit(bit);
   }
 
-  private createCharacterContext(ch: Character): CharacterContextImpl {
-    return new CharacterContextImpl(this.state, this.who, this.sourceId, ch);
+  protected createCharacterContext(ch: Character): CharacterContextImpl {
+    return new CharacterContextImpl(this.state, this.who, ch, this.sourceId);
   }
   private createSummonContext(s: Summon): SummonContextImpl {
-    return new SummonContextImpl(this.state, this.who, this.sourceId, s);
+    return new SummonContextImpl(this.state, this.who, s, this.sourceId);
   }
   private getCharacterFromTarget(
     t: Target | TargetInfo
@@ -72,7 +78,7 @@ export class ContextImpl implements Context {
         const characters = new Set(
           positions.map((pos) => player.getCharacter(pos))
         );
-        return [...characters].map(createCharacterContext);
+        return [...characters].map(this.createCharacterContext);
       }
       case "oneEnergyNotFull": {
         const player = this.state.getPlayer(this.who);
@@ -130,17 +136,32 @@ export class ContextImpl implements Context {
     }
     return characters.map(this.createCharacterContext);
   }
-  fullSupportArea(opp: boolean): boolean {}
+  fullSupportArea(opp: boolean): boolean {
+    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    return player.fullSupportArea();
+  }
   hasSummon(summon: number): SummonContext | null {
     const s = this.state
       .getPlayer(this.who)
       .summons.find((s) => s.info.id === summon);
     return s ? this.createSummonContext(s) : null;
   }
-  allSummons(): SummonContext[] {}
+  allSummons(): SummonContext[] {
+    const mySummons = this.state.getPlayer(this.who).summons;
+    const oppSummons = this.state.getPlayer(flip(this.who)).summons;
+    return [...mySummons, ...oppSummons].map(this.createSummonContext);
+  }
 
-  hasCombatStatus(status: number): StatusContext | null {}
-  hasCombatShield(): StatusContext | null {}
+  hasCombatStatus(status: number): StatusContext | null {
+    const combatStatuses = this.state.getPlayer(this.who).combatStatuses;
+    const s = combatStatuses.find((s) => s.info.id === status);
+    return s ? new StatusContextImpl(s, this.sourceId) : null;
+  }
+  hasCombatShield(): StatusContext | null {
+    const combatStatuses = this.state.getPlayer(this.who).combatStatuses;
+    const s = combatStatuses.find((s) => s.shield !== null);
+    return s ? new StatusContextImpl(s, this.sourceId) : null;
+  }
 
   dealDamage(
     value: number,
@@ -149,35 +170,88 @@ export class ContextImpl implements Context {
   ): void {}
   applyElement(type: DamageType, target?: Target | undefined): void {}
   heal(value: number, target: Target): void {}
-  gainEnergy(value?: number | undefined, target?: Target | undefined): number {}
-  loseEnergy(value?: number | undefined, target?: Target | undefined): number {}
+  gainEnergy(value?: number | undefined, target?: Target | undefined): number {
+    target ??= Target.myActive();
+    const ctx = this.getCharacterFromTarget(target);
+    let sum = 0;
+    for (const ch of ctx) {
+      sum += ch.gainEnergy(value ?? 0);
+    }
+    return sum;
+  }
+  loseEnergy(value?: number | undefined, target?: Target | undefined): number {
+    target ??= Target.myActive();
+    const ctx = this.getCharacterFromTarget(target);
+    let sum = 0;
+    for (const ch of ctx) {
+      sum += ch.loseEnergy(value ?? 0);
+    }
+    return sum;
+  }
 
-  createStatus(status: number, target?: Target | undefined): StatusContext {}
-  removeStatus(status: number, target?: Target | undefined): boolean {}
+  createStatus(status: number, target?: Target | undefined): StatusContext {
+    target ??= Target.myActive();
+    const ctx = this.getCharacterFromTarget(target);
+    if (ctx.length !== 1) {
+      throw new Error(
+        `Expected to create status on exactly one character, but got ${ctx.length}`
+      );
+    }
+    return ctx[0].createStatus(status);
+  }
+  removeStatus(status: number, target?: Target | undefined): boolean {
+    target ??= Target.myActive();
+    const ctx = this.getCharacterFromTarget(target);
+    let removed = false;
+    for (const ch of ctx) {
+      removed ||= ch.removeStatus(status);
+    }
+    return removed;
+  }
   createCombatStatus(
     status: number,
     opp?: boolean | undefined
-  ): StatusContext {}
+  ): StatusContext {
+    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    const st = new Status(status);
+    player.combatStatuses.push(st);
+    return new StatusContextImpl(st, this.sourceId);
+  }
 
   summon(summon: number): void {}
   summonOneOf(...summons: number[]): void {}
   createSupport(support: number, opp?: boolean | undefined): void {}
 
-  getDice(): DiceType[] {}
-  rollDice(count: number): Promise<void> {}
-  generateDice(...dice: DiceType[]): void {}
-  removeAllDice(): DiceType[] {}
+  getDice(): DiceType[] {
+    return this.state.getPlayer(this.who).dice;
+  }
+  rollDice(count: number): Promise<void> {
+    return this.state.getPlayer(this.who).rollDice(count);
+  }
+  generateDice(...dice: DiceType[]): void {
+    this.state.getPlayer(this.who).dice.push(...dice);
+  }
+  removeAllDice(): DiceType[] {
+    const old = this.state.getPlayer(this.who).dice;
+    this.state.getPlayer(this.who).dice = [];
+    return old;
+  }
 
-  getCardCount(opp?: boolean | undefined): number {}
+  getCardCount(opp?: boolean | undefined): number {
+    return this.state.getPlayer(opp ? flip(this.who) : this.who).hands.length;
+  }
   drawCards(
     count: number,
     opp?: boolean | undefined,
     tag?: CardTag | undefined
   ): void {
-    this.state.getPlayer(opp ? flip(this.who) : this.who).drawHands(count, tag);
+    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    const controlled = tag ? player.cardsWithTagFromPile(tag) : [];
+    player.drawHands(count, controlled);
   }
-  createCards(...cards: number[]): void {
-    // TODO
+  createCards(...ids: number[]): void {
+    const cards = ids.map((id) => new Card(id));
+    this.state.getPlayer(this.who).hands.push(...cards);
   }
   switchCards(): Promise<void> {
     return this.state.getPlayer(this.who).switchHands();
@@ -227,13 +301,13 @@ class CharacterContextImpl implements CharacterContext {
   constructor(
     private state: GameState,
     public readonly who: 0 | 1,
-    public readonly sourceId: number,
-    protected character: Character
+    protected character: Character,
+    public readonly sourceId = character.entityId
   ) {}
   get entityId() {
     return this.character.entityId;
   }
-  get info() {
+  get info(): CharacterInfoWithId {
     return this.character.info;
   }
   get health() {
@@ -295,10 +369,41 @@ class CharacterContextImpl implements CharacterContext {
       ],
     });
   }
-  gainEnergy(amount: number): void {}
-  createStatus(status: number): StatusContext {}
-  hasStatus(status: number): StatusContext | null {}
-  hasShield(): StatusContext {}
+  gainEnergy(amount: number): number {
+    const newEnergy = this.character.energy + amount;
+    const realEnergy = Math.min(newEnergy, this.character.info.maxEnergy);
+    const diff = realEnergy - this.character.energy;
+    this.character.energy = realEnergy;
+    return diff;
+  }
+  loseEnergy(amount: number): number {
+    const newEnergy = this.character.energy - amount;
+    const realEnergy = Math.max(newEnergy, 0);
+    const diff = this.character.energy - realEnergy;
+    this.character.energy = realEnergy;
+    return diff;
+  }
+  createStatus(status: number): StatusContext {
+    const st = new Status(status);
+    this.character.statuses.push(st);
+    return new StatusContextImpl(st, this.sourceId);
+  }
+  removeStatus(status: number): boolean {
+    const st = this.character.statuses.findIndex((s) => s.info.id === status);
+    if (st === -1) return false;
+    this.character.statuses.splice(st, 1);
+    return true;
+  }
+  hasStatus(status: number): StatusContext | null {
+    const st = this.character.statuses.find((s) => s.info.id === status);
+    if (!st) return null;
+    return new StatusContextImpl(st, this.entityId);
+  }
+  hasShield(): StatusContext {
+    const st = this.character.statuses.find((s) => s.shield !== null);
+    if (!st) throw new Error("No shield");
+    return new StatusContextImpl(st, this.entityId);
+  }
 
   isActive() {
     return (
@@ -324,4 +429,87 @@ class CharacterContextImpl implements CharacterContext {
   }
 }
 
-type A = UseDiceContext;
+class StatusContextImpl implements StatusContext {
+  constructor(private status: Status, private sourceId: number) {}
+
+  get entityId() {
+    return this.status.entityId;
+  }
+
+  get info(): StatusInfoWithId {
+    return this.status.info;
+  }
+
+  getVisibleValue(): number | null {
+    return this.status.visibleValue;
+  }
+  addVisibleValue(added: number): number {
+    const v = this.status.visibleValue ?? 0;
+    return (this.status.visibleValue = v + added);
+  }
+
+  gainUsage() {
+    this.status.usage++;
+  }
+  gainShield(value: number): void {
+    if (this.status.shield === null) {
+      return;
+    }
+    this.status.shield += value;
+  }
+}
+
+export class StatusDescriptionContextImpl extends ContextImpl {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    private master: Character | null,
+    private status: Status,
+    public readonly sourceId = status.entityId
+  ) {
+    super(state, who, sourceId);
+  }
+  override getMaster() {
+    if (this.master === null) {
+      throw new Error("Master not exists; maybe this is a combat status");
+    }
+    return this.createCharacterContext(this.master);
+  }
+  override asStatus() {
+    return new StatusContextImpl(this.status, this.sourceId);
+  }
+}
+
+class SummonContextImpl implements SummonContext {
+  constructor(
+    private state: GameState,
+    private readonly who: 0 | 1,
+    private summon: Summon,
+    private sourceId: number
+  ) {}
+
+  get entityId() {
+    return this.summon.entityId;
+  }
+
+  get info(): SummonInfoWithId {
+    return this.summon.info;
+  }
+
+  isMine() {
+    return !!this.state
+      .getPlayer(this.who)
+      .summons.find((s) => s.entityId === this.entityId);
+  }
+
+  get usage() {
+    return this.summon.getUsage();
+  }
+  set usage(value: number) {
+    this.summon.setUsage(value);
+  }
+
+  dispose() {
+    this.summon.shouldDispose = true;
+  }
+}

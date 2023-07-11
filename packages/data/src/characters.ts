@@ -57,7 +57,7 @@ export interface CharacterContext {
   gainEnergy(amount: number): void;
   createStatus(status: StatusHandle): StatusContext;
   hasStatus(status: StatusHandle): StatusContext | null;
-  hasShield(): StatusContext;
+  hasShield(): StatusContext | null;
 
   isActive(): boolean;
   isMine(): boolean;

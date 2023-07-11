@@ -228,7 +228,7 @@ class CardBuilder<
   private shownOption: ShownOption = true;
   private filters: PlayCardFilter<T>[] = [];
   private targetFilters: PlayCardTargetFilter<T>[] = [];
-  private actions: PlayCardAction[] = [];
+  private actions: ((this: ContextOfTarget<T>, c: Context) => void)[] = [];
 
   constructor(
     private readonly id: number,
@@ -306,9 +306,10 @@ class CardBuilder<
       }
       return true;
     }
-    async function action(this: ContextOfTarget<T>, c: Context) {
+    async function* action(this: ContextOfTarget<T>, c: Context) {
       for (const a of outerThis.actions) {
         await a.call(this, c);
+        yield;
       }
     }
     registerCard(this.id, {
