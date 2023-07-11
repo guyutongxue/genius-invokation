@@ -1,4 +1,10 @@
-import { ContextOfEvent, EventHandlers } from "@gi-tcg/data";
+import {
+  ContextOfEvent,
+  EventHandlerNames,
+  EventHandlers,
+  HandlerResult,
+} from "@gi-tcg/data";
+import { EventAndContext, EventFactory } from "./context.js";
 
 const ENTITY_ID_BEGIN = 5.6e7;
 
@@ -12,25 +18,29 @@ export class Entity {
   constructor(protected readonly id: number) {
     this.entityId = newEntityId();
   }
-  protected static async handleEvent<E extends keyof EventHandlers>(
+  protected async doHandleEvent(
     handler: EventHandlers,
-    e: E,
-    ctx: ContextOfEvent<E>
+    event: EventAndContext | EventFactory
   ): Promise<boolean> {
-    if (e === "onUseSkill") {
-      const ctx2 = ctx as ContextOfEvent<"onUseSkill">;
-      if (ctx2.damage) {
-        Entity.handleEvent(handler, "onDealDamage", ctx2.damage);
-        if (ctx2.damage.reaction) {
-          Entity.handleEvent(handler, "onElementalReaction", ctx2.damage.reaction);
+    let r: boolean | undefined;
+    if (Array.isArray(event)) {
+      const [name, ctx] = event;
+      const h = handler[name];
+      if (typeof h !== "undefined") {
+        // @ts-ignore
+        r = await h.call(handler, ctx);
+      }
+    } else {
+      const candidates = event(this);
+      for (const [name, ctx] of candidates) {
+        const h = handler[name];
+        if (typeof h !== "undefined") {
+          // @ts-ignore
+          r = await h.call(handler, ctx);
+          break;
         }
       }
     }
-    if (typeof handler[e] !== "function") {
-      return false;
-    }
-    // @ts-ignore
-    const r = await handler[e](ctx);
     if (typeof r === "undefined") {
       return true;
     } else {

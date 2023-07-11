@@ -28,9 +28,9 @@ const PassionOverload = createSkill(13032)
  */
 const InspirationField = createStatus(113031)
   .withDuration(2)
-  .on("beforeUseSkill", (c) => {
-    if (c.character.health <= 7) {
-      c.damage?.addDamage(2);
+  .on("beforeSkillDamage", (c) => {
+    if (c.getMaster().health <= 7) {
+      c.addDamage(2);
     }
   })
   .on("useSkill", (c) => {
@@ -47,8 +47,8 @@ const InspirationField = createStatus(113031)
  */
 const InspirationField01 = createStatus(113032)
   .withDuration(2)
-  .on("beforeUseSkill", (c) => {
-    c.damage?.addDamage(2);
+  .on("beforeSkillDamage", (c) => {
+    c.addDamage(2);
   })
   .on("useSkill", (c) => {
     if (c.character.health <= 6) {

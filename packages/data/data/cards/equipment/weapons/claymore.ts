@@ -12,7 +12,7 @@ const SacrificialGreatsword = createCard(311302, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
       c.generateDice(c.character.elementType());
@@ -33,13 +33,11 @@ const SkywardPride = createCard(311304, ["character"])
   .addTags("weaponClaymore")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      if (c.info.type === "normal") {
-        c.damage.addDamage(2);
-      } else {
-        c.damage.addDamage(1);
-      }
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(2);
+    } else {
+      c.addDamage(1);
     }
   })
   .build();
@@ -64,7 +62,7 @@ const TheBell = createCard(311305, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => (c.createStatus(RebelliousShield), true))
   .build();
 
@@ -78,7 +76,7 @@ const WhiteIronGreatsword = createCard(311301, ["character"])
   .addTags("weaponClaymore")
   .costSame(2)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();
 
 /**
@@ -92,13 +90,11 @@ const WolfsGravestone = createCard(311303, ["character"])
   .addTags("weaponClaymore")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      if (c.damage.target.health <= 6) {
-        c.damage.addDamage(3);
-      } else {
-        c.damage.addDamage(1);
-      }
+  .on("beforeSkillDamage", (c) => {
+    if (c.target.health <= 6) {
+      c.addDamage(3);
+    } else {
+      c.addDamage(1);
     }
   })
   .build();

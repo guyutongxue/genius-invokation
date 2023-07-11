@@ -1,10 +1,10 @@
-import { CharacterInfoWithId, ContextOfEvent, EventHandlers, getCharacter, getSkill } from "@gi-tcg/data";
+import { CharacterInfoWithId, getCharacter, getSkill } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
-import { ContextFactory } from "./context.js";
+import {  EventAndContext, EventFactory } from "./context.js";
 
 export class Character extends Entity {
   public readonly info: CharacterInfoWithId;
@@ -35,18 +35,15 @@ export class Character extends Entity {
     return this.energy === this.info.maxEnergy;
   }
   
-  handleEvent<E extends keyof EventHandlers>(
-    event: E,
-    cf: ContextFactory<ContextOfEvent<E>>
-  ) {
+  async handleEvent(event: EventAndContext | EventFactory) {
     for (const sk of this.passiveSkills) {
-      sk.handleEvent(event, cf);
+      await sk.handleEvent(event);
     }
     for (const eq of this.equipments) {
-      eq.handleEvent(event, cf);
+      await eq.handleEvent(event);
     }
     for (const st of this.statuses) {
-      st.handleEvent(event, cf);
+      await st.handleEvent(event);
     }
   }
 

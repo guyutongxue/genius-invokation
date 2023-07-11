@@ -11,32 +11,19 @@ const ChangTheNinth = createCard(322009)
   .buildToSupport()
   .listenToOpp()
   .do({
-    onBeforeUseSkill(c) {
-      this.listening = true;
-    },
-    onElementalReaction(c) {
-      if (this.listening) {
-        this.inspiration++;
-      }
-    },
-    onDealDamage(c) {
-      if (this.listening) {
-        if (c.damageType === DamageType.Physical ||
-          c.damageType === DamageType.Piercing) {
-          this.inspiration++;
-        }
-      }
-    },
     onUseSkill(c) {
+      const damageCnt = c.getAllDescendingDamages()
+        .filter(c => c.damageType === DamageType.Physical || c.damageType === DamageType.Piercing)
+        .length;
+      const reactionCnt = c.getAllDescendingReactions().length;
+      this.inspiration += damageCnt + reactionCnt;
       if (this.inspiration >= 3) {
         c.dispose();
         c.drawCards(2);
       }
-      this.listening = false;
     }
   }, {
     inspiration: 0,
-    listening: false
   })
   .build();
 
@@ -52,7 +39,7 @@ const ChefMao = createCard(322005)
   .withUsagePerRound(1)
   .on("playCard", (c) => {
     if (c.info.tags.includes("food")) {
-      c.generateDice(Math.floor(Math.random() * 7) + 1);
+      c.generateRandomElementDice();
     } else {
       return false;
     }

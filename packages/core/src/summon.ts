@@ -1,7 +1,7 @@
-import { ContextOfEvent, EventHandlers, getSummon, SummonInfoWithId } from "@gi-tcg/data";
+import { EventHandlers, getSummon, SummonInfoWithId } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { SummonData } from "@gi-tcg/typings";
-import { ContextFactory } from "./context.js";
+import { EventAndContext, EventFactory } from "./context.js";
 
 export class Summon extends Entity {
   public readonly info: SummonInfoWithId;
@@ -31,18 +31,13 @@ export class Summon extends Entity {
     };
   }
 
-  async handleEvent<E extends keyof EventHandlers>(
-    e: E,
-    cf: ContextFactory<ContextOfEvent<E>>
-  ) {
-    const ctx = cf(this.entityId);
-    if (ctx) {
-      const result = await Entity.handleEvent(this.handler, e, ctx);
-      if (result) {
-        this.usage--;
-        if (this.usage === 0) {
-          this.shouldDispose = true;
-        }
+  async handleEvent(event: EventAndContext | EventFactory)  {
+    if (this.shouldDispose) return;
+    const result = await this.doHandleEvent(this.handler, event);
+    if (result) {
+      this.usage--;
+      if (this.info.disposeWhenUsedUp && this.usage === 0) {
+        this.shouldDispose = true;
       }
     }
   }

@@ -25,9 +25,9 @@ const ExplosiveSpark = createStatus(113061)
     }
     return false;
   })
-  .on("beforeUseSkill", (c) => {
-    if (c.isCharged() && c.info.type === "normal") {
-      c.damage?.addDamage(1);
+  .on("beforeSkillDamage", (c) => {
+    if (c.isCharged() && c.skillInfo.type === "normal") {
+      c.addDamage(1);
     } else {
       return false;
     }
@@ -48,9 +48,9 @@ const ExplosiveSpark01 = createStatus(113061)
     }
     return false;
   })
-  .on("beforeUseSkill", (c) => {
-    if (c.isCharged() && c.info.type === "normal") {
-      c.damage?.addDamage(1);
+  .on("beforeSkillDamage", (c) => {
+    if (c.isCharged() && c.skillInfo.type === "normal") {
+      c.addDamage(1);
     } else {
       return false;
     }

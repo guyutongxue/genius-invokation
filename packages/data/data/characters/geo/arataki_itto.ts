@@ -55,9 +55,9 @@ const SuperlativeSuperstrength = createStatus(116054)
     }
     return false;
   })
-  .on("beforeUseSkill", (c) => {
+  .on("beforeSkillDamage", (c) => {
     if (c.isCharged()) {
-      c.damage?.addDamage(1);
+      c.addDamage(1);
     } else {
       return false;
     }
@@ -137,10 +137,10 @@ export const AratakiIchiban = createCard(216051, ["character"])
   .useSkill(FightClubLegend)
   .buildToEquipment()
   .do({
-    onBeforeUseSkill(c) {
+    onBeforeSkillDamage(c) {
       if (this.attackCount >= 1) {
         if (c.getMaster().hasStatus(SuperlativeSuperstrength) && c.isCharged()) {
-          c.damage?.addDamage(1);
+          c.addDamage(1);
         }
       }
       this.attackCount++;

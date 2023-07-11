@@ -166,9 +166,9 @@ const EmblemOfSeveredFate = createCard(312008, ["character"])
       c.character.gainEnergy(1);
     }
   })
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "burst" && c.character.info.id === c.getMaster().info.id) {
-      c.damage?.addDamage(2);
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "burst" && c.characterInfo.id === c.getMaster().info.id) {
+      c.addDamage(2);
     }
   })
   .build();
@@ -369,10 +369,10 @@ const ShimenawasReminiscence = createCard(312014, ["character"])
       return false;
     }
   })
-  .on("beforeUseSkill", (c) => {
+  .on("beforeSkillDamage", (c) => {
     if (c.getMaster().energy >= 2) {
-      if (c.info.type === "normal" || c.info.type === "elemental") {
-        c.damage?.addDamage(1);
+      if (c.skillInfo.type === "normal" || c.skillInfo.type === "elemental") {
+        c.addDamage(1);
       }
     }
     return false;
@@ -490,7 +490,7 @@ const TravelingDoctorsHandkerchief = createCard(312003, ["character"])
  */
 const VermillionHereafterStatus = createStatus(301203)
   .withDuration(1)
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build()
 
 /**

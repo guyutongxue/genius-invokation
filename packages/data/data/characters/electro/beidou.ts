@@ -112,9 +112,9 @@ export const LightningStorm = createCard(214051, ["character"])
   .useSkill(Tidecaller)
   .buildToEquipment()
   .do({
-    onBeforeUseSkill(c) {
-      if (c.info.id === Wavestrider) {
-        const status = c.character.hasStatus(TidecallerSurfEmbrace);
+    onBeforeSkillDamage(c) {
+      if (c.skillInfo.id === Wavestrider) {
+        const status = c.getMaster().hasStatus(TidecallerSurfEmbrace);
         const shield = status?.getVisibleValue() ?? 0;
         if (shield !== 2) {
           c.createStatus(SummonerOfLightning);

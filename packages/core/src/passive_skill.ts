@@ -1,6 +1,6 @@
-import { ContextOfEvent, EventHandlers, PassiveSkillInfo } from "@gi-tcg/data";
+import { EventHandlers, PassiveSkillInfo } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
-import { ContextFactory } from "./context.js";
+import { EventAndContext, EventFactory } from "./context.js";
 
 type PassiveSkillInfoWithId = Readonly<PassiveSkillInfo & { id: number }>;
 
@@ -14,19 +14,13 @@ export class PassiveSkill extends Entity {
     this.usagePerRound = this.info.usagePerRound;
   }
 
-  async handleEvent<E extends keyof EventHandlers>(
-    e: E,
-    cf: ContextFactory<ContextOfEvent<E>>
-  ) {
-    if (e === "onRollPhase") {
+  async handleEvent(event: EventAndContext | EventFactory) {
+    if (Array.isArray(event) && event[0] === "onRollPhase") {
       this.usagePerRound = this.info.usagePerRound;
     }
-    const ctx = cf(this.entityId);
-    if (ctx && this.usagePerRound > 0) {
-      const result = await Entity.handleEvent(this.handler, e, ctx);
-      if (result) {
-        this.usagePerRound--;
-      }
+    const result = await this.doHandleEvent(this.handler, event);
+    if (result) {
+      this.usagePerRound--;
     }
   }
 

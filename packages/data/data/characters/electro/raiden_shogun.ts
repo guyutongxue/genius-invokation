@@ -20,9 +20,9 @@ const Origin = createSkill(14071)
 const EyeOfStormyJudgement = createSummon(114071)
   .withUsage(3)
   .on("endPhase", (c) => c.dealDamage(1, DamageType.Electro))
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "burst" && c.damage) {
-      c.damage.addDamage(1);
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "burst") {
+      c.addDamage(1);
     }
     return false;
   })
@@ -60,9 +60,9 @@ const ChakraDesiderataStatus = createStatus(114072)
   .listenToOthers()
   .do(
     {
-      onBeforeUseSkill(c) {
-        if (c.info.id === SecretArtMusouShinsetsu) {
-          c.damage?.addDamage(this.resolve);
+      onBeforeSkillDamage(c) {
+        if (c.skillInfo.id === SecretArtMusouShinsetsu) {
+          c.addDamage(this.resolve);
         }
       },
       onUseSkill(c) {
@@ -112,10 +112,10 @@ export const WishesUnnumbered = createCard(214071, ["character"])
   .costEnergy(2)
   .useSkill(SecretArtMusouShinsetsu)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    const status = c.character.hasStatus(ChakraDesiderataStatus);
-    if (status && c.info.id === SecretArtMusouShinsetsu) {
-      c.damage?.addDamage(status.getVisibleValue() ?? 0);
+  .on("beforeSkillDamage", (c) => {
+    const status = c.getMaster().hasStatus(ChakraDesiderataStatus);
+    if (status && c.skillInfo.id === SecretArtMusouShinsetsu) {
+      c.addDamage(status.getVisibleValue() ?? 0);
     }
   })
   .build();

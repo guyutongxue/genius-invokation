@@ -96,9 +96,9 @@ const ElementalResonanceFerventFlames = createCard(331302)
   .buildToStatus(undefined)
   .withUsage(1)
   .withDuration(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.damage?.reaction?.relatedWith(DamageType.Pyro)) {
-      c.damage.addDamage(3);
+  .on("beforeSkillDamage", (c) => {
+    if (c.reaction?.relatedWith(DamageType.Pyro)) {
+      c.addDamage(3);
     } else {
       return false;
     }
@@ -338,12 +338,12 @@ const HeavyStrike = createCard(332018)
   .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "normal") {
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
       if (c.isCharged()) {
-        c.damage?.addDamage(2);
+        c.addDamage(2);
       } else {
-        c.damage?.addDamage(1);
+        c.addDamage(1);
       }
     } else {
       return false;
@@ -499,14 +499,7 @@ const TheLegendOfVennessa = createCard(332019)
   .setType("event")
   .costSame(3)
   .do((c) => {
-    const dice: DiceType[] = [];
-    while (dice.length < 4) {
-      const d: DiceType = Math.floor(Math.random() * 7) + 1;
-      if (!dice.includes(d)) {
-        dice.push(d);
-      }
-    }
-    c.generateDice(...dice);
+    c.generateRandomElementDice(4);
   })
   .build();
 
@@ -558,8 +551,9 @@ const WindAndFreedom = createCard(331801)
   .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
-  .on("dealDamage", (c) => {
-    if (c.isMyTurn()) {
+  // TODO
+  .on("defeated", (c) => {
+    if (c.isMyTurn() && !c.target.isMine()) {
       c.flipNextTurn();
     } else {
       return false;

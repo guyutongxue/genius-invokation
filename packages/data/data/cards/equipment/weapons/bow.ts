@@ -11,12 +11,10 @@ const AmosBow = createCard(311204, ["character"])
   .addTags("weaponBow")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      c.damage.addDamage(1);
-      if ("costs" in c.info && c.info.costs.length >= 5) {
-        c.damage.addDamage(2);
-      }
+  .on("beforeSkillDamage", (c) => {
+    c.addDamage(1);
+    if ("costs" in c.skillInfo && c.skillInfo.costs.length >= 5) {
+      c.addDamage(2);
     }
   })
   .build();
@@ -42,8 +40,8 @@ const ElegyForTheEnd = createCard(311205, ["character"])
   .addTags("weaponBow")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    c.damage?.addDamage(1);
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
+  .on("useSkill", (c) => {
     if (c.info.type === "burst") {
       c.createCombatStatus(MillennialMovementFarewellSong);
     }
@@ -60,7 +58,7 @@ const RavenBow = createCard(311201, ["character"])
   .addTags("weaponBow")
   .costSame(2)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();
 
 /**
@@ -75,7 +73,7 @@ const SacrificialBow = createCard(311202, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
       c.generateDice(c.character.elementType());
@@ -96,13 +94,11 @@ const SkywardHarp = createCard(311203, ["character"])
   .addTags("weaponBow")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      if (c.info.type === "normal") {
-        c.damage.addDamage(2);
-      } else {
-        c.damage.addDamage(1);
-      }
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(2);
+    } else {
+      c.addDamage(1);
     }
   })
   .build();

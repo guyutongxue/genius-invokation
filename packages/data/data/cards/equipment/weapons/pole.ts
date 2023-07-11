@@ -16,7 +16,7 @@ const EngulfingLightning = createCard(311405, ["character"])
     }
   })
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .on("actionPhase", (c) => {
     const m = c.getMaster();
     if (m.energy === 0) {
@@ -52,7 +52,7 @@ const LithicSpear = createCard(311402, ["character"])
     status.gainShield(shield);
   })
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();
 
 /**
@@ -66,13 +66,11 @@ const SkywardSpine = createCard(311403, ["character"])
   .addTags("weaponPole")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      if (c.info.type === "normal") {
-        c.damage.addDamage(2);
-      } else {
-        c.damage.addDamage(1);
-      }
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(2);
+    } else {
+      c.addDamage(1);
     }
   })
   .build();
@@ -90,11 +88,11 @@ const VortexVanquisher = createCard(311404, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.character.hasShield()) {
-      c.damage?.addDamage(2);
+  .on("beforeSkillDamage", (c) => {
+    if (c.getMaster().hasShield()) {
+      c.addDamage(2);
     } else {
-      c.damage?.addDamage(1);
+      c.addDamage(1);
     }
     return false;
   })
@@ -116,5 +114,5 @@ const WhiteTassel = createCard(311401, ["character"])
   .addTags("weaponPole")
   .costSame(2)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();

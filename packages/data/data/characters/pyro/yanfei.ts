@@ -18,9 +18,9 @@ const SealOfApproval = createSkill(-21)
  */
 const ScarletSeal = createStatus(-22)
   .withUsage(1)
-  .on("beforeUseSkill", (c) => {
+  .on("beforeSkillDamage", (c) => {
     if (c.isCharged()) {
-      c.damage?.addDamage(2)
+      c.addDamage(2)
     } else {
       return false;
     }
@@ -96,9 +96,9 @@ const RightOfFinalInterpretation = createCard(-26, ["character"])
   .addCharacterFilter(YanFei)
   .useSkill(SealOfApproval)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
+  .on("beforeSkillDamage", (c) => {
     if (c.isCharged() && c.target.health <= 6) {
-      c.damage?.addDamage(1);
+      c.addDamage(1);
     }
   })
   .build()

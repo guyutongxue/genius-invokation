@@ -26,9 +26,9 @@ const AdeptusTemptation = createFood(333002)
   .buildToStatus("this0")
   .withUsage(1)
   .withDuration(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "burst") {
-      c.damage?.addDamage(3);
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "burst") {
+      c.addDamage(3);
     } else {
       return false;
     }
@@ -63,9 +63,9 @@ const JueyunGuoba = createFood(333001)
   .buildToStatus("this0")
   .withUsage(1)
   .withDuration(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "normal") {
-      c.damage?.addDamage(1);
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(1);
     } else {
       return false;
     }
@@ -159,9 +159,9 @@ const SashimiPlatter = createFood(333010)
   .costSame(1)
   .buildToStatus("this0")
   .withDuration(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "normal") {
-      c.damage?.addDamage(1);
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(1);
     }
   })
   .build();
@@ -187,9 +187,9 @@ const TandooriRoastChicken = createFood(333011)
   .buildToStatus("this0")
   .withUsage(1)
   .withDuration(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.info.type === "elemental") {
-      c.damage?.addDamage(2);
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "elemental") {
+      c.addDamage(2);
     } else {
       return false;
     }

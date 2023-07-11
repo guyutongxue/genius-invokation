@@ -2,7 +2,7 @@ import type { DamageType, DiceType } from "@gi-tcg/typings";
 import { CardHandle, CharacterHandle, SkillHandle, StatusHandle, SummonHandle, SupportHandle } from "./builders";
 import { Target } from "./target";
 import { SkillInfoWithId } from "./skills";
-import { CharacterContext } from "./characters";
+import { CharacterContext, CharacterInfoWithId } from "./characters";
 import { CardInfoWithId, CardTag, CardTarget } from "./cards";
 import { SummonContext } from ".";
 import { StatusContext } from "./statuses";
@@ -44,6 +44,7 @@ export interface Context {
   getDice(): DiceType[];
   rollDice(count: number): Promise<void>;
   generateDice(...dice: DiceType[]): void;
+  generateRandomElementDice(count?: number): void;
   removeAllDice(): DiceType[];
 
   getCardCount(opp?: boolean): number;
@@ -75,18 +76,15 @@ export interface SkillDescriptionContext extends Context {
   isPlunging(): boolean; // 下落攻击
 }
 
-export interface SkillReadonlyContext extends SkillDescriptionContext {
+export interface SkillContext extends SkillDescriptionContext {
   readonly info: SkillInfoWithId;
-  readonly damage?: DamageReadonlyContext;
-  hasReaction(relatedWith?: DamageType): boolean;
-}
-
-export interface SkillContext extends SkillReadonlyContext {
-  readonly damage?: DamageContext;
+  // 常九爷、参量质变仪：读取此次技能连带造成的所有伤害/元素反应
+  getAllDescendingDamages(): DamageContext[];
+  getAllDescendingReactions(): ElementalReactionContext[];
 }
 
 export interface UseDiceContext extends Context {
-  readonly useSkillCtx?: SkillReadonlyContext;
+  readonly useSkillCtx?: SkillContext;
   readonly switchActiveCtx?: SwitchActiveContext;
   readonly playCardCtx?: PlayCardContext;
   addCost(...dice: DiceType[]): void;
@@ -95,7 +93,7 @@ export interface UseDiceContext extends Context {
 
 interface DamageBaseContext extends Context {
   readonly sourceSummon?: SummonContext;
-  readonly sourceSkill?: SkillReadonlyContext;
+  readonly sourceSkill?: SkillContext;
   readonly sourceReaction?: ElementalReactionContext;
   readonly target: CharacterContext;
   readonly damageType: DamageType;
@@ -107,16 +105,23 @@ export interface DamageReadonlyContext extends DamageBaseContext {
 }
 
 export interface BeforeDamageCalculatedContext extends DamageBaseContext {
-  changeDamageType(type: DamageType, order?: number): void;  // default order = 0
-  addDamage(value: number, order?: number): void;
-  multiplyDamage(multiplier: number, order?: number): void;
-  decreaseDamage(value: number, order?: number): void;
+  changeDamageType(type: DamageType): void;  // default order = 0
+  addDamage(value: number): void;
+  multiplyDamage(multiplier: number): void;
+  decreaseDamage(value: number): void;
 }
 
 export interface DamageContext extends DamageReadonlyContext {
-  addDamage(value: number, order?: number): void;            // default order = 3
-  multiplyDamage(multiplier: number, order?: number): void;  // default order = 3
-  decreaseDamage(value: number, order?: number): void;       // default order = 10
+  addDamage(value: number): void;            // default order = 3
+  multiplyDamage(multiplier: number): void;  // default order = 3
+  decreaseDamage(value: number): void;       // default order = 10
+}
+
+export interface SkillDamageContext extends DamageContext {
+  readonly skillInfo: SkillInfoWithId;
+  readonly characterInfo: CharacterInfoWithId;
+  isCharged(): boolean;
+  isPlunging(): boolean;
 }
 
 export interface BeforeDefeatedContext extends Context {

@@ -28,8 +28,8 @@ const CuttingTorrent = createSkill(12041)
  */
 const RangedStance = createStatus(112041)
   // .on("useSkill", (c) => {
-  //   if (c.isCharged() && c.damage) {
-  //     c.createStatus(Riptide, c.damage.target.asTarget());
+  //   if (c.isCharged()) {
+  //     c.createStatus(Riptide, c.target.asTarget());
   //   }
   // })
   .build();
@@ -54,10 +54,10 @@ const MeleeStance = createStatus(112042)
       }
     },
     onUseSkill(c) {
-      // if (c.isCharged() && c.damage) {
-      //   c.createStatus(Riptide, c.damage.target.asTarget());
+      // if (c.isCharged() && c) {
+      //   c.createStatus(Riptide, c.target.asTarget());
       // }
-      if (this.piercingCount && c.damage && c.damage.target.hasStatus(Riptide)) {
+      if (this.piercingCount && c.target.hasStatus(Riptide)) {
         c.dealDamage(1, DamageType.Piercing, Target.oppNext());
         this.piercingCount--;
       }

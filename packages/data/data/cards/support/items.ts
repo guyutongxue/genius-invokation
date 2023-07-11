@@ -1,4 +1,4 @@
-import { createCard } from '@gi-tcg';
+import { DamageType, createCard } from '@gi-tcg';
 
 /**
  * **便携营养袋**
@@ -25,14 +25,27 @@ const Nre = createCard(323002)
  * **参量质变仪**
  * 双方角色使用技能后：如果造成了元素伤害，此牌累积1个「质变进度」。
  * 当此牌已累积3个「质变进度」时，弃置此牌：生成3个不同的基础元素骰子。
- * 注意：使用常九爷类似的方法来处理（有没有更好的办法？）
  */
 const ParametricTransformer = createCard(323001)
   .setType("support")
   .addTags("item")
   .costVoid(2)
   .buildToSupport()
-  // TODO
+  .listenToOpp()
+  .do({
+    onUseSkill(c) {
+      const damageCnt = c.getAllDescendingDamages()
+        .filter(c => c.damageType !== DamageType.Physical && c.damageType !== DamageType.Piercing)
+        .length;
+      this.progress += damageCnt;
+      if (this.progress >= 3) {
+        c.dispose();
+        c.generateRandomElementDice(3);
+      }
+    }
+  }, {
+    progress: 0,
+  })
   .build();
 
 /**

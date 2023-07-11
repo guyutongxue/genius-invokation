@@ -1,18 +1,18 @@
 import {
   DamageData,
+  DamageType,
   Event,
-  GamePhaseEvent,
   NotificationMessage,
   PhaseType,
   StateData,
   verifyNotificationMessage,
 } from "@gi-tcg/typings";
-import { Context, ContextOfEvent, EventHandlers } from "@gi-tcg/data";
 
 import { GameOptions, PlayerConfig } from "./game.js";
 import { Player } from "./player.js";
 import { shallowClone } from "./entity.js";
-import { ContextFactory } from "./context.js";
+import { EventAndContext, EventFactory, SkillContextImpl, StatusContextImpl, SummonContextImpl } from "./context.js";
+import { Character } from "./character.js";
 
 export function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
@@ -125,8 +125,7 @@ export class GameState {
     this.phase = "roll";
   }
   private async rollPhase() {
-
-    this.phase = "gameEnd"
+    this.phase = "gameEnd";
   }
   private async actionPhase() {}
   private async endPhase() {
@@ -148,12 +147,9 @@ export class GameState {
     };
   }
 
-  handleEvent<E extends keyof EventHandlers>(
-    event: E,
-    cf: ContextFactory<ContextOfEvent<E>>
-  ) {
-    this.players[this.currentTurn].handleEvent(event, cf);
-    this.players[flip(this.currentTurn)].handleEvent(event, cf);
+  async handleEvent(event: EventAndContext | EventFactory) {
+    await this.players[this.currentTurn].handleEvent(event);
+    await this.players[flip(this.currentTurn)].handleEvent(event);
   }
 
   private createNotifier(who: 0 | 1) {
@@ -177,8 +173,32 @@ export class GameState {
   }
 
   private damageLogs: DamageData[] = [];
-  addDamageLog(damage: DamageData) {
-    this.damageLogs.push(damage);
+  dealDamage(
+    sourceCtx: SkillContextImpl | StatusContextImpl | SummonContextImpl,
+    target: Character,
+    value: number,
+    type: DamageType
+  ) {
+    if (type !== DamageType.Heal) {
+      // TODO create context for onBefore stuff
+      // handle "onEarlyBeforeDealDamage"
+      // handle "onBeforeDealDamage"
+      if (sourceCtx instanceof SkillContextImpl) {
+        // handle "onBeforeSkillDamage"
+      }
+      // handle target's "onBeforeDamage"
+    }
+    target.health -= value;
+    if (target.health < 0) {
+      target.health = 0;
+    }
+    // TODO Elemental Reaction
+    this.damageLogs.push({
+      target: target.entityId,
+      value,
+      type,
+      log: [] // TODO
+    });
   }
 
   clone() {

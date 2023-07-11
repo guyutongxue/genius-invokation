@@ -50,12 +50,8 @@ const MirrorReflectionOfDoom = createSkill(12032)
  */
 const IllusoryBubble = createStatus(112032)
   .withUsage(1)
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      c.damage.multiplyDamage(2, /* order: */ 6);
-    } else {
-      return false;
-    }
+  .on("beforeSkillDamage", (c) => {
+    c.multiplyDamage(2);
   })
   .build();
 

@@ -12,7 +12,7 @@ const AThousandFloatingDreams = createCard(311104, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(2)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("beforeDealDamage", (c) => {
     if (c.reaction) {
       c.addDamage(1);
@@ -32,7 +32,7 @@ const MagicGuide = createCard(311101, ["character"])
   .addTags("weaponCatalyst")
   .costSame(2)
   .buildToEquipment()
-  .on("beforeUseSkill", c => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", c => c.addDamage(1))
   .build();
 
 /**
@@ -47,7 +47,7 @@ const SacrificialFragments = createCard(311102, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
       c.generateDice(c.character.elementType());
@@ -68,13 +68,11 @@ const SkywardAtlas = createCard(311103, ["character"])
   .addTags("weaponCatalyst")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      if (c.info.type === "normal") {
-        c.damage.addDamage(2);
-      } else {
-        c.damage.addDamage(1);
-      }
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(2);
+    } else {
+      c.addDamage(1);
     }
   })
   .build();
@@ -91,5 +89,5 @@ const FruitOfFulfillment = createCard(-37, ["character"])
   .costVoid(3)
   .drawCards(2)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();

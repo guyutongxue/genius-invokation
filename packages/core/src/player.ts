@@ -17,16 +17,14 @@ import { Character } from "./character.js";
 import { Status } from "./status.js";
 import { Support } from "./support.js";
 import { Summon } from "./summon.js";
-import { shallowClone } from "./entity.js";
+import { ClonedObj, shallowClone } from "./entity.js";
 import { Notifier } from "./state.js";
 import {
   CardTag,
-  ContextOfEvent,
-  EventHandlers,
   RollContext,
   SpecialBits,
 } from "@gi-tcg/data";
-import { ContextFactory } from "./context.js";
+import { EventAndContext, EventFactory } from "./context.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -199,26 +197,23 @@ export class Player {
     return this.supports.length >= this.config.game.maxSupports;
   }
 
-  handleEvent<E extends keyof EventHandlers>(
-    event: E,
-    cf: ContextFactory<ContextOfEvent<E>>
-  ) {
+  async handleEvent(event: EventAndContext | EventFactory)  {
     const activeIndex = this.activeIndex ?? 0;
     for (let i = 0; i < this.characters.length; i++) {
       const character =
         this.characters[(activeIndex + i) % this.characters.length];
       if (character.isAlive()) {
-        character.handleEvent(event, cf);
+        await character.handleEvent(event);
       }
     }
     for (const status of this.combatStatuses) {
-      status.handleEvent(event, cf);
+      await status.handleEvent(event);
     }
     for (const summon of this.summons) {
-      summon.handleEvent(event, cf);
+      await summon.handleEvent(event);
     }
     for (const support of this.supports) {
-      support.handleEvent(event, cf);
+      await support.handleEvent(event);
     }
   }
 
@@ -226,6 +221,9 @@ export class Player {
     method: M,
     data: RpcRequest[M]
   ): Promise<RpcResponse[M]> {
+    if (ClonedObj in this) {
+      throw new Error("Cannot call rpc in cloned player");
+    }
     verifyRpcRequest(method, data);
     const resp = await this.config.handler(method, data);
     verifyRpcResponse(method, resp);

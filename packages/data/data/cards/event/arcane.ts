@@ -38,13 +38,6 @@ const CovenantOfRock = createCard(-32)
   .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))
   .addFilter((c) => c.getDice().length === 0)
   .do((c) => {
-    const newDice: DiceType[] = [];
-    while (newDice.length < 2) {
-      const dice = Math.floor(Math.random() * 7) + 1;
-      if (!newDice.includes(dice)) {
-        newDice.push(dice);
-      }
-    }
-    c.generateDice(...newDice);
+    c.generateRandomElementDice(2);
   })
   .build();

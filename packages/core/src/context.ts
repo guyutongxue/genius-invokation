@@ -4,13 +4,19 @@ import {
   CharacterContext,
   CharacterInfoWithId,
   Context,
+  ContextOfEvent,
   ElementTag,
   EquipmentInfoWithId,
+  EventHandlerNames,
+  SkillContext,
+  SkillDescriptionContext,
+  SkillInfoWithId,
   SpecialBits,
   StatusContext,
   StatusInfoWithId,
   SummonContext,
   SummonInfoWithId,
+  SwitchActiveContext,
   Target,
   TargetInfo,
   UseDiceContext,
@@ -24,8 +30,10 @@ import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Summon } from "./summon.js";
 import { Card } from "./card.js";
+import { Entity } from "./entity.js";
 
-export type ContextFactory<T> = (entityId: number) => T | null;
+export type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [event: E, ctx: ContextOfEvent<E>];
+export type EventFactory = (entity: Entity) => EventAndContext[];
 
 export class ContextImpl implements Context {
   constructor(
@@ -167,10 +175,16 @@ export class ContextImpl implements Context {
     value: number,
     type: DamageType,
     target?: Target | undefined
-  ): void {}
-  applyElement(type: DamageType, target?: Target | undefined): void {}
-  heal(value: number, target: Target): void {}
-  gainEnergy(value?: number | undefined, target?: Target | undefined): number {
+  ): void {
+    // TODO
+  }
+  applyElement(type: DamageType, target?: Target): void {
+    // TODO
+  }
+  heal(value: number, target: Target): void {
+    // TODO
+  }
+  gainEnergy(value?: number | undefined, target?: Target): number {
     target ??= Target.myActive();
     const ctx = this.getCharacterFromTarget(target);
     let sum = 0;
@@ -179,7 +193,7 @@ export class ContextImpl implements Context {
     }
     return sum;
   }
-  loseEnergy(value?: number | undefined, target?: Target | undefined): number {
+  loseEnergy(value?: number | undefined, target?: Target): number {
     target ??= Target.myActive();
     const ctx = this.getCharacterFromTarget(target);
     let sum = 0;
@@ -189,7 +203,7 @@ export class ContextImpl implements Context {
     return sum;
   }
 
-  createStatus(status: number, target?: Target | undefined): StatusContext {
+  createStatus(status: number, target?: Target): StatusContext {
     target ??= Target.myActive();
     const ctx = this.getCharacterFromTarget(target);
     if (ctx.length !== 1) {
@@ -199,7 +213,7 @@ export class ContextImpl implements Context {
     }
     return ctx[0].createStatus(status);
   }
-  removeStatus(status: number, target?: Target | undefined): boolean {
+  removeStatus(status: number, target?: Target): boolean {
     target ??= Target.myActive();
     const ctx = this.getCharacterFromTarget(target);
     let removed = false;
@@ -210,7 +224,7 @@ export class ContextImpl implements Context {
   }
   createCombatStatus(
     status: number,
-    opp?: boolean | undefined
+    opp: boolean = false
   ): StatusContext {
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
     const st = new Status(status);
@@ -218,9 +232,15 @@ export class ContextImpl implements Context {
     return new StatusContextImpl(st, this.sourceId);
   }
 
-  summon(summon: number): void {}
-  summonOneOf(...summons: number[]): void {}
-  createSupport(support: number, opp?: boolean | undefined): void {}
+  summon(summon: number): void {
+    // TODO
+  }
+  summonOneOf(...summons: number[]): void {
+    // TODO
+  }
+  createSupport(support: number, opp?: boolean | undefined): void {
+    // TODO
+  }
 
   getDice(): DiceType[] {
     return this.state.getPlayer(this.who).dice;
@@ -230,6 +250,16 @@ export class ContextImpl implements Context {
   }
   generateDice(...dice: DiceType[]): void {
     this.state.getPlayer(this.who).dice.push(...dice);
+  }
+  generateRandomElementDice(count: number = 1): void {
+    const newDice: DiceType[] = [];
+    while (newDice.length < count) {
+      const dice = Math.floor(Math.random() * 7) + 1;
+      if (!newDice.includes(dice)) {
+        newDice.push(dice);
+      }
+    }
+    this.generateDice(...newDice);
   }
   removeAllDice(): DiceType[] {
     const old = this.state.getPlayer(this.who).dice;
@@ -357,17 +387,7 @@ class CharacterContextImpl implements CharacterContext {
     const realHealth = Math.min(newHealth, this.character.info.maxHealth);
     const diff = realHealth - this.character.health;
     this.character.health = realHealth;
-    this.state.addDamageLog({
-      target: this.entityId,
-      type: DamageType.Heal,
-      value: diff,
-      log: [
-        {
-          source: this.entityId,
-          what: `+${diff} HP`,
-        },
-      ],
-    });
+    this.dealDamage();
   }
   gainEnergy(amount: number): number {
     const newEnergy = this.character.energy + amount;
@@ -429,7 +449,7 @@ class CharacterContextImpl implements CharacterContext {
   }
 }
 
-class StatusContextImpl implements StatusContext {
+export class StatusContextImpl implements StatusContext {
   constructor(private status: Status, private sourceId: number) {}
 
   get entityId() {
@@ -480,7 +500,7 @@ export class StatusDescriptionContextImpl extends ContextImpl {
   }
 }
 
-class SummonContextImpl implements SummonContext {
+export class SummonContextImpl implements SummonContext {
   constructor(
     private state: GameState,
     private readonly who: 0 | 1,
@@ -512,4 +532,19 @@ class SummonContextImpl implements SummonContext {
   dispose() {
     this.summon.shouldDispose = true;
   }
+}
+
+class SwitchActiveContextImpl extends ContextImpl implements SwitchActiveContext {
+}
+
+class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
+
+}
+
+class SkillDescriptionContextImpl extends ContextImpl implements SkillDescriptionContext {
+
+}
+
+export class SkillContextImpl extends SkillDescriptionContextImpl implements SkillContext {
+
 }

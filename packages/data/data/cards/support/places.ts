@@ -58,14 +58,12 @@ const GrandNarukamiShrine = createCard(321008)
   .addTags("place")
   .costSame(2)
   .do((c) => {
-    const r = Math.floor(Math.random() * 7) + 1;
-    c.generateDice(r);
+    c.generateRandomElementDice();
   })
   .buildToSupport()
   .withUsage(2)
   .on("actionPhase", (c) => {
-    const r = Math.floor(Math.random() * 7) + 1;
-    c.generateDice(r);
+    c.generateRandomElementDice();
   })
   .build();
 

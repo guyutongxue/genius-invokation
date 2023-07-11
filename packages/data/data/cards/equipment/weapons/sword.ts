@@ -13,7 +13,7 @@ const AquilaFavonia = createCard(311503, ["character"])
   .buildToEquipment()
   .listenToOpp()
   .withUsagePerRound(2)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
     if (!c.character.isMine() && c.getMaster().isActive()) {
       c.getMaster().heal(1);
@@ -35,7 +35,7 @@ const FavoniusSword = createCard(311505, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
       c.generateDice(c.character.elementType());
@@ -57,7 +57,7 @@ const SacrificialSword = createCard(311502, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("beforeUseSkill", (c) => (c.damage?.addDamage(1), false))
+  .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
       c.generateDice(c.character.elementType());
@@ -78,13 +78,11 @@ const SkywardBlade = createCard(311504, ["character"])
   .addTags("weaponSword")
   .costSame(3)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => {
-    if (c.damage) {
-      if (c.info.type === "normal") {
-        c.damage.addDamage(2);
-      } else {
-        c.damage.addDamage(1);
-      }
+  .on("beforeSkillDamage", (c) => {
+    if (c.skillInfo.type === "normal") {
+      c.addDamage(2);
+    } else {
+      c.addDamage(1);
     }
   })
   .build();
@@ -99,5 +97,5 @@ const TravelersHandySword = createCard(311501, ["character"])
   .addTags("weaponSword")
   .costSame(2)
   .buildToEquipment()
-  .on("beforeUseSkill", (c) => c.damage?.addDamage(1))
+  .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();
