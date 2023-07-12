@@ -71,7 +71,7 @@ export class ContextImpl implements Context {
     return new CharacterContextImpl(this.state, this.who, ch, this.sourceId);
   }
   private createSummonContext(s: Summon): SummonContextImpl {
-    return new SummonContextImpl(this.state, this.who, s, this.sourceId);
+    return new SummonContextImpl(this.state, this.who, s);
   }
   private getCharacterFromTarget(
     t: Target | TargetInfo
@@ -172,12 +172,12 @@ export class ContextImpl implements Context {
   hasCombatStatus(status: number): StatusContext | null {
     const combatStatuses = this.state.getPlayer(this.who).combatStatuses;
     const s = combatStatuses.find((s) => s.info.id === status);
-    return s ? new StatusContextImpl(s, this.sourceId) : null;
+    return s ? new StatusContextImpl(s) : null;
   }
   hasCombatShield(): StatusContext | null {
     const combatStatuses = this.state.getPlayer(this.who).combatStatuses;
     const s = combatStatuses.find((s) => s.shield !== null);
-    return s ? new StatusContextImpl(s, this.sourceId) : null;
+    return s ? new StatusContextImpl(s) : null;
   }
 
   dealDamage(
@@ -240,7 +240,7 @@ export class ContextImpl implements Context {
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
     const st = new Status(status);
     player.combatStatuses.push(st);
-    return new StatusContextImpl(st, this.sourceId);
+    return new StatusContextImpl(st);
   }
 
   summon(summon: number): void {
@@ -507,7 +507,7 @@ export class StatusDescriptionContextImpl extends ContextImpl {
     return this.createCharacterContext(this.master);
   }
   override asStatus() {
-    return new StatusContextImpl(this.status, this.sourceId);
+    return new StatusContextImpl(this.status);
   }
 }
 

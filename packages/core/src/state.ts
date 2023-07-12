@@ -25,9 +25,10 @@ export function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
 }
 
-export interface Notifier {
-  me: (event: Event) => void;
-  opp: (event: Event) => void;
+export interface GlobalOperations {
+  triggerHandlingEvent: (...event: unknown[]) => void;
+  notifyMe: (event: Event) => void;
+  notifyOpp: (event: Event) => void;
 }
 
 export class GameState {
@@ -65,7 +66,7 @@ export class GameState {
         ...this.playerConfigs[who],
         game: this.options,
       },
-      this.createNotifier(who)
+      this.createOperationsForPlayer(who)
     );
   }
 
@@ -170,10 +171,13 @@ export class GameState {
     await this.players[flip(this.currentTurn)].handleEvent(event);
   }
 
-  private createNotifier(who: 0 | 1) {
+  private createOperationsForPlayer(who: 0 | 1): GlobalOperations {
     return {
-      me: (event: Event) => this.notifyPlayer(who, event),
-      opp: (event: Event) => this.notifyPlayer(flip(who), event),
+      notifyMe: (event: Event) => this.notifyPlayer(who, event),
+      notifyOpp: (event: Event) => this.notifyPlayer(flip(who), event),
+      triggerHandlingEvent: (...event: unknown[]) => {
+        this.eventWaitingForHandle.push(...event);
+      }
     };
   }
   private notifyPlayer(who: 0 | 1, event: Event) {
@@ -191,8 +195,8 @@ export class GameState {
   }
 
   private damageLogs: DamageData[] = [];
+  private eventWaitingForHandle: unknown[] = [];
   dealDamage(
-    // 这里最好只留一个 sourceId，然后用专门的函数来生成对应的 Context
     sourceId: number,
     target: Character,
     value: number,
@@ -235,6 +239,7 @@ export class GameState {
   clone() {
     const clone = shallowClone(this);
     clone.players = [this.players[0].clone(), this.players[1].clone()];
+    clone.eventWaitingForHandle = [...this.eventWaitingForHandle];
     clone.damageLogs = [...this.damageLogs];
     return clone;
   }

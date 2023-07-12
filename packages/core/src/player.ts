@@ -18,7 +18,7 @@ import { Status } from "./status.js";
 import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
-import { Notifier } from "./state.js";
+import { GlobalOperations } from "./state.js";
 import {
   CardTag,
   RollContext,
@@ -45,7 +45,7 @@ export class Player {
 
   constructor(
     private readonly config: PlayerConfigWithGame,
-    private notifier: Notifier
+    private notifier: GlobalOperations
   ) {
     this.piles = config.deck.actions.map((id) => new Card(id));
     this.characters = config.deck.characters.map((id) => new Character(id));
@@ -84,8 +84,8 @@ export class Player {
     const discardedCount = this.hands.length - this.config.game.maxHands;
     this.hands.splice(this.config.game.maxHands, discardedCount);
 
-    this.notifier.me({ type: "stateUpdated", damages: [] });
-    this.notifier.opp({
+    this.notifier.notifyMe({ type: "stateUpdated", damages: [] });
+    this.notifier.notifyOpp({
       type: "oppChangeHands",
       removed: 0,
       added: this.hands.length,
@@ -107,7 +107,7 @@ export class Player {
     if (!this.config.noShuffle) {
       this.piles = _.shuffle(this.piles);
     }
-    this.notifier.opp({
+    this.notifier.notifyOpp({
       type: "oppChangeHands",
       removed: removed.length,
       added: 0,
@@ -174,14 +174,14 @@ export class Player {
     this.activeIndex = this.characters.findIndex(
       (c) => c.entityId === targetEntityId
     );
-    this.notifier.me({
+    this.notifier.notifyMe({
       type: "switchActive",
       opp: false,
       target: targetEntityId,
     });
     // TODO handle "onSwitchActive"
     const oppNotify = () => {
-      this.notifier.opp({
+      this.notifier.notifyOpp({
         type: "switchActive",
         opp: true,
         target: targetEntityId,
@@ -272,10 +272,8 @@ export class Player {
     // clone.piles = this.piles.map(c => c.clone());
     // clone.hands = this.hands.map(c => c.clone());
     // Cloned object shouldn't have side effects
-    clone.notifier = {
-      me: () => {},
-      opp: () => {},
-    };
+    clone.notifier.notifyMe = () => {};
+    clone.notifier.notifyOpp = () => {};
     clone.characters = this.characters.map((c) => c.clone());
     clone.combatStatuses = this.combatStatuses.map((s) => s.clone());
     clone.supports = this.supports.map((s) => s.clone());
