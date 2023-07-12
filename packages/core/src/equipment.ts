@@ -1,6 +1,6 @@
 import { getEquipment, EquipmentInfoWithId, EventHandlers, ContextOfEvent, EventHandlerNames } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
-import { EventAndContext, EventFactory } from "./context.js";
+import { EventFactory, TrivialEvent } from "./context.js";
 
 export class Equipment extends Entity {
   public readonly info: EquipmentInfoWithId;
@@ -21,8 +21,8 @@ export class Equipment extends Entity {
     return this.info.type === "artifact";
   }
 
-  async handleEvent(event: EventAndContext | EventFactory)  {
-    if (Array.isArray(event) && event[0] === "onRollPhase") {
+  async handleEvent(event: TrivialEvent | EventFactory)  {
+    if (event === "onActionPhase") {
       this.usagePerRound = this.info.usagePerRound;
     }
     const result = await this.doHandleEvent(this.handler, event);

@@ -324,7 +324,7 @@ const FriendshipEternal = createCard(332020)
 const GuardiansOath = createCard(332014)
   .setType("event")
   .costSame(4)
-  .do((c) => { c.allSummons().map(s => s.dispose()); })
+  .do((c) => { c.allSummons(true).map(s => s.dispose()); })
   .build();
 
 /**

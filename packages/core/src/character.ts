@@ -4,7 +4,7 @@ import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
-import {  EventAndContext, EventFactory } from "./context.js";
+import { EventFactory, TrivialEvent } from "./context.js";
 
 export class Character extends Entity {
   public readonly info: CharacterInfoWithId;
@@ -14,7 +14,7 @@ export class Character extends Entity {
   public equipments: Equipment[] = [];
   public statuses: Status[] = [];
   public applied: Aura = Aura.None;
-  private passiveSkills: PassiveSkill[] = [];
+  public passiveSkills: PassiveSkill[] = [];
 
   constructor(id: number) {
     super(id);
@@ -35,7 +35,7 @@ export class Character extends Entity {
     return this.energy === this.info.maxEnergy;
   }
   
-  async handleEvent(event: EventAndContext | EventFactory) {
+  async handleEvent(event: TrivialEvent | EventFactory) {
     for (const sk of this.passiveSkills) {
       await sk.handleEvent(event);
     }

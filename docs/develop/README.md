@@ -4,14 +4,16 @@
 
 项目整体使用 Pnpm Monorepo 组织，目前共有如下包：
 
-- `@jenshin-tcg/core`：核心库，包括游戏流程和游戏逻辑
-- `@jenshin-tcg/typings`：类型与类型检查库
-- `@jenshin-tcg/data`：卡牌数据
-- `@jenshin-tcg/web`：（考虑重命名）基于 Vue 的前端界面
+- `@gi-tcg/core`：核心库，包括游戏流程和游戏逻辑
+- `@gi-tcg/typings`：类型与类型检查库
+- `@gi-tcg/data`：卡牌数据
+- `@gi-tcg/standalone`：（暂时）基于 Vue 的前端界面
 
 `core`、`typings`、`data` 被设计为前后端通用。
 
 所有的库都使用 ESM 接口。
+
+# 以下为过时内容。
 
 ## 整体进行逻辑
 

@@ -11,7 +11,14 @@ import {
 import { GameOptions, PlayerConfig } from "./game.js";
 import { Player } from "./player.js";
 import { shallowClone } from "./entity.js";
-import { EventAndContext, EventFactory, SkillContextImpl, StatusContextImpl, SummonContextImpl } from "./context.js";
+import {
+  EventFactory,
+  SkillContextImpl,
+  StatusContextImpl,
+  SummonContextImpl,
+  TrivialEvent,
+  getSourceContextById,
+} from "./context.js";
 import { Character } from "./character.js";
 
 export function flip(who: 0 | 1): 0 | 1 {
@@ -122,12 +129,23 @@ export class GameState {
     ]);
     n0();
     n1();
+    // TODO handle "onBattleBegin"
     this.phase = "roll";
   }
   private async rollPhase() {
+    // TODO handle "onRollPhase"
     this.phase = "gameEnd";
   }
-  private async actionPhase() {}
+  private async actionPhase() {
+    // TODO handle "onActionPhase"
+    // for each turn, handle "onBeforeAction"
+    // TODO "onBeforeUseDice"
+    // TODO "onRequestFastSwitchActive"
+    // after action, handle "onAction"
+    // ... / "onSwitchActive" / "onUseSkill" / "onPlayCard" / "onDeclareEnd"
+    // 上方的三个可见操作，应当在对应的 player 函数内触发
+    this.phase = "end";
+  }
   private async endPhase() {
     this.roundNumber++;
     if (this.roundNumber > this.options.maxRounds) {
@@ -147,7 +165,7 @@ export class GameState {
     };
   }
 
-  async handleEvent(event: EventAndContext | EventFactory) {
+  async handleEvent(event: TrivialEvent | EventFactory) {
     await this.players[this.currentTurn].handleEvent(event);
     await this.players[flip(this.currentTurn)].handleEvent(event);
   }
@@ -174,20 +192,20 @@ export class GameState {
 
   private damageLogs: DamageData[] = [];
   dealDamage(
-    sourceCtx: SkillContextImpl | StatusContextImpl | SummonContextImpl,
+    // 这里最好只留一个 sourceId，然后用专门的函数来生成对应的 Context
+    sourceId: number,
     target: Character,
     value: number,
     type: DamageType
   ) {
-    if (type !== DamageType.Heal) {
-      // TODO create context for onBefore stuff
-      // handle "onEarlyBeforeDealDamage"
-      // handle "onBeforeDealDamage"
-      if (sourceCtx instanceof SkillContextImpl) {
-        // handle "onBeforeSkillDamage"
-      }
-      // handle target's "onBeforeDamage"
+    const sourceCtx = getSourceContextById(this, sourceId);
+    // TODO create context for onBefore stuff
+    // handle "onEarlyBeforeDealDamage"
+    // handle "onBeforeDealDamage"
+    if (sourceCtx instanceof SkillContextImpl) {
+      // handle "onBeforeSkillDamage"
     }
+    // handle target's "onBeforeDamage"
     target.health -= value;
     if (target.health < 0) {
       target.health = 0;
@@ -197,13 +215,27 @@ export class GameState {
       target: target.entityId,
       value,
       type,
-      log: [] // TODO
+      log: [], // TODO
+    });
+  }
+  addHealLog(target: Character, value: number, sourceId: number) {
+    this.damageLogs.push({
+      target: target.entityId,
+      value,
+      type: DamageType.Heal,
+      log: [
+        {
+          source: sourceId,
+          what: `Heal ${value} HP`,
+        },
+      ],
     });
   }
 
   clone() {
     const clone = shallowClone(this);
     clone.players = [this.players[0].clone(), this.players[1].clone()];
+    clone.damageLogs = [...this.damageLogs];
     return clone;
   }
 }

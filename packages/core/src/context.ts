@@ -1,6 +1,8 @@
 // //@ts-nocheck
 import {
+  CardInfoWithId,
   CardTag,
+  CardTarget,
   CharacterContext,
   CharacterInfoWithId,
   Context,
@@ -8,6 +10,7 @@ import {
   ElementTag,
   EquipmentInfoWithId,
   EventHandlerNames,
+  PlayCardContext,
   SkillContext,
   SkillDescriptionContext,
   SkillInfoWithId,
@@ -32,8 +35,12 @@ import { Summon } from "./summon.js";
 import { Card } from "./card.js";
 import { Entity } from "./entity.js";
 
-export type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [event: E, ctx: ContextOfEvent<E>];
+type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [
+  event: E,
+  ctx: ContextOfEvent<E>
+];
 export type EventFactory = (entity: Entity) => EventAndContext[];
+export type TrivialEvent = "onActionPhase";
 
 export class ContextImpl implements Context {
   constructor(
@@ -154,9 +161,11 @@ export class ContextImpl implements Context {
       .summons.find((s) => s.info.id === summon);
     return s ? this.createSummonContext(s) : null;
   }
-  allSummons(): SummonContext[] {
+  allSummons(includeOpp = false): SummonContext[] {
     const mySummons = this.state.getPlayer(this.who).summons;
-    const oppSummons = this.state.getPlayer(flip(this.who)).summons;
+    const oppSummons = includeOpp
+      ? this.state.getPlayer(flip(this.who)).summons
+      : [];
     return [...mySummons, ...oppSummons].map(this.createSummonContext);
   }
 
@@ -177,12 +186,17 @@ export class ContextImpl implements Context {
     target?: Target | undefined
   ): void {
     // TODO
+    throw new Error("Shouldn't called by base class");
   }
   applyElement(type: DamageType, target?: Target): void {
     // TODO
+    throw new Error("Shouldn't called by base class");
   }
   heal(value: number, target: Target): void {
-    // TODO
+    const ctx = this.getCharacterFromTarget(target);
+    for (const ch of ctx) {
+      ch.heal(value);
+    }
   }
   gainEnergy(value?: number | undefined, target?: Target): number {
     target ??= Target.myActive();
@@ -222,10 +236,7 @@ export class ContextImpl implements Context {
     }
     return removed;
   }
-  createCombatStatus(
-    status: number,
-    opp: boolean = false
-  ): StatusContext {
+  createCombatStatus(status: number, opp: boolean = false): StatusContext {
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
     const st = new Status(status);
     player.combatStatuses.push(st);
@@ -387,7 +398,7 @@ class CharacterContextImpl implements CharacterContext {
     const realHealth = Math.min(newHealth, this.character.info.maxHealth);
     const diff = realHealth - this.character.health;
     this.character.health = realHealth;
-    this.dealDamage();
+    this.state.addHealLog(this.character, diff, this.sourceId);
   }
   gainEnergy(amount: number): number {
     const newEnergy = this.character.energy + amount;
@@ -406,7 +417,7 @@ class CharacterContextImpl implements CharacterContext {
   createStatus(status: number): StatusContext {
     const st = new Status(status);
     this.character.statuses.push(st);
-    return new StatusContextImpl(st, this.sourceId);
+    return new StatusContextImpl(st);
   }
   removeStatus(status: number): boolean {
     const st = this.character.statuses.findIndex((s) => s.info.id === status);
@@ -417,12 +428,12 @@ class CharacterContextImpl implements CharacterContext {
   hasStatus(status: number): StatusContext | null {
     const st = this.character.statuses.find((s) => s.info.id === status);
     if (!st) return null;
-    return new StatusContextImpl(st, this.entityId);
+    return new StatusContextImpl(st);
   }
   hasShield(): StatusContext {
     const st = this.character.statuses.find((s) => s.shield !== null);
     if (!st) throw new Error("No shield");
-    return new StatusContextImpl(st, this.entityId);
+    return new StatusContextImpl(st);
   }
 
   isActive() {
@@ -450,7 +461,7 @@ class CharacterContextImpl implements CharacterContext {
 }
 
 export class StatusContextImpl implements StatusContext {
-  constructor(private status: Status, private sourceId: number) {}
+  constructor(private status: Status) {}
 
   get entityId() {
     return this.status.entityId;
@@ -504,8 +515,7 @@ export class SummonContextImpl implements SummonContext {
   constructor(
     private state: GameState,
     private readonly who: 0 | 1,
-    private summon: Summon,
-    private sourceId: number
+    private summon: Summon
   ) {}
 
   get entityId() {
@@ -534,17 +544,95 @@ export class SummonContextImpl implements SummonContext {
   }
 }
 
-class SwitchActiveContextImpl extends ContextImpl implements SwitchActiveContext {
-}
+class SwitchActiveContextImpl
+  extends ContextImpl
+  implements SwitchActiveContext {}
 
 class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
+  switchActiveCtx?: SwitchActiveContext;
+  useSkillCtx?: SkillContext;
+  playCardCtx?: PlayCardContext;
 
+  constructor(
+    protected state: GameState,
+    private readonly who: 0 | 1,
+    private readonly sourceId: number,
+    private readonly targetId: number
+  ) {
+    super(state, who, sourceId);
+    const ctx = getContextById(state, targetId);
+  }
 }
 
-class SkillDescriptionContextImpl extends ContextImpl implements SkillDescriptionContext {
+class SkillDescriptionContextImpl
+  extends ContextImpl
+  implements SkillDescriptionContext {}
 
+export class SkillContextImpl
+  extends SkillDescriptionContextImpl
+  implements SkillContext {}
+
+export class PlayCardContextImpl
+  extends ContextImpl
+  implements PlayCardContext {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    private readonly card: Card,
+    private readonly targetObj: (Character | Summon)[]
+  ) {
+    super(state, who, card.entityId);
+  }
+  get info(): CardInfoWithId {
+    return this.card.info;
+  }
+  get target(): CardTarget[keyof CardTarget][] {}
 }
 
-export class SkillContextImpl extends SkillDescriptionContextImpl implements SkillContext {
+export function getSourceContextById(state: GameState, entityIdOrSkillId: number) {
+  for (const who of [0, 1] as const) {
+    const player = state.getPlayer(who);
+    for (const ch of player.characters) {
+      const skill = ch.info.skills.find((s) => s === entityIdOrSkillId);
+      if (skill) {
+        return new SkillContextImpl(state, who, skill);
+      }
+      const passive = ch.passiveSkills.find(
+        (s) =>
+          s.entityId === entityIdOrSkillId || s.info.id === entityIdOrSkillId
+      );
+      if (passive) {
+        return new SkillContextImpl(state, who, passive.info.id);
+      }
+      const status = ch.statuses.find((s) => s.entityId === entityIdOrSkillId);
+      if (status) {
+        return new StatusContextImpl(status);
+      }
+    }
+    const combatStatus = player.combatStatuses.find(
+      (s) => s.entityId === entityIdOrSkillId
+    );
+    if (combatStatus) {
+      return new StatusContextImpl(combatStatus);
+    }
+    const summon = player.summons.find((s) => s.entityId === entityIdOrSkillId);
+    if (summon) {
+      return new SummonContextImpl(state, who, summon);
+    }
+    // const support = player.supports.find(
+    //   (s) => s.entityId === entityIdOrId || s.info.id === entityIdOrId
+    // );
+    // if (support) {
+    //   return new SupportContextImpl(state, who, support, support.entityId);
+    // }
+    // const hand = player.hands.find((c) => c.entityId === entityIdOrSkillId);
+    // if (hand) {
+    //   return new PlayCardContextImpl(state, who, hand, []);
+    // }
+  }
+  return null;
+}
 
+function createCommonEventContext(state: GameState, who: 0 | 1, event: EventHandlerNames) {
+  const ctx 
 }

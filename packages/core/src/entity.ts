@@ -4,13 +4,13 @@ import {
   EventHandlers,
   HandlerResult,
 } from "@gi-tcg/data";
-import { EventAndContext, EventFactory } from "./context.js";
+import { TrivialEvent, EventFactory } from "./context.js";
 
-const ENTITY_ID_BEGIN = 5.6e7;
+const ENTITY_ID_BEGIN = -100;
 
 let nextEntityId = ENTITY_ID_BEGIN;
 function newEntityId(): number {
-  return nextEntityId++;
+  return nextEntityId--;
 }
 
 export class Entity {
@@ -20,16 +20,11 @@ export class Entity {
   }
   protected async doHandleEvent(
     handler: EventHandlers,
-    event: EventAndContext | EventFactory
+    event: TrivialEvent | EventFactory
   ): Promise<boolean> {
     let r: boolean | undefined;
-    if (Array.isArray(event)) {
-      const [name, ctx] = event;
-      const h = handler[name];
-      if (typeof h !== "undefined") {
-        // @ts-ignore
-        r = await h.call(handler, ctx);
-      }
+    if (typeof event === "string") {
+      return false;
     } else {
       const candidates = event(this);
       for (const [name, ctx] of candidates) {

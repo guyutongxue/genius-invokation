@@ -24,7 +24,7 @@ import {
   RollContext,
   SpecialBits,
 } from "@gi-tcg/data";
-import { EventAndContext, EventFactory } from "./context.js";
+import { EventFactory, TrivialEvent } from "./context.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -179,6 +179,7 @@ export class Player {
       opp: false,
       target: targetEntityId,
     });
+    // TODO handle "onSwitchActive"
     const oppNotify = () => {
       this.notifier.opp({
         type: "switchActive",
@@ -197,7 +198,7 @@ export class Player {
     return this.supports.length >= this.config.game.maxSupports;
   }
 
-  async handleEvent(event: EventAndContext | EventFactory)  {
+  async handleEvent(event: TrivialEvent | EventFactory)  {
     const activeIndex = this.activeIndex ?? 0;
     for (let i = 0; i < this.characters.length; i++) {
       const character =

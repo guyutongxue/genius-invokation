@@ -41,27 +41,13 @@
 
 ## 目标描述语法
 
-对于 `dealDamage` `heal` `createStatus` `switchActive` 等操作，需要指定一个或多个角色。由于数据描述语境缺乏大量信息（比如角色 ID、角色位置等），所以需要一个更适合数据描述的语法。下述语法定义在 `Target` 对象内：
+对于 `dealDamage` `heal` `createStatus` `switchActive` 等操作，需要指定一个或多个角色。由于数据描述语境缺乏大量信息（比如角色 ID、角色位置等），所以需要一个更适合数据描述的语法。下述语法由 `Target` 类的若干简单工厂函数给出：
 
-| 语法              | 含义                                                         |
-| ----------------- | ------------------------------------------------------------ |
-| `UNDEFINED`       | 不指明，使用默认值                                           |
-| `ME`              | 己方阵营修饰（不单独使用）                                   |
-| `OPP`             | 对方阵营修饰（不单独使用）                                   |
-| `ACTIVE`          | 出战角色，应附加阵营修饰                                     |
-| `NEXT`            | 下一（右侧）角色，应附加阵营修饰                             |
-| `OPP`             | 上一（左侧）角色，应附加阵营修饰                             |
-| `STANDBY`         | 后台角色，应附加阵营修饰                                     |
-| `ALL`             | 所有角色，应附加阵营修饰                                     |
-| `WITH_STATUS(id)` | 带有 `id` 状态的角色，应附加阵营修饰                         |
-| `OF_OBJ_ID(id)`   | 己方角色 ID 为 `id` 的角色                                   |
-| `NEARBY`          | “最近的对方角色”修饰（不单独使用，被修饰的角色应当只有一个） |
-
-`NEARBY` 给温迪用的。
+**TODO**
 
 目标默认值：
 
 - 对于 `dealDamage`，是对方出战角色 `ACTIVE | OPP`。
 - 对于 `heal`、`gainEnergy`，是己方出战角色 `ACTIVE | ME`。
-- 对于 `create[Combat]Status`，是己方出战角色 `ACTIVE | ME`。
+- 对于 `createStatus`，是己方出战角色 `ACTIVE | ME`。
 - 对于 `switchActive`，是己方下一出战角色 `NEXT | ME`。

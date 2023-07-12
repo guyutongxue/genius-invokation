@@ -6,13 +6,13 @@ export interface EventHandlers<This = {}> {
   onBattleBegin?(this: This, c: Context): HandlerResult;
   onRollPhase?(this: This, c: RollContext): HandlerResult;
   onActionPhase?(this: This, c: Context): HandlerResult;
-  onTurn?(this: This, c: Context): HandlerResult;
   onEndPhase?(this: This, c: Context): HandlerResult;
 
   onBeforeAction?(this: This, c: Context): HandlerResult;
-  onUseSkill?(this: This, c: SkillContext): HandlerResult;
-
   onRequestFastSwitchActive?(this: This, c: Context): boolean;
+
+  onUseSkill?(this: This, c: SkillContext): HandlerResult;
+  onAction?(this: This, c: Context): HandlerResult;
   onPlayCard?(this: This, c: PlayCardContext): HandlerResult;
   onSwitchActive?(this: This, c: SwitchActiveContext): HandlerResult;
   onDeclareEnd?(this: This, c: Context): HandlerResult;
@@ -31,10 +31,8 @@ export interface EventHandlers<This = {}> {
   onDefeated?(this: This, c: DamageReadonlyContext): HandlerResult;
 
   onBeforeUseDice?(this: This, c: UseDiceContext): HandlerResult;
-  onBeforeSwitchShouldFast?(this: This): HandlerResult;
 
   onElementalReaction?(this: This, c: ElementalReactionContext): HandlerResult;
-
 }
 
 export type EventHandlerCtor = new () => EventHandlers;

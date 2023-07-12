@@ -23,7 +23,7 @@ export interface Context {
   allCharacters(opp?: boolean, includesDefeated?: boolean): CharacterContext[];
   fullSupportArea(opp: boolean): boolean;
   hasSummon(summon: SummonHandle): SummonContext | null;
-  allSummons(): SummonContext[];
+  allSummons(includeOpp?: boolean): SummonContext[];
   hasCombatStatus(status: StatusHandle): StatusContext | null;
   hasCombatShield(): StatusContext | null;
 

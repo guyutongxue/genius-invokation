@@ -5,10 +5,10 @@ import {
 } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { SupportData } from "@gi-tcg/typings";
-import {  EventAndContext, EventFactory } from "./context.js";
+import { EventFactory, TrivialEvent } from "./context.js";
 
 export class Support extends Entity {
-  private readonly info: SupportInfoWithId;
+  public readonly info: SupportInfoWithId;
   private handler: EventHandlers;
   private usage: number;
   private usagePerRound: number;
@@ -39,8 +39,8 @@ export class Support extends Entity {
     return null;
   }
 
-  async handleEvent(event: EventAndContext | EventFactory)  {
-    if (Array.isArray(event) && event[0] === "onRollPhase") {
+  async handleEvent(event: TrivialEvent | EventFactory)  {
+    if (event === "onActionPhase") {
       this.usagePerRound = this.info.usagePerRound;
       this.duration--;
       if (this.duration === 0) {

@@ -11,8 +11,8 @@ function createFood(id: number) {
     .setType("event")
     .addTags("food")
     .filterTargets((c) => !c.hasStatus(Satiated))
-    .do(function (c) {
-      c.createStatus(Satiated, this[0].asTarget());
+    .doAtLast(function (c) {
+      this[0].createStatus(Satiated);
     });
 }
 
@@ -112,7 +112,7 @@ const MintyMeatRolls = createFood(333008)
 const MondstadtHashBrown = createFood(333006)
   .costSame(1)
   .do(function (c) {
-    c.heal(2, this[0].asTarget());
+    this[0].heal(2);
   })
   .build();
 
@@ -124,7 +124,7 @@ const MondstadtHashBrown = createFood(333006)
 const MushroomPizza = createFood(333007)
   .costSame(1)
   .do(function (c) {
-    c.heal(1, this[0].asTarget());
+    this[0].heal(1);
   })
   .buildToStatus("this0")
   .withUsage(1)
@@ -173,7 +173,7 @@ const SashimiPlatter = createFood(333010)
  */
 const SweetMadame = createFood(333005)
   .do(function (c) {
-    c.heal(1, this[0].asTarget());
+    this[0].heal(1);
   })
   .build();
 
@@ -207,7 +207,7 @@ const TeyvatFriedEgg = createCard(333009, ["character"])
   .filterTargets((c) => !c.isAlive())
   .costSame(3)
   .do(function (c) {
-    c.heal(1, this[0].asTarget());
-    c.createStatus(Satiated, this[0].asTarget());
+    this[0].heal(1);
+    this[0].createStatus(Satiated);
   })
   .build();

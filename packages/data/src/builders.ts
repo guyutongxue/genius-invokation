@@ -229,6 +229,8 @@ class CardBuilder<
   private filters: PlayCardFilter<T>[] = [];
   private targetFilters: PlayCardTargetFilter<T>[] = [];
   private actions: ((this: ContextOfTarget<T>, c: Context) => void)[] = [];
+  // 固定在最后做的操作，用于编写卡牌模板如食物牌
+  private lastActions: ((this: ContextOfTarget<T>, c: Context) => void)[] = [];
 
   constructor(
     private readonly id: number,
@@ -290,6 +292,10 @@ class CardBuilder<
     this.pushAction(action);
     return this;
   }
+  doAtLast(action: (this: ContextOfTarget<T>, c: Context) => void) {
+    this.lastActions.push(action);
+    return this;
+  }
 
   build(): CardHandle {
     const outerThis = this;
@@ -308,6 +314,10 @@ class CardBuilder<
     }
     async function* action(this: ContextOfTarget<T>, c: Context) {
       for (const a of outerThis.actions) {
+        await a.call(this, c);
+        yield;
+      }
+      for (const a of outerThis.lastActions) {
         await a.call(this, c);
         yield;
       }

@@ -5,7 +5,7 @@ import {
 } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { StatusData } from "@gi-tcg/typings";
-import { EventAndContext, EventFactory } from "./context.js";
+import { TrivialEvent, EventFactory } from "./context.js";
 
 export class Status extends Entity {
   public readonly info: StatusInfoWithId;
@@ -58,7 +58,7 @@ export class Status extends Entity {
     }
   }
 
-  async handleEvent(event: EventAndContext | EventFactory) {
+  async handleEvent(event: TrivialEvent | EventFactory) {
     if (Array.isArray(event) && event[0] === "onRollPhase") {
       this.usagePerRound = this.info.usagePerRound;
       this.duration--;
