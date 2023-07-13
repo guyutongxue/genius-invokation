@@ -17,7 +17,7 @@ import {
   StatusContextImpl,
   SummonContextImpl,
   TrivialEvent,
-  getSourceContextById,
+  getContextById,
 } from "./context.js";
 import { Character } from "./character.js";
 
@@ -202,7 +202,7 @@ export class GameState {
     value: number,
     type: DamageType
   ) {
-    const sourceCtx = getSourceContextById(this, sourceId);
+    const sourceCtx = getContextById(this, sourceId);
     // TODO create context for onBefore stuff
     // handle "onEarlyBeforeDealDamage"
     // handle "onBeforeDealDamage"

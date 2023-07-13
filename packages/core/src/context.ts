@@ -7,7 +7,9 @@ import {
   CharacterInfoWithId,
   Context,
   ContextOfEvent,
+  DamageContext,
   ElementTag,
+  ElementalReactionContext,
   EquipmentInfoWithId,
   EventHandlerNames,
   PlayCardContext,
@@ -23,6 +25,7 @@ import {
   Target,
   TargetInfo,
   UseDiceContext,
+  getSkill,
   getTargetInfo,
 } from "@gi-tcg/data";
 import { GameState, flip } from "./state.js";
@@ -34,6 +37,8 @@ import { Status } from "./status.js";
 import { Summon } from "./summon.js";
 import { Card } from "./card.js";
 import { Entity } from "./entity.js";
+import { Action } from "./action.js";
+import { Support } from "./support.js";
 
 type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [
   event: E,
@@ -70,7 +75,7 @@ export class ContextImpl implements Context {
   protected createCharacterContext(ch: Character): CharacterContextImpl {
     return new CharacterContextImpl(this.state, this.who, ch, this.sourceId);
   }
-  private createSummonContext(s: Summon): SummonContextImpl {
+  protected createSummonContext(s: Summon): SummonContextImpl {
     return new SummonContextImpl(this.state, this.who, s);
   }
   private getCharacterFromTarget(
@@ -244,13 +249,17 @@ export class ContextImpl implements Context {
   }
 
   summon(summon: number): void {
-    // TODO
+    const summonObj = new Summon(summon);
+    this.state.getPlayer(this.who).summons.push(summonObj);
   }
   summonOneOf(...summons: number[]): void {
-    // TODO
+    const summon = summons[Math.floor(Math.random() * summons.length)];
+    this.summon(summon);
   }
   createSupport(support: number, opp?: boolean | undefined): void {
-    // TODO
+    const supportObj = new Support(support);
+    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    player.supports.push(supportObj);
   }
 
   getDice(): DiceType[] {
@@ -546,39 +555,177 @@ export class SummonContextImpl implements SummonContext {
 
 class SwitchActiveContextImpl
   extends ContextImpl
-  implements SwitchActiveContext {}
+  implements SwitchActiveContext
+{
+  from: CharacterContext;
+  to: CharacterContext;
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    sourceId: number,
+    from: Character,
+    to: Character
+  ) {
+    super(state, who, sourceId);
+    this.from = this.createCharacterContext(from);
+    this.to = this.createCharacterContext(to);
+  }
+}
 
-class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
+export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   switchActiveCtx?: SwitchActiveContext;
   useSkillCtx?: SkillContext;
   playCardCtx?: PlayCardContext;
+  private requiredDice: DiceType[];
 
-  constructor(
-    protected state: GameState,
-    private readonly who: 0 | 1,
-    private readonly sourceId: number,
-    private readonly targetId: number
-  ) {
+  constructor(state: GameState, who: 0 | 1, sourceId: number, action: Action) {
     super(state, who, sourceId);
-    const ctx = getContextById(state, targetId);
+    this.requiredDice = action.dice;
+    switch (action.type) {
+      case "switchActive": {
+        this.switchActiveCtx = new SwitchActiveContextImpl(
+          state,
+          who,
+          sourceId,
+          action.from,
+          action.to
+        );
+        break;
+      }
+      case "useSkill": {
+        this.useSkillCtx = new SkillContextImpl(
+          state,
+          who,
+          sourceId,
+          action.skillInfo
+        );
+        break;
+      }
+      case "playCard": {
+        this.playCardCtx = new PlayCardContextImpl(
+          state,
+          who,
+          action.card,
+          action.targets
+        );
+      }
+    }
+  }
+
+  addCost(...dice: DiceType[]): void {
+    this.requiredDice.push(...dice);
+  }
+  deductCost(...dice: DiceType[]): void {
+    for (const d of dice) {
+      let i;
+      if (d === DiceType.Omni) {
+        i = this.requiredDice.findIndex((d) => d !== DiceType.Void);
+      } else {
+        i = this.requiredDice.indexOf(d);
+      }
+      if (i !== -1) {
+        this.requiredDice.splice(i, 1);
+      }
+    }
+  }
+
+  getHandleResult(): DiceType[] {
+    return this.requiredDice;
   }
 }
 
 class SkillDescriptionContextImpl
   extends ContextImpl
-  implements SkillDescriptionContext {}
-
-export class SkillContextImpl
-  extends SkillDescriptionContextImpl
-  implements SkillContext {}
-
-export class PlayCardContextImpl
-  extends ContextImpl
-  implements PlayCardContext {
+  implements SkillDescriptionContext
+{
   constructor(
     state: GameState,
     who: 0 | 1,
-    private readonly card: Card,
+    sourceId: number,
+    protected skill: SkillInfoWithId
+  ) {
+    super(state, who, sourceId);
+  }
+
+  get character() {
+    const player = this.state.getPlayer(this.who);
+    const ch = player.characters.find((ch) =>
+      ch.info.skills.includes(this.skill.id)
+    );
+    if (!ch) throw new Error("Character not found");
+    return this.createCharacterContext(ch);
+  }
+  get target() {
+    const player = this.state.getPlayer(flip(this.who));
+    const ch = player.getCharacter("active");
+    return this.createCharacterContext(ch);
+  }
+
+  triggeredByCard(card: number): PlayCardContext | null {
+    const ctx = getContextById(this.state, this.sourceId);
+    if (ctx instanceof PlayCardContextImpl) {
+      if (ctx.card.info.id === card) {
+        return ctx;
+      }
+    }
+    return null;
+  }
+  triggeredByStatus(status: number): StatusContext | null {
+    const ctx = getContextById(this.state, this.sourceId);
+    if (ctx instanceof StatusContextImpl) {
+      if (ctx.info.id === status) {
+        return ctx;
+      }
+    }
+    return null;
+  }
+
+  isCharged(): boolean {
+    const player = this.state.getPlayer(this.who);
+    const bit = player.dice.length % 2 === 0;
+    return bit && this.skill.type === "normal";
+  }
+  isPlunging(): boolean {
+    const player = this.state.getPlayer(this.who);
+    const bit = player.getSpecialBit(SpecialBits.Plunging);
+    return bit && this.skill.type === "normal";
+  }
+}
+
+export class SkillContextImpl
+  extends SkillDescriptionContextImpl
+  implements SkillContext
+{
+  get info() {
+    return this.skill;
+  }
+
+  private allDamages: DamageContext[] = [];
+  private allReactions: ElementalReactionContext[] = [];
+
+  pushDamage(damage: DamageContext) {
+    this.allDamages.push(damage);
+  }
+  pushReaction(reaction: ElementalReactionContext) {
+    this.allReactions.push(reaction);
+  }
+
+  getAllDescendingDamages(): DamageContext[] {
+    return this.allDamages;
+  }
+  getAllDescendingReactions(): ElementalReactionContext[] {
+    return this.allReactions;
+  }
+}
+
+export class PlayCardContextImpl
+  extends ContextImpl
+  implements PlayCardContext
+{
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    public readonly card: Card,
     private readonly targetObj: (Character | Summon)[]
   ) {
     super(state, who, card.entityId);
@@ -586,23 +733,55 @@ export class PlayCardContextImpl
   get info(): CardInfoWithId {
     return this.card.info;
   }
-  get target(): CardTarget[keyof CardTarget][] {}
+  get target(): CardTarget[keyof CardTarget][] {
+    const result: CardTarget[keyof CardTarget][] = [];
+    for (const obj of this.targetObj) {
+      if (obj instanceof Character) {
+        result.push(this.createCharacterContext(obj));
+      } else if (obj instanceof Summon) {
+        result.push(this.createSummonContext(obj));
+      } else {
+        console.error(obj);
+        throw new Error(`Unknown target object: ${obj}`);
+      }
+    }
+    return result;
+  }
+
+  isTalentOf(charId: number): boolean {
+    return (
+      this.card.info.tags.includes("talent") &&
+      !!this.targetObj.find(
+        (ch) => ch instanceof Character && ch.info.id === charId
+      )
+    );
+  }
+  isWeapon(): boolean {
+    const weaponTags: CardTag[] = [
+      "weaponBow",
+      "weaponCatalyst",
+      "weaponClaymore",
+      "weaponPole",
+      "weaponSword",
+    ];
+    return this.card.info.tags.some((t) => weaponTags.includes(t));
+  }
 }
 
-export function getSourceContextById(state: GameState, entityIdOrSkillId: number) {
+export function getContextById(state: GameState, entityIdOrSkillId: number) {
   for (const who of [0, 1] as const) {
     const player = state.getPlayer(who);
     for (const ch of player.characters) {
       const skill = ch.info.skills.find((s) => s === entityIdOrSkillId);
       if (skill) {
-        return new SkillContextImpl(state, who, skill);
+        return new SkillContextImpl(state, who, entityIdOrSkillId, getSkill(skill));
       }
       const passive = ch.passiveSkills.find(
         (s) =>
           s.entityId === entityIdOrSkillId || s.info.id === entityIdOrSkillId
       );
       if (passive) {
-        return new SkillContextImpl(state, who, passive.info.id);
+        return new SkillContextImpl(state, who, passive.entityId, passive.info);
       }
       const status = ch.statuses.find((s) => s.entityId === entityIdOrSkillId);
       if (status) {
@@ -625,14 +804,19 @@ export function getSourceContextById(state: GameState, entityIdOrSkillId: number
     // if (support) {
     //   return new SupportContextImpl(state, who, support, support.entityId);
     // }
-    // const hand = player.hands.find((c) => c.entityId === entityIdOrSkillId);
-    // if (hand) {
-    //   return new PlayCardContextImpl(state, who, hand, []);
-    // }
+    const hand = player.hands.find((c) => c.entityId === entityIdOrSkillId);
+    if (hand) {
+      // FIXME targets 为空，因为确实无从得知
+      return new PlayCardContextImpl(state, who, hand, []);
+    }
   }
   return null;
 }
 
-function createCommonEventContext(state: GameState, who: 0 | 1, event: EventHandlerNames) {
-  const ctx 
+function createCommonEventContext(
+  state: GameState,
+  who: 0 | 1,
+  event: EventHandlerNames
+) {
+  // WHAT SHOULD BE HERE?
 }

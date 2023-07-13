@@ -34,10 +34,11 @@ const ParametricTransformer = createCard(323001)
   .listenToOpp()
   .do({
     onUseSkill(c) {
-      const damageCnt = c.getAllDescendingDamages()
-        .filter(c => c.damageType !== DamageType.Physical && c.damageType !== DamageType.Piercing)
-        .length;
-      this.progress += damageCnt;
+      const hasDamage = c.getAllDescendingDamages()
+        .some(c => c.damageType !== DamageType.Physical && c.damageType !== DamageType.Piercing);
+      if (hasDamage) {
+        this.progress++;
+      }
       if (this.progress >= 3) {
         c.dispose();
         c.generateRandomElementDice(3);

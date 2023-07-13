@@ -68,8 +68,8 @@ export interface RollContext {
 }
 
 export interface SkillDescriptionContext extends Context {
-  triggeredByCard(card: CardHandle): PlayCardContext;
-  triggeredByStatus(status: StatusHandle): StatusContext;
+  triggeredByCard(card: CardHandle): PlayCardContext | null;
+  triggeredByStatus(status: StatusHandle): StatusContext | null;
   readonly character: CharacterContext;
   readonly target: CharacterContext;
   isCharged(): boolean;  // 重击
@@ -132,7 +132,7 @@ export interface PlayCardContext extends Context {
   readonly info: CardInfoWithId;
   readonly target: CardTarget[keyof CardTarget][];
   isTalentOf(charId: number): boolean;
-  isWeapon(type?: unknown): boolean;
+  isWeapon(): boolean;
 }
 
 export interface SwitchActiveContext extends Context {

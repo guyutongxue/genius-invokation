@@ -12,11 +12,12 @@ const ChangTheNinth = createCard(322009)
   .listenToOpp()
   .do({
     onUseSkill(c) {
-      const damageCnt = c.getAllDescendingDamages()
-        .filter(c => c.damageType === DamageType.Physical || c.damageType === DamageType.Piercing)
-        .length;
-      const reactionCnt = c.getAllDescendingReactions().length;
-      this.inspiration += damageCnt + reactionCnt;
+      const hasDamage = c.getAllDescendingDamages()
+        .some(c => c.damageType === DamageType.Physical || c.damageType === DamageType.Piercing);
+      const hasReaction = c.getAllDescendingReactions().length > 0;
+      if (hasDamage || hasReaction) {
+        this.inspiration++;
+      }
       if (this.inspiration >= 3) {
         c.dispose();
         c.drawCards(2);
