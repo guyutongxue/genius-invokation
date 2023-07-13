@@ -8,7 +8,7 @@ import {
   Context,
   ContextOfEvent,
   DamageContext,
-  ElementTag,
+  RollContext,
   ElementalReactionContext,
   EquipmentInfoWithId,
   EventHandlerNames,
@@ -30,7 +30,7 @@ import {
 } from "@gi-tcg/data";
 import { GameState, flip } from "./state.js";
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { CharacterPosition } from "./player.js";
+import { CharacterPosition, Player } from "./player.js";
 import { Character } from "./character.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
@@ -39,13 +39,15 @@ import { Card } from "./card.js";
 import { Entity } from "./entity.js";
 import { Action } from "./action.js";
 import { Support } from "./support.js";
+import { PassiveSkill } from "./passive_skill.js";
+import { Skill } from "./skill.js";
 
 type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [
   event: E,
   ctx: ContextOfEvent<E>
 ];
-export type EventFactory = (entity: Entity) => EventAndContext[];
-export type TrivialEvent = "onActionPhase";
+export type EventFactory = (entityId: number) => EventAndContext[];
+export type TrivialEvent = "onBattleBegin" | "onActionPhase" | "onEndPhase";
 
 export class ContextImpl implements Context {
   constructor(
@@ -98,7 +100,7 @@ export class ContextImpl implements Context {
         const characters = new Set(
           positions.map((pos) => player.getCharacter(pos))
         );
-        return [...characters].map(this.createCharacterContext);
+        return [...characters].map(this.createCharacterContext.bind(this));
       }
       case "oneEnergyNotFull": {
         const player = this.state.getPlayer(this.who);
@@ -154,7 +156,7 @@ export class ContextImpl implements Context {
     if (!includesDefeated) {
       characters = characters.filter((ch) => ch.isAlive());
     }
-    return characters.map(this.createCharacterContext);
+    return characters.map(this.createCharacterContext.bind(this));
   }
   fullSupportArea(opp: boolean): boolean {
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
@@ -171,7 +173,7 @@ export class ContextImpl implements Context {
     const oppSummons = includeOpp
       ? this.state.getPlayer(flip(this.who)).summons
       : [];
-    return [...mySummons, ...oppSummons].map(this.createSummonContext);
+    return [...mySummons, ...oppSummons].map(this.createSummonContext.bind(this));
   }
 
   hasCombatStatus(status: number): StatusContext | null {
@@ -266,10 +268,12 @@ export class ContextImpl implements Context {
     return this.state.getPlayer(this.who).dice;
   }
   rollDice(count: number): Promise<void> {
-    return this.state.getPlayer(this.who).rollDice(count);
+    return this.state.getPlayer(this.who).rerollDice(count);
   }
   generateDice(...dice: DiceType[]): void {
-    this.state.getPlayer(this.who).dice.push(...dice);
+    const player = this.state.getPlayer(this.who);
+    player.dice.push(...dice);
+    player.sortDice();
   }
   generateRandomElementDice(count: number = 1): void {
     const newDice: DiceType[] = [];
@@ -336,16 +340,6 @@ export class ContextImpl implements Context {
     throw new Error("Cannot dispose raw Context");
   }
 }
-
-export const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
-  cryo: DiceType.Cryo,
-  hydro: DiceType.Hydro,
-  pyro: DiceType.Pyro,
-  electro: DiceType.Electro,
-  anemo: DiceType.Anemo,
-  geo: DiceType.Geo,
-  dendro: DiceType.Dendro,
-};
 
 class CharacterContextImpl implements CharacterContext {
   constructor(
@@ -460,12 +454,7 @@ class CharacterContextImpl implements CharacterContext {
     return Target.ofCharacter(this.character.info.id as any);
   }
   elementType(): DiceType {
-    const elementTag = this.character.info.tags.filter((t): t is ElementTag =>
-      Object.keys(ELEMENT_TAG_MAP).includes(t)
-    );
-    if (elementTag.length === 0) return DiceType.Void;
-    const elementType = ELEMENT_TAG_MAP[elementTag[0]] ?? DiceType.Void;
-    return elementType;
+    return this.character.elementType();
   }
 }
 
@@ -499,15 +488,23 @@ export class StatusContextImpl implements StatusContext {
   }
 }
 
-export class StatusDescriptionContextImpl extends ContextImpl {
+export class ContextWithMasterImpl extends ContextImpl {
   constructor(
     state: GameState,
     who: 0 | 1,
     private master: Character | null,
-    private status: Status,
+    private status: Status | Equipment | PassiveSkill,
     public readonly sourceId = status.entityId
   ) {
     super(state, who, sourceId);
+  }
+  override createStatus(status: number, target?: Target | undefined): StatusContext {
+    if (typeof target !== "undefined" || this.master === null) {
+      return super.createStatus(status, target);
+    }
+    // 调整角色状态的“附属状态”为附属到本角色上
+    const adjustedTarget = this.createCharacterContext(this.master).asTarget();
+    return super.createStatus(status, adjustedTarget);
   }
   override getMaster() {
     if (this.master === null) {
@@ -516,7 +513,11 @@ export class StatusDescriptionContextImpl extends ContextImpl {
     return this.createCharacterContext(this.master);
   }
   override asStatus() {
-    return new StatusContextImpl(this.status);
+    if (this.status instanceof Status) {
+      return new StatusContextImpl(this.status);
+    } else {
+      return super.asStatus();
+    }
   }
 }
 
@@ -576,11 +577,9 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   switchActiveCtx?: SwitchActiveContext;
   useSkillCtx?: SkillContext;
   playCardCtx?: PlayCardContext;
-  private requiredDice: DiceType[];
 
-  constructor(state: GameState, who: 0 | 1, sourceId: number, action: Action) {
+  constructor(state: GameState, who: 0 | 1, sourceId: number, private action: Action) {
     super(state, who, sourceId);
-    this.requiredDice = action.dice;
     switch (action.type) {
       case "switchActive": {
         this.switchActiveCtx = new SwitchActiveContextImpl(
@@ -597,7 +596,7 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
           state,
           who,
           sourceId,
-          action.skillInfo
+          action.skill
         );
         break;
       }
@@ -613,24 +612,20 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   }
 
   addCost(...dice: DiceType[]): void {
-    this.requiredDice.push(...dice);
+    this.action.dice.push(...dice);
   }
   deductCost(...dice: DiceType[]): void {
     for (const d of dice) {
       let i;
       if (d === DiceType.Omni) {
-        i = this.requiredDice.findIndex((d) => d !== DiceType.Void);
+        i = this.action.dice.findIndex((d) => d !== DiceType.Void);
       } else {
-        i = this.requiredDice.indexOf(d);
+        i = this.action.dice.indexOf(d);
       }
       if (i !== -1) {
-        this.requiredDice.splice(i, 1);
+        this.action.dice.splice(i, 1);
       }
     }
-  }
-
-  getHandleResult(): DiceType[] {
-    return this.requiredDice;
   }
 }
 
@@ -642,7 +637,7 @@ class SkillDescriptionContextImpl
     state: GameState,
     who: 0 | 1,
     sourceId: number,
-    protected skill: SkillInfoWithId
+    protected skill: Skill
   ) {
     super(state, who, sourceId);
   }
@@ -650,7 +645,7 @@ class SkillDescriptionContextImpl
   get character() {
     const player = this.state.getPlayer(this.who);
     const ch = player.characters.find((ch) =>
-      ch.info.skills.includes(this.skill.id)
+      ch.info.skills.includes(this.skill.info.id)
     );
     if (!ch) throw new Error("Character not found");
     return this.createCharacterContext(ch);
@@ -683,12 +678,12 @@ class SkillDescriptionContextImpl
   isCharged(): boolean {
     const player = this.state.getPlayer(this.who);
     const bit = player.dice.length % 2 === 0;
-    return bit && this.skill.type === "normal";
+    return bit && this.skill.info.type === "normal";
   }
   isPlunging(): boolean {
     const player = this.state.getPlayer(this.who);
     const bit = player.getSpecialBit(SpecialBits.Plunging);
-    return bit && this.skill.type === "normal";
+    return bit && this.skill.info.type === "normal";
   }
 }
 
@@ -697,7 +692,7 @@ export class SkillContextImpl
   implements SkillContext
 {
   get info() {
-    return this.skill;
+    return this.skill.info;
   }
 
   private allDamages: DamageContext[] = [];
@@ -768,55 +763,124 @@ export class PlayCardContextImpl
   }
 }
 
-export function getContextById(state: GameState, entityIdOrSkillId: number) {
+export interface RollPhaseConfig {
+  controlled: DiceType[];
+  times: number;
+}
+
+class RollContextImpl implements RollContext {
+  constructor(
+    private player: Player,
+    private config: RollPhaseConfig
+  ) {}
+
+  get activeCharacterElement() {
+    const ch = this.player.getCharacter("active");
+    return ch.elementType();
+  }
+
+  fixDice(...dice: DiceType[]): void {
+    this.config.controlled.push(...dice);  
+  }
+
+  addRerollCount(count: number): void {
+    this.config.times += count;
+  }
+}
+
+interface EntityEnv {
+  who: 0 | 1;
+  master?: Character;
+  entity: Entity;
+}
+
+function getEntityById(state: GameState, entityId: number): EntityEnv | null {
   for (const who of [0, 1] as const) {
     const player = state.getPlayer(who);
     for (const ch of player.characters) {
-      const skill = ch.info.skills.find((s) => s === entityIdOrSkillId);
-      if (skill) {
-        return new SkillContextImpl(state, who, entityIdOrSkillId, getSkill(skill));
-      }
       const passive = ch.passiveSkills.find(
         (s) =>
-          s.entityId === entityIdOrSkillId || s.info.id === entityIdOrSkillId
-      );
+          s.entityId === entityId);
       if (passive) {
-        return new SkillContextImpl(state, who, passive.entityId, passive.info);
+        return { who, master: ch, entity: passive };
       }
-      const status = ch.statuses.find((s) => s.entityId === entityIdOrSkillId);
+      const skill = ch.skills.find((s) => s.entityId === entityId);
+      if (skill) {
+        return { who, master: ch, entity: skill };
+      }
+      const equip = ch.equipments.find((s) => s.entityId === entityId);
+      if (equip) {
+        return { who, master: ch, entity: equip };
+      }
+      const status = ch.statuses.find((s) => s.entityId === entityId);
       if (status) {
-        return new StatusContextImpl(status);
+        return { who, master: ch, entity: status };
       }
     }
     const combatStatus = player.combatStatuses.find(
-      (s) => s.entityId === entityIdOrSkillId
+      (s) => s.entityId === entityId
     );
     if (combatStatus) {
-      return new StatusContextImpl(combatStatus);
+      return { who, entity: combatStatus };
     }
-    const summon = player.summons.find((s) => s.entityId === entityIdOrSkillId);
+    const summon = player.summons.find((s) => s.entityId === entityId);
     if (summon) {
-      return new SummonContextImpl(state, who, summon);
+      return { who, entity: summon };
     }
-    // const support = player.supports.find(
-    //   (s) => s.entityId === entityIdOrId || s.info.id === entityIdOrId
-    // );
-    // if (support) {
-    //   return new SupportContextImpl(state, who, support, support.entityId);
-    // }
-    const hand = player.hands.find((c) => c.entityId === entityIdOrSkillId);
+    const support = player.supports.find(
+      (s) => s.entityId === entityId
+    );
+    if (support) {
+      return { who, entity: support };
+    }
+    const hand = player.hands.find((c) => c.entityId === entityId);
     if (hand) {
-      // FIXME targets 为空，因为确实无从得知
-      return new PlayCardContextImpl(state, who, hand, []);
+      return { who, entity: hand };
     }
   }
   return null;
 }
 
-function createCommonEventContext(
+export function getContextById(state: GameState, entityId: number) {
+  const ee = getEntityById(state, entityId);
+  if (ee === null) return null;
+  const { who, entity: object } = ee;
+  if (object instanceof PassiveSkill || object instanceof Skill) {
+    return new SkillContextImpl(state, who, object.entityId, object);
+  } else if (object instanceof Status) {
+    return new StatusContextImpl(object);
+  } else if (object instanceof Summon) {
+    return new SummonContextImpl(state, who, object);
+  } else if (object instanceof Card) {
+    // FIXME targets 为空，因为确实无从得知
+    return new PlayCardContextImpl(state, who, object, []);
+  } else {
+    return null;
+  }
+}
+
+export function createCommonEventContext(
   state: GameState,
-  who: 0 | 1,
   event: EventHandlerNames
-) {
-  // WHAT SHOULD BE HERE?
+): EventFactory {
+  return (entityId: number) => {
+    let ctx: ContextImpl;
+    const { entity, master, who } = getEntityById(state, entityId)!;
+    if (entity instanceof Status || master) {
+      ctx = new ContextWithMasterImpl(state, who, master ?? null, entity as Status);
+    } else {
+      ctx = new ContextImpl(state, who, entity.entityId);
+    }
+    return [[event,ctx]];
+  };
+}
+
+export function createRollPhaseContext(
+  player: Player,
+  rollConfig: RollPhaseConfig,
+): EventFactory {
+  return (entityId: number) => {
+    const ctx = new RollContextImpl(player, rollConfig);
+    return [["onRollPhase", ctx]];
+  }
 }

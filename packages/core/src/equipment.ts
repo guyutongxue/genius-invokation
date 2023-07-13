@@ -21,10 +21,12 @@ export class Equipment extends Entity {
     return this.info.type === "artifact";
   }
 
-  async handleEvent(event: TrivialEvent | EventFactory)  {
-    if (event === "onActionPhase") {
-      this.usagePerRound = this.info.usagePerRound;
-    }
+  protected override onRoundBegin(): void {
+    this.usagePerRound = this.info.usagePerRound;
+  }
+
+  async handleEvent(event: EventFactory)  {
+    if (this.usagePerRound <= 0) return;
     const result = await this.doHandleEvent(this.handler, event);
     if (result) {
       this.usagePerRound--;

@@ -10,9 +10,9 @@ import { TrivialEvent, EventFactory } from "./context.js";
 export class Status extends Entity {
   public readonly info: StatusInfoWithId;
   private handler: EventHandlers;
-  usagePerRound: number;
+  private usagePerRound: number;
   usage: number;
-  duration: number;
+  private duration: number;
   shield: number | null = null;
   prepare: number | null = null;
   shouldDispose = false;
@@ -58,14 +58,14 @@ export class Status extends Entity {
     }
   }
 
-  async handleEvent(event: TrivialEvent | EventFactory) {
-    if (Array.isArray(event) && event[0] === "onRollPhase") {
-      this.usagePerRound = this.info.usagePerRound;
-      this.duration--;
-      if (this.duration === 0) {
-        this.shouldDispose = true;
-      }
+  protected override onRoundBegin(): void {
+    this.usagePerRound = this.info.usagePerRound;
+    this.duration--;
+    if (this.duration === 0) {
+      this.shouldDispose = true;
     }
+  }
+  async handleEvent(event: EventFactory) {
     if (this.shouldDispose || this.usagePerRound === 0) return;
     const result = await this.doHandleEvent(this.handler, event);
     if (result) {

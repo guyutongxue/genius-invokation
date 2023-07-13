@@ -17,6 +17,7 @@ import {
   StatusContextImpl,
   SummonContextImpl,
   TrivialEvent,
+  createCommonEventContext,
   getContextById,
 } from "./context.js";
 import { Character } from "./character.js";
@@ -130,15 +131,18 @@ export class GameState {
     ]);
     n0();
     n1();
-    // TODO handle "onBattleBegin"
+    await this.sendEvent("onBattleBegin");
     this.phase = "roll";
   }
   private async rollPhase() {
-    // TODO handle "onRollPhase"
-    this.phase = "gameEnd";
+    await Promise.all([
+      this.players[0].rollDice(),
+      this.players[1].rollDice(),
+    ]);
+    this.phase = "action";
   }
   private async actionPhase() {
-    // TODO handle "onActionPhase"
+    await this.sendEvent("onActionPhase");
     // for each turn, handle "onBeforeAction"
     // TODO "onBeforeUseDice"
     // TODO "onRequestFastSwitchActive"
@@ -148,6 +152,8 @@ export class GameState {
     this.phase = "end";
   }
   private async endPhase() {
+    await this.sendEvent("onEndPhase");
+    this.phase = "gameEnd";
     this.roundNumber++;
     if (this.roundNumber > this.options.maxRounds) {
       this.phase = "gameEnd";
@@ -166,9 +172,22 @@ export class GameState {
     };
   }
 
-  async handleEvent(event: TrivialEvent | EventFactory) {
-    await this.players[this.currentTurn].handleEvent(event);
-    await this.players[flip(this.currentTurn)].handleEvent(event);
+  async sendEvent(event: TrivialEvent | EventFactory) {
+    if (typeof event === "string") {
+      event = createCommonEventContext(this, event);
+    } 
+    for await (const r of this.handleEvent(event)) {
+    }
+  }
+
+  async *handleEvent(event: EventFactory) {
+    for await (const r of this.players[this.currentTurn].handleEvent(event)) {
+      yield;
+    }
+    for await (const r of this.players[flip(this.currentTurn)].handleEvent(event)) {
+      yield;
+    }
+
   }
 
   private createOperationsForPlayer(who: 0 | 1): GlobalOperations {

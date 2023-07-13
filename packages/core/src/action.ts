@@ -1,13 +1,13 @@
-import { SkillInfoWithId, SummonContext } from "@gi-tcg/data";
 import { Card } from "./card.js";
 import { Summon } from "./summon.js";
 import { Character } from "./character.js";
 import { DiceType } from "@gi-tcg/typings";
+import { Skill } from "./skill.js";
 
 export type UseSkillAction = {
   type: "useSkill",
   dice: DiceType[],
-  skillInfo: SkillInfoWithId,
+  skill: Skill,
 }
 
 export type PlayCardTargetObj = Summon | Character;

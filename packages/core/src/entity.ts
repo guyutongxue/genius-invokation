@@ -5,6 +5,9 @@ import {
   HandlerResult,
 } from "@gi-tcg/data";
 import { TrivialEvent, EventFactory } from "./context.js";
+import { Support } from "./support.js";
+import { Status } from "./status.js";
+import { PassiveSkill } from "./passive_skill.js";
 
 const ENTITY_ID_BEGIN = -100;
 
@@ -18,22 +21,26 @@ export class Entity {
   constructor(protected readonly id: number) {
     this.entityId = newEntityId();
   }
+
+  protected onRoundBegin() {
+    return;
+  }
+
   protected async doHandleEvent(
     handler: EventHandlers,
-    event: TrivialEvent | EventFactory
+    event: EventFactory
   ): Promise<boolean> {
     let r: boolean | undefined;
-    if (typeof event === "string") {
-      return false;
-    } else {
-      const candidates = event(this);
-      for (const [name, ctx] of candidates) {
-        const h = handler[name];
-        if (typeof h !== "undefined") {
-          // @ts-ignore
-          r = await h.call(handler, ctx);
-          break;
-        }
+    const candidates = event(this.entityId);
+    for (const [name, ctx] of candidates) {
+      if (name === "onActionPhase") {
+        this.onRoundBegin();
+      }
+      const h = handler[name];
+      if (typeof h !== "undefined") {
+        // @ts-ignore
+        r = await h.call(handler, ctx);
+        break;
       }
     }
     if (typeof r === "undefined") {

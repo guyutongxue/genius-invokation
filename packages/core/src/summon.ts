@@ -31,7 +31,7 @@ export class Summon extends Entity {
     };
   }
 
-  async handleEvent(event: TrivialEvent | EventFactory)  {
+  async handleEvent(event: EventFactory)  {
     if (this.shouldDispose) return;
     const result = await this.doHandleEvent(this.handler, event);
     if (result) {

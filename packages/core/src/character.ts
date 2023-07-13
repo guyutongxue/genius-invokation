@@ -1,10 +1,21 @@
-import { CharacterInfoWithId, getCharacter, getSkill } from "@gi-tcg/data";
+import { CharacterInfoWithId, ElementTag, getCharacter, getSkill } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
 import { EventFactory, TrivialEvent } from "./context.js";
+import { Skill } from "./skill.js";
+
+const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
+  cryo: DiceType.Cryo,
+  hydro: DiceType.Hydro,
+  pyro: DiceType.Pyro,
+  electro: DiceType.Electro,
+  anemo: DiceType.Anemo,
+  geo: DiceType.Geo,
+  dendro: DiceType.Dendro,
+};
 
 export class Character extends Entity {
   public readonly info: CharacterInfoWithId;
@@ -14,6 +25,7 @@ export class Character extends Entity {
   public equipments: Equipment[] = [];
   public statuses: Status[] = [];
   public applied: Aura = Aura.None;
+  public skills: Skill[] = [];
   public passiveSkills: PassiveSkill[] = [];
 
   constructor(id: number) {
@@ -24,6 +36,8 @@ export class Character extends Entity {
       const skill = getSkill(s);
       if (skill.type === "passive") {
         this.passiveSkills.push(new PassiveSkill(skill));
+      } else {
+        this.skills.push(new Skill(skill));
       }
     }
   }
@@ -34,16 +48,27 @@ export class Character extends Entity {
   fullEnergy() {
     return this.energy === this.info.maxEnergy;
   }
+  elementType(): DiceType {
+    const elementTag = this.info.tags.filter((t): t is ElementTag =>
+      Object.keys(ELEMENT_TAG_MAP).includes(t)
+    );
+    if (elementTag.length === 0) return DiceType.Void;
+    const elementType = ELEMENT_TAG_MAP[elementTag[0]] ?? DiceType.Void;
+    return elementType;
+  }
   
-  async handleEvent(event: TrivialEvent | EventFactory) {
+  async *handleEvent(event: EventFactory) {
     for (const sk of this.passiveSkills) {
       await sk.handleEvent(event);
+      yield;
     }
     for (const eq of this.equipments) {
       await eq.handleEvent(event);
+      yield;
     }
     for (const st of this.statuses) {
       await st.handleEvent(event);
+      yield;
     }
   }
 
@@ -68,6 +93,7 @@ export class Character extends Entity {
     const clone = shallowClone(this);
     clone.equipments = this.equipments.map(e => e.clone());
     clone.statuses = this.statuses.map(s => s.clone());
+    clone.skills = this.skills.map(s => s.clone());
     clone.passiveSkills = this.passiveSkills.map(h => h.clone());
     return clone;
   }
