@@ -16,16 +16,13 @@ const emit = defineEmits<{
 }>();
 
 function selected() {
-  emit(
-    "selected",
-    removed.value.map((i) => props.dice[i])
-  );
+  emit("selected", removed.value);
 }
 </script>
 
 <template>
   <div class="flex flex-col justify-center items-center">
-    <ul class="max-w-[20em] grid grid-cols-4 gap-8">
+    <ul class="max-w-[20em] grid grid-cols-4 gap-6">
       <li v-for="(d, i) of dice">
         <input
           type="checkbox"
@@ -38,7 +35,8 @@ function selected() {
           <Dice
             :type="(d as DiceType)"
             :selected="removed.includes(i)"
-            class="scale-150 cursor-pointer"
+            :size="70"
+            class="cursor-pointer"
           ></Dice>
         </label>
       </li>

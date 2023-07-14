@@ -4,7 +4,7 @@ import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
-import { EventFactory, TrivialEvent } from "./context.js";
+import { EventFactory } from "./context.js";
 import { Skill } from "./skill.js";
 
 const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {

@@ -5,7 +5,7 @@ import {
 } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { SupportData } from "@gi-tcg/typings";
-import { EventFactory, TrivialEvent } from "./context.js";
+import { EventFactory } from "./context.js";
 
 export class Support extends Entity {
   public readonly info: SupportInfoWithId;

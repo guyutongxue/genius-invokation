@@ -4,10 +4,7 @@ import {
   EventHandlers,
   HandlerResult,
 } from "@gi-tcg/data";
-import { TrivialEvent, EventFactory } from "./context.js";
-import { Support } from "./support.js";
-import { Status } from "./status.js";
-import { PassiveSkill } from "./passive_skill.js";
+import { EventFactory } from "./context.js";
 
 const ENTITY_ID_BEGIN = -100;
 
@@ -38,7 +35,7 @@ export class Entity {
       }
       const h = handler[name];
       if (typeof h !== "undefined") {
-        // @ts-ignore
+        // @ts-expect-error TS SUCKS
         r = await h.call(handler, ctx);
         break;
       }

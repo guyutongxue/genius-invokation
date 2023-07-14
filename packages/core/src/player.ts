@@ -19,12 +19,10 @@ import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
 import { GlobalOperations } from "./state.js";
-import { CardTag, RollContext, SpecialBits } from "@gi-tcg/data";
+import { CardTag, SpecialBits } from "@gi-tcg/data";
 import {
   EventFactory,
   RollPhaseConfig,
-  TrivialEvent,
-  createRollPhaseContext,
 } from "./context.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
@@ -139,8 +137,7 @@ export class Player {
       controlled: [],
       times: 1,
     };
-    const e = createRollPhaseContext(this, config);
-    this.handleEvent(e);
+    await this.ops.sendEvent("onRollPhase", config);
     this.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
     if (!this.config.alwaysOmni) {
       this.doRollDice(config.controlled);
@@ -160,7 +157,7 @@ export class Player {
     } else if (x === this.getCharacter("prev").elementType()) {
       return 10;
     } else {
-      return x;
+      return -x;
     }
   }
   private doRollDice(controlled: DiceType[]) {
@@ -341,12 +338,4 @@ export class Player {
     clone.summons = this.summons.map((s) => s.clone());
     return clone;
   }
-}
-
-class RollContextImpl implements RollContext {
-  private rollCount = 2;
-  constructor(readonly activeCharacterElement: DiceType) {}
-  fixDice(...dice: DiceType[]): void {}
-  addRerollCount(count: number): void {}
-  roll() {}
 }

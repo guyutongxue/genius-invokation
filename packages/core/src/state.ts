@@ -14,11 +14,11 @@ import { shallowClone } from "./entity.js";
 import {
   EventFactory,
   SkillContextImpl,
-  StatusContextImpl,
-  SummonContextImpl,
-  TrivialEvent,
-  createCommonEventContext,
+  CONTEXT_CREATOR,
   getContextById,
+  EventCreatorArgs,
+  EventCreatorArgsForPlayer,
+  EventHandlerNames1,
 } from "./context.js";
 import { Character } from "./character.js";
 
@@ -30,6 +30,7 @@ export interface GlobalOperations {
   triggerHandlingEvent: (...event: unknown[]) => void;
   notifyMe: (event: Event) => void;
   notifyOpp: (event: Event) => void;
+  sendEvent: <K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgsForPlayer<K>) => Promise<void>;
 }
 
 export class GameState {
@@ -131,7 +132,7 @@ export class GameState {
     ]);
     n0();
     n1();
-    await this.sendEvent("onBattleBegin");
+    await this.sendEvent("onBattleBegin", undefined, "onBattleBegin");
     this.phase = "roll";
   }
   private async rollPhase() {
@@ -142,7 +143,7 @@ export class GameState {
     this.phase = "action";
   }
   private async actionPhase() {
-    await this.sendEvent("onActionPhase");
+    await this.sendEvent("onActionPhase", undefined, "onActionPhase");
     // for each turn, handle "onBeforeAction"
     // TODO "onBeforeUseDice"
     // TODO "onRequestFastSwitchActive"
@@ -152,7 +153,7 @@ export class GameState {
     this.phase = "end";
   }
   private async endPhase() {
-    await this.sendEvent("onEndPhase");
+    await this.sendEvent("onEndPhase", undefined, "onEndPhase");
     this.phase = "gameEnd";
     this.roundNumber++;
     if (this.roundNumber > this.options.maxRounds) {
@@ -172,11 +173,11 @@ export class GameState {
     };
   }
 
-  async sendEvent(event: TrivialEvent | EventFactory) {
-    if (typeof event === "string") {
-      event = createCommonEventContext(this, event);
-    } 
-    for await (const r of this.handleEvent(event)) {
+  async sendEvent<K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgs<K>)  {
+    const creator = CONTEXT_CREATOR[event];
+    // @ts-expect-error TS SUCKS
+    const e: EventFactory = creator(this, ...args);
+    for await (const r of this.handleEvent(e)) {
     }
   }
 
@@ -191,10 +192,14 @@ export class GameState {
 
   private createOperationsForPlayer(who: 0 | 1): GlobalOperations {
     return {
-      notifyMe: (event: Event) => this.notifyPlayer(who, event),
-      notifyOpp: (event: Event) => this.notifyPlayer(flip(who), event),
+      notifyMe: (event) => this.notifyPlayer(who, event),
+      notifyOpp: (event) => this.notifyPlayer(flip(who), event),
       triggerHandlingEvent: (...event: unknown[]) => {
         this.eventWaitingForHandle.push(...event);
+      },
+      sendEvent: (event, ...args) => {
+        // @ts-expect-error TS SUCKS
+        return this.sendEvent(event, who, ...args);
       }
     };
   }

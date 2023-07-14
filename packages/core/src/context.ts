@@ -1,4 +1,3 @@
-// //@ts-nocheck
 import {
   CardInfoWithId,
   CardTag,
@@ -27,6 +26,7 @@ import {
   UseDiceContext,
   getSkill,
   getTargetInfo,
+  ListenTarget,
 } from "@gi-tcg/data";
 import { GameState, flip } from "./state.js";
 import { DamageType, DiceType } from "@gi-tcg/typings";
@@ -47,7 +47,6 @@ type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [
   ctx: ContextOfEvent<E>
 ];
 export type EventFactory = (entityId: number) => EventAndContext[];
-export type TrivialEvent = "onBattleBegin" | "onActionPhase" | "onEndPhase";
 
 export class ContextImpl implements Context {
   constructor(
@@ -173,7 +172,9 @@ export class ContextImpl implements Context {
     const oppSummons = includeOpp
       ? this.state.getPlayer(flip(this.who)).summons
       : [];
-    return [...mySummons, ...oppSummons].map(this.createSummonContext.bind(this));
+    return [...mySummons, ...oppSummons].map(
+      this.createSummonContext.bind(this)
+    );
   }
 
   hasCombatStatus(status: number): StatusContext | null {
@@ -498,7 +499,10 @@ export class ContextWithMasterImpl extends ContextImpl {
   ) {
     super(state, who, sourceId);
   }
-  override createStatus(status: number, target?: Target | undefined): StatusContext {
+  override createStatus(
+    status: number,
+    target?: Target | undefined
+  ): StatusContext {
     if (typeof target !== "undefined" || this.master === null) {
       return super.createStatus(status, target);
     }
@@ -578,7 +582,12 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   useSkillCtx?: SkillContext;
   playCardCtx?: PlayCardContext;
 
-  constructor(state: GameState, who: 0 | 1, sourceId: number, private action: Action) {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    sourceId: number,
+    private action: Action
+  ) {
     super(state, who, sourceId);
     switch (action.type) {
       case "switchActive": {
@@ -769,10 +778,7 @@ export interface RollPhaseConfig {
 }
 
 class RollContextImpl implements RollContext {
-  constructor(
-    private player: Player,
-    private config: RollPhaseConfig
-  ) {}
+  constructor(private player: Player, private config: RollPhaseConfig) {}
 
   get activeCharacterElement() {
     const ch = this.player.getCharacter("active");
@@ -780,7 +786,7 @@ class RollContextImpl implements RollContext {
   }
 
   fixDice(...dice: DiceType[]): void {
-    this.config.controlled.push(...dice);  
+    this.config.controlled.push(...dice);
   }
 
   addRerollCount(count: number): void {
@@ -792,50 +798,61 @@ interface EntityEnv {
   who: 0 | 1;
   master?: Character;
   entity: Entity;
+  listenTo: ListenTarget;
 }
 
 function getEntityById(state: GameState, entityId: number): EntityEnv | null {
   for (const who of [0, 1] as const) {
     const player = state.getPlayer(who);
     for (const ch of player.characters) {
-      const passive = ch.passiveSkills.find(
-        (s) =>
-          s.entityId === entityId);
+      const passive = ch.passiveSkills.find((s) => s.entityId === entityId);
       if (passive) {
-        return { who, master: ch, entity: passive };
+        return { who, master: ch, entity: passive, listenTo: "master" };
       }
       const skill = ch.skills.find((s) => s.entityId === entityId);
       if (skill) {
-        return { who, master: ch, entity: skill };
+        return { who, master: ch, entity: skill, listenTo: "master" };
       }
       const equip = ch.equipments.find((s) => s.entityId === entityId);
       if (equip) {
-        return { who, master: ch, entity: equip };
+        return {
+          who,
+          master: ch,
+          entity: equip,
+          listenTo: equip.info.listenTo,
+        };
       }
       const status = ch.statuses.find((s) => s.entityId === entityId);
       if (status) {
-        return { who, master: ch, entity: status };
+        return {
+          who,
+          master: ch,
+          entity: status,
+          listenTo: status.info.listenTo,
+        };
       }
     }
     const combatStatus = player.combatStatuses.find(
       (s) => s.entityId === entityId
     );
     if (combatStatus) {
-      return { who, entity: combatStatus };
+      return {
+        who,
+        entity: combatStatus,
+        listenTo: combatStatus.info.listenTo,
+      };
     }
     const summon = player.summons.find((s) => s.entityId === entityId);
     if (summon) {
-      return { who, entity: summon };
+      return { who, entity: summon, listenTo: "my" };
     }
-    const support = player.supports.find(
-      (s) => s.entityId === entityId
-    );
+    const support = player.supports.find((s) => s.entityId === entityId);
     if (support) {
-      return { who, entity: support };
+      return { who, entity: support, listenTo: support.info.listenTo };
     }
     const hand = player.hands.find((c) => c.entityId === entityId);
     if (hand) {
-      return { who, entity: hand };
+      return { who, entity: hand, listenTo: "my" };
     }
   }
   return null;
@@ -859,28 +876,86 @@ export function getContextById(state: GameState, entityId: number) {
   }
 }
 
-export function createCommonEventContext(
+function createCommonEventContext<K extends EventHandlerNames>(
   state: GameState,
-  event: EventHandlerNames
+  sourceWho: 0 | 1 | undefined,
+  event: K
 ): EventFactory {
   return (entityId: number) => {
     let ctx: ContextImpl;
-    const { entity, master, who } = getEntityById(state, entityId)!;
+    const env = getEntityById(state, entityId)!;
+    if (typeof sourceWho === "number" && !checkShouldListen(env, sourceWho)) {
+      return [];
+    }
+    const { entity, master, who } = env;
     if (entity instanceof Status || master) {
-      ctx = new ContextWithMasterImpl(state, who, master ?? null, entity as Status);
+      ctx = new ContextWithMasterImpl(
+        state,
+        who,
+        master ?? null,
+        entity as Status
+      );
     } else {
       ctx = new ContextImpl(state, who, entity.entityId);
     }
-    return [[event,ctx]];
+    return [[event, ctx]];
   };
 }
 
-export function createRollPhaseContext(
-  player: Player,
-  rollConfig: RollPhaseConfig,
+function checkShouldListen(entityEnv: EntityEnv, who: 0 | 1, char?: Character) {
+  // Default of PassiveSkill, Equipment, Status
+  if (entityEnv.listenTo === "master" && entityEnv.master && char) {
+    return char.entityId === entityEnv.master.entityId;
+  }
+  // Default of CombatStatus, Support, Summon
+  if (entityEnv.listenTo === "master" || entityEnv.listenTo === "my") {
+    return entityEnv.who === who;
+  }
+  return true;
+}
+
+function createRollPhaseContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  rollConfig: RollPhaseConfig
 ): EventFactory {
   return (entityId: number) => {
-    const ctx = new RollContextImpl(player, rollConfig);
+    const env = getEntityById(state, entityId)!;
+    if (!checkShouldListen(env, sourceWho)) return [];
+    const ctx = new RollContextImpl(state.getPlayer(sourceWho), rollConfig);
     return [["onRollPhase", ctx]];
-  }
+  };
 }
+
+export const CONTEXT_CREATOR = {
+  onBattleBegin: createCommonEventContext<"onBattleBegin">,
+  onRollPhase: createRollPhaseContext,
+  onActionPhase: createCommonEventContext<"onActionPhase">,
+  onEndPhase: createCommonEventContext<"onEndPhase">,
+
+  onBeforeAction: createCommonEventContext<"onBeforeAction">,
+  onRequestFastSwitchActive:
+    createCommonEventContext<"onRequestFastSwitchActive">,
+
+  // @ts-expect-error unimplemented
+} satisfies Record<
+  EventHandlerNames,
+  (state: GameState, ...args: any[]) => EventFactory
+>;
+
+type ContextCreator = typeof CONTEXT_CREATOR;
+export type EventHandlerNames1 = keyof ContextCreator; // TODO REMOVE THIS
+
+export type EventCreatorArgs<K extends keyof ContextCreator> =
+  ContextCreator[K] extends (state: GameState, ...args: infer A) => EventFactory
+    ? A
+    : never;
+
+export type EventCreatorArgsForPlayer<K extends keyof ContextCreator> =
+  ContextCreator[K] extends (
+    state: GameState,
+    sourceWho: 0 | 1,
+    ...args: infer A
+  ) => EventFactory
+    ? A
+    : never;

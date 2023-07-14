@@ -17,8 +17,9 @@ export interface EventHandlers<This = {}> {
   onSwitchActive?(this: This, c: SwitchActiveContext): HandlerResult;
   onDeclareEnd?(this: This, c: Context): HandlerResult;
 
-  // 对于角色技能、角色状态、装备来说，默认仅监听角色技能造成的伤害，不包括元素反应
-  // 对于出战状态、支援牌、召唤物来说，默认仅监听我方造成的伤害，包括元素反应
+  // listenTo "master": 监听角色技能造成的伤害，不包括元素反应
+  // listenTo "my": 监听我方造成的伤害，包括元素反应
+  // .... 如果要筛选出“我方角色导致的元素反应”，请检测 sourceSkill
   onEarlyBeforeDealDamage?(this: This, c: BeforeDamageCalculatedContext): HandlerResult;
   onBeforeSkillDamage?(this: This, c: SkillDamageContext): HandlerResult;
   onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;

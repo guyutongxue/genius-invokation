@@ -566,7 +566,7 @@ const WindAndFreedom = createCard(331801)
  * **大梦的曲调**
  * 我方下次打出「武器」或「圣遗物」手牌时，少花费1个元素骰。
  */
-const RhythmOfTheGreatDream = createCard(-35)
+const RhythmOfTheGreatDream = createCard(332021)
   .setType("event")
   .buildToStatus("combat")
   .withUsage(1)

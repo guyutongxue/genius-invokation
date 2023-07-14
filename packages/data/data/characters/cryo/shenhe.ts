@@ -25,6 +25,7 @@ const IceQuill = createStatus(111071)
       return false;
     }
   })
+  .build()
 
 /**
  * **仰灵威召将役咒**
@@ -34,7 +35,7 @@ const SpringSpiritSummoning = createSkill(11072)
   .setType("elemental")
   .costCryo(3)
   .dealDamage(2, DamageType.Cryo)
-
+  .createCombatStatus(IceQuill)
   .build();
 
 /**

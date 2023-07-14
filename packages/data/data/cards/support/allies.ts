@@ -302,7 +302,7 @@ const Xudong = createCard(322015)
  * **老章** 
  * 我方打出「武器」手牌时：少花费1个元素骰；我方场上每有一个已装备「武器」的角色，就额外少花费1个元素骰。（每回合1次）
  */
-const MasterZhang = createCard(-33)
+const MasterZhang = createCard(322018)
   .setType("support")
   .addTags("ally")
   .costVoid(1)

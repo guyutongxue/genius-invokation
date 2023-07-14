@@ -4,7 +4,7 @@ import { DamageType, createCard, createCharacter, createSkill, createStatus, cre
  * **我流剑术**
  * 造成2点物理伤害。
  */
-const GaryuuBladework = createSkill(-1)
+const GaryuuBladework = createSkill(15051)
   .setType("normal")
   .costAnemo(1)
   .costVoid(2)
@@ -34,7 +34,7 @@ const MidareRanzan = createStatus(-2)
  * 如果此技能引发了扩散，则将乱岚拨止转换为被扩散的元素。
  * 此技能结算后：我方切换到后一个角色。
  */
-const Chihayaburu = createSkill(-3)
+const Chihayaburu = createSkill(15052)
   .setType("elemental")
   .costAnemo(3)
   .dealDamage(3, DamageType.Anemo)
@@ -70,7 +70,7 @@ const AutumnWhirlwind = createSummon(-4)
  * **万叶之一刀**
  * 造成3点风元素伤害，召唤流风秋野。
  */
-const KazuhaSlash = createSkill(-5)
+const KazuhaSlash = createSkill(15053)
   .setType("burst")
   .costAnemo(3)
   .costEnergy(2)
@@ -78,7 +78,7 @@ const KazuhaSlash = createSkill(-5)
   .summon(AutumnWhirlwind)
   .build()
 
-const KaedeharaKazuha = createCharacter(-6)
+const KaedeharaKazuha = createCharacter(1505)
   .addTags("anemo", "sword", "inazuma")
   .maxEnergy(2)
   .addSkills(GaryuuBladework, Chihayaburu, KazuhaSlash)
@@ -92,7 +92,7 @@ const KaedeharaKazuha = createCharacter(-6)
  * （每种元素类型分别计算次数）
  * （牌组中包含枫原万叶，才能加入牌组）
  */
-export const PoeticsOfFuubutsu = createCard(-7, ["character"])
+export const PoeticsOfFuubutsu = createCard(215051, ["character"])
   .addTags("action", "talent")
   .requireCharacter(KaedeharaKazuha)
   .addCharacterFilter(KaedeharaKazuha)

@@ -14,57 +14,45 @@ const COLOR: Record<DiceType, string> = {
   [DiceType.Energy]: "energy",
 };
 
-const NAME: Record<DiceType, string> = {
-  [DiceType.Void]: "无",
-  [DiceType.Anemo]: "风",
-  [DiceType.Geo]: "岩",
-  [DiceType.Electro]: "雷",
-  [DiceType.Dendro]: "草",
-  [DiceType.Hydro]: "水",
-  [DiceType.Pyro]: "火",
-  [DiceType.Cryo]: "冰",
-  [DiceType.Omni]: "万",
-  [DiceType.Energy]: "充",
+const IMAGE: Partial<Record<DiceType, string>> = {
+  [DiceType.Anemo]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Wind.png",
+  [DiceType.Geo]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Rock.png",
+  [DiceType.Electro]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Electric.png",
+  [DiceType.Dendro]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Grass.png",
+  [DiceType.Hydro]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Water.png",
+  [DiceType.Pyro]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Fire.png",
+  [DiceType.Cryo]:
+    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Ice.png",
 };
 
-const props = defineProps<{
-  type: DiceType;
-  text?: string;
-  selected?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    type: DiceType;
+    text?: string;
+    selected?: boolean;
+    size?: number;
+  }>(),
+  {
+    selected: false,
+    size: 25,
+  }
+);
 </script>
 <template>
   <div class="relative select-none flex items-center justify-center">
-    <!-- <div
-      class="text-5xl text-center align-baseline"
-      :class="type === DiceType.Energy ? '-translate-y-2' : '-translate-y-3'"
-      :style="{
-        color: COLOR[type],
-        ...(selected
-          ? { '-webkit-text-stroke': '3px ' + (selectedColor ?? 'black') }
-          : {}),
-      }"
-    >
-      {{ type === DiceType.Energy ? "\u2726" : "\u2b22" }}
-    </div>
-    <div
-      class="absolute top-0 text-base w-full text-center translate-y-1"
-      :class="
-        [DiceType.Omni, DiceType.Energy].includes(type)
-          ? 'text-black'
-          : 'text-white'
-      "
-    >
-      {{ text ?? NAME[type] }}
-    </div> -->
-
     <svg
       v-if="type === DiceType.Energy"
       width="14"
       height="14"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 15 15"
-      class="h-10 w-10"
+      :style="{ height: size, width: size }"
     >
       <path
         d="M7.5 2.143c-.222 0-.623.548-1.02 1.188a4.301 4.301 0 00-3.15 3.152c-.64.396-1.187.797-1.187 1.017 0 .22.547.62 1.186 1.017a4.301 4.301 0 003.152 3.152c.396.64.797 1.188 1.019 1.188.222 0 .623-.548 1.02-1.188a4.301 4.301 0 003.149-3.15c.64-.396 1.188-.797 1.188-1.019 0-.22-.542-.619-1.178-1.013a4.301 4.301 0 00-3.166-3.166C8.119 2.685 7.72 2.143 7.5 2.143z"
@@ -95,6 +83,7 @@ const props = defineProps<{
       viewBox="0 0 15 15"
       class="fill-current w-10 h-10"
       :class="`text-${COLOR[type]}`"
+      :style="{ height: size, width: size }"
     >
       <path
         d="M7.5 2.065L2.97 4.784v5.432l4.53 2.719 4.53-2.719V4.784z"
@@ -110,7 +99,7 @@ const props = defineProps<{
       <path
         d="M7.5 1.071L2.143 4.286v6.428L7.5 13.93l5.357-3.215V4.286L7.5 1.07zm0 .994l4.53 2.719v5.432L7.5 12.935l-4.53-2.719V4.784L7.5 2.065z"
         fill="#D4C0A5"
-        stroke="#000000"
+        stroke="#dc2626"
         :stroke-width="selected ? 1 : 0"
         stroke-linejoin="round"
       ></path>
@@ -122,8 +111,18 @@ const props = defineProps<{
       <path d="M7.5 12.935V7.5l-4.53 2.716zm0-10.87V7.5l4.53-2.716z"></path>
       <path d="M7.5 7.5l4.53-2.716v5.432z" opacity=".9"></path>
     </svg>
-    <span class="absolute text-outline">
-      {{ text ?? NAME[type] }}
+    <span
+      v-if="text"
+      class="absolute text-outline"
+      :style="{ fontSize: `${0.4 * size}px` }"
+    >
+      {{ text }}
     </span>
+    <img
+      v-else-if="type in IMAGE"
+      class="absolute"
+      :src="IMAGE[type]"
+      :width="0.6 * size"
+    />
   </div>
 </template>

@@ -20,6 +20,11 @@ export default {
       },
     },
   },
+  safelist: [
+    {
+      pattern: /text-(void|electro|pyro|dendro|cryo|geo|hydro|anemo|omni|energy)/
+    }
+  ],
   plugins: [require("daisyui")],
   daisyui: {
     themes: ["light"]

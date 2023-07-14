@@ -6,7 +6,7 @@ import { createCard, DiceType, SpecialBits } from "@gi-tcg";
  * 本回合中，我方下次打出「武器」或「圣遗物」装备牌时少花费2个元素骰。
  * （整局游戏只能打出一张「秘传」卡牌：这张牌一定在你的起始手牌中）
  */
-const AncientCourtyard = createCard(-31)
+const AncientCourtyard = createCard(330001)
   .setType("event")
   .addTags("legend")
   .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))
@@ -32,7 +32,7 @@ const AncientCourtyard = createCard(-31)
  * 生成2个不同的基础元素骰。
  * （整局游戏只能打出一张「秘传」卡牌：这张牌一定在你的起始手牌中）
  */
-const CovenantOfRock = createCard(-32)
+const CovenantOfRock = createCard(330002)
   .setType("event")
   .addTags("legend")
   .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))

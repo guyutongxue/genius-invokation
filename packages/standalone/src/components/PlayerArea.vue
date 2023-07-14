@@ -5,6 +5,7 @@ import {
   CharacterData,
   DiceType,
   PlayCardAction,
+  SummonData,
   SwitchActiveAction,
   UseSkillAction,
 } from "@gi-tcg/typings";
@@ -14,10 +15,30 @@ import HandCard from "./HandCard.vue";
 import { computed } from "vue";
 import { MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
 
+export type Clickable = (
+  | {
+      type: "entity";
+      entityId: number;
+    }
+  | {
+      type: "skill";
+      id: number;
+    }
+  | {
+      type: "declareEnd";
+    }
+  | {
+      type: "elementalTuning";
+      entityId: number;
+    }
+) & {
+  cost?: DiceType[];
+};
+
 const props = defineProps<{
   name?: string;
   data: MyPlayerData | OppPlayerData;
-  availableActions: Action[];
+  availableActions: Clickable[];
 }>();
 
 const emit = defineEmits<{
@@ -32,13 +53,29 @@ type WithAction = {
 const characters = computed<Array<CharacterData & WithAction>>(() => {
   return props.data.characters.map((c) => {
     const idx = props.availableActions.findIndex(
-      (a) => a.type === "switchActive" && a.active === c.entityId
+      (a) => a.type === "entity" && a.entityId === c.entityId
     );
-    let action: SwitchActiveAction | null = null;
+    let cost: DiceType[] = [];
     if (idx !== -1) {
-      action = props.availableActions[idx] as SwitchActiveAction;
+      cost = props.availableActions[idx].cost ?? [];
     }
-    const cost = action?.cost ?? [];
+    return {
+      ...c,
+      cost: toCostMap(cost),
+      actionIndex: idx,
+    };
+  });
+});
+
+const summons = computed<Array<SummonData & WithAction>>(() => {
+  return props.data.summons.map((c) => {
+    const idx = props.availableActions.findIndex(
+      (a) => a.type === "entity" && a.entityId === c.entityId
+    );
+    let cost: DiceType[] = [];
+    if (idx !== -1) {
+      cost = props.availableActions[idx].cost ?? [];
+    }
     return {
       ...c,
       cost: toCostMap(cost),
@@ -53,19 +90,18 @@ const hands = computed<
   if (props.data.type === "opp") return [];
   return props.data.hands.map((c) => {
     const idx = props.availableActions.findIndex(
-      (a) => a.type === "playCard" && a.card === c.entityId
+      (a) => a.type === "entity" && a.entityId === c.entityId
     );
-    let action: PlayCardAction | null = null;
+    let cost: DiceType[] = [];
     if (idx !== -1) {
-      action = props.availableActions[idx] as PlayCardAction;
+      cost = props.availableActions[idx].cost ?? [];
     }
-    const cost = action?.cost ?? [];
     return {
       ...c,
       cost: toCostMap(cost),
       actionIndex: idx,
       tuneActionIndex: props.availableActions.findIndex(
-        (a) => a.type === "elementalTuning" && a.discardedCard === c.entityId
+        (a) => a.type === "elementalTuning" && a.entityId === c.entityId
       ),
     };
   });
@@ -73,19 +109,17 @@ const hands = computed<
 
 const skills = computed<Array<{ id: number } & WithAction>>(() => {
   // TODO load all skill info from static data.
-  return props.availableActions
-    .map((a, i) => [a, i] as const)
-    .filter((ai): ai is [UseSkillAction, number] => {
-      return ai[0].type === "useSkill";
-    })
-    .map(([a, i]) => {
-      const cost = a.cost ?? [];
-      return {
-        id: a.skill,
+  return props.availableActions.flatMap((a, i) => {
+    const cost = a.cost ?? [];
+    if (a.type !== "skill") return [];
+    return [
+      {
+        id: a.id,
         cost: toCostMap(cost),
         actionIndex: i,
-      };
-    });
+      },
+    ];
+  });
 });
 
 const declareEndIdx = computed<number>(() => {
@@ -110,11 +144,18 @@ function toCostMap(cost: number[]): [DiceType, number][] {
 
 <template>
   <div
-    class="flex border border-black gap-1 relative"
+    class="flex gap-1 relative"
     :class="data.type === 'opp' ? 'flex-col-reverse' : 'flex-col'"
   >
     <div class="flex flex-row">
-      <div class="bg-yellow-800 text-white p-2">{{ data.pileNumber }}</div>
+      <div class="bg-yellow-800 text-white p-1 flex flex-col">
+        <div class="flex-grow">
+          {{ data.pileNumber }}
+        </div>
+        <div v-if="data.type === 'opp'">
+          <Dice :type="DiceType.Void" :text="String(data.dice)"></Dice>
+        </div>
+      </div>
       <div class="bg-blue-50">SUPPORTS</div>
       <div class="bg-white flex-grow flex justify-center gap-4 p-6">
         <div
@@ -139,16 +180,6 @@ function toCostMap(cost: number[]): [DiceType, number][] {
         </div>
       </div>
       <div class="bg-red-50">SUMMONS</div>
-      <div class="bg-yellow-800 text-white flex flex-col p-2 gap-2">
-        <div v-if="data.type === 'my'">
-          <div v-for="d of data.dice">
-            <Dice :type="d"></Dice>
-          </div>
-        </div>
-        <div v-else>
-          {{ data.dice }}
-        </div>
-      </div>
     </div>
     <div v-if="data.type === 'my'" class="flex justify-between">
       <div class="flex flex-wrap gap-3">

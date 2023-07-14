@@ -1,6 +1,6 @@
 import { EventHandlers, PassiveSkillInfo } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
-import { EventFactory, TrivialEvent } from "./context.js";
+import { EventFactory } from "./context.js";
 
 type PassiveSkillInfoWithId = Readonly<PassiveSkillInfo & { id: number }>;
 
