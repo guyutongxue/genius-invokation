@@ -35,8 +35,8 @@ importers:
         version: link:../typings
     devDependencies:
       '@genshin-db/tcg':
-        specifier: ^4.3.10
-        version: 4.3.10
+        specifier: ^4.3.12
+        version: 4.3.12
       case-anything:
         specifier: ^2.1.13
         version: 2.1.13
@@ -575,8 +575,8 @@ packages:
     dev: true
     optional: true
 
-  /@genshin-db/tcg@4.3.10:
-    resolution: {integrity: sha512-ktQ6OiOCiTqCQQSY3FRaW5DmHBz4w54BWUHAjcKG9cxgkHUgFE+A95Rnh4SBJUc3KHSUJnjanvx6pqUBaPfrhg==}
+  /@genshin-db/tcg@4.3.12:
+    resolution: {integrity: sha512-MdP7bvMuc2+SQlMRBB+TIMeenQ7apuuLRdzghHu84h1dU9DugYnylRzHgLkEI7eiuInPdbdj8bHpBa7ir3VA1Q==}
     dependencies:
       fuzzysort: 1.9.0
       pako: 2.1.0

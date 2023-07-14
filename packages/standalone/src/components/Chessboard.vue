@@ -109,9 +109,9 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
           switch (a.type) {
             case "declareEnd": return { type: "declareEnd" };
             case "elementalTuning": return { type: "elementalTuning", entityId: a.discardedCard };
-            case "playCard": return { type: "entity", entityId: a.card };
-            case "switchActive": return { type: "entity", entityId: a.active };
-            case "useSkill": return { type: "skill", id: a.skill };
+            case "playCard": return { type: "entity", entityId: a.card, cost: a.cost };
+            case "switchActive": return { type: "entity", entityId: a.active, cost: a.cost };
+            case "useSkill": return { type: "skill", id: a.skill, cost: a.cost };
             default: throw new Error("unreachable");
           }
         });
@@ -177,6 +177,7 @@ const player: PlayerConfig = {
   },
   handler: handler as Handler,
   onNotify,
+  // noShuffle: true
 };
 
 function diceSelected(dice: DiceType[], targetIdx?: number) {

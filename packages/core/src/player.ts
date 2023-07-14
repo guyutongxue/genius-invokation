@@ -20,11 +20,14 @@ import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
 import { GlobalOperations } from "./state.js";
 import { CardTag, SpecialBits } from "@gi-tcg/data";
+import { EventFactory, RollPhaseConfig } from "./context.js";
 import {
-  EventFactory,
-  RollPhaseConfig,
-} from "./context.js";
-import { ActionConfig, UseSkillConfig, actionToRpcRequest, checkRpcResponse } from "./action.js";
+  ActionConfig,
+  SwitchActiveConfig,
+  UseSkillConfig,
+  actionToRpcRequest,
+  checkRpcResponse,
+} from "./action.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -224,27 +227,59 @@ export class Player {
    * @returns nontrivial action `ActionConfig`; `null` for elemental tuning & declare end
    */
   async action(): Promise<ActionConfig | null> {
-    this.setSpecialBit(SpecialBits.DeclaredEnd, false);
     const actions: ActionConfig[] = [];
     const ch = this.getCharacter("active");
-    actions.push(...ch.skills.map((s): UseSkillConfig => ({
-      type: "useSkill",
-      dice: s.info.costs,
-      skill: s
-    })));
+    actions.push(
+      ...ch.skills.map(
+        (s): UseSkillConfig => ({
+          type: "useSkill",
+          dice: [...s.info.costs],
+          skill: s,
+        })
+      )
+    );
     actions.push(...this.ops.getCardActions());
+    actions.push(
+      ...this.characters
+        .filter((c) => c.isAlive() && c.entityId !== ch.entityId)
+        .map(
+          (c): SwitchActiveConfig => ({
+            type: "switchActive",
+            dice: [DiceType.Void],
+            from: ch,
+            to: c,
+            fast: false,
+          })
+        )
+    );
     // TODO handle "beforeUseDice"
     const request = actionToRpcRequest(actions);
     const response = await this.rpc("action", request);
     if (response.type === "declareEnd") {
       this.setSpecialBit(SpecialBits.DeclaredEnd, true);
-      this.ops.sendEvent("onDeclareEnd", "onDeclareEnd");
+      this.ops.notifyMe({ type: "declareEnd", opp: false });
+      this.ops.notifyOpp({ type: "declareEnd", opp: true });
+      await this.ops.sendEvent("onDeclareEnd");
       return null;
     }
-    // TODO deduct dice
+    // TODO consume dice
     if (response.type === "elementalTuning") {
+      const cardIdx = this.hands.findIndex(
+        (c) => c.entityId === response.discardedCard
+      );
+      if (cardIdx === -1) {
+        throw new Error("Invalid card");
+      }
+      this.hands.splice(cardIdx, 1);
+      this.ops.notifyOpp({
+        type: "oppChangeHands",
+        removed: 0,
+        added: 0,
+        discarded: 1,
+      });
       this.dice.push(this.getCharacter("active").elementType());
       this.sortDice();
+      this.ops.notifyMe({ type: "stateUpdated", damages: [] });
       return null;
     }
     const selectedAction = checkRpcResponse(actions, response);
@@ -323,10 +358,15 @@ export class Player {
   public getSpecialBit(bit: SpecialBits): boolean {
     return (this.specialBits & (1 << bit)) !== 0;
   }
-  public setSpecialBit(bit: SpecialBits, value: boolean) {
+  private setSpecialBit(bit: SpecialBits, value = true) {
     if (value) {
       this.specialBits |= 1 << bit;
     } else {
+      this.specialBits &= ~(1 << bit);
+    }
+  }
+  public cleanSpecialBits(...bits: SpecialBits[]) {
+    for (const bit of bits) {
       this.specialBits &= ~(1 << bit);
     }
   }

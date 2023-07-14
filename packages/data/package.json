@@ -17,7 +17,7 @@
     "@gi-tcg/typings": "workspace:*"
   },
   "devDependencies": {
-    "@genshin-db/tcg": "^4.3.10",
+    "@genshin-db/tcg": "^4.3.12",
     "case-anything": "^2.1.13",
     "glob": "^10.2.7",
     "tsup": "^7.1.0",

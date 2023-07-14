@@ -25,6 +25,7 @@ export type SwitchActiveConfig = {
   dice: DiceType[];
   from: Character;
   to: Character;
+  fast: boolean;
 };
 
 export type OtherActionConfig = never;

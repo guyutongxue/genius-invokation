@@ -9,15 +9,8 @@ import { EventHandlerCtor, EventHandlers } from "./events";
 export type UseSkillAction = (c: SkillDescriptionContext) => void | Promise<void>;
 
 export interface NormalSkillInfo {
-  type: "normal" | "elemental";
+  type: "normal" | "elemental" | "burst";
   gainEnergy: boolean;
-  costs: DiceType[];
-  action: UseSkillAction;
-}
-
-export interface BurstSkillInfo {
-  type: "burst";
-  gainEnergy: false;
   costs: DiceType[];
   action: UseSkillAction;
 }
@@ -32,8 +25,10 @@ export interface PassiveSkillInfo {
 
 export type SkillInfo =
   | NormalSkillInfo
-  | BurstSkillInfo
   | PassiveSkillInfo;
+
+export type SkillType = SkillInfo["type"];
+
 export type SkillInfoWithId = Readonly<SkillInfo & { id: number; }>;
 
 const allSkills = new Map<number, SkillInfoWithId>();

@@ -1,7 +1,7 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { Context, SkillDescriptionContext, SwitchActiveContext } from "./contexts";
 import { Target } from "./target";
-import { BurstSkillInfo, NormalSkillInfo, UseSkillAction, registerSkill } from "./skills";
+import { SkillType, UseSkillAction, registerSkill } from "./skills";
 import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType, registerEquipment } from "./equipments";
@@ -10,13 +10,6 @@ import { PrepareConfig, ShieldConfig, StatusTag, registerStatus } from "./status
 import { SupportType, registerSupport } from "./supports";
 import { SummonContext, registerSummon } from "./summons";
 import { AddPrefix, RemovePrefix, addPrefix, capitalize } from "./utils";
-
-export type SkillType =
-  | "normal"
-  | "elemental"
-  | "burst"
-  | "prepare"
-  | "passive";
 
 export type CharacterHandle = number & { readonly _never: unique symbol };
 export type SkillHandle = number & { readonly _never: unique symbol };
@@ -213,9 +206,10 @@ class SkillBuilder extends ActionBuilderBase {
     };
     registerSkill(this.id, {
       type: this.type,
+      costs: this.costs,
       gainEnergy: this.shouldGainEnergy,
       action,
-    } as NormalSkillInfo | BurstSkillInfo);
+    });
     return this.id as SkillHandle;
   }
 }
@@ -276,14 +270,14 @@ class CardBuilder<
   addCharacterFilter(ch: CharacterHandle, requireActive = true) {
     const self: unknown = this;
     CardBuilder.ensureTargetDescriptor(self);
-    return self.filterMyTargets((c) => c.entityId === ch)
+    return self.filterMyTargets((c) => c.info.id === ch)
       .addFilter(
-      function (c) {
-        return this[0].info.id === ch && (
-          requireActive ? this[0].isActive() : true
-        );
-      }
-    );
+        function (c) {
+          return this[0].info.id === ch && (
+            requireActive ? this[0].isActive() : true
+          );
+        }
+      );
   }
   filterOppTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
     this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {
@@ -291,9 +285,11 @@ class CardBuilder<
     });
     return this;
   }
-  filterMyTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
+  filterMyTargets(filter: (...targets: ContextOfTarget<T>) => boolean, includesDefeated = false) {
     this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {
-      return t.every(t => t.isMine()) && filter(...<ContextOfTarget<T>>t)
+      return t.every(t => t.isMine() &&
+        (!("isAlive" in t) || includesDefeated || t.isAlive())) &&
+        filter(...<ContextOfTarget<T>>t)
     });
     return this;
   }

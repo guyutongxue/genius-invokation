@@ -249,12 +249,16 @@ export class ContextImpl implements Context {
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
     const st = new Status(status);
     player.combatStatuses.push(st);
+    this.state.pushEvent(createEnterEventContext(this.state, this.who, st));
     return new StatusContextImpl(st);
   }
 
   summon(summon: number): void {
     const summonObj = new Summon(summon);
     this.state.getPlayer(this.who).summons.push(summonObj);
+    this.state.pushEvent(
+      createEnterEventContext(this.state, this.who, summonObj)
+    );
   }
   summonOneOf(...summons: number[]): void {
     const summon = summons[Math.floor(Math.random() * summons.length)];
@@ -264,6 +268,9 @@ export class ContextImpl implements Context {
     const supportObj = new Support(support);
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
     player.supports.push(supportObj);
+    this.state.pushEvent(
+      createEnterEventContext(this.state, this.who, supportObj)
+    );
   }
 
   getDice(): DiceType[] {
@@ -390,6 +397,7 @@ class CharacterContextImpl implements CharacterContext {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
     const eq = new Equipment(eqId);
     this.character.equipments.push(eq);
+    this.state.pushEvent(createEnterEventContext(this.state, this.who, eq));
   }
   removeEquipment(equipment: number | EquipmentInfoWithId): void {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
@@ -399,6 +407,8 @@ class CharacterContextImpl implements CharacterContext {
   }
 
   heal(amount: number): void {
+    if (this.character.health === 0) {
+    }
     const newHealth = this.character.health + amount;
     const realHealth = Math.min(newHealth, this.character.info.maxHealth);
     const diff = realHealth - this.character.health;
@@ -422,6 +432,7 @@ class CharacterContextImpl implements CharacterContext {
   createStatus(status: number): StatusContext {
     const st = new Status(status);
     this.character.statuses.push(st);
+    this.state.pushEvent(createEnterEventContext(this.state, this.who, st));
     return new StatusContextImpl(st);
   }
   removeStatus(status: number): boolean {
@@ -727,8 +738,7 @@ export class PlayCardContextImpl
   extends ContextImpl
   implements PlayCardContext
 {
-
-  targetCtxs:  CardTarget[keyof CardTarget][] = [];
+  targetCtxs: CardTarget[keyof CardTarget][] = [];
 
   constructor(
     state: GameState,
@@ -885,33 +895,50 @@ export function getContextById(state: GameState, entityId: number) {
   }
 }
 
-function createCommonEventContext<K extends EventHandlerNames>(
-  state: GameState,
-  sourceWho: 0 | 1 | undefined,
-  event: K
-): EventFactory {
-  return (entityId: number) => {
-    let ctx: ContextImpl;
-    const env = getEntityById(state, entityId)!;
-    if (typeof sourceWho === "number" && !checkShouldListen(env, sourceWho)) {
-      return [];
-    }
-    const { entity, master, who } = env;
-    if (entity instanceof Status || master) {
-      ctx = new ContextWithMasterImpl(
-        state,
-        who,
-        master ?? null,
-        entity as Status
-      );
-    } else {
-      ctx = new ContextImpl(state, who, entity.entityId);
-    }
-    return [[event, ctx]];
+function createCommonEventContext(...events: EventHandlerNames[]) {
+  return (
+    state: GameState,
+    sourceWho?: 0 | 1,
+    sourceChar?: Character,
+    sourceEntityId?: number
+  ): EventFactory => {
+    return (entityId: number) => {
+      let ctx: ContextImpl;
+      const env = getEntityById(state, entityId)!;
+      if (
+        typeof sourceWho === "number" &&
+        !checkShouldListen(env, sourceWho, sourceChar, sourceEntityId)
+      ) {
+        return [];
+      }
+      const { entity, master, who } = env;
+      if (entity instanceof Status || master) {
+        ctx = new ContextWithMasterImpl(
+          state,
+          who,
+          master ?? null,
+          entity as Status
+        );
+      } else {
+        ctx = new ContextImpl(state, who, entity.entityId);
+      }
+      return events.map(e => [e, ctx]);
+    };
   };
 }
 
-function checkShouldListen(entityEnv: EntityEnv, who: 0 | 1, char?: Character) {
+function checkShouldListen(
+  entityEnv: EntityEnv,
+  who?: 0 | 1,
+  char?: Character,
+  entity?: number
+) {
+  if (typeof who === "undefined") {
+    return true;
+  }
+  if (typeof entity === "number") {
+    return entityEnv.entity.entityId === entity;
+  }
   // Default of PassiveSkill, Equipment, Status
   if (entityEnv.listenTo === "master" && entityEnv.master && char) {
     return char.entityId === entityEnv.master.entityId;
@@ -921,6 +948,20 @@ function checkShouldListen(entityEnv: EntityEnv, who: 0 | 1, char?: Character) {
     return entityEnv.who === who;
   }
   return true;
+}
+
+function createEnterEventContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  entity: Entity
+) {
+  const sourceEnv = getEntityById(state, entity.entityId)!;
+  return createCommonEventContext("onEnter")(
+    state,
+    sourceWho,
+    sourceEnv.master,
+    entity.entityId
+  );
 }
 
 function createRollPhaseContext(
@@ -937,24 +978,23 @@ function createRollPhaseContext(
 }
 
 export const CONTEXT_CREATOR = {
-  onBattleBegin: createCommonEventContext<"onBattleBegin">,
+  onBattleBegin: createCommonEventContext("onBattleBegin", "onEnter"),
   onRollPhase: createRollPhaseContext,
-  onActionPhase: createCommonEventContext<"onActionPhase">,
-  onEndPhase: createCommonEventContext<"onEndPhase">,
+  onActionPhase: createCommonEventContext("onActionPhase"),
+  onEndPhase: createCommonEventContext("onEndPhase"),
 
-  onBeforeAction: createCommonEventContext<"onBeforeAction">,
-  onRequestFastSwitchActive:
-    createCommonEventContext<"onRequestFastSwitchActive">,
+  onBeforeAction: createCommonEventContext("onBeforeAction"),
+  onRequestFastSwitchActive: createCommonEventContext(
+    "onRequestFastSwitchActive"
+  ),
 
-  onDeclareEnd: createCommonEventContext<"onDeclareEnd">,
-  // @ts-expect-error unimplemented
-} satisfies Record<
-  EventHandlerNames,
-  (state: GameState, ...args: any[]) => EventFactory
+  onDeclareEnd: createCommonEventContext("onDeclareEnd"),
+} satisfies Partial<
+  Record<EventHandlerNames, (state: GameState, ...args: any[]) => EventFactory>
 >;
 
 type ContextCreator = typeof CONTEXT_CREATOR;
-export type EventHandlerNames1 = keyof ContextCreator; // TODO REMOVE THIS
+export type EventHandlerNames1 = keyof ContextCreator;
 
 export type EventCreatorArgs<K extends keyof ContextCreator> =
   ContextCreator[K] extends (state: GameState, ...args: infer A) => EventFactory

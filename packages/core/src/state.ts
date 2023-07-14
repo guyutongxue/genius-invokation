@@ -23,19 +23,20 @@ import {
 } from "./context.js";
 import { Character } from "./character.js";
 import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
-import { CardTargetDescriptor } from "@gi-tcg/data";
-import { Summon } from "./summon.js";
+import { CardTargetDescriptor, SpecialBits } from "@gi-tcg/data";
 
 export function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
 }
 
 export interface GlobalOperations {
-  triggerHandlingEvent: (...event: unknown[]) => void;
   notifyMe: (event: Event) => void;
   notifyOpp: (event: Event) => void;
   getCardActions: () => PlayCardConfig[];
-  sendEvent: <K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgsForPlayer<K>) => Promise<void>;
+  sendEvent: <K extends EventHandlerNames1>(
+    event: K,
+    ...args: EventCreatorArgsForPlayer<K>
+  ) => Promise<void>;
 }
 
 export class GameState {
@@ -137,29 +138,59 @@ export class GameState {
     ]);
     n0();
     n1();
-    await this.sendEvent("onBattleBegin", undefined, "onBattleBegin");
+    await this.sendEvent("onBattleBegin", undefined);
     this.phase = "roll";
   }
   private async rollPhase() {
-    await Promise.all([
-      this.players[0].rollDice(),
-      this.players[1].rollDice(),
-    ]);
+    await Promise.all([this.players[0].rollDice(), this.players[1].rollDice()]);
+    this.players[0].cleanSpecialBits(
+      SpecialBits.DeclaredEnd,
+      SpecialBits.Defeated,
+      SpecialBits.Plunging
+    );
+    this.players[1].cleanSpecialBits(
+      SpecialBits.DeclaredEnd,
+      SpecialBits.Defeated,
+      SpecialBits.Plunging
+    );
     this.phase = "action";
   }
   private async actionPhase() {
-    await this.sendEvent("onActionPhase", undefined, "onActionPhase");
+    if (this.players[this.currentTurn].getSpecialBit(SpecialBits.DeclaredEnd)) {
+      this.currentTurn = flip(this.currentTurn);
+    }
+    await this.sendEvent("onActionPhase", undefined);
+    const action = await this.players[this.currentTurn].action();
+    if (!action) {
+      // 宣布结束 || 元素调和
+      if (
+        this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
+        this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
+      ) {
+        this.phase = "end";
+      }
+      return;
+    }
+    if (
+      action.type === "useSkill" ||
+      (action.type === "playCard" &&
+        action.card.info.tags.includes("action")) ||
+      (action.type === "switchActive" && !action.fast)
+    ) {
+      this.currentTurn = flip(this.currentTurn);
+    }
     // for each turn, handle "onBeforeAction"
     // TODO "onBeforeUseDice"
     // TODO "onRequestFastSwitchActive"
     // after action, handle "onAction"
-    // ... / "onSwitchActive" / "onUseSkill" / "onPlayCard" / "onDeclareEnd"
-    // 上方的三个可见操作，应当在对应的 player 函数内触发
-    this.phase = "end";
+    // ... / "onSwitchActive" / "onUseSkill" / "onPlayCard"
   }
   private async endPhase() {
-    await this.sendEvent("onEndPhase", undefined, "onEndPhase");
-    this.phase = "gameEnd";
+    await this.sendEvent("onEndPhase", undefined);
+    await Promise.all([
+      this.players[0].drawHands(2),
+      this.players[1].drawHands(2),
+    ]);
     this.roundNumber++;
     if (this.roundNumber > this.options.maxRounds) {
       this.phase = "gameEnd";
@@ -178,7 +209,10 @@ export class GameState {
     };
   }
 
-  async sendEvent<K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgs<K>)  {
+  async sendEvent<K extends EventHandlerNames1>(
+    event: K,
+    ...args: EventCreatorArgs<K>
+  ) {
     const creator = CONTEXT_CREATOR[event];
     // @ts-expect-error TS SUCKS
     const e: EventFactory = creator(this, ...args);
@@ -190,7 +224,9 @@ export class GameState {
     for await (const r of this.players[this.currentTurn].handleEvent(event)) {
       yield;
     }
-    for await (const r of this.players[flip(this.currentTurn)].handleEvent(event)) {
+    for await (const r of this.players[flip(this.currentTurn)].handleEvent(
+      event
+    )) {
       yield;
     }
   }
@@ -199,14 +235,11 @@ export class GameState {
     return {
       notifyMe: (event) => this.notifyPlayer(who, event),
       notifyOpp: (event) => this.notifyPlayer(flip(who), event),
-      triggerHandlingEvent: (...event: unknown[]) => {
-        this.eventWaitingForHandle.push(...event);
-      },
       getCardActions: () => this.getCardActions(who),
       sendEvent: (event, ...args) => {
         // @ts-expect-error TS SUCKS
         return this.sendEvent(event, who, ...args);
-      }
+      },
     };
   }
   private notifyPlayer(who: 0 | 1, event: Event) {
@@ -224,7 +257,10 @@ export class GameState {
   }
 
   private damageLogs: DamageData[] = [];
-  private eventWaitingForHandle: unknown[] = [];
+  private eventWaitingForHandle: EventFactory[] = [];
+  pushEvent(event: EventFactory) {
+    this.eventWaitingForHandle.push(event);
+  }
   dealDamage(
     sourceId: number,
     target: Character,
@@ -265,9 +301,11 @@ export class GameState {
     });
   }
 
-  private getCardTarget(...descriptor: CardTargetDescriptor): PlayCardTargetObj[][] {
+  private getCardTarget(
+    ...descriptor: CardTargetDescriptor
+  ): PlayCardTargetObj[][] {
     if (descriptor.length === 0) {
-      return [];
+      return [[]];
     }
     const [first, ...rest] = descriptor;
     let firstResult: PlayCardTargetObj[] = [];
@@ -276,14 +314,18 @@ export class GameState {
         const c0 = this.players[0].characters;
         const c1 = this.players[1].characters;
         firstResult = [...c0, ...c1];
+        break;
       }
       case "summon": {
         const c0 = this.players[0].summons;
         const c1 = this.players[1].summons;
         firstResult = [...c0, ...c1];
+        break;
       }
     }
-    return firstResult.flatMap((c) => this.getCardTarget(...rest).map((r) => [c, ...r]));
+    return firstResult.flatMap((c) =>
+      this.getCardTarget(...rest).map((r) => [c, ...r])
+    );
   }
   getCardActions(who: 0 | 1): PlayCardConfig[] {
     const player = this.players[who];
@@ -295,7 +337,7 @@ export class GameState {
         if (ctx.enabled()) {
           actions.push({
             type: "playCard",
-            dice: hand.info.costs,
+            dice: [...hand.info.costs],
             card: hand,
             targets: t,
           });

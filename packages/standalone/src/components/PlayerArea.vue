@@ -143,13 +143,13 @@ function toCostMap(cost: number[]): [DiceType, number][] {
 </script>
 
 <template>
-  <div
-    class="flex gap-1 relative"
-    :class="data.type === 'opp' ? 'flex-col-reverse' : 'flex-col'"
-  >
+  <div class="flex gap-1 relative flex-col">
     <div class="flex flex-row">
-      <div class="bg-yellow-800 text-white p-1 flex flex-col">
-        <div class="flex-grow">
+      <div
+        class="bg-yellow-800 text-white p-1 flex justify-between"
+        :class="data.type === 'my' ? 'flex-col-reverse' : 'flex-col'"
+      >
+        <div>
           {{ data.pileNumber }}
         </div>
         <div v-if="data.type === 'opp'">
@@ -213,7 +213,6 @@ function toCostMap(cost: number[]): [DiceType, number][] {
                 v-for="[t, a] of skill.cost"
                 :type="t"
                 :text="String(a)"
-                class="scale-75"
               ></Dice>
             </div>
           </li>
@@ -221,9 +220,8 @@ function toCostMap(cost: number[]): [DiceType, number][] {
       </div>
     </div>
     <div
-      v-if="declareEndIdx !== -1"
-      class="absolute left-3 bg-yellow-300 clickable"
-      :class="data.type === 'opp' ? 'bottom-3' : 'top-3'"
+      v-if="data.type === 'my' && declareEndIdx !== -1"
+      class="absolute left-3 top-3 bg-yellow-300 clickable"
     >
       <button @click="emitClick(declareEndIdx)">End round</button>
     </div>
