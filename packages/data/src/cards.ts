@@ -55,7 +55,7 @@ interface CardInfo {
 
 export type CardInfoWithId = Readonly<CardInfo & { id: number }>;
 
-export type PlayCardFilter<T extends CardTargetDescriptor = readonly any[]> = (
+export type PlayCardFilter<T extends CardTargetDescriptor = CardTargetDescriptor> = (
   this: ContextOfTarget<T>,
   c: Context
 ) => boolean;

@@ -10,13 +10,14 @@ const EngulfingLightning = createCard(311405, ["character"])
   .setType("equipment")
   .addTags("weaponPole")
   .costSame(3)
-  .do(function (c) {
-    if (this[0].energy === 0) {
-      this[0].gainEnergy(1);
-    }
-  })
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => c.addDamage(1))
+  .on("enter", (c) => {
+    const m = c.getMaster();
+    if (m.energy === 0) {
+      m.gainEnergy(1);
+    }
+  })
   .on("actionPhase", (c) => {
     const m = c.getMaster();
     if (m.energy === 0) {
@@ -43,7 +44,8 @@ const LithicSpear = createCard(311402, ["character"])
   .setType("equipment")
   .addTags("weaponPole")
   .costSame(3)
-  .do((c) => {
+  .buildToEquipment()
+  .on("enter", (c) => {
     const shield = c
       .allCharacters()
       .filter(c => c.info.tags.includes("liyue"))
@@ -51,7 +53,6 @@ const LithicSpear = createCard(311402, ["character"])
     const status = c.createStatus(LithicGuard);
     status.gainShield(shield);
   })
-  .buildToEquipment()
   .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();
 

@@ -57,11 +57,11 @@ const GrandNarukamiShrine = createCard(321008)
   .setType("support")
   .addTags("place")
   .costSame(2)
-  .do((c) => {
-    c.generateRandomElementDice();
-  })
   .buildToSupport()
   .withUsage(2)
+  .on("enter", (c) => {
+    c.generateRandomElementDice();
+  })
   .on("actionPhase", (c) => {
     c.generateRandomElementDice();
   })
@@ -91,8 +91,8 @@ const KnightsOfFavoniusLibrary = createCard(321002)
   .setType("support")
   .addTags("place")
   .costSame(1)
-  .rollDice(1)
   .buildToSupport()
+  .on("enter", (c) => c.rollDice(1))
   .on("rollPhase", (c) => c.addRerollCount(1))
   .build();
 

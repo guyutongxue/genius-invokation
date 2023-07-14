@@ -8,9 +8,10 @@ import { SummonContext } from ".";
 import { StatusContext } from "./statuses";
 
 export enum SpecialBits {
-  Defeated = 0,
-  Plunging = 1,
-  LegendUsed = 2,
+  DeclaredEnd,
+  Defeated,
+  Plunging,
+  LegendUsed,
 }
 
 export interface Context {

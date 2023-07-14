@@ -2,7 +2,10 @@ import { SkillHandle } from "./builders";
 import { Context, DamageContext, SwitchActiveContext } from "./contexts";
 import { EventHandlerCtor, ListenTarget } from "./events";
 
-export type StatusTag = "disableSkill" | "shield";
+export type StatusTag =
+  | "disableSkill" // 禁用技能（仅角色状态）
+  | "shield"       // 护盾
+  ;
 
 export type ShieldConfig = null | number | {
   initial: number;
@@ -33,7 +36,7 @@ export interface StatusContext {
   readonly info: StatusInfoWithId;
   getVisibleValue(): number | null;
   addVisibleValue(value: number): number;
-  
+
   gainUsage(value: number): void;
   gainShield(value: number): void;
 }

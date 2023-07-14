@@ -19,8 +19,12 @@ import {
   EventCreatorArgs,
   EventCreatorArgsForPlayer,
   EventHandlerNames1,
+  PlayCardContextImpl,
 } from "./context.js";
 import { Character } from "./character.js";
+import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
+import { CardTargetDescriptor } from "@gi-tcg/data";
+import { Summon } from "./summon.js";
 
 export function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
@@ -30,6 +34,7 @@ export interface GlobalOperations {
   triggerHandlingEvent: (...event: unknown[]) => void;
   notifyMe: (event: Event) => void;
   notifyOpp: (event: Event) => void;
+  getCardActions: () => PlayCardConfig[];
   sendEvent: <K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgsForPlayer<K>) => Promise<void>;
 }
 
@@ -197,6 +202,7 @@ export class GameState {
       triggerHandlingEvent: (...event: unknown[]) => {
         this.eventWaitingForHandle.push(...event);
       },
+      getCardActions: () => this.getCardActions(who),
       sendEvent: (event, ...args) => {
         // @ts-expect-error TS SUCKS
         return this.sendEvent(event, who, ...args);
@@ -257,6 +263,46 @@ export class GameState {
         },
       ],
     });
+  }
+
+  private getCardTarget(...descriptor: CardTargetDescriptor): PlayCardTargetObj[][] {
+    if (descriptor.length === 0) {
+      return [];
+    }
+    const [first, ...rest] = descriptor;
+    let firstResult: PlayCardTargetObj[] = [];
+    switch (first) {
+      case "character": {
+        const c0 = this.players[0].characters;
+        const c1 = this.players[1].characters;
+        firstResult = [...c0, ...c1];
+      }
+      case "summon": {
+        const c0 = this.players[0].summons;
+        const c1 = this.players[1].summons;
+        firstResult = [...c0, ...c1];
+      }
+    }
+    return firstResult.flatMap((c) => this.getCardTarget(...rest).map((r) => [c, ...r]));
+  }
+  getCardActions(who: 0 | 1): PlayCardConfig[] {
+    const player = this.players[who];
+    const actions: PlayCardConfig[] = [];
+    for (const hand of player.hands) {
+      const targets = this.getCardTarget(...hand.info.target);
+      for (const t of targets) {
+        const ctx = new PlayCardContextImpl(this, who, hand, t);
+        if (ctx.enabled()) {
+          actions.push({
+            type: "playCard",
+            dice: hand.info.costs,
+            card: hand,
+            targets: t,
+          });
+        }
+      }
+    }
+    return actions;
   }
 
   clone() {

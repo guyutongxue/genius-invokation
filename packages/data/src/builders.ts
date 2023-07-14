@@ -5,10 +5,10 @@ import { BurstSkillInfo, NormalSkillInfo, UseSkillAction, registerSkill } from "
 import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType, registerEquipment } from "./equipments";
-import { CharacterTag, registerCharacter } from "./characters";
+import { CharacterContext, CharacterTag, registerCharacter } from "./characters";
 import { PrepareConfig, ShieldConfig, StatusTag, registerStatus } from "./statuses";
 import { SupportType, registerSupport } from "./supports";
-import { registerSummon } from "./summons";
+import { SummonContext, registerSummon } from "./summons";
 import { AddPrefix, RemovePrefix, addPrefix, capitalize } from "./utils";
 
 export type SkillType =
@@ -276,7 +276,8 @@ class CardBuilder<
   addCharacterFilter(ch: CharacterHandle, requireActive = true) {
     const self: unknown = this;
     CardBuilder.ensureTargetDescriptor(self);
-    return self.addFilter(
+    return self.filterMyTargets((c) => c.entityId === ch)
+      .addFilter(
       function (c) {
         return this[0].info.id === ch && (
           requireActive ? this[0].isActive() : true
@@ -284,8 +285,16 @@ class CardBuilder<
       }
     );
   }
-  filterTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
-    this.targetFilters.push(filter);
+  filterOppTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
+    this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {
+      return t.every(t => !t.isMine()) && filter(...<ContextOfTarget<T>>t)
+    });
+    return this;
+  }
+  filterMyTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
+    this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {
+      return t.every(t => t.isMine()) && filter(...<ContextOfTarget<T>>t)
+    });
     return this;
   }
   do(action: (this: ContextOfTarget<T>, c: Context) => void) {

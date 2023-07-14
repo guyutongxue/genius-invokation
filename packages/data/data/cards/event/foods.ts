@@ -10,7 +10,7 @@ function createFood(id: number) {
   return createCard(id, ["character"])
     .setType("event")
     .addTags("food")
-    .filterTargets((c) => !c.hasStatus(Satiated))
+    .filterMyTargets((c) => !c.hasStatus(Satiated))
     .doAtLast(function (c) {
       this[0].createStatus(Satiated);
     });
@@ -43,7 +43,7 @@ const AdeptusTemptation = createFood(333002)
 const ButterCrab = createCard(333012, ["character"])
   .setType("event")
   .addTags("food")
-  .filterTargets((c) => !c.hasStatus(Satiated))
+  .filterMyTargets((c) => !c.hasStatus(Satiated))
   .costVoid(2)
   .do((c) => {
     c.createStatus(Satiated, Target.myAll());
@@ -204,7 +204,7 @@ const TandooriRoastChicken = createFood(333011)
 const TeyvatFriedEgg = createCard(333009, ["character"])
   .setType("event")
   .addTags("food")
-  .filterTargets((c) => !c.isAlive())
+  .filterMyTargets((c) => !c.isAlive())
   .costSame(3)
   .do(function (c) {
     this[0].heal(1);

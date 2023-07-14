@@ -87,7 +87,7 @@ const FruitOfFulfillment = createCard(-37, ["character"])
   .setType("equipment")
   .addTags("weaponCatalyst")
   .costVoid(3)
-  .drawCards(2)
   .buildToEquipment()
+  .on("enter", (c) => c.drawCards(2))
   .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();

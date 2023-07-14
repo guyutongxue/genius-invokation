@@ -19,7 +19,7 @@ const AbyssalSummons = createCard(332015)
  */
 const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "character"])
   .setType("event")
-  .filterTargets((ch0, ch1) => !!ch0.hasEquipment("artifact"))
+  .filterMyTargets((ch0, ch1) => !!ch0.hasEquipment("artifact") && ch0.entityId !== ch1.entityId)
   .do(function () {
     const from = this[0];
     const to = this[1];
@@ -380,8 +380,8 @@ const LeaveItToMe = createCard(332006)
  */
 const MasterOfWeaponry = createCard(332010, ["character", "character"])
   .setType("event")
-  .filterTargets((ch0, ch1) => {
-    return !!ch0.hasEquipment("weapon") &&
+  .filterMyTargets((ch0, ch1) => {
+    return !!ch0.hasEquipment("weapon") && ch0.entityId !== ch1.entityId &&
       (["bow", "catalyst", "claymore", "pole", "sword"] as const)
         .filter(c => ch0.info.tags.includes(c) && ch1.info.tags.includes(c)).length > 0;
   })
@@ -428,7 +428,7 @@ const PlungingStrike = createCard(332017, ["character"])
 const QuickKnit = createCard(332012, ["summon"])
   .setType("event")
   .costSame(1)
-  .filterTargets((t) => t.isMine())
+  .filterMyTargets((t) => true)
   .do(function () {
     this[0].usage += 1;
   })
@@ -441,7 +441,7 @@ const QuickKnit = createCard(332012, ["summon"])
 const SendOff = createCard(332013, ["summon"])
   .setType("event")
   .costSame(2)
-  .filterTargets((t) => !t.isMine())
+  .filterOppTargets((t) => true)
   .do(function () {
     this[0].usage -= 2;
   })

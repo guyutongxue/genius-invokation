@@ -9,9 +9,12 @@ const Nre = createCard(323002)
   .setType("support")
   .addTags("item")
   .costVoid(2)
-  .drawCards(1, false, "food")
   .buildToSupport()
   .withUsagePerRound(1)
+  .on("enter", (c) => {
+    c.drawCards(1, false, "food");
+    return false;
+  })
   .on("playCard", (c) => {
     if (c.info.tags.includes("food")) {
       c.drawCards(1, false, "food");

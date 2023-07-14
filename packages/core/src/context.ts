@@ -27,6 +27,7 @@ import {
   getSkill,
   getTargetInfo,
   ListenTarget,
+  PlayCardFilter,
 } from "@gi-tcg/data";
 import { GameState, flip } from "./state.js";
 import { DamageType, DiceType } from "@gi-tcg/typings";
@@ -37,7 +38,7 @@ import { Status } from "./status.js";
 import { Summon } from "./summon.js";
 import { Card } from "./card.js";
 import { Entity } from "./entity.js";
-import { Action } from "./action.js";
+import { ActionConfig, PlayCardTargetObj } from "./action.js";
 import { Support } from "./support.js";
 import { PassiveSkill } from "./passive_skill.js";
 import { Skill } from "./skill.js";
@@ -586,7 +587,7 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
     state: GameState,
     who: 0 | 1,
     sourceId: number,
-    private action: Action
+    private action: ActionConfig
   ) {
     super(state, who, sourceId);
     switch (action.type) {
@@ -646,7 +647,7 @@ class SkillDescriptionContextImpl
     state: GameState,
     who: 0 | 1,
     sourceId: number,
-    protected skill: Skill
+    protected skill: Skill | PassiveSkill
   ) {
     super(state, who, sourceId);
   }
@@ -726,29 +727,37 @@ export class PlayCardContextImpl
   extends ContextImpl
   implements PlayCardContext
 {
+
+  targetCtxs:  CardTarget[keyof CardTarget][] = [];
+
   constructor(
     state: GameState,
     who: 0 | 1,
     public readonly card: Card,
-    private readonly targetObj: (Character | Summon)[]
+    private readonly targetObj: PlayCardTargetObj[]
   ) {
     super(state, who, card.entityId);
-  }
-  get info(): CardInfoWithId {
-    return this.card.info;
-  }
-  get target(): CardTarget[keyof CardTarget][] {
-    const result: CardTarget[keyof CardTarget][] = [];
     for (const obj of this.targetObj) {
       if (obj instanceof Character) {
-        result.push(this.createCharacterContext(obj));
+        this.targetCtxs.push(this.createCharacterContext(obj));
       } else if (obj instanceof Summon) {
-        result.push(this.createSummonContext(obj));
+        this.targetCtxs.push(this.createSummonContext(obj));
       } else {
         console.error(obj);
         throw new Error(`Unknown target object: ${obj}`);
       }
     }
+  }
+  get info(): CardInfoWithId {
+    return this.card.info;
+  }
+  get target(): CardTarget[keyof CardTarget][] {
+    return this.targetCtxs;
+  }
+
+  enabled() {
+    // @ts-expect-error TS Sucks
+    const result = this.card.info.filter.call(this.targetCtxs, this);
     return result;
   }
 
@@ -937,6 +946,7 @@ export const CONTEXT_CREATOR = {
   onRequestFastSwitchActive:
     createCommonEventContext<"onRequestFastSwitchActive">,
 
+  onDeclareEnd: createCommonEventContext<"onDeclareEnd">,
   // @ts-expect-error unimplemented
 } satisfies Record<
   EventHandlerNames,

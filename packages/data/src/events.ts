@@ -34,6 +34,8 @@ export interface EventHandlers<This = {}> {
   onBeforeUseDice?(this: This, c: UseDiceContext): HandlerResult;
 
   onElementalReaction?(this: This, c: ElementalReactionContext): HandlerResult;
+
+  onEnter?(this: This, c: Context): HandlerResult;
 }
 
 export type EventHandlerCtor = new () => EventHandlers;

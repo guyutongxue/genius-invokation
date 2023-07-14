@@ -24,6 +24,7 @@ import {
   EventFactory,
   RollPhaseConfig,
 } from "./context.js";
+import { ActionConfig, UseSkillConfig, actionToRpcRequest, checkRpcResponse } from "./action.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -219,8 +220,38 @@ export class Player {
     }
   }
 
-  action() {
-    
+  /**
+   * @returns nontrivial action `ActionConfig`; `null` for elemental tuning & declare end
+   */
+  async action(): Promise<ActionConfig | null> {
+    this.setSpecialBit(SpecialBits.DeclaredEnd, false);
+    const actions: ActionConfig[] = [];
+    const ch = this.getCharacter("active");
+    actions.push(...ch.skills.map((s): UseSkillConfig => ({
+      type: "useSkill",
+      dice: s.info.costs,
+      skill: s
+    })));
+    actions.push(...this.ops.getCardActions());
+    // TODO handle "beforeUseDice"
+    const request = actionToRpcRequest(actions);
+    const response = await this.rpc("action", request);
+    if (response.type === "declareEnd") {
+      this.setSpecialBit(SpecialBits.DeclaredEnd, true);
+      this.ops.sendEvent("onDeclareEnd", "onDeclareEnd");
+      return null;
+    }
+    // TODO deduct dice
+    if (response.type === "elementalTuning") {
+      this.dice.push(this.getCharacter("active").elementType());
+      this.sortDice();
+      return null;
+    }
+    const selectedAction = checkRpcResponse(actions, response);
+    if (selectedAction === null) {
+      throw new Error("Invalid action");
+    }
+    return selectedAction;
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {
@@ -291,6 +322,13 @@ export class Player {
 
   public getSpecialBit(bit: SpecialBits): boolean {
     return (this.specialBits & (1 << bit)) !== 0;
+  }
+  public setSpecialBit(bit: SpecialBits, value: boolean) {
+    if (value) {
+      this.specialBits |= 1 << bit;
+    } else {
+      this.specialBits &= ~(1 << bit);
+    }
   }
 
   private getDataBase(): PlayerDataBase {
