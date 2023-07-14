@@ -35,7 +35,11 @@ function selected() {
           v-model="removed"
         />
         <label :for="`rdInput${rand}-${i}`">
-          <Dice :type="(d as DiceType)" :selected="removed.includes(i)" selectedColor="yellow"  class="scale-150"></Dice>
+          <Dice
+            :type="(d as DiceType)"
+            :selected="removed.includes(i)"
+            class="scale-150 cursor-pointer"
+          ></Dice>
         </label>
       </li>
     </ul>

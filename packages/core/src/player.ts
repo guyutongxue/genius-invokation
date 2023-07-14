@@ -141,8 +141,10 @@ export class Player {
     };
     const e = createRollPhaseContext(this, config);
     this.handleEvent(e);
-    this.dice = new Array(this.config.game.initialDice).fill(0);
-    this.doRollDice(config.controlled);
+    this.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
+    if (!this.config.alwaysOmni) {
+      this.doRollDice(config.controlled);
+    }
     await this.rerollDice(config.times);
   }
   async sortDice() {
@@ -218,6 +220,10 @@ export class Player {
     } else {
       return ch;
     }
+  }
+
+  action() {
+    
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {

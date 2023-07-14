@@ -187,7 +187,6 @@ export class GameState {
     for await (const r of this.players[flip(this.currentTurn)].handleEvent(event)) {
       yield;
     }
-
   }
 
   private createOperationsForPlayer(who: 0 | 1): GlobalOperations {
