@@ -40,7 +40,7 @@ export type ActionConfig =
   | SwitchActiveConfig
   | OtherActionConfig;
 
-export function actionToRpcRequest(actions: ActionConfig[]): ActionRequest {
+export function actionToRpcRequest(actions: ActionConfig[], hands: Card[]): ActionRequest {
   const results: Action[] = [];
   const cards = new Map<number, PlayCardConfig[]>();
   for (const action of actions) {
@@ -83,10 +83,12 @@ export function actionToRpcRequest(actions: ActionConfig[]): ActionRequest {
         })))
       },
     });
+  }
+  for (const hand of hands) {
     results.push({
       type: "elementalTuning",
-      discardedCard: cardId
-    });
+      discardedCard: hand.entityId,
+    })
   }
   results.push({
     type: "declareEnd",

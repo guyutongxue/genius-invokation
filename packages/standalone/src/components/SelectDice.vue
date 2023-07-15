@@ -22,7 +22,7 @@ function initChosen() {
     const requiredCount = requiredMap.get(DiceType.Omni)!;
     for (let i = props.dice.length - 1; i >= 0; i--) {
       if (props.dice[i] === DiceType.Omni) continue;
-      const thisCount = requiredMap.get(props.dice[i]) ?? 0;
+      const thisCount = props.dice.filter(d => d === props.dice[i]).length;
       if (thisCount + OMNI_COUNT < requiredCount) continue;
       const result: number[] = [];
       for (

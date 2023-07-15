@@ -270,14 +270,7 @@ class CardBuilder<
   addCharacterFilter(ch: CharacterHandle, requireActive = true) {
     const self: unknown = this;
     CardBuilder.ensureTargetDescriptor(self);
-    return self.filterMyTargets((c) => c.info.id === ch)
-      .addFilter(
-        function (c) {
-          return this[0].info.id === ch && (
-            requireActive ? this[0].isActive() : true
-          );
-        }
-      );
+    return self.filterMyTargets((c) => c.info.id === ch && (!requireActive || c.isActive()));
   }
   filterOppTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
     this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {

@@ -408,12 +408,9 @@ class CharacterContextImpl implements CharacterContext {
 
   heal(amount: number): void {
     if (this.character.health === 0) {
+      this.character.revive();
     }
-    const newHealth = this.character.health + amount;
-    const realHealth = Math.min(newHealth, this.character.info.maxHealth);
-    const diff = realHealth - this.character.health;
-    this.character.health = realHealth;
-    this.state.addHealLog(this.character, diff, this.sourceId);
+    this.state.heal(this.character, amount, this.sourceId);
   }
   gainEnergy(amount: number): number {
     const newEnergy = this.character.energy + amount;
@@ -904,7 +901,8 @@ function createCommonEventContext(...events: EventHandlerNames[]) {
   ): EventFactory => {
     return (entityId: number) => {
       let ctx: ContextImpl;
-      const env = getEntityById(state, entityId)!;
+      const env = getEntityById(state, entityId);
+      if (env === null) return [];
       if (
         typeof sourceWho === "number" &&
         !checkShouldListen(env, sourceWho, sourceChar, sourceEntityId)
@@ -922,7 +920,7 @@ function createCommonEventContext(...events: EventHandlerNames[]) {
       } else {
         ctx = new ContextImpl(state, who, entity.entityId);
       }
-      return events.map(e => [e, ctx]);
+      return events.map((e) => [e, ctx]);
     };
   };
 }
@@ -950,17 +948,32 @@ function checkShouldListen(
   return true;
 }
 
+/**
+ * 创建只响应特定实体或角色（通常为被动技能）的入场事件
+ * @param state 全局状态
+ * @param sourceWho 所属玩家
+ * @param entityOrCharacter 入场的实体或角色
+ * @returns 要发送的 EventFactory，只会对特定实体有效
+ */
 function createEnterEventContext(
   state: GameState,
   sourceWho: 0 | 1,
-  entity: Entity
-) {
-  const sourceEnv = getEntityById(state, entity.entityId)!;
+  entityOrCharacter: Entity | Character
+): EventFactory {
+  if (entityOrCharacter instanceof Character) {
+    return createCommonEventContext("onEnter")(
+      state,
+      sourceWho,
+      entityOrCharacter
+    );
+  }
+  const sourceEnv = getEntityById(state, entityOrCharacter.entityId);
+  if (sourceEnv === null) return () => [];
   return createCommonEventContext("onEnter")(
     state,
     sourceWho,
     sourceEnv.master,
-    entity.entityId
+    entityOrCharacter.entityId
   );
 }
 
@@ -970,12 +983,15 @@ function createRollPhaseContext(
   rollConfig: RollPhaseConfig
 ): EventFactory {
   return (entityId: number) => {
-    const env = getEntityById(state, entityId)!;
+    const env = getEntityById(state, entityId);
+    if (env === null) return [];
     if (!checkShouldListen(env, sourceWho)) return [];
     const ctx = new RollContextImpl(state.getPlayer(sourceWho), rollConfig);
     return [["onRollPhase", ctx]];
   };
 }
+
+type Creator = (state: GameState, ...args: any[]) => EventFactory;
 
 export const CONTEXT_CREATOR = {
   onBattleBegin: createCommonEventContext("onBattleBegin", "onEnter"),
@@ -989,9 +1005,9 @@ export const CONTEXT_CREATOR = {
   ),
 
   onDeclareEnd: createCommonEventContext("onDeclareEnd"),
-} satisfies Partial<
-  Record<EventHandlerNames, (state: GameState, ...args: any[]) => EventFactory>
->;
+
+  onEnter: createEnterEventContext,
+} satisfies Partial<Record<EventHandlerNames, Creator>>;
 
 type ContextCreator = typeof CONTEXT_CREATOR;
 export type EventHandlerNames1 = keyof ContextCreator;
@@ -1008,4 +1024,11 @@ export type EventCreatorArgsForPlayer<K extends keyof ContextCreator> =
     ...args: infer A
   ) => EventFactory
     ? A
+    : never;
+
+export type EventCreatorArgsForCharacter<K extends EventHandlerNames1> =
+  EventCreatorArgsForPlayer<K> extends [infer F, ...infer R]
+    ? Character extends F
+      ? R
+      : never
     : never;

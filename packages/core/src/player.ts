@@ -20,7 +20,7 @@ import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
 import { GlobalOperations } from "./state.js";
 import { CardTag, SpecialBits } from "@gi-tcg/data";
-import { EventFactory, RollPhaseConfig } from "./context.js";
+import { EventCreatorArgsForCharacter, EventCreatorArgsForPlayer, EventFactory, EventHandlerNames1, RollPhaseConfig } from "./context.js";
 import {
   ActionConfig,
   SwitchActiveConfig,
@@ -51,7 +51,7 @@ export class Player {
     private ops: GlobalOperations
   ) {
     this.piles = config.deck.actions.map((id) => new Card(id));
-    this.characters = config.deck.characters.map((id) => new Character(id));
+    this.characters = config.deck.characters.map((id) => new Character(id, this));
     if (!config.noShuffle) {
       this.piles = _.shuffle(this.piles);
     }
@@ -253,7 +253,7 @@ export class Player {
         )
     );
     // TODO handle "beforeUseDice"
-    const request = actionToRpcRequest(actions);
+    const request = actionToRpcRequest(actions, this.hands);
     const response = await this.rpc("action", request);
     if (response.type === "declareEnd") {
       this.setSpecialBit(SpecialBits.DeclaredEnd, true);
@@ -315,6 +315,11 @@ export class Player {
 
   fullSupportArea(): boolean {
     return this.supports.length >= this.config.game.maxSupports;
+  }
+
+  sendEventFromCharacter<K extends EventHandlerNames1>(ch: Character, event: K, ...rest: EventCreatorArgsForCharacter<K>) {
+    // @ts-expect-error TS sucks
+    this.ops.sendEvent(event, ch, ...rest);
   }
 
   async *handleEvent(event: EventFactory) {

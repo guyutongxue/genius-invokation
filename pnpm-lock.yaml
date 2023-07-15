@@ -121,6 +121,15 @@ importers:
         specifier: ^0.57.0
         version: 0.57.0
 
+  packages/utils:
+    devDependencies:
+      '@gi-tcg/typings':
+        specifier: workspace:*
+        version: link:../typings
+      typescript:
+        specifier: ^5.1.3
+        version: 5.1.6
+
 packages:
 
   /@alloc/quick-lru@5.2.0:

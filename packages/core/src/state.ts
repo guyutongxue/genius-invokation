@@ -287,7 +287,11 @@ export class GameState {
       log: [], // TODO
     });
   }
-  addHealLog(target: Character, value: number, sourceId: number) {
+  heal(target: Character, value: number, sourceId: number) {
+    const newHealth = target.health + value;
+    const realHealth = Math.min(newHealth, target.info.maxHealth);
+    const diff = realHealth - target.health;
+    target.health = realHealth;
     this.damageLogs.push({
       target: target.entityId,
       value,
@@ -295,7 +299,7 @@ export class GameState {
       log: [
         {
           source: sourceId,
-          what: `Heal ${value} HP`,
+          what: `Heal ${value}(${diff}) HP`,
         },
       ],
     });

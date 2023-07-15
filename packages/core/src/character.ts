@@ -4,8 +4,9 @@ import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
-import { EventFactory } from "./context.js";
+import { EventCreatorArgsForCharacter, EventFactory, EventHandlerNames1 } from "./context.js";
 import { Skill } from "./skill.js";
+import { Player } from "./player.js";
 
 const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
   cryo: DiceType.Cryo,
@@ -28,7 +29,7 @@ export class Character extends Entity {
   public skills: Skill[] = [];
   public passiveSkills: PassiveSkill[] = [];
 
-  constructor(id: number) {
+  constructor(id: number, private parent: Player) {
     super(id);
     this.info = getCharacter(id);
     this.health = this.info.maxHealth;
@@ -40,6 +41,15 @@ export class Character extends Entity {
         this.skills.push(new Skill(skill));
       }
     }
+  }
+  private sendEvent<K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgsForCharacter<K>) {
+    this.parent.sendEventFromCharacter(this, event, ...args);
+  }
+
+  revive() {
+    this.defeated = false;
+    this.health = 0;
+    this.sendEvent("onEnter");
   }
 
   isAlive() {
