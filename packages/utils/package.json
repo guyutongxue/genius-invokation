@@ -1,5 +1,6 @@
 {
-  "name": "@gi-tcg/core",
+  "name": "@gi-tcg/utils",
+  "private": true,
   "type": "module",
   "exports": {
     ".": {
@@ -11,14 +12,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@gi-tcg/data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
-    "@gi-tcg/utils": "workspace:*",
-    "@types/lodash-es": "^4.17.7",
-    "nodemon": "^2.0.22",
     "typescript": "^5.1.3"
-  },
-  "dependencies": {
-    "lodash-es": "^4.17.21"
   }
 }

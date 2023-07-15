@@ -36,7 +36,7 @@ const showRollDice = ref<boolean>(false);
 const ee = new EventEmitter<{
   cardSwitched: [removed: number[]];
   diceSwitched: [removed: number[]];
-  diceSelected: [dice: number[] | undefined, targets: number];
+  diceSelected: [dice: number[] | undefined];
   acted: [selectedActionIndex: number];
 }>();
 
@@ -53,15 +53,13 @@ const requireSelectedDice = ref<number[]>();
 const requireTargets = ref<PlayCardTargets>();
 async function useDice(
   needed: DiceType[],
-  target?: PlayCardTargets
-): Promise<[DiceType[], number] | undefined> {
+): Promise<DiceType[] | undefined> {
   requireSelectedDice.value = needed;
-  requireTargets.value = target;
-  const selected = await new Promise<[number[], number] | undefined>(
+  const selected = await new Promise<number[] | undefined>(
     (resolve) => {
-      ee.once("diceSelected", (selected, target) => {
+      ee.once("diceSelected", (selected) => {
         if (typeof selected === "undefined") return resolve(undefined);
-        resolve([selected, target]);
+        resolve(selected);
       });
     }
   );
@@ -83,10 +81,12 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
     }
     case "chooseActive": {
       const { candidates } = req as RpcRequest["chooseActive"];
-      availableActions.value = candidates.map((c): Clickable => ({
-        type: "entity",
-        entityId: c,
-      }));
+      availableActions.value = candidates.map(
+        (c): Clickable => ({
+          type: "entity",
+          entityId: c,
+        })
+      );
       const idx = await new Promise<number>((resolve) => {
         ee.once("acted", resolve);
       });
@@ -107,12 +107,18 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
       while (true) {
         availableActions.value = candidates.map((a): Clickable => {
           switch (a.type) {
-            case "declareEnd": return { type: "declareEnd" };
-            case "elementalTuning": return { type: "elementalTuning", entityId: a.discardedCard };
-            case "playCard": return { type: "entity", entityId: a.card, cost: a.cost };
-            case "switchActive": return { type: "entity", entityId: a.active, cost: a.cost };
-            case "useSkill": return { type: "skill", id: a.skill, cost: a.cost };
-            default: throw new Error("unreachable");
+            case "declareEnd":
+              return { type: "declareEnd" };
+            case "elementalTuning":
+              return { type: "elementalTuning", entityId: a.discardedCard };
+            case "playCard":
+              return { type: "entity", entityId: a.card, cost: a.cost };
+            case "switchActive":
+              return { type: "entity", entityId: a.active, cost: a.cost };
+            case "useSkill":
+              return { type: "skill", id: a.skill, cost: a.cost };
+            default:
+              throw new Error("unreachable");
           }
         });
         const actionIdx = await new Promise<number>((resolve) => {
@@ -132,7 +138,7 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
             return (r = {
               type: "elementalTuning",
               discardedCard: selectedAction.discardedCard,
-              dice: cost[0] as [DiceType],
+              dice: cost as [DiceType],
             });
           }
           case "switchActive": {
@@ -141,17 +147,18 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
             return (r = {
               type: "switchActive",
               active: selectedAction.active,
-              dice: spent[0],
+              dice: spent,
             });
           }
           case "playCard": {
             const cardTarget = selectedAction.target;
-            const spent = await useDice(selectedAction.cost, cardTarget);
+            // TODO
+            const spent = await useDice(selectedAction.cost);
             if (typeof spent === "undefined") continue;
             return (r = {
               type: "playCard",
               card: selectedAction.card,
-              dice: spent[0],
+              dice: spent,
               targetIndex: spent[1],
             });
           }
@@ -161,7 +168,7 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
             return (r = {
               type: "useSkill",
               skill: selectedAction.skill,
-              dice: spent[0],
+              dice: spent,
             });
           }
         }
@@ -180,8 +187,8 @@ const player: PlayerConfig = {
   // noShuffle: true
 };
 
-function diceSelected(dice: DiceType[], targetIdx?: number) {
-  ee.emit("diceSelected", dice, targetIdx ?? 0);
+function diceSelected(dice: DiceType[]) {
+  ee.emit("diceSelected", dice);
 }
 
 const emit = defineEmits<{
@@ -195,8 +202,8 @@ onMounted(() => {
 
 <template>
   <div v-if="stateData" class="relative">
-    <div class="flex flex-row">
-      <div class="flex-grow flex flex-col gap-2">
+    <div class="flex flex-row items-stretch">
+      <div class="flex-grow flex flex-col gap-2" >
         <PlayerArea
           :data="stateData.players[1]"
           :availableActions="availableActions"
@@ -210,7 +217,17 @@ onMounted(() => {
         >
         </PlayerArea>
       </div>
-      <div class="bg-yellow-800 text-white flex flex-col p-2 gap-[1px]">
+      <SelectDice
+        class="bg-yellow-800"
+        v-if="requireSelectedDice"
+        :dice="stateData.players[0].dice"
+        :required="requireSelectedDice"
+        :targets="requireTargets"
+        @selected="diceSelected"
+        @cancelled="ee.emit('diceSelected', undefined)"
+      >
+      </SelectDice>
+      <div v-else class="bg-yellow-800 text-white flex flex-col p-2 gap-[1px]">
         <div v-for="d of stateData.players[0].dice">
           <Dice :type="d"></Dice>
         </div>
@@ -230,15 +247,5 @@ onMounted(() => {
       @selected="ee.emit('diceSwitched', $event)"
     >
     </RollDice>
-    <SelectDice
-      class="absolute top-0 right-0 h-full bg-white outline outline-4 outline-green-400"
-      v-if="requireSelectedDice"
-      :dice="stateData.players[0].dice"
-      :required="requireSelectedDice"
-      :targets="requireTargets"
-      @selected="diceSelected"
-      @cancelled="ee.emit('diceSelected', undefined, 0)"
-    >
-    </SelectDice>
   </div>
 </template>

@@ -19,6 +19,7 @@ export type Clickable = (
   | {
       type: "entity";
       entityId: number;
+      withMark?: boolean;
     }
   | {
       type: "skill";

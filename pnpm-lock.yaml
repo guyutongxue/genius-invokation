@@ -18,6 +18,9 @@ importers:
       '@gi-tcg/typings':
         specifier: workspace:*
         version: link:../typings
+      '@gi-tcg/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@types/lodash-es':
         specifier: ^4.17.7
         version: 4.17.7
@@ -61,6 +64,9 @@ importers:
       '@gi-tcg/typings':
         specifier: workspace:*
         version: link:../typings
+      '@gi-tcg/utils':
+        specifier: workspace:*
+        version: link:../utils
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.1

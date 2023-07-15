@@ -29,7 +29,8 @@ import {
   ListenTarget,
   PlayCardFilter,
 } from "@gi-tcg/data";
-import { GameState, flip } from "./state.js";
+import { flip } from "@gi-tcg/utils";
+import { GameState } from "./state.js";
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { CharacterPosition, Player } from "./player.js";
 import { Character } from "./character.js";

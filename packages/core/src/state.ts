@@ -24,10 +24,7 @@ import {
 import { Character } from "./character.js";
 import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
 import { CardTargetDescriptor, SpecialBits } from "@gi-tcg/data";
-
-export function flip(who: 0 | 1): 0 | 1 {
-  return (1 - who) as 0 | 1;
-}
+import { flip } from "@gi-tcg/utils";
 
 export interface GlobalOperations {
   notifyMe: (event: Event) => void;
