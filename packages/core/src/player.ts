@@ -20,15 +20,23 @@ import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
 import { GlobalOperations } from "./state.js";
 import { CardTag, SpecialBits } from "@gi-tcg/data";
-import { EventCreatorArgsForCharacter, EventCreatorArgsForPlayer, EventFactory, EventHandlerNames1, RollPhaseConfig } from "./context.js";
+import {
+  EventCreatorArgsForCharacter,
+  EventCreatorArgsForPlayer,
+  EventFactory,
+  EventHandlerNames1,
+  RollPhaseConfig,
+} from "./context.js";
 import {
   ActionConfig,
+  PlayCardTargetObj,
   SwitchActiveConfig,
   UseSkillConfig,
   actionToRpcRequest,
   checkRpcResponse,
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
+import { Skill } from "./skill.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -52,7 +60,9 @@ export class Player {
     private ops: GlobalOperations
   ) {
     this.piles = config.deck.actions.map((id) => new Card(id));
-    this.characters = config.deck.characters.map((id) => new Character(id, this));
+    this.characters = config.deck.characters.map(
+      (id) => new Character(id, this)
+    );
     if (!config.noShuffle) {
       this.piles = _.shuffle(this.piles);
     }
@@ -190,7 +200,7 @@ export class Player {
   }
 
   getCharacter(target: CharacterPosition): Character {
-    let chIndex = this.activeIndex ?? 0;
+    let chIndex = (this.activeIndex ?? 0) + this.characters.length;
     while (true) {
       switch (target) {
         case "next": {
@@ -206,7 +216,7 @@ export class Player {
           return ch;
         }
         case "active":
-          return this.characters[chIndex];
+          return this.characters[chIndex % this.characters.length];
       }
     }
   }
@@ -224,10 +234,18 @@ export class Player {
     }
   }
 
+  // 消耗骰子或能量
   private consumeDice(required: DiceType[], consumed: DiceType[]) {
     if (!checkDice(required, consumed)) {
       throw new Error("Invalid dice");
     }
+    const activeCh = this.getCharacter("active");
+    const currentEnergy = activeCh.energy;
+    const costEnergy = required.filter((c) => c === DiceType.Energy).length;
+    if (currentEnergy < costEnergy) {
+      throw new Error("Not enough energy");
+    }
+    activeCh.energy -= costEnergy;
     for (const d of consumed) {
       const idx = this.dice.indexOf(d);
       if (idx === -1) {
@@ -235,6 +253,7 @@ export class Player {
       }
       this.dice.splice(idx, 1);
     }
+    this.sortDice();
   }
 
   /**
@@ -244,13 +263,20 @@ export class Player {
     const actions: ActionConfig[] = [];
     const ch = this.getCharacter("active");
     actions.push(
-      ...ch.skills.map(
-        (s): UseSkillConfig => ({
-          type: "useSkill",
-          dice: [...s.info.costs],
-          skill: s,
-        })
-      )
+      ...ch.skills
+        .filter(
+          // Enough energy
+          (s) =>
+            s.info.costs.filter((d) => d === DiceType.Energy).length <=
+            ch.energy
+        )
+        .map(
+          (s): UseSkillConfig => ({
+            type: "useSkill",
+            dice: [...s.info.costs],
+            skill: s,
+          })
+        )
     );
     actions.push(...this.ops.getCardActions());
     actions.push(
@@ -266,7 +292,8 @@ export class Player {
           })
         )
     );
-    // TODO handle "beforeUseDice"
+    // TODO "onBeforeUseDice"
+    // TODO "onRequestFastSwitchActive"
     const request = actionToRpcRequest(actions, this.hands);
     const response = await this.rpc("action", request);
     if (response.type === "declareEnd") {
@@ -304,16 +331,40 @@ export class Player {
     return selectedAction;
   }
 
+  useSkill(skill: Skill) {
+    const index = this.getCharacter("active").skills.findIndex(
+      (s) => s.entityId === skill.entityId
+    );
+    if (index === -1) {
+      throw new Error("Invalid skill");
+    }
+    // TODO
+    // TODO handle "onUseSkill"
+  }
+
+  playCard(hand: Card, targets: PlayCardTargetObj[]) {
+    const index = this.hands.findIndex((c) => c.entityId === hand.entityId);
+    if (index === -1) {
+      throw new Error("Invalid card");
+    }
+    this.hands.splice(index, 1);
+    this.ops.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
+    this.ops.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
+    // TODO
+    // TODO handle "onPlayCard"
+  }
+
   switchActive(targetEntityId: number, delayNotify = false): any {
+    const from = this.getCharacter("active");
     this.activeIndex = this.characters.findIndex(
       (c) => c.entityId === targetEntityId
     );
+    const to = this.getCharacter("active");
     this.ops.notifyMe({
       type: "switchActive",
       opp: false,
       target: targetEntityId,
     });
-    // TODO handle "onSwitchActive"
     const oppNotify = () => {
       this.ops.notifyOpp({
         type: "switchActive",
@@ -323,16 +374,20 @@ export class Player {
     };
     if (delayNotify) {
       return oppNotify;
-    } else {
-      oppNotify();
     }
+    oppNotify();
+    // TODO handle "onSwitchActive"
   }
 
   fullSupportArea(): boolean {
     return this.supports.length >= this.config.game.maxSupports;
   }
 
-  sendEventFromCharacter<K extends EventHandlerNames1>(ch: Character, event: K, ...rest: EventCreatorArgsForCharacter<K>) {
+  sendEventFromCharacter<K extends EventHandlerNames1>(
+    ch: Character,
+    event: K,
+    ...rest: EventCreatorArgsForCharacter<K>
+  ) {
     // @ts-expect-error TS sucks
     this.ops.sendEvent(event, ch, ...rest);
   }

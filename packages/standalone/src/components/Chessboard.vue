@@ -148,6 +148,7 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
               },
             ];
             const spent = await useDice(selectedAction.cost);
+            availableActions.value = [];
             if (typeof spent === "undefined") continue;
             return (r = {
               type: "switchActive",
@@ -182,8 +183,8 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
               } else if (restLength === 1) {
                 // 当卡牌目标只有一步操作时，在显示卡牌选择框的同时，显示骰子窗口
                 let selectedEntityIdx: number | undefined = undefined;
-                if (candidates.length === 0) {
-                  selectedEntityIdx = candidates[0][0][0];
+                if (candidates.length === 1) {
+                  selectedEntityIdx = 0;
                 }
                 disableDiceOk.value = typeof selectedEntityIdx === "undefined";
                 availableActions.value = candidates.map(([c], i) => ({

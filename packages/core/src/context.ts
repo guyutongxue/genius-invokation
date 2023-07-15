@@ -414,18 +414,12 @@ class CharacterContextImpl implements CharacterContext {
     this.state.heal(this.character, amount, this.sourceId);
   }
   gainEnergy(amount: number): number {
-    const newEnergy = this.character.energy + amount;
-    const realEnergy = Math.min(newEnergy, this.character.info.maxEnergy);
-    const diff = realEnergy - this.character.energy;
-    this.character.energy = realEnergy;
-    return diff;
+    return this.character.gainEnergy(amount);
   }
   loseEnergy(amount: number): number {
-    const newEnergy = this.character.energy - amount;
-    const realEnergy = Math.max(newEnergy, 0);
-    const diff = this.character.energy - realEnergy;
-    this.character.energy = realEnergy;
-    return diff;
+    const oldEnergy = this.character.energy;
+    this.character.energy = Math.max(this.character.energy - amount, 0);
+    return oldEnergy - this.character.energy;
   }
   createStatus(status: number): StatusContext {
     const st = new Status(status);

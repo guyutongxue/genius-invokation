@@ -55,6 +55,11 @@ export class Character extends Entity {
   isAlive() {
     return !this.defeated;
   }
+  gainEnergy(energy = 1): number {
+    const oldEnergy = this.energy;
+    this.energy = Math.min(this.energy + energy, this.info.maxEnergy);
+    return this.energy - oldEnergy;
+  }
   fullEnergy() {
     return this.energy === this.info.maxEnergy;
   }
