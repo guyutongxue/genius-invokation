@@ -12,10 +12,11 @@ const props = defineProps<{
 const rand = Math.random();
 
 const isOk = computed<boolean>(() =>
-  checkDice(props.required, props.dice, chosen.value)
+  checkDice(props.required, chosenDice.value)
 );
 
-const chosen = ref<number[]>(chooseDice(props.required, props.dice));
+const chosenIdx = ref<number[]>(chooseDice(props.required, props.dice));
+const chosenDice = computed(() => chosenIdx.value.map((i) => props.dice[i]));
 
 const emit = defineEmits<{
   (e: "selected", selected: number[]): void;
@@ -32,12 +33,12 @@ const emit = defineEmits<{
           hidden
           :value="i"
           :id="`rdInput${rand}-${i}`"
-          v-model="chosen"
+          v-model="chosenIdx"
         />
         <label :for="`rdInput${rand}-${i}`">
           <Dice
             :type="(d as DiceType)"
-            :selected="chosen.includes(i)"
+            :selected="chosenIdx.includes(i)"
             :size="40"
           ></Dice>
         </label>
@@ -47,7 +48,7 @@ const emit = defineEmits<{
       <button
         class="btn btn-primary"
         :disabled="disableOk || !isOk"
-        @click="$emit('selected', chosen)"
+        @click="$emit('selected', chosenDice)"
       >
         确认
       </button>

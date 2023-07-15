@@ -28,6 +28,7 @@ import {
   actionToRpcRequest,
   checkRpcResponse,
 } from "./action.js";
+import { checkDice } from "@gi-tcg/utils";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -223,6 +224,19 @@ export class Player {
     }
   }
 
+  private consumeDice(required: DiceType[], consumed: DiceType[]) {
+    if (!checkDice(required, consumed)) {
+      throw new Error("Invalid dice");
+    }
+    for (const d of consumed) {
+      const idx = this.dice.indexOf(d);
+      if (idx === -1) {
+        throw new Error("Invalid dice");
+      }
+      this.dice.splice(idx, 1);
+    }
+  }
+
   /**
    * @returns nontrivial action `ActionConfig`; `null` for elemental tuning & declare end
    */
@@ -262,8 +276,8 @@ export class Player {
       await this.ops.sendEvent("onDeclareEnd");
       return null;
     }
-    // TODO consume dice
     if (response.type === "elementalTuning") {
+      this.consumeDice([DiceType.Void], response.dice);
       const cardIdx = this.hands.findIndex(
         (c) => c.entityId === response.discardedCard
       );
@@ -286,6 +300,7 @@ export class Player {
     if (selectedAction === null) {
       throw new Error("Invalid action");
     }
+    this.consumeDice(selectedAction.dice, response.dice);
     return selectedAction;
   }
 

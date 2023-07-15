@@ -68,10 +68,10 @@ export function chooseDice(required: DiceType[], dice: DiceType[]): number[] {
  * 检查骰子是否符合要求
  * @param required 卡牌或技能需要的骰子类型
  * @param dice 当前持有的骰子
- * @param chosen 已选择的骰子序号（基于 `dice`）
+ * @param chosen 已选择的骰子
  * @returns 是否符合要求
  */
-export function checkDice(required: DiceType[], dice: DiceType[], chosen: number[]): boolean {
+export function checkDice(required: DiceType[], chosen: DiceType[]): boolean {
   const requiredMap = new Map<DiceType, number>();
   for (const r of required) {
     if (r === DiceType.Energy) continue;
@@ -80,7 +80,7 @@ export function checkDice(required: DiceType[], dice: DiceType[], chosen: number
   if (requiredMap.has(DiceType.Omni)) {
     const requiredCount = requiredMap.get(DiceType.Omni)!;
     if (requiredCount !== chosen.length) return false;
-    const chosenMap = new Set<DiceType>(chosen.map((i) => dice[i]));
+    const chosenMap = new Set<DiceType>(chosen);
     return (
       chosenMap.size === 1 ||
       (chosenMap.size === 2 && chosenMap.has(DiceType.Omni))
@@ -94,11 +94,9 @@ export function checkDice(required: DiceType[], dice: DiceType[], chosen: number
       voidCount++;
       continue;
     }
-    const index = chosen2.findIndex((i) => dice[i] === r);
+    const index = chosen2.indexOf(r);
     if (index === -1) {
-      const omniIndex = chosen2.findIndex(
-        (i) => dice[i] === DiceType.Omni
-      );
+      const omniIndex = chosen2.indexOf(DiceType.Omni);
       if (omniIndex === -1) return false;
       chosen2.splice(omniIndex, 1);
       continue;
