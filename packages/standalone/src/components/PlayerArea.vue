@@ -127,6 +127,13 @@ const declareEndIdx = computed<number>(() => {
   return props.availableActions.findIndex((a) => a.type === "declareEnd");
 });
 
+function showMark(actionIdx: number): boolean {
+  if (actionIdx === -1) return false;
+  const action = props.availableActions[actionIdx];
+  if (action.type !== "entity") return false;
+  return action.withMark ?? false;
+}
+
 function emitClick(idx: number) {
   if (idx !== -1) {
     emit("click", idx);
@@ -177,12 +184,31 @@ function toCostMap(cost: number[]): [DiceType, number][] {
             <div class="absolute bg-white">{{ ch.health }}</div>
             <div class="absolute right-0 bg-yellow-500">{{ ch.energy }}</div>
             <img :src="(images as any)[ch.id]" />
+            <span v-if="showMark(ch.actionIndex)" class="check-mark">
+            </span>
           </div>
         </div>
       </div>
-      <div class="bg-red-50">SUMMONS</div>
+      <div class="bg-red-50">
+        SUMMONS
+        <div
+          v-for="summon of summons"
+          class="grid grid-cols-2 grid-rows-2 gap-4"
+        >
+          <div
+            class="w-10 h-14 relative"
+            :class="{ clickable: summon.actionIndex !== -1 }"
+            @click="emitClick(summon.actionIndex)"
+          >
+            <div class="absolute bg-white">{{ summon.value }}</div>
+            <img :src="(images as any)[summon.id]" />
+            <span v-if="showMark(summon.actionIndex)" class="check-mark">
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div v-if="data.type === 'my'" class="flex justify-between">
+    <div v-if="data.type === 'my'" class="flex justify-between items-end">
       <div class="flex flex-wrap gap-3">
         <div v-for="hand of hands">
           <div
@@ -202,7 +228,7 @@ function toCostMap(cost: number[]): [DiceType, number][] {
         </div>
       </div>
       <div>
-        <ul v-if="availableActions" class="flex gap-2">
+        <ul v-if="availableActions" class="m-4 flex gap-2">
           <li
             v-for="skill of skills"
             :class="{ clickable: skill.actionIndex !== -1 }"
@@ -229,9 +255,23 @@ function toCostMap(cost: number[]): [DiceType, number][] {
   </div>
 </template>
 
-<style>
+<style scoped>
 .clickable {
   cursor: pointer;
   outline: 4px solid lightgreen;
+}
+.check-mark {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: green;
+  transform: translateY(-50%);
+}
+.check-mark::before {
+  content: "\2705"
 }
 </style>

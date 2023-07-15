@@ -16,6 +16,7 @@ import {
   Action,
   Handler,
   PlayCardTargets,
+  PlayCardSingleTarget,
 } from "@gi-tcg/typings";
 import EventEmitter from "eventemitter3";
 import RollDice from "./RollDice.vue";
@@ -50,22 +51,26 @@ function onNotify({ event, state }: NotificationMessage) {
 }
 
 const requireSelectedDice = ref<number[]>();
-const requireTargets = ref<PlayCardTargets>();
-async function useDice(
-  needed: DiceType[],
-): Promise<DiceType[] | undefined> {
+const disableDiceOk = ref<boolean>(false);
+async function useDice(needed: DiceType[]): Promise<DiceType[] | undefined> {
   requireSelectedDice.value = needed;
-  const selected = await new Promise<number[] | undefined>(
-    (resolve) => {
-      ee.once("diceSelected", (selected) => {
-        if (typeof selected === "undefined") return resolve(undefined);
-        resolve(selected);
-      });
-    }
-  );
+  const selected = await new Promise<number[] | undefined>((resolve) => {
+    ee.once("diceSelected", (selected) => {
+      if (typeof selected === "undefined") return resolve(undefined);
+      resolve(selected);
+    });
+  });
   requireSelectedDice.value = undefined;
-  requireTargets.value = undefined;
   return selected;
+}
+
+async function requestAction(clickable: Clickable[]): Promise<number> {
+  availableActions.value = clickable;
+  const result = await new Promise<number>((resolve) => {
+    ee.once("acted", resolve);
+  });
+  availableActions.value = [];
+  return result;
 }
 
 async function handler(method: RpcMethod, req: Request): Promise<Response> {
@@ -81,16 +86,14 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
     }
     case "chooseActive": {
       const { candidates } = req as RpcRequest["chooseActive"];
-      availableActions.value = candidates.map(
-        (c): Clickable => ({
-          type: "entity",
-          entityId: c,
-        })
+      const idx = await requestAction(
+        candidates.map(
+          (c): Clickable => ({
+            type: "entity",
+            entityId: c,
+          })
+        )
       );
-      const idx = await new Promise<number>((resolve) => {
-        ee.once("acted", resolve);
-      });
-      availableActions.value = [];
       const target = candidates[idx];
       return { active: target } as RpcResponse["chooseActive"];
     }
@@ -105,7 +108,7 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
     case "action": {
       const { candidates } = req as RpcRequest["action"];
       while (true) {
-        availableActions.value = candidates.map((a): Clickable => {
+        const clickable = candidates.map((a): Clickable => {
           switch (a.type) {
             case "declareEnd":
               return { type: "declareEnd" };
@@ -117,14 +120,9 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
               return { type: "entity", entityId: a.active, cost: a.cost };
             case "useSkill":
               return { type: "skill", id: a.skill, cost: a.cost };
-            default:
-              throw new Error("unreachable");
           }
         });
-        const actionIdx = await new Promise<number>((resolve) => {
-          ee.once("acted", resolve);
-        });
-        availableActions.value = [];
+        const actionIdx = await requestAction(clickable);
         const selectedAction = candidates[actionIdx];
         console.log(selectedAction);
         let r: RpcResponse["action"]; // type check only
@@ -142,6 +140,13 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
             });
           }
           case "switchActive": {
+            availableActions.value = [
+              {
+                type: "entity",
+                entityId: selectedAction.active,
+                withMark: true,
+              },
+            ];
             const spent = await useDice(selectedAction.cost);
             if (typeof spent === "undefined") continue;
             return (r = {
@@ -151,15 +156,83 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
             });
           }
           case "playCard": {
-            const cardTarget = selectedAction.target;
+            const cardTarget = selectedAction.target?.candidates ?? [[]];
             // TODO
-            const spent = await useDice(selectedAction.cost);
+            let selectedTarget = 0;
+            let candidates: [number[], number][] = [];
+            const lengthCheck = new Set<number>();
+            for (let i = 0; i < cardTarget.length; i++) {
+              const entities = cardTarget[i].map((e) => e.entityId);
+              candidates.push([entities, i]);
+              lengthCheck.add(entities.length);
+            }
+            // Assume that every candidate has same length
+            if (lengthCheck.size !== 1) {
+              throw new Error("Cannot deal with mismatch length targets");
+            }
+            let spent: number[] | undefined;
+            while (true) {
+              const restLength = candidates[0][0].length;
+              // If no target needed, break
+              if (restLength === 0) {
+                // 当不需要目标时，直接显示骰子窗口
+                selectedTarget = candidates[0][1];
+                spent = await useDice(selectedAction.cost);
+                break;
+              } else if (restLength === 1) {
+                // 当卡牌目标只有一步操作时，在显示卡牌选择框的同时，显示骰子窗口
+                let selectedEntityIdx: number | undefined = undefined;
+                if (candidates.length === 0) {
+                  selectedEntityIdx = candidates[0][0][0];
+                }
+                disableDiceOk.value = typeof selectedEntityIdx === "undefined";
+                availableActions.value = candidates.map(([c], i) => ({
+                  type: "entity",
+                  entityId: c[0],
+                  withMark: i === selectedEntityIdx,
+                }));
+                const handler = ee.on("acted", (idx) => {
+                  selectedEntityIdx = idx;
+                  disableDiceOk.value =
+                    typeof selectedEntityIdx === "undefined";
+                  availableActions.value.forEach((a, i) => {
+                    if (a.type === "entity") {
+                      a.withMark = i === selectedEntityIdx;
+                    }
+                  });
+                });
+                spent = await useDice(selectedAction.cost);
+                if (typeof selectedEntityIdx === "undefined") {
+                  // Cancelled while selecting target
+                  break;
+                }
+                selectedTarget = candidates[selectedEntityIdx][1];
+                disableDiceOk.value = false;
+                availableActions.value = [];
+                break;
+              } else {
+                // 当多于一步操作目标时，这一步先选择第一个目标，不显示“勾”，不显示骰子窗口
+                const firstCandidate = [
+                  ...new Set(candidates.map((a) => a[0][0])),
+                ];
+                const selected = await requestAction(
+                  firstCandidate.map((e) => ({
+                    type: "entity",
+                    entityId: e,
+                  }))
+                );
+                candidates = candidates.filter(
+                  ([c, i]) => c[0] === firstCandidate[selected]
+                );
+                candidates.forEach(([c, i]) => c.shift());
+              }
+            }
             if (typeof spent === "undefined") continue;
             return (r = {
               type: "playCard",
               card: selectedAction.card,
               dice: spent,
-              targetIndex: spent[1],
+              targetIndex: selectedTarget,
             });
           }
           case "useSkill": {
@@ -184,7 +257,7 @@ const player: PlayerConfig = {
   },
   handler: handler as Handler,
   onNotify,
-  // noShuffle: true
+  // noShuffle: true,
 };
 
 function diceSelected(dice: DiceType[]) {
@@ -203,7 +276,7 @@ onMounted(() => {
 <template>
   <div v-if="stateData" class="relative">
     <div class="flex flex-row items-stretch">
-      <div class="flex-grow flex flex-col gap-2" >
+      <div class="flex-grow flex flex-col gap-2">
         <PlayerArea
           :data="stateData.players[1]"
           :availableActions="availableActions"
@@ -222,7 +295,7 @@ onMounted(() => {
         v-if="requireSelectedDice"
         :dice="stateData.players[0].dice"
         :required="requireSelectedDice"
-        :targets="requireTargets"
+        :disableOk="disableDiceOk"
         @selected="diceSelected"
         @cancelled="ee.emit('diceSelected', undefined)"
       >

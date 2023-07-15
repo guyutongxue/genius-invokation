@@ -3,12 +3,11 @@ import { DiceType, PlayCardTargets } from "@gi-tcg/typings";
 import { checkDice, chooseDice } from "@gi-tcg/utils";
 import { computed, ref } from "vue";
 import Dice from "./Dice.vue";
-import SelectTarget from "./SelectTarget.vue";
 
 const props = defineProps<{
   dice: DiceType[];
   required: DiceType[];
-  targets?: PlayCardTargets;
+  disableOk?: boolean;
 }>();
 const rand = Math.random();
 
@@ -47,7 +46,7 @@ const emit = defineEmits<{
     <div class="flex flex-col gap-1">
       <button
         class="btn btn-primary"
-        :disabled="!isOk"
+        :disabled="disableOk || !isOk"
         @click="$emit('selected', chosen)"
       >
         确认

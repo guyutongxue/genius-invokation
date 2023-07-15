@@ -361,14 +361,13 @@ class CardBuilder<
     ] as const) {
       const cardTag = `weapon${capitalize(weaponType)}` as const;
       if (cardBuilder.tags.includes(cardTag)) {
-        cardBuilder.addFilter(function (c) {
-          return this[0].info.tags.includes(weaponType);
-        });
+        cardBuilder.filterMyTargets((c) => c.info.tags.includes(weaponType));
         eqBuilder.setType("weapon");
         break;
       }
     }
     if (cardBuilder.tags.includes("artifact")) {
+      cardBuilder.filterMyTargets(() => true);
       eqBuilder.setType("artifact");
     }
     cardBuilder.actions.unshift(function (c) {
