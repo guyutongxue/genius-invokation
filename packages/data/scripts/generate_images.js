@@ -1,8 +1,7 @@
 // @ts-check
 import db from "@genshin-db/tcg/src/min/data.min.json" assert { type: "json" };
-import { pascalCase, snakeCase } from "case-anything";
 import { fileURLToPath } from "node:url";
-import { writeFile as write, mkdir, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import * as path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,10 +26,10 @@ for (const key in English[cardKey]) {
   const imageObj = image[cardKey][key];
   result[enObj.id] = "https://api.ambr.top/assets/UI/gcg/" + imageObj["filename_cardface"] + ".png";
 }
-for (const key in English[summKey]) {
-  const enObj = English[summKey][key];
-  const imageObj = image[summKey][key];
-  result[enObj.id] = "https://api.ambr.top/assets/UI/gcg/" + imageObj["filename_cardface"];
-}
+// for (const key in English[summKey]) {
+//   const enObj = English[summKey][key];
+//   const imageObj = image[summKey][key];
+//   result[enObj.id] = "https://api.ambr.top/assets/UI/gcg/" + imageObj["filename_cardface"] + ".png";
+// }
 
 await writeFile(path.join(__dirname, "./images.json"), JSON.stringify(result, null, 2));

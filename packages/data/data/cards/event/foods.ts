@@ -39,6 +39,7 @@ const AdeptusTemptation = createFood(333002)
  * **黄油蟹蟹**
  * 本回合中，所有我方角色下次受到的伤害-2。
  * （每回合每个角色最多食用1次「料理」）
+ * TODO 似乎不用选择目标？
  */
 const ButterCrab = createCard(333012, ["character"])
   .setType("event")
@@ -181,6 +182,7 @@ const SweetMadame = createFood(333005)
  * **唐杜尔烤鸡**
  * 本回合中，所有我方角色下一次「元素战技」造成的伤害+2。
  * （每回合每个角色最多食用1次「料理」）
+ * TODO 似乎不用选择目标？
  */
 const TandooriRoastChicken = createFood(333011)
   .costVoid(2)

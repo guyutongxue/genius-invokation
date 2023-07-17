@@ -336,8 +336,8 @@ export class ContextImpl implements Context {
     // TODO
   }
 
-  flipNextTurn(): void {
-    this.state.nextTurn = flip(this.state.nextTurn);
+  actionAgain(): void {
+    this.state.getPlayer(flip(this.who)).setSpecialBit(SpecialBits.SkipTurn);
   }
 
   getMaster(): CharacterContext {
@@ -625,18 +625,22 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   }
 
   addCost(...dice: DiceType[]): void {
-    this.action.dice.push(...dice);
+    if ("dice" in this.action) {
+      this.action.dice.push(...dice);
+    }
   }
   deductCost(...dice: DiceType[]): void {
-    for (const d of dice) {
-      let i;
-      if (d === DiceType.Omni) {
-        i = this.action.dice.findIndex((d) => d !== DiceType.Void);
-      } else {
-        i = this.action.dice.indexOf(d);
-      }
-      if (i !== -1) {
-        this.action.dice.splice(i, 1);
+    if ("dice" in this.action) {
+      for (const d of dice) {
+        let i;
+        if (d === DiceType.Omni) {
+          i = this.action.dice.findIndex((d) => d !== DiceType.Void);
+        } else {
+          i = this.action.dice.indexOf(d);
+        }
+        if (i !== -1) {
+          this.action.dice.splice(i, 1);
+        }
       }
     }
   }

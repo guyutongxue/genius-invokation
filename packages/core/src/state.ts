@@ -41,8 +41,6 @@ export class GameState {
   private phase: PhaseType = "initHands";
   private roundNumber = 0;
   private currentTurn: 0 | 1 = 0;
-  public nextTurn: 0 | 1 = 0;
-  private nextRoundBeginTurn: 0 | 1 = 0;
   private winner: 0 | 1 | null = null;
   private players: [Player, Player];
 
@@ -95,12 +93,12 @@ export class GameState {
     this.notifyPlayer(0, {
       type: "newGamePhase",
       roundNumber: this.roundNumber,
-      isFirst: this.nextTurn === 0,
+      isFirst: this.currentTurn === 0,
     });
     this.notifyPlayer(1, {
       type: "newGamePhase",
       roundNumber: this.roundNumber,
-      isFirst: this.nextTurn === 1,
+      isFirst: this.currentTurn === 1,
     });
     switch (this.phase) {
       case "initHands":
@@ -145,67 +143,37 @@ export class GameState {
     this.players[0].cleanSpecialBits(
       SpecialBits.DeclaredEnd,
       SpecialBits.Defeated,
-      SpecialBits.Plunging
+      SpecialBits.Plunging,
+      SpecialBits.SkipTurn
     );
     this.players[1].cleanSpecialBits(
       SpecialBits.DeclaredEnd,
       SpecialBits.Defeated,
-      SpecialBits.Plunging
+      SpecialBits.Plunging,
+      SpecialBits.SkipTurn
     );
     this.phase = "action";
-    this.currentTurn = this.nextRoundBeginTurn;
-    await this.sendEvent("onActionPhase");
   }
   private async actionPhase() {
-    await this.sendEvent("onBeforeAction");
-    const player = this.players[this.currentTurn];
-    const action = await player.action();
-    if (action) {
-      // 切换角色 || 使用技能 || 使用手牌
-      if (
-        action.type === "useSkill" ||
-        (action.type === "playCard" &&
-          action.card.info.tags.includes("action")) ||
-        (action.type === "switchActive" && !action.fast)
-      ) {
-        // 战斗行动：切换角色、使用技能、使用“出战行动”手牌
-        this.nextTurn = flip(this.currentTurn);
+    await this.sendEvent("onActionPhase");
+    while (!(
+      this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
+      this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
+    )) {
+      let player = this.players[this.currentTurn];
+      if (player.getSpecialBit(SpecialBits.DeclaredEnd)) {
+        player = this.players[flip(this.currentTurn)];
+      } else if (player.getSpecialBit(SpecialBits.SkipTurn)) {
+        player.setSpecialBit(SpecialBits.SkipTurn, false);
+        player = this.players[flip(this.currentTurn)];
       }
-      switch (action.type) {
-        case "useSkill": {
-          player.useSkill(action.skill);
-          break;
-        }
-        case "playCard": {
-          player.playCard(action.card, action.targets);
-          break;
-        }
-        case "switchActive": {
-          player.switchActive(action.to.entityId);
-          break;
-        }
-      }
-      // TODO handle "onAction"
-      if (action.type === "useSkill" && action.skill.info.gainEnergy) {
-        player.getCharacter("active").gainEnergy();
-      }
-      // ... / "onSwitchActive" / "onUseSkill" / "onPlayCard"
-    } else {
-      // 宣布结束 || 元素调和
-      if (
-        this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
-        this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
-      ) {
-        this.phase = "end";
-        // currentTurn 是下回合的后手
-        this.nextRoundBeginTurn = flip(this.currentTurn);
+      const fast = await player.action();
+      await this.options.pauser();
+      if (!fast) {
+        this.currentTurn = flip(this.currentTurn);
       }
     }
-    this.currentTurn = this.nextTurn;
-    if (this.players[this.nextTurn].getSpecialBit(SpecialBits.DeclaredEnd)) {
-      // 若下一方已宣布结束，则切换回来
-      this.currentTurn = flip(this.nextTurn);
-    }
+    this.phase = "end"
   }
   private async endPhase() {
     await this.sendEvent("onEndPhase");

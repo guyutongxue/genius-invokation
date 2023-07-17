@@ -8,11 +8,14 @@ const props = defineProps<{
   dice: DiceType[];
   required: DiceType[];
   disableOk?: boolean;
+  disableOmni?: boolean;
 }>();
 const rand = Math.random();
 
-const isOk = computed<boolean>(() =>
-  checkDice(props.required, chosenDice.value)
+const isOk = computed<boolean>(
+  () =>
+    (!props.disableOmni || !chosenDice.value.includes(DiceType.Omni)) &&
+    checkDice(props.required, chosenDice.value)
 );
 
 const chosenIdx = ref<number[]>(chooseDice(props.required, props.dice));

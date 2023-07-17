@@ -29,11 +29,11 @@ import {
 } from "./context.js";
 import {
   ActionConfig,
+  ElementalTuningActionConfig,
   PlayCardTargetObj,
   SwitchActiveConfig,
   UseSkillConfig,
-  actionToRpcRequest,
-  checkRpcResponse,
+  rpcAction,
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
@@ -161,6 +161,7 @@ export class Player {
   }
   async sortDice() {
     this.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
+    this.ops.notifyMe({ type: "stateUpdated", damages: [] });
   }
   private diceValue(x: DiceType): number {
     if (x === DiceType.Omni) {
@@ -182,7 +183,6 @@ export class Player {
       this.dice.push(Math.floor(Math.random() * 8) + 1);
     }
     this.sortDice();
-    this.ops.notifyMe({ type: "stateUpdated", damages: [] });
   }
 
   async rerollDice(times: number) {
@@ -257,27 +257,34 @@ export class Player {
   }
 
   /**
-   * @returns nontrivial action `ActionConfig`; `null` for elemental tuning & declare end
+   * @returns is fast action
    */
-  async action(): Promise<ActionConfig | null> {
-    const actions: ActionConfig[] = [];
+  async action(): Promise<boolean> {
+    this.ops.sendEvent("onBeforeAction");
+    const actions: ActionConfig[] = [
+      {
+        type: "declareEnd",
+      },
+    ];
     const ch = this.getCharacter("active");
-    actions.push(
-      ...ch.skills
-        .filter(
-          // Enough energy
-          (s) =>
-            s.info.costs.filter((d) => d === DiceType.Energy).length <=
-            ch.energy
-        )
-        .map(
-          (s): UseSkillConfig => ({
-            type: "useSkill",
-            dice: [...s.info.costs],
-            skill: s,
-          })
-        )
-    );
+    if (!ch.skillDisabled()) {
+      actions.push(
+        ...ch.skills
+          .filter(
+            // Enough energy
+            (s) =>
+              s.info.costs.filter((d) => d === DiceType.Energy).length <=
+              ch.energy
+          )
+          .map(
+            (s): UseSkillConfig => ({
+              type: "useSkill",
+              dice: [...s.info.costs],
+              skill: s,
+            })
+          )
+      );
+    }
     actions.push(...this.ops.getCardActions());
     actions.push(
       ...this.characters
@@ -292,53 +299,81 @@ export class Player {
           })
         )
     );
+    actions.push(
+      ...this.hands.map(
+        (h): ElementalTuningActionConfig => ({
+          type: "elementalTuning",
+          card: h,
+        })
+      )
+    );
     // TODO "onBeforeUseDice"
     // TODO "onRequestFastSwitchActive"
-    const request = actionToRpcRequest(actions, this.hands);
-    const response = await this.rpc("action", request);
-    if (response.type === "declareEnd") {
-      this.setSpecialBit(SpecialBits.DeclaredEnd, true);
-      this.ops.notifyMe({ type: "declareEnd", opp: false });
-      this.ops.notifyOpp({ type: "declareEnd", opp: true });
-      await this.ops.sendEvent("onDeclareEnd");
-      return null;
-    }
-    if (response.type === "elementalTuning") {
-      this.consumeDice([DiceType.Void], response.dice);
-      const cardIdx = this.hands.findIndex(
-        (c) => c.entityId === response.discardedCard
-      );
-      if (cardIdx === -1) {
-        throw new Error("Invalid card");
+    const action = await rpcAction(actions, (r) => this.rpc("action", r));
+    switch (action.type) {
+      case "declareEnd": {
+        this.setSpecialBit(SpecialBits.DeclaredEnd, true);
+        this.ops.notifyMe({ type: "declareEnd", opp: false });
+        this.ops.notifyOpp({ type: "declareEnd", opp: true });
+        await this.ops.sendEvent("onDeclareEnd");
+        return false;
       }
-      this.hands.splice(cardIdx, 1);
-      this.ops.notifyOpp({
-        type: "oppChangeHands",
-        removed: 0,
-        added: 0,
-        discarded: 1,
-      });
-      this.dice.push(this.getCharacter("active").elementType());
-      this.sortDice();
-      this.ops.notifyMe({ type: "stateUpdated", damages: [] });
-      return null;
+      case "elementalTuning": {
+        if (action.consumedDice.includes(DiceType.Omni)) {
+          throw new Error("Cannot tune omni dice");
+        }
+        this.consumeDice([DiceType.Void], action.consumedDice);
+        const cardIdx = this.hands.findIndex(
+          (c) => c.entityId === action.card.entityId
+        );
+        if (cardIdx === -1) {
+          throw new Error("Invalid card");
+        }
+        this.hands.splice(cardIdx, 1);
+        this.ops.notifyOpp({
+          type: "oppChangeHands",
+          removed: 0,
+          added: 0,
+          discarded: 1,
+        });
+        this.dice.push(this.getCharacter("active").elementType());
+        this.sortDice();
+        this.ops.notifyMe({ type: "stateUpdated", damages: [] });
+        return true;
+      }
+      case "useSkill": {
+        this.consumeDice(action.dice, action.consumedDice);
+        this.useSkill(action.skill);
+        return false;
+      }
+      case "playCard": {
+        this.consumeDice(action.dice, action.consumedDice);
+        this.playCard(action.card, action.targets);
+        return !action.card.info.tags.includes("action");
+      }
+      case "switchActive": {
+        this.consumeDice(action.dice, action.consumedDice);
+        this.switchActive(action.to.entityId);
+        return action.fast;
+      }
     }
-    const selectedAction = checkRpcResponse(actions, response);
-    if (selectedAction === null) {
-      throw new Error("Invalid action");
-    }
-    this.consumeDice(selectedAction.dice, response.dice);
-    return selectedAction;
   }
 
   useSkill(skill: Skill) {
-    const index = this.getCharacter("active").skills.findIndex(
+    const ch = this.getCharacter("active");
+    const index = ch.skills.findIndex(
       (s) => s.entityId === skill.entityId
     );
     if (index === -1) {
       throw new Error("Invalid skill");
     }
+    this.ops.notifyMe({ type: "useSkill", skill: skill.info.id, opp: false });
+    this.ops.notifyOpp({ type: "useSkill", skill: skill.info.id, opp: true });
+
     // TODO
+    if (skill.info.gainEnergy) {
+      ch.gainEnergy();
+    }
     // TODO handle "onUseSkill"
   }
 
@@ -433,7 +468,7 @@ export class Player {
   public getSpecialBit(bit: SpecialBits): boolean {
     return (this.specialBits & (1 << bit)) !== 0;
   }
-  private setSpecialBit(bit: SpecialBits, value = true) {
+  public setSpecialBit(bit: SpecialBits, value = true) {
     if (value) {
       this.specialBits |= 1 << bit;
     } else {

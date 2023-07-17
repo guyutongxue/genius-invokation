@@ -52,6 +52,7 @@ function onNotify({ event, state }: NotificationMessage) {
 
 const requireSelectedDice = ref<number[]>();
 const disableDiceOk = ref<boolean>(false);
+const disableOmniDice = ref<boolean>(false);
 async function useDice(needed: DiceType[]): Promise<DiceType[] | undefined> {
   requireSelectedDice.value = needed;
   const selected = await new Promise<number[] | undefined>((resolve) => {
@@ -131,7 +132,9 @@ async function handler(method: RpcMethod, req: Request): Promise<Response> {
             return (r = { type: "declareEnd" });
           }
           case "elementalTuning": {
+            disableOmniDice.value = true;
             const cost = await useDice([DiceType.Void]);
+            disableOmniDice.value = false;
             if (typeof cost === "undefined") continue;
             return (r = {
               type: "elementalTuning",
@@ -297,6 +300,7 @@ onMounted(() => {
         :dice="stateData.players[0].dice"
         :required="requireSelectedDice"
         :disableOk="disableDiceOk"
+        :disableOmni="disableOmniDice"
         @selected="diceSelected"
         @cancelled="ee.emit('diceSelected', undefined)"
       >

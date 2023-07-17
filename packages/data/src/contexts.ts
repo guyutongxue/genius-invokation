@@ -12,6 +12,7 @@ export enum SpecialBits {
   Defeated,
   Plunging,
   LegendUsed,
+  SkipTurn, // 风与自由
 }
 
 export interface Context {
@@ -55,7 +56,7 @@ export interface Context {
 
   switchActive(target: Target): void;
   useSkill(skill: SkillHandle | "normal"): void;
-  flipNextTurn(): void;
+  actionAgain(): void;
 
   getMaster(): CharacterContext;
   asStatus(): StatusContext;

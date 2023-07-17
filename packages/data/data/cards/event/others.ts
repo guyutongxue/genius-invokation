@@ -554,7 +554,7 @@ const WindAndFreedom = createCard(331801)
   // TODO
   .on("defeated", (c) => {
     if (c.isMyTurn() && !c.target.isMine()) {
-      c.flipNextTurn();
+      c.actionAgain();
     } else {
       return false;
     }

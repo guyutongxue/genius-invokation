@@ -63,6 +63,7 @@ export class Character extends Entity {
   fullEnergy() {
     return this.energy === this.info.maxEnergy;
   }
+
   elementType(): DiceType {
     const elementTag = this.info.tags.filter((t): t is ElementTag =>
       Object.keys(ELEMENT_TAG_MAP).includes(t)
@@ -70,6 +71,10 @@ export class Character extends Entity {
     if (elementTag.length === 0) return DiceType.Void;
     const elementType = ELEMENT_TAG_MAP[elementTag[0]] ?? DiceType.Void;
     return elementType;
+  }
+
+  skillDisabled() {
+    return this.statuses.some(s => s.info.tags.includes("disableSkill"));
   }
   
   async *handleEvent(event: EventFactory) {
