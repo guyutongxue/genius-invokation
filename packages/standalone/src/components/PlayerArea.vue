@@ -11,6 +11,7 @@ import {
 } from "@gi-tcg/typings";
 import images from "../assets/images.json";
 import Dice from "./Dice.vue";
+import Character from "./Character.vue";
 import HandCard from "./HandCard.vue";
 import { computed } from "vue";
 import { MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
@@ -177,15 +178,12 @@ function toCostMap(cost: number[]): [DiceType, number][] {
           "
         >
           <div
-            class="w-20 h-30 relative"
+            class="relative"
             :class="{ clickable: ch.actionIndex !== -1 }"
             @click="emitClick(ch.actionIndex)"
           >
-            <div class="absolute bg-white">{{ ch.health }}</div>
-            <div class="absolute right-0 bg-yellow-500">{{ ch.energy }}</div>
-            <img :src="(images as any)[ch.id]" />
-            <span v-if="showMark(ch.actionIndex)" class="check-mark">
-            </span>
+            <Character :character="ch"></Character>
+            <span v-if="showMark(ch.actionIndex)" class="check-mark"> </span>
           </div>
         </div>
       </div>
@@ -272,6 +270,6 @@ function toCostMap(cost: number[]): [DiceType, number][] {
   transform: translateY(-50%);
 }
 .check-mark::before {
-  content: "\2705"
+  content: "\2705";
 }
 </style>
