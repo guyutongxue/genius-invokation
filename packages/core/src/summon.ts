@@ -23,6 +23,10 @@ export class Summon extends Entity {
     this.usage = Math.min(this.info.maxUsage, value);
   }
 
+  refresh() {
+    this.usage = Math.min(this.usage + this.info.usage, this.info.maxUsage);
+  }
+
   getData(): SummonData {
     return {
       entityId: this.entityId,

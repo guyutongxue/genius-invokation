@@ -123,6 +123,12 @@ export async function rpcAction(
     }
     case "elementalTuning": {
       cfg = actions.find((c) => c.type === "elementalTuning" && c.card.entityId === response.discardedCard);
+      if (response.dice.includes(DiceType.Omni)) {
+        throw new Error("Cannot tune omni dice");
+      }
+      if (response.dice.length !== 1) {
+        throw new Error("Must tune exactly one dice");
+      }
       break;
     }
     case "switchActive": {

@@ -293,6 +293,15 @@ export class GameState {
       ],
     });
   }
+  async dealWaitingEvent() {
+    // TODO check death
+    while (this.eventWaitingForHandle.length > 0) {
+      const event = this.eventWaitingForHandle.shift()!;
+      for await (const r of this.handleEvent(event)) {
+        this.dealWaitingEvent();
+      }
+    }
+  }
 
   private getCardTarget(
     ...descriptor: CardTargetDescriptor

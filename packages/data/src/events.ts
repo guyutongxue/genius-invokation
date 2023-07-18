@@ -30,6 +30,7 @@ export interface EventHandlers<This = {}> {
 
   onBeforeDefeated?(this: This, c: BeforeDefeatedContext): HandlerResult;
   onDefeated?(this: This, c: DamageReadonlyContext): HandlerResult;
+  onRevive?(this: This, c: Context): HandlerResult;
 
   onBeforeUseDice?(this: This, c: UseDiceContext): HandlerResult;
 

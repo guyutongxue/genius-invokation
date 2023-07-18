@@ -22,8 +22,10 @@ import EventEmitter from "eventemitter3";
 import RollDice from "./RollDice.vue";
 import SelectDice from "./SelectDice.vue";
 import Dice from "./Dice.vue";
+import { logs } from "../logs";
 
 const props = defineProps<{
+  debug?: boolean;
   characters: number[];
   piles: number[];
 }>();
@@ -44,7 +46,13 @@ const ee = new EventEmitter<{
 function onNotify({ event, state }: NotificationMessage) {
   console.log({ event, state });
   switch (event.type) {
-    case "newGamePhase": {
+    case "stateUpdated": {
+      break;
+    }
+    default: {
+      if (props.debug) {
+        logs.push(JSON.stringify(event));
+      }
     }
   }
   stateData.value = state;
@@ -327,3 +335,4 @@ onMounted(() => {
     </RollDice>
   </div>
 </template>
+../log ../logs

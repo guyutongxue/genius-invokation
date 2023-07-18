@@ -19,7 +19,7 @@ import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
 import { GlobalOperations } from "./state.js";
-import { CardTag, SpecialBits } from "@gi-tcg/data";
+import { CardTag, SkillInfoWithId, SpecialBits } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
   EventCreatorArgsForPlayer,
@@ -95,7 +95,7 @@ export class Player {
     }
     this.hands.push(...drawn);
     // "爆牌"
-    const discardedCount = this.hands.length - this.config.game.maxHands;
+    const discardedCount = Math.max(0, this.hands.length - this.config.game.maxHands);
     this.hands.splice(this.config.game.maxHands, discardedCount);
 
     this.ops.notifyMe({ type: "stateUpdated", damages: [] });
@@ -159,7 +159,7 @@ export class Player {
     }
     await this.rerollDice(config.times);
   }
-  async sortDice() {
+  sortDice() {
     this.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
     this.ops.notifyMe({ type: "stateUpdated", damages: [] });
   }
@@ -260,7 +260,7 @@ export class Player {
    * @returns is fast action
    */
   async action(): Promise<boolean> {
-    this.ops.sendEvent("onBeforeAction");
+    await this.ops.sendEvent("onBeforeAction");
     const actions: ActionConfig[] = [
       {
         type: "declareEnd",
@@ -319,10 +319,10 @@ export class Player {
         return false;
       }
       case "elementalTuning": {
-        if (action.consumedDice.includes(DiceType.Omni)) {
-          throw new Error("Cannot tune omni dice");
+        const diceIndex = this.dice.indexOf(action.consumedDice[0]);
+        if (diceIndex === -1) {
+          throw new Error("Invalid dice");
         }
-        this.consumeDice([DiceType.Void], action.consumedDice);
         const cardIdx = this.hands.findIndex(
           (c) => c.entityId === action.card.entityId
         );
@@ -330,15 +330,14 @@ export class Player {
           throw new Error("Invalid card");
         }
         this.hands.splice(cardIdx, 1);
+        this.dice[diceIndex] = this.getCharacter("active").elementType();
+        this.sortDice();
         this.ops.notifyOpp({
           type: "oppChangeHands",
           removed: 0,
           added: 0,
           discarded: 1,
         });
-        this.dice.push(this.getCharacter("active").elementType());
-        this.sortDice();
-        this.ops.notifyMe({ type: "stateUpdated", damages: [] });
         return true;
       }
       case "useSkill": {
@@ -367,8 +366,7 @@ export class Player {
     if (index === -1) {
       throw new Error("Invalid skill");
     }
-    this.ops.notifyMe({ type: "useSkill", skill: skill.info.id, opp: false });
-    this.ops.notifyOpp({ type: "useSkill", skill: skill.info.id, opp: true });
+    this.notifySkill(skill.info);
 
     // TODO
     if (skill.info.gainEnergy) {
@@ -414,6 +412,17 @@ export class Player {
     // TODO handle "onSwitchActive"
   }
 
+  createCombatStatus(newStatusId: number) {
+    const oldStatus = this.combatStatuses.find(s => s.info.id === newStatusId);
+    if (oldStatus) {
+      oldStatus.refresh();
+      return oldStatus;
+    } else {
+      const newStatus = new Status(newStatusId);
+      this.combatStatuses.push(newStatus);
+      return newStatus;
+    }
+  }
   fullSupportArea(): boolean {
     return this.supports.length >= this.config.game.maxSupports;
   }
@@ -425,6 +434,10 @@ export class Player {
   ) {
     // @ts-expect-error TS sucks
     this.ops.sendEvent(event, ch, ...rest);
+  }
+  notifySkill(skillInfo: SkillInfoWithId) {
+    this.ops.notifyMe({ type: "useSkill", skill: skillInfo.id, opp: false });
+    this.ops.notifyOpp({ type: "useSkill", skill: skillInfo.id, opp: true });
   }
 
   async *handleEvent(event: EventFactory) {

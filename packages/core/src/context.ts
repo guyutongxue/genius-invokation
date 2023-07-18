@@ -248,8 +248,7 @@ export class ContextImpl implements Context {
   }
   createCombatStatus(status: number, opp: boolean = false): StatusContext {
     const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
-    const st = new Status(status);
-    player.combatStatuses.push(st);
+    const st = player.createCombatStatus(status);
     this.state.pushEvent(createEnterEventContext(this.state, this.who, st));
     return new StatusContextImpl(st);
   }
@@ -422,8 +421,7 @@ class CharacterContextImpl implements CharacterContext {
     return oldEnergy - this.character.energy;
   }
   createStatus(status: number): StatusContext {
-    const st = new Status(status);
-    this.character.statuses.push(st);
+    const st = this.character.createStatus(status);
     this.state.pushEvent(createEnterEventContext(this.state, this.who, st));
     return new StatusContextImpl(st);
   }
@@ -957,15 +955,8 @@ function checkShouldListen(
 function createEnterEventContext(
   state: GameState,
   sourceWho: 0 | 1,
-  entityOrCharacter: Entity | Character
+  entityOrCharacter: Entity
 ): EventFactory {
-  if (entityOrCharacter instanceof Character) {
-    return createCommonEventContext("onEnter")(
-      state,
-      sourceWho,
-      entityOrCharacter
-    );
-  }
   const sourceEnv = getEntityById(state, entityOrCharacter.entityId);
   if (sourceEnv === null) return () => [];
   return createCommonEventContext("onEnter")(
@@ -993,7 +984,7 @@ function createRollPhaseContext(
 type Creator = (state: GameState, ...args: any[]) => EventFactory;
 
 export const CONTEXT_CREATOR = {
-  onBattleBegin: createCommonEventContext("onBattleBegin", "onEnter"),
+  onBattleBegin: createCommonEventContext("onBattleBegin"),
   onRollPhase: createRollPhaseContext,
   onActionPhase: createCommonEventContext("onActionPhase"),
   onEndPhase: createCommonEventContext("onEndPhase"),
@@ -1005,6 +996,7 @@ export const CONTEXT_CREATOR = {
 
   onDeclareEnd: createCommonEventContext("onDeclareEnd"),
 
+  onRevive: createCommonEventContext("onRevive"),
   onEnter: createEnterEventContext,
 } satisfies Partial<Record<EventHandlerNames, Creator>>;
 
@@ -1026,7 +1018,7 @@ export type EventCreatorArgsForPlayer<K extends keyof ContextCreator> =
     : never;
 
 export type EventCreatorArgsForCharacter<K extends EventHandlerNames1> =
-  EventCreatorArgsForPlayer<K> extends [infer F, ...infer R]
+  EventCreatorArgsForPlayer<K> extends [ch?: infer F, ...rest: infer R]
     ? Character extends F
       ? R
       : never

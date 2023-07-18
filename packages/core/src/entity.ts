@@ -27,7 +27,7 @@ export class Entity {
     handler: EventHandlers,
     event: EventFactory
   ): Promise<boolean> {
-    let r: boolean | undefined;
+    let r: boolean | undefined = false;
     const candidates = event(this.entityId);
     for (const [name, ctx] of candidates) {
       if (name === "onActionPhase") {

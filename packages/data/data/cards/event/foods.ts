@@ -39,17 +39,25 @@ const AdeptusTemptation = createFood(333002)
  * **黄油蟹蟹**
  * 本回合中，所有我方角色下次受到的伤害-2。
  * （每回合每个角色最多食用1次「料理」）
- * TODO 似乎不用选择目标？
  */
-const ButterCrab = createCard(333012, ["character"])
+const ButterCrab = createCard(333012)
   .setType("event")
   .addTags("food")
-  .filterMyTargets((c) => !c.hasStatus(Satiated))
+  .addFilter((c) => {
+    return c.allCharacters().some(c => !c.hasStatus(Satiated));
+  })
   .costVoid(2)
   .do((c) => {
-    c.createStatus(Satiated, Target.myAll());
+    for (const ch of c.allCharacters()) {
+      if (!ch.hasStatus(Satiated)) {
+        ch.createStatus(ButterCrabStatus);
+        ch.createStatus(Satiated);
+      }
+    }
   })
-  .buildToStatus(Target.myAll())
+  .build();
+
+const ButterCrabStatus = createStatus(333012)
   .withUsage(1)
   .withDuration(1)
   .on("beforeDamaged", (c) => c.decreaseDamage(2))
@@ -182,11 +190,25 @@ const SweetMadame = createFood(333005)
  * **唐杜尔烤鸡**
  * 本回合中，所有我方角色下一次「元素战技」造成的伤害+2。
  * （每回合每个角色最多食用1次「料理」）
- * TODO 似乎不用选择目标？
  */
-const TandooriRoastChicken = createFood(333011)
+const TandooriRoastChicken = createCard(333011)
+  .setType("event")
+  .addTags("food")
+  .addFilter((c) => {
+    return c.allCharacters().some(c => !c.hasStatus(Satiated));
+  })
   .costVoid(2)
-  .buildToStatus("this0")
+  .do((c) => {
+    for (const ch of c.allCharacters()) {
+      if (!ch.hasStatus(Satiated)) {
+        ch.createStatus(TandooriRoastChickenStatus);
+        ch.createStatus(Satiated);
+      }
+    }
+  })
+  .build();
+
+const TandooriRoastChickenStatus = createStatus(333011)
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", (c) => {
@@ -198,6 +220,10 @@ const TandooriRoastChicken = createFood(333011)
   })
   .build();
 
+const ReviveOnCoolDown = createStatus(303307)
+  .withDuration(1)
+  .build();
+
 /**
  * **提瓦特煎蛋**
  * 复苏目标角色，并治疗此角色1点。
@@ -207,9 +233,10 @@ const TeyvatFriedEgg = createCard(333009, ["character"])
   .setType("event")
   .addTags("food")
   .filterMyTargets((c) => !c.isAlive(), true)
+  .addFilter((c) => !c.hasCombatStatus(ReviveOnCoolDown))
   .costSame(3)
   .do(function (c) {
     this[0].heal(1);
-    this[0].createStatus(Satiated);
+    c.createCombatStatus(ReviveOnCoolDown);
   })
   .build();

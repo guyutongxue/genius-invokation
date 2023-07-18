@@ -30,6 +30,19 @@ export class Status extends Entity {
         : this.info.shield?.initial ?? null;
   }
 
+  refresh() {
+    this.usage = Math.min(this.usage + this.info.usage, this.info.maxUsage);
+    this.usagePerRound = this.info.usagePerRound;
+    this.duration = this.info.duration;
+    if (this.shield !== null) {
+      if (typeof this.info.shield === "number") {
+        this.shield = this.info.shield;
+      } else if (this.info.shield !== null) {
+        this.shield = Math.min(this.info.shield.recreateMax, this.shield + this.info.shield.initial);
+      }
+    }
+  }
+
   private getVisibleValueProp(): "shield" | "usage" | "duration" | null {
     if (this.shield !== null) {
       return "shield";

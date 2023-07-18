@@ -1,10 +1,19 @@
-import { CharacterInfoWithId, ElementTag, getCharacter, getSkill } from "@gi-tcg/data";
+import {
+  CharacterInfoWithId,
+  ElementTag,
+  getCharacter,
+  getSkill,
+} from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
 import { PassiveSkill } from "./passive_skill.js";
-import { EventCreatorArgsForCharacter, EventFactory, EventHandlerNames1 } from "./context.js";
+import {
+  EventCreatorArgsForCharacter,
+  EventFactory,
+  EventHandlerNames1,
+} from "./context.js";
 import { Skill } from "./skill.js";
 import { Player } from "./player.js";
 
@@ -36,20 +45,27 @@ export class Character extends Entity {
     for (const s of this.info.skills) {
       const skill = getSkill(s);
       if (skill.type === "passive") {
-        this.passiveSkills.push(new PassiveSkill(skill));
+        this.passiveSkills.push(
+          new PassiveSkill(skill, () => {
+            this.parent.notifySkill(skill);
+          })
+        );
       } else {
         this.skills.push(new Skill(skill));
       }
     }
   }
-  private sendEvent<K extends EventHandlerNames1>(event: K, ...args: EventCreatorArgsForCharacter<K>) {
+  private sendEvent<K extends EventHandlerNames1>(
+    event: K,
+    ...args: EventCreatorArgsForCharacter<K>
+  ) {
     this.parent.sendEventFromCharacter(this, event, ...args);
   }
 
   revive() {
     this.defeated = false;
     this.health = 0;
-    this.sendEvent("onEnter");
+    this.sendEvent("onRevive");
   }
 
   isAlive() {
@@ -74,9 +90,21 @@ export class Character extends Entity {
   }
 
   skillDisabled() {
-    return this.statuses.some(s => s.info.tags.includes("disableSkill"));
+    return this.statuses.some((s) => s.info.tags.includes("disableSkill"));
   }
-  
+
+  createStatus(newStatusId: number) {
+    const oldStatus = this.statuses.find((s) => s.info.id === newStatusId);
+    if (oldStatus) {
+      oldStatus.refresh();
+      return oldStatus;
+    } else {
+      const newStatus = new Status(newStatusId);
+      this.statuses.push(newStatus);
+      return newStatus;
+    }
+  }
+
   async *handleEvent(event: EventFactory) {
     for (const sk of this.passiveSkills) {
       await sk.handleEvent(event);
@@ -93,8 +121,8 @@ export class Character extends Entity {
   }
 
   getData(): CharacterData {
-    const weapon = this.equipments.find(e => e.isWeapon());
-    const artifact = this.equipments.find(e => e.isArtifact());
+    const weapon = this.equipments.find((e) => e.isWeapon());
+    const artifact = this.equipments.find((e) => e.isArtifact());
     return {
       id: this.id,
       entityId: this.entityId,
@@ -103,18 +131,18 @@ export class Character extends Entity {
       energy: this.energy,
       weapon: weapon?.getData() ?? null,
       artifact: artifact?.getData() ?? null,
-      equipments: this.equipments.map(e => e.getData()),
-      statuses: this.statuses.map(s => s.getData()),
-      applied: this.applied
+      equipments: this.equipments.map((e) => e.getData()),
+      statuses: this.statuses.map((s) => s.getData()),
+      applied: this.applied,
     };
   }
 
   clone() {
     const clone = shallowClone(this);
-    clone.equipments = this.equipments.map(e => e.clone());
-    clone.statuses = this.statuses.map(s => s.clone());
-    clone.skills = this.skills.map(s => s.clone());
-    clone.passiveSkills = this.passiveSkills.map(h => h.clone());
+    clone.equipments = this.equipments.map((e) => e.clone());
+    clone.statuses = this.statuses.map((s) => s.clone());
+    clone.skills = this.skills.map((s) => s.clone());
+    clone.passiveSkills = this.passiveSkills.map((h) => h.clone());
     return clone;
   }
-};
+}

@@ -85,7 +85,8 @@ const PactswornPathclearer = createStatus(114041)
  */
 const LawfulEnforcer = createSkill(14044)
   .setType("passive")
-  .on("enter", (c) => { c.createStatus(PactswornPathclearer); })
+  .on("battleBegin", (c) => { c.createStatus(PactswornPathclearer); })
+  .on("revive", (c) => { c.createStatus(PactswornPathclearer); })
   .build();
 
 export const Cyno = createCharacter(1404)

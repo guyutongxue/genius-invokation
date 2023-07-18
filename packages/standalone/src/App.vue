@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DiceType } from "@gi-tcg/typings";
+import { logs } from "./logs";
 import Chessboard from "./components/Chessboard.vue";
 import { Game, PlayerConfig } from "@gi-tcg/core";
 import { ref } from "vue";
@@ -39,6 +39,7 @@ const player1 = {
   </button>
   <div v-else>
     <Chessboard
+      debug
       v-bind="player0"
       @initialized="initializePlayer(0, $event)"
     ></Chessboard>
@@ -48,4 +49,9 @@ const player1 = {
       @initialized="initializePlayer(1, $event)"
     ></Chessboard>
   </div>
+  <ul>
+    <li v-for="log of logs">
+      {{ log }}
+    </li>
+  </ul>
 </template>

@@ -8,7 +8,7 @@ export class PassiveSkill extends Entity {
   private handler: EventHandlers;
   private usagePerRound: number;
 
-  constructor(public readonly info: PassiveSkillInfoWithId) {
+  constructor(public readonly info: PassiveSkillInfoWithId, private notifier: () => void) {
     super(info.id);
     this.handler = new this.info.handlerCtor();
     this.usagePerRound = this.info.usagePerRound;
@@ -22,6 +22,7 @@ export class PassiveSkill extends Entity {
     if (this.usagePerRound <= 0) return;
     const result = await this.doHandleEvent(this.handler, event);
     if (result) {
+      this.notifier();
       this.usagePerRound--;
     }
   }
