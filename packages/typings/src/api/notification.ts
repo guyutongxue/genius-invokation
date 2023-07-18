@@ -122,7 +122,7 @@ export interface DeclareEndEvent {
   opp: boolean;
 }
 export interface OtherEvent {
-  type: "oppChoosingActive"
+  type: "oppChoosingActive" | "oppAction"
 }
 export type Event =
   | GamePhaseEvent

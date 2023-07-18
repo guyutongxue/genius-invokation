@@ -260,6 +260,7 @@ export class Player {
    * @returns is fast action
    */
   async action(): Promise<boolean> {
+    this.ops.notifyOpp({ type: "oppAction" });
     await this.ops.sendEvent("onBeforeAction");
     const actions: ActionConfig[] = [
       {
@@ -409,6 +410,11 @@ export class Player {
       return oppNotify;
     }
     oppNotify();
+    // 取消准备技能
+    const preparingSkill = from.statuses.find(s => s.preparing());
+    if (preparingSkill) {
+      preparingSkill.shouldDispose = true;
+    }
     // TODO handle "onSwitchActive"
   }
 
@@ -425,6 +431,40 @@ export class Player {
   }
   fullSupportArea(): boolean {
     return this.supports.length >= this.config.game.maxSupports;
+  }
+  /**
+   * 检查标记为“应当弃置”的实体并弃置它们
+   */
+  checkDispose() {
+    const activeIndex = this.activeIndex ?? 0;
+    for (let i = 0; i < this.characters.length; i++) {
+      const character =
+        this.characters[(activeIndex + i) % this.characters.length];
+      for (let j = 0; j < character.statuses.length; j++) {
+        if (character.statuses[j].shouldDispose) {
+          character.statuses.splice(j, 1);
+          j--;
+        }
+      }
+    }
+    for (let i = 0; i < this.combatStatuses.length; i++) {
+      if (this.combatStatuses[i].shouldDispose) {
+        this.combatStatuses.splice(i, 1);
+        i--;
+      }
+    }
+    for (let i = 0; i < this.summons.length; i++) {
+      if (this.summons[i].shouldDispose) {
+        this.summons.splice(i, 1);
+        i--;
+      }
+    }
+    for (let i = 0; i < this.supports.length; i++) {
+      if (this.supports[i].shouldDispose) {
+        this.supports.splice(i, 1);
+        i--;
+      }
+    }
   }
 
   sendEventFromCharacter<K extends EventHandlerNames1>(

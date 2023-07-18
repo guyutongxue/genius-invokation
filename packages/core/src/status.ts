@@ -1,11 +1,18 @@
-import {
-  EventHandlers,
-  getStatus,
-  StatusInfoWithId,
-} from "@gi-tcg/data";
+import { EventHandlers, getStatus, StatusInfoWithId } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { StatusData } from "@gi-tcg/typings";
 import { EventFactory } from "./context.js";
+
+export type PreparingResult =
+  | {
+      type: "skill";
+      id: number;
+    }
+  | {
+      type: "status";
+      id: number;
+    }
+  | null;
 
 export class Status extends Entity {
   public readonly info: StatusInfoWithId;
@@ -14,7 +21,6 @@ export class Status extends Entity {
   usage: number;
   private duration: number;
   shield: number | null = null;
-  prepare: number | null = null;
   shouldDispose = false;
 
   constructor(id: number) {
@@ -30,7 +36,12 @@ export class Status extends Entity {
         : this.info.shield?.initial ?? null;
   }
 
+  private get prepare() {
+    return this.info.prepare?.round ?? null;
+  }
+
   refresh() {
+    this.shouldDispose = false;
     this.usage = Math.min(this.usage + this.info.usage, this.info.maxUsage);
     this.usagePerRound = this.info.usagePerRound;
     this.duration = this.info.duration;
@@ -38,20 +49,35 @@ export class Status extends Entity {
       if (typeof this.info.shield === "number") {
         this.shield = this.info.shield;
       } else if (this.info.shield !== null) {
-        this.shield = Math.min(this.info.shield.recreateMax, this.shield + this.info.shield.initial);
+        this.shield = Math.min(
+          this.info.shield.recreateMax,
+          this.shield + this.info.shield.initial
+        );
       }
     }
   }
 
-  private getVisibleValueProp(): "shield" | "usage" | "duration" | null {
+  preparing(): PreparingResult {
+    if (this.info.prepare === null) return null;
+    if (this.info.prepare.round === 1) {
+      return { type: "skill", id: this.info.prepare.skillOrStatus };
+    } else {
+      return { type: "status", id: this.info.prepare.skillOrStatus };
+    }
+  }
+
+  private getVisibleValueProp() {
     if (this.shield !== null) {
-      return "shield";
+      return "shield" as const;
+    }
+    if (this.prepare !== null) {
+      return "prepare" as const;
     }
     if (this.info.usage !== 1 && isFinite(this.usage)) {
-      return "usage";
+      return "usage" as const;
     }
     if (this.info.duration !== 1 && isFinite(this.duration)) {
-      return "duration";
+      return "duration" as const;
     }
     return null;
   }
@@ -66,7 +92,7 @@ export class Status extends Entity {
   }
   set visibleValue(value: number) {
     const prop = this.getVisibleValueProp();
-    if (prop !== null) {
+    if (prop !== null && prop !== "prepare") {
       this[prop] = value;
     }
   }

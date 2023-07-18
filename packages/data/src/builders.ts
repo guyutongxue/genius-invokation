@@ -511,8 +511,10 @@ class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilde
     this.shieldConfig = shield;
     return this;
   }
-  prepare(skill: SkillHandle, round = 1) {
-    this.prepareConfig = { skill, round };
+  prepare(skill: SkillHandle): this;
+  prepare(status: StatusHandle, round: number): this; 
+  prepare(skillOrStatus: SkillHandle | StatusHandle, round: number = 1) {
+    this.prepareConfig = { skillOrStatus, round: 1 };
     return this;
   }
 

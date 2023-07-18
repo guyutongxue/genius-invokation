@@ -35,6 +35,7 @@ export interface GlobalOperations {
     event: K,
     ...args: EventCreatorArgsForPlayer<K>
   ) => Promise<void>;
+  doEvent: () => Promise<void>;
 }
 
 export class GameState {
@@ -207,6 +208,7 @@ export class GameState {
     // @ts-expect-error TS SUCKS
     const e: EventFactory = creator(this, ...args);
     for await (const r of this.handleEvent(e)) {
+      this.dealWaitingEvent();
     }
   }
 
@@ -230,6 +232,7 @@ export class GameState {
         // @ts-expect-error TS SUCKS
         return this.sendEvent(event, who, ...args);
       },
+      doEvent: () => this.dealWaitingEvent(),
     };
   }
   private notifyPlayer(who: 0 | 1, event: Event) {
@@ -294,11 +297,18 @@ export class GameState {
     });
   }
   async dealWaitingEvent() {
+    const events = [...this.eventWaitingForHandle];
+    this.eventWaitingForHandle = [];
     // TODO check death
-    while (this.eventWaitingForHandle.length > 0) {
-      const event = this.eventWaitingForHandle.shift()!;
+    // 弃置所有标记为弃置的实体
+    this.players[this.currentTurn].checkDispose();
+    this.players[flip(this.currentTurn)].checkDispose();
+    // 处理剩余事件
+    for (const event of events) {
       for await (const r of this.handleEvent(event)) {
+        // 每次处理完一个事件，检查新的状态
         this.dealWaitingEvent();
+        // 随后继续处理剩余事件
       }
     }
   }

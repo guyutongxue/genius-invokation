@@ -1,4 +1,4 @@
-import { SkillHandle } from "./builders";
+import { SkillHandle, StatusHandle } from "./builders";
 import { Context, DamageContext, SwitchActiveContext } from "./contexts";
 import { EventHandlerCtor, ListenTarget } from "./events";
 
@@ -13,7 +13,7 @@ export type ShieldConfig = null | number | {
 }
 
 export type PrepareConfig = null | {
-  skill: SkillHandle,
+  skillOrStatus: SkillHandle | StatusHandle,
   round: number,
 }
 
