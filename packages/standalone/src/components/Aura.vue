@@ -30,7 +30,7 @@ const auraList = computed<string[]>(() => {
 </script>
 
 <template>
-  <div class="flex flex-row gap-1 h-6">
+  <div class="flex flex-row gap-1 h-6 justify-center">
     <img
       v-for="icon in auraList"
       :src="'https://guyutongxue.site/gcg-buff-icon-data/Sprite/' + icon"

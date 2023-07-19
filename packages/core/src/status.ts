@@ -1,4 +1,4 @@
-import { EventHandlers, getStatus, StatusInfoWithId } from "@gi-tcg/data";
+import { DamageContext, EventHandlers, getStatus, StatusInfoWithId } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { StatusData } from "@gi-tcg/typings";
 import { EventFactory } from "./context.js";
@@ -104,6 +104,25 @@ export class Status extends Entity {
       this.shouldDispose = true;
     }
   }
+  protected override doHandleEventSync(handler: EventHandlers<{}>, event: EventFactory): boolean {
+    if (this.shield) {
+      const candidates = event(this.entityId);
+      for (const [name, ctx] of candidates) {
+        if (name === "onBeforeDamaged") {
+          const c = ctx as DamageContext;
+          const decValue = Math.min(this.shield, c.value);
+          c.decreaseDamage(decValue);
+          this.shield -= decValue;
+          if (this.shield === 0) {
+            this.shouldDispose = true;
+          }
+          return true;
+        }
+      }
+    }
+    return super.doHandleEventSync(handler, event);
+  }
+
   async handleEvent(event: EventFactory) {
     if (this.shouldDispose || this.usagePerRound === 0) return;
     const result = await this.doHandleEvent(this.handler, event);

@@ -16,6 +16,7 @@ import HandCard from "./HandCard.vue";
 import { computed } from "vue";
 import { MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
 import Aura from "./Aura.vue";
+import Status from "./Status.vue";
 
 export type Clickable = (
   | {
@@ -178,7 +179,7 @@ function toCostMap(cost: number[]): [DiceType, number][] {
               : ''
           "
         >
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col">
             <Aura :applied="ch.applied"></Aura>
             <div
               class="relative"
@@ -187,6 +188,9 @@ function toCostMap(cost: number[]): [DiceType, number][] {
             >
               <Character :character="ch"></Character>
               <span v-if="showMark(ch.actionIndex)" class="check-mark"> </span>
+            </div>
+            <div v-if="data.active === ch.entityId" class="flex flex-row gap-1 p-1">
+              <Status v-for="st of data.combatStatuses" :status="st"></Status>
             </div>
           </div>
         </div>

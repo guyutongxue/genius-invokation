@@ -359,16 +359,23 @@ export class GameState {
     this.notifyPlayer(0, { type: "stateUpdated", damages: [damageLog] });
     this.notifyPlayer(1, { type: "stateUpdated", damages: [damageLog] });
   }
+
   async doEvent() {
     const events = [...this.eventWaitingForHandle];
     this.eventWaitingForHandle = [];
     // TODO check death
+    this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
+    this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
     // 弃置所有标记为弃置的实体
     this.players[this.currentTurn].checkDispose();
     this.players[flip(this.currentTurn)].checkDispose();
+    this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
+    this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
     // 处理剩余事件
     for (const event of events) {
       for await (const r of this.handleEvent(event)) {
+        this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
+        this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
         // 每次处理完一个事件，检查新的状态
         this.doEvent();
         // 随后继续处理剩余事件
