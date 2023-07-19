@@ -55,7 +55,7 @@ export interface Context {
   switchCards(): Promise<void>;
 
   switchActive(target: Target): void;
-  useSkill(skill: SkillHandle | "normal"): void;
+  useSkill(skill: SkillHandle | "normal"): Promise<void>;
   actionAgain(): void;
 
   getMaster(): CharacterContext;

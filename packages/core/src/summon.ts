@@ -45,6 +45,16 @@ export class Summon extends Entity {
       }
     }
   }
+  handleEventSync(event: EventFactory) {
+    if (this.shouldDispose) return;
+    const result = this.doHandleEventSync(this.handler, event);
+    if (result) {
+      this.usage--;
+      if (this.info.disposeWhenUsedUp && this.usage === 0) {
+        this.shouldDispose = true;
+      }
+    }
+  }
 
   clone() {
     const clone = shallowClone(this);

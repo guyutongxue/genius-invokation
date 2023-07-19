@@ -32,6 +32,13 @@ export class Equipment extends Entity {
       this.usagePerRound--;
     }
   }
+  handleEventSync(event: EventFactory) {
+    if (this.usagePerRound <= 0) return;
+    const result = this.doHandleEventSync(this.handler, event);
+    if (result) {
+      this.usagePerRound--;
+    }
+  }
 
   getData(): number {
     return this.id;

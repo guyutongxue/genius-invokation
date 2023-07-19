@@ -46,6 +46,30 @@ export class Entity {
       return r;
     }
   }
+  protected doHandleEventSync(handler: EventHandlers, event: EventFactory) {
+    let r: boolean | undefined = false;
+    const candidates = event(this.entityId);
+    for (const [name, ctx] of candidates) {
+      if (name === "onActionPhase") {
+        this.onRoundBegin();
+      }
+      const h = handler[name];
+      if (typeof h !== "undefined") {
+        // @ts-expect-error TS SUCKS
+        const currentR = h.call(handler, ctx);
+        if (typeof currentR === "object" && "then" in currentR) {
+          throw new Error("Cannot handle async event in sync mode");
+        }
+        r = currentR ?? undefined;
+        break;
+      }
+    }
+    if (typeof r === "undefined") {
+      return true;
+    } else {
+      return r;
+    }
+  }
 }
 
 // 浅拷贝（只克隆一层）

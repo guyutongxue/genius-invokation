@@ -119,6 +119,17 @@ export class Character extends Entity {
       yield;
     }
   }
+  handleEventSync(event: EventFactory) {
+    for (const sk of this.passiveSkills) {
+      sk.handleEventSync(event);
+    }
+    for (const eq of this.equipments) {
+      eq.handleEventSync(event);
+    }
+    for (const st of this.statuses) {
+      st.handleEventSync(event);
+    }
+  }
 
   getData(): CharacterData {
     const weapon = this.equipments.find((e) => e.isWeapon());

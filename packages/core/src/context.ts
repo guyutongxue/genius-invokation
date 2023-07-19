@@ -199,8 +199,10 @@ export class ContextImpl implements Context {
     type: DamageType,
     target?: Target | undefined
   ): void {
-    // TODO
-    throw new Error("Shouldn't called by base class");
+    const chs = this.getCharacterFromTarget(target ?? Target.oppActive());
+    for (const ch of chs) {
+      this.state.dealDamage(this.sourceId, ch.character, value, type);
+    }
   }
   applyElement(type: DamageType, target?: Target): void {
     // TODO
@@ -335,8 +337,19 @@ export class ContextImpl implements Context {
     );
     player.switchActive(chCtx.entityId);
   }
-  useSkill(skill: number | "normal"): void {
-    // TODO
+  useSkill(skill: number | "normal"): Promise<void> {
+    const player = this.state.getPlayer(this.who);
+    const ch = player.getCharacter("active");
+    let skillObj: Skill | undefined;
+    if (skill === "normal") {
+      skillObj = ch.skills.find((sk) => sk.info.type === "normal");
+    } else {
+      skillObj = ch.skills.find((sk) => sk.info.id === skill);
+    }
+    if (!skillObj) {
+      throw new Error("NO normal attack defined for active ch");
+    }
+    return player.useSkill(skillObj);
   }
 
   actionAgain(): void {
@@ -358,7 +371,7 @@ class CharacterContextImpl implements CharacterContext {
   constructor(
     private state: GameState,
     public readonly who: 0 | 1,
-    protected character: Character,
+    public character: Character,
     public readonly sourceId = character.entityId
   ) {}
   get entityId() {
@@ -449,7 +462,9 @@ class CharacterContextImpl implements CharacterContext {
   isActive() {
     return (
       this.state.getPlayer(this.who).getCharacter("active").entityId ===
-      this.entityId
+        this.entityId ||
+      this.state.getPlayer(flip(this.who)).getCharacter("active").entityId ===
+        this.entityId
     );
   }
   isMine() {
@@ -855,7 +870,7 @@ class ElementalReactionContextImpl
   }
 }
 
-class DamageContextImpl extends ContextImpl implements DamageContext {
+export class DamageContextImpl extends ContextImpl implements DamageContext {
   constructor(
     state: GameState,
     who: 0 | 1,
@@ -895,7 +910,12 @@ class DamageContextImpl extends ContextImpl implements DamageContext {
     }
     const sourceId = this.damage.sourceId;
     const { who } = getEntityById(this.state, sourceId)!;
-    return new ElementalReactionContextImpl(this.state, who, sourceId, reaction);
+    return new ElementalReactionContextImpl(
+      this.state,
+      who,
+      sourceId,
+      reaction
+    );
   }
 
   get target() {
@@ -944,7 +964,10 @@ class DamageContextImpl extends ContextImpl implements DamageContext {
   }
 }
 
-class SkillDamageContextImpl extends DamageContextImpl implements SkillDamageContext {
+class SkillDamageContextImpl
+  extends DamageContextImpl
+  implements SkillDamageContext
+{
   private getSkillCtx() {
     const ctx = this.getSource();
     if (ctx instanceof SkillContextImpl) {
@@ -974,7 +997,10 @@ interface EntityEnv {
   listenTo: ListenTarget;
 }
 
-function getEntityById(state: GameState, entityId: number): EntityEnv | null {
+export function getEntityById(
+  state: GameState,
+  entityId: number
+): EntityEnv | null {
   for (const who of [0, 1] as const) {
     const player = state.getPlayer(who);
     for (const ch of player.characters) {
@@ -1031,7 +1057,7 @@ function getEntityById(state: GameState, entityId: number): EntityEnv | null {
   return null;
 }
 
-export function getContextById(state: GameState, entityId: number) {
+function getContextById(state: GameState, entityId: number) {
   const ee = getEntityById(state, entityId);
   if (ee === null) return null;
   const { who, entity: object } = ee;
@@ -1088,18 +1114,19 @@ function checkShouldListen(
   char?: Character,
   entity?: number
 ) {
-  if (typeof who === "undefined") {
-    return true;
-  }
   if (typeof entity === "number") {
     return entityEnv.entity.entityId === entity;
   }
   // Default of PassiveSkill, Equipment, Status
-  if (entityEnv.listenTo === "master" && entityEnv.master && char) {
-    return char.entityId === entityEnv.master.entityId;
+  if (entityEnv.listenTo === "master") {
+    if (entityEnv.master && char) {
+      return char.entityId === entityEnv.master.entityId;
+    } else if (who) {
+      return who === entityEnv.who;
+    }
   }
   // Default of CombatStatus, Support, Summon
-  if (entityEnv.listenTo === "master" || entityEnv.listenTo === "my") {
+  if (entityEnv.listenTo === "my" && who) {
     return entityEnv.who === who;
   }
   return true;
@@ -1141,6 +1168,64 @@ function createRollPhaseContext(
   };
 }
 
+function createDamageContext(
+  eventName: EventHandlerNames,
+  CtxImpl = DamageContextImpl
+) {
+  return (state: GameState, damage: Damage): EventFactory => {
+    return (entityId: number) => {
+      const env = getEntityById(state, entityId);
+      if (env === null) return [];
+      if (eventName === "onDamaged" || eventName === "onBeforeDamaged") {
+        if (!checkShouldListen(env, undefined, damage.target)) return [];
+      } else {
+        if (!checkShouldListen(env, damage.who)) return [];
+      }
+      const ctx = new CtxImpl(state, env.who, entityId, damage);
+      return [[eventName, ctx]];
+    };
+  };
+}
+
+function createReactionContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  sourceId: number,
+  reaction: Reaction
+): EventFactory {
+  return (entityId: number) => {
+    const env = getEntityById(state, entityId);
+    if (env === null) return [];
+    if (!checkShouldListen(env, sourceWho)) return [];
+    const ctx = new ElementalReactionContextImpl(
+      state,
+      sourceWho,
+      sourceId,
+      reaction
+    );
+    return [["onElementalReaction", ctx]];
+  };
+}
+
+function createUseSkillContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  skill: Skill
+): EventFactory {
+  return (entityId: number) => {
+    const env = getEntityById(state, entityId);
+    if (env === null) return [];
+    if (!checkShouldListen(env, sourceWho)) return [];
+    const ctx = new SkillContextImpl(state, sourceWho, entityId, skill);
+    return [["onUseSkill", ctx]];
+  };
+}
+
+export function createSkillContext(state: GameState, who: 0 | 1) {
+  return (skill: Skill) =>
+    new SkillDescriptionContextImpl(state, who, skill.entityId, skill);
+}
+
 type Creator = (state: GameState, ...args: any[]) => EventFactory;
 
 export const CONTEXT_CREATOR = {
@@ -1154,7 +1239,20 @@ export const CONTEXT_CREATOR = {
     "onRequestFastSwitchActive"
   ),
 
+  onUseSkill: createUseSkillContext,
   onDeclareEnd: createCommonEventContext("onDeclareEnd"),
+
+  onEarlyBeforeDealDamage: createDamageContext("onEarlyBeforeDealDamage"),
+  onBeforeDealDamage: createDamageContext("onBeforeDealDamage"),
+  onBeforeSkillDamage: createDamageContext(
+    "onBeforeSkillDamage",
+    SkillDamageContextImpl
+  ),
+  onBeforeDamaged: createDamageContext("onBeforeDamaged"),
+
+  onDamaged: createDamageContext("onDamaged"),
+
+  onElementalReaction: createReactionContext,
 
   onRevive: createCommonEventContext("onRevive"),
   onEnter: createEnterEventContext,

@@ -57,6 +57,17 @@ export class Support extends Entity {
       }
     }
   }
+  handleEventSync(event: EventFactory) {
+    if (this.shouldDispose || this.usagePerRound === 0) return;
+    const result = this.doHandleEventSync(this.handler, event);
+    if (result) {
+      this.usagePerRound--;
+      this.usage--;
+      if (this.usage === 0) {
+        this.shouldDispose = true;
+      }
+    }
+  }
 
   getData(): SupportData {
     return {

@@ -2,8 +2,14 @@ import { DamageType, Reaction } from "@gi-tcg/typings";
 import { Character } from "./character.js";
 
 export class Damage {
-  constructor(public sourceId: number, private originalValue: number, private type: DamageType, public target: Character, public triggeredByReaction?: Reaction) {
-  }
+  constructor(
+    public who: 0 | 1,
+    public sourceId: number,
+    public target: Character,
+    private originalValue: number,
+    private type: DamageType,
+    public triggeredByReaction?: Reaction
+  ) {}
 
   changedLogs: [sourceId: number, changedTo: DamageType][] = [];
   addedLogs: [sourceId: number, value: number][] = [];

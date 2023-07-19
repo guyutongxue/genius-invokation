@@ -14,18 +14,21 @@ import { Player } from "./player.js";
 import { shallowClone } from "./entity.js";
 import {
   EventFactory,
-  SkillContextImpl,
   CONTEXT_CREATOR,
-  getContextById,
   EventCreatorArgs,
   EventCreatorArgsForPlayer,
   EventHandlerNames1,
   PlayCardContextImpl,
+  getEntityById,
+  DamageContextImpl,
+  createSkillContext,
 } from "./context.js";
 import { Character } from "./character.js";
 import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
-import { CardTargetDescriptor, SpecialBits } from "@gi-tcg/data";
+import { CardTargetDescriptor, SkillDescriptionContext, SpecialBits, makeReaction, makeReactionFromDamage } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
+import { Damage } from "./damage.js";
+import { Skill } from "./skill.js";
 
 export interface GlobalOperations {
   notifyMe: (event: Event) => void;
@@ -34,8 +37,13 @@ export interface GlobalOperations {
   emitEvent: <K extends EventHandlerNames1>(
     event: K,
     ...args: EventCreatorArgsForPlayer<K>
-  ) => Promise<void>;
+  ) => void;
+  emitImmediatelyHandledEvent: <K extends EventHandlerNames1>(
+    event: K,
+    ...args: EventCreatorArgsForPlayer<K>
+  ) => void;
   doEvent: () => Promise<void>;
+  getSkillContext: () => (sk: Skill) => SkillDescriptionContext
 }
 
 export class GameState {
@@ -136,7 +144,8 @@ export class GameState {
     ]);
     n0();
     n1();
-    await this.emitEvent("onBattleBegin");
+    this.emitEvent("onBattleBegin");
+    await this.doEvent();
     this.phase = "roll";
   }
   private async rollPhase() {
@@ -156,11 +165,14 @@ export class GameState {
     this.phase = "action";
   }
   private async actionPhase() {
-    await this.emitEvent("onActionPhase");
-    while (!(
-      this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
-      this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
-    )) {
+    this.emitEvent("onActionPhase");
+    await this.doEvent();
+    while (
+      !(
+        this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
+        this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
+      )
+    ) {
       let player = this.players[this.currentTurn];
       if (player.getSpecialBit(SpecialBits.DeclaredEnd)) {
         player = this.players[flip(this.currentTurn)];
@@ -169,15 +181,17 @@ export class GameState {
         player = this.players[flip(this.currentTurn)];
       }
       const fast = await player.action();
+      await this.doEvent();
       await this.options.pauser();
       if (!fast) {
         this.currentTurn = flip(this.currentTurn);
       }
     }
-    this.phase = "end"
+    this.phase = "end";
   }
   private async endPhase() {
-    await this.emitEvent("onEndPhase");
+    this.emitEvent("onEndPhase");
+    await this.doEvent();
     await Promise.all([
       this.players[0].drawHands(2),
       this.players[1].drawHands(2),
@@ -200,16 +214,23 @@ export class GameState {
     };
   }
 
-  async emitEvent<K extends EventHandlerNames1>(
+  emitEvent<K extends EventHandlerNames1>(
     event: K,
     ...args: EventCreatorArgs<K>
   ) {
     const creator = CONTEXT_CREATOR[event];
     // @ts-expect-error TS SUCKS
     const e: EventFactory = creator(this, ...args);
-    for await (const r of this.handleEvent(e)) {
-      this.dealWaitingEvent();
-    }
+    this.eventWaitingForHandle.push(e);
+  }
+  emitImmediatelyHandledEvent<K extends EventHandlerNames1>(
+    event: K,
+    ...args: EventCreatorArgs<K>
+  ) {
+    const creator = CONTEXT_CREATOR[event];
+    // @ts-expect-error TS SUCKS
+    const e: EventFactory = creator(this, ...args);
+    this.handleEventSync(e);
   }
 
   async *handleEvent(event: EventFactory) {
@@ -222,6 +243,10 @@ export class GameState {
       yield;
     }
   }
+  handleEventSync(event: EventFactory) {
+    this.players[this.currentTurn].handleEventSync(event);
+    this.players[flip(this.currentTurn)].handleEventSync(event);
+  }
 
   private createOperationsForPlayer(who: 0 | 1): GlobalOperations {
     return {
@@ -232,7 +257,12 @@ export class GameState {
         // @ts-expect-error TS SUCKS
         return this.emitEvent(event, who, ...args);
       },
-      doEvent: () => this.dealWaitingEvent(),
+      emitImmediatelyHandledEvent: (event, ...args) => {
+        // @ts-expect-error TS SUCKS
+        return this.emitImmediatelyHandledEvent(event, who, ...args);
+      },
+      doEvent: () => this.doEvent(),
+      getSkillContext: () => createSkillContext(this, who)
     };
   }
   private notifyPlayer(who: 0 | 1, event: Event) {
@@ -249,7 +279,6 @@ export class GameState {
     throw new Error("Not implemented");
   }
 
-  private damageLogs: DamageData[] = [];
   private eventWaitingForHandle: EventFactory[] = [];
   pushEvent(event: EventFactory) {
     this.eventWaitingForHandle.push(event);
@@ -260,31 +289,63 @@ export class GameState {
     value: number,
     type: DamageType
   ) {
-    const sourceCtx = getContextById(this, sourceId);
-    // TODO create context for onBefore stuff
-    // handle "onEarlyBeforeDealDamage"
-    // handle "onBeforeDealDamage"
-    if (sourceCtx instanceof SkillContextImpl) {
-      // handle "onBeforeSkillDamage"
+    const { who, master, entity } = getEntityById(this, sourceId)!;
+    const damage = new Damage(who, sourceId, target, value, type);
+    this.emitImmediatelyHandledEvent("onEarlyBeforeDealDamage", damage);
+    const changedType = damage.getType();
+    if (changedType !== DamageType.Piercing) {
+      const dmgCtx = new DamageContextImpl(this, who, sourceId, damage);
+      const [newAura, reaction] = makeReactionFromDamage(dmgCtx);
+      target.applied = newAura;
+      if (reaction !== null) {
+        this.emitEvent("onElementalReaction", who, sourceId, reaction);
+      }
+      this.emitImmediatelyHandledEvent("onBeforeDealDamage", damage);
+      if (entity instanceof Skill) {
+        this.emitImmediatelyHandledEvent("onBeforeSkillDamage", damage);
+      }
+      this.emitImmediatelyHandledEvent("onBeforeDamaged", damage);
     }
-    // handle target's "onBeforeDamage"
-    target.health -= value;
+    target.health -= damage.getValue();
     if (target.health < 0) {
       target.health = 0;
     }
-    // TODO Elemental Reaction
-    this.damageLogs.push({
+    this.emitEvent("onDamaged", damage);
+    const damageLog: DamageData = {
       target: target.entityId,
-      value,
-      type,
-      log: [], // TODO
-    });
+      type: damage.getType(),
+      value: damage.getValue(),
+      log: [
+        {
+          source: entity instanceof Skill ? entity.info.id : entity.entityId,
+          what: `Original damage ${value} with type ${type}`
+        },
+        ...damage.changedLogs.map(([s, c]) => ({
+          source: s,
+          what: `Change damage type to ${c}`
+        })),
+        ...damage.addedLogs.map(([s, c]) => ({
+          source: s,
+          what: `+${c} by ${s}`
+        })),
+        ...damage.multipliedLogs.map(([s, c]) => ({
+          source: s,
+          what: `*${c} by ${s}`
+        })),
+        ...damage.decreasedLogs.map(([s, c]) => ({
+          source: s,
+          what: `-${c} by ${s}`
+        })),
+      ]
+    };
+    this.notifyPlayer(0, { type: "stateUpdated", damages: [damageLog] });
+    this.notifyPlayer(1, { type: "stateUpdated", damages: [damageLog] });
   }
   heal(target: Character, value: number, sourceId: number) {
     const oldHealth = target.health;
     target.health = Math.min(target.health + value, target.info.maxHealth);
     const diff = target.health - oldHealth;
-    this.damageLogs.push({
+    const damageLog: DamageData = {
       target: target.entityId,
       value: diff,
       type: DamageType.Heal,
@@ -294,9 +355,11 @@ export class GameState {
           what: `Heal ${value}(${diff}) HP`,
         },
       ],
-    });
+    };
+    this.notifyPlayer(0, { type: "stateUpdated", damages: [damageLog] });
+    this.notifyPlayer(1, { type: "stateUpdated", damages: [damageLog] });
   }
-  async dealWaitingEvent() {
+  async doEvent() {
     const events = [...this.eventWaitingForHandle];
     this.eventWaitingForHandle = [];
     // TODO check death
@@ -307,7 +370,7 @@ export class GameState {
     for (const event of events) {
       for await (const r of this.handleEvent(event)) {
         // 每次处理完一个事件，检查新的状态
-        this.dealWaitingEvent();
+        this.doEvent();
         // 随后继续处理剩余事件
       }
     }
@@ -344,7 +407,9 @@ export class GameState {
     const actions: PlayCardConfig[] = [];
     for (const hand of player.hands) {
       const currentEnergy = player.getCharacter("active").energy;
-      const costEnergy = hand.info.costs.filter((c) => c === DiceType.Energy).length;
+      const costEnergy = hand.info.costs.filter(
+        (c) => c === DiceType.Energy
+      ).length;
       if (currentEnergy < costEnergy) {
         continue;
       }
@@ -368,7 +433,6 @@ export class GameState {
     const clone = shallowClone(this);
     clone.players = [this.players[0].clone(), this.players[1].clone()];
     clone.eventWaitingForHandle = [...this.eventWaitingForHandle];
-    clone.damageLogs = [...this.damageLogs];
     return clone;
   }
 }

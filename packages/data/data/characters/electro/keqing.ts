@@ -19,6 +19,7 @@ const YunlaiSwordsmanship = createSkill(14031)
 const StellarRestoration = createSkill(14032)
   .setType("elemental")
   .costElectro(3)
+  .dealDamage(3, DamageType.Electro)
   .do((c) => {
     if (c.triggeredByCard(LightningStiletto)) {
       if (c.character.hasEquipment(ThunderingPenance)) {

@@ -417,8 +417,8 @@ const PlungingStrike = createCard(332017, ["character"])
   .costSame(3)
   .do(function (c) {
     c.switchActive(this[0].asTarget());
-    c.useSkill("normal");
   })
+  .useSkill("normal")
   .build();
 
 /**

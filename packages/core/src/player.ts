@@ -152,7 +152,7 @@ export class Player {
       controlled: [],
       times: 1,
     };
-    await this.ops.emitEvent("onRollPhase", config);
+    this.ops.emitImmediatelyHandledEvent("onRollPhase", config);
     this.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
     if (!this.config.alwaysOmni) {
       this.doRollDice(config.controlled);
@@ -281,7 +281,8 @@ export class Player {
       await this.ops.doEvent();
       return false; // 以慢速行动跳过本回合
     }
-    await this.ops.emitEvent("onBeforeAction");
+    this.ops.emitEvent("onBeforeAction");
+    await this.ops.doEvent();
     // 收集可用行动
     const actions: ActionConfig[] = [
       {
@@ -336,7 +337,7 @@ export class Player {
         this.setSpecialBit(SpecialBits.DeclaredEnd, true);
         this.ops.notifyMe({ type: "declareEnd", opp: false });
         this.ops.notifyOpp({ type: "declareEnd", opp: true });
-        await this.ops.emitEvent("onDeclareEnd");
+        this.ops.emitEvent("onDeclareEnd");
         return false;
       }
       case "elementalTuning": {
@@ -374,7 +375,6 @@ export class Player {
       case "switchActive": {
         this.consumeDice(action.dice, action.consumedDice);
         this.switchActive(action.to.entityId);
-        // TODO emitEvent "onSwitchActive"
         return action.fast;
       }
     }
@@ -389,13 +389,14 @@ export class Player {
       throw new Error("Invalid skill");
     }
     this.notifySkill(skill.info);
-
-    // TODO
+    const ctx = this.ops.getSkillContext();
+    skill.do(ctx(skill));
     if (skill.info.gainEnergy) {
       ch.gainEnergy();
     }
     await this.ops.doEvent();
-    // TODO handle "onUseSkill"
+    this.ops.emitEvent("onUseSkill", skill);
+    await this.ops.doEvent();
   }
 
   async playCard(hand: Card, targets: PlayCardTargetObj[]) {
@@ -437,6 +438,7 @@ export class Player {
     if (preparingSkill) {
       preparingSkill.shouldDispose = true;
     }
+    // TODO emitEvent "onSwitchActive"
   }
 
   createCombatStatus(newStatusId: number) {
@@ -523,6 +525,25 @@ export class Player {
     for (const support of this.supports) {
       await support.handleEvent(event);
       yield;
+    }
+  }
+  handleEventSync(event: EventFactory) {
+    const activeIndex = this.activeIndex ?? 0;
+    for (let i = 0; i < this.characters.length; i++) {
+      const character =
+        this.characters[(activeIndex + i) % this.characters.length];
+      if (character.isAlive()) {
+        character.handleEventSync(event);
+      }
+    }
+    for (const status of this.combatStatuses) {
+      status.handleEventSync(event);
+    }
+    for (const summon of this.summons) {
+      summon.handleEventSync(event);
+    }
+    for (const support of this.supports) {
+      support.handleEventSync(event);
     }
   }
 
