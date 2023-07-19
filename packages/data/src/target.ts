@@ -1,4 +1,4 @@
-import { CharacterInfoWithId } from ".";
+import { CharacterContext, CharacterInfoWithId } from ".";
 import { CharacterHandle } from "./builders";
 
 export type TargetInfo = {
@@ -114,6 +114,13 @@ export class Target {
   static oneEnergyNotFull() {
     return new Target({
       type: "oneEnergyNotFull"
+    });
+  }
+  // Should not be used by this package
+  static byEntityId(entityId: number) {
+    return new Target({
+      type: "byEntityId",
+      entityId
     });
   }
 }

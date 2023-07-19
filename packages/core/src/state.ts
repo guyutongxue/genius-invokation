@@ -25,7 +25,13 @@ import {
 } from "./context.js";
 import { Character } from "./character.js";
 import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
-import { CardTargetDescriptor, SkillDescriptionContext, SpecialBits, makeReaction, makeReactionFromDamage } from "@gi-tcg/data";
+import {
+  CardTargetDescriptor,
+  SkillDescriptionContext,
+  SpecialBits,
+  makeReaction,
+  makeReactionFromDamage,
+} from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import { Damage } from "./damage.js";
 import { Skill } from "./skill.js";
@@ -43,7 +49,7 @@ export interface GlobalOperations {
     ...args: EventCreatorArgsForPlayer<K>
   ) => void;
   doEvent: () => Promise<void>;
-  getSkillContext: () => (sk: Skill) => SkillDescriptionContext
+  getSkillContext: () => (sk: Skill) => SkillDescriptionContext;
 }
 
 export class GameState {
@@ -262,7 +268,7 @@ export class GameState {
         return this.emitImmediatelyHandledEvent(event, who, ...args);
       },
       doEvent: () => this.doEvent(),
-      getSkillContext: () => createSkillContext(this, who)
+      getSkillContext: () => createSkillContext(this, who),
     };
   }
   private notifyPlayer(who: 0 | 1, event: Event) {
@@ -290,8 +296,17 @@ export class GameState {
     type: DamageType
   ) {
     const { who, master, entity } = getEntityById(this, sourceId)!;
+    const targetWho = this.players.findIndex((p) =>
+      p.characters.includes(target)
+    ) as 0 | 1;
     const damage = new Damage(who, sourceId, target, value, type);
-    this.emitImmediatelyHandledEvent("onEarlyBeforeDealDamage", damage);
+    this.emitImmediatelyHandledEvent(
+      "onEarlyBeforeDealDamage",
+      damage,
+      who,
+      targetWho,
+      master
+    );
     const changedType = damage.getType();
     if (changedType !== DamageType.Piercing) {
       const dmgCtx = new DamageContextImpl(this, who, sourceId, damage);
@@ -300,17 +315,35 @@ export class GameState {
       if (reaction !== null) {
         this.emitEvent("onElementalReaction", who, sourceId, reaction);
       }
-      this.emitImmediatelyHandledEvent("onBeforeDealDamage", damage);
+      this.emitImmediatelyHandledEvent(
+        "onBeforeDealDamage",
+        damage,
+        who,
+        targetWho,
+        master
+      );
       if (entity instanceof Skill) {
-        this.emitImmediatelyHandledEvent("onBeforeSkillDamage", damage);
+        this.emitImmediatelyHandledEvent(
+          "onBeforeSkillDamage",
+          damage,
+          who,
+          targetWho,
+          master
+        );
       }
-      this.emitImmediatelyHandledEvent("onBeforeDamaged", damage);
+      this.emitImmediatelyHandledEvent(
+        "onBeforeDamaged",
+        damage,
+        who,
+        targetWho,
+        master
+      );
     }
     target.health -= damage.getValue();
     if (target.health < 0) {
       target.health = 0;
     }
-    this.emitEvent("onDamaged", damage);
+    this.emitEvent("onDamaged", damage, who, targetWho, master);
     const damageLog: DamageData = {
       target: target.entityId,
       type: damage.getType(),
@@ -318,25 +351,25 @@ export class GameState {
       log: [
         {
           source: entity instanceof Skill ? entity.info.id : entity.entityId,
-          what: `Original damage ${value} with type ${type}`
+          what: `Original damage ${value} with type ${type}`,
         },
         ...damage.changedLogs.map(([s, c]) => ({
           source: s,
-          what: `Change damage type to ${c}`
+          what: `Change damage type to ${c}`,
         })),
         ...damage.addedLogs.map(([s, c]) => ({
           source: s,
-          what: `+${c} by ${s}`
+          what: `+${c} by ${s}`,
         })),
         ...damage.multipliedLogs.map(([s, c]) => ({
           source: s,
-          what: `*${c} by ${s}`
+          what: `*${c} by ${s}`,
         })),
         ...damage.decreasedLogs.map(([s, c]) => ({
           source: s,
-          what: `-${c} by ${s}`
+          what: `-${c} by ${s}`,
         })),
-      ]
+      ],
     };
     this.notifyPlayer(0, { type: "stateUpdated", damages: [damageLog] });
     this.notifyPlayer(1, { type: "stateUpdated", damages: [damageLog] });

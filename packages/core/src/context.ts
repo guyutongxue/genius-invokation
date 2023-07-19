@@ -118,12 +118,22 @@ export class ContextImpl implements Context {
         return [];
       }
       case "byEntityId": {
-        const player = this.state.getPlayer(this.who);
-        const character = player.getCharacterById(info.entityId);
-        return character ? [this.createCharacterContext(character)] : [];
+        const character = this.state
+          .getPlayer(this.who)
+          .getCharacterById(info.entityId);
+        const character2 = this.state
+          .getPlayer(flip(this.who))
+          .getCharacterById(info.entityId);
+        return character
+          ? [this.createCharacterContext(character)]
+          : character2
+          ? [this.createCharacterContext(character2)]
+          : [];
       }
       case "byId": {
-        const player = this.state.getPlayer(this.who);
+        const player = this.state.getPlayer(
+          info.opp ? this.who : flip(this.who)
+        );
         const character = player.getCharacterById(info.id, true);
         return character ? [this.createCharacterContext(character)] : [];
       }
@@ -473,7 +483,7 @@ class CharacterContextImpl implements CharacterContext {
       .characters.find((c) => c.entityId === this.entityId);
   }
   asTarget(): Target {
-    return Target.ofCharacter(this.character.info.id as any);
+    return Target.byEntityId(this.entityId);
   }
   elementType(): DiceType {
     return this.character.elementType();
@@ -1121,12 +1131,12 @@ function checkShouldListen(
   if (entityEnv.listenTo === "master") {
     if (entityEnv.master && char) {
       return char.entityId === entityEnv.master.entityId;
-    } else if (who) {
+    } else if (typeof who !== "undefined") {
       return who === entityEnv.who;
     }
   }
   // Default of CombatStatus, Support, Summon
-  if (entityEnv.listenTo === "my" && who) {
+  if (entityEnv.listenTo === "my" && typeof who !== "undefined") {
     return entityEnv.who === who;
   }
   return true;
@@ -1172,14 +1182,20 @@ function createDamageContext(
   eventName: EventHandlerNames,
   CtxImpl = DamageContextImpl
 ) {
-  return (state: GameState, damage: Damage): EventFactory => {
+  return (
+    state: GameState,
+    damage: Damage,
+    sourceWho: 0 | 1,
+    targetWho: 0 | 1,
+    sourceCharacter?: Character | undefined
+  ): EventFactory => {
     return (entityId: number) => {
       const env = getEntityById(state, entityId);
       if (env === null) return [];
       if (eventName === "onDamaged" || eventName === "onBeforeDamaged") {
-        if (!checkShouldListen(env, undefined, damage.target)) return [];
+        if (!checkShouldListen(env, targetWho, damage.target)) return [];
       } else {
-        if (!checkShouldListen(env, damage.who)) return [];
+        if (!checkShouldListen(env, sourceWho, sourceCharacter)) return [];
       }
       const ctx = new CtxImpl(state, env.who, entityId, damage);
       return [[eventName, ctx]];

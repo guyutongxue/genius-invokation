@@ -66,8 +66,8 @@ const WindsOfHarmony = createStatus(115033)
 const SkywardSonnet = createSkill(15032)
   .setType("elemental")
   .costAnemo(3)
+  .dealDamage(2, DamageType.Anemo)
   .do((c) => {
-    c.dealDamage(2, DamageType.Anemo);
     if (c.character.hasEquipment(EmbraceOfWinds)) {
       c.createCombatStatus(StormZone01);
     } else {
