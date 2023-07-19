@@ -152,7 +152,7 @@ export class Player {
       controlled: [],
       times: 1,
     };
-    await this.ops.sendEvent("onRollPhase", config);
+    await this.ops.emitEvent("onRollPhase", config);
     this.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
     if (!this.config.alwaysOmni) {
       this.doRollDice(config.controlled);
@@ -261,14 +261,34 @@ export class Player {
    */
   async action(): Promise<boolean> {
     this.ops.notifyOpp({ type: "oppAction" });
-    await this.ops.sendEvent("onBeforeAction");
+    const ch = this.getCharacter("active");
+    const canUseSkill = !ch.skillDisabled();
+    // 检查准备中技能
+    const preparingStatus = ch.statuses.find((st) => st.preparing());
+    if (canUseSkill && preparingStatus) {
+      const preparing = preparingStatus.preparing()!;
+      switch (preparing.type) {
+        case "skill": {
+          // TODO
+          break;
+        }
+        case "status": {
+          ch.createStatus(preparing.id);
+          break;
+        }
+      }
+      preparingStatus.shouldDispose = true;
+      await this.ops.doEvent();
+      return false; // 以慢速行动跳过本回合
+    }
+    await this.ops.emitEvent("onBeforeAction");
+    // 收集可用行动
     const actions: ActionConfig[] = [
       {
         type: "declareEnd",
       },
     ];
-    const ch = this.getCharacter("active");
-    if (!ch.skillDisabled()) {
+    if (canUseSkill) {
       actions.push(
         ...ch.skills
           .filter(
@@ -316,7 +336,7 @@ export class Player {
         this.setSpecialBit(SpecialBits.DeclaredEnd, true);
         this.ops.notifyMe({ type: "declareEnd", opp: false });
         this.ops.notifyOpp({ type: "declareEnd", opp: true });
-        await this.ops.sendEvent("onDeclareEnd");
+        await this.ops.emitEvent("onDeclareEnd");
         return false;
       }
       case "elementalTuning": {
@@ -343,23 +363,24 @@ export class Player {
       }
       case "useSkill": {
         this.consumeDice(action.dice, action.consumedDice);
-        this.useSkill(action.skill);
+        await this.useSkill(action.skill);
         return false;
       }
       case "playCard": {
         this.consumeDice(action.dice, action.consumedDice);
-        this.playCard(action.card, action.targets);
+        await this.playCard(action.card, action.targets);
         return !action.card.info.tags.includes("action");
       }
       case "switchActive": {
         this.consumeDice(action.dice, action.consumedDice);
         this.switchActive(action.to.entityId);
+        // TODO emitEvent "onSwitchActive"
         return action.fast;
       }
     }
   }
 
-  useSkill(skill: Skill) {
+  async useSkill(skill: Skill) {
     const ch = this.getCharacter("active");
     const index = ch.skills.findIndex(
       (s) => s.entityId === skill.entityId
@@ -373,10 +394,11 @@ export class Player {
     if (skill.info.gainEnergy) {
       ch.gainEnergy();
     }
+    await this.ops.doEvent();
     // TODO handle "onUseSkill"
   }
 
-  playCard(hand: Card, targets: PlayCardTargetObj[]) {
+  async playCard(hand: Card, targets: PlayCardTargetObj[]) {
     const index = this.hands.findIndex((c) => c.entityId === hand.entityId);
     if (index === -1) {
       throw new Error("Invalid card");
@@ -415,7 +437,6 @@ export class Player {
     if (preparingSkill) {
       preparingSkill.shouldDispose = true;
     }
-    // TODO handle "onSwitchActive"
   }
 
   createCombatStatus(newStatusId: number) {
@@ -467,13 +488,13 @@ export class Player {
     }
   }
 
-  sendEventFromCharacter<K extends EventHandlerNames1>(
+  emitEventFromCharacter<K extends EventHandlerNames1>(
     ch: Character,
     event: K,
     ...rest: EventCreatorArgsForCharacter<K>
   ) {
     // @ts-expect-error TS sucks
-    this.ops.sendEvent(event, ch, ...rest);
+    this.ops.emitEvent(event, ch, ...rest);
   }
   notifySkill(skillInfo: SkillInfoWithId) {
     this.ops.notifyMe({ type: "useSkill", skill: skillInfo.id, opp: false });

@@ -55,17 +55,17 @@ export class Character extends Entity {
       }
     }
   }
-  private sendEvent<K extends EventHandlerNames1>(
+  private emitEvent<K extends EventHandlerNames1>(
     event: K,
     ...args: EventCreatorArgsForCharacter<K>
   ) {
-    this.parent.sendEventFromCharacter(this, event, ...args);
+    this.parent.emitEventFromCharacter(this, event, ...args);
   }
 
   revive() {
     this.defeated = false;
     this.health = 0;
-    this.sendEvent("onRevive");
+    this.emitEvent("onRevive");
   }
 
   isAlive() {

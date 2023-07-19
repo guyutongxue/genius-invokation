@@ -31,7 +31,7 @@ export interface GlobalOperations {
   notifyMe: (event: Event) => void;
   notifyOpp: (event: Event) => void;
   getCardActions: () => PlayCardConfig[];
-  sendEvent: <K extends EventHandlerNames1>(
+  emitEvent: <K extends EventHandlerNames1>(
     event: K,
     ...args: EventCreatorArgsForPlayer<K>
   ) => Promise<void>;
@@ -136,7 +136,7 @@ export class GameState {
     ]);
     n0();
     n1();
-    await this.sendEvent("onBattleBegin");
+    await this.emitEvent("onBattleBegin");
     this.phase = "roll";
   }
   private async rollPhase() {
@@ -156,7 +156,7 @@ export class GameState {
     this.phase = "action";
   }
   private async actionPhase() {
-    await this.sendEvent("onActionPhase");
+    await this.emitEvent("onActionPhase");
     while (!(
       this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
       this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
@@ -177,7 +177,7 @@ export class GameState {
     this.phase = "end"
   }
   private async endPhase() {
-    await this.sendEvent("onEndPhase");
+    await this.emitEvent("onEndPhase");
     await Promise.all([
       this.players[0].drawHands(2),
       this.players[1].drawHands(2),
@@ -200,7 +200,7 @@ export class GameState {
     };
   }
 
-  async sendEvent<K extends EventHandlerNames1>(
+  async emitEvent<K extends EventHandlerNames1>(
     event: K,
     ...args: EventCreatorArgs<K>
   ) {
@@ -228,9 +228,9 @@ export class GameState {
       notifyMe: (event) => this.notifyPlayer(who, event),
       notifyOpp: (event) => this.notifyPlayer(flip(who), event),
       getCardActions: () => this.getCardActions(who),
-      sendEvent: (event, ...args) => {
+      emitEvent: (event, ...args) => {
         // @ts-expect-error TS SUCKS
-        return this.sendEvent(event, who, ...args);
+        return this.emitEvent(event, who, ...args);
       },
       doEvent: () => this.dealWaitingEvent(),
     };

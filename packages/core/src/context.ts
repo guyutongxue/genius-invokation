@@ -28,10 +28,13 @@ import {
   getTargetInfo,
   ListenTarget,
   PlayCardFilter,
+  makeReaction,
+  REACTION_MAP,
+  SkillDamageContext,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import { GameState } from "./state.js";
-import { DamageType, DiceType } from "@gi-tcg/typings";
+import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CharacterPosition, Player } from "./player.js";
 import { Character } from "./character.js";
 import { Equipment } from "./equipment.js";
@@ -43,6 +46,7 @@ import { ActionConfig, PlayCardTargetObj } from "./action.js";
 import { Support } from "./support.js";
 import { PassiveSkill } from "./passive_skill.js";
 import { Skill } from "./skill.js";
+import { Damage } from "./damage.js";
 
 type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [
   event: E,
@@ -804,6 +808,162 @@ class RollContextImpl implements RollContext {
 
   addRerollCount(count: number): void {
     this.config.times += count;
+  }
+}
+
+class ElementalReactionContextImpl
+  extends ContextImpl
+  implements ElementalReactionContext
+{
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    sourceId: number,
+    private reaction: Reaction
+  ) {
+    super(state, who, sourceId);
+  }
+  get reactionType() {
+    return this.reaction;
+  }
+
+  relatedWith(d: DamageType): boolean {
+    const aura = d as number as Aura;
+    if (!(aura in REACTION_MAP)) return false;
+    return !!Object.values(REACTION_MAP[aura]).find(
+      ([a, r]) => r === this.reaction
+    );
+  }
+  swirledElement():
+    | DamageType.Cryo
+    | DamageType.Hydro
+    | DamageType.Pyro
+    | DamageType.Electro
+    | null {
+    switch (this.reaction) {
+      case Reaction.SwirlCryo:
+        return DamageType.Cryo;
+      case Reaction.SwirlHydro:
+        return DamageType.Hydro;
+      case Reaction.SwirlPyro:
+        return DamageType.Pyro;
+      case Reaction.SwirlElectro:
+        return DamageType.Electro;
+      default:
+        return null;
+    }
+  }
+}
+
+class DamageContextImpl extends ContextImpl implements DamageContext {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    public sourceId: number,
+    private damage: Damage
+  ) {
+    super(state, who, sourceId);
+  }
+
+  getSource() {
+    const srcId = this.damage.sourceId;
+    return getContextById(this.state, srcId);
+  }
+
+  get sourceSummon() {
+    const ctx = this.getSource();
+    if (ctx instanceof SummonContextImpl) {
+      return ctx;
+    } else {
+      return undefined;
+    }
+  }
+
+  get sourceSkill() {
+    const ctx = this.getSource();
+    if (ctx instanceof SkillContextImpl) {
+      return ctx;
+    } else {
+      return undefined;
+    }
+  }
+
+  get sourceReaction() {
+    const reaction = this.damage.triggeredByReaction;
+    if (typeof reaction === "undefined") {
+      return undefined;
+    }
+    const sourceId = this.damage.sourceId;
+    const { who } = getEntityById(this.state, sourceId)!;
+    return new ElementalReactionContextImpl(this.state, who, sourceId, reaction);
+  }
+
+  get target() {
+    return this.createCharacterContext(this.damage.target);
+  }
+
+  get damageType() {
+    return this.damage.getType();
+  }
+
+  get value() {
+    return this.damage.getValue();
+  }
+
+  get reaction(): ElementalReactionContextImpl | null {
+    const type = this.damageType;
+    if (type === DamageType.Heal) {
+      throw new Error("Should not contain heal in damage context");
+    }
+    if (type === DamageType.Piercing || type === DamageType.Physical) {
+      return null;
+    }
+    const reaction = makeReaction(this.damage.target.applied, type)[1];
+    if (reaction === null) {
+      return null;
+    }
+    return new ElementalReactionContextImpl(
+      this.state,
+      this.who,
+      this.sourceId,
+      reaction
+    );
+  }
+
+  changeDamageType(type: DamageType) {
+    this.damage.changedLogs.push([this.sourceId, type]);
+  }
+  addDamage(value: number): void {
+    this.damage.addedLogs.push([this.sourceId, value]);
+  }
+  multiplyDamage(value: number): void {
+    this.damage.multipliedLogs.push([this.sourceId, value]);
+  }
+  decreaseDamage(value: number): void {
+    this.damage.decreasedLogs.push([this.sourceId, value]);
+  }
+}
+
+class SkillDamageContextImpl extends DamageContextImpl implements SkillDamageContext {
+  private getSkillCtx() {
+    const ctx = this.getSource();
+    if (ctx instanceof SkillContextImpl) {
+      return ctx;
+    } else {
+      throw new Error("Damage source is not a skill");
+    }
+  }
+  get skillInfo(): SkillInfoWithId {
+    return this.getSkillCtx().info;
+  }
+  get characterInfo(): CharacterInfoWithId {
+    return this.getSkillCtx().character.info;
+  }
+  isCharged(): boolean {
+    return this.getSkillCtx().isCharged();
+  }
+  isPlunging(): boolean {
+    return this.getSkillCtx().isPlunging();
   }
 }
 

@@ -24,3 +24,5 @@ export function makeReactionFromDamage(c: DamageContext): [Aura, Reaction | null
 export function makeReaction(a: Aura, d: Exclude<D, D.Physical | D.Piercing | D.Heal>): [Aura, Reaction | null] {
   return REACTION_MAP[a][d];
 }
+
+export { REACTION_MAP };
