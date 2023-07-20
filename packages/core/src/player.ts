@@ -629,8 +629,6 @@ export class Player {
     // clone.piles = this.piles.map(c => c.clone());
     // clone.hands = this.hands.map(c => c.clone());
     // Cloned object shouldn't have side effects
-    clone.ops.notifyMe = () => {};
-    clone.ops.notifyOpp = () => {};
     clone.characters = this.characters.map((c) => c.clone());
     clone.combatStatuses = this.combatStatuses.map((s) => s.clone());
     clone.supports = this.supports.map((s) => s.clone());

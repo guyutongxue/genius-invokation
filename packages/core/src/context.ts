@@ -1319,7 +1319,7 @@ function createUseDiceContext(
     const env = getEntityById(state, entityId);
     if (env === null) return [];
     if (!checkShouldListen(env, sourceWho)) return [];
-    const ctx = new UseDiceContextImpl(state.clone(), sourceWho, entityId, action);
+    const ctx = new UseDiceContextImpl(state, sourceWho, entityId, action);
     return [["onBeforeUseDice", ctx]];
   };
 }

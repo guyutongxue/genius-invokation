@@ -44,7 +44,7 @@ const ee = new EventEmitter<{
 }>();
 
 function onNotify({ event, state }: NotificationMessage) {
-  console.log({ event, state });
+  console.log(event);
   switch (event.type) {
     case "stateUpdated": {
       break;

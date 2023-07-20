@@ -240,9 +240,10 @@ export class GameState {
     ...args: EventCreatorArgs<K>
   ) {
     const creator = CONTEXT_CREATOR[event];
+    const THIS = event === "onBeforeUseDice" ? this.clone() : this;
     // @ts-expect-error TS SUCKS
-    const e: EventFactory = creator(this, ...args);
-    this.handleEventSync(e);
+    const e: EventFactory = creator(THIS, ...args);
+    THIS.handleEventSync(e);
   }
 
   async *handleEvent(event: EventFactory) {
@@ -281,7 +282,12 @@ export class GameState {
         this.damageLog = [];
       },
       getSkillContext: (skill, srcId) =>
-        new SkillDescriptionContextImpl(this, who, srcId ?? skill.entityId, skill),
+        new SkillDescriptionContextImpl(
+          this,
+          who,
+          srcId ?? skill.entityId,
+          skill
+        ),
       getCardContext: (card, target) =>
         new PlayCardContextImpl(this, who, card, target),
     };
@@ -497,7 +503,21 @@ export class GameState {
   clone() {
     const clone = shallowClone(this);
     clone.players = [this.players[0].clone(), this.players[1].clone()];
+    // @ts-expect-error
+    clone.players[0].ops = {
+      ...clone.createOperationsForPlayer(0),
+      notifyOpp: () => {},
+      notifyMe: () => {},
+    };
+    // @ts-expect-error
+    clone.players[1].ops = {
+      ...clone.createOperationsForPlayer(1),
+      notifyOpp: () => {},
+      notifyMe: () => {},
+    };
     clone.eventWaitingForHandle = [...this.eventWaitingForHandle];
+    console.log("cloned", clone);
+    console.log("this", this);
     return clone;
   }
 }

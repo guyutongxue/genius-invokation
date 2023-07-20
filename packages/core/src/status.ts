@@ -1,5 +1,5 @@
 import { DamageContext, EventHandlers, getStatus, StatusInfoWithId } from "@gi-tcg/data";
-import { Entity, shallowClone } from "./entity.js";
+import { ClonedObj, Entity, shallowClone } from "./entity.js";
 import { StatusData } from "@gi-tcg/typings";
 import { EventFactory } from "./context.js";
 
@@ -138,6 +138,9 @@ export class Status extends Entity {
     if (this.shouldDispose || this.usagePerRound === 0) return;
     const result = this.doHandleEventSync(this.handler, event);
     if (result) {
+      if (!Object.hasOwn(this, ClonedObj)) {
+        debugger;
+      }
       this.usagePerRound--;
       this.usage--;
       if (this.usage === 0) {
