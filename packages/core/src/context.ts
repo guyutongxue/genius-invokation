@@ -1359,6 +1359,7 @@ export const CONTEXT_CREATOR = {
   onSwitchActive: createSwitchActiveContext,
   onPlayCard: createPlayCardContext,
   onDeclareEnd: createCommonEventContext("onDeclareEnd"),
+  onAction: createCommonEventContext("onAction"),
 
   onEarlyBeforeDealDamage: createDamageContext("onEarlyBeforeDealDamage"),
   onBeforeDealDamage: createDamageContext("onBeforeDealDamage"),

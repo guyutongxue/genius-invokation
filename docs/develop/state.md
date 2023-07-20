@@ -7,11 +7,10 @@ flowchart TB
   InitHandsState --> InitActiveState --> RollPhase --> ActionPhase --> EndPhase --> RollPhase
   ges[[GameEndState]]
   ActionPhase --> ges
-  ActionPhase --> ActionPhase
   EndPhase --> ges
 ```
 
-在不考虑主动投降的情形下，整个游戏的流程如上所示。
+在不考虑放弃对局的情形下，整个游戏的流程如上所示。
 
 - `InitHandsState`，在这个状态下双方获得初始手牌。
 - `InitActiveState`，在这个状态下双方获得初始出战角色。
