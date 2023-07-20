@@ -31,6 +31,7 @@ import {
   makeReaction,
   REACTION_MAP,
   SkillDamageContext,
+  RequestFastSwitchContext,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import { GameState } from "./state.js";
@@ -132,7 +133,7 @@ export class ContextImpl implements Context {
       }
       case "byId": {
         const player = this.state.getPlayer(
-          info.opp ? this.who : flip(this.who)
+          info.opp ? flip(this.who) : this.who
         );
         const character = player.getCharacterById(info.id, true);
         return character ? [this.createCharacterContext(character)] : [];
@@ -359,7 +360,7 @@ export class ContextImpl implements Context {
     if (!skillObj) {
       throw new Error("NO normal attack defined for active ch");
     }
-    return player.useSkill(skillObj);
+    return player.useSkill(skillObj, this.sourceId);
   }
 
   actionAgain(): void {
@@ -373,7 +374,17 @@ export class ContextImpl implements Context {
     throw new Error("This context is not a status");
   }
   dispose(): void {
-    throw new Error("Cannot dispose raw Context");
+    const env = getEntityById(this.state, this.sourceId);
+    if (!env) return;
+    if (
+      env.entity instanceof Status ||
+      env.entity instanceof Support ||
+      env.entity instanceof Summon
+    ) {
+      env.entity.shouldDispose = true;
+    } else {
+      throw new Error("This entity cannot be disposed this way.");
+    }
   }
 }
 
@@ -673,7 +684,7 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   }
 }
 
-class SkillDescriptionContextImpl
+export class SkillDescriptionContextImpl
   extends ContextImpl
   implements SkillDescriptionContext
 {
@@ -739,21 +750,16 @@ export class SkillContextImpl
     return this.skill.info;
   }
 
-  private allDamages: DamageContext[] = [];
-  private allReactions: ElementalReactionContext[] = [];
-
-  pushDamage(damage: DamageContext) {
-    this.allDamages.push(damage);
-  }
-  pushReaction(reaction: ElementalReactionContext) {
-    this.allReactions.push(reaction);
-  }
-
   getAllDescendingDamages(): DamageContext[] {
-    return this.allDamages;
+    return this.state.damageLog.map(
+      ([dmg]) => new DamageContextImpl(this.state, this.who, 0, dmg)
+    );
   }
   getAllDescendingReactions(): ElementalReactionContext[] {
-    return this.allReactions;
+    return this.state.reactionLog.map(
+      ([_, id, reaction]) =>
+        new ElementalReactionContextImpl(this.state, this.who, id, reaction)
+    );
   }
 }
 
@@ -1000,6 +1006,34 @@ class SkillDamageContextImpl
   }
 }
 
+export interface RequestFastToken {
+  resolved: boolean;
+}
+
+class RequestFastSwitchContextImpl
+  extends ContextImpl
+  implements RequestFastSwitchContext
+{
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    sourceId: number,
+    private token: RequestFastToken
+  ) {
+    super(state, who, sourceId);
+  }
+  requestFast(condition?: boolean | undefined): void {
+    if (this.token.resolved) {
+      console.warn(
+        "You are calling requestFast TWICE. This might be an error!"
+      );
+    }
+    if (typeof condition === "undefined" || condition === true) {
+      this.token.resolved = true;
+    }
+  }
+}
+
 interface EntityEnv {
   who: 0 | 1;
   master?: Character;
@@ -1059,9 +1093,8 @@ export function getEntityById(
     if (support) {
       return { who, entity: support, listenTo: support.info.listenTo };
     }
-    const hand = player.hands.find((c) => c.entityId === entityId);
-    if (hand) {
-      return { who, entity: hand, listenTo: "my" };
+    if (player.playingCard?.entityId === entityId) {
+      return { who, entity: player.playingCard, listenTo: "my" };
     }
   }
   return null;
@@ -1103,13 +1136,12 @@ function createCommonEventContext(...events: EventHandlerNames[]) {
         return [];
       }
       const { entity, master, who } = env;
-      if (entity instanceof Status || master) {
-        ctx = new ContextWithMasterImpl(
-          state,
-          who,
-          master ?? null,
-          entity as Status
-        );
+      if (
+        entity instanceof Status ||
+        entity instanceof Equipment ||
+        entity instanceof PassiveSkill
+      ) {
+        ctx = new ContextWithMasterImpl(state, who, master ?? null, entity);
       } else {
         ctx = new ContextImpl(state, who, entity.entityId);
       }
@@ -1237,9 +1269,78 @@ function createUseSkillContext(
   };
 }
 
-export function createSkillContext(state: GameState, who: 0 | 1) {
-  return (skill: Skill) =>
-    new SkillDescriptionContextImpl(state, who, skill.entityId, skill);
+function createSwitchActiveContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  from: Character,
+  to: Character
+): EventFactory {
+  return (entityId: number) => {
+    const env = getEntityById(state, entityId);
+    if (env === null) return [];
+    if (
+      !checkShouldListen(env, sourceWho, from) &&
+      !checkShouldListen(env, sourceWho, to)
+    ) {
+      return [];
+    }
+    const ctx = new SwitchActiveContextImpl(
+      state,
+      sourceWho,
+      entityId,
+      from,
+      to
+    );
+    return [["onSwitchActive", ctx]];
+  };
+}
+
+function createPlayCardContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  card: Card,
+  targets: PlayCardTargetObj[]
+): EventFactory {
+  return (entityId: number) => {
+    const env = getEntityById(state, entityId);
+    if (env === null) return [];
+    if (!checkShouldListen(env, sourceWho)) return [];
+    const ctx = new PlayCardContextImpl(state, sourceWho, card, targets);
+    return [["onPlayCard", ctx]];
+  };
+}
+
+function createUseDiceContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  action: ActionConfig
+): EventFactory {
+  return (entityId: number) => {
+    const env = getEntityById(state, entityId);
+    if (env === null) return [];
+    if (!checkShouldListen(env, sourceWho)) return [];
+    const ctx = new UseDiceContextImpl(state.clone(), sourceWho, entityId, action);
+    return [["onBeforeUseDice", ctx]];
+  };
+}
+
+function createRequestFastSwitchContext(
+  state: GameState,
+  sourceWho: 0 | 1,
+  token: RequestFastToken
+): EventFactory {
+  return (entityId: number) => {
+    const env = getEntityById(state, entityId)!;
+    if (!checkShouldListen(env, sourceWho)) return [];
+    if (token.resolved) return [];
+    const ctx = new RequestFastSwitchContextImpl(
+      state,
+      sourceWho,
+      entityId,
+      token
+    );
+    return [["onRequestFastSwitchActive", ctx]];
+  };
 }
 
 type Creator = (state: GameState, ...args: any[]) => EventFactory;
@@ -1251,11 +1352,12 @@ export const CONTEXT_CREATOR = {
   onEndPhase: createCommonEventContext("onEndPhase"),
 
   onBeforeAction: createCommonEventContext("onBeforeAction"),
-  onRequestFastSwitchActive: createCommonEventContext(
-    "onRequestFastSwitchActive"
-  ),
+  onBeforeUseDice: createUseDiceContext,
+  onRequestFastSwitchActive: createRequestFastSwitchContext,
 
   onUseSkill: createUseSkillContext,
+  onSwitchActive: createSwitchActiveContext,
+  onPlayCard: createPlayCardContext,
   onDeclareEnd: createCommonEventContext("onDeclareEnd"),
 
   onEarlyBeforeDealDamage: createDamageContext("onEarlyBeforeDealDamage"),

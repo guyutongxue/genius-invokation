@@ -148,4 +148,8 @@ export interface ElementalReactionContext extends Context {
   swirledElement(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null;
 }
 
+export interface RequestFastSwitchContext extends Context {
+  requestFast(condition?: boolean): void;
+}
+
 export { Target, TargetInfo, getTargetInfo } from "./target";

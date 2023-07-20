@@ -4,7 +4,9 @@ import { DiceType, Target, createCard, createStatus } from '@gi-tcg';
  * **饱腹**
  * 本回合无法食用更多「料理」
  */
-const Satiated = createStatus(303300).build();
+const Satiated = createStatus(303300)
+  .withDuration(1)
+  .build();
 
 function createFood(id: number) {
   return createCard(id, ["character"])
@@ -134,10 +136,12 @@ const MushroomPizza = createFood(333007)
   .costSame(1)
   .do(function (c) {
     this[0].heal(1);
+    this[0].createStatus(MushroomPizzaStatus);
   })
-  .buildToStatus("this0")
-  .withUsage(1)
-  .withDuration(1)
+  .build();
+  
+const MushroomPizzaStatus = createStatus(303305) // 为啥 id 和卡牌不一样啊我的老米？
+  .withUsage(2)
   .on("endPhase", function (c) { c.getMaster().heal(1); })
   .build();
 

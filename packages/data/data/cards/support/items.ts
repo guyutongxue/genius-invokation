@@ -62,7 +62,7 @@ const RedFeatherFan = createCard(323003)
   .costSame(2)
   .buildToSupport()
   .withUsagePerRound(1)
-  .on("requestFastSwitchActive", () => true)
+  .on("requestFastSwitchActive", (c) => c.requestFast())
   .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
       c.deductCost(1);

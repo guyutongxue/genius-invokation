@@ -18,9 +18,9 @@ const DivineMarksmanship = createSkill(15031)
  */
 const StormZone = createStatus(115031)
   .withUsage(2)
-  .on("beforeUseDice", (c) => { 
+  .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
-      c.deductCost(DiceType.Omni);
+      c.deductCost(DiceType.Void);
     } else {
       return false;
     }
@@ -34,9 +34,9 @@ const StormZone = createStatus(115031)
  */
 const StormZone01 = createStatus(115032)
   .withUsage(2)
-  .on("beforeUseDice", (c) => { 
+  .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
-      c.deductCost(DiceType.Omni);
+      c.deductCost(DiceType.Void);
     }
     return false;
   })

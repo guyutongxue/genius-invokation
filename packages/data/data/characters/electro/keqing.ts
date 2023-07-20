@@ -57,7 +57,7 @@ export const Keqing = createCharacter(1403)
  */
 const LightningStiletto = createCard(114031)
   .addTags("action", "talent")
-  .costCryo(3)
+  .costElectro(3)
   .switchActive(Target.ofCharacter(Keqing))
   .useSkill(StellarRestoration)
   .build();
@@ -76,6 +76,6 @@ export const ThunderingPenance = createCard(214031, ["character"])
   .requireCharacter(Keqing)
   .addCharacterFilter(Keqing)
   .costElectro(3)
-  .useSkill(StarwardSword)
+  .useSkill(StellarRestoration)
   .buildToEquipment()
   .build();

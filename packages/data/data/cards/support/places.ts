@@ -25,7 +25,7 @@ const DawnWinery = createCard(321004)
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
-      c.deductCost(DiceType.Omni, 1);
+      c.deductCost(DiceType.Void);
     } else {
       return false;
     }

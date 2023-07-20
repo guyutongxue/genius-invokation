@@ -1,4 +1,4 @@
-import { BeforeDamageCalculatedContext, BeforeDefeatedContext, Context, DamageContext, DamageReadonlyContext, ElementalReactionContext, PlayCardContext, RollContext,  SkillDamageContext, SkillContext, SwitchActiveContext, UseDiceContext } from "./contexts";
+import { BeforeDamageCalculatedContext, BeforeDefeatedContext, Context, DamageContext, DamageReadonlyContext, ElementalReactionContext, PlayCardContext, RollContext,  SkillDamageContext, SkillContext, SwitchActiveContext, UseDiceContext, RequestFastSwitchContext } from "./contexts";
 
 export type HandlerResult = boolean | void | Promise<boolean | void>;
 
@@ -9,7 +9,7 @@ export interface EventHandlers<This = {}> {
   onEndPhase?(this: This, c: Context): HandlerResult;
 
   onBeforeAction?(this: This, c: Context): HandlerResult;
-  onRequestFastSwitchActive?(this: This, c: Context): boolean;
+  onRequestFastSwitchActive?(this: This, c: RequestFastSwitchContext): HandlerResult;
 
   onUseSkill?(this: This, c: SkillContext): HandlerResult;
   onAction?(this: This, c: Context): HandlerResult;

@@ -21,20 +21,21 @@ import {
   PlayCardContextImpl,
   getEntityById,
   DamageContextImpl,
-  createSkillContext,
+  SkillDescriptionContextImpl,
 } from "./context.js";
 import { Character } from "./character.js";
 import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
 import {
   CardTargetDescriptor,
+  ElementalReactionContext,
   SkillDescriptionContext,
   SpecialBits,
-  makeReaction,
   makeReactionFromDamage,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import { Damage } from "./damage.js";
 import { Skill } from "./skill.js";
+import { Card } from "./card.js";
 
 export interface GlobalOperations {
   notifyMe: (event: Event) => void;
@@ -49,7 +50,12 @@ export interface GlobalOperations {
     ...args: EventCreatorArgsForPlayer<K>
   ) => void;
   doEvent: () => Promise<void>;
-  getSkillContext: () => (sk: Skill) => SkillDescriptionContext;
+  declareUsingSkill: (sk: Skill) => void;
+  getSkillContext: (sk: Skill, sourceId?: number) => SkillDescriptionContext;
+  getCardContext: (
+    card: Card,
+    target: PlayCardTargetObj[]
+  ) => PlayCardContextImpl;
 }
 
 export class GameState {
@@ -254,6 +260,8 @@ export class GameState {
     this.players[flip(this.currentTurn)].handleEventSync(event);
   }
 
+  reactionLog: EventCreatorArgs<"onElementalReaction">[] = [];
+  damageLog: EventCreatorArgs<"onBeforeDamaged">[] = [];
   private createOperationsForPlayer(who: 0 | 1): GlobalOperations {
     return {
       notifyMe: (event) => this.notifyPlayer(who, event),
@@ -268,7 +276,14 @@ export class GameState {
         return this.emitImmediatelyHandledEvent(event, who, ...args);
       },
       doEvent: () => this.doEvent(),
-      getSkillContext: () => createSkillContext(this, who),
+      declareUsingSkill: (skill) => {
+        this.reactionLog = [];
+        this.damageLog = [];
+      },
+      getSkillContext: (skill, srcId) =>
+        new SkillDescriptionContextImpl(this, who, srcId ?? skill.entityId, skill),
+      getCardContext: (card, target) =>
+        new PlayCardContextImpl(this, who, card, target),
     };
   }
   private notifyPlayer(who: 0 | 1, event: Event) {
@@ -289,6 +304,19 @@ export class GameState {
   pushEvent(event: EventFactory) {
     this.eventWaitingForHandle.push(event);
   }
+  doElementalReaction(damageCtx: DamageContextImpl) {
+    const [newAura, reaction] = makeReactionFromDamage(damageCtx);
+    damageCtx.target.character.applied = newAura;
+    if (reaction !== null) {
+      this.emitEvent(
+        "onElementalReaction",
+        damageCtx.who,
+        damageCtx.sourceId,
+        reaction
+      );
+      this.reactionLog.push([damageCtx.who, damageCtx.sourceId, reaction]);
+    }
+  }
   dealDamage(
     sourceId: number,
     target: Character,
@@ -300,6 +328,8 @@ export class GameState {
       p.characters.includes(target)
     ) as 0 | 1;
     const damage = new Damage(who, sourceId, target, value, type);
+    const dmgCtx = new DamageContextImpl(this, who, sourceId, damage);
+    this.doElementalReaction(dmgCtx);
     this.emitImmediatelyHandledEvent(
       "onEarlyBeforeDealDamage",
       damage,
@@ -309,12 +339,6 @@ export class GameState {
     );
     const changedType = damage.getType();
     if (changedType !== DamageType.Piercing) {
-      const dmgCtx = new DamageContextImpl(this, who, sourceId, damage);
-      const [newAura, reaction] = makeReactionFromDamage(dmgCtx);
-      target.applied = newAura;
-      if (reaction !== null) {
-        this.emitEvent("onElementalReaction", who, sourceId, reaction);
-      }
       this.emitImmediatelyHandledEvent(
         "onBeforeDealDamage",
         damage,
@@ -344,6 +368,7 @@ export class GameState {
       target.health = 0;
     }
     this.emitEvent("onDamaged", damage, who, targetWho, master);
+    this.damageLog.push([damage, who, targetWho, master]);
     const damageLog: DamageData = {
       target: target.entityId,
       type: damage.getType(),

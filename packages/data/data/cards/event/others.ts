@@ -371,7 +371,7 @@ const LeaveItToMe = createCard(332006)
   .setType("event")
   .buildToStatus("combat")
   .withUsage(1)
-  .on("requestFastSwitchActive", () => true)
+  .on("requestFastSwitchActive", (c) => c.requestFast())
   .build();
 
 /**

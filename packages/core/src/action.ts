@@ -12,7 +12,6 @@ import {
   UseSkillActionResponse,
 } from "@gi-tcg/typings";
 import { Skill } from "./skill.js";
-import { Player } from "./player.js";
 import * as _ from "lodash-es";
 
 export type UseSkillConfig = {

@@ -22,9 +22,10 @@ import { GlobalOperations } from "./state.js";
 import { CardTag, SkillInfoWithId, SpecialBits } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
-  EventCreatorArgsForPlayer,
   EventFactory,
   EventHandlerNames1,
+  PlayCardContextImpl,
+  RequestFastToken,
   RollPhaseConfig,
 } from "./context.js";
 import {
@@ -48,6 +49,7 @@ export class Player {
   piles: Card[];
   activeIndex: number | null = null;
   hands: Card[] = [];
+  playingCard: Card | null = null;
   characters: Character[];
   combatStatuses: Status[] = [];
   supports: Support[] = [];
@@ -269,7 +271,11 @@ export class Player {
       const preparing = preparingStatus.preparing()!;
       switch (preparing.type) {
         case "skill": {
-          // TODO
+          const skillObj = ch.skills.find((s) => s.entityId === preparing.id);
+          if (typeof skillObj === "undefined") {
+            throw new Error(`preparing skill ${preparing.id} not found}`)
+          }
+          await this.useSkill(skillObj);
           break;
         }
         case "status": {
@@ -289,6 +295,10 @@ export class Player {
         type: "declareEnd",
       },
     ];
+    const fastSwitchToken: RequestFastToken = {
+      resolved: false
+    };
+    this.ops.emitImmediatelyHandledEvent("onRequestFastSwitchActive", fastSwitchToken);
     if (canUseSkill) {
       actions.push(
         ...ch.skills
@@ -317,7 +327,7 @@ export class Player {
             dice: [DiceType.Void],
             from: ch,
             to: c,
-            fast: false,
+            fast: fastSwitchToken.resolved,
           })
         )
     );
@@ -329,8 +339,9 @@ export class Player {
         })
       )
     );
-    // TODO "onBeforeUseDice"
-    // TODO "onRequestFastSwitchActive"
+    for (const action of actions) {
+      this.ops.emitImmediatelyHandledEvent("onBeforeUseDice", action);
+    }
     const action = await rpcAction(actions, (r) => this.rpc("action", r));
     switch (action.type) {
       case "declareEnd": {
@@ -380,8 +391,9 @@ export class Player {
     }
   }
 
-  async useSkill(skill: Skill) {
+  async useSkill(skill: Skill, sourceId?: number) {
     const ch = this.getCharacter("active");
+    if (ch.skillDisabled()) return; // 下落斩、雷楔等无法提前检测到的技能禁用
     const index = ch.skills.findIndex(
       (s) => s.entityId === skill.entityId
     );
@@ -389,14 +401,14 @@ export class Player {
       throw new Error("Invalid skill");
     }
     this.notifySkill(skill.info);
-    const ctx = this.ops.getSkillContext();
-    skill.do(ctx(skill));
+    const ctx = this.ops.getSkillContext(skill, sourceId);
+    skill.do(ctx);
     if (skill.info.gainEnergy) {
       ch.gainEnergy();
     }
     await this.ops.doEvent();
     this.ops.emitEvent("onUseSkill", skill);
-    await this.ops.doEvent();
+    // await this.ops.doEvent();
   }
 
   async playCard(hand: Card, targets: PlayCardTargetObj[]) {
@@ -404,11 +416,15 @@ export class Player {
     if (index === -1) {
       throw new Error("Invalid card");
     }
+    this.playingCard = hand;
     this.hands.splice(index, 1);
     this.ops.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
     this.ops.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
-    // TODO
-    // TODO handle "onPlayCard"
+    const ctx = this.ops.getCardContext(hand, targets);
+    for await (const r of hand.do(ctx)) {
+      this.ops.doEvent();
+    }
+    this.ops.emitEvent("onPlayCard", hand, targets);
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {
@@ -438,7 +454,7 @@ export class Player {
     if (preparingSkill) {
       preparingSkill.shouldDispose = true;
     }
-    // TODO emitEvent "onSwitchActive"
+    this.ops.emitEvent("onSwitchActive", from, to);
   }
 
   createCombatStatus(newStatusId: number) {

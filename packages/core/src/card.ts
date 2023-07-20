@@ -1,5 +1,6 @@
-import { CardInfoWithId, getCard } from "@gi-tcg/data";
+import { CardInfoWithId, Context, getCard } from "@gi-tcg/data";
 import { Entity } from "./entity.js";
+import { PlayCardContextImpl } from "./context.js";
 
 export class Card extends Entity {
   public readonly info: CardInfoWithId;
@@ -10,6 +11,10 @@ export class Card extends Entity {
 
   isLegend() {
     return this.info.tags.includes("legend");
+  }
+
+  do(ctx: PlayCardContextImpl) {
+    return this.info.action.call(ctx.target, ctx);
   }
 
   getData() {

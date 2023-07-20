@@ -127,7 +127,7 @@ const Katheryne = createCard(322002)
   .costSame(1)
   .buildToSupport()
   .withUsagePerRound(1)
-  .on("requestFastSwitchActive", () => true)
+  .on("requestFastSwitchActive", (c) => c.requestFast())
   .build();
 
 /**

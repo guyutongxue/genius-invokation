@@ -167,7 +167,16 @@ function toCostMap(cost: number[]): [DiceType, number][] {
           <Dice :type="DiceType.Void" :text="String(data.dice)"></Dice>
         </div>
       </div>
-      <div class="bg-blue-50">SUPPORTS</div>
+      <div class="p-8 bg-blue-50 grid grid-cols-2 grid-rows-2 gap-4">
+        <div
+          v-for="support of data.supports"
+        >
+          <div class="w-10 h-14 relative">
+            <div class="absolute right-0 bg-white">{{ support.value }}</div>
+            <img :src="(images as any)[support.id]" />
+          </div>
+        </div>
+      </div>
       <div class="bg-white flex-grow flex justify-center gap-4 p-6">
         <div
           v-for="ch of characters"
@@ -189,24 +198,25 @@ function toCostMap(cost: number[]): [DiceType, number][] {
               <Character :character="ch"></Character>
               <span v-if="showMark(ch.actionIndex)" class="check-mark"> </span>
             </div>
-            <div v-if="data.active === ch.entityId" class="flex flex-row gap-1 p-1">
+            <div
+              v-if="data.active === ch.entityId"
+              class="flex flex-row gap-1 p-1"
+            >
               <Status v-for="st of data.combatStatuses" :status="st"></Status>
             </div>
           </div>
         </div>
       </div>
-      <div class="bg-red-50">
-        SUMMONS
+      <div class="p-8 bg-red-50 grid grid-cols-2 grid-rows-2 gap-4">
         <div
           v-for="summon of summons"
-          class="grid grid-cols-2 grid-rows-2 gap-4"
         >
           <div
             class="w-10 h-14 relative"
             :class="{ clickable: summon.actionIndex !== -1 }"
             @click="emitClick(summon.actionIndex)"
           >
-            <div class="absolute bg-white">{{ summon.value }}</div>
+            <div class="absolute right-0 bg-white">{{ summon.value }}</div>
             <img :src="(images as any)[summon.id]" />
             <span v-if="showMark(summon.actionIndex)" class="check-mark">
             </span>
