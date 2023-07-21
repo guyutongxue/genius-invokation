@@ -1370,8 +1370,11 @@ export const CONTEXT_CREATOR = {
   onBeforeDamaged: createDamageContext("onBeforeDamaged"),
 
   onDamaged: createDamageContext("onDamaged"),
-
+  onDealDamage: createDamageContext("onDealDamage"),
   onElementalReaction: createReactionContext,
+
+  // onBeforeDefeated,
+  // onDefeated,
 
   onRevive: createCommonEventContext("onRevive"),
   onEnter: createEnterEventContext,

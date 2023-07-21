@@ -427,7 +427,6 @@ export class GameState {
   async doEvent() {
     const events = [...this.eventWaitingForHandle];
     this.eventWaitingForHandle = [];
-    // TODO check death
     this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
     this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
     // 弃置所有标记为弃置的实体
@@ -445,6 +444,7 @@ export class GameState {
         // 随后继续处理剩余事件
       }
     }
+    // TODO check death
   }
 
   private getCardTarget(

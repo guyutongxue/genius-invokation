@@ -4,7 +4,7 @@ export * from "./contexts";
 export * from "./events";
 export { CharacterContext, CharacterInfoWithId, CharacterTag, ElementTag, NationTag, WeaponTag, getCharacter } from "./characters";
 export {
-  NormalSkillInfo, PassiveSkillInfo, SkillInfo, SkillInfoWithId, UseSkillAction, getSkill
+  NormalSkillInfo, PassiveSkillInfo, SkillInfo, SkillInfoWithId, PassiveSkillInfoWithId, UseSkillAction, getSkill
 } from "./skills";
 export {
   CardInfoWithId, CardTag, CardTarget, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, getCard

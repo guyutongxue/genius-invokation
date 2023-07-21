@@ -30,6 +30,7 @@ export type SkillInfo =
 export type SkillType = SkillInfo["type"];
 
 export type SkillInfoWithId = Readonly<SkillInfo & { id: number; }>;
+export type PassiveSkillInfoWithId = Readonly<PassiveSkillInfo & { id: number; }>;
 
 const allSkills = new Map<number, SkillInfoWithId>();
 export function registerSkill(id: number, info: SkillInfo) {

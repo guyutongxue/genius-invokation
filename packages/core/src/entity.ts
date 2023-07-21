@@ -6,7 +6,7 @@ import { EventFactory } from "./context.js";
 const ENTITY_ID_BEGIN = -100;
 
 let nextEntityId = ENTITY_ID_BEGIN;
-function newEntityId(): number {
+export function newEntityId(): number {
   return nextEntityId--;
 }
 

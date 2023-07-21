@@ -1,23 +1,5 @@
 # 数据描述（通用部分）
 
-## 全局事件
-
-全局事件，即 `Card` 的可用检测器、`Support`、`Summon` 都会监听的事件包括：
-
-- `onActionPhase`：行动阶段开始时；
-- `onTurn`：轮到我方行动轮时；
-- `onEndPhase`：结束阶段开始时；
-- `onUseSkill`：当**我方角色**使用技能后；
-- `onSwitchActive`：当**我方**切换出战角色后；
-- `onBeforeDealDamage`：当**我方**造成伤害前，进行额外结算；
-- `onDealDamage`：当**我方**造成伤害后；
-- `onBeforeUseDice`：当使用骰子前，进行减费/增费结算；
-- `onBeforeSwitchShouldFast`：当切换出战角色前，是否视为快速行动；
-- `onDamaged`: 当**我方**角色受到伤害后；
-- `onDefeated`：当**我方**角色被击倒后；
-
-上述所有 **我方** 描述可以通过加 `@WithOpp` 修饰，变成可针对双方的描述。**TODO**
-
 ## 全局操作语境
 
 所有的事件响应器都继承自全局操作语境 `Context`，包括如下接口：
