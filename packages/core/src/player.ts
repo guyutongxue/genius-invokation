@@ -38,6 +38,7 @@ import {
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
+import { Store } from "./immutable_test.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -46,20 +47,11 @@ interface PlayerConfigWithGame extends PlayerConfig {
 export type CharacterPosition = "active" | "prev" | "next";
 
 export class Player {
-  piles: Card[];
-  activeIndex: number | null = null;
-  hands: Card[] = [];
-  playingCard: Card | null = null;
-  characters: Character[];
-  combatStatuses: Status[] = [];
-  supports: Support[] = [];
-  summons: Summon[] = [];
-  dice: DiceType[] = [];
-  specialBits: number = 0;
 
   constructor(
+    private store: Store,
+    private readonly who: 0 | 1,
     private readonly config: PlayerConfigWithGame,
-    private ops: GlobalOperations
   ) {
     this.piles = config.deck.actions.map((id) => new Card(id));
     this.characters = config.deck.characters.map(

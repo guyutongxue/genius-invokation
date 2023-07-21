@@ -18,173 +18,154 @@ import {
   getSupport,
 } from "@gi-tcg/data";
 import { Aura, DiceType, PhaseType } from "@gi-tcg/typings";
-import { List, Record, RecordOf } from "immutable";
 import { newEntityId } from "./entity.js";
-import { GameOptions, PlayerConfig } from "./game.js";
+import { PlayerConfig } from "./game.js";
+import { produce, Draft } from "immer";
 
 interface GameState {
-  phase: PhaseType;
-  roundNumber: number;
-  currentTurn: 0 | 1;
-  winner: 0 | 1 | null;
-  players: List<PlayerState>;
+  readonly phase: PhaseType;
+  readonly roundNumber: number;
+  readonly currentTurn: 0 | 1;
+  readonly winner: 0 | 1 | null;
+  readonly players: readonly [PlayerState, PlayerState];
 }
 
 interface PlayerState {
-  piles: List<CardState>;
-  activeIndex: number | null;
-  hands: List<CardState>;
-  characters: List<CharacterState>;
-  combatStatuses: List<StatusState>;
-  supports: List<SupportState>;
-  summons: List<SummonState>;
-  dice: List<DiceType>;
-  declaredEnd: boolean;
-  hasDefeated: boolean;
-  canPlunging: boolean;
-  legendUsed: boolean;
-  skipNextTurn: boolean;
+  readonly piles: readonly CardState[];
+  readonly activeIndex: number | null;
+  readonly hands: readonly CardState[];
+  readonly characters: readonly CharacterState[];
+  readonly combatStatuses: readonly StatusState[];
+  readonly supports: readonly SupportState[];
+  readonly summons: readonly SummonState[];
+  readonly dice: readonly DiceType[];
+  readonly declaredEnd: boolean;
+  readonly hasDefeated: boolean;
+  readonly canPlunging: boolean;
+  readonly legendUsed: boolean;
+  readonly skipNextTurn: boolean;
 }
 
 interface CardState {
-  entityId: number;
-  info: CardInfoWithId;
+  readonly entityId: number;
+  readonly info: CardInfoWithId;
 }
-const CardRecord = Record<CardState>({
-  entityId: 0,
-  info: null!,
-});
-function createCard(id: number) {
-  return CardRecord({ entityId: newEntityId(), info: getCard(id) });
+interface CharacterState {
+  readonly entityId: number;
+  readonly info: CharacterInfoWithId;
+  readonly health: number;
+  readonly defeated: boolean;
+  readonly energy: number;
+  readonly equipments: readonly EquipmentState[];
+  readonly statuses: readonly StatusState[];
+  readonly aura: Aura;
+  readonly skills: readonly SkillState[];
+  readonly passiveSkills: readonly PassiveSkillState[];
 }
 
-interface CharacterState {
-  entityId: number;
-  info: CharacterInfoWithId;
-  health: number;
-  defeated: boolean;
-  energy: number;
-  equipments: List<EquipmentState>;
-  statuses: List<StatusState>;
-  aura: Aura;
-  skills: List<SkillState>;
-  passiveSkills: List<PassiveSkillState>;
-}
-const CharacterRecord = Record<CharacterState>({
-  entityId: 0,
-  info: null!,
-  health: 0,
-  defeated: false,
-  energy: 0,
-  equipments: List(),
-  statuses: List(),
-  aura: Aura.None,
-  skills: List(),
-  passiveSkills: List(),
-});
-function createCharacter(id: number) {
+function createCharacter(id: number): CharacterState {
   const info = getCharacter(id);
   const skills = info.skills.map((id) => getSkill(id));
-  const normalSkills = List(skills.filter((skill) => skill.type !== "passive"));
-  const passiveSkills = List(
-    skills.filter(
-      (skill): skill is PassiveSkillInfoWithId => skill.type === "passive"
-    )
+  const normalSkills = skills.filter((skill) => skill.type !== "passive");
+  const passiveSkills = skills.filter(
+    (skill): skill is PassiveSkillInfoWithId => skill.type === "passive"
   );
-  return CharacterRecord({
+  return {
     entityId: newEntityId(),
     info,
     health: info.maxHealth,
-    skills: normalSkills.map((skill) =>
-      SkillRecord({ entityId: newEntityId(), info: skill })
-    ),
-    passiveSkills: passiveSkills.map((skill) =>
-      PassiveSkillRecord({ entityId: newEntityId(), info: skill })
-    ),
-  });
+    defeated: false,
+    energy: 0,
+    equipments: [],
+    statuses: [],
+    aura: Aura.None,
+    skills: normalSkills.map((skill) => ({
+      entityId: newEntityId(),
+      info: skill,
+    })),
+    passiveSkills: passiveSkills.map(createEntity),
+  };
 }
 
 interface StatefulEntity<InfoT> {
-  entityId: number;
-  info: InfoT;
-  handler: EventHandlers;
-  usagePerRound: number;
-  usage: number;
-  duration: number;
-  shouldDispose: boolean;
+  readonly entityId: number;
+  readonly info: InfoT;
+  readonly handler: EventHandlers;
+  readonly usagePerRound: number;
+  readonly usage: number;
+  readonly duration: number;
+  readonly shouldDispose: boolean;
 }
 
 interface SkillState {
-  entityId: number;
-  info: SkillInfoWithId;
+  readonly entityId: number;
+  readonly info: SkillInfoWithId;
 }
-const SkillRecord = Record<SkillState>({
-  entityId: 0,
-  info: null!,
-});
-
-const StatefulEntityDefault: StatefulEntity<any> = {
-  entityId: 0,
-  info: null,
+const ENTITY_DEFAULT = {
   handler: {},
   usagePerRound: Infinity,
   usage: Infinity,
   duration: Infinity,
   shouldDispose: false,
-};
+} satisfies Partial<StatefulEntity<unknown>>;
 
 type EquipmentState = StatefulEntity<EquipmentInfoWithId>;
-const EquipmentRecord = Record<EquipmentState>(StatefulEntityDefault);
-
 type StatusState = StatefulEntity<StatusInfoWithId>;
-const StatusRecord = Record<StatusState>(StatefulEntityDefault);
-
 type SupportState = StatefulEntity<SupportInfoWithId>;
-const SupportRecord = Record<SupportState>(StatefulEntityDefault);
-
 type SummonState = StatefulEntity<SummonInfoWithId>;
-const SummonRecord = Record<SummonState>(StatefulEntityDefault);
-
 type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
-const PassiveSkillRecord = Record<PassiveSkillState>(StatefulEntityDefault);
 
-const PlayerRecord = Record<PlayerState>({
-  piles: List(),
-  activeIndex: null,
-  hands: List(),
-  characters: List(),
-  combatStatuses: List(),
-  supports: List(),
-  summons: List(),
-  dice: List(),
-  declaredEnd: false,
-  hasDefeated: false,
-  canPlunging: false,
-  legendUsed: false,
-  skipNextTurn: false,
-});
-
-const GameRecord = Record<GameState>({
-  phase: "initHands",
-  roundNumber: 0,
-  currentTurn: 0,
-  players: null!,
-  winner: null,
-});
-
-function createPlayer(playerConfig: PlayerConfig) {
-  let player = PlayerRecord({
-    piles: List(playerConfig.deck.actions).map(createCard),
-    characters: List(playerConfig.deck.characters).map(createCharacter),
-  });
-  return player;
+function createEntity<T>(info: T): StatefulEntity<T> {
+  return { entityId: newEntityId(), ...ENTITY_DEFAULT, info };
 }
 
+function createPlayer(playerConfig: PlayerConfig): PlayerState {
+  return {
+    piles: playerConfig.deck.actions.map((card) => ({
+      entityId: newEntityId(),
+      info: getCard(card),
+    })),
+    activeIndex: null,
+    hands: [],
+    characters: playerConfig.deck.characters.map(createCharacter),
+    combatStatuses: [],
+    supports: [],
+    summons: [],
+    dice: [],
+    declaredEnd: false,
+    hasDefeated: false,
+    canPlunging: false,
+    legendUsed: false,
+    skipNextTurn: false,
+  };
+}
+
+
+
 export class Store {
-  private state: RecordOf<GameState>;
-  constructor(options: GameOptions, players: [PlayerConfig, PlayerConfig]) {
-    this.state = GameRecord({
-      players: List(players).map(createPlayer),
-    });
+  private constructor(private _state: GameState) {
+  }
+
+  static initialState(players: [PlayerConfig, PlayerConfig]) {
+    const state: GameState = {
+      phase: "initHands",
+      roundNumber: 0,
+      currentTurn: 0,
+      players: [createPlayer(players[0]), createPlayer(players[1])],
+      winner: null,
+    };
+    return new Store(state);
+  }
+
+  clone() {
+    return new Store(this._state);
+  }
+
+  updateState(fn: (draft: Draft<GameState>) => void) {
+    this._state = produce(this._state, fn);
+  }
+
+  get state() {
+    return this._state;
   }
 }

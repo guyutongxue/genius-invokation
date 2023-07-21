@@ -36,6 +36,7 @@ import { flip } from "@gi-tcg/utils";
 import { Damage } from "./damage.js";
 import { Skill } from "./skill.js";
 import { Card } from "./card.js";
+import { Store } from "./immutable_test.js";
 
 export interface GlobalOperations {
   notifyMe: (event: Event) => void;
@@ -59,28 +60,20 @@ export interface GlobalOperations {
 }
 
 export class GameState {
-  private phase: PhaseType = "initHands";
-  private roundNumber = 0;
-  private currentTurn: 0 | 1 = 0;
-  private winner: 0 | 1 | null = null;
+  private store: Store;
   private players: [Player, Player];
 
   constructor(
     private readonly options: GameOptions,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig]
   ) {
+    this.store = Store.initialState(playerConfigs);
     this.players = [this.createPlayer(0), this.createPlayer(1)];
     this.start();
   }
 
-  public getPhase() {
-    return this.phase;
-  }
-  public getRoundNumber() {
-    return this.roundNumber;
-  }
-  public getCurrentTurn() {
-    return this.currentTurn;
+  public get phase() {
+    return this.store.state.phase;
   }
   public getPlayer(who: 0 | 1) {
     return this.players[who];
@@ -88,11 +81,12 @@ export class GameState {
 
   private createPlayer(who: 0 | 1) {
     return new Player(
+      this.store,
+      who,
       {
         ...this.playerConfigs[who],
         game: this.options,
       },
-      this.createOperationsForPlayer(who)
     );
   }
 
