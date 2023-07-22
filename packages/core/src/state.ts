@@ -36,7 +36,7 @@ import { flip } from "@gi-tcg/utils";
 import { Damage } from "./damage.js";
 import { Skill } from "./skill.js";
 import { Card } from "./card.js";
-import { Store } from "./immutable_test.js";
+import { Store } from "./store.js";
 
 export interface GlobalOperations {
   notifyMe: (event: Event) => void;

@@ -87,33 +87,10 @@ function createCharacter(id: number): CharacterState {
   };
 }
 
-interface StatefulEntity<InfoT> {
-  readonly entityId: number;
-  readonly info: InfoT;
-  readonly handler: EventHandlers;
-  readonly usagePerRound: number;
-  readonly usage: number;
-  readonly duration: number;
-  readonly shouldDispose: boolean;
-}
-
 interface SkillState {
   readonly entityId: number;
   readonly info: SkillInfoWithId;
 }
-const ENTITY_DEFAULT = {
-  handler: {},
-  usagePerRound: Infinity,
-  usage: Infinity,
-  duration: Infinity,
-  shouldDispose: false,
-} satisfies Partial<StatefulEntity<unknown>>;
-
-type EquipmentState = StatefulEntity<EquipmentInfoWithId>;
-type StatusState = StatefulEntity<StatusInfoWithId>;
-type SupportState = StatefulEntity<SupportInfoWithId>;
-type SummonState = StatefulEntity<SummonInfoWithId>;
-type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
 
 function createEntity<T>(info: T): StatefulEntity<T> {
   return { entityId: newEntityId(), ...ENTITY_DEFAULT, info };

@@ -1,5 +1,6 @@
 import {
-  EventHandlers,
+  EquipmentInfoWithId,
+  EventHandlers, PassiveSkillInfo, PassiveSkillInfoWithId, StatusInfoWithId, SummonInfoWithId, SupportInfoWithId, getEquipment, getSkill, getStatus, getSummon, getSupport,
 } from "@gi-tcg/data";
 import { EventFactory } from "./context.js";
 
@@ -8,6 +9,55 @@ const ENTITY_ID_BEGIN = -100;
 let nextEntityId = ENTITY_ID_BEGIN;
 export function newEntityId(): number {
   return nextEntityId--;
+}
+
+export type EntityType = "passive_skill" | "equipment" | "status" | "summon" | "support";
+
+
+const ENTITY_DEFAULT = {
+  handler: {},
+  usagePerRound: Infinity,
+  usage: Infinity,
+  duration: Infinity,
+  shouldDispose: false,
+} satisfies Partial<StatefulEntity<unknown>>;
+
+
+const ENTITY_INFO_GETTER = {
+  passive_skill: (id: number): PassiveSkillInfoWithId => {
+    const info = getSkill(id);
+    if (info.type !== "passive") throw new Error("Not a passive skill");
+    return info;
+  },
+  equipment: getEquipment,
+  status: getStatus,
+  summon: getSummon,
+  support: getSupport,
+} satisfies Record<EntityType, (id: number) => any>;
+
+interface StatefulEntity<InfoT> {
+  readonly entityId: number;
+  readonly info: InfoT;
+  readonly handler: EventHandlers;
+  readonly usagePerRound: number;
+  readonly usage: number;
+  readonly duration: number;
+  readonly shouldDispose: boolean;
+}
+export type EquipmentState = StatefulEntity<EquipmentInfoWithId>;
+export type StatusState = StatefulEntity<StatusInfoWithId>;
+export type SupportState = StatefulEntity<SupportInfoWithId>;
+export type SummonState = StatefulEntity<SummonInfoWithId>;
+export type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
+
+type InfoTypeOfEntity<T extends EntityType> = ReturnType<typeof ENTITY_INFO_GETTER[T]>;
+
+function createEntity<T extends EntityType>(type: T, id: number): StatefulEntity<InfoTypeOfEntity<T>> {
+  const info: InfoTypeOfEntity<T> = ENTITY_INFO_GETTER[type](id);
+  return {
+    entityId: newEntityId(),
+    info,
+  };
 }
 
 export class Entity {

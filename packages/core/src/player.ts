@@ -38,7 +38,7 @@ import {
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
-import { Store } from "./immutable_test.js";
+import { Store } from "./store.js";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
