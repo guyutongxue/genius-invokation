@@ -1,19 +1,25 @@
+import { SupportHandle } from "./builders";
+import { EntityContext } from "./entities";
 import { EventHandlerCtor, ListenTarget } from "./events";
 
 export type SupportType = "ally" | "item" | "place" | "other"
 
-interface SupportInfo {
-  type: SupportType;
-  duration: number;
-  usage: number;
-  usagePerRound: number;
-  listenTo: Exclude<ListenTarget, "master">;
-  handlerCtor: EventHandlerCtor;
-}
-export type SupportInfoWithId = Readonly<SupportInfo & { id: number }>;
+type SupportInfoNoId = Omit<SupportInfo, "id">;
 
-const allStatuses = new Map<number, SupportInfoWithId>();
-export function registerSupport(id: number, info: SupportInfo) {
+export interface SupportInfo {
+  readonly id: number;
+  readonly type: SupportType;
+  readonly duration: number;
+  readonly usage: number;
+  readonly usagePerRound: number;
+  readonly listenTo: Exclude<ListenTarget, "master">;
+  readonly handlerCtor: EventHandlerCtor;
+}
+
+export type SupportContext<Writable extends boolean> = EntityContext<SupportInfo, SupportHandle, Writable>;
+
+const allStatuses = new Map<number, SupportInfo>();
+export function registerSupport(id: number, info: SupportInfoNoId) {
   allStatuses.set(id, { ...info, id });
 }
 export function getSupport(id: number) {

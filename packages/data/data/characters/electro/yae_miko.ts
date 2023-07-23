@@ -68,7 +68,7 @@ const GreatSecretArtTenkoKenshin = createSkill(14083)
   .costEnergy(2)
   .do((c) => {
     c.dealDamage(4, DamageType.Electro);
-    const sakura = c.hasSummon(SesshouSakura);
+    const sakura = c.findSummon(SesshouSakura);
     if (sakura) {
       sakura.dispose();
       c.createCombatStatus(TenkoThunderbolts);

@@ -1,15 +1,16 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { Context, SkillDescriptionContext, SwitchActiveContext } from "./contexts";
-import { Target } from "./target";
-import { SkillType, UseSkillAction, registerSkill } from "./skills";
+import { SwitchActiveContext } from "./contexts";
+import { SkillContext, SkillType, UseSkillAction, registerSkill } from "./skills";
 import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
-import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, PlayCardTargetFilter, ShownOption, registerCard } from "./cards";
+import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, FuzzyContextOfTarget, PlayCardAction, PlayCardContext, PlayCardFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentType, registerEquipment } from "./equipments";
 import { CharacterContext, CharacterTag, registerCharacter } from "./characters";
 import { PrepareConfig, ShieldConfig, StatusTag, registerStatus } from "./statuses";
 import { SupportType, registerSupport } from "./supports";
 import { SummonContext, registerSummon } from "./summons";
 import { AddPrefix, RemovePrefix, addPrefix, capitalize } from "./utils";
+import { Context } from "./global";
+import { ValidSelector } from "./target";
 
 export type CharacterHandle = number & { readonly _never: unique symbol };
 export type SkillHandle = number & { readonly _never: unique symbol };
@@ -19,7 +20,7 @@ export type SummonHandle = number & { readonly _never: unique symbol };
 export type SupportHandle = CardHandle & { readonly _never2: unique symbol };
 export type EquipmentHandle = CardHandle & { readonly _never2: unique symbol };
 
-type CommonAction = (c: Context) => void;
+type CommonAction<ThisT, Writable extends boolean> = (c: Context<ThisT, Writable>) => void;
 
 class CharacterBuilder {
   private readonly tags: CharacterTag[] = [];
@@ -58,9 +59,9 @@ class CharacterBuilder {
   }
 }
 
-class ActionBuilderBase {
+class ActionBuilderBase<ThisT> {
   protected costs: DiceType[] = [];
-  protected pushAction(action: CommonAction) {
+  protected pushAction(action: CommonAction<ThisT, true>) {
     throw new Error("Method not implemented.");
   }
   protected addCost(type: DiceType, count: number) {
@@ -97,29 +98,17 @@ class ActionBuilderBase {
   costEnergy(count: number) {
     return this.addCost(DiceType.Energy, count);
   }
-  dealDamage(value: number, type: DamageType, target?: Target) {
+  dealDamage<const Selector extends string>(value: number, type: DamageType, target?: ValidSelector<Selector>) {
     this.pushAction((c) => c.dealDamage(value, type, target));
     return this;
   }
   // applyElement
-  heal(value: number, target: Target) {
-    this.pushAction((c) => c.heal(value, target));
+  heal<const Selector extends string>(value: number, target: ValidSelector<Selector>) {
+    this.pushAction((c) => c.queryCharacter(target)?.heal(value));
     return this;
   }
-  gainEnergy(value?: number, target?: Target) {
-    this.pushAction((c) => c.gainEnergy(value, target));
-    return this;
-  }
-  lossEnergy(value?: number, target?: Target) {
-    this.pushAction((c) => c.loseEnergy(value, target));
-    return this;
-  }
-  createStatus(status: StatusHandle, target?: Target) {
-    this.pushAction((c) => c.createStatus(status, target));
-    return this;
-  }
-  removeStatus(status: StatusHandle, target?: Target) {
-    this.pushAction((c) => c.removeStatus(status, target));
+  gainActiveEnergy(value: number) {
+    this.pushAction((c) => c.queryCharacter("|")?.gainEnergy(value));
     return this;
   }
   createCombatStatus(status: StatusHandle, opp = false) {
@@ -130,11 +119,6 @@ class ActionBuilderBase {
     this.pushAction((c) => c.summon(summon));
     return this;
   }
-  summonOneOf(...summons: SummonHandle[]) {
-    this.pushAction((c) => c.summonOneOf(...summons));
-    return this;
-  }
-  // createSupport
   rollDice(count: number) {
     this.pushAction((c) => c.rollDice(count));
     return this;
@@ -143,8 +127,6 @@ class ActionBuilderBase {
     this.pushAction((c) => c.generateDice(...dice));
     return this;
   }
-  // removeAllDice
-  // getCardCount
   drawCards(count: number, opp?: boolean, tag?: CardTag) {
     this.pushAction((c) => c.drawCards(count, opp, tag));
     return this;
@@ -157,7 +139,7 @@ class ActionBuilderBase {
     this.pushAction((c) => c.switchCards());
     return this;
   }
-  switchActive(target: Target) {
+  switchActive<const Selector extends string>(target: ValidSelector<Selector>) {
     this.pushAction((c) => c.switchActive(target));
     return this;
   }
@@ -168,7 +150,7 @@ class ActionBuilderBase {
 
 }
 
-class SkillBuilder extends ActionBuilderBase {
+class SkillBuilder extends ActionBuilderBase<SkillContext> {
   private type: Exclude<SkillType, "passive"> = "normal";
   private actions: UseSkillAction[] = [];
   private shouldGainEnergy = false;
@@ -176,7 +158,7 @@ class SkillBuilder extends ActionBuilderBase {
   constructor(private readonly id: number) {
     super();
   }
-  protected override pushAction(action: CommonAction): void {
+  protected override pushAction(action: CommonAction<SkillContext, true>): void {
     this.actions.push(action);
   }
 
@@ -199,7 +181,7 @@ class SkillBuilder extends ActionBuilderBase {
   }
 
   build(): SkillHandle {
-    const action = async (c: SkillDescriptionContext) => {
+    const action = async (c: Context<SkillContext, true>) => {
       for (const a of this.actions) {
         await a(c);
       }
@@ -207,6 +189,7 @@ class SkillBuilder extends ActionBuilderBase {
     registerSkill(this.id, {
       type: this.type,
       costs: this.costs,
+      hidden: false, // TODO
       gainEnergy: this.shouldGainEnergy,
       action,
     });
@@ -216,15 +199,14 @@ class SkillBuilder extends ActionBuilderBase {
 
 class CardBuilder<
   const T extends CardTargetDescriptor = []
-> extends ActionBuilderBase {
+> extends ActionBuilderBase<PlayCardContext> {
   private type: CardType = "event";
   private tags: CardTag[] = [];
   private shownOption: ShownOption = true;
   private filters: PlayCardFilter<T>[] = [];
-  private targetFilters: PlayCardTargetFilter<T>[] = [];
-  private actions: ((this: ContextOfTarget<T>, c: Context) => void)[] = [];
+  private actions: CommonAction<PlayCardContext<T>, true>[] = [];
   // 固定在最后做的操作，用于编写卡牌模板如食物牌
-  private lastActions: ((this: ContextOfTarget<T>, c: Context) => void)[] = [];
+  private lastActions: CommonAction<PlayCardContext<T>, true>[] = [];
 
   constructor(
     private readonly id: number,
@@ -233,7 +215,7 @@ class CardBuilder<
     super();
   }
 
-  protected override pushAction(action: CommonAction) {
+  protected override pushAction(action: CommonAction<PlayCardContext<T>, true>) {
     this.actions.push(action);
   }
 
@@ -273,50 +255,45 @@ class CardBuilder<
     return self.filterMyTargets((c) => c.info.id === ch && (!requireActive || c.isActive()));
   }
   filterOppTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
-    this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {
-      return t.every(t => !t.isMine()) && filter(...<ContextOfTarget<T>>t)
+    this.filters.push((c: Context<PlayCardContext<T>, false>) => {
+      return (c.this.target as FuzzyContextOfTarget).every(t => !t.isMine()) && filter(...c.this.target)
     });
     return this;
   }
   filterMyTargets(filter: (...targets: ContextOfTarget<T>) => boolean, includesDefeated = false) {
-    this.targetFilters.push((...t: readonly (CharacterContext | SummonContext)[]) => {
-      return t.every(t => t.isMine() &&
+    this.filters.push((c: Context<PlayCardContext<T>, false>) => {
+      return (c.this.target as FuzzyContextOfTarget).every(t => t.isMine() &&
         (!("isAlive" in t) || includesDefeated || t.isAlive())) &&
-        filter(...<ContextOfTarget<T>>t)
+        filter(...c.this.target)
     });
     return this;
   }
-  do(action: (this: ContextOfTarget<T>, c: Context) => void) {
+  do(action: CommonAction<PlayCardContext<T>, true>) {
     this.pushAction(action);
     return this;
   }
-  doAtLast(action: (this: ContextOfTarget<T>, c: Context) => void) {
+  doAtLast(action: CommonAction<PlayCardContext<T>, true>) {
     this.lastActions.push(action);
     return this;
   }
 
   build(): CardHandle {
     const outerThis = this;
-    function finalFilter(this: ContextOfTarget<T>, c: Context) {
+    function finalFilter(this: ContextOfTarget<T>, c: Context<any, false>) {
       for (const f of outerThis.filters) {
         if (!f.call(this, c)) {
           return false;
         }
       }
-      for (const f of outerThis.targetFilters) {
-        if (!f(...this)) {
-          return false;
-        }
-      }
       return true;
     }
-    async function* action(this: ContextOfTarget<T>, c: Context) {
+    async function* action(c: Context<any, true>) {
       for (const a of outerThis.actions) {
-        await a.call(this, c);
+        await a(c);
         yield;
       }
       for (const a of outerThis.lastActions) {
-        await a.call(this, c);
+        await a(c);
         yield;
       }
     }
@@ -325,8 +302,8 @@ class CardBuilder<
       costs: this.costs,
       tags: this.tags,
       showWhen: this.shownOption,
-      filter: finalFilter as PlayCardFilter,
-      action: action as PlayCardAction,
+      filter: finalFilter,
+      action,
       target: this.targetDescriptor ?? [],
     });
     return this.id as CardHandle;
@@ -370,8 +347,8 @@ class CardBuilder<
       cardBuilder.filterMyTargets(() => true);
       eqBuilder.setType("artifact");
     }
-    cardBuilder.actions.unshift(function (c) {
-      this[0].equip(cardBuilder.id as EquipmentHandle);
+    cardBuilder.actions.unshift((c) => {
+      c.this.target[0].equip(cardBuilder.id as EquipmentHandle);
     });
     cardBuilder.setType("equipment").build();
     return eqBuilder;
@@ -391,17 +368,17 @@ class CardBuilder<
     return suppBuilder;
   }
 
-  buildToStatus(combatOrTarget: Target | "combat" | "this0" | undefined): StatusBuilder<true> {
-    const statusBuilder = createStatus<true>(this.id);
+  buildToStatus(combatOrTarget: "active" | "combat" | "target0", id?: number): StatusBuilder<true> {
+    const statusId = (id ?? this.id) as StatusHandle;
+    const statusBuilder = createStatus<true>(statusId);
     if (combatOrTarget === "combat") {
-      this.do((c) => c.createCombatStatus(this.id as StatusHandle))
-    } else if (combatOrTarget === "this0") {
-      const id = this.id;
+      this.do((c) => c.createCombatStatus(statusId))
+    } else if (combatOrTarget === "target0") {
       const s = this as any;
       CardBuilder.ensureTargetDescriptor(s);
-      s.do(function (c) { c.createStatus(id as StatusHandle, this[0].asTarget()); });
-    } else {
-      this.do((c) => c.createStatus(this.id as StatusHandle, combatOrTarget))
+      s.do((c) => c.this.target[0].createStatus(statusId));
+    } else if (combatOrTarget === "active") {
+      this.do((c) => c.queryCharacter("|")?.createStatus(statusId))
     }
     this.build();
     return statusBuilder;
@@ -512,7 +489,7 @@ class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilde
     return this;
   }
   prepare(skill: SkillHandle): this;
-  prepare(status: StatusHandle, round: number): this; 
+  prepare(status: StatusHandle, round: number): this;
   prepare(skillOrStatus: SkillHandle | StatusHandle, round: number = 1) {
     this.prepareConfig = { skillOrStatus, round: 1 };
     return this;

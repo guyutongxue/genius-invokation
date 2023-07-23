@@ -1,5 +1,5 @@
 import { SkillHandle, StatusHandle } from "./builders";
-import { Context, DamageContext, SwitchActiveContext } from "./contexts";
+import { EntityContext } from "./entities";
 import { EventHandlerCtor, ListenTarget } from "./events";
 
 export type StatusTag =
@@ -7,7 +7,7 @@ export type StatusTag =
   | "shield"       // 护盾
   ;
 
-export type ShieldConfig = null | number | {
+export type ShieldConfig = null | {
   initial: number;
   recreateMax: number;
 }
@@ -17,32 +17,25 @@ export type PrepareConfig = null | {
   round: number,
 }
 
-interface StatusInfo {
-  tags: StatusTag[];
-  duration: number;
-  usage: number;
-  maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
-  usagePerRound: number;
-  listenTo: ListenTarget;
-  shield: ShieldConfig;
-  prepare: PrepareConfig;
-  handlerCtor: EventHandlerCtor;
+type StatusInfoNoId = Omit<StatusInfo, "id">;
+
+export interface StatusInfo {
+  readonly id: number;
+  readonly tags: StatusTag[];
+  readonly duration: number;
+  readonly usage: number;
+  readonly maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
+  readonly usagePerRound: number;
+  readonly listenTo: ListenTarget;
+  readonly shield: ShieldConfig;
+  readonly prepare: PrepareConfig;
+  readonly handlerCtor: EventHandlerCtor;
 }
 
-export type StatusInfoWithId = Readonly<StatusInfo & { id: number }>;
+export type StatusContext<Writable extends boolean> = EntityContext<StatusInfo, StatusHandle, Writable>;
 
-export interface StatusContext {
-  readonly entityId: number;
-  readonly info: StatusInfoWithId;
-  getVisibleValue(): number | null;
-  addVisibleValue(value: number): number;
-
-  gainUsage(value: number): void;
-  gainShield(value: number): void;
-}
-
-const allStatuses = new Map<number, StatusInfoWithId>();
-export function registerStatus(id: number, info: StatusInfo) {
+const allStatuses = new Map<number, StatusInfo>();
+export function registerStatus(id: number, info: StatusInfoNoId) {
   allStatuses.set(id, { ...info, id });
 }
 export function getStatus(id: number) {

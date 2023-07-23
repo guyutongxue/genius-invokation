@@ -5,10 +5,8 @@ export type ReactionHandler = (c: DamageContext) => void;
 
 function swirl(srcElement: DamageType) {
   return (c: DamageContext) => {
-    c.allCharacters(true).forEach(ch => {
-      if (ch.entityId !== c.target.entityId) {
-        c.dealDamage(1, srcElement, ch.asTarget());
-      }
+    c.queryCharacterAll(`:exclude(#${c.target.entityId})`).forEach(ch => {
+      c.dealDamage(1, srcElement, ch.asTarget());
     });
   }
 }
@@ -33,18 +31,14 @@ export const REACTION_HANDLERS: Record<Reaction, ReactionHandler> = {
   },
   [Reaction.Superconduct]: (c) => {
     c.addDamage(1);
-    c.allCharacters(true).forEach(ch => {
-      if (ch.entityId !== c.target.entityId) {
-        c.dealDamage(1, DamageType.Piercing, ch.asTarget());
-      }
+    c.queryCharacterAll(`:exclude(#${c.target.entityId})`).forEach(ch => {
+      c.dealDamage(1, DamageType.Piercing, ch.asTarget());
     });
   },
   [Reaction.ElectroCharged]: (c) => {
     c.addDamage(1);
-    c.allCharacters(true).forEach(ch => {
-      if (ch.entityId !== c.target.entityId) {
-        c.dealDamage(1, DamageType.Hydro, ch.asTarget());
-      }
+    c.queryCharacterAll(`:exclude(#${c.target.entityId})`).forEach(ch => {
+      c.dealDamage(1, DamageType.Hydro, ch.asTarget());
     });
   },
   [Reaction.Frozen]: (c) => {

@@ -95,8 +95,8 @@ export const DominanceOfEarth = createCard(216031, ["character"])
   .buildToEquipment()
   .listenToOther()
   .on("beforeDealDamage", (c) => {
-    const active = c.hasCharacter(Target.myActive());
-    if (c.sourceSummon && active?.hasShield()) {
+    const active = c.queryCharacter("|");
+    if (c.sourceSummon && active?.findShield()) {
       c.addDamage(1);
     }
   })

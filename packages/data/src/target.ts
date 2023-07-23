@@ -1,131 +1,24 @@
-import { CharacterContext, CharacterInfoWithId } from ".";
-import { CharacterHandle } from "./builders";
+import { CharacterTag } from ".";
+import { CharacterHandle, StatusHandle } from "./builders";
 
-export type TargetInfo = {
-  type: "byPos",
-  pos: "active" | "standby" | "prev" | "next" | "all",
-  opp: boolean
-} | {
-  type: "byId",
-  id: number,
-  opp: boolean
-} | {
-  type: "byEntityId",
-  entityId: number
-} | {
-  type: "recentOpp",
-  relativeTo: TargetInfo
-} | {
-  type: "oneEnergyNotFull",
-};
+type ByPos = '<' | '|' | '>' | '<>' | '*';
+type ById = `@${CharacterHandle}`;
+type NoEnergy = `:energy(${number | "notFull"})`;
+type HasStatus = `:has(${StatusHandle})`;
+type WithTag = `:tag(${CharacterTag})`;
+export type SimpleSelector = ById | ByPos | NoEnergy | HasStatus | WithTag;
 
-export class Target {
-  private constructor(private readonly info: TargetInfo) {}
+type NoPrefixSelector<T extends string> = T extends SimpleSelector
+  ? T
+  : T extends `:recent(${infer Rel})`
+  ? `:recent(${ValidSelector<Rel>})`
+  : T extends `:exclude(${infer Rel})`
+  ? `:exclude(${ValidSelector<Rel>})`
+  : never;
 
-  static ofCharacter(character: CharacterHandle | CharacterInfoWithId, opp = false) {
-    let id: number;
-    if (typeof character === "number") {
-      id = character;
-    } else {
-      id = character.id;
-    }
-    return new Target({
-      type: "byId",
-      id,
-      opp
-    });
-  }
-  static oppActive() {
-    return new Target({
-      type: "byPos",
-      pos: "active",
-      opp: true
-    });
-  }
-  static oppNext() {
-    return new Target({
-      type: "byPos",
-      pos: "next",
-      opp: true
-    });
-  }
-  static oppPrev() {
-    return new Target({
-      type: "byPos",
-      pos: "prev",
-      opp: true
-    });
-  }
-  static oppStandby() {
-    return new Target({
-      type: "byPos",
-      pos: "standby",
-      opp: true
-    });
-  }
-  static oppAll() {
-    return new Target({
-      type: "byPos",
-      pos: "all",
-      opp: true
-    });
-  }
-  static myActive() {
-    return new Target({
-      type: "byPos",
-      pos: "active",
-      opp: false
-    });
-  }
-  static myNext() {
-    return new Target({
-      type: "byPos",
-      pos: "next",
-      opp: false
-    });
-  }
-  static myPrev() {
-    return new Target({
-      type: "byPos",
-      pos: "prev",
-      opp: false
-    });
-  }
-  static myStandby() {
-    return new Target({
-      type: "byPos",
-      pos: "standby",
-      opp: false
-    });
-  }
-  static myAll() {
-    return new Target({
-      type: "byPos",
-      pos: "all",
-      opp: false
-    });
-  }
-  static oppRecentFrom(target: Target) {
-    return new Target({
-      type: "recentOpp",
-      relativeTo: target.info
-    });
-  }
-  static oneEnergyNotFull() {
-    return new Target({
-      type: "oneEnergyNotFull"
-    });
-  }
-  // Should not be used by this package
-  static byEntityId(entityId: number) {
-    return new Target({
-      type: "byEntityId",
-      entityId
-    });
-  }
-}
+type Prefix = "!" | "+";
 
-export function getTargetInfo(target: Target): TargetInfo {
-  // @ts-expect-error Accessing private field
-  return target.info;
-}
+export type ValidSelector<T extends string> =
+  T extends `${infer P extends Prefix}${infer Rest}`
+  ? `${P}${NoPrefixSelector<Rest>}`
+  : T extends `#${number}` ? T : NoPrefixSelector<T>;

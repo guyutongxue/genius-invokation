@@ -20,10 +20,10 @@ const SeedOfSkadha = createStatus(117031)
   .withUsage(2)
   .listenToOthers()
   .on("damaged", (c) => {
-    if (c.target.hasStatus(SeedOfSkadha) && c.reaction) {
+    if (c.target.findStatus(SeedOfSkadha) && c.reaction) {
       // 摩耶之殿天赋（火）：受到元素反应伤害的对象的伤害是草元素伤害
-      if (c.allCharacters(true).some(c => c.hasEquipment(TheSeedOfStoredKnowledge))
-        && c.allCharacters(true).filter(c => c.info.tags.includes("pyro")).length
+      if (c.queryCharacterAll("!*").some(c => c.findEquipment(TheSeedOfStoredKnowledge))
+        && c.queryCharacterAll("!*").filter(c => c.info.tags.includes("pyro")).length
         && c.target.entityId === c.getMaster().entityId) {
         c.dealDamage(1, DamageType.Dendro, c.target.asTarget());
       } else {
@@ -105,16 +105,15 @@ const IllusoryHeart = createSkill(17034)
   .do((c) => {
     if (c.character.hasEquipment(TheSeedOfStoredKnowledge)) {
       // 摩耶之殿天赋（水）：持续回合+1
-      if (c.allCharacters().filter(c => c.info.tags.includes("hydro")).length) {
+      if (c.queryCharacterAll(":tag(hydro)")) {
         c.createStatus(ShrineOfMaya01);
       } else {
         c.createStatus(ShrineOfMaya);
       }
       // 摩耶之殿天赋（雷）：蕴种印可用次数+1
-      if (c.allCharacters().filter(c => c.info.tags.includes("electro")).length) {
-        c.allCharacters(true).forEach(ch => {
-          const status = ch.hasStatus(SeedOfSkadha);
-          status?.gainUsage(1);
+      if (c.queryCharacter(":tag(electro)")) {
+        c.queryCharacterAll("!*").forEach(ch => {
+          ch.findStatus(SeedOfSkadha)?.gainUsage(1);
         });
       }
     } else {

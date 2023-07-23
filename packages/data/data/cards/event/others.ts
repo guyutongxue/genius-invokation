@@ -19,13 +19,12 @@ const AbyssalSummons = createCard(332015)
  */
 const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "character"])
   .setType("event")
-  .filterMyTargets((ch0, ch1) => !!ch0.hasEquipment("artifact") && ch0.entityId !== ch1.entityId)
-  .do(function () {
-    const from = this[0];
-    const to = this[1];
-    const weapon = from.hasEquipment("artifact")!;
-    from.removeEquipment(weapon);
-    to.equip(weapon);
+  .filterMyTargets((ch0, ch1) => !!ch0.findEquipment("artifact") && ch0.entityId !== ch1.entityId)
+  .do((c) => {
+    const [from, to] = c.this.target;
+    const e = from.findEquipment("artifact")!;
+    from.removeEquipment(e.id);
+    to.equip(e.id);
   })
   .build();
 
@@ -37,8 +36,11 @@ const CalxsArts = createCard(332009)
   .setType("event")
   .costSame(1)
   .do((c) => {
-    const energyCount = c.loseEnergy(1, Target.myStandby());
-    c.gainEnergy(energyCount);
+    const energyCount = c
+      .queryCharacterAll("<>")
+      .map(ch => ch.loseEnergy(1))
+      .reduce((a, b) => a + b, 0);
+    c.queryCharacter("|")?.gainEnergy(energyCount);
   })
   .build();
 
@@ -73,7 +75,7 @@ const ElementalResonanceEnduringRock = createCard(331602)
   .withDuration(1)
   .on("dealDamage", (c) => {
     if (c.damageType === DamageType.Geo) {
-      const shield = c.hasCombatShield();
+      const shield = c.findCombatShield();
       if (shield) {
         shield.gainShield(3);
       }
@@ -93,7 +95,7 @@ const ElementalResonanceFerventFlames = createCard(331302)
   .addTags("resonance")
   .requireDualCharacterTag("pyro")
   .costPyro(1)
-  .buildToStatus(undefined)
+  .buildToStatus("active")
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", (c) => {
@@ -144,7 +146,7 @@ const ElementalResonanceShatteringIce = createCard(331102)
   .addTags("resonance")
   .requireDualCharacterTag("cryo")
   .costCryo(1)
-  .buildToStatus(undefined) // active character status
+  .buildToStatus("active") // active character status
   .withUsage(1)
   .withDuration(1)
   .on("beforeDealDamage", (c) => {
@@ -178,15 +180,15 @@ const ElementalResonanceSprawlingGreenery = createCard(331702)
   .requireDualCharacterTag("dendro")
   .costDendro(1)
   .do((c) => {
-    const dp = c.hasSummon(BurningFlame);
+    const dp = c.findSummon(BurningFlame);
     if (dp) {
       dp.usage++;
     }
-    const dh = c.hasCombatStatus(DendroCore);
+    const dh = c.findCombatStatus(DendroCore);
     if (dh) {
       dh.gainUsage(1);
     }
-    const de = c.hasCombatStatus(CatalyzingField);
+    const de = c.findCombatStatus(CatalyzingField);
     if (de) {
       de.gainUsage(1);
     }
@@ -381,16 +383,15 @@ const LeaveItToMe = createCard(332006)
 const MasterOfWeaponry = createCard(332010, ["character", "character"])
   .setType("event")
   .filterMyTargets((ch0, ch1) => {
-    return !!ch0.hasEquipment("weapon") && ch0.entityId !== ch1.entityId &&
+    return !!ch0.findEquipment("weapon") && ch0.entityId !== ch1.entityId &&
       (["bow", "catalyst", "claymore", "pole", "sword"] as const)
         .filter(c => ch0.info.tags.includes(c) && ch1.info.tags.includes(c)).length > 0;
   })
-  .do(function () {
-    const from = this[0];
-    const to = this[1];
-    const weapon = from.hasEquipment("weapon")!;
-    from.removeEquipment(weapon);
-    to.equip(weapon);
+  .do((c) => {
+    const [from, to] = c.this.target;
+    const e = from.findEquipment("weapon")!;
+    from.removeEquipment(e.id);
+    to.equip(e.id);
   })
   .build();
 
@@ -429,8 +430,9 @@ const QuickKnit = createCard(332012, ["summon"])
   .setType("event")
   .costSame(1)
   .filterMyTargets((t) => true)
-  .do(function () {
-    this[0].usage += 1;
+  .do((c) => {
+    const summon = c.this.target[0];
+    summon.setUsage(summon.usage + 1);
   })
   .build();
 
@@ -442,8 +444,9 @@ const SendOff = createCard(332013, ["summon"])
   .setType("event")
   .costSame(2)
   .filterOppTargets((t) => true)
-  .do(function () {
-    this[0].usage -= 2;
+  .do((c) => {
+    const summon = c.this.target[0];
+    summon.setUsage(summon.usage - 2);
   })
   .build();
 
@@ -454,7 +457,7 @@ const SendOff = createCard(332013, ["summon"])
 const Starsigns = createCard(332008)
   .setType("event")
   .costVoid(2)
-  .gainEnergy(1)
+  .gainActiveEnergy(1)
   .build();
 
 /**

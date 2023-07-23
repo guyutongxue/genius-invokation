@@ -52,7 +52,7 @@ const KamisatoArtSenho = createSkill(11054)
   .setType("passive")
   .on("switchActive", (c) => {
     if (c.to.entityId === KamisatoAyaka) {
-      if (c.to.hasEquipment(KantenSenmyouBlessing)) {
+      if (c.to.findEquipment(KantenSenmyouBlessing)) {
         c.to.createStatus(CryoElementalInfusion01);
       } else {
         c.to.createStatus(CryoElementalInfusion);

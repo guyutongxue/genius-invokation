@@ -98,9 +98,9 @@ export const EmbersRekindled = createCard(223021, ["character"])
   .addCharacterFilter(AbyssLectorFathomlessFlames, false)
   .costPyro(2)
   .do((c) => {
-    const ch = c.hasCharacter(AbyssLectorFathomlessFlames);
+    const ch = c.queryCharacter(`@${AbyssLectorFathomlessFlames}`);
     if (!ch) return;
-    if (!ch.hasStatus(FieryRebirthStaus)) {
+    if (!ch.findStatus(FieryRebirthStaus)) {
       ch.createStatus(AegisOfAbyssalFlame);
     } else {
       ch.equip(EmbersRekindledEquip);

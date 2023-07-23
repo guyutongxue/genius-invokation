@@ -1,8 +1,7 @@
 import { Aura, DiceType } from "@gi-tcg/typings";
 import { EquipmentHandle, StatusHandle } from "./builders";
 import { StatusContext } from "./statuses";
-import { Target } from "./target";
-import { EquipmentInfoWithId, EquipmentType } from "./equipments";
+import { EquipmentContext, EquipmentInfo, EquipmentType } from "./equipments";
 
 export type ElementTag =
   | "cryo"
@@ -40,7 +39,7 @@ interface CharacterInfo {
 }
 export type CharacterInfoWithId = Readonly<CharacterInfo & { id: number }>;
 
-export interface CharacterContext {
+interface CharacterBaseContext<Writable extends boolean = false> {
   readonly entityId: number;
   readonly info: CharacterInfoWithId;
 
@@ -48,24 +47,31 @@ export interface CharacterContext {
   readonly energy: number;
   readonly aura: Aura;
   isAlive(): boolean;
-  
-  hasEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentInfoWithId | null;
-  equip(equipment: EquipmentHandle | EquipmentInfoWithId): void;
-  removeEquipment(equipment: EquipmentHandle | EquipmentInfoWithId): void;
+  isMine(): boolean;
 
-  heal(amount: number): void;
-  gainEnergy(amount: number): void;
-  createStatus(status: StatusHandle): StatusContext;
-  hasStatus(status: StatusHandle): StatusContext | null;
-  hasShield(): StatusContext | null;
+  findEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentContext<Writable> | null;
+  findStatus(status: StatusHandle): StatusContext<Writable> | null;
+  findShield(): StatusContext<Writable> | null;
 
   isActive(): boolean;
   isMine(): boolean;
 
-  asTarget(): Target;
+  asTarget(): `#${number}`;
   elementType(): DiceType;
 }
-// return Target.ofCharacter(this.info.id);
+
+interface CharacterActionContext extends CharacterBaseContext<true> {
+  equip(equipment: EquipmentHandle): void;
+  removeEquipment(equipment: EquipmentHandle): void;
+
+  heal(value: number): void;
+  gainEnergy(amount: number): void;
+  loseEnergy(amount: number): number;
+
+  createStatus(status: StatusHandle): StatusContext<true>;
+}
+
+export type CharacterContext<Writable extends boolean = false> = Writable extends true ? CharacterActionContext : CharacterBaseContext;
 
 const allCharacters = new Map<number, CharacterInfoWithId>();
 export function registerCharacter(id: number, info: CharacterInfo) {

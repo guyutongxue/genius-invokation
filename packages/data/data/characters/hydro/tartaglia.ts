@@ -49,7 +49,7 @@ const MeleeStance = createStatus(112042)
       c.changeDamageType(DamageType.Hydro);
     },
     onBeforeDealDamage(c) {
-      if (c.target.hasStatus(Riptide)) {
+      if (c.target.findStatus(Riptide)) {
         c.addDamage(1);
       }
     },
@@ -147,8 +147,8 @@ export const AbyssalMayhemHydrospout = createCard(212041, ["character"])
   .useSkill(FoulLegacyRagingTide)
   .buildToEquipment()
   .on("endPhase", (c) => {
-    c.allCharacters(true)
-      .filter(c => c.hasStatus(Riptide))
+    c.queryCharacterAll("!*")
+      .filter(c => c.findStatus(Riptide))
       .forEach((ch) => {
         c.dealDamage(1, DamageType.Piercing, ch.asTarget());
       });

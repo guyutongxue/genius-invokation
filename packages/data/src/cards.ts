@@ -1,22 +1,34 @@
 import { DiceType } from "@gi-tcg/typings";
 import { CharacterContext, CharacterTag } from "./characters";
-import { Context } from "./contexts";
 import { SummonContext } from "./summons";
+import { CardHandle } from "./builders";
+import { Context } from "./global";
+
+export interface PlayCardContext<TargetT extends CardTargetDescriptor = CardTargetDescriptor> {
+  readonly id: CardHandle;
+  readonly info: CardInfoWithId;
+
+  readonly target: ContextOfTarget<TargetT>;
+  isTalentOf(charId: number): boolean;
+  isWeapon(): boolean;
+}
 
 export type CardTarget = {
-  character: CharacterContext;
-  summon: SummonContext;
+  character: CharacterContext<true>;
+  summon: SummonContext<true>;
 };
 
 export type CardTargetDescriptor = readonly (keyof CardTarget)[];
 
-export type ContextOfTarget<T extends CardTargetDescriptor> =
-  T extends readonly [
+export type ContextOfTarget<TargetT extends CardTargetDescriptor> =
+  TargetT extends readonly [
     infer First extends keyof CardTarget,
     ...infer Rest extends CardTargetDescriptor
   ]
   ? readonly [CardTarget[First], ...ContextOfTarget<Rest>]
   : readonly [];
+
+export type FuzzyContextOfTarget = readonly (CardTarget[keyof CardTarget])[];
 
 export type CardTag =
   | "legend" // 秘传
@@ -55,14 +67,11 @@ interface CardInfo {
 
 export type CardInfoWithId = Readonly<CardInfo & { id: number }>;
 
-export type PlayCardFilter<T extends CardTargetDescriptor = CardTargetDescriptor> = (
-  this: ContextOfTarget<T>,
-  c: Context
-) => boolean;
-export type PlayCardTargetFilter<
-  T extends CardTargetDescriptor = readonly any[]
-> = (...targets: ContextOfTarget<T>) => boolean;
-export type PlayCardAction = (this: readonly any[], c: Context) => AsyncGenerator<void>;
+export type PlayCardFilter<TargetT extends CardTargetDescriptor = any[]> =
+  (c: Context<PlayCardContext<TargetT>, false>) => boolean;
+
+export type PlayCardAction<TargetT extends CardTargetDescriptor = any[]> =
+  (c: Context<PlayCardContext<TargetT>, true>) => AsyncGenerator<void>;
 
 const allCards = new Map<number, CardInfoWithId>();
 export function registerCard(id: number, info: CardInfo) {

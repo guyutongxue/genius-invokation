@@ -205,7 +205,7 @@ const Rana = createCard(322017)
   .buildToSupport()
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
-      const next = c.hasCharacter(Target.myNext());
+      const next = c.queryCharacter(">");
       if (next) {
         c.generateDice(next.elementType());
       }
@@ -310,7 +310,7 @@ const MasterZhang = createCard(322018)
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
     if (c.playCardCtx?.isWeapon()) {
-      const hasWeaponChar = c.allCharacters().filter(ch => ch.hasEquipment("weapon")).length;
+      const hasWeaponChar = c.queryCharacterAll("*").filter(ch => ch.findEquipment("weapon")).length;
       const deduct = new Array(hasWeaponChar + 1).fill(DiceType.Omni);
       c.deductCost(...deduct);
     } else {

@@ -30,8 +30,8 @@ const GaleBlade = createSkill(15022)
 const DandelionField = createSummon(115021)
   .withUsage(2)
   .on("endPhase", (c) => {
-    const jean = c.hasCharacter(Jean);
-    if (jean && jean.hasEquipment(LandsOfDandelion)) {
+    const jean = c.queryCharacter(`@${Jean}`);
+    if (jean && jean.findEquipment(LandsOfDandelion)) {
       c.dealDamage(3, DamageType.Anemo)
     } else {
       c.dealDamage(2, DamageType.Anemo)

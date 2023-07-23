@@ -47,8 +47,7 @@ const LithicSpear = createCard(311402, ["character"])
   .buildToEquipment()
   .on("enter", (c) => {
     const shield = c
-      .allCharacters()
-      .filter(c => c.info.tags.includes("liyue"))
+      .queryCharacterAll(":tag(liyue)")
       .length;
     const status = c.createStatus(LithicGuard);
     status.gainShield(shield);
@@ -98,7 +97,7 @@ const VortexVanquisher = createCard(311404, ["character"])
     return false;
   })
   .on("useSkill", (c) => {
-    const status = c.hasCombatShield();
+    const status = c.findCombatShield();
     if (status) {
       status.gainShield(1);
     }

@@ -1,28 +1,22 @@
+import { SummonHandle } from "./builders";
+import { EntityContext } from "./entities";
 import { EventHandlerCtor } from "./events";
 
-interface SummonInfo {
-  usage: number;    // 释放时的可用次数
-  maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
-  disposeWhenUsedUp: boolean; // 是否在使用完毕后销毁
-  handlerCtor: EventHandlerCtor;
+type SummonInfoNoId = Omit<SummonInfo, "id">;
+
+export interface SummonInfo {
+  readonly id: number;
+  readonly usage: number;    // 释放时的可用次数
+  readonly maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
+  readonly disposeWhenUsedUp: boolean; // 是否在使用完毕后销毁
+  readonly handlerCtor: EventHandlerCtor;
 }
 
-export type SummonInfoWithId = Readonly<SummonInfo & { id: number }>;
+export type SummonContext<Writable extends boolean> = EntityContext<SummonInfo, SummonHandle, Writable>;
 
-export interface SummonContext {
-  readonly entityId: number;
-  readonly info: SummonInfoWithId;
-
-  isMine(): boolean;
-  usage: number;
-
-  dispose(): void;
-}
-
-
-const allSummons = new Map<number, SummonInfoWithId>();
-export function registerSummon(id: number, info: SummonInfo) {
-  allSummons.set(id, {...info, id});
+const allSummons = new Map<number, SummonInfo>();
+export function registerSummon(id: number, info: SummonInfoNoId) {
+  allSummons.set(id, { ...info, id });
 }
 export function getSummon(id: number) {
   if (!allSummons.has(id)) {

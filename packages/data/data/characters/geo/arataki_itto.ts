@@ -23,7 +23,7 @@ const Ushi = createSummon(116051)
   .noDispose()
   .do({
     onBeforeDamaged(c) {
-      const itto = c.hasCharacter(AratakiItto);
+      const itto = c.queryCharacter(`@${AratakiItto}`);
       if (this.addStatus && itto) {
         c.createStatus(SuperlativeSuperstrength, itto.asTarget());
         this.addStatus = false;

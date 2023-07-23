@@ -11,9 +11,9 @@ const AncientCourtyard = createCard(330001)
   .addTags("legend")
   .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))
   .addFilter((c) => {
-    return c.allCharacters().filter(ch =>
-      ch.hasEquipment("weapon") ||
-      ch.hasEquipment("artifact")).length > 0;
+    return c.queryCharacterAll("*").filter(ch =>
+      ch.findEquipment("weapon") ||
+      ch.findEquipment("artifact")).length > 0;
   })
   .buildToStatus("combat")
   .withUsage(1)

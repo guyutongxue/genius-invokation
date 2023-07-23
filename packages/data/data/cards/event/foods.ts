@@ -1,4 +1,4 @@
-import { DiceType, Target, createCard, createStatus } from '@gi-tcg';
+import { DiceType, createCard, createStatus } from '@gi-tcg';
 
 /**
  * **饱腹**
@@ -12,9 +12,9 @@ function createFood(id: number) {
   return createCard(id, ["character"])
     .setType("event")
     .addTags("food")
-    .filterMyTargets((c) => !c.hasStatus(Satiated))
-    .doAtLast(function (c) {
-      this[0].createStatus(Satiated);
+    .filterMyTargets((c) => !c.findStatus(Satiated))
+    .doAtLast((c) => {
+      c.this.target[0].createStatus(Satiated);
     });
 }
 
@@ -25,7 +25,7 @@ function createFood(id: number) {
  */
 const AdeptusTemptation = createFood(333002)
   .costVoid(2)
-  .buildToStatus("this0")
+  .buildToStatus("target0")
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", (c) => {
@@ -46,12 +46,12 @@ const ButterCrab = createCard(333012)
   .setType("event")
   .addTags("food")
   .addFilter((c) => {
-    return c.allCharacters().some(c => !c.hasStatus(Satiated));
+    return c.queryCharacterAll("*").some(c => !c.findStatus(Satiated));
   })
   .costVoid(2)
   .do((c) => {
-    for (const ch of c.allCharacters()) {
-      if (!ch.hasStatus(Satiated)) {
+    for (const ch of c.queryCharacterAll("*")) {
+      if (!ch.findStatus(Satiated)) {
         ch.createStatus(ButterCrabStatus);
         ch.createStatus(Satiated);
       }
@@ -71,7 +71,7 @@ const ButterCrabStatus = createStatus(333012)
  * （每回合每个角色最多食用1次「料理」）
  */
 const JueyunGuoba = createFood(333001)
-  .buildToStatus("this0")
+  .buildToStatus("target0")
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", (c) => {
@@ -90,7 +90,7 @@ const JueyunGuoba = createFood(333001)
  */
 const LotusFlowerCrisp = createFood(333003)
   .costSame(1)
-  .buildToStatus("this0")
+  .buildToStatus("target0")
   .withUsage(1)
   .withDuration(1)
   .on("beforeDamaged", (c) => c.decreaseDamage(3))
@@ -103,7 +103,7 @@ const LotusFlowerCrisp = createFood(333003)
  */
 const MintyMeatRolls = createFood(333008)
   .costSame(1)
-  .buildToStatus("this0")
+  .buildToStatus("target0")
   .withUsage(3)
   .withDuration(1)
   .on("beforeUseDice", (c) => {
@@ -134,15 +134,10 @@ const MondstadtHashBrown = createFood(333006)
  */
 const MushroomPizza = createFood(333007)
   .costSame(1)
-  .do(function (c) {
-    this[0].heal(1);
-    this[0].createStatus(MushroomPizzaStatus);
-  })
-  .build();
-  
-const MushroomPizzaStatus = createStatus(303305) // 为啥 id 和卡牌不一样啊我的老米？
+  .do((c) => c.this.target[0].heal(1))
+  .buildToStatus("target0", 303305)
   .withUsage(2)
-  .on("endPhase", function (c) { c.getMaster().heal(1); })
+  .on("endPhase", (c) => { c.getMaster().heal(1); })
   .build();
 
 /**
@@ -151,7 +146,7 @@ const MushroomPizzaStatus = createStatus(303305) // 为啥 id 和卡牌不一样
  * （每回合每个角色最多食用1次「料理」）
  */
 const NorthernSmokedChicken = createFood(333004)
-  .buildToStatus("this0")
+  .buildToStatus("target0")
   .withUsage(1)
   .withDuration(1)
   .on("beforeUseDice", (c) => {
@@ -170,7 +165,7 @@ const NorthernSmokedChicken = createFood(333004)
  */
 const SashimiPlatter = createFood(333010)
   .costSame(1)
-  .buildToStatus("this0")
+  .buildToStatus("target0")
   .withDuration(1)
   .on("beforeSkillDamage", (c) => {
     if (c.skillInfo.type === "normal") {
@@ -185,9 +180,7 @@ const SashimiPlatter = createFood(333010)
  * （每回合每个角色最多食用1次「料理」）
  */
 const SweetMadame = createFood(333005)
-  .do(function (c) {
-    this[0].heal(1);
-  })
+  .do((c) => { c.this.target[0].heal(1); })
   .build();
 
 /**
@@ -199,15 +192,13 @@ const TandooriRoastChicken = createCard(333011)
   .setType("event")
   .addTags("food")
   .addFilter((c) => {
-    return c.allCharacters().some(c => !c.hasStatus(Satiated));
+    return c.queryCharacterAll("*").some(c => !c.findStatus(Satiated));
   })
   .costVoid(2)
   .do((c) => {
-    for (const ch of c.allCharacters()) {
-      if (!ch.hasStatus(Satiated)) {
-        ch.createStatus(TandooriRoastChickenStatus);
-        ch.createStatus(Satiated);
-      }
+    for (const ch of c.queryCharacterAll(`:exclude(:has(${Satiated}))`)) {
+      ch.createStatus(TandooriRoastChickenStatus);
+      ch.createStatus(Satiated);
     }
   })
   .build();
@@ -237,10 +228,10 @@ const TeyvatFriedEgg = createCard(333009, ["character"])
   .setType("event")
   .addTags("food")
   .filterMyTargets((c) => !c.isAlive(), true)
-  .addFilter((c) => !c.hasCombatStatus(ReviveOnCoolDown))
+  .addFilter((c) => !c.findCombatStatus(ReviveOnCoolDown))
   .costSame(3)
-  .do(function (c) {
-    this[0].heal(1);
+  .do((c) => {
+    c.this.target[0].heal(1);
     c.createCombatStatus(ReviveOnCoolDown);
   })
   .build();

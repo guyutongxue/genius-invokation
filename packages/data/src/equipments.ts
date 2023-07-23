@@ -1,19 +1,23 @@
+import { EquipmentHandle } from "./builders";
+import { EntityContext } from "./entities";
 import { EventHandlerCtor, ListenTarget } from "./events";
 
 export type EquipmentType = "weapon" | "artifact" | "other";
 
-interface EquipmentInfo {
-  type: EquipmentType;
-  // duration: number;
-  // usage: number;
-  usagePerRound: number;
-  listenTo: ListenTarget;
-  handlerCtor: EventHandlerCtor;
-}
-export type EquipmentInfoWithId = Readonly<EquipmentInfo & { id: number }>;
+type EquipmentInfoNoId = Omit<EquipmentInfo, "id">;
 
-const allEquipments = new Map<number, EquipmentInfoWithId>();
-export function registerEquipment(id: number, info: EquipmentInfo) {
+export interface EquipmentInfo {
+  readonly id: number;
+  readonly type: EquipmentType;
+  readonly usagePerRound: number;
+  readonly listenTo: ListenTarget;
+  readonly handlerCtor: EventHandlerCtor;
+}
+
+export type EquipmentContext<Writable extends boolean> = EntityContext<EquipmentInfo, EquipmentHandle, Writable>;
+
+const allEquipments = new Map<number, EquipmentInfo>();
+export function registerEquipment(id: number, info: EquipmentInfoNoId) {
   allEquipments.set(id, { ...info, id });
 }
 export function getEquipment(id: number) {
