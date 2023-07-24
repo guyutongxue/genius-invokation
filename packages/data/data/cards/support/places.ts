@@ -1,4 +1,4 @@
-import { DiceType, Target, createCard } from '@gi-tcg';
+import { DiceType, createCard } from '@gi-tcg';
 
 /**
  * **镇守之森**
@@ -10,7 +10,10 @@ const ChinjuForest = createCard(321012)
   .addTags("place")
   .costSame(1)
   .buildToSupport()
-  // TODO
+  .withUsage(3)
+  .on("actionPhase",
+    (c) => !c.isMyTurn(),
+    (c) => c.generateDice(c.queryCharacter("|")!.elementType()))
   .build();
 
 /**
@@ -23,13 +26,9 @@ const DawnWinery = createCard(321004)
   .costSame(2)
   .buildToSupport()
   .withUsagePerRound(1)
-  .on("beforeUseDice", (c) => {
-    if (c.switchActiveCtx) {
-      c.deductCost(DiceType.Void);
-    } else {
-      return false;
-    }
-  })
+  .on("beforeUseDice", 
+    (c) => !!c.switchActiveCtx,
+    (c) => c.deductCost(DiceType.Void))
   .build();
 
 /**
@@ -43,9 +42,7 @@ const FavoniusCathedral = createCard(321006)
   .costSame(2)
   .buildToSupport()
   .withUsage(2)
-  .on("endPhase", (c) => {
-    c.heal(2, Target.myActive());
-  })
+  .on("endPhase", (c) => c.queryCharacter("|")!.heal(2))
   .build();
 
 /**
@@ -77,7 +74,7 @@ const JadeChamber = createCard(321003)
   .costSame(1)
   .buildToSupport()
   .on("rollPhase", (c) => {
-    const d = c.activeCharacterElement;
+    const d = c.queryCharacter("|")!.elementType();
     c.fixDice(d, d);
   })
   .build();
@@ -121,7 +118,7 @@ const SangonomiyaShrine = createCard(321009)
   .costSame(2)
   .buildToSupport()
   .withUsage(2)
-  .on("endPhase", (c) => c.heal(1, Target.myAll()))
+  .on("endPhase", (c) => c.queryCharacterAll("*").forEach(ch => ch.heal(1)))
   .build();
 
 /**
@@ -146,7 +143,7 @@ const Tenshukaku = createCard(321007)
   .costSame(2)
   .buildToSupport()
   .on("actionPhase", (c) => {
-    const diceTypeCount = new Set(c.getDice()).size;
+    const diceTypeCount = new Set(c.dice).size;
     if (diceTypeCount >= 5) {
       c.generateDice(DiceType.Omni);
     }
@@ -162,18 +159,21 @@ const Vanarana = createCard(321011)
   .setType("support")
   .addTags("place")
   .buildToSupport()
-  .do({
-    onEndPhase(c) {
-      const a = c.getDice().shift();
-      const b = c.getDice().shift();
-      a && this.collected.push(a);
-      b && this.collected.push(b);
-    },
-    onActionPhase(c) {
-      c.generateDice(...collected);
-      this.collected = [];
-    }
-  }, { collected: [] as DiceType[] })
+  .withThis({ collected: [] as DiceType[], collectedLength: 0 })
+  .on("endPhase", (c) => {
+      const length = Math.min(2, c.dice.length);
+      const removed: number[] = [];
+      for (let i = 0; i < length; i++) {
+        removed.push(i);
+      }
+      c.this.collected = c.absorbDice(removed);
+      c.this.collectedLength = length;
+    })
+  .on("actionPhase", (c) => {
+    c.generateDice(...c.this.collected);
+    c.this.collected = [];
+    c.this.collectedLength = 0;
+  })
   .build();
 
 /**
@@ -186,5 +186,11 @@ const WangshuInn = createCard(321005)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .on("endPhase", (c) => {
+    const chs = [...c.queryCharacterAll("<>")];
+    chs.sort((a, b) => (b.info.maxHealth - b.health) - (a.info.maxHealth - a.health));
+    if (chs.length > 0) {
+      chs[0].heal(2);
+    }
+  })
   .build();

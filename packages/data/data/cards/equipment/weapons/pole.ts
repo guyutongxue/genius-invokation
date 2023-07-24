@@ -13,13 +13,13 @@ const EngulfingLightning = createCard(311405, ["character"])
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => c.addDamage(1))
   .on("enter", (c) => {
-    const m = c.this.master!;
+    const m = c.this.master;
     if (m.energy === 0) {
       m.gainEnergy(1);
     }
   })
   .on("actionPhase", (c) => {
-    const m = c.this.master!;
+    const m = c.this.master;
     if (m.energy === 0) {
       m.gainEnergy(1);
     }
@@ -31,7 +31,7 @@ const EngulfingLightning = createCard(311405, ["character"])
  * 根据「璃月」角色的数量提供护盾，保护所附属的角色。
  */
 const LithicGuard = createStatus(301101)
-  .shield({ initial: 0, recreateMax: Infinity })
+  .shield(0)
   .build();
 
 /**
@@ -49,7 +49,7 @@ const LithicSpear = createCard(311402, ["character"])
     const shield = c
       .queryCharacterAll(":tag(liyue)")
       .length;
-    const status = c.this.master!.createStatus(LithicGuard);
+    const status = c.this.master.createStatus(LithicGuard);
     status.setValue(shield);
   })
   .on("beforeSkillDamage", (c) => c.addDamage(1))
@@ -89,7 +89,7 @@ const VortexVanquisher = createCard(311404, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeSkillDamage", (c) => {
-    if (c.getMaster().hasShield()) {
+    if (c.this.master?.findShield()) {
       c.addDamage(2);
     } else {
       c.addDamage(1);
@@ -99,7 +99,7 @@ const VortexVanquisher = createCard(311404, ["character"])
   .on("useSkill", (c) => {
     const status = c.findCombatShield();
     if (status) {
-      status.gainShield(1);
+      status.setValue(status.value + 1);
     }
   })
   .build();

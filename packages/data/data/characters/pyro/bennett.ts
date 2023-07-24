@@ -28,16 +28,12 @@ const PassionOverload = createSkill(13032)
  */
 const InspirationField = createStatus(113031)
   .withDuration(2)
-  .on("beforeSkillDamage", (c) => {
-    if (c.getMaster().health <= 7) {
-      c.addDamage(2);
-    }
-  })
-  .on("useSkill", (c) => {
-    if (c.character.health <= 6) {
-      c.getMaster().heal(2);
-    }
-  })
+  .on("beforeSkillDamage",
+    (c) => c.sourceSkill.character.health <= 7,
+    (c) => c.addDamage(2))
+  .on("useSkill",
+    (c) => c.character.health <= 6,
+    (c) => c.character.heal(2))
   .build();
 
 /**
@@ -47,14 +43,11 @@ const InspirationField = createStatus(113031)
  */
 const InspirationField01 = createStatus(113032)
   .withDuration(2)
-  .on("beforeSkillDamage", (c) => {
-    c.addDamage(2);
-  })
-  .on("useSkill", (c) => {
-    if (c.character.health <= 6) {
-      c.getMaster().heal(2);
-    }
-  })
+  .on("beforeSkillDamage",
+    (c) => c.addDamage(2))
+  .on("useSkill",
+    (c) => c.character.health <= 6,
+    (c) => c.character.heal(2))
   .build();
 
 /**
@@ -67,7 +60,7 @@ const FantasticVoyage = createSkill(13033)
   .costEnergy(2)
   .do((c) => {
     c.dealDamage(2, DamageType.Pyro);
-    if (c.character.hasEquipment(GrandExpectation)) {
+    if (c.character.findEquipment(GrandExpectation)) {
       c.createCombatStatus(InspirationField01);
     } else {
       c.createCombatStatus(InspirationField);

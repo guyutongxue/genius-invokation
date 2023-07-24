@@ -1,11 +1,8 @@
 import type { DamageType, DiceType } from "@gi-tcg/typings";
-import { CardHandle, CharacterHandle, SkillHandle, StatusHandle, SummonHandle, SupportHandle } from "./builders";
-import { ValidSelector } from "./target";
 import { SkillContext } from "./skills";
-import { CharacterContext, CharacterInfoWithId } from "./characters";
-import { CardInfoWithId, CardTag, CardTarget, PlayCardContext } from "./cards";
-import { SummonContext } from ".";
-import { StatusContext } from "./statuses";
+import { CharacterContext } from "./characters";
+import { PlayCardContext } from "./cards";
+import { SummonContext } from "./summons";
 
 export interface RollContext {
   fixDice(...dice: DiceType[]): void;
@@ -20,11 +17,11 @@ export interface UseDiceContext {
   deductCost(...dice: DiceType[]): void;
 }
 
-interface DamageBaseContext  {
+interface DamageBaseContext {
   readonly sourceSummon?: SummonContext<false>;
   readonly sourceSkill?: SkillContext;
   readonly sourceReaction?: ElementalReactionContext;
-  readonly target: CharacterContext;
+  readonly target: CharacterContext<true>;
   readonly damageType: DamageType;
 }
 
@@ -54,9 +51,9 @@ export interface BeforeDefeatedContext  {
   immune(healTo: number): void;
 }
 
-export interface SwitchActiveContext {
-  readonly from: CharacterContext;
-  readonly to: CharacterContext;
+export interface SwitchActiveContext<Writable extends boolean = false> {
+  readonly from: CharacterContext<Writable>;
+  readonly to: CharacterContext<Writable>;
 }
 
 export interface ElementalReactionContext {

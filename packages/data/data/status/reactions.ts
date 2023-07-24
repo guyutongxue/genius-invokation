@@ -24,17 +24,17 @@ export const CatalyzingField = createStatus(117)
  * 可用次数：1
  */
 export const DendroCore = createStatus(116)
-.withUsage(1)
-.on("beforeDealDamage", (c) => {
-  if ((c.damageType === DamageType.Pyro || c.damageType === DamageType.Electro)
-    && c.target.isActive()
-    && !c.target.isMine()) {
-    c.addDamage(2);
-  } else {
-    return false;
-  }
-})
-.build();
+  .withUsage(1)
+  .on("beforeDealDamage", (c) => {
+    if ((c.damageType === DamageType.Pyro || c.damageType === DamageType.Electro)
+      && c.target.isActive()
+      && !c.target.isMine()) {
+      c.addDamage(2);
+    } else {
+      return false;
+    }
+  })
+  .build();
 
 /**
  * **燃烧烈焰**
@@ -59,7 +59,7 @@ export const Frozen = createStatus(106)
   .on("beforeDamaged", (c) => {
     if (c.damageType === DamageType.Pyro || c.damageType === DamageType.Physical) {
       c.addDamage(2);
-      c.dispose();
+      c.this.dispose();
     }
   })
   .build();
@@ -69,5 +69,5 @@ export const Frozen = createStatus(106)
  * 为我方出战角色提供1点护盾。（可叠加，最多叠加到2点）
  */
 export const Crystallize = createStatus(111)
-  .shield({ initial: 1, recreateMax: 2 })
+  .shield(1, 2)
   .build();

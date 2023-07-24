@@ -14,7 +14,7 @@ export interface EquipmentInfo {
   readonly handler: EventHandlerAndState;
 }
 
-export type EquipmentContext<Writable extends boolean> = EntityContext<EquipmentInfo, EquipmentHandle, Writable>;
+export type EquipmentContext<Writable extends boolean> = EntityContext<EquipmentInfo, EquipmentHandle, "yes", Writable>;
 
 const allEquipments = new Map<number, EquipmentInfo>();
 export function registerEquipment(id: number, info: EquipmentInfoNoId) {

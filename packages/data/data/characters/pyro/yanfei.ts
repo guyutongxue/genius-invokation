@@ -19,7 +19,7 @@ const SealOfApproval = createSkill(-21)
 const ScarletSeal = createStatus(-22)
   .withUsage(1)
   .on("beforeSkillDamage", (c) => {
-    if (c.isCharged()) {
+    if (c.sourceSkill.charged) {
       c.addDamage(2)
     } else {
       return false;
@@ -35,7 +35,7 @@ const SignedEdict = createSkill(-23)
   .setType("elemental")
   .costPyro(3)
   .dealDamage(3, DamageType.Pyro)
-  .createStatus(ScarletSeal)
+  .createCharacterStatus(ScarletSeal)
   .build()
 
 /**
@@ -46,22 +46,19 @@ const SignedEdict = createSkill(-23)
  */
 const Brilliance = createStatus(-24)
   .withDuration(2)
-  .do({
-    onBeforeUseDice(c) {
-      if (this.deductCount && c.useSkillCtx?.isCharged()) {
-        c.deductCost(DiceType.Pyro);
-        this.deductCount--;
-      }
-      return false;
-    },
-    onEndPhase(c) {
-      c.createStatus(ScarletSeal);
-    },
-    onActionPhase(c) {
-      this.deductCount = 1;
-      return false;
-    }
-  }, { deductCount: 1 })
+  .withThis({ deductCost: true })
+  .on("beforeUseDice",
+    (c) => !!(c.this.deductCost && c.useSkillCtx?.charged),
+    (c) => {
+      c.deductCost(DiceType.Pyro);
+      c.this.deductCost = false;
+    })
+  .on("endPhase", (c) => {
+    c.this.master!.createStatus(ScarletSeal);
+  })
+  .on("actionPhase", (c) => {
+    c.this.deductCost = true;
+  })
   .build()
 
 /**
@@ -73,8 +70,8 @@ const DoneDeal = createSkill(-25)
   .costPyro(3)
   .costEnergy(2)
   .dealDamage(3, DamageType.Pyro)
-  .createStatus(ScarletSeal)
-  .createStatus(Brilliance)
+  .createCharacterStatus(ScarletSeal)
+  .createCharacterStatus(Brilliance)
   .build()
 
 const YanFei = createCharacter(-20)
@@ -97,7 +94,7 @@ const RightOfFinalInterpretation = createCard(-26, ["character"])
   .useSkill(SealOfApproval)
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
-    if (c.isCharged() && c.target.health <= 6) {
+    if (c.sourceSkill.charged && c.target.health <= 6) {
       c.addDamage(1);
     }
   })

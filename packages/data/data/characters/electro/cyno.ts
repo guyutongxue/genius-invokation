@@ -19,8 +19,8 @@ const SecretRiteChasmicSoulfarer = createSkill(14042)
   .setType("elemental")
   .costElectro(3)
   .do((c) => {
-    if (c.character.hasEquipment(FeatherfallJudgment)) {
-      const indwelling = c.character.hasStatus(PactswornPathclearer)?.getVisibleValue();
+    if (c.character.findEquipment(FeatherfallJudgment)) {
+      const indwelling = c.character.findStatus(PactswornPathclearer)?.value;
       if (indwelling === 3 || indwelling === 5) {
         c.dealDamage(4, DamageType.Electro);
       } else {
@@ -43,11 +43,11 @@ const SacredRiteWolfsSwiftness = createSkill(14043)
   .costEnergy(2)
   .do((c) => {
     c.dealDamage(4, DamageType.Electro);
-    const status = c.character.hasStatus(PactswornPathclearer);
+    const status = c.character.findStatus(PactswornPathclearer);
     if (!status) return;
-    status.addVisibleValue(2);
-    if (status.getVisibleValue()! >= 6) {
-      status.addVisibleValue(-4);
+    status.setValue(status.value + 2)
+    if (status.value >= 6) {
+      status.setValue(status.value - 4);
     }
   })
   .build();
@@ -61,22 +61,21 @@ const SacredRiteWolfsSwiftness = createSkill(14043)
  * 大于等于6级时：「凭依」级数-4。
  */
 const PactswornPathclearer = createStatus(114041)
-  .do({
-    onEndPhase(c) {
-      this.indwelling++;
-      if (this.indwelling >= 6) {
-        this.indwelling -= 4;
-      }
-    },
-    onEarlyBeforeDealDamage(c) {
-      if (this.indwelling >= 2 && c.damageType === DamageType.Physical) {
-        c.changeDamageType(DamageType.Electro);
-      }
-      if (this.indwelling >= 4) {
-        c.addDamage(2);
-      }
-    },
-  }, { indwelling: 0 })
+  .withThis({ indwelling: 0 })
+  .on("endPhase", (c) => {
+    c.this.indwelling++;
+    if (c.this.indwelling >= 6) {
+      c.this.indwelling -= 4;
+    }
+  })
+  .on("earlyBeforeDealDamage", (c) => {
+    if (c.this.indwelling >= 2 && c.damageType === DamageType.Physical) {
+      c.changeDamageType(DamageType.Electro);
+    }
+    if (c.this.indwelling >= 4) {
+      c.addDamage(2);
+    }
+  })
   .build();
 
 /**
@@ -85,8 +84,8 @@ const PactswornPathclearer = createStatus(114041)
  */
 const LawfulEnforcer = createSkill(14044)
   .setType("passive")
-  .on("battleBegin", (c) => { c.createStatus(PactswornPathclearer); })
-  .on("revive", (c) => { c.createStatus(PactswornPathclearer); })
+  .on("battleBegin", (c) => { c.this.character.createStatus(PactswornPathclearer); })
+  .on("revive", (c) => { c.this.character.createStatus(PactswornPathclearer); })
   .build();
 
 export const Cyno = createCharacter(1404)

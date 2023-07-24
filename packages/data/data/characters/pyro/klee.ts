@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createStatus, DamageType, DiceType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType, DiceType } from "@gi-tcg";
 
 /**
  * **砰砰**
@@ -18,20 +18,12 @@ const Kaboom = createSkill(13061)
  */
 const ExplosiveSpark = createStatus(113061)
   .withUsage(1)
-  .on("beforeUseDice", (c) => {
-    const skillCtx = c.useSkillCtx;
-    if (skillCtx && skillCtx.isCharged()) {
-      c.deductCost(DiceType.Pyro);
-    }
-    return false;
-  })
-  .on("beforeSkillDamage", (c) => {
-    if (c.isCharged() && c.skillInfo.type === "normal") {
-      c.addDamage(1);
-    } else {
-      return false;
-    }
-  })
+  .on("beforeUseDice",
+    (c) => !!c.useSkillCtx?.charged,
+    (c) => c.deductCost(DiceType.Pyro))
+  .on("beforeSkillDamage",
+    (c) => c.sourceSkill.charged,
+    (c) => c.addDamage(1))
   .build();
 
 /**
@@ -41,20 +33,12 @@ const ExplosiveSpark = createStatus(113061)
  */
 const ExplosiveSpark01 = createStatus(113061)
   .withUsage(2)
-  .on("beforeUseDice", (c) => {
-    const skillCtx = c.useSkillCtx;
-    if (skillCtx && skillCtx.isCharged()) {
-      c.deductCost(DiceType.Pyro);
-    }
-    return false;
-  })
-  .on("beforeSkillDamage", (c) => {
-    if (c.isCharged() && c.skillInfo.type === "normal") {
-      c.addDamage(1);
-    } else {
-      return false;
-    }
-  })
+  .on("beforeUseDice",
+    (c) => !!c.useSkillCtx?.charged,
+    (c) => c.deductCost(DiceType.Pyro))
+  .on("beforeSkillDamage",
+    (c) => c.sourceSkill.charged,
+    (c) => c.addDamage(1))
   .build();
 
 /**
@@ -66,10 +50,10 @@ const JumpyDumpty = createSkill(13062)
   .costPyro(3)
   .do((c) => {
     c.dealDamage(3, DamageType.Pyro);
-    if (c.character.hasEquipment(PoundingSurprise)) {
-      c.createStatus(ExplosiveSpark01);
+    if (c.character.findEquipment(PoundingSurprise)) {
+      c.character.createStatus(ExplosiveSpark01);
     } else {
-      c.createStatus(ExplosiveSpark);
+      c.character.createStatus(ExplosiveSpark);
     }
   })
   .build();
@@ -82,7 +66,7 @@ const JumpyDumpty = createSkill(13062)
 const SparksNSplashStatus = createStatus(113063)
   .withUsage(2)
   .on("useSkill", (c) => {
-    c.dealDamage(2, DamageType.Pyro, Target.myActive());
+    c.dealDamage(2, DamageType.Pyro, "|");
   })
   .build();
 

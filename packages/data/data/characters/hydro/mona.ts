@@ -29,7 +29,7 @@ const Reflection = createSummon(112031)
   })
   .on("endPhase", (c) => {
     c.dealDamage(1, DamageType.Hydro);
-    c.dispose();
+    c.this.dispose();
   })
   .build();
 
@@ -74,7 +74,7 @@ const StellarisPhantasm = createSkill(12033)
 const IllusoryTorrent = createSkill(12034)
   .setType("passive")
   .withUsagePerRound(1)
-  .on("requestFastSwitchActive", (c) => c.requestFast(c.getMaster().isActive()))
+  .on("requestFastSwitchActive", (c) => c.requestFast(c.this.character.isActive()))
   .build();
 
 export const Mona = createCharacter(1203)
@@ -100,7 +100,7 @@ export const ProphecyOfSubmersion = createCard(212031, ["character"])
   .buildToEquipment()
   .listenToOther()
   .on("beforeDealDamage", (c) => {
-    if (c.getMaster().isActive() && c.reaction?.relatedWith(DamageType.Hydro)) {
+    if (c.this.master.isActive() && c.reaction?.relatedWith(DamageType.Hydro)) {
       c.addDamage(2);
     }
   })

@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createSummon, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType } from "@gi-tcg";
 
 // 重要：修改了元素爆发的逻辑。
 
@@ -98,9 +98,9 @@ export const TranscendentAutomaton = createCard(225011, ["character"])
   .buildToEquipment()
   .on("useSkill", (c) => {
     if (c.info.id === BlusteringBlade) {
-      c.switchActive(Target.myNext())
+      c.switchActive(">")
     } else if (c.info.id === FrostyAssault) {
-      c.switchActive(Target.myPrev())
+      c.switchActive("<")
     }
   })
   .build();

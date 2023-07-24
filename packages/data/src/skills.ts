@@ -1,7 +1,5 @@
 import { DiceType } from "@gi-tcg/typings";
-import {
-  SwitchActiveContext, DamageContext, ElementalReactionContext
-} from "./contexts";
+import { ElementalReactionContext, DamageReadonlyContext } from "./contexts";
 import { EventHandlerAndState } from "./events";
 import { CardHandle, SkillHandle, StatusHandle } from "./builders";
 import { CharacterContext } from "./characters";
@@ -9,20 +7,23 @@ import { PlayCardContext } from "./cards";
 import { StatusContext } from "./statuses";
 import { Context } from "./global";
 
-export type UseSkillAction = (c: Context<never, SkillContext, true>) => void | Promise<void>;
+export type UseSkillAction = (c: Context<never, SkillContext<true>, true>) => void | Promise<void>;
 
-export interface SkillContext {
+export interface SkillContext<Writable extends boolean = false> {
   readonly id: SkillHandle;
   readonly info: SkillInfo;
   triggeredByCard(card: CardHandle): PlayCardContext | null;
-  triggeredByStatus(status: StatusHandle): StatusContext<true> | null;
-  readonly character: CharacterContext;
-  readonly target: CharacterContext;
+  triggeredByStatus(status: StatusHandle): StatusContext<Writable> | null;
+  readonly character: CharacterContext<Writable>;
+  readonly target: CharacterContext<Writable>;
   readonly charged: boolean;  // 重击
   readonly plunging: boolean; // 下落攻击
 
+  // 坚定之岩
+  readonly damages: DamageReadonlyContext[];
+
   // 常九爷、参量质变仪：读取此次技能连带造成的所有伤害/元素反应
-  getAllDescendingDamages(): DamageContext[];
+  getAllDescendingDamages(): DamageReadonlyContext[];
   getAllDescendingReactions(): ElementalReactionContext[];
 }
 

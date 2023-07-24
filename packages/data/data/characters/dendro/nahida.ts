@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createStatus, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **行相**
@@ -24,10 +24,10 @@ const SeedOfSkadha = createStatus(117031)
       // 摩耶之殿天赋（火）：受到元素反应伤害的对象的伤害是草元素伤害
       if (c.queryCharacterAll("!*").some(c => c.findEquipment(TheSeedOfStoredKnowledge))
         && c.queryCharacterAll("!*").filter(c => c.info.tags.includes("pyro")).length
-        && c.target.entityId === c.getMaster().entityId) {
+        && c.target.entityId === c.this.master!.entityId) {
         c.dealDamage(1, DamageType.Dendro, c.target.asTarget());
       } else {
-        c.dealDamage(1, DamageType.Piercing, c.getMaster().asTarget());
+        c.dealDamage(1, DamageType.Piercing, c.this.master!.asTarget());
       }
     } else {
       return false;
@@ -43,10 +43,10 @@ const AllSchemesToKnow = createSkill(17032)
   .setType("elemental")
   .costDendro(3)
   .do((c) => {
-    if (c.target.hasStatus(SeedOfSkadha)) {
-      c.createStatus(SeedOfSkadha, Target.oppAll());
+    if (c.target.findStatus(SeedOfSkadha)) {
+      c.queryCharacterAll("!*").forEach(ch => ch.createStatus(SeedOfSkadha));
     } else {
-      c.createStatus(SeedOfSkadha, Target.oppActive());
+      c.target.createStatus(SeedOfSkadha);
     }
   })
   .build();
@@ -58,7 +58,9 @@ const AllSchemesToKnow = createSkill(17032)
 const AllSchemesToKnowTathata = createSkill(17033)
   .setType("elemental")
   .costDendro(5)
-  .createStatus(SeedOfSkadha, Target.oppAll())
+  .do((c) => {
+    c.queryCharacterAll("!*").forEach(ch => ch.createStatus(SeedOfSkadha));
+  })
   .build();
 
 
@@ -103,21 +105,24 @@ const IllusoryHeart = createSkill(17034)
   .costDendro(3)
   .costEnergy(2)
   .do((c) => {
-    if (c.character.hasEquipment(TheSeedOfStoredKnowledge)) {
+    if (c.character.findEquipment(TheSeedOfStoredKnowledge)) {
       // 摩耶之殿天赋（水）：持续回合+1
       if (c.queryCharacterAll(":tag(hydro)")) {
-        c.createStatus(ShrineOfMaya01);
+        c.createCombatStatus(ShrineOfMaya01);
       } else {
-        c.createStatus(ShrineOfMaya);
+        c.createCombatStatus(ShrineOfMaya);
       }
       // 摩耶之殿天赋（雷）：蕴种印可用次数+1
       if (c.queryCharacter(":tag(electro)")) {
         c.queryCharacterAll("!*").forEach(ch => {
-          ch.findStatus(SeedOfSkadha)?.gainUsage(1);
+          const seed = ch.findStatus(SeedOfSkadha);
+          if (seed) {
+            seed.setUsage(seed.usage + 1);
+          }
         });
       }
     } else {
-      c.createStatus(ShrineOfMaya);
+      c.createCombatStatus(ShrineOfMaya);
     }
   })
   .build();

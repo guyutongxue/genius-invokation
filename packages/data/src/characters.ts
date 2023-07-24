@@ -65,10 +65,11 @@ interface CharacterActionContext extends CharacterBaseContext<true> {
   removeEquipment(equipment: EquipmentHandle): void;
 
   heal(value: number): void;
-  gainEnergy(amount: number): void;
+  gainEnergy(amount: number): number;
   loseEnergy(amount: number): number;
 
   createStatus(status: StatusHandle): StatusContext<true>;
+  removeStatus(status: StatusHandle): boolean;
 }
 
 export type CharacterContext<Writable extends boolean = false> = Writable extends true ? CharacterActionContext : CharacterBaseContext;

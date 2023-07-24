@@ -1,4 +1,4 @@
-import { DiceType, createCard, SpecialBits, Target, DamageType } from '@gi-tcg';
+import { DiceType, createCard, SpecialBits, DamageType } from '@gi-tcg';
 import { BurningFlame, CatalyzingField, DendroCore } from '../../status/reactions';
 
 /**
@@ -51,13 +51,9 @@ const CalxsArts = createCard(332009)
 const ChangingShifts = createCard(332002)
   .setType("event")
   .buildToStatus("combat")
-  .on("beforeUseDice", (c) => {
-    if (c.switchActiveCtx) {
-      c.deductCost(DiceType.Void);
-    } else {
-      return false;
-    }
-  })
+  .on("beforeUseDice",
+    (c) => !!c.switchActiveCtx,
+    (c) => c.deductCost(DiceType.Void))
   .build();
 
 /**
@@ -73,16 +69,14 @@ const ElementalResonanceEnduringRock = createCard(331602)
   .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
-  .on("dealDamage", (c) => {
-    if (c.damageType === DamageType.Geo) {
+  .on("useSkill",
+    (c) => c.damages.some((d) => d.damageType === DamageType.Geo),
+    (c) => {
       const shield = c.findCombatShield();
       if (shield) {
-        shield.gainShield(3);
+        shield.setValue(shield.value + 3);
       }
-    } else {
-      return false;
-    }
-  })
+    })
   .build();
 
 /**
@@ -98,13 +92,9 @@ const ElementalResonanceFerventFlames = createCard(331302)
   .buildToStatus("active")
   .withUsage(1)
   .withDuration(1)
-  .on("beforeSkillDamage", (c) => {
-    if (c.reaction?.relatedWith(DamageType.Pyro)) {
-      c.addDamage(3);
-    } else {
-      return false;
-    }
-  })
+  .on("beforeSkillDamage",
+    (c) => c.reaction?.relatedWith(DamageType.Pyro) ?? false,
+    (c) => c.addDamage(3))
   .build();
 
 /**
@@ -117,7 +107,7 @@ const ElementalResonanceHighVoltage = createCard(331402)
   .addTags("resonance")
   .requireDualCharacterTag("electro")
   .costElectro(1)
-  .gainEnergy(1, Target.oneEnergyNotFull())
+  .do((c) => c.queryCharacter(":energy(notFull)")?.gainEnergy(1))
   .build();
 
 /**
@@ -131,7 +121,7 @@ const ElementalResonanceImpetuousWinds = createCard(331502, ["character"])
   .requireDualCharacterTag("anemo")
   .costAnemo(1)
   .do(function (c) {
-    c.switchActive(Target.ofCharacter(this[0].info));
+    c.switchActive(c.target[0].asTarget());
     c.generateDice(DiceType.Omni);
   })
   .build();
@@ -164,8 +154,8 @@ const ElementalResonanceSoothingWater = createCard(331202)
   .addTags("resonance")
   .requireDualCharacterTag("hydro")
   .costHydro(1)
-  .heal(2, Target.myActive())
-  .heal(1, Target.myStandby())
+  .heal(2, "|")
+  .heal(1, "<>")
   .build();
 
 /**
@@ -182,15 +172,15 @@ const ElementalResonanceSprawlingGreenery = createCard(331702)
   .do((c) => {
     const dp = c.findSummon(BurningFlame);
     if (dp) {
-      dp.usage++;
+      dp.setUsage(dp.usage + 1);
     }
     const dh = c.findCombatStatus(DendroCore);
     if (dh) {
-      dh.gainUsage(1);
+      dh.setUsage(dh.usage + 1);
     }
     const de = c.findCombatStatus(CatalyzingField);
     if (de) {
-      de.gainUsage(1);
+      de.setUsage(de.usage + 1);
     }
   })
   .buildToStatus("combat")
@@ -341,8 +331,8 @@ const HeavyStrike = createCard(332018)
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "normal") {
-      if (c.isCharged()) {
+    if (c.sourceSkill.info.type === "normal") {
+      if (c.sourceSkill.charged) {
         c.addDamage(2);
       } else {
         c.addDamage(1);
@@ -362,7 +352,7 @@ const IHaventLostYet = createCard(332005)
   .setType("event")
   .addFilter(c => c.checkSpecialBit(SpecialBits.Defeated))
   .generateDice(DiceType.Omni)
-  .gainEnergy(1)
+  .gainEnergyToActive(1)
   .build();
 
 /**
@@ -416,8 +406,8 @@ const PlungingStrike = createCard(332017, ["character"])
   .setType("event")
   .addTags("action")
   .costSame(3)
-  .do(function (c) {
-    c.switchActive(this[0].asTarget());
+  .do((c) => {
+    c.switchActive(c.target[0].asTarget());
   })
   .useSkill("normal")
   .build();
@@ -457,7 +447,7 @@ const SendOff = createCard(332013, ["summon"])
 const Starsigns = createCard(332008)
   .setType("event")
   .costVoid(2)
-  .gainActiveEnergy(1)
+  .gainEnergyToActive(1)
   .build();
 
 /**
@@ -514,9 +504,14 @@ const TheLegendOfVennessa = createCard(332019)
 const ThunderAndEternity = createCard(331803)
   .setType("event")
   .requireDualCharacterTag("inazuma")
-  .do(c => {
-    const count = c.removeAllDice().length;
-    c.generateDice(...Array(count).fill(c.getMaster().elementType()));
+  .do((c) => {
+    const length = c.dice.length;
+    const removed: number[] = [];
+    for (let i = 0; i < length; i++) {
+      removed.push(i);
+    }
+    c.absorbDice(removed);
+    c.generateDice(...Array(length).fill(c.queryCharacter("|")!.elementType()));
   })
   .build();
 
@@ -538,7 +533,7 @@ const WhenTheCraneReturned = createCard(332007)
   .costSame(1)
   .buildToStatus("combat")
   .withUsage(1)
-  .on("useSkill", (c) => c.switchActive(Target.myNext()))
+  .on("useSkill", (c) => c.switchActive(">"))
   .build();
 
 /**
@@ -554,7 +549,7 @@ const WindAndFreedom = createCard(331801)
   .buildToStatus("combat")
   .withUsage(1)
   .withDuration(1)
-  // TODO
+  .listenToOpp()
   .on("defeated", (c) => {
     if (c.isMyTurn() && !c.target.isMine()) {
       c.actionAgain();

@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
 import { ElectroInfusion, ElectroInfusion01 } from "../../status/infusions";
 
 /**
@@ -22,10 +22,10 @@ const StellarRestoration = createSkill(14032)
   .dealDamage(3, DamageType.Electro)
   .do((c) => {
     if (c.triggeredByCard(LightningStiletto)) {
-      if (c.character.hasEquipment(ThunderingPenance)) {
-        c.createStatus(ElectroInfusion01);
+      if (c.character.findEquipment(ThunderingPenance)) {
+        c.character.createStatus(ElectroInfusion01);
       } else {
-        c.createStatus(ElectroInfusion);
+        c.character.createStatus(ElectroInfusion);
       }
     } else {
       c.createCards(LightningStiletto);
@@ -42,7 +42,7 @@ const StarwardSword = createSkill(14033)
   .costElectro(4)
   .costEnergy(3)
   .dealDamage(4, DamageType.Electro)
-  .dealDamage(3, DamageType.Piercing, Target.oppStandby())
+  .dealDamage(3, DamageType.Piercing, "!<>")
   .build();
 
 export const Keqing = createCharacter(1403)
@@ -58,7 +58,7 @@ export const Keqing = createCharacter(1403)
 const LightningStiletto = createCard(114031)
   .addTags("action", "talent")
   .costElectro(3)
-  .switchActive(Target.ofCharacter(Keqing))
+  .switchActive(`@${Keqing}`)
   .useSkill(StellarRestoration)
   .build();
 

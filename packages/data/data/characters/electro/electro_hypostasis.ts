@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType, DiceType } from "@gi-tcg";
 
 /**
  * **雷晶投射**
@@ -22,6 +22,26 @@ const RockpaperscissorsCombo = createSkill(24012)
   .build();
 
 /**
+ * **雷锁镇域**
+ * 结束阶段：造成1点雷元素伤害。
+ * 可用次数：2
+ * 此召唤物在场时：敌方执行「切换角色」行动的元素骰费用+1。（每回合1次）
+ */
+const ChainsOfWardingThunder = createSummon(124013)
+  .withUsage(2)
+  .listenToOpp()
+  .withThis({ addCost: true })
+  .on("endPhase", (c) => { c.dealDamage(1, DamageType.Electro); })
+  .on("beforeUseDice", 
+    (c) => c.this.addCost && !!c.switchActiveCtx && !c.switchActiveCtx.from.isMine(), 
+    (c) => {
+      c.addCost(DiceType.Void);
+      c.this.addCost = false;
+    })
+  .on("actionPhase", (c) => { c.this.addCost = true; })
+  .build();
+
+/**
  * **雳霆镇锁**
  * 造成2点雷元素伤害，召唤雷锁镇域。
  */
@@ -29,7 +49,8 @@ const LightningLockdown = createSkill(24013)
   .setType("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .dealDamage(2, DamageType.Electro)
+  .summon(ChainsOfWardingThunder)
   .build();
 
 /**

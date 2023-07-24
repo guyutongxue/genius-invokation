@@ -31,6 +31,8 @@ interface GlobalContext<ThisT, Writable extends boolean = false> {
   findCombatStatus(status: StatusHandle): StatusContext<Writable> | null;
   findCombatShield(): StatusContext<Writable> | null;
 
+  dice: readonly DiceType[];
+
   // 本回合中技能使用次数（迪卢克、艾琳）
   skillCount(skill: SkillHandle): number;
 
@@ -43,13 +45,13 @@ interface GlobalAction<ThisT> extends GlobalContext<ThisT, true> {
   createCombatStatus(status: StatusHandle, opp?: boolean): StatusContext<true>;
 
   summon(summon: SummonHandle): void;
+  summonOneOf(...summons: SummonHandle[]): void;
   createSupport(support: SupportHandle, opp?: boolean): SupportContext<true>;
 
-  getDice(): DiceType[];
+  absorbDice(indexes: number[]): DiceType[];
   rollDice(count: number): Promise<void>;
   generateDice(...dice: DiceType[]): void;
   generateRandomElementDice(count?: number): void;
-  removeAllDice(): DiceType[];
 
   getCardCount(opp?: boolean): number;
   drawCards(count: number, opp?: boolean, tag?: CardTag): void;
@@ -58,6 +60,8 @@ interface GlobalAction<ThisT> extends GlobalContext<ThisT, true> {
 
   switchActive<const Selector extends string>(target: ValidSelector<Selector>): void;
   useSkill(skill: SkillHandle | "normal"): Promise<void>;
+
+  actionAgain(): void;
 }
 
 export type Context<ThisT, ExtPoint, Writable extends boolean = false> = (Writable extends true ? GlobalAction<ThisT> : GlobalContext<ThisT>) & ExtPoint;

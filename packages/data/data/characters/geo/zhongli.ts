@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **岩雨**
@@ -70,7 +70,7 @@ const PlanetBefall = createSkill(16034)
   .costGeo(3)
   .costEnergy(3)
   .dealDamage(4, DamageType.Geo)
-  .createStatus(Petrification, Target.oppActive())
+  .do((c) => { c.target.createStatus(Petrification) })
   .build();
 
 export const Zhongli = createCharacter(1603)

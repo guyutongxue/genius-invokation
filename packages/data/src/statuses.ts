@@ -32,7 +32,7 @@ export interface StatusInfo {
   readonly handler: EventHandlerAndState;
 }
 
-export type StatusContext<Writable extends boolean> = EntityContext<StatusInfo, StatusHandle, Writable>;
+export type StatusContext<Writable extends boolean> = EntityContext<StatusInfo, StatusHandle, "possible", Writable>;
 
 const allStatuses = new Map<number, StatusInfo>();
 export function registerStatus(id: number, info: StatusInfoNoId) {

@@ -72,8 +72,8 @@ const GreatSecretArtTenkoKenshin = createSkill(14083)
     if (sakura) {
       sakura.dispose();
       c.createCombatStatus(TenkoThunderbolts);
-      if (c.character.hasEquipment(TheShrinesSacredShade)) {
-        c.createStatus(RiteOfDispatch);
+      if (c.character.findEquipment(TheShrinesSacredShade)) {
+        c.character.createStatus(RiteOfDispatch);
       }
     }
   })

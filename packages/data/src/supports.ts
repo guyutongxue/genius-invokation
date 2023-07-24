@@ -16,7 +16,7 @@ export interface SupportInfo {
   readonly handler: EventHandlerAndState;
 }
 
-export type SupportContext<Writable extends boolean> = EntityContext<SupportInfo, SupportHandle, Writable>;
+export type SupportContext<Writable extends boolean> = EntityContext<SupportInfo, SupportHandle, "no", Writable>;
 
 const allStatuses = new Map<number, SupportInfo>();
 export function registerSupport(id: number, info: SupportInfoNoId) {

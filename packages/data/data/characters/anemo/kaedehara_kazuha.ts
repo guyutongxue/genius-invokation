@@ -18,12 +18,12 @@ const GaryuuBladework = createSkill(15051)
  */
 const MidareRanzan = createStatus(-2)
   .on("earlyBeforeDealDamage", (c) => {
-    if (c.sourceSkill?.isPlunging() && c.damageType === DamageType.Physical) {
+    if (c.sourceSkill?.plunging && c.damageType === DamageType.Physical) {
       c.changeDamageType(DamageType.Anemo);
       c.addDamage(1);
     }
   })
-  .on("useSkill", (c) => c.dispose())
+  .on("useSkill", (c) => c.this.dispose())
   .build()
 
 // TODO: MAYBE 5 status here? wait for next update data
@@ -38,9 +38,10 @@ const Chihayaburu = createSkill(15052)
   .setType("elemental")
   .costAnemo(3)
   .dealDamage(3, DamageType.Anemo)
-  .createStatus(MidareRanzan)
-  // TODO
+  .createCharacterStatus(MidareRanzan)
   .build()
+
+// TODO 被动技能：千早振
 
 /**
  * **流风秋野**
@@ -50,20 +51,19 @@ const Chihayaburu = createSkill(15052)
  */
 const AutumnWhirlwind = createSummon(-4)
   .withUsage(3)
-  .do({
-    onEndPhase(c) {
-      c.dealDamage(1, this.type);
-    },
-    onDealDamage(c) {
-      if ((c.sourceSkill || c.sourceSummon) && c.damageType !== DamageType.Anemo) {
-        const newType = c.reaction?.swirledElement() ?? null;
-        if (newType !== null) {
-          this.type = newType;
-        }
+  .withThis({ type: DamageType.Anemo })
+  .on("endPhase", (c) => {
+    c.dealDamage(1, c.this.type);
+  })
+  .on("dealDamage", (c) => {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+      const newType = c.reaction?.swirledElement() ?? null;
+      if (newType !== null) {
+        c.this.type = newType;
       }
-      return false;
     }
-  }, { type: DamageType.Anemo })
+    return false;
+  })
   .build();
 
 /**

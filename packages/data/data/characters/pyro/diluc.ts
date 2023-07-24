@@ -18,7 +18,13 @@ const TemperedSword = createSkill(13011)
 const SearingOnslaught = createSkill(13012)
   .setType("elemental")
   .costPyro(3)
-  // TODO
+  .do((c) => {
+    if (c.skillCount(SearingOnslaught) === 3) {
+      c.dealDamage(5, DamageType.Pyro);
+    } else {
+      c.dealDamage(3, DamageType.Pyro);
+    }
+  })
   .build();
 
 /**

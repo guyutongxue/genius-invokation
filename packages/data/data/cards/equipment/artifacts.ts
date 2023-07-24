@@ -1,4 +1,4 @@
-import { DiceType, Target, createCard, createStatus } from '@gi-tcg';
+import { DiceType, createCard, createStatus } from '@gi-tcg';
 
 /**
  * **冒险家头带**
@@ -13,7 +13,7 @@ const AdventurersBandana = createCard(312001, ["character"])
   .withUsagePerRound(3)
   .on("useSkill", (c) => {
     if (c.info.type === "normal") {
-      c.getMaster().heal(1);
+      c.this.master.heal(1);
     } else {
       return false;
     }
@@ -33,7 +33,7 @@ const ArchaicPetra = createCard(312602, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Geo);
     } else {
       return false;
@@ -55,7 +55,7 @@ const BlizzardStrayer = createCard(312102, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Cryo);
     } else {
       return false;
@@ -76,7 +76,7 @@ const BrokenRimesEcho = createCard(312101, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Cryo);
     } else {
       return false;
@@ -97,7 +97,7 @@ const CapriciousVisage = createCard(312013, ["character"])
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
     if (c.useSkillCtx?.info.type === "elemental" ||
-      c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+      c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Omni);
     } else {
       return false;
@@ -118,7 +118,7 @@ const CrimsonWitchOfFlames = createCard(312302, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Pyro);
     } else {
       return false;
@@ -140,7 +140,7 @@ const DeepwoodMemories = createCard(312702, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Dendro);
     } else {
       return false;
@@ -162,12 +162,12 @@ const EmblemOfSeveredFate = createCard(312008, ["character"])
   .buildToEquipment()
   .listenToOther()
   .on("useSkill", (c) => {
-    if (c.info.type !== "burst" && c.character.info.id !== c.getMaster().info.id) {
+    if (c.info.type === "burst" && c.character.info.id !== c.this.master.info.id) {
       c.character.gainEnergy(1);
     }
   })
   .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "burst" && c.characterInfo.id === c.getMaster().info.id) {
+    if (c.sourceSkill.info.type === "burst" && c.sourceSkill.character.info.id === c.this.master.info.id) {
       c.addDamage(2);
     }
   })
@@ -184,13 +184,9 @@ const ExilesCirclet = createCard(312006, ["character"])
   .costVoid(2)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("useSkill", (c) => {
-    if (c.info.type === "burst") {
-      c.gainEnergy(1, Target.myStandby());
-    } else {
-      return false;
-    }
-  })
+  .on("useSkill",
+    (c) => c.info.type === "burst",
+    (c) => c.queryCharacterAll("<>").forEach(c => c.gainEnergy(1)))
   .build();
 
 /**
@@ -204,14 +200,13 @@ const GamblersEarrings = createCard(312004, ["character"])
   .costSame(1)
   .buildToEquipment()
   .listenToOpp()
-  .do({
-    onDefeated(c) {
-      if (this.count && !c.target.isMine() && c.getMaster().isActive()) {
-        c.generateDice(DiceType.Omni, DiceType.Omni);
-        this.count--;
-      }
-    }
-  }, { count: 3 })
+  .withThis({ count: 3 })
+  .on("defeated",
+    (c) => !!c.this.count && !c.target.isMine() && c.this.master.isActive(),
+    (c) => {
+      c.generateDice(DiceType.Omni, DiceType.Omni);
+      c.this.count--;
+    })
   .build();
 
 /**
@@ -232,7 +227,7 @@ const GeneralsAncientHelm = createCard(312009, ["character"])
   .addTags("artifact")
   .costSame(2)
   .buildToEquipment()
-  .on("actionPhase", (c) => { c.createStatus(UnmovableMountain) })
+  .on("actionPhase", (c) => { c.this.master.createStatus(UnmovableMountain) })
   .build();
 
 /**
@@ -248,7 +243,7 @@ const HeartOfDepth = createCard(312202, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Hydro);
     } else {
       return false;
@@ -269,7 +264,7 @@ const InstructorsCap = createCard(312005, ["character"])
   .buildToEquipment()
   .withUsagePerRound(3)
   .on("elementalReaction", (c) => {
-    c.generateDice(c.getMaster().elementType());
+    c.generateDice(c.this.master.elementType());
   })
   .build();
 
@@ -285,7 +280,7 @@ const LaurelCoronet = createCard(312701, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Dendro);
     } else {
       return false;
@@ -306,7 +301,7 @@ const LuckyDogsSilverCirclet = createCard(312002, ["character"])
   .withUsagePerRound(1)
   .on("useSkill", (c) => {
     if (c.info.type === "elemental") {
-      c.getMaster().heal(2);
+      c.this.master.heal(2);
     } else {
       return false;
     }
@@ -325,7 +320,7 @@ const MaskOfSolitudeBasalt = createCard(312601, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Geo);
     } else {
       return false;
@@ -345,8 +340,8 @@ const OrnateKabuto = createCard(312007, ["character"])
   .buildToEquipment()
   .listenToOther()
   .on("useSkill", (c) => {
-    if (c.info.type !== "burst" && c.character.info.id !== c.getMaster().info.id) {
-      c.gainEnergy(1);
+    if (c.info.type !== "burst" && c.character.info.id !== c.this.master.info.id) {
+      c.this.master.gainEnergy(1);
     }
   })
   .build();
@@ -364,16 +359,16 @@ const ShimenawasReminiscence = createCard(312014, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx?.info.type === "elemental" 
-      || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx?.info.type === "elemental"
+      || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Void);
     } else {
       return false;
     }
   })
   .on("beforeSkillDamage", (c) => {
-    if (c.getMaster().energy >= 2) {
-      if (c.skillInfo.type === "normal" || c.skillInfo.type === "elemental") {
+    if (c.this.master.energy >= 2) {
+      if (c.sourceSkill.info.type === "normal" || c.sourceSkill.info.type === "elemental") {
         c.addDamage(1);
       }
     }
@@ -393,14 +388,10 @@ const TenacityOfTheMillelith = createCard(312010, ["character"])
   .costSame(3)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("actionPhase", (c) => (c.createStatus(UnmovableMountain), false))
-  .on("damaged", (c) => {
-    if (c.getMaster().isActive()) {
-      c.generateDice(c.getMaster().elementType());
-    } else {
-      return false;
-    }
-  })
+  .on("actionPhase", (c) => (c.this.master.createStatus(UnmovableMountain), false))
+  .on("damaged",
+    (c) => c.this.master.isActive(),
+    (c) => c.generateDice(c.this.master.elementType()))
   .build();
 
 /**
@@ -416,7 +407,7 @@ const ThunderingFury = createCard(312402, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Electro);
     } else {
       return false;
@@ -437,8 +428,8 @@ const ThunderingPoise = createCard(312011, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx?.info.type === "normal" || 
-      c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx?.info.type === "normal" ||
+      c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Void);
     } else {
       return false;
@@ -458,7 +449,7 @@ const ThunderSummonersCrown = createCard(312401, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Electro);
     } else {
       return false;
@@ -477,13 +468,9 @@ const TravelingDoctorsHandkerchief = createCard(312003, ["character"])
   .costSame(1)
   .buildToEquipment()
   .withUsagePerRound(1)
-  .on("useSkill", (c) => {
-    if (c.info.type === "burst") {
-      c.heal(1, Target.myAll());
-    } else {
-      return false;
-    }
-  })
+  .on("useSkill", 
+    (c) => c.info.type === "burst", 
+    (c) => c.queryCharacterAll("*").forEach(c => c.heal(1)))
   .build();
 
 /**
@@ -508,14 +495,16 @@ const VermillionHereafter = createCard(312012, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx?.info.type === "elemental" || 
-      c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx?.info.type === "elemental" ||
+      c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Void);
     } else {
       return false;
     }
   })
-  .on("switchActive", (c) => (c.createStatus(VermillionHereafterStatus), false))
+  .on("switchActive", 
+    (c) => c.to.entityId === c.this.master.entityId, 
+    (c) => (c.this.master.createStatus(VermillionHereafterStatus), false))
   .build();
 
 /**
@@ -531,7 +520,7 @@ const ViridescentVenerer = createCard(312502, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Anemo);
     } else {
       return false;
@@ -552,7 +541,7 @@ const ViridescentVenerersDiadem = createCard(312501, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Anemo);
     } else {
       return false;
@@ -572,7 +561,7 @@ const WinestainedTricorne = createCard(312201, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Hydro);
     } else {
       return false;
@@ -591,7 +580,7 @@ const WitchsScorchingHat = createCard(312301, ["character"])
   .costSame(2)
   .buildToEquipment()
   .on("beforeUseDice", (c) => {
-    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.getMaster().info.id)) {
+    if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Pyro);
     } else {
       return false;

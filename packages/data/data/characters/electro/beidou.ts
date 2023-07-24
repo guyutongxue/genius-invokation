@@ -39,7 +39,7 @@ const TidecallerSurfEmbrace = createStatus(114051)
 const Tidecaller = createSkill(14052)
   .setType("elemental")
   .costElectro(3)
-  .createStatus(TidecallerSurfEmbrace)
+  .createCharacterStatus(TidecallerSurfEmbrace)
   .build();
 
 /**
@@ -111,15 +111,13 @@ export const LightningStorm = createCard(214051, ["character"])
   .costElectro(3)
   .useSkill(Tidecaller)
   .buildToEquipment()
-  .do({
-    onBeforeSkillDamage(c) {
-      if (c.skillInfo.id === Wavestrider) {
-        const status = c.getMaster().hasStatus(TidecallerSurfEmbrace);
-        const shield = status?.getVisibleValue() ?? 0;
-        if (shield !== 2) {
-          c.createStatus(SummonerOfLightning);
-        }
+  .on("beforeSkillDamage", (c) => {
+    if (c.sourceSkill.info.id === Wavestrider) {
+      const status = c.this.master.findStatus(TidecallerSurfEmbrace);
+      const shield = status?.value;
+      if (shield !== 2) {
+        c.this.master.createStatus(SummonerOfLightning);
       }
-    },
+    }
   })
   .build();

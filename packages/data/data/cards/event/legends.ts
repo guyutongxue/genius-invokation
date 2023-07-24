@@ -36,7 +36,7 @@ const CovenantOfRock = createCard(330002)
   .setType("event")
   .addTags("legend")
   .addFilter((c) => !c.checkSpecialBit(SpecialBits.LegendUsed))
-  .addFilter((c) => c.getDice().length === 0)
+  .addFilter((c) => c.dice.length === 0)
   .do((c) => {
     c.generateRandomElementDice(2);
   })

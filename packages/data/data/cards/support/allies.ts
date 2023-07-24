@@ -1,4 +1,4 @@
-import { DamageType, DiceType, Target, createCard } from '@gi-tcg';
+import { DamageType, DiceType, createCard } from '@gi-tcg';
 
 /**
  * **常九爷**
@@ -10,21 +10,18 @@ const ChangTheNinth = createCard(322009)
   .addTags("ally")
   .buildToSupport()
   .listenToOpp()
-  .do({
-    onUseSkill(c) {
-      const hasDamage = c.getAllDescendingDamages()
-        .some(c => c.damageType === DamageType.Physical || c.damageType === DamageType.Piercing);
-      const hasReaction = c.getAllDescendingReactions().length > 0;
-      if (hasDamage || hasReaction) {
-        this.inspiration++;
-      }
-      if (this.inspiration >= 3) {
-        c.dispose();
-        c.drawCards(2);
-      }
+  .withThis({ inspiration: 0 })
+  .on("useSkill", (c) => {
+    const hasDamage = c.getAllDescendingDamages()
+      .some(c => c.damageType === DamageType.Physical || c.damageType === DamageType.Piercing);
+    const hasReaction = c.getAllDescendingReactions().length > 0;
+    if (hasDamage || hasReaction) {
+      c.this.inspiration++;
     }
-  }, {
-    inspiration: 0,
+    if (c.this.inspiration >= 3) {
+      c.this.dispose();
+      c.drawCards(2);
+    }
   })
   .build();
 
@@ -75,19 +72,9 @@ const Ellin = createCard(322010)
   .addTags("ally")
   .costSame(2)
   .buildToSupport()
-  .do({
-    onBeforeUseDice(c) {
-      if (c.useSkillCtx && this.skills.includes(c.useSkillCtx.info.id)) {
-        c.deductCost(DiceType.Omni);
-      } else {
-        return false;
-      }
-    },
-    onUseSkill(c) {
-      this.skills.push(c.info.id);
-      return false;
-    }
-  }, { skills: [] as number[] })
+  .on("beforeUseDice",
+    (c) => !!c.useSkillCtx && c.skillCount(c.useSkillCtx.id) > 0,
+    (c) => c.deductCost(DiceType.Omni))
   .build();
 
 /**
@@ -113,7 +100,7 @@ const IronTongueTian = createCard(322011)
   .costVoid(2)
   .buildToSupport()
   .withUsage(2)
-  .on("endPhase", (c) => !!c.gainEnergy(1, Target.oneEnergyNotFull()))
+  .on("endPhase", (c) => !!c.queryCharacter(":energy(notFull)")?.gainEnergy(1))
   .build();
 // TODO: 确认：如果所有角色充能已满，是否扣除可用次数
 
@@ -142,7 +129,7 @@ const KidKujirai = createCard(322014)
     c.generateDice(DiceType.Omni);
     if (c.fullSupportArea(true)) {
       c.createSupport(KidKujirai, true);
-      c.dispose();
+      c.this.dispose();
     }
   })
   .build();
@@ -236,16 +223,15 @@ const Timmie = createCard(322007)
   .setType("support")
   .addTags("ally")
   .buildToSupport()
-  .do({
-    onActionPhase(c) {
-      this.penguin++;
-      if (this.penguin >= 3) {
-        c.dispose();
-        c.drawCards(1);
-        c.generateDice(DiceType.Omni);
-      }
+  .withThis({ penguin: 1 })
+  .on("actionPhase", (c) => {
+    c.this.penguin++;
+    if (c.this.penguin >= 3) {
+      c.this.dispose();
+      c.drawCards(1);
+      c.generateDice(DiceType.Omni);
     }
-  }, { penguin: 1 })
+  })
   .build();
 
 /**

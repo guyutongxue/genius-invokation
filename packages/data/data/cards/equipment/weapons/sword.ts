@@ -15,8 +15,8 @@ const AquilaFavonia = createCard(311503, ["character"])
   .withUsagePerRound(2)
   .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
   .on("useSkill", (c) => {
-    if (!c.character.isMine() && c.getMaster().isActive()) {
-      c.getMaster().heal(1);
+    if (!c.character.isMine() && c.this.master.isActive()) {
+      c.this.master.heal(1);
     } else {
       return false;
     }
@@ -79,7 +79,7 @@ const SkywardBlade = createCard(311504, ["character"])
   .costSame(3)
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "normal") {
+    if (c.sourceSkill.info.type === "normal") {
       c.addDamage(2);
     } else {
       c.addDamage(1);

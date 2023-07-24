@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createSummon, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **西风剑术**
@@ -19,7 +19,7 @@ const GaleBlade = createSkill(15022)
   .setType("elemental")
   .costAnemo(3)
   .dealDamage(3, DamageType.Anemo)
-  .switchActive(Target.oppNext())
+  .switchActive("!>")
   .build();
 
 /**
@@ -36,7 +36,7 @@ const DandelionField = createSummon(115021)
     } else {
       c.dealDamage(2, DamageType.Anemo)
     }
-    c.heal(1, Target.myActive())
+    c.queryCharacter("|")?.heal(1);
   })
   .build();
 
@@ -48,7 +48,7 @@ const DandelionBreeze = createSkill(15023)
   .setType("burst")
   .costAnemo(4)
   .costEnergy(3)
-  .heal(2, Target.myAll())
+  .heal(2, "*")
   .summon(DandelionField)
   .build();
 

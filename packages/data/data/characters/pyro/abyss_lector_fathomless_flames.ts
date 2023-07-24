@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createEquipment, createSkill, createStatus, createSummon, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createEquipment, createSkill, createStatus, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **拯救之焰**
@@ -30,7 +30,7 @@ const DarkfireFurnace = createSummon(123021)
   .withUsage(2)
   .on("endPhase", (c) => {
     c.dealDamage(1, DamageType.Pyro);
-    c.dealDamage(1, DamageType.Piercing, Target.oppStandby());
+    c.dealDamage(1, DamageType.Piercing, "!<>");
   })
   .build();
 
@@ -61,7 +61,7 @@ const FieryRebirthStaus = createStatus(123022)
  */
 const FieryRebirth = createSkill(23024)
   .setType("passive")
-  .on("battleBegin", (c) => { c.createStatus(FieryRebirthStaus); })
+  .on("battleBegin", (c) => { c.this.character.createStatus(FieryRebirthStaus); })
   .build();
 
 export const AbyssLectorFathomlessFlames = createCharacter(2302)
@@ -110,7 +110,7 @@ export const EmbersRekindled = createCard(223021, ["character"])
 
 const EmbersRekindledEquip = createEquipment(EmbersRekindled)
   .on("beforeDefeated", (c) => {
-    c.createStatus(AegisOfAbyssalFlame);
-    c.dispose();
+    c.this.master.createStatus(AegisOfAbyssalFlame);
+    c.this.dispose();
   })
   .build();

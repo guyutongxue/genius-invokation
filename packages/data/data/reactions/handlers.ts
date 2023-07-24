@@ -1,17 +1,18 @@
-import { DamageContext, DamageType, Reaction, Target } from "@gi-tcg";
+import { Context, DamageContext, DamageType, Reaction } from "@gi-tcg";
 import { BurningFlame, CatalyzingField, Crystallize, DendroCore, Frozen } from "../status/reactions";
 
-export type ReactionHandler = (c: DamageContext) => void;
+export type RContext = Context<{}, DamageContext, true>;
+export type ReactionHandler = (c: RContext) => void;
 
 function swirl(srcElement: DamageType) {
-  return (c: DamageContext) => {
+  return (c: RContext) => {
     c.queryCharacterAll(`:exclude(#${c.target.entityId})`).forEach(ch => {
       c.dealDamage(1, srcElement, ch.asTarget());
     });
   }
 }
 
-function crystallize(c: DamageContext) {
+function crystallize(c: RContext) {
   c.addDamage(1);
   c.createCombatStatus(Crystallize);
 }
@@ -26,7 +27,7 @@ export const REACTION_HANDLERS: Record<Reaction, ReactionHandler> = {
   [Reaction.Overloaded]: (c) => {
     c.addDamage(2);
     if (c.target.isActive()) {
-      c.switchActive(Target.oppNext());
+      c.switchActive("!>");
     }
   },
   [Reaction.Superconduct]: (c) => {
@@ -43,7 +44,7 @@ export const REACTION_HANDLERS: Record<Reaction, ReactionHandler> = {
   },
   [Reaction.Frozen]: (c) => {
     c.addDamage(1);
-    c.createStatus(Frozen, c.target.asTarget());
+    c.target.createStatus(Frozen);
   },
   [Reaction.SwirlCryo]: swirl(DamageType.Cryo),
   [Reaction.SwirlHydro]: swirl(DamageType.Hydro),

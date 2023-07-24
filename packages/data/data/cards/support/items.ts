@@ -35,20 +35,17 @@ const ParametricTransformer = createCard(323001)
   .costVoid(2)
   .buildToSupport()
   .listenToOpp()
-  .do({
-    onUseSkill(c) {
-      const hasDamage = c.getAllDescendingDamages()
-        .some(c => c.damageType !== DamageType.Physical && c.damageType !== DamageType.Piercing);
-      if (hasDamage) {
-        this.progress++;
-      }
-      if (this.progress >= 3) {
-        c.dispose();
-        c.generateRandomElementDice(3);
-      }
+  .withThis({ progress: 0 })
+  .on("useSkill", (c) => {
+    const hasDamage = c.getAllDescendingDamages()
+      .some(c => c.damageType !== DamageType.Physical && c.damageType !== DamageType.Piercing);
+    if (hasDamage) {
+      c.this.progress++;
     }
-  }, {
-    progress: 0,
+    if (c.this.progress >= 3) {
+      c.this.dispose();
+      c.generateRandomElementDice(3);
+    }
   })
   .build();
 
@@ -81,13 +78,12 @@ const TreasureseekingSeelie = createCard(323004)
   .addTags("item")
   .costSame(1)
   .buildToSupport()
-  .do({
-    onUseSkill(c) {
-      this.clue++;
-      if (this.clue === 3) {
-        c.drawCards(3);
-        c.dispose();
-      }
+  .withThis({ clue: 0 })
+  .on("useSkill", (c) => {
+    c.this.clue++;
+    if (c.this.clue === 3) {
+      c.drawCards(3);
+      c.this.dispose();
     }
-  }, { clue: 0 })
+  })
   .build();

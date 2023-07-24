@@ -31,10 +31,11 @@ type NO_EXTRA = Record<never, never>;
 export type AsyncEventMap = {
   onBattleBegin: NO_EXTRA,
   onActionPhase: NO_EXTRA,
+  onEndPhase: NO_EXTRA,
 
   onBeforeAction: NO_EXTRA,
-  onUseSkill: SkillContext,
-  onSwitchActive: SwitchActiveContext,
+  onUseSkill: SkillContext<true>,
+  onSwitchActive: SwitchActiveContext<true>,
   onPlayCard: PlayCardContext,
   onDeclareEnd: NO_EXTRA,
   onAction: NO_EXTRA,

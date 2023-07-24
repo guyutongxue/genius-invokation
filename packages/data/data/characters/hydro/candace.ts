@@ -38,7 +38,7 @@ const HeronShield = createStatus(-11)
 const SacredRiteHeronsSanctum = createSkill(-13)
   .setType("elemental")
   .costHydro(3)
-  .createStatus(HeronShield)
+  .createCharacterStatus(HeronShield)
   .build()
 
 /**

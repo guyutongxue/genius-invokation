@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **源流**
@@ -20,12 +20,9 @@ const Origin = createSkill(14071)
 const EyeOfStormyJudgement = createSummon(114071)
   .withUsage(3)
   .on("endPhase", (c) => c.dealDamage(1, DamageType.Electro))
-  .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "burst") {
-      c.addDamage(1);
-    }
-    return false;
-  })
+  .on("beforeSkillDamage",
+    (c) => c.sourceSkill.info.type === "burst",
+    (c) => c.addDamage(1))
   .build();
 
 /**
@@ -47,7 +44,7 @@ const SecretArtMusouShinsetsu = createSkill(14073)
   .costElectro(4)
   .costEnergy(2)
   .dealDamage(3, DamageType.Electro)
-  .gainEnergy(2, Target.myStandby())
+  .do((c) => c.queryCharacterAll("<>").forEach((ch) => ch.gainEnergy(2)))
   .build();
 
 
@@ -58,26 +55,20 @@ const SecretArtMusouShinsetsu = createSkill(14073)
  */
 const ChakraDesiderataStatus = createStatus(114072)
   .listenToOthers()
-  .do(
-    {
-      onBeforeSkillDamage(c) {
-        if (c.skillInfo.id === SecretArtMusouShinsetsu) {
-          c.addDamage(this.resolve);
-        }
-      },
-      onUseSkill(c) {
-        // 清空愿力
-        if (c.info.id === SecretArtMusouShinsetsu) {
-          this.resolve = 0;
-        } else if (c.info.type === "burst") {
-          this.resolve = Math.min(3, this.resolve + 1);
-        }
-      }
-    },
-    {
-      resolve: 0,
+  .withThis({ resolve: 0 })
+  .on("beforeSkillDamage", (c) => {
+    if (c.sourceSkill.info.id === SecretArtMusouShinsetsu) {
+      c.addDamage(c.this.resolve);
     }
-  )
+  })
+  .on("useSkill", (c) => {
+    // 清空愿力
+    if (c.info.id === SecretArtMusouShinsetsu) {
+      c.this.resolve = 0;
+    } else if (c.info.type === "burst") {
+      c.this.resolve = Math.min(3, c.this.resolve + 1);
+    }
+  })
   .build();
 
 
@@ -87,8 +78,8 @@ const ChakraDesiderataStatus = createStatus(114072)
  */
 const ChakraDesiderata = createSkill(14074)
   .setType("passive")
-  .on("battleBegin", (c) => { c.createStatus(ChakraDesiderataStatus); })
-  .on("revive", (c) => { c.createStatus(ChakraDesiderataStatus); })
+  .on("battleBegin", (c) => { c.this.character.createStatus(ChakraDesiderataStatus); })
+  .on("revive", (c) => { c.this.character.createStatus(ChakraDesiderataStatus); })
   .build();
 
 export const RaidenShogun = createCharacter(1407)
@@ -114,9 +105,9 @@ export const WishesUnnumbered = createCard(214071, ["character"])
   .useSkill(SecretArtMusouShinsetsu)
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
-    const status = c.getMaster().hasStatus(ChakraDesiderataStatus);
-    if (status && c.skillInfo.id === SecretArtMusouShinsetsu) {
-      c.addDamage(status.getVisibleValue() ?? 0);
+    const status = c.this.master.findStatus(ChakraDesiderataStatus);
+    if (status && c.sourceSkill.id === SecretArtMusouShinsetsu) {
+      c.addDamage(status.value);
     }
   })
   .build();

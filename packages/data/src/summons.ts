@@ -10,9 +10,10 @@ export interface SummonInfo {
   readonly maxUsage: number; // 最大叠加可用次数（几乎所有都=usage）
   readonly disposeWhenUsedUp: boolean; // 是否在使用完毕后销毁
   readonly handler: EventHandlerAndState;
+  readonly listenTo: "my" | "all";
 }
 
-export type SummonContext<Writable extends boolean> = EntityContext<SummonInfo, SummonHandle, Writable>;
+export type SummonContext<Writable extends boolean> = EntityContext<SummonInfo, SummonHandle, "no", Writable>;
 
 const allSummons = new Map<number, SummonInfo>();
 export function registerSummon(id: number, info: SummonInfoNoId) {

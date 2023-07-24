@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createSummon, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **简式风灵作成**
@@ -19,7 +19,7 @@ const AstableAnemohypostasisCreation6308 = createSkill(15012)
   .setType("elemental")
   .costAnemo(3)
   .dealDamage(3, DamageType.Anemo)
-  .switchActive(Target.oppPrev())
+  .switchActive("!<")
   .build();
 
 /**
@@ -29,20 +29,20 @@ const AstableAnemohypostasisCreation6308 = createSkill(15012)
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
 const LargeWindSpirit = createSummon(115011)
-  .do({
-    onEndPhase(c) {
-      c.dealDamage(2, this.type);
-    },
-    onDealDamage(c) {
-      if ((c.sourceSkill || c.sourceSummon) && c.damageType !== DamageType.Anemo) {
-        const newType = c.reaction?.swirledElement() ?? null;
-        if (newType !== null) {
-          this.type = newType;
-        }
+  .withUsage(3)
+  .withThis({ type: DamageType.Anemo })
+  .on("endPhase", (c) => {
+    c.dealDamage(2, c.this.type);
+  })
+  .on("dealDamage", (c) => {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+      const newType = c.reaction?.swirledElement() ?? null;
+      if (newType !== null) {
+        c.this.type = newType;
       }
-      return false;
     }
-  }, { type: DamageType.Anemo })
+    return false;
+  })
   .build();
 
 /**

@@ -21,24 +21,21 @@ const FightClubLegend = createSkill(16051)
 const Ushi = createSummon(116051)
   .withUsage(1)
   .noDispose()
-  .do({
-    onBeforeDamaged(c) {
-      const itto = c.queryCharacter(`@${AratakiItto}`);
-      if (this.addStatus && itto) {
-        c.createStatus(SuperlativeSuperstrength, itto.asTarget());
-        this.addStatus = false;
-      }
-      if (c.target.isActive()) {
-        c.decreaseDamage(1);
-      } else {
-        return false;
-      }
-    },
-    onEndPhase(c) {
-      c.dealDamage(1, DamageType.Geo);
-      c.dispose();
+  .withThis({ addStatus: true })
+  .on("beforeDamaged",
+    (c) => c.target.isActive(),
+    (c) => c.decreaseDamage(1))
+  .on("damaged", (c) => {
+    const itto = c.queryCharacter(`@${AratakiItto}`);
+    if (c.this.addStatus && itto) {
+      itto.createStatus(SuperlativeSuperstrength);
+      c.this.addStatus = false;
     }
-  }, { addStatus: true })
+  })
+  .on("endPhase", (c) => {
+    c.dealDamage(1, DamageType.Geo);
+    c.this.dispose();
+  })
   .build()
 
 /**
@@ -48,20 +45,12 @@ const Ushi = createSummon(116051)
  */
 const SuperlativeSuperstrength = createStatus(116054)
   .withUsage(1, 3)
-  .on("beforeUseDice", (c) => {
-    const usage = c.asStatus().getVisibleValue() ?? 0;
-    if (usage >= 2) {
-      c.deductCost(DiceType.Void);
-    }
-    return false;
-  })
-  .on("beforeSkillDamage", (c) => {
-    if (c.isCharged()) {
-      c.addDamage(1);
-    } else {
-      return false;
-    }
-  })
+  .on("beforeUseDice",
+    (c) => !!(c.useSkillCtx?.charged && c.this.value > 2),
+    (c) => c.deductCost(DiceType.Void))
+  .on("beforeSkillDamage",
+    (c) => c.sourceSkill.charged,
+    (c) => c.addDamage(1))
   .build()
 
 /**
@@ -73,7 +62,7 @@ const MasatsuZetsugiAkaushiBurst = createSkill(16052)
   .costGeo(3)
   .dealDamage(1, DamageType.Geo)
   .summon(Ushi)
-  .createStatus(SuperlativeSuperstrength)
+  .createCharacterStatus(SuperlativeSuperstrength)
   .build();
 
 /**
@@ -84,23 +73,24 @@ const MasatsuZetsugiAkaushiBurst = createSkill(16052)
  */
 const RagingOniKing = createStatus(116053)
   .withDuration(2)
-  .do({
-    onEarlyBeforeDealDamage(c) {
-      if (c.sourceSkill?.info.type === "normal" && c.damageType === DamageType.Physical) {
-        c.changeDamageType(DamageType.Geo);
-        c.addDamage(2);
-      }
-    },
-    onUseSkill(c) {
-      if (this.addStatus && c.info.type === "normal") {
-        c.createStatus(SuperlativeSuperstrength);
-        this.addStatus--;
-      }
-    },
-    onActionPhase() {
-      this.addStatus = 1;
+  .withThis({ addStatus: true })
+  .on("earlyBeforeDealDamage", (c) => {
+    if (c.sourceSkill?.info.type === "normal") {
+      c.addDamage(2);
     }
-  }, { addStatus: 1 })
+    if (c.damageType === DamageType.Physical) {
+      c.changeDamageType(DamageType.Geo);
+    }
+  })
+  .on("useSkill", (c) => {
+    if (c.this.addStatus && c.info.type === "normal") {
+      c.this.master!.createStatus(SuperlativeSuperstrength);
+      c.this.addStatus = false;
+    }
+  })
+  .on("actionPhase", (c) => {
+    c.this.addStatus = true;
+  })
   .build();
 
 /**
@@ -112,7 +102,7 @@ const RoyalDescentBeholdIttoTheEvil = createSkill(16053)
   .costGeo(3)
   .costEnergy(3)
   .dealDamage(5, DamageType.Geo)
-  .createStatus(RagingOniKing)
+  .createCharacterStatus(RagingOniKing)
   .build();
 
 export const AratakiItto = createCharacter(1605)
@@ -136,14 +126,13 @@ export const AratakiIchiban = createCard(216051, ["character"])
   .costVoid(2)
   .useSkill(FightClubLegend)
   .buildToEquipment()
-  .do({
-    onBeforeSkillDamage(c) {
-      if (this.attackCount >= 1) {
-        if (c.getMaster().hasStatus(SuperlativeSuperstrength) && c.isCharged()) {
-          c.addDamage(1);
-        }
+  .withThis({ attackCount: 0 })
+  .on("beforeSkillDamage", (c) => {
+    if (c.this.attackCount >= 1) {
+      if (c.this.master.findStatus(SuperlativeSuperstrength) && c.sourceSkill.charged) {
+        c.addDamage(1);
       }
-      this.attackCount++;
     }
-  }, { attackCount: 0 })
+    c.this.attackCount++;
+  })
   .build();

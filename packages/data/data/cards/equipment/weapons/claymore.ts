@@ -43,7 +43,7 @@ const SkywardPride = createCard(311304, ["character"])
  * 提供1点护盾，保护我方出战角色。（可叠加，最多叠加到2点）
  */
 const RebelliousShield = createStatus(121013)
-  .shield({ initial: 1, recreateMax: 2 })
+  .shield(1, 2)
   .build();
 
 /**

@@ -106,7 +106,7 @@ class ActionBuilderBase<ExtPt> {
     this.pushAction((c) => c.queryCharacter(target)?.heal(value));
     return this;
   }
-  gainActiveEnergy(value: number) {
+  gainEnergyToActive(value: number) {
     this.pushAction((c) => c.queryCharacter("|")?.gainEnergy(value));
     return this;
   }
@@ -171,6 +171,11 @@ class SkillBuilder extends ActionBuilderBase<SkillContext> {
       this.shouldGainEnergy = (opt ?? true) as boolean;
     }
     this.type = type;
+    return this;
+  }
+
+  createCharacterStatus(status: StatusHandle) {
+    this.actions.push((c) => { c.character.createStatus(status); });
     return this;
   }
 
@@ -391,6 +396,7 @@ class TriggerBuilderBase<ThisT> {
   protected usage = Infinity;
   protected maxUsage = Infinity;
   protected usagePerRound = Infinity;
+  protected listenTo: ListenTarget = "master";
 
   withDuration(duration: number) {
     this.duration = duration;
@@ -405,15 +411,25 @@ class TriggerBuilderBase<ThisT> {
     this.usagePerRound = usage;
     return this;
   }
+
+  listenToOthers() {
+    this.listenTo = "my";
+    return this;
+  }
+  listenToOpp() {
+    this.listenTo = "all";
+    return this;
+  }
+
   on<E extends RemovePrefix<EventNames>>(
-    event: E, 
+    event: E,
     handler: EventHandler<ThisT, AddPrefix<E>>
   ): this;
   on<E extends RemovePrefix<EventNames>>(
-    event: E, 
+    event: E,
     cond: TriggerCondition<ThisT, AddPrefix<E>>,
     handler: EventHandler<ThisT, AddPrefix<E>>)
-  : this;
+    : this;
   on(event: string, condOrHandler: any, handler?: any) {
     const handlerName = addPrefix(event) as EventNames;
     if (this.handlers[handlerName]) {
@@ -433,7 +449,7 @@ class TriggerBuilderBase<ThisT> {
   }
 }
 
-class PassiveSkillBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SkillContext> {
+class PassiveSkillBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SkillContext<true>> {
   constructor(private readonly id: number) {
     super();
   }
@@ -444,14 +460,14 @@ class PassiveSkillBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SkillCo
     throw new Error("Cannot set usage for passive skill");
   }
 
-  withThis<NewThisT>(state: NewThisT): PassiveSkillBuilder<NewThisT & SkillContext> {
+  withThis<NewThisT>(state: NewThisT): PassiveSkillBuilder<NewThisT & SkillContext<true>> {
     if (this.state !== null) {
       throw new Error("Cannot set this twice");
     }
     this.state = state;
-    return this as unknown as PassiveSkillBuilder<NewThisT & SkillContext>;
+    return this as unknown as PassiveSkillBuilder<NewThisT & SkillContext<true>>;
   }
-  
+
   build(): SkillHandle {
     registerSkill(this.id, {
       type: "passive",
@@ -469,7 +485,6 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
   private tags: StatusTag[] = [];
   private prepareConfig: PrepareConfig = null;
   private shieldConfig: ShieldConfig = null;
-  private shouldListenToOthers: boolean = false;
 
   constructor(private readonly id: number) {
     super();
@@ -483,17 +498,16 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
     return this as unknown as StatusBuilder<BuildFromCard, NewThisT & StatusContext<true>>;
   }
 
-  listenToOthers() {
-    this.shouldListenToOthers = true;
-    return this;
-  }
   disableSkill() {
     this.tags.push("disableSkill");
     return this;
   }
-  shield(shield: ShieldConfig) {
+  shield(shield: number, recreateMax?: number) {
     this.tags.push("shield");
-    this.shieldConfig = shield;
+    this.shieldConfig = {
+      initial: shield,
+      recreateMax: recreateMax ?? shield,
+    };
     return this;
   }
   prepare(skill: SkillHandle): this;
@@ -510,7 +524,7 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
       usage: this.usage,
       maxUsage: this.maxUsage,
       usagePerRound: this.usagePerRound,
-      listenTo: this.shouldListenToOthers ? "my" : "master",
+      listenTo: this.listenTo,
       shield: this.shieldConfig,
       prepare: this.prepareConfig,
       handler: {
@@ -524,7 +538,6 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
 
 class SupportBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SupportContext<true>> {
   private type: SupportType = "other";
-  private shouldListenToOpp: boolean = false;
   constructor(private readonly id: number) {
     super();
   }
@@ -542,18 +555,13 @@ class SupportBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SupportConte
     return this;
   }
 
-  listenToOpp() {
-    this.shouldListenToOpp = true;
-    return this;
-  }
-
   build(): SupportHandle {
     registerSupport(this.id, {
       type: this.type,
       usage: this.usage,
       usagePerRound: this.usagePerRound,
       duration: this.duration,
-      listenTo: this.shouldListenToOpp ? "all" : "my",
+      listenTo: this.listenTo === "master" ? "my" : this.listenTo,
       handler: {
         handler: this.handlers,
         state: this.state
@@ -565,7 +573,6 @@ class SupportBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SupportConte
 
 class EquipmentBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & EquipmentContext<true>> {
   private type: EquipmentType = "other";
-  private listenTo: ListenTarget = "master";
   constructor(private readonly id: number) {
     super();
   }
@@ -587,14 +594,6 @@ class EquipmentBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & EquipmentC
   }
   override withUsage(usage: number, maxUsage?: number): never {
     throw new Error("Cannot set usage for equipment");
-  }
-  listenToOther() {
-    this.listenTo = "my";
-    return this;
-  }
-  listenToOpp() {
-    this.listenTo = "all";
-    return this;
   }
 
   build(): EquipmentHandle {
@@ -635,6 +634,7 @@ class SummonBuilder<ThisT> extends TriggerBuilderBase<ThisT & SummonContext<true
       usage: this.usage,
       maxUsage: this.maxUsage,
       disposeWhenUsedUp: this.disposeWhenUsedUp,
+      listenTo: this.listenTo === "master" ? "my" : this.listenTo,
       handler: {
         handler: this.handlers,
         state: this.state

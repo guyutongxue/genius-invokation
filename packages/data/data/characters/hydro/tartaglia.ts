@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, createStatus, DamageType, Target } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **断雨**
@@ -10,8 +10,8 @@ const CuttingTorrent = createSkill(12041)
   .costVoid(2)
   .do((c) => {
     c.dealDamage(2, DamageType.Physical);
-    if (c.isCharged()) {
-      c.createStatus(Riptide, c.target.asTarget());
+    if (c.charged) {
+      c.target.createStatus(Riptide);
     }
   })
   .dealDamage(2, DamageType.Physical)
@@ -43,29 +43,31 @@ const RangedStance = createStatus(112041)
  * 持续回合：2
  */
 const MeleeStance = createStatus(112042)
-  .withDuration(2)
-  .do({
-    onEarlyBeforeDealDamage(c) {
+  .withThis({ duration: 2, _piercingCount: 2 })
+  .on("earlyBeforeDealDamage", (c) => {
+    if (c.damageType === DamageType.Physical) {
       c.changeDamageType(DamageType.Hydro);
-    },
-    onBeforeDealDamage(c) {
-      if (c.target.findStatus(Riptide)) {
-        c.addDamage(1);
-      }
-    },
-    onUseSkill(c) {
-      // if (c.isCharged() && c) {
-      //   c.createStatus(Riptide, c.target.asTarget());
-      // }
-      if (this.piercingCount && c.target.hasStatus(Riptide)) {
-        c.dealDamage(1, DamageType.Piercing, Target.oppNext());
-        this.piercingCount--;
-      }
-    },
-    onActionPhase() {
-      this.piercingCount = 2;
     }
-  }, { piercingCount: 2 })
+  })
+  .on("beforeDealDamage", (c) => {
+    if (c.target.findStatus(Riptide)) {
+      c.addDamage(1);
+    }
+  })
+  .on("useSkill", (c) => {
+    if (c.this._piercingCount && c.target.findStatus(Riptide)) {
+      c.dealDamage(1, DamageType.Piercing, "!>");
+      c.this._piercingCount--;
+    }
+  })
+  .on("actionPhase", (c) => {
+    c.this._piercingCount = 2;
+    c.this.duration--;
+    if (c.this.duration === 0) {
+      c.this.master!.createStatus(RangedStance);
+      c.this.dispose();
+    }
+  })
   .build();
 
 
@@ -76,9 +78,11 @@ const MeleeStance = createStatus(112042)
 const FoulLegacyRagingTide = createSkill(12042)
   .setType("elemental")
   .costHydro(3)
-  .removeStatus(RangedStance)
-  .createStatus(MeleeStance)
-  .dealDamage(2, DamageType.Hydro)
+  .do((c) => {
+    c.character.removeStatus(RangedStance);
+    c.character.createStatus(MeleeStance);
+    c.dealDamage(2, DamageType.Hydro);
+  })
   .build();
 
 /**
@@ -92,11 +96,11 @@ const HavocObliteration = createSkill(12043)
   .costHydro(3)
   .costEnergy(3)
   .do((c) => {
-    if (c.character.hasStatus(RangedStance)) {
+    if (c.character.findStatus(RangedStance)) {
       c.dealDamage(4, DamageType.Hydro);
-      c.gainEnergy(2);
-      c.createStatus(Riptide, Target.oppActive());
-    } else if (c.character.hasStatus(MeleeStance)) {
+      c.character.gainEnergy(2);
+      c.target.createStatus(Riptide);
+    } else if (c.character.findStatus(MeleeStance)) {
       c.dealDamage(7, DamageType.Hydro);
     }
   })
@@ -109,8 +113,8 @@ const HavocObliteration = createSkill(12043)
  */
 const TideWithholder = createSkill(12044)
   .setType("passive")
-  .on("battleBegin", (c) => { c.createStatus(RangedStance) })
-  .on("revive", (c) => { c.createStatus(RangedStance) })
+  .on("battleBegin", (c) => { c.this.character.createStatus(RangedStance) })
+  .on("revive", (c) => { c.this.character.createStatus(RangedStance) })
   .build();
 
 export const Tartaglia = createCharacter(1204)
@@ -127,7 +131,7 @@ export const Tartaglia = createCharacter(1204)
 const Riptide = createStatus(112043)
   .withDuration(2)
   .on("defeated", (c) => {
-    c.createStatus(Riptide, Target.oppActive());
+    c.queryCharacter("|")!.createStatus(Riptide);
   })
   .build();
 
