@@ -60,4 +60,4 @@ interface GlobalAction<ThisT> extends GlobalContext<ThisT, true> {
   useSkill(skill: SkillHandle | "normal"): Promise<void>;
 }
 
-export type Context<ThisT, Writable extends boolean = false> = Writable extends true ? GlobalAction<ThisT> : GlobalContext<ThisT>;
+export type Context<ThisT, ExtPoint, Writable extends boolean = false> = (Writable extends true ? GlobalAction<ThisT> : GlobalContext<ThisT>) & ExtPoint;

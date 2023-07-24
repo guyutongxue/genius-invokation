@@ -14,7 +14,7 @@ function createFood(id: number) {
     .addTags("food")
     .filterMyTargets((c) => !c.findStatus(Satiated))
     .doAtLast((c) => {
-      c.this.target[0].createStatus(Satiated);
+      c.target[0].createStatus(Satiated);
     });
 }
 
@@ -122,9 +122,7 @@ const MintyMeatRolls = createFood(333008)
  */
 const MondstadtHashBrown = createFood(333006)
   .costSame(1)
-  .do(function (c) {
-    this[0].heal(2);
-  })
+  .do((c) => c.target[0].heal(2))
   .build();
 
 /**
@@ -134,7 +132,7 @@ const MondstadtHashBrown = createFood(333006)
  */
 const MushroomPizza = createFood(333007)
   .costSame(1)
-  .do((c) => c.this.target[0].heal(1))
+  .do((c) => c.target[0].heal(1))
   .buildToStatus("target0", 303305)
   .withUsage(2)
   .on("endPhase", (c) => { c.getMaster().heal(1); })
@@ -180,7 +178,7 @@ const SashimiPlatter = createFood(333010)
  * （每回合每个角色最多食用1次「料理」）
  */
 const SweetMadame = createFood(333005)
-  .do((c) => { c.this.target[0].heal(1); })
+  .do((c) => { c.target[0].heal(1); })
   .build();
 
 /**
@@ -231,7 +229,7 @@ const TeyvatFriedEgg = createCard(333009, ["character"])
   .addFilter((c) => !c.findCombatStatus(ReviveOnCoolDown))
   .costSame(3)
   .do((c) => {
-    c.this.target[0].heal(1);
+    c.target[0].heal(1);
     c.createCombatStatus(ReviveOnCoolDown);
   })
   .build();

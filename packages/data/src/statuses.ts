@@ -1,6 +1,6 @@
 import { SkillHandle, StatusHandle } from "./builders";
 import { EntityContext } from "./entities";
-import { EventHandlerCtor, ListenTarget } from "./events";
+import { EventHandlerAndState, ListenTarget } from "./events";
 
 export type StatusTag =
   | "disableSkill" // 禁用技能（仅角色状态）
@@ -29,7 +29,7 @@ export interface StatusInfo {
   readonly listenTo: ListenTarget;
   readonly shield: ShieldConfig;
   readonly prepare: PrepareConfig;
-  readonly handlerCtor: EventHandlerCtor;
+  readonly handler: EventHandlerAndState;
 }
 
 export type StatusContext<Writable extends boolean> = EntityContext<StatusInfo, StatusHandle, Writable>;

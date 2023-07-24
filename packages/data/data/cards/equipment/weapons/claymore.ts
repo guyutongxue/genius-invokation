@@ -13,13 +13,9 @@ const SacrificialGreatsword = createCard(311302, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
-  .on("useSkill", (c) => {
-    if (c.info.type === "elemental") {
-      c.generateDice(c.character.elementType());
-    } else {
-      return false;
-    }
-  })
+  .on("useSkill", 
+    (c) => c.info.type === "elemental", 
+    (c) => c.generateDice(c.character.elementType()))
   .build();
 
 /**
@@ -34,7 +30,7 @@ const SkywardPride = createCard(311304, ["character"])
   .costSame(3)
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "normal") {
+    if (c.sourceSkill.info.type === "normal") {
       c.addDamage(2);
     } else {
       c.addDamage(1);
@@ -63,7 +59,7 @@ const TheBell = createCard(311305, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
-  .on("useSkill", (c) => (c.createStatus(RebelliousShield), true))
+  .on("useSkill", (c) => (c.queryCharacter("|")?.createStatus(RebelliousShield), true))
   .build();
 
 /**

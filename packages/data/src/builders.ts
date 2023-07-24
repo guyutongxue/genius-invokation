@@ -1,12 +1,11 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { SwitchActiveContext } from "./contexts";
 import { SkillContext, SkillType, UseSkillAction, registerSkill } from "./skills";
-import { EventHandlers, EventHandlerCtor, ListenTarget } from "./events";
-import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, FuzzyContextOfTarget, PlayCardAction, PlayCardContext, PlayCardFilter, ShownOption, registerCard } from "./cards";
-import { EquipmentType, registerEquipment } from "./equipments";
-import { CharacterContext, CharacterTag, registerCharacter } from "./characters";
-import { PrepareConfig, ShieldConfig, StatusTag, registerStatus } from "./statuses";
-import { SupportType, registerSupport } from "./supports";
+import { EventHandlers, ListenTarget, EventNames, EventHandler, TriggerCondition } from "./events";
+import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, FuzzyContextOfTarget, PlayCardContext, PlayCardFilter, ShownOption, registerCard } from "./cards";
+import { EquipmentContext, EquipmentType, registerEquipment } from "./equipments";
+import { CharacterTag, registerCharacter } from "./characters";
+import { PrepareConfig, ShieldConfig, StatusContext, StatusTag, registerStatus } from "./statuses";
+import { SupportContext, SupportType, registerSupport } from "./supports";
 import { SummonContext, registerSummon } from "./summons";
 import { AddPrefix, RemovePrefix, addPrefix, capitalize } from "./utils";
 import { Context } from "./global";
@@ -20,7 +19,7 @@ export type SummonHandle = number & { readonly _never: unique symbol };
 export type SupportHandle = CardHandle & { readonly _never2: unique symbol };
 export type EquipmentHandle = CardHandle & { readonly _never2: unique symbol };
 
-type CommonAction<ThisT, Writable extends boolean> = (c: Context<ThisT, Writable>) => void;
+type CommonAction<ExtPt, Writable extends boolean> = (c: Context<never, ExtPt, Writable>) => void;
 
 class CharacterBuilder {
   private readonly tags: CharacterTag[] = [];
@@ -59,9 +58,9 @@ class CharacterBuilder {
   }
 }
 
-class ActionBuilderBase<ThisT> {
+class ActionBuilderBase<ExtPt> {
   protected costs: DiceType[] = [];
-  protected pushAction(action: CommonAction<ThisT, true>) {
+  protected pushAction(action: CommonAction<ExtPt, true>) {
     throw new Error("Method not implemented.");
   }
   protected addCost(type: DiceType, count: number) {
@@ -181,7 +180,7 @@ class SkillBuilder extends ActionBuilderBase<SkillContext> {
   }
 
   build(): SkillHandle {
-    const action = async (c: Context<SkillContext, true>) => {
+    const action: UseSkillAction = async (c) => {
       for (const a of this.actions) {
         await a(c);
       }
@@ -198,24 +197,24 @@ class SkillBuilder extends ActionBuilderBase<SkillContext> {
 }
 
 class CardBuilder<
-  const T extends CardTargetDescriptor = []
+  const TargetT extends CardTargetDescriptor = []
 > extends ActionBuilderBase<PlayCardContext> {
   private type: CardType = "event";
   private tags: CardTag[] = [];
   private shownOption: ShownOption = true;
-  private filters: PlayCardFilter<T>[] = [];
-  private actions: CommonAction<PlayCardContext<T>, true>[] = [];
+  private filters: PlayCardFilter<TargetT>[] = [];
+  private actions: CommonAction<PlayCardContext<TargetT>, true>[] = [];
   // 固定在最后做的操作，用于编写卡牌模板如食物牌
-  private lastActions: CommonAction<PlayCardContext<T>, true>[] = [];
+  private lastActions: CommonAction<PlayCardContext<TargetT>, true>[] = [];
 
   constructor(
     private readonly id: number,
-    private readonly targetDescriptor?: T
+    private readonly targetDescriptor?: TargetT
   ) {
     super();
   }
 
-  protected override pushAction(action: CommonAction<PlayCardContext<T>, true>) {
+  protected override pushAction(action: CommonAction<PlayCardContext<TargetT>, true>) {
     this.actions.push(action);
   }
 
@@ -245,7 +244,7 @@ class CardBuilder<
     this.tags.push(...tags);
     return this;
   }
-  addFilter(filter: PlayCardFilter<T>) {
+  addFilter(filter: PlayCardFilter<TargetT>) {
     this.filters.push(filter);
     return this;
   }
@@ -254,32 +253,32 @@ class CardBuilder<
     CardBuilder.ensureTargetDescriptor(self);
     return self.filterMyTargets((c) => c.info.id === ch && (!requireActive || c.isActive()));
   }
-  filterOppTargets(filter: (...targets: ContextOfTarget<T>) => boolean) {
-    this.filters.push((c: Context<PlayCardContext<T>, false>) => {
-      return (c.this.target as FuzzyContextOfTarget).every(t => !t.isMine()) && filter(...c.this.target)
+  filterOppTargets(filter: (...targets: ContextOfTarget<TargetT>) => boolean) {
+    this.filters.push((c: Context<never, PlayCardContext<TargetT>, false>) => {
+      return (c.target as FuzzyContextOfTarget).every(t => !t.isMine()) && filter(...c.target)
     });
     return this;
   }
-  filterMyTargets(filter: (...targets: ContextOfTarget<T>) => boolean, includesDefeated = false) {
-    this.filters.push((c: Context<PlayCardContext<T>, false>) => {
-      return (c.this.target as FuzzyContextOfTarget).every(t => t.isMine() &&
+  filterMyTargets(filter: (...targets: ContextOfTarget<TargetT>) => boolean, includesDefeated = false) {
+    this.filters.push((c: Context<never, PlayCardContext<TargetT>, false>) => {
+      return (c.target as FuzzyContextOfTarget).every(t => t.isMine() &&
         (!("isAlive" in t) || includesDefeated || t.isAlive())) &&
-        filter(...c.this.target)
+        filter(...c.target)
     });
     return this;
   }
-  do(action: CommonAction<PlayCardContext<T>, true>) {
+  do(action: CommonAction<PlayCardContext<TargetT>, true>) {
     this.pushAction(action);
     return this;
   }
-  doAtLast(action: CommonAction<PlayCardContext<T>, true>) {
+  doAtLast(action: CommonAction<PlayCardContext<TargetT>, true>) {
     this.lastActions.push(action);
     return this;
   }
 
   build(): CardHandle {
     const outerThis = this;
-    function finalFilter(this: ContextOfTarget<T>, c: Context<any, false>) {
+    function finalFilter(this: ContextOfTarget<TargetT>, c: Context<never, any, false>) {
       for (const f of outerThis.filters) {
         if (!f.call(this, c)) {
           return false;
@@ -287,7 +286,7 @@ class CardBuilder<
       }
       return true;
     }
-    async function* action(c: Context<any, true>) {
+    async function* action(c: Context<never, any, true>) {
       for (const a of outerThis.actions) {
         await a(c);
         yield;
@@ -348,7 +347,7 @@ class CardBuilder<
       eqBuilder.setType("artifact");
     }
     cardBuilder.actions.unshift((c) => {
-      c.this.target[0].equip(cardBuilder.id as EquipmentHandle);
+      c.target[0].equip(cardBuilder.id as EquipmentHandle);
     });
     cardBuilder.setType("equipment").build();
     return eqBuilder;
@@ -376,7 +375,7 @@ class CardBuilder<
     } else if (combatOrTarget === "target0") {
       const s = this as any;
       CardBuilder.ensureTargetDescriptor(s);
-      s.do((c) => c.this.target[0].createStatus(statusId));
+      s.do((c) => c.target[0].createStatus(statusId));
     } else if (combatOrTarget === "active") {
       this.do((c) => c.queryCharacter("|")?.createStatus(statusId))
     }
@@ -385,9 +384,9 @@ class CardBuilder<
   }
 }
 
-class TriggerBuilderBase {
-  private perEventHandler: EventHandlers = {};
-  private complexHandler: EventHandlerCtor | null = null;
+class TriggerBuilderBase<ThisT> {
+  protected handlers: EventHandlers = {};
+  protected state: any = null;
   protected duration = Infinity;
   protected usage = Infinity;
   protected maxUsage = Infinity;
@@ -406,44 +405,35 @@ class TriggerBuilderBase {
     this.usagePerRound = usage;
     return this;
   }
-
-  on<E extends RemovePrefix<keyof EventHandlers>>(
-    event: E,
-    handler: EventHandlers[AddPrefix<E>]
-  ) {
-    const handlerName = addPrefix(event);
-    if (this.perEventHandler[handlerName]) {
+  on<E extends RemovePrefix<EventNames>>(
+    event: E, 
+    handler: EventHandler<ThisT, AddPrefix<E>>
+  ): this;
+  on<E extends RemovePrefix<EventNames>>(
+    event: E, 
+    cond: TriggerCondition<ThisT, AddPrefix<E>>,
+    handler: EventHandler<ThisT, AddPrefix<E>>)
+  : this;
+  on(event: string, condOrHandler: any, handler?: any) {
+    const handlerName = addPrefix(event) as EventNames;
+    if (this.handlers[handlerName]) {
       throw new Error(`Handler for event ${event} already exists`);
     }
-    this.perEventHandler[handlerName] = handler;
-    return this;
-  }
-
-  do<This extends {}>(handlers: EventHandlers<This>, data?: This) {
-    if (this.complexHandler) {
-      throw new Error("Multiple do() calls");
-    }
-    function ctor(this: any) {
-      Object.assign(this, data);
-    }
-    Object.assign(ctor.prototype, handlers);
-    this.complexHandler = ctor as any;
-    return this;
-  }
-
-  protected getHandlerCtor(): EventHandlerCtor {
-    const ctor = this.complexHandler ?? class { };
-    if (Object.keys(this.perEventHandler).length) {
-      if (this.complexHandler) {
-        throw new Error("Cannot use both do() and on()");
+    if (typeof handler === "function") {
+      this.handlers[handlerName] = (c: any) => {
+        if (condOrHandler(c)) {
+          handler(c);
+        } else {
+          return false;
+        }
       }
-      Object.assign(ctor.prototype, this.perEventHandler);
     }
-    return ctor;
+    this.handlers[handlerName] = handler;
+    return this;
   }
 }
 
-class PassiveSkillBuilder extends TriggerBuilderBase {
+class PassiveSkillBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SkillContext> {
   constructor(private readonly id: number) {
     super();
   }
@@ -453,19 +443,29 @@ class PassiveSkillBuilder extends TriggerBuilderBase {
   override withUsage(usage: number): never {
     throw new Error("Cannot set usage for passive skill");
   }
+
+  withThis<NewThisT>(state: NewThisT): PassiveSkillBuilder<NewThisT & SkillContext> {
+    if (this.state !== null) {
+      throw new Error("Cannot set this twice");
+    }
+    this.state = state;
+    return this as unknown as PassiveSkillBuilder<NewThisT & SkillContext>;
+  }
+  
   build(): SkillHandle {
     registerSkill(this.id, {
       type: "passive",
-      duration: this.duration,
-      // usage: this.usage,
       usagePerRound: this.usagePerRound,
-      handlerCtor: this.getHandlerCtor(),
+      handler: {
+        handler: this.handlers,
+        state: this.state
+      }
     });
     return this.id as SkillHandle;
   }
 }
 
-class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilderBase {
+class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends TriggerBuilderBase<ThisT & StatusContext<true>> {
   private tags: StatusTag[] = [];
   private prepareConfig: PrepareConfig = null;
   private shieldConfig: ShieldConfig = null;
@@ -473,6 +473,14 @@ class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilde
 
   constructor(private readonly id: number) {
     super();
+  }
+
+  withThis<NewThisT>(state: NewThisT): StatusBuilder<BuildFromCard, NewThisT & StatusContext<true>> {
+    if (this.state !== null) {
+      throw new Error("Cannot set this twice");
+    }
+    this.state = state;
+    return this as unknown as StatusBuilder<BuildFromCard, NewThisT & StatusContext<true>>;
   }
 
   listenToOthers() {
@@ -505,17 +513,28 @@ class StatusBuilder<BuildFromCard extends boolean = false> extends TriggerBuilde
       listenTo: this.shouldListenToOthers ? "my" : "master",
       shield: this.shieldConfig,
       prepare: this.prepareConfig,
-      handlerCtor: this.getHandlerCtor(),
+      handler: {
+        handler: this.handlers,
+        state: this.state
+      }
     });
     return this.id as CardHandle & StatusHandle;
   }
 }
 
-class SupportBuilder extends TriggerBuilderBase {
+class SupportBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SupportContext<true>> {
   private type: SupportType = "other";
   private shouldListenToOpp: boolean = false;
   constructor(private readonly id: number) {
     super();
+  }
+
+  withThis<NewThisT>(state: NewThisT): SupportBuilder<NewThisT & SupportContext<true>> {
+    if (this.state !== null) {
+      throw new Error("Cannot set this twice");
+    }
+    this.state = state;
+    return this as unknown as SupportBuilder<NewThisT & SupportContext<true>>;
   }
 
   setType(type: SupportType) {
@@ -535,18 +554,30 @@ class SupportBuilder extends TriggerBuilderBase {
       usagePerRound: this.usagePerRound,
       duration: this.duration,
       listenTo: this.shouldListenToOpp ? "all" : "my",
-      handlerCtor: this.getHandlerCtor(),
+      handler: {
+        handler: this.handlers,
+        state: this.state
+      }
     })
     return this.id as SupportHandle;
   }
 }
 
-class EquipmentBuilder extends TriggerBuilderBase {
+class EquipmentBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & EquipmentContext<true>> {
   private type: EquipmentType = "other";
   private listenTo: ListenTarget = "master";
   constructor(private readonly id: number) {
     super();
   }
+
+  withThis<NewThisT>(state: NewThisT): EquipmentBuilder<NewThisT & EquipmentContext<true>> {
+    if (this.state !== null) {
+      throw new Error("Cannot set this twice");
+    }
+    this.state = state;
+    return this as unknown as EquipmentBuilder<NewThisT & EquipmentContext<true>>;
+  }
+
   setType(type: EquipmentType) {
     this.type = type;
     return this;
@@ -571,16 +602,27 @@ class EquipmentBuilder extends TriggerBuilderBase {
       type: this.type,
       usagePerRound: this.usagePerRound,
       listenTo: this.listenTo,
-      handlerCtor: this.getHandlerCtor(),
+      handler: {
+        handler: this.handlers,
+        state: this.state
+      }
     });
     return this.id as EquipmentHandle;
   }
 }
 
-class SummonBuilder extends TriggerBuilderBase {
+class SummonBuilder<ThisT> extends TriggerBuilderBase<ThisT & SummonContext<true>> {
   private disposeWhenUsedUp = true;
   constructor(private readonly id: number) {
     super();
+  }
+
+  withThis<NewThisT>(state: NewThisT): SummonBuilder<NewThisT & SummonContext<true>> {
+    if (this.state !== null) {
+      throw new Error("Cannot set this twice");
+    }
+    this.state = state;
+    return this as unknown as SummonBuilder<NewThisT & SummonContext<true>>;
   }
 
   noDispose() {
@@ -593,7 +635,10 @@ class SummonBuilder extends TriggerBuilderBase {
       usage: this.usage,
       maxUsage: this.maxUsage,
       disposeWhenUsedUp: this.disposeWhenUsedUp,
-      handlerCtor: this.getHandlerCtor(),
+      handler: {
+        handler: this.handlers,
+        state: this.state
+      }
     })
     return this.id as SummonHandle;
   }

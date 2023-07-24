@@ -170,7 +170,7 @@ const Vanarana = createCard(321011)
       b && this.collected.push(b);
     },
     onActionPhase(c) {
-      c.generateDice(...this.collected);
+      c.generateDice(...collected);
       this.collected = [];
     }
   }, { collected: [] as DiceType[] })

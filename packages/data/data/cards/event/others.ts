@@ -21,7 +21,7 @@ const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "
   .setType("event")
   .filterMyTargets((ch0, ch1) => !!ch0.findEquipment("artifact") && ch0.entityId !== ch1.entityId)
   .do((c) => {
-    const [from, to] = c.this.target;
+    const [from, to] = c.target;
     const e = from.findEquipment("artifact")!;
     from.removeEquipment(e.id);
     to.equip(e.id);
@@ -388,7 +388,7 @@ const MasterOfWeaponry = createCard(332010, ["character", "character"])
         .filter(c => ch0.info.tags.includes(c) && ch1.info.tags.includes(c)).length > 0;
   })
   .do((c) => {
-    const [from, to] = c.this.target;
+    const [from, to] = c.target;
     const e = from.findEquipment("weapon")!;
     from.removeEquipment(e.id);
     to.equip(e.id);
@@ -431,7 +431,7 @@ const QuickKnit = createCard(332012, ["summon"])
   .costSame(1)
   .filterMyTargets((t) => true)
   .do((c) => {
-    const summon = c.this.target[0];
+    const summon = c.target[0];
     summon.setUsage(summon.usage + 1);
   })
   .build();
@@ -445,7 +445,7 @@ const SendOff = createCard(332013, ["summon"])
   .costSame(2)
   .filterOppTargets((t) => true)
   .do((c) => {
-    const summon = c.this.target[0];
+    const summon = c.target[0];
     summon.setUsage(summon.usage - 2);
   })
   .build();

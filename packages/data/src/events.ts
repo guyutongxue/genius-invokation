@@ -1,47 +1,65 @@
-import { BeforeDamageCalculatedContext, BeforeDefeatedContext, Context, DamageContext, DamageReadonlyContext, ElementalReactionContext, PlayCardContext, RollAction,  SkillDamageContext, SkillContext, SwitchActiveContext, UseDiceContext, RequestFastSwitchContext } from "./contexts";
+import { AddPrefix, RemovePrefix } from "./utils";
+import { PlayCardContext } from "./cards";
+import { BeforeDamageCalculatedContext, BeforeDefeatedContext, DamageContext, DamageReadonlyContext, ElementalReactionContext, SkillDamageContext, SwitchActiveContext, UseDiceContext, RequestFastSwitchContext, RollContext } from "./contexts";
+import { Context } from "./global";
+import { SkillContext } from "./skills";
 
-export type HandlerResult = boolean | void | Promise<boolean | void>;
+export type SyncHandlerResult = boolean | void;
+export type AsyncHandlerResult = SyncHandlerResult | Promise<SyncHandlerResult>;
 
-export interface EventHandlers<This = {}> {
-  onBattleBegin?(this: This, c: Context): HandlerResult;
-  onRollPhase?(this: This, c: RollAction): HandlerResult;
-  onActionPhase?(this: This, c: Context): HandlerResult;
-  onEndPhase?(this: This, c: Context): HandlerResult;
+type SyncHandler<ThisT, ExtPoint> = (c: Context<ThisT, ExtPoint, false>) => SyncHandlerResult;
+type AsyncHandler<ThisT, ExtPoint> = (c: Context<ThisT, ExtPoint, true>) => AsyncHandlerResult;
 
-  onBeforeAction?(this: This, c: Context): HandlerResult;
-  onRequestFastSwitchActive?(this: This, c: RequestFastSwitchContext): HandlerResult;
+// Follow docs/develop/events.md of all events.
 
-  onUseSkill?(this: This, c: SkillContext): HandlerResult;
-  onAction?(this: This, c: Context): HandlerResult;
-  onPlayCard?(this: This, c: PlayCardContext): HandlerResult;
-  onSwitchActive?(this: This, c: SwitchActiveContext): HandlerResult;
-  onDeclareEnd?(this: This, c: Context): HandlerResult;
+export type SyncEventMap = {
+  onRollPhase: RollContext,
 
-  // listenTo "master": 监听角色技能造成的伤害，不包括元素反应
-  // listenTo "my": 监听我方造成的伤害，包括元素反应
-  // .... 如果要筛选出“我方角色导致的元素反应”，请检测 sourceSkill
-  onEarlyBeforeDealDamage?(this: This, c: BeforeDamageCalculatedContext): HandlerResult;
-  onBeforeSkillDamage?(this: This, c: SkillDamageContext): HandlerResult;
-  onBeforeDealDamage?(this: This, c: DamageContext): HandlerResult;
-  onBeforeDamaged?(this: This, c: DamageContext): HandlerResult;
+  onBeforeUseDice: UseDiceContext,
+  onRequestFastSwitchActive: RequestFastSwitchContext,
 
-  onDealDamage?(this: This, c: DamageReadonlyContext): HandlerResult;
-  onDamaged?(this: This, c: DamageReadonlyContext): HandlerResult;
+  onEarlyBeforeDealDamage: BeforeDamageCalculatedContext,
+  onBeforeDealDamage: DamageContext,
+  onBeforeSkillDamage: SkillDamageContext,
+  onBeforeDamaged: DamageContext,
 
-  onBeforeDefeated?(this: This, c: BeforeDefeatedContext): HandlerResult;
-  onDefeated?(this: This, c: DamageReadonlyContext): HandlerResult;
-  onRevive?(this: This, c: Context): HandlerResult;
-
-  onBeforeUseDice?(this: This, c: UseDiceContext): HandlerResult;
-
-  onElementalReaction?(this: This, c: ElementalReactionContext): HandlerResult;
-
-  onEnter?(this: This, c: Context): HandlerResult;
+  onBeforeDefeated: BeforeDefeatedContext,
 }
 
-export type EventHandlerCtor = new () => EventHandlers;
+type NO_EXTRA = Record<never, never>;
+
+export type AsyncEventMap = {
+  onBattleBegin: NO_EXTRA,
+  onActionPhase: NO_EXTRA,
+
+  onBeforeAction: NO_EXTRA,
+  onUseSkill: SkillContext,
+  onSwitchActive: SwitchActiveContext,
+  onPlayCard: PlayCardContext,
+  onDeclareEnd: NO_EXTRA,
+  onAction: NO_EXTRA,
+
+  onDealDamage: DamageReadonlyContext,
+  onDamaged: DamageReadonlyContext,
+  onElementalReaction: ElementalReactionContext,
+  onDefeated: DamageReadonlyContext,
+  onRevive: NO_EXTRA,
+
+  onEnter: NO_EXTRA,
+}
+
+export type EventMap = SyncEventMap & AsyncEventMap;
+export type EventNames = keyof EventMap;
+export type EventHandler<ThisT, E extends EventNames> = E extends keyof SyncEventMap ? SyncHandler<ThisT, EventMap[E]> : AsyncHandler<ThisT, EventMap[E]>;
+export type TriggerCondition<ThisT, E extends EventNames> = (c: Context<ThisT, EventMap[E], false>) => boolean;
+
+export type EventHandlers<ThisT = any> = {
+  [E in EventNames]?: EventHandler<ThisT, E>
+};
 
 export type ListenTarget = "master" | "my" | "all";
 
-export type EventHandlerNames = keyof EventHandlers;
-export type ContextOfEvent<E extends EventHandlerNames> = Parameters<Required<EventHandlers>[E]>[0];
+export interface EventHandlerAndState<ThisT = any> {
+  readonly handler: EventHandlers<ThisT>;
+  readonly state: ThisT;
+}

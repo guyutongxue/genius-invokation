@@ -13,7 +13,7 @@ const AmosBow = createCard(311204, ["character"])
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
     c.addDamage(1);
-    if ("costs" in c.skillInfo && c.skillInfo.costs.length >= 5) {
+    if ("costs" in c.sourceSkill.info && c.sourceSkill.info.costs.length >= 5) {
       c.addDamage(2);
     }
   })
@@ -74,13 +74,9 @@ const SacrificialBow = createCard(311202, ["character"])
   .buildToEquipment()
   .withUsagePerRound(1)
   .on("beforeSkillDamage", (c) => (c.addDamage(1), false))
-  .on("useSkill", (c) => {
-    if (c.info.type === "elemental") {
-      c.generateDice(c.character.elementType());
-    } else {
-      return false;
-    }
-  })
+  .on("useSkill", 
+    (c) => c.info.type === "elemental", 
+    (c) => c.generateDice(c.character.elementType()))
   .build();
 
 /**
@@ -95,7 +91,7 @@ const SkywardHarp = createCard(311203, ["character"])
   .costSame(3)
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "normal") {
+    if (c.sourceSkill.info.type === "normal") {
       c.addDamage(2);
     } else {
       c.addDamage(1);

@@ -68,10 +68,10 @@ interface CardInfo {
 export type CardInfoWithId = Readonly<CardInfo & { id: number }>;
 
 export type PlayCardFilter<TargetT extends CardTargetDescriptor = any[]> =
-  (c: Context<PlayCardContext<TargetT>, false>) => boolean;
+  (c: Context<never, PlayCardContext<TargetT>, false>) => boolean;
 
 export type PlayCardAction<TargetT extends CardTargetDescriptor = any[]> =
-  (c: Context<PlayCardContext<TargetT>, true>) => AsyncGenerator<void>;
+  (c: Context<never, PlayCardContext<TargetT>, true>) => AsyncGenerator<void>;
 
 const allCards = new Map<number, CardInfoWithId>();
 export function registerCard(id: number, info: CardInfo) {

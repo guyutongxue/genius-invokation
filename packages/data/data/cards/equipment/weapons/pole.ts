@@ -13,13 +13,13 @@ const EngulfingLightning = createCard(311405, ["character"])
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => c.addDamage(1))
   .on("enter", (c) => {
-    const m = c.getMaster();
+    const m = c.this.master!;
     if (m.energy === 0) {
       m.gainEnergy(1);
     }
   })
   .on("actionPhase", (c) => {
-    const m = c.getMaster();
+    const m = c.this.master!;
     if (m.energy === 0) {
       m.gainEnergy(1);
     }
@@ -49,8 +49,8 @@ const LithicSpear = createCard(311402, ["character"])
     const shield = c
       .queryCharacterAll(":tag(liyue)")
       .length;
-    const status = c.createStatus(LithicGuard);
-    status.gainShield(shield);
+    const status = c.this.master!.createStatus(LithicGuard);
+    status.setValue(shield);
   })
   .on("beforeSkillDamage", (c) => c.addDamage(1))
   .build();
@@ -67,7 +67,7 @@ const SkywardSpine = createCard(311403, ["character"])
   .costSame(3)
   .buildToEquipment()
   .on("beforeSkillDamage", (c) => {
-    if (c.skillInfo.type === "normal") {
+    if (c.sourceSkill.info.type === "normal") {
       c.addDamage(2);
     } else {
       c.addDamage(1);

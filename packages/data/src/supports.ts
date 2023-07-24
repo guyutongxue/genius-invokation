@@ -1,6 +1,6 @@
 import { SupportHandle } from "./builders";
 import { EntityContext } from "./entities";
-import { EventHandlerCtor, ListenTarget } from "./events";
+import { EventHandlerAndState, ListenTarget } from "./events";
 
 export type SupportType = "ally" | "item" | "place" | "other"
 
@@ -13,7 +13,7 @@ export interface SupportInfo {
   readonly usage: number;
   readonly usagePerRound: number;
   readonly listenTo: Exclude<ListenTarget, "master">;
-  readonly handlerCtor: EventHandlerCtor;
+  readonly handler: EventHandlerAndState;
 }
 
 export type SupportContext<Writable extends boolean> = EntityContext<SupportInfo, SupportHandle, Writable>;

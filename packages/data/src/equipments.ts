@@ -1,6 +1,6 @@
 import { EquipmentHandle } from "./builders";
 import { EntityContext } from "./entities";
-import { EventHandlerCtor, ListenTarget } from "./events";
+import { EventHandlerAndState, ListenTarget } from "./events";
 
 export type EquipmentType = "weapon" | "artifact" | "other";
 
@@ -11,7 +11,7 @@ export interface EquipmentInfo {
   readonly type: EquipmentType;
   readonly usagePerRound: number;
   readonly listenTo: ListenTarget;
-  readonly handlerCtor: EventHandlerCtor;
+  readonly handler: EventHandlerAndState;
 }
 
 export type EquipmentContext<Writable extends boolean> = EntityContext<EquipmentInfo, EquipmentHandle, Writable>;
