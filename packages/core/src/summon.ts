@@ -1,10 +1,10 @@
-import { EventHandlers, getSummon, SummonInfoWithId } from "@gi-tcg/data";
+import { EventHandlers, getSummon, SummonInfo } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { SummonData } from "@gi-tcg/typings";
 import { EventFactory } from "./context.js";
 
 export class Summon extends Entity {
-  public readonly info: SummonInfoWithId;
+  public readonly info: SummonInfo;
   private handler: EventHandlers;
   private usage: number;
   shouldDispose = false;

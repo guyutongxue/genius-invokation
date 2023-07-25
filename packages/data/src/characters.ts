@@ -31,17 +31,19 @@ export type NationTag =
 
 export type CharacterTag = ElementTag | WeaponTag | NationTag;
 
-interface CharacterInfo {
-  tags: CharacterTag[];
-  maxHealth: number;
-  maxEnergy: number;
-  skills: number[];
+type CharacterInfoNoId = Omit<CharacterInfo, "id">;
+
+export interface CharacterInfo {
+  readonly id: number;
+  readonly tags: CharacterTag[];
+  readonly maxHealth: number;
+  readonly maxEnergy: number;
+  readonly skills: number[];
 }
-export type CharacterInfoWithId = Readonly<CharacterInfo & { id: number }>;
 
 interface CharacterBaseContext<Writable extends boolean = false> {
   readonly entityId: number;
-  readonly info: CharacterInfoWithId;
+  readonly info: CharacterInfo;
 
   readonly health: number;
   readonly energy: number;
@@ -74,8 +76,8 @@ interface CharacterActionContext extends CharacterBaseContext<true> {
 
 export type CharacterContext<Writable extends boolean = false> = Writable extends true ? CharacterActionContext : CharacterBaseContext;
 
-const allCharacters = new Map<number, CharacterInfoWithId>();
-export function registerCharacter(id: number, info: CharacterInfo) {
+const allCharacters = new Map<number, CharacterInfo>();
+export function registerCharacter(id: number, info: CharacterInfoNoId) {
   allCharacters.set(id, { id, ...info });
 }
 export function getCharacter(id: number) {

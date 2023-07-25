@@ -1,14 +1,14 @@
 import {
   EventHandlers,
   getSupport,
-  SupportInfoWithId,
+  SupportInfo,
 } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { SupportData } from "@gi-tcg/typings";
 import { EventFactory } from "./context.js";
 
 export class Support extends Entity {
-  public readonly info: SupportInfoWithId;
+  public readonly info: SupportInfo;
   private handler: EventHandlers;
   private usage: number;
   private usagePerRound: number;

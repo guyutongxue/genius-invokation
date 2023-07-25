@@ -1,8 +1,8 @@
-import { PassiveSkillInfo, SkillDescriptionContext, SkillInfoWithId } from "@gi-tcg/data";
+import { PassiveSkillInfo, SkillDescriptionContext, SkillInfo } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 
 export class Skill extends Entity {
-  constructor(public readonly info: Exclude<SkillInfoWithId, PassiveSkillInfo>) {
+  constructor(public readonly info: Exclude<SkillInfo, PassiveSkillInfo>) {
     super(info.id);
   }
 

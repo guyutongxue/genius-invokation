@@ -1,8 +1,9 @@
 import {
-  EquipmentInfoWithId,
-  EventHandlers, PassiveSkillInfo, PassiveSkillInfoWithId, StatusInfoWithId, SummonInfoWithId, SupportInfoWithId, getEquipment, getSkill, getStatus, getSummon, getSupport,
+  EquipmentInfo,
+  EventHandlers, PassiveSkillInfo, StatusInfo, SummonInfo, SupportInfo, getEquipment, getSkill, getStatus, getSummon, getSupport,
 } from "@gi-tcg/data";
 import { EventFactory } from "./context.js";
+import { produce } from "immer";
 
 const ENTITY_ID_BEGIN = -100;
 
@@ -13,18 +14,8 @@ export function newEntityId(): number {
 
 export type EntityType = "passive_skill" | "equipment" | "status" | "summon" | "support";
 
-
-const ENTITY_DEFAULT = {
-  handler: {},
-  usagePerRound: Infinity,
-  usage: Infinity,
-  duration: Infinity,
-  shouldDispose: false,
-} satisfies Partial<StatefulEntity<unknown>>;
-
-
 const ENTITY_INFO_GETTER = {
-  passive_skill: (id: number): PassiveSkillInfoWithId => {
+  passive_skill: (id: number): PassiveSkillInfo => {
     const info = getSkill(id);
     if (info.type !== "passive") throw new Error("Not a passive skill");
     return info;
@@ -35,29 +26,59 @@ const ENTITY_INFO_GETTER = {
   support: getSupport,
 } satisfies Record<EntityType, (id: number) => any>;
 
-interface StatefulEntity<InfoT> {
+export interface StatefulEntity<InfoT> {
   readonly entityId: number;
   readonly info: InfoT;
   readonly handler: EventHandlers;
+  readonly state: any;
   readonly usagePerRound: number;
   readonly usage: number;
   readonly duration: number;
   readonly shouldDispose: boolean;
 }
-export type EquipmentState = StatefulEntity<EquipmentInfoWithId>;
-export type StatusState = StatefulEntity<StatusInfoWithId>;
-export type SupportState = StatefulEntity<SupportInfoWithId>;
-export type SummonState = StatefulEntity<SummonInfoWithId>;
+export type EquipmentState = StatefulEntity<EquipmentInfo>;
+export type StatusState = StatefulEntity<StatusInfo>;
+export type SupportState = StatefulEntity<SupportInfo>;
+export type SummonState = StatefulEntity<SummonInfo>;
 export type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
 
 type InfoTypeOfEntity<T extends EntityType> = ReturnType<typeof ENTITY_INFO_GETTER[T]>;
+type AllEntityState = StatefulEntity<InfoTypeOfEntity<EntityType>>;
 
-function createEntity<T extends EntityType>(type: T, id: number): StatefulEntity<InfoTypeOfEntity<T>> {
-  const info: InfoTypeOfEntity<T> = ENTITY_INFO_GETTER[type](id);
+export function createEntity<T extends EntityType>(type: T, id: number): StatefulEntity<InfoTypeOfEntity<T>> {
+  const info = ENTITY_INFO_GETTER[type](id) as InfoTypeOfEntity<T>;
   return {
     entityId: newEntityId(),
     info,
+    state: info.handler.state,
+    handler: info.handler.handler,
+    usage: "usage" in info ? info.usage : Infinity,
+    usagePerRound: "usagePerRound" in info ? info.usagePerRound : Infinity,
+    duration: "duration" in info ? info.duration : Infinity,
+    shouldDispose: false,
   };
+}
+
+export async function handleEvent<T extends AllEntityState>(entity: T, event: EventFactory): Promise<T> {
+  const candidates = event(entity.entityId);
+  produce(entity, (draft) => {
+    for (const [name, ctx] of candidates) {
+      if (name === "onActionPhase") {
+        this.onRoundBegin();
+      }
+      const h = entity.info.handler.handler[name];
+      if (typeof h !== "undefined") {
+        // @ts-expect-error TS SUCKS
+        r = await h.call(handler, ctx);
+        break;
+      }
+    }
+    if (typeof r === "undefined") {
+      return true;
+    } else {
+      return r;
+    }
+  })
 }
 
 export class Entity {

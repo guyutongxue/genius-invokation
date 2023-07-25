@@ -1,25 +1,25 @@
 import {
-  CardInfoWithId,
+  CardInfo,
   CardTag,
   CardTarget,
   CharacterContext,
-  CharacterInfoWithId,
+  CharacterInfo,
   Context,
   ContextOfEvent,
   DamageContext,
   RollContext,
   ElementalReactionContext,
-  EquipmentInfoWithId,
+  EquipmentInfo,
   EventHandlerNames,
   PlayCardContext,
   SkillContext,
   SkillDescriptionContext,
-  SkillInfoWithId,
+  SkillInfo,
   SpecialBits,
   StatusContext,
-  StatusInfoWithId,
+  StatusInfo,
   SummonContext,
-  SummonInfoWithId,
+  SummonInfo,
   SwitchActiveContext,
   Target,
   TargetInfo,
@@ -398,7 +398,7 @@ class CharacterContextImpl implements CharacterContext {
   get entityId() {
     return this.character.entityId;
   }
-  get info(): CharacterInfoWithId {
+  get info(): CharacterInfo {
     return this.character.info;
   }
   get health() {
@@ -422,7 +422,7 @@ class CharacterContextImpl implements CharacterContext {
 
   hasEquipment(
     equipment: number | "artifact" | "weapon"
-  ): EquipmentInfoWithId | null {
+  ): EquipmentInfo | null {
     let eq: Equipment | undefined;
     if (typeof equipment === "number") {
       eq = this.character.equipments.find((e) => e.info.id === equipment);
@@ -431,13 +431,13 @@ class CharacterContextImpl implements CharacterContext {
     }
     return eq?.info ?? null;
   }
-  equip(equipment: number | EquipmentInfoWithId): void {
+  equip(equipment: number | EquipmentInfo): void {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
     const eq = new Equipment(eqId);
     this.character.equipments.push(eq);
     this.state.pushEvent(createEnterEventContext(this.state, this.who, eq));
   }
-  removeEquipment(equipment: number | EquipmentInfoWithId): void {
+  removeEquipment(equipment: number | EquipmentInfo): void {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
     this.character.equipments = this.character.equipments.filter(
       (e) => e.info.id !== eqId
@@ -508,7 +508,7 @@ export class StatusContextImpl implements StatusContext {
     return this.status.entityId;
   }
 
-  get info(): StatusInfoWithId {
+  get info(): StatusInfo {
     return this.status.info;
   }
 
@@ -578,7 +578,7 @@ export class SummonContextImpl implements SummonContext {
     return this.summon.entityId;
   }
 
-  get info(): SummonInfoWithId {
+  get info(): SummonInfo {
     return this.summon.info;
   }
 
@@ -787,7 +787,7 @@ export class PlayCardContextImpl
       }
     }
   }
-  get info(): CardInfoWithId {
+  get info(): CardInfo {
     return this.card.info;
   }
   get target(): CardTarget[keyof CardTarget][] {
@@ -992,10 +992,10 @@ class SkillDamageContextImpl
       throw new Error("Damage source is not a skill");
     }
   }
-  get skillInfo(): SkillInfoWithId {
+  get skillInfo(): SkillInfo {
     return this.getSkillCtx().info;
   }
-  get characterInfo(): CharacterInfoWithId {
+  get characterInfo(): CharacterInfo {
     return this.getSkillCtx().character.info;
   }
   isCharged(): boolean {

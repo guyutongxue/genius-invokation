@@ -1,9 +1,9 @@
-import { CardInfoWithId, Context, getCard } from "@gi-tcg/data";
+import { CardInfo, Context, getCard } from "@gi-tcg/data";
 import { Entity } from "./entity.js";
 import { PlayCardContextImpl } from "./context.js";
 
 export class Card extends Entity {
-  public readonly info: CardInfoWithId;
+  public readonly info: CardInfo;
   constructor(id: number) {
     super(id);
     this.info = getCard(id);

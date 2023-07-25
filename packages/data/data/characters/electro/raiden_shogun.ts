@@ -54,7 +54,7 @@ const SecretArtMusouShinsetsu = createSkill(14073)
  * 所附属角色使用奥义·梦想真说时：消耗所有「愿力」，每点「愿力」使造成的伤害+1。
  */
 const ChakraDesiderataStatus = createStatus(114072)
-  .listenToOthers()
+  .listenToOther()
   .withThis({ resolve: 0 })
   .on("beforeSkillDamage", (c) => {
     if (c.sourceSkill.info.id === SecretArtMusouShinsetsu) {

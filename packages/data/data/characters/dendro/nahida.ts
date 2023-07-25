@@ -18,7 +18,7 @@ const Akara = createSkill(17031)
  */
 const SeedOfSkadha = createStatus(117031)
   .withUsage(2)
-  .listenToOthers()
+  .listenToOther()
   .on("damaged", (c) => {
     if (c.target.findStatus(SeedOfSkadha) && c.reaction) {
       // 摩耶之殿天赋（火）：受到元素反应伤害的对象的伤害是草元素伤害

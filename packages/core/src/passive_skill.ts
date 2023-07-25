@@ -2,13 +2,13 @@ import { EventHandlers, PassiveSkillInfo } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { EventFactory } from "./context.js";
 
-type PassiveSkillInfoWithId = Readonly<PassiveSkillInfo & { id: number }>;
+type PassiveSkillInfo = Readonly<PassiveSkillInfo & { id: number }>;
 
 export class PassiveSkill extends Entity {
   private handler: EventHandlers;
   private usagePerRound: number;
 
-  constructor(public readonly info: PassiveSkillInfoWithId, private notifier: () => void) {
+  constructor(public readonly info: PassiveSkillInfo, private notifier: () => void) {
     super(info.id);
     this.handler = new this.info.handlerCtor();
     this.usagePerRound = this.info.usagePerRound;

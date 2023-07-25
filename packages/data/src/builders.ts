@@ -412,7 +412,7 @@ class TriggerBuilderBase<ThisT> {
     return this;
   }
 
-  listenToOthers() {
+  listenToOther() {
     this.listenTo = "my";
     return this;
   }

@@ -19,7 +19,7 @@ import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
 import { GlobalOperations } from "./state.js";
-import { CardTag, SkillInfoWithId, SpecialBits } from "@gi-tcg/data";
+import { CardTag, SkillInfo, SpecialBits } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
   EventFactory,
@@ -506,7 +506,7 @@ export class Player {
     // @ts-expect-error TS sucks
     this.ops.emitEvent(event, ch, ...rest);
   }
-  notifySkill(skillInfo: SkillInfoWithId) {
+  notifySkill(skillInfo: SkillInfo) {
     this.ops.notifyMe({ type: "useSkill", skill: skillInfo.id, opp: false });
     this.ops.notifyOpp({ type: "useSkill", skill: skillInfo.id, opp: true });
   }

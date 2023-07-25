@@ -1,9 +1,9 @@
-import { getEquipment, EquipmentInfoWithId, EventHandlers } from "@gi-tcg/data";
+import { getEquipment, EquipmentInfo, EventHandlers } from "@gi-tcg/data";
 import { Entity, shallowClone } from "./entity.js";
 import { EventFactory } from "./context.js";
 
 export class Equipment extends Entity {
-  public readonly info: EquipmentInfoWithId;
+  public readonly info: EquipmentInfo;
   private handler: EventHandlers;
   private usagePerRound: number;
 

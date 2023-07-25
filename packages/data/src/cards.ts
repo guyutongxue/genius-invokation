@@ -6,7 +6,7 @@ import { Context } from "./global";
 
 export interface PlayCardContext<TargetT extends CardTargetDescriptor = CardTargetDescriptor> {
   readonly id: CardHandle;
-  readonly info: CardInfoWithId;
+  readonly info: CardInfo;
 
   readonly target: ContextOfTarget<TargetT>;
   isTalentOf(charId: number): boolean;
@@ -55,17 +55,18 @@ export type ShownOption = boolean | {
   requiredCharacter: number;
 }
 
-interface CardInfo {
-  type: CardType;
-  costs: DiceType[];
-  tags: CardTag[];
-  showWhen: ShownOption;
-  target: CardTargetDescriptor;
-  filter: PlayCardFilter;
-  action: PlayCardAction;
-}
+type CardInfoNoId = Omit<CardInfo, "id">;
 
-export type CardInfoWithId = Readonly<CardInfo & { id: number }>;
+export interface CardInfo {
+  readonly id: number;
+  readonly type: CardType;
+  readonly costs: DiceType[];
+  readonly tags: CardTag[];
+  readonly showWhen: ShownOption;
+  readonly target: CardTargetDescriptor;
+  readonly filter: PlayCardFilter;
+  readonly action: PlayCardAction;
+}
 
 export type PlayCardFilter<TargetT extends CardTargetDescriptor = any[]> =
   (c: Context<never, PlayCardContext<TargetT>, false>) => boolean;
@@ -73,8 +74,8 @@ export type PlayCardFilter<TargetT extends CardTargetDescriptor = any[]> =
 export type PlayCardAction<TargetT extends CardTargetDescriptor = any[]> =
   (c: Context<never, PlayCardContext<TargetT>, true>) => AsyncGenerator<void>;
 
-const allCards = new Map<number, CardInfoWithId>();
-export function registerCard(id: number, info: CardInfo) {
+const allCards = new Map<number, CardInfo>();
+export function registerCard(id: number, info: CardInfoNoId) {
   allCards.set(id, { ...info, id });
 }
 export function getCard(id: number) {

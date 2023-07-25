@@ -1,4 +1,4 @@
-import { DamageContext, EventHandlers, getStatus, StatusInfoWithId } from "@gi-tcg/data";
+import { DamageContext, EventHandlers, getStatus, StatusInfo } from "@gi-tcg/data";
 import { ClonedObj, Entity, shallowClone } from "./entity.js";
 import { StatusData } from "@gi-tcg/typings";
 import { EventFactory } from "./context.js";
@@ -15,7 +15,7 @@ export type PreparingResult =
   | null;
 
 export class Status extends Entity {
-  public readonly info: StatusInfoWithId;
+  public readonly info: StatusInfo;
   private handler: EventHandlers;
   private usagePerRound: number;
   usage: number;

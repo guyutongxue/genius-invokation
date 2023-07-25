@@ -1,5 +1,5 @@
 import {
-  CharacterInfoWithId,
+  CharacterInfo,
   ElementTag,
   getCharacter,
   getSkill,
@@ -28,7 +28,7 @@ const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
 };
 
 export class Character extends Entity {
-  public readonly info: CharacterInfoWithId;
+  public readonly info: CharacterInfo;
   public health: number;
   private defeated = false;
   public energy: number = 0;

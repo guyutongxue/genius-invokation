@@ -1,24 +1,32 @@
 import {
-  CardInfoWithId,
-  CharacterInfoWithId,
-  EquipmentInfoWithId,
+  CardInfo,
+  CharacterInfo,
+  EquipmentInfo,
   EventHandlers,
   PassiveSkillInfo,
-  SkillInfoWithId,
-  StatusInfoWithId,
-  SummonInfoWithId,
-  SupportInfoWithId,
+  SkillInfo,
+  StatusInfo,
+  SummonInfo,
+  SupportInfo,
   getCard,
   getCharacter,
   getEquipment,
-  PassiveSkillInfoWithId,
   getSkill,
   getStatus,
   getSummon,
   getSupport,
 } from "@gi-tcg/data";
 import { Aura, DiceType, PhaseType } from "@gi-tcg/typings";
-import { newEntityId } from "./entity.js";
+import {
+  EquipmentState,
+  PassiveSkillState,
+  StatefulEntity,
+  StatusState,
+  SummonState,
+  SupportState,
+  createEntity,
+  newEntityId,
+} from "./entity.js";
 import { PlayerConfig } from "./game.js";
 import { produce, Draft } from "immer";
 
@@ -48,11 +56,11 @@ interface PlayerState {
 
 interface CardState {
   readonly entityId: number;
-  readonly info: CardInfoWithId;
+  readonly info: CardInfo;
 }
 interface CharacterState {
   readonly entityId: number;
-  readonly info: CharacterInfoWithId;
+  readonly info: CharacterInfo;
   readonly health: number;
   readonly defeated: boolean;
   readonly energy: number;
@@ -67,9 +75,9 @@ function createCharacter(id: number): CharacterState {
   const info = getCharacter(id);
   const skills = info.skills.map((id) => getSkill(id));
   const normalSkills = skills.filter((skill) => skill.type !== "passive");
-  const passiveSkills = skills.filter(
-    (skill): skill is PassiveSkillInfoWithId => skill.type === "passive"
-  );
+  const passiveSkills = skills
+    .filter((skill): skill is PassiveSkillInfo => skill.type === "passive")
+    .map((e) => createEntity("passive_skill", e.id));
   return {
     entityId: newEntityId(),
     info,
@@ -83,17 +91,13 @@ function createCharacter(id: number): CharacterState {
       entityId: newEntityId(),
       info: skill,
     })),
-    passiveSkills: passiveSkills.map(createEntity),
+    passiveSkills,
   };
 }
 
 interface SkillState {
   readonly entityId: number;
-  readonly info: SkillInfoWithId;
-}
-
-function createEntity<T>(info: T): StatefulEntity<T> {
-  return { entityId: newEntityId(), ...ENTITY_DEFAULT, info };
+  readonly info: SkillInfo;
 }
 
 function createPlayer(playerConfig: PlayerConfig): PlayerState {
@@ -117,11 +121,8 @@ function createPlayer(playerConfig: PlayerConfig): PlayerState {
   };
 }
 
-
-
 export class Store {
-  private constructor(private _state: GameState) {
-  }
+  private constructor(private _state: GameState) {}
 
   static initialState(players: [PlayerConfig, PlayerConfig]) {
     const state: GameState = {
@@ -144,5 +145,11 @@ export class Store {
 
   get state() {
     return this._state;
+  }
+
+  test() {
+    produce(this._state, (draft) => {
+      draft.players[0].
+    });
   }
 }
