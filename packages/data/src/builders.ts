@@ -4,7 +4,7 @@ import { EventHandlers, ListenTarget, EventNames, EventHandler, TriggerCondition
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, FuzzyContextOfTarget, PlayCardContext, PlayCardFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentContext, EquipmentType, registerEquipment } from "./equipments";
 import { CharacterTag, registerCharacter } from "./characters";
-import { PrepareConfig, ShieldConfig, StatusContext, StatusTag, registerStatus } from "./statuses";
+import { PrepareConfig, SHIELD_VALUE, ShieldConfig, StatusContext, StatusTag, registerStatus } from "./statuses";
 import { SupportContext, SupportType, registerSupport } from "./supports";
 import { SummonContext, registerSummon } from "./summons";
 import { AddPrefix, RemovePrefix, addPrefix, capitalize } from "./utils";
@@ -502,12 +502,22 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
     this.tags.push("disableSkill");
     return this;
   }
-  shield(shield: number, recreateMax?: number) {
+  shield(initial: number, recreateMax?: number) {
     this.tags.push("shield");
     this.shieldConfig = {
-      initial: shield,
-      recreateMax: recreateMax ?? shield,
+      initial: initial,
+      recreateMax: recreateMax ?? initial,
     };
+    this
+      .withThis({ [SHIELD_VALUE]: initial })
+      .on("beforeDamaged", (c) => {
+        const deducted = Math.min(c.value, c.this[SHIELD_VALUE]);
+        c.decreaseDamage(deducted);
+        c.this[SHIELD_VALUE] -= deducted;
+        if (c.this[SHIELD_VALUE] === 0) {
+          c.this.dispose();
+        }
+      });
     return this;
   }
   prepare(skill: SkillHandle): this;

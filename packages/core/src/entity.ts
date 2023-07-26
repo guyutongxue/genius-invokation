@@ -1,6 +1,16 @@
 import {
   EquipmentInfo,
-  EventHandlers, PassiveSkillInfo, StatusInfo, SummonInfo, SupportInfo, getEquipment, getSkill, getStatus, getSummon, getSupport,
+  EventHandlers,
+  PassiveSkillInfo,
+  StatusInfo,
+  SummonInfo,
+  SupportInfo,
+  SyncHandlerResult,
+  getEquipment,
+  getSkill,
+  getStatus,
+  getSummon,
+  getSupport,
 } from "@gi-tcg/data";
 import { EventFactory } from "./context.js";
 import { produce } from "immer";
@@ -12,7 +22,12 @@ export function newEntityId(): number {
   return nextEntityId--;
 }
 
-export type EntityType = "passive_skill" | "equipment" | "status" | "summon" | "support";
+export type EntityType =
+  | "passive_skill"
+  | "equipment"
+  | "status"
+  | "summon"
+  | "support";
 
 const ENTITY_INFO_GETTER = {
   passive_skill: (id: number): PassiveSkillInfo => {
@@ -42,10 +57,15 @@ export type SupportState = StatefulEntity<SupportInfo>;
 export type SummonState = StatefulEntity<SummonInfo>;
 export type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
 
-type InfoTypeOfEntity<T extends EntityType> = ReturnType<typeof ENTITY_INFO_GETTER[T]>;
-type AllEntityState = StatefulEntity<InfoTypeOfEntity<EntityType>>;
+type InfoTypeOfEntity<T extends EntityType> = ReturnType<
+  (typeof ENTITY_INFO_GETTER)[T]
+>;
+export type AllEntityState = StatefulEntity<InfoTypeOfEntity<EntityType>>;
 
-export function createEntity<T extends EntityType>(type: T, id: number): StatefulEntity<InfoTypeOfEntity<T>> {
+export function createEntity<T extends EntityType>(
+  type: T,
+  id: number
+): StatefulEntity<InfoTypeOfEntity<T>> {
   const info = ENTITY_INFO_GETTER[type](id) as InfoTypeOfEntity<T>;
   return {
     entityId: newEntityId(),
@@ -59,26 +79,79 @@ export function createEntity<T extends EntityType>(type: T, id: number): Statefu
   };
 }
 
-export async function handleEvent<T extends AllEntityState>(entity: T, event: EventFactory): Promise<T> {
+interface PlayerEntityPath {
+  who: 0 | 1;
+  type: "status" | "summon" | "support";
+  entityId: number;
+  indexHint: number;
+}
+
+type VirtualEntityPath =
+  | {
+      who: 0 | 1;
+      type: "skill";
+      characterId: number;
+      id: number;
+    }
+  | {
+      who: 0 | 1;
+      type: "card";
+      id: number;
+    };
+
+interface CharacterEntityPath {
+  who: 0 | 1;
+  type: "passive_skill" | "equipment" | "status";
+  characterEntityId: number;
+  characterIndexHint: number;
+  entityId: number;
+  indexHint: number;
+}
+
+export type EntityPath =
+  | PlayerEntityPath
+  | VirtualEntityPath
+  | CharacterEntityPath;
+
+export function handleSyncEvent<T extends AllEntityState>(
+  entity: T,
+  event: EventFactory
+): T {
   const candidates = event(entity.entityId);
-  produce(entity, (draft) => {
+  return produce(entity, (draft) => {
+    let r: SyncHandlerResult = undefined;
     for (const [name, ctx] of candidates) {
       if (name === "onActionPhase") {
-        this.onRoundBegin();
+        draft.duration--;
+        if (draft.duration <= 0) {
+          draft.shouldDispose = true;
+        } else if ("usagePerRound" in draft.info) {
+          draft.usagePerRound = draft.info.usagePerRound;
+        }
       }
       const h = entity.info.handler.handler[name];
-      if (typeof h !== "undefined") {
-        // @ts-expect-error TS SUCKS
-        r = await h.call(handler, ctx);
+      if (
+        typeof h !== "undefined" &&
+        !draft.shouldDispose &&
+        draft.usagePerRound > 0
+      ) {
+        ctx.this;
+        const result = h(ctx as any);
+        if (typeof result === "object" && "then" in result) {
+          throw new Error("Cannot handle async event in sync mode");
+        }
+        r = result;
         break;
       }
     }
-    if (typeof r === "undefined") {
-      return true;
-    } else {
-      return r;
+    if (typeof r === "undefined" || r === true) {
+      draft.usage--;
+      draft.usagePerRound--;
+      if (draft.usage <= 0) {
+        draft.shouldDispose = true;
+      }
     }
-  })
+  });
 }
 
 export class Entity {

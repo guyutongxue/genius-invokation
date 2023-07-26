@@ -44,3 +44,5 @@ export function getStatus(id: number) {
   }
   return allStatuses.get(id)!;
 }
+
+export const SHIELD_VALUE: unique symbol = Symbol("shieldValue");

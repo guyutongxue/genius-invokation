@@ -12,13 +12,13 @@ import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 
 import { Card } from "./card.js";
-import { GameOptions, PlayerConfig } from "./game.js";
+import { GameOptions, PlayerConfig } from "./game_interface.js";
 import { Character } from "./character.js";
 import { Status } from "./status.js";
 import { Support } from "./support.js";
 import { Summon } from "./summon.js";
 import { ClonedObj, shallowClone } from "./entity.js";
-import { GlobalOperations } from "./state.js";
+import { GlobalOperations } from "./game.js";
 import { CardTag, SkillInfo, SpecialBits } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
@@ -38,7 +38,8 @@ import {
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
-import { Store } from "./store.js";
+import { CardState, Store } from "./store.js";
+import { Draft } from "immer";
 
 interface PlayerConfigWithGame extends PlayerConfig {
   game: GameOptions;
@@ -53,13 +54,10 @@ export class Player {
     private readonly who: 0 | 1,
     private readonly config: PlayerConfigWithGame,
   ) {
-    this.piles = config.deck.actions.map((id) => new Card(id));
-    this.characters = config.deck.characters.map(
-      (id) => new Character(id, this)
-    );
-    if (!config.noShuffle) {
-      this.piles = _.shuffle(this.piles);
-    }
+  }
+
+  get state() {
+    return this.store.state.players[this.who];
   }
 
   initHands() {
@@ -77,28 +75,30 @@ export class Player {
   }
 
   async drawHands(count: number, controlled: number[] = []) {
-    const drawn: Card[] = [];
-    for (const cardIdx of controlled) {
-      drawn.push(...this.piles.splice(cardIdx, 1));
-      if (drawn.length === count) {
-        break;
+    this.store.updatePlayer(this.who, (draft) => {
+      const drawn: Draft<CardState>[] = [];
+      for (const cardIdx of controlled) {
+        drawn.push(...draft.piles.splice(cardIdx, 1));
+        if (drawn.length === count) {
+          break;
+        }
       }
-    }
-    if (drawn.length < count) {
-      drawn.push(...this.piles.splice(0, count - drawn.length));
-    }
-    this.hands.push(...drawn);
-    // "爆牌"
-    const discardedCount = Math.max(0, this.hands.length - this.config.game.maxHands);
-    this.hands.splice(this.config.game.maxHands, discardedCount);
-
-    this.ops.notifyMe({ type: "stateUpdated", damages: [] });
-    this.ops.notifyOpp({
-      type: "oppChangeHands",
-      removed: 0,
-      added: this.hands.length,
-      discarded: discardedCount,
-    });
+      if (drawn.length < count) {
+        drawn.push(...draft.piles.splice(0, count - drawn.length));
+      }
+      draft.hands.push(...drawn);
+      // "爆牌"
+      const discardedCount = Math.max(0, draft.hands.length - this.config.game.maxHands);
+      draft.hands.splice(this.config.game.maxHands, discardedCount);
+    })
+    // TODO: notify
+    // this.ops.notifyMe({ type: "stateUpdated", damages: [] });
+    // this.ops.notifyOpp({
+    //   type: "oppChangeHands",
+    //   removed: 0,
+    //   added: this.hands.length,
+    //   discarded: discardedCount,
+    // });
   }
 
   async switchHands() {

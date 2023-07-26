@@ -5,12 +5,14 @@ import {
   CharacterContext,
   CharacterInfo,
   Context,
-  ContextOfEvent,
+  SyncEventMap,
+  AsyncEventMap,
+  EventMap,
   DamageContext,
   RollContext,
   ElementalReactionContext,
   EquipmentInfo,
-  EventHandlerNames,
+  EventNames,
   PlayCardContext,
   SkillContext,
   SkillDescriptionContext,
@@ -34,7 +36,7 @@ import {
   RequestFastSwitchContext,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
-import { GameState } from "./state.js";
+import { Store } from "./store.js";
 import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CharacterPosition, Player } from "./player.js";
 import { Character } from "./character.js";
@@ -42,28 +44,29 @@ import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Summon } from "./summon.js";
 import { Card } from "./card.js";
-import { Entity } from "./entity.js";
+import { Entity, EntityPath } from "./entity.js";
 import { ActionConfig, PlayCardTargetObj } from "./action.js";
 import { Support } from "./support.js";
 import { PassiveSkill } from "./passive_skill.js";
 import { Skill } from "./skill.js";
 import { Damage } from "./damage.js";
+import { Game } from "./game.js";
 
-type EventAndContext<E extends EventHandlerNames = EventHandlerNames> = [
+type ContextOfEvent<E extends EventNames> = Context<{}, EventMap[E], true>;
+type EventAndContext<E extends EventNames = EventNames> = [
   event: E,
   ctx: ContextOfEvent<E>
 ];
 export type EventFactory = (entityId: number) => EventAndContext[];
 
-export class ContextImpl implements Context {
+export class ContextImpl implements Context<any, {}, true> {
   constructor(
-    protected state: GameState,
-    public readonly who: 0 | 1,
-    public readonly sourceId: number
+    protected game: Game,
+    protected caller: EntityPath
   ) {}
 
   get currentPhase(): "action" | "end" | "other" {
-    const phase = this.state.getPhase();
+    const phase = this.game.state.phase;
     if (phase === "action" || phase === "end") {
       return phase;
     } else {
@@ -71,20 +74,20 @@ export class ContextImpl implements Context {
     }
   }
   get currentTurn(): number {
-    return this.state.getCurrentTurn();
+    return this.game.state.currentTurn;
   }
   isMyTurn(): boolean {
-    return this.currentTurn === this.who;
+    return this.currentTurn === this.caller.who;
   }
   checkSpecialBit(bit: SpecialBits): boolean {
-    return this.state.getPlayer(this.who).getSpecialBit(bit);
+    return this.game.getPlayer(this.who).getSpecialBit(bit);
   }
 
   protected createCharacterContext(ch: Character): CharacterContextImpl {
-    return new CharacterContextImpl(this.state, this.who, ch, this.sourceId);
+    return new CharacterContextImpl(this.game, this.who, ch, this.sourceId);
   }
   protected createSummonContext(s: Summon): SummonContextImpl {
-    return new SummonContextImpl(this.state, this.who, s);
+    return new SummonContextImpl(this.game, this.who, s);
   }
   private getCharacterFromTarget(
     t: Target | TargetInfo
@@ -92,7 +95,7 @@ export class ContextImpl implements Context {
     const info = t instanceof Target ? getTargetInfo(t) : t;
     switch (info.type) {
       case "byPos": {
-        const player = this.state.getPlayer(
+        const player = this.game.getPlayer(
           info.opp ? flip(this.who) : this.who
         );
         let positions: CharacterPosition[];
@@ -109,7 +112,7 @@ export class ContextImpl implements Context {
         return [...characters].map(this.createCharacterContext.bind(this));
       }
       case "oneEnergyNotFull": {
-        const player = this.state.getPlayer(this.who);
+        const player = this.game.getPlayer(this.who);
         const try1 = player.getCharacter("active");
         if (!try1.fullEnergy()) return [this.createCharacterContext(try1)];
         const try2 = player.getCharacter("next");
@@ -119,10 +122,10 @@ export class ContextImpl implements Context {
         return [];
       }
       case "byEntityId": {
-        const character = this.state
+        const character = this.game
           .getPlayer(this.who)
           .getCharacterById(info.entityId);
-        const character2 = this.state
+        const character2 = this.game
           .getPlayer(flip(this.who))
           .getCharacterById(info.entityId);
         return character
@@ -132,7 +135,7 @@ export class ContextImpl implements Context {
           : [];
       }
       case "byId": {
-        const player = this.state.getPlayer(
+        const player = this.game.getPlayer(
           info.opp ? flip(this.who) : this.who
         );
         const character = player.getCharacterById(info.id, true);
@@ -142,7 +145,7 @@ export class ContextImpl implements Context {
         const relativeCtx = this.getCharacterFromTarget(info.relativeTo);
         if (relativeCtx.length === 0) return [];
         const relative = relativeCtx[0];
-        const targetPlayer = this.state.getPlayer(flip(relative.who));
+        const targetPlayer = this.game.getPlayer(flip(relative.who));
         const targetCharacter = targetPlayer.getCharacterByPos(
           relative.indexOfPlayer()
         );
@@ -166,7 +169,7 @@ export class ContextImpl implements Context {
     opp?: boolean | undefined,
     includesDefeated?: boolean | undefined
   ): CharacterContext[] {
-    let characters = this.state.getPlayer(
+    let characters = this.game.getPlayer(
       opp ? flip(this.who) : this.who
     ).characters;
     if (!includesDefeated) {
@@ -175,19 +178,19 @@ export class ContextImpl implements Context {
     return characters.map(this.createCharacterContext.bind(this));
   }
   fullSupportArea(opp: boolean): boolean {
-    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    const player = this.game.getPlayer(opp ? flip(this.who) : this.who);
     return player.fullSupportArea();
   }
   hasSummon(summon: number): SummonContext | null {
-    const s = this.state
+    const s = this.game
       .getPlayer(this.who)
       .summons.find((s) => s.info.id === summon);
     return s ? this.createSummonContext(s) : null;
   }
   allSummons(includeOpp = false): SummonContext[] {
-    const mySummons = this.state.getPlayer(this.who).summons;
+    const mySummons = this.game.getPlayer(this.who).summons;
     const oppSummons = includeOpp
-      ? this.state.getPlayer(flip(this.who)).summons
+      ? this.game.getPlayer(flip(this.who)).summons
       : [];
     return [...mySummons, ...oppSummons].map(
       this.createSummonContext.bind(this)
@@ -195,12 +198,12 @@ export class ContextImpl implements Context {
   }
 
   hasCombatStatus(status: number): StatusContext | null {
-    const combatStatuses = this.state.getPlayer(this.who).combatStatuses;
+    const combatStatuses = this.game.getPlayer(this.who).combatStatuses;
     const s = combatStatuses.find((s) => s.info.id === status);
     return s ? new StatusContextImpl(s) : null;
   }
   hasCombatShield(): StatusContext | null {
-    const combatStatuses = this.state.getPlayer(this.who).combatStatuses;
+    const combatStatuses = this.game.getPlayer(this.who).combatStatuses;
     const s = combatStatuses.find((s) => s.shield !== null);
     return s ? new StatusContextImpl(s) : null;
   }
@@ -212,7 +215,7 @@ export class ContextImpl implements Context {
   ): void {
     const chs = this.getCharacterFromTarget(target ?? Target.oppActive());
     for (const ch of chs) {
-      this.state.dealDamage(this.sourceId, ch.character, value, type);
+      this.game.dealDamage(this.sourceId, ch.character, value, type);
     }
   }
   applyElement(type: DamageType, target?: Target): void {
@@ -264,17 +267,17 @@ export class ContextImpl implements Context {
     return removed;
   }
   createCombatStatus(status: number, opp: boolean = false): StatusContext {
-    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    const player = this.game.getPlayer(opp ? flip(this.who) : this.who);
     const st = player.createCombatStatus(status);
-    this.state.pushEvent(createEnterEventContext(this.state, this.who, st));
+    this.game.pushEvent(createEnterEventContext(this.game, this.who, st));
     return new StatusContextImpl(st);
   }
 
   summon(summon: number): void {
     const summonObj = new Summon(summon);
-    this.state.getPlayer(this.who).summons.push(summonObj);
-    this.state.pushEvent(
-      createEnterEventContext(this.state, this.who, summonObj)
+    this.game.getPlayer(this.who).summons.push(summonObj);
+    this.game.pushEvent(
+      createEnterEventContext(this.game, this.who, summonObj)
     );
   }
   summonOneOf(...summons: number[]): void {
@@ -283,21 +286,21 @@ export class ContextImpl implements Context {
   }
   createSupport(support: number, opp?: boolean | undefined): void {
     const supportObj = new Support(support);
-    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    const player = this.game.getPlayer(opp ? flip(this.who) : this.who);
     player.supports.push(supportObj);
-    this.state.pushEvent(
-      createEnterEventContext(this.state, this.who, supportObj)
+    this.game.pushEvent(
+      createEnterEventContext(this.game, this.who, supportObj)
     );
   }
 
   getDice(): DiceType[] {
-    return this.state.getPlayer(this.who).dice;
+    return this.game.getPlayer(this.who).dice;
   }
   rollDice(count: number): Promise<void> {
-    return this.state.getPlayer(this.who).rerollDice(count);
+    return this.game.getPlayer(this.who).rerollDice(count);
   }
   generateDice(...dice: DiceType[]): void {
-    const player = this.state.getPlayer(this.who);
+    const player = this.game.getPlayer(this.who);
     player.dice.push(...dice);
     player.sortDice();
   }
@@ -312,29 +315,29 @@ export class ContextImpl implements Context {
     this.generateDice(...newDice);
   }
   removeAllDice(): DiceType[] {
-    const old = this.state.getPlayer(this.who).dice;
-    this.state.getPlayer(this.who).dice = [];
+    const old = this.game.getPlayer(this.who).dice;
+    this.game.getPlayer(this.who).dice = [];
     return old;
   }
 
   getCardCount(opp?: boolean | undefined): number {
-    return this.state.getPlayer(opp ? flip(this.who) : this.who).hands.length;
+    return this.game.getPlayer(opp ? flip(this.who) : this.who).hands.length;
   }
   drawCards(
     count: number,
     opp?: boolean | undefined,
     tag?: CardTag | undefined
   ): void {
-    const player = this.state.getPlayer(opp ? flip(this.who) : this.who);
+    const player = this.game.getPlayer(opp ? flip(this.who) : this.who);
     const controlled = tag ? player.cardsWithTagFromPile(tag) : [];
     player.drawHands(count, controlled);
   }
   createCards(...ids: number[]): void {
     const cards = ids.map((id) => new Card(id));
-    this.state.getPlayer(this.who).hands.push(...cards);
+    this.game.getPlayer(this.who).hands.push(...cards);
   }
   switchCards(): Promise<void> {
-    return this.state.getPlayer(this.who).switchHands();
+    return this.game.getPlayer(this.who).switchHands();
   }
 
   switchActive(target: Target): void {
@@ -343,13 +346,13 @@ export class ContextImpl implements Context {
       throw new Error(`Switching active: Target not exists: ${target}`);
     }
     const chCtx = ctx[0];
-    const player = this.state.getPlayer(
+    const player = this.game.getPlayer(
       chCtx.isMine() ? this.who : flip(this.who)
     );
     player.switchActive(chCtx.entityId);
   }
   useSkill(skill: number | "normal"): Promise<void> {
-    const player = this.state.getPlayer(this.who);
+    const player = this.game.getPlayer(this.who);
     const ch = player.getCharacter("active");
     let skillObj: Skill | undefined;
     if (skill === "normal") {
@@ -364,7 +367,7 @@ export class ContextImpl implements Context {
   }
 
   actionAgain(): void {
-    this.state.getPlayer(flip(this.who)).setSpecialBit(SpecialBits.SkipTurn);
+    this.game.getPlayer(flip(this.who)).setSpecialBit(SpecialBits.SkipTurn);
   }
 
   getMaster(): CharacterContext {
@@ -374,7 +377,7 @@ export class ContextImpl implements Context {
     throw new Error("This context is not a status");
   }
   dispose(): void {
-    const env = getEntityById(this.state, this.sourceId);
+    const env = getEntityById(this.game, this.sourceId);
     if (!env) return;
     if (
       env.entity instanceof Status ||
@@ -698,7 +701,7 @@ export class SkillDescriptionContextImpl
   }
 
   get character() {
-    const player = this.state.getPlayer(this.who);
+    const player = this.game.getPlayer(this.who);
     const ch = player.characters.find((ch) =>
       ch.info.skills.includes(this.skill.info.id)
     );
@@ -706,13 +709,13 @@ export class SkillDescriptionContextImpl
     return this.createCharacterContext(ch);
   }
   get target() {
-    const player = this.state.getPlayer(flip(this.who));
+    const player = this.game.getPlayer(flip(this.who));
     const ch = player.getCharacter("active");
     return this.createCharacterContext(ch);
   }
 
   triggeredByCard(card: number): PlayCardContext | null {
-    const ctx = getContextById(this.state, this.sourceId);
+    const ctx = getContextById(this.game, this.sourceId);
     if (ctx instanceof PlayCardContextImpl) {
       if (ctx.card.info.id === card) {
         return ctx;
@@ -721,7 +724,7 @@ export class SkillDescriptionContextImpl
     return null;
   }
   triggeredByStatus(status: number): StatusContext | null {
-    const ctx = getContextById(this.state, this.sourceId);
+    const ctx = getContextById(this.game, this.sourceId);
     if (ctx instanceof StatusContextImpl) {
       if (ctx.info.id === status) {
         return ctx;
@@ -731,12 +734,12 @@ export class SkillDescriptionContextImpl
   }
 
   isCharged(): boolean {
-    const player = this.state.getPlayer(this.who);
+    const player = this.game.getPlayer(this.who);
     const bit = player.dice.length % 2 === 0;
     return bit && this.skill.info.type === "normal";
   }
   isPlunging(): boolean {
-    const player = this.state.getPlayer(this.who);
+    const player = this.game.getPlayer(this.who);
     const bit = player.getSpecialBit(SpecialBits.Plunging);
     return bit && this.skill.info.type === "normal";
   }
@@ -751,14 +754,14 @@ export class SkillContextImpl
   }
 
   getAllDescendingDamages(): DamageContext[] {
-    return this.state.damageLog.map(
-      ([dmg]) => new DamageContextImpl(this.state, this.who, 0, dmg)
+    return this.game.damageLog.map(
+      ([dmg]) => new DamageContextImpl(this.game, this.who, 0, dmg)
     );
   }
   getAllDescendingReactions(): ElementalReactionContext[] {
-    return this.state.reactionLog.map(
+    return this.game.reactionLog.map(
       ([_, id, reaction]) =>
-        new ElementalReactionContextImpl(this.state, this.who, id, reaction)
+        new ElementalReactionContextImpl(this.game, this.who, id, reaction)
     );
   }
 }
@@ -898,7 +901,7 @@ export class DamageContextImpl extends ContextImpl implements DamageContext {
 
   getSource() {
     const srcId = this.damage.sourceId;
-    return getContextById(this.state, srcId);
+    return getContextById(this.game, srcId);
   }
 
   get sourceSummon() {
@@ -925,9 +928,9 @@ export class DamageContextImpl extends ContextImpl implements DamageContext {
       return undefined;
     }
     const sourceId = this.damage.sourceId;
-    const { who } = getEntityById(this.state, sourceId)!;
+    const { who } = getEntityById(this.game, sourceId)!;
     return new ElementalReactionContextImpl(
-      this.state,
+      this.game,
       who,
       sourceId,
       reaction
@@ -959,7 +962,7 @@ export class DamageContextImpl extends ContextImpl implements DamageContext {
       return null;
     }
     return new ElementalReactionContextImpl(
-      this.state,
+      this.game,
       this.who,
       this.sourceId,
       reaction
@@ -1118,7 +1121,7 @@ function getContextById(state: GameState, entityId: number) {
   }
 }
 
-function createCommonEventContext(...events: EventHandlerNames[]) {
+function createCommonEventContext(...events: EventNames[]) {
   return (
     state: GameState,
     sourceWho?: 0 | 1,
@@ -1211,7 +1214,7 @@ function createRollPhaseContext(
 }
 
 function createDamageContext(
-  eventName: EventHandlerNames,
+  eventName: EventNames,
   CtxImpl = DamageContextImpl
 ) {
   return (
@@ -1378,7 +1381,7 @@ export const CONTEXT_CREATOR = {
 
   onRevive: createCommonEventContext("onRevive"),
   onEnter: createEnterEventContext,
-} satisfies Partial<Record<EventHandlerNames, Creator>>;
+} satisfies Partial<Record<EventNames, Creator>>;
 
 type ContextCreator = typeof CONTEXT_CREATOR;
 export type EventHandlerNames1 = keyof ContextCreator;
