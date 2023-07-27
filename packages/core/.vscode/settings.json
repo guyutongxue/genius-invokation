@@ -1,0 +1,4 @@
+{
+  // Keep this until vscode natively support TS 5.2
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}

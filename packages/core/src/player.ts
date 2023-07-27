@@ -17,8 +17,6 @@ import { Character } from "./character.js";
 import { Status } from "./status.js";
 import { Support } from "./support.js";
 import { Summon } from "./summon.js";
-import { ClonedObj, shallowClone } from "./entity.js";
-import { GlobalOperations } from "./game.js";
 import { CardTag, SkillInfo, SpecialBits } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
@@ -40,20 +38,38 @@ import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
 import { CardState, Store } from "./store.js";
 import { Draft } from "immer";
+import { IONotAvailableError, PlayerIO } from "./io.js";
 
-interface PlayerConfigWithGame extends PlayerConfig {
-  game: GameOptions;
+interface PlayerOptions {
+  initialHands: number;
+  maxHands: number;
+  maxSupports: number;
+  maxSummons: number;
+  initialDice: number;
+  maxDice: number;
+  noShuffle: boolean;
+  alwaysOmni: boolean;
 }
 
 export type CharacterPosition = "active" | "prev" | "next";
 
 export class Player {
-
+  private config: PlayerOptions;
   constructor(
-    private store: Store,
+    private readonly store: Store,
     private readonly who: 0 | 1,
-    private readonly config: PlayerConfigWithGame,
+    private readonly io?: PlayerIO
   ) {
+    this.config = {
+      maxHands: this.store.state.config.maxHands,
+      initialDice: this.store.state.config.initialDice,
+      initialHands: this.store.state.config.initialHands,
+      maxDice: this.store.state.config.maxDice,
+      maxSummons: this.store.state.config.maxSummons,
+      maxSupports: this.store.state.config.maxSupports,
+      alwaysOmni: this.state.config.alwaysOmni,
+      noShuffle: this.state.config.noShuffle,
+    }
   }
 
   get state() {
@@ -61,80 +77,94 @@ export class Player {
   }
 
   initHands() {
-    const legends = this.piles
+    const legends = this.state.piles
       .map((c, i) => [c, i] as const)
-      .filter(([c]) => c.isLegend())
+      .filter(([c]) => c.info.tags.includes("legend"))
       .map(([c, i]) => i);
-    this.drawHands(this.config.game.initialHands, legends);
+    this.drawHands(this.config.initialHands, legends);
   }
 
   cardsWithTagFromPile(tag: CardTag): number[] {
-    return this.piles
+    return this.state.piles
       .filter((c) => c.info.tags.includes(tag))
       .map((c) => c.entityId);
   }
 
   async drawHands(count: number, controlled: number[] = []) {
-    this.store.updatePlayer(this.who, (draft) => {
-      const drawn: Draft<CardState>[] = [];
-      for (const cardIdx of controlled) {
-        drawn.push(...draft.piles.splice(cardIdx, 1));
-        if (drawn.length === count) {
-          break;
-        }
+    using draft = this.store.createDraftForPlayer(this.who);
+    const drawn: Draft<CardState>[] = [];
+    for (const cardIdx of controlled) {
+      drawn.push(...draft.piles.splice(cardIdx, 1));
+      if (drawn.length === count) {
+        break;
       }
-      if (drawn.length < count) {
-        drawn.push(...draft.piles.splice(0, count - drawn.length));
-      }
-      draft.hands.push(...drawn);
-      // "爆牌"
-      const discardedCount = Math.max(0, draft.hands.length - this.config.game.maxHands);
-      draft.hands.splice(this.config.game.maxHands, discardedCount);
-    })
-    // TODO: notify
-    // this.ops.notifyMe({ type: "stateUpdated", damages: [] });
-    // this.ops.notifyOpp({
-    //   type: "oppChangeHands",
-    //   removed: 0,
-    //   added: this.hands.length,
-    //   discarded: discardedCount,
-    // });
+    }
+    if (drawn.length < count) {
+      drawn.push(...draft.piles.splice(0, count - drawn.length));
+    }
+    draft.hands.push(...drawn);
+    // "爆牌"
+    const discardedCount = Math.max(
+      0,
+      draft.hands.length - this.config.game.maxHands
+    );
+    draft.hands.splice(this.config.game.maxHands, discardedCount);
+
+    this.io?.notifyMe({ type: "stateUpdated", damages: [] });
+    this.io?.notifyOpp({
+      type: "oppChangeHands",
+      removed: 0,
+      added: draft.hands.length,
+      discarded: discardedCount,
+    });
   }
 
   async switchHands() {
-    const { removedHands } = await this.rpc("switchHands", {});
-    const removed: Card[] = [];
-    for (let i = 0; i < this.hands.length; i++) {
-      if (removedHands.includes(this.hands[i].entityId)) {
-        removed.push(this.hands[i]);
-        this.hands.splice(i, 1);
-        i--;
+    if (!this.io) {
+      throw new IONotAvailableError();
+    }
+    const { removedHands } = await this.io.rpc("switchHands", {});
+    const removed: Draft<CardState>[] = [];
+
+    // Remove hands
+    {
+      using draft = this.store.createDraftForPlayer(this.who);
+      for (let i = 0; i < draft.hands.length; i++) {
+        if (removedHands.includes(draft.hands[i].entityId)) {
+          removed.push(draft.hands[i]);
+          draft.hands.splice(i, 1);
+          i--;
+        }
+      }
+      draft.piles.push(...removed);
+      if (!this.config.noShuffle) {
+        draft.piles = _.shuffle(draft.piles);
       }
     }
-    this.piles.push(...removed);
-    if (!this.config.noShuffle) {
-      this.piles = _.shuffle(this.piles);
-    }
-    this.ops.notifyOpp({
+    this.io?.notifyOpp({
       type: "oppChangeHands",
       removed: removed.length,
       added: 0,
       discarded: 0,
     });
+
     this.drawHands(removed.length);
   }
 
   async chooseActive(delayNotify: false): Promise<void>;
   async chooseActive(delayNotify: true): Promise<() => void>;
   async chooseActive(delayNotify = false): Promise<any> {
+    if (!this.io) {
+      throw new IONotAvailableError();
+    }
     const activeId =
-      this.activeIndex === null
+      this.state.activeIndex === null
         ? null
-        : this.characters[this.activeIndex].entityId;
-    const { active } = await this.rpc("chooseActive", {
-      candidates: this.characters
+        : this.state.characters[this.state.activeIndex].entityId;
+    const { active } = await this.io.rpc("chooseActive", {
+      candidates: this.state.characters
         .filter((c) => {
-          return c.isAlive() && c.entityId !== activeId;
+          return !c.defeated && c.entityId !== activeId;
         })
         .map((c) => c.entityId),
     });
@@ -146,16 +176,19 @@ export class Player {
       controlled: [],
       times: 1,
     };
-    this.ops.emitImmediatelyHandledEvent("onRollPhase", config);
-    this.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
+    {
+      using draft = this.store.createDraftForPlayer(this.who);
+      draft.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
+    }
     if (!this.config.alwaysOmni) {
       this.doRollDice(config.controlled);
     }
     await this.rerollDice(config.times);
   }
   sortDice() {
-    this.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
-    this.ops.notifyMe({ type: "stateUpdated", damages: [] });
+    using draft = this.store.createDraftForPlayer(this.who);
+    draft.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
+    this.io?.notifyMe({ type: "stateUpdated", damages: [] });
   }
   private diceValue(x: DiceType): number {
     if (x === DiceType.Omni) {
@@ -171,22 +204,28 @@ export class Player {
     }
   }
   private doRollDice(controlled: DiceType[]) {
-    const rerollCount = this.dice.length - controlled.length;
-    this.dice = [...controlled];
-    for (let i = 0; i < rerollCount; i++) {
-      this.dice.push(Math.floor(Math.random() * 8) + 1);
+    {
+      using draft = this.store.createDraftForPlayer(this.who);
+      const rerollCount = draft.dice.length - controlled.length;
+      draft.dice = [...controlled];
+      for (let i = 0; i < rerollCount; i++) {
+        draft.dice.push(Math.floor(Math.random() * 8) + 1);
+      }
     }
     this.sortDice();
   }
 
   async rerollDice(times: number) {
+    if (!this.io) {
+      throw new IONotAvailableError();
+    }
     for (let i = 0; i < times; i++) {
-      if (this.dice.length !== 0) {
-        const { rerollIndexes } = await this.rpc("rerollDice", {});
+      if (this.state.dice.length !== 0) {
+        const { rerollIndexes } = await this.io.rpc("rerollDice", {});
         if (rerollIndexes.length === 0) {
           break;
         }
-        const controlled = [...this.dice];
+        const controlled = [...this.state.dice];
         _.pullAt(controlled, rerollIndexes);
         this.doRollDice(controlled);
       }
@@ -194,34 +233,34 @@ export class Player {
   }
 
   getCharacter(target: CharacterPosition): Character {
-    let chIndex = (this.activeIndex ?? 0) + this.characters.length;
+    let chIndex = (this.state.activeIndex ?? 0) + this.state.characters.length;
     while (true) {
       switch (target) {
         case "next": {
           chIndex++;
-          const ch = this.characters[chIndex % this.characters.length];
+          const ch = this.state.characters[chIndex % this.state.characters.length];
           if (!ch.isAlive()) continue;
           return ch;
         }
         case "prev": {
           chIndex--;
-          const ch = this.characters[chIndex % this.characters.length];
-          if (!ch.isAlive()) continue;
+          const ch = this.state.characters[chIndex % this.state.characters.length];
+          if (ch.defeated) continue;
           return ch;
         }
         case "active":
-          return this.characters[chIndex % this.characters.length];
+          return this.state.characters[chIndex % this.state.characters.length];
       }
     }
   }
   getCharacterById(id: number, useStaticId = false): Character | undefined {
-    return this.characters.find((c) =>
+    return this.state.characters.find((c) =>
       useStaticId ? c.info.id === id : c.entityId === id
     );
   }
   getCharacterByPos(posIndex: number): Character {
-    const ch = this.characters[posIndex % 3];
-    if (!ch.isAlive()) {
+    const ch = this.state.characters[posIndex % 3];
+    if (ch.defeated) {
       return this.getCharacterByPos(posIndex + 1);
     } else {
       return ch;
@@ -241,11 +280,14 @@ export class Player {
     }
     activeCh.energy -= costEnergy;
     for (const d of consumed) {
-      const idx = this.dice.indexOf(d);
+      const idx = this.state.dice.indexOf(d);
       if (idx === -1) {
         throw new Error("Invalid dice");
       }
-      this.dice.splice(idx, 1);
+      {
+        using draft = this.store.createDraftForPlayer(this.who);
+        draft.dice.splice(idx, 1);
+      }
     }
     this.sortDice();
   }
@@ -254,7 +296,10 @@ export class Player {
    * @returns is fast action
    */
   async action(): Promise<boolean> {
-    this.ops.notifyOpp({ type: "oppAction" });
+    if (!this.io) {
+      throw new IONotAvailableError();
+    }
+    this.io.notifyOpp({ type: "oppAction" });
     const ch = this.getCharacter("active");
     const canUseSkill = !ch.skillDisabled();
     // 检查准备中技能
@@ -265,7 +310,7 @@ export class Player {
         case "skill": {
           const skillObj = ch.skills.find((s) => s.entityId === preparing.id);
           if (typeof skillObj === "undefined") {
-            throw new Error(`preparing skill ${preparing.id} not found}`)
+            throw new Error(`preparing skill ${preparing.id} not found}`);
           }
           await this.useSkill(skillObj);
           break;
@@ -288,9 +333,12 @@ export class Player {
       },
     ];
     const fastSwitchToken: RequestFastToken = {
-      resolved: false
+      resolved: false,
     };
-    this.ops.emitImmediatelyHandledEvent("onRequestFastSwitchActive", fastSwitchToken);
+    this.ops.emitImmediatelyHandledEvent(
+      "onRequestFastSwitchActive",
+      fastSwitchToken
+    );
     if (canUseSkill) {
       actions.push(
         ...ch.skills
@@ -386,9 +434,7 @@ export class Player {
   async useSkill(skill: Skill, sourceId?: number) {
     const ch = this.getCharacter("active");
     if (ch.skillDisabled()) return; // 下落斩、雷楔等无法提前检测到的技能禁用
-    const index = ch.skills.findIndex(
-      (s) => s.entityId === skill.entityId
-    );
+    const index = ch.skills.findIndex((s) => s.entityId === skill.entityId);
     if (index === -1) {
       throw new Error("Invalid skill");
     }
@@ -442,7 +488,7 @@ export class Player {
     }
     oppNotify();
     // 取消准备技能
-    const preparingSkill = from.statuses.find(s => s.preparing());
+    const preparingSkill = from.statuses.find((s) => s.preparing());
     if (preparingSkill) {
       preparingSkill.shouldDispose = true;
     }
@@ -450,7 +496,9 @@ export class Player {
   }
 
   createCombatStatus(newStatusId: number) {
-    const oldStatus = this.combatStatuses.find(s => s.info.id === newStatusId);
+    const oldStatus = this.combatStatuses.find(
+      (s) => s.info.id === newStatusId
+    );
     if (oldStatus) {
       oldStatus.refresh();
       return oldStatus;
@@ -467,10 +515,11 @@ export class Player {
    * 检查标记为“应当弃置”的实体并弃置它们
    */
   checkDispose() {
-    const activeIndex = this.activeIndex ?? 0;
-    for (let i = 0; i < this.characters.length; i++) {
+    using draft = this.store.createDraftForPlayer(this.who);
+    const activeIndex = draft.activeIndex ?? 0;
+    for (let i = 0; i < draft.characters.length; i++) {
       const character =
-        this.characters[(activeIndex + i) % this.characters.length];
+      draft.characters[(activeIndex + i) % draft.characters.length];
       for (let j = 0; j < character.statuses.length; j++) {
         if (character.statuses[j].shouldDispose) {
           character.statuses.splice(j, 1);
@@ -478,21 +527,21 @@ export class Player {
         }
       }
     }
-    for (let i = 0; i < this.combatStatuses.length; i++) {
-      if (this.combatStatuses[i].shouldDispose) {
-        this.combatStatuses.splice(i, 1);
+    for (let i = 0; i < draft.combatStatuses.length; i++) {
+      if (draft.combatStatuses[i].shouldDispose) {
+        draft.combatStatuses.splice(i, 1);
         i--;
       }
     }
-    for (let i = 0; i < this.summons.length; i++) {
-      if (this.summons[i].shouldDispose) {
-        this.summons.splice(i, 1);
+    for (let i = 0; i < draft.summons.length; i++) {
+      if (draft.summons[i].shouldDispose) {
+        draft.summons.splice(i, 1);
         i--;
       }
     }
-    for (let i = 0; i < this.supports.length; i++) {
-      if (this.supports[i].shouldDispose) {
-        this.supports.splice(i, 1);
+    for (let i = 0; i < draft.supports.length; i++) {
+      if (draft.supports[i].shouldDispose) {
+        draft.supports.splice(i, 1);
         i--;
       }
     }
@@ -553,19 +602,6 @@ export class Player {
     for (const support of this.supports) {
       support.handleEventSync(event);
     }
-  }
-
-  private async rpc<M extends RpcMethod>(
-    method: M,
-    data: RpcRequest[M]
-  ): Promise<RpcResponse[M]> {
-    if (ClonedObj in this) {
-      throw new Error("Cannot call rpc in cloned player");
-    }
-    verifyRpcRequest(method, data);
-    const resp = await this.config.handler(method, data);
-    verifyRpcResponse(method, resp);
-    return resp;
   }
 
   public getSpecialBit(bit: SpecialBits): boolean {

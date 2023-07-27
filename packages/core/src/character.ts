@@ -4,7 +4,7 @@ import {
   getCharacter,
   getSkill,
 } from "@gi-tcg/data";
-import { Entity, shallowClone } from "./entity.js";
+import { Entity } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
@@ -146,14 +146,5 @@ export class Character extends Entity {
       statuses: this.statuses.map((s) => s.getData()),
       applied: this.applied,
     };
-  }
-
-  clone() {
-    const clone = shallowClone(this);
-    clone.equipments = this.equipments.map((e) => e.clone());
-    clone.statuses = this.statuses.map((s) => s.clone());
-    clone.skills = this.skills.map((s) => s.clone());
-    clone.passiveSkills = this.passiveSkills.map((h) => h.clone());
-    return clone;
   }
 }

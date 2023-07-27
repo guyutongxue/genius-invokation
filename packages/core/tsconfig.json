@@ -4,11 +4,13 @@
   ],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "Node16",
     "moduleResolution": "Node16",
+
+    "lib": ["ESNext"],
     
     "declaration": true,
-    "sourceMap": true, 
+    "emitDeclarationOnly": true,
     "outDir": "./dist", 
 
     "esModuleInterop": true,

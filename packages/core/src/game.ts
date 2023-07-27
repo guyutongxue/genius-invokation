@@ -7,11 +7,12 @@ import {
   PhaseType,
   StateData,
   verifyNotificationMessage,
+  verifyRpcRequest,
+  verifyRpcResponse,
 } from "@gi-tcg/typings";
 
 import { GameOptions, PlayerConfig } from "./game_interface.js";
 import { Player } from "./player.js";
-import { shallowClone } from "./entity.js";
 import {
   EventFactory,
   CONTEXT_CREATOR,
@@ -28,7 +29,6 @@ import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
 import {
   CardTargetDescriptor,
   ElementalReactionContext,
-  SkillDescriptionContext,
   SpecialBits,
   makeReactionFromDamage,
 } from "@gi-tcg/data";
@@ -36,28 +36,8 @@ import { flip } from "@gi-tcg/utils";
 import { Damage } from "./damage.js";
 import { Skill } from "./skill.js";
 import { Card } from "./card.js";
-import { Store } from "./store.js";
-
-export interface GlobalOperations {
-  notifyMe: (event: Event) => void;
-  notifyOpp: (event: Event) => void;
-  getCardActions: () => PlayCardConfig[];
-  emitEvent: <K extends EventHandlerNames1>(
-    event: K,
-    ...args: EventCreatorArgsForPlayer<K>
-  ) => void;
-  emitImmediatelyHandledEvent: <K extends EventHandlerNames1>(
-    event: K,
-    ...args: EventCreatorArgsForPlayer<K>
-  ) => void;
-  doEvent: () => Promise<void>;
-  declareUsingSkill: (sk: Skill) => void;
-  getSkillContext: (sk: Skill, sourceId?: number) => SkillDescriptionContext;
-  getCardContext: (
-    card: Card,
-    target: PlayCardTargetObj[]
-  ) => PlayCardContextImpl;
-}
+import { DraftWithResource, GameState, Store } from "./store.js";
+import { Draft } from "immer";
 
 export class Game {
   private store: Store;
@@ -67,83 +47,97 @@ export class Game {
     private readonly options: GameOptions,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig]
   ) {
-    this.store = Store.initialState(playerConfigs);
+    this.store = Store.initialState(options, playerConfigs);
     this.players = [this.createPlayer(0), this.createPlayer(1)];
     this.start();
   }
 
-  public get state() {
+  private get state() {
     return this.store.state;
   }
-  public getPlayer(who: 0 | 1) {
-    return this.players[who];
+  private produce(): DraftWithResource<GameState>;
+  private produce(fn: (draft: Draft<GameState>) => void): void;
+  private produce(fn?: (draft: Draft<GameState>) => void) {
+    if (fn) {
+      this.store.produce(fn);
+    } else {
+      return this.store.createDraft();
+    }
   }
 
   private createPlayer(who: 0 | 1) {
-    return new Player(
-      this.store,
-      who,
-      {
-        ...this.playerConfigs[who],
-        game: this.options,
+    return this.store.createPlayer(who, {
+      notifyMe: (event) => this.notifyPlayer(who, event),
+      notifyOpp: (event) => this.notifyPlayer(flip(who), event),
+      rpc: async (method, req) => {
+        verifyRpcRequest(method, req);
+        const res = await this.playerConfigs[who].handler(method, req);
+        verifyRpcResponse(method, res);
+        return res;
       },
-    );
+    });
   }
 
   private async start() {
-    while (this.phase !== "gameEnd") {
+    while (this.state.phase !== "gameEnd") {
       await this.step();
     }
     this.notifyPlayer(0, {
       type: "gameEnd",
-      win: this.winner === null ? undefined : this.winner === 0,
+      win: this.state.winner === null ? undefined : this.state.winner === 0,
     });
     this.notifyPlayer(1, {
       type: "gameEnd",
-      win: this.winner === null ? undefined : this.winner === 1,
+      win: this.state.winner === null ? undefined : this.state.winner === 1,
     });
   }
 
   private async step() {
     this.notifyPlayer(0, {
       type: "newGamePhase",
-      roundNumber: this.roundNumber,
-      isFirst: this.currentTurn === 0,
+      roundNumber: this.state.roundNumber,
+      isFirst: this.state.currentTurn === 0,
     });
     this.notifyPlayer(1, {
       type: "newGamePhase",
-      roundNumber: this.roundNumber,
-      isFirst: this.currentTurn === 1,
+      roundNumber: this.state.roundNumber,
+      isFirst: this.state.currentTurn === 1,
     });
-    switch (this.phase) {
+    let nextPhase: PhaseType;
+    switch (this.state.phase) {
       case "initHands":
-        await this.initHands();
+        nextPhase = await this.initHands();
         break;
       case "initActives":
-        await this.initActives();
+        nextPhase = await this.initActives();
         break;
       case "roll":
-        await this.rollPhase();
+        nextPhase = await this.rollPhase();
         break;
       case "action":
-        await this.actionPhase();
+        nextPhase = await this.actionPhase();
         break;
       case "end":
-        await this.endPhase();
+        nextPhase = await this.endPhase();
         break;
+      case "gameEnd":
+        return;
     }
+    this.produce((draft) => {
+      draft.phase = nextPhase;
+    });
     await this.options.pauser();
   }
-  private async initHands() {
+  private async initHands(): Promise<PhaseType> {
     this.players[0].initHands();
     this.players[1].initHands();
     await Promise.all([
       this.players[0].switchHands(),
       this.players[1].switchHands(),
     ]);
-    this.phase = "initActives";
+    return "initActives";
   }
-  private async initActives() {
+  private async initActives(): Promise<PhaseType> {
     const [n0, n1] = await Promise.all([
       this.players[0].chooseActive(true),
       this.players[1].chooseActive(true),
@@ -152,9 +146,9 @@ export class Game {
     n1();
     this.emitEvent("onBattleBegin");
     await this.doEvent();
-    this.phase = "roll";
+    return "roll";
   }
-  private async rollPhase() {
+  private async rollPhase(): Promise<PhaseType> {
     await Promise.all([this.players[0].rollDice(), this.players[1].rollDice()]);
     this.players[0].cleanSpecialBits(
       SpecialBits.DeclaredEnd,
@@ -168,9 +162,9 @@ export class Game {
       SpecialBits.Plunging,
       SpecialBits.SkipTurn
     );
-    this.phase = "action";
+    return "action";
   }
-  private async actionPhase() {
+  private async actionPhase(): Promise<PhaseType> {
     this.emitEvent("onActionPhase");
     await this.doEvent();
     while (
@@ -179,34 +173,38 @@ export class Game {
         this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
       )
     ) {
-      let player = this.players[this.currentTurn];
+      let player = this.players[this.state.currentTurn];
       if (player.getSpecialBit(SpecialBits.DeclaredEnd)) {
-        player = this.players[flip(this.currentTurn)];
+        player = this.players[flip(this.state.currentTurn)];
       } else if (player.getSpecialBit(SpecialBits.SkipTurn)) {
         player.setSpecialBit(SpecialBits.SkipTurn, false);
-        player = this.players[flip(this.currentTurn)];
+        player = this.players[flip(this.state.currentTurn)];
       }
       const fast = await player.action();
       await this.doEvent();
       await this.options.pauser();
       if (!fast) {
-        this.currentTurn = flip(this.currentTurn);
+        this.produce((draft) => {
+          draft.currentTurn = flip(draft.currentTurn);
+        });
       }
     }
-    this.phase = "end";
+    return "end";
   }
-  private async endPhase() {
+  private async endPhase(): Promise<PhaseType> {
     this.emitEvent("onEndPhase");
     await this.doEvent();
     await Promise.all([
       this.players[0].drawHands(2),
       this.players[1].drawHands(2),
     ]);
-    this.roundNumber++;
-    if (this.roundNumber > this.options.maxRounds) {
-      this.phase = "gameEnd";
+    this.produce((draft) => {
+      draft.roundNumber++;
+    });
+    if (this.state.roundNumber > this.options.maxRounds) {
+      return "gameEnd";
     } else {
-      this.phase = "roll";
+      return "roll";
     }
   }
 
@@ -214,8 +212,8 @@ export class Game {
     const playerData = this.players[who].getData();
     const oppPlayerData = this.players[flip(who)].getDataForOpp();
     return {
-      phase: this.phase,
-      turn: this.currentTurn,
+      phase: this.state.phase,
+      turn: this.state.currentTurn,
       players: [playerData, oppPlayerData],
     };
   }
@@ -240,52 +238,23 @@ export class Game {
     THIS.handleEventSync(e);
   }
 
-  async *handleEvent(event: EventFactory) {
-    for await (const r of this.players[this.currentTurn].handleEvent(event)) {
-      yield;
-    }
-    for await (const r of this.players[flip(this.currentTurn)].handleEvent(
-      event
-    )) {
-      yield;
-    }
-  }
-  handleEventSync(event: EventFactory) {
-    this.players[this.currentTurn].handleEventSync(event);
-    this.players[flip(this.currentTurn)].handleEventSync(event);
-  }
+  // async *handleEvent(event: EventFactory) {
+  //   for await (const r of this.players[this.statecurrentTurn].handleEvent(event)) {
+  //     yield;
+  //   }
+  //   for await (const r of this.players[flip(this.currentTurn)].handleEvent(
+  //     event
+  //   )) {
+  //     yield;
+  //   }
+  // }
+  // handleEventSync(event: EventFactory) {
+  //   this.players[this.currentTurn].handleEventSync(event);
+  //   this.players[flip(this.currentTurn)].handleEventSync(event);
+  // }
 
   reactionLog: EventCreatorArgs<"onElementalReaction">[] = [];
   damageLog: EventCreatorArgs<"onBeforeDamaged">[] = [];
-  private createOperationsForPlayer(who: 0 | 1): GlobalOperations {
-    return {
-      notifyMe: (event) => this.notifyPlayer(who, event),
-      notifyOpp: (event) => this.notifyPlayer(flip(who), event),
-      getCardActions: () => this.getCardActions(who),
-      emitEvent: (event, ...args) => {
-        // @ts-expect-error TS SUCKS
-        return this.emitEvent(event, who, ...args);
-      },
-      emitImmediatelyHandledEvent: (event, ...args) => {
-        // @ts-expect-error TS SUCKS
-        return this.emitImmediatelyHandledEvent(event, who, ...args);
-      },
-      doEvent: () => this.doEvent(),
-      declareUsingSkill: (skill) => {
-        this.reactionLog = [];
-        this.damageLog = [];
-      },
-      getSkillContext: (skill, srcId) =>
-        new SkillDescriptionContextImpl(
-          this,
-          who,
-          srcId ?? skill.entityId,
-          skill
-        ),
-      getCardContext: (card, target) =>
-        new PlayCardContextImpl(this, who, card, target),
-    };
-  }
   private notifyPlayer(who: 0 | 1, event: Event) {
     const msg: NotificationMessage = {
       event,
