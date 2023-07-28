@@ -60,17 +60,21 @@ export type SupportState = StatefulEntity<SupportInfo>;
 export type SummonState = StatefulEntity<SummonInfo>;
 export type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
 
-type InfoTypeOfEntity<T extends EntityType> = ReturnType<
-  (typeof ENTITY_INFO_GETTER)[T]
+type EntityTypeMap = {
+  [T in EntityType]: ReturnType<(typeof ENTITY_INFO_GETTER)[T]>;
+};
+
+export type StateOfEntity<T extends EntityType> = StatefulEntity<
+  EntityTypeMap[T]
 >;
-export type AllEntityInfo = InfoTypeOfEntity<EntityType>;
+export type AllEntityInfo = EntityTypeMap[EntityType];
 export type AllEntityState = StatefulEntity<AllEntityInfo>;
 
 export function createEntity<T extends EntityType>(
   type: T,
   id: number
-): StatefulEntity<InfoTypeOfEntity<T>> {
-  const info = ENTITY_INFO_GETTER[type](id) as InfoTypeOfEntity<T>;
+): StatefulEntity<EntityTypeMap[T]> {
+  const info = ENTITY_INFO_GETTER[type](id) as EntityTypeMap[T];
   return {
     entityId: newEntityId(),
     info,
@@ -155,8 +159,9 @@ export function handleSyncEvent<T extends AllEntityState>(
   }
 }
 
-export type EntityUpdateFn = <T extends AllEntityState>(
-  draft: Draft<T>
+export type EntityUpdateFn<T extends AllEntityState = AllEntityState> = (
+  draft: Draft<T>,
+  path: EntityPath
 ) => void;
 
 export function getVisibleValue(entity: AllEntityState): number | null;
@@ -220,6 +225,26 @@ export function getVisibleValue(
     throw new Error("This entity has no visible value");
   }
   return null;
+}
+
+export function refreshEntity(entity: Draft<SummonState> | Draft<StatusState>) {
+  entity.shouldDispose = false;
+  entity.usage = Math.min(
+    entity.usage + entity.info.usage,
+    entity.info.maxUsage
+  );
+  if ("usagePerRound" in entity.info) {
+    entity.usagePerRound = entity.info.usagePerRound;
+  }
+  if ("duration" in entity.info) {
+    entity.duration = entity.info.duration;
+  }
+  if ("shield" in entity.info && entity.info.shield !== null) {
+    entity.state[SHIELD_VALUE] = Math.min(
+      Number(entity.state[SHIELD_VALUE]) + entity.info.shield.initial,
+      entity.info.shield.recreateMax
+    );
+  }
 }
 
 export class Entity {

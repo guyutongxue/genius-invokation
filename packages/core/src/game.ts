@@ -20,7 +20,6 @@ import {
   EventCreatorArgsForPlayer,
   EventHandlerNames1,
   PlayCardContextImpl,
-  getEntityById,
   DamageContextImpl,
   SkillDescriptionContextImpl,
 } from "./context.js";
@@ -41,20 +40,23 @@ import { Draft } from "immer";
 
 export class Game {
   private store: Store;
-  private players: [PlayerMutator, PlayerMutator];
 
   constructor(
     private readonly options: GameOptions,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig]
   ) {
     this.store = Store.initialState(options, playerConfigs);
-    this.players = [this.createPlayer(0), this.createPlayer(1)];
     this.start();
   }
 
   private get state() {
     return this.store.state;
   }
+  private get mutator() {
+    return this.store.mutator;
+  }
+
+
   private produce(): DraftWithResource<GameState>;
   private produce(fn: (draft: Draft<GameState>) => void): void;
   private produce(fn?: (draft: Draft<GameState>) => void) {
@@ -63,19 +65,6 @@ export class Game {
     } else {
       return this.store.createDraft();
     }
-  }
-
-  private createPlayer(who: 0 | 1) {
-    return this.store.createPlayer(who, {
-      notifyMe: (event) => this.notifyPlayer(who, event),
-      notifyOpp: (event) => this.notifyPlayer(flip(who), event),
-      rpc: async (method, req) => {
-        verifyRpcRequest(method, req);
-        const res = await this.playerConfigs[who].handler(method, req);
-        verifyRpcResponse(method, res);
-        return res;
-      },
-    });
   }
 
   private async start() {
@@ -129,18 +118,18 @@ export class Game {
     await this.options.pauser();
   }
   private async initHands(): Promise<PhaseType> {
-    this.players[0].initHands();
-    this.players[1].initHands();
+    this.mutator.players[0].initHands();
+    this.mutator.players[1].initHands();
     await Promise.all([
-      this.players[0].switchHands(),
-      this.players[1].switchHands(),
+      this.mutator.players[0].switchHands(),
+      this.mutator.players[1].switchHands(),
     ]);
     return "initActives";
   }
   private async initActives(): Promise<PhaseType> {
     const [n0, n1] = await Promise.all([
-      this.players[0].chooseActive(true),
-      this.players[1].chooseActive(true),
+      this.mutator.players[0].chooseActive(true),
+      this.mutator.players[1].chooseActive(true),
     ]);
     n0();
     n1();
@@ -149,7 +138,10 @@ export class Game {
     return "roll";
   }
   private async rollPhase(): Promise<PhaseType> {
-    await Promise.all([this.players[0].rollPhase(), this.players[1].rollPhase()]);
+    await Promise.all([
+      this.mutator.players[0].rollPhase(), 
+      this.mutator.players[1].rollPhase()
+    ]);
     return "action";
   }
   private async actionPhase(): Promise<PhaseType> {
@@ -161,13 +153,14 @@ export class Game {
         this.state.players[1].declaredEnd
       )
     ) {
-      let player = this.players[this.state.currentTurn];
-      if (player.getSpecialBit(SpecialBits.DeclaredEnd)) {
-        player = this.players[flip(this.state.currentTurn)];
-      } else if (player.getSpecialBit(SpecialBits.SkipTurn)) {
+      let thisTurn = this.state.currentTurn;
+      if (this.state.players[thisTurn].declaredEnd) {
+        thisTurn = flip(thisTurn);
+      } else if (this.state.players[thisTurn].skipNextTurn) {
         player.setSpecialBit(SpecialBits.SkipTurn, false);
-        player = this.players[flip(this.state.currentTurn)];
+        thisTurn = flip(thisTurn);
       }
+      const player = this.mutator.players[thisTurn];
       const fast = await player.action();
       await this.doEvent();
       await this.options.pauser();
@@ -196,15 +189,6 @@ export class Game {
     }
   }
 
-  private getData(who: 0 | 1): StateData {
-    const playerData = this.players[who].getData();
-    const oppPlayerData = this.players[flip(who)].getDataForOpp();
-    return {
-      phase: this.state.phase,
-      turn: this.state.currentTurn,
-      players: [playerData, oppPlayerData],
-    };
-  }
 
   emitEvent<K extends EventHandlerNames1>(
     event: K,

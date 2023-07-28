@@ -5,7 +5,7 @@ import {
   getCharacter,
   getSkill,
 } from "@gi-tcg/data";
-import { Entity, getEntityData } from "./entity.js";
+import { Entity, EntityPath, createEntity, getEntityData, refreshEntity } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
@@ -18,6 +18,7 @@ import {
 import { Skill } from "./skill.js";
 import { PlayerMutator } from "./player.js";
 import { CharacterState } from "./store.js";
+import { Draft } from "immer";
 
 const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
   cryo: DiceType.Cryo,
@@ -35,14 +36,9 @@ export interface CharacterPath {
   indexHint: number;
 }
 
-export class Character extends Entity {
+export type CharacterUpdateFn = (draft: Draft<CharacterState>, path: CharacterPath) => void;
 
-  private emitEvent<K extends EventHandlerNames1>(
-    event: K,
-    ...args: EventCreatorArgsForCharacter<K>
-  ) {
-    this.parent.emitEventFromCharacter(this, event, ...args);
-  }
+export class Character extends Entity {
 
   revive() {
     this.defeated = false;
@@ -50,22 +46,10 @@ export class Character extends Entity {
     this.emitEvent("onRevive");
   }
 
-  isAlive() {
-    return !this.defeated;
-  }
   gainEnergy(energy = 1): number {
     const oldEnergy = this.energy;
     this.energy = Math.min(this.energy + energy, this.info.maxEnergy);
     return this.energy - oldEnergy;
-  }
-  fullEnergy() {
-    return this.energy === this.info.maxEnergy;
-  }
-
-  // elementType(): DiceType {}
-
-  skillDisabled() {
-    return this.statuses.some((s) => s.info.tags.includes("disableSkill"));
   }
 
   createStatus(newStatusId: number) {
@@ -80,33 +64,68 @@ export class Character extends Entity {
     }
   }
 
-  async *handleEvent(event: EventFactory) {
-    for (const sk of this.passiveSkills) {
-      await sk.handleEvent(event);
-      yield;
-    }
-    for (const eq of this.equipments) {
-      await eq.handleEvent(event);
-      yield;
-    }
-    for (const st of this.statuses) {
-      await st.handleEvent(event);
-      yield;
-    }
-  }
-  handleEventSync(event: EventFactory) {
-    for (const sk of this.passiveSkills) {
-      sk.handleEventSync(event);
-    }
-    for (const eq of this.equipments) {
-      eq.handleEventSync(event);
-    }
-    for (const st of this.statuses) {
-      st.handleEventSync(event);
-    }
+  // async *handleEvent(event: EventFactory) {
+  //   for (const sk of this.passiveSkills) {
+  //     await sk.handleEvent(event);
+  //     yield;
+  //   }
+  //   for (const eq of this.equipments) {
+  //     await eq.handleEvent(event);
+  //     yield;
+  //   }
+  //   for (const st of this.statuses) {
+  //     await st.handleEvent(event);
+  //     yield;
+  //   }
+  // }
+  // handleEventSync(event: EventFactory) {
+  //   for (const sk of this.passiveSkills) {
+  //     sk.handleEventSync(event);
+  //   }
+  //   for (const eq of this.equipments) {
+  //     eq.handleEventSync(event);
+  //   }
+  //   for (const st of this.statuses) {
+  //     st.handleEventSync(event);
+  //   }
+  // }
+}
+
+export function createStatus(ch: Draft<CharacterState>, chPath: CharacterPath, statusId: number): EntityPath {
+  const idx = ch.statuses.findIndex((s) => s.info.id === statusId);
+  if (idx !== -1) {
+    refreshEntity(ch.statuses[idx]);
+    return {
+      type: "status",
+      who: chPath.who,
+      character: chPath,
+      entityId: ch.statuses[idx].entityId,
+      indexHint: idx,
+    };
+  } else {
+    const newIdx = ch.statuses.length;
+    const newStatus = createEntity("status", statusId);
+    ch.statuses.push(newStatus);
+    return {
+      type: "status",
+      who: chPath.who,
+      character: chPath,
+      entityId: newStatus.entityId,
+      indexHint: newIdx,
+    };
   }
 }
 
+export function gainEnergy(ch: Draft<CharacterState>, value = 1) {
+  ch.energy = Math.min(ch.energy + value, ch.info.maxEnergy);
+}
+export function loseEnergy(ch: Draft<CharacterState>, value = 1) {
+  ch.energy = Math.max(ch.energy - value, 0);
+}
+
+export function fullEnergy(ch: CharacterState) {
+  return ch.energy === ch.info.maxEnergy;
+}
 export function getCharacterData(ch: CharacterState): CharacterData {
   const weapon = ch.equipments.find((e) => e.info.type === "weapon");
   const artifact = ch.equipments.find((e) => e.info.type === "artifact");

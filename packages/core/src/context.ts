@@ -34,7 +34,7 @@ import {
   EquipmentContext,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
-import { Store } from "./store.js";
+import { CharacterState, Store, getCharacterAtPath } from "./store.js";
 import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CharacterPosition, PlayerMutator, fullSupportArea } from "./player.js";
 import { Character, CharacterPath } from "./character.js";
@@ -42,7 +42,7 @@ import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Summon } from "./summon.js";
 import { Card } from "./card.js";
-import { AllEntityInfo, AllEntityState, Entity, EntityPath, SummonState, getVisibleValue } from "./entity.js";
+import { AllEntityInfo, AllEntityState, Entity, EntityPath, EquipmentState, SummonState, getVisibleValue } from "./entity.js";
 import { ActionConfig, PlayCardTargetObj } from "./action.js";
 import { Support } from "./support.js";
 import { PassiveSkill } from "./passive_skill.js";
@@ -97,7 +97,7 @@ export class ContextImpl implements Context<any, {}, true> {
   protected createCharacterContext(ch: CharacterPath): CharacterContextImpl {
     return new CharacterContextImpl(this.store, ch, this.caller);
   }
-  protected createSummonContext(path: EntityPath): SummonContext<true> {
+  protected createEntityContext(path: EntityPath): EntityContextImpl {
     return new EntityContextImpl(this.store, path, this.caller);
   }
   private getCharactersFromSelector(
@@ -201,8 +201,8 @@ export class ContextImpl implements Context<any, {}, true> {
     return fullSupportArea(this.store.state, who);
   }
   findSummon(summon: number): SummonContext<true> | null {
-    const s = this.player.summons.find((s) => s.info.id === summon);
-    return s ? this.createSummonContext(s) : null;
+    const r = this.store.findEntity(this.who, "summon", (s) => s.info.id === summon);
+    return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
   allSummons(includeOpp = false): SummonContext<true>[] {
     const mySummons = this.player.summons;
@@ -210,38 +210,35 @@ export class ContextImpl implements Context<any, {}, true> {
       ? this.store.state.players[flip(this.who)].summons
       : [];
     return [...mySummons, ...oppSummons].map(
-      this.createSummonContext.bind(this)
+      this.createEntityContext.bind(this)
     );
   }
 
-  findCombatStatus(status: number): StatusContext | null {
-    const combatStatuses = this.store.getPlayer(this.who).combatStatuses;
-    const s = combatStatuses.find((s) => s.info.id === status);
-    return s ? new StatusContextImpl(s) : null;
+  findCombatStatus(status: number): StatusContext<true> | null {
+    const r = this.store.findEntity(this.who, "status", (st) => st.info.id === status);
+    return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
-  findCombatShield(): StatusContext | null {
-    const combatStatuses = this.player.combatStatuses;
-    const s = combatStatuses.find((s) => s.shield !== null);
-    return s ? new StatusContextImpl(s) : null;
+  findCombatShield(): StatusContext<true> | null {
+    const r = this.store.findEntity(this.who, "status", (st) => st.info.shield !== null);
+    return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
 
   dealDamage(
     value: number,
     type: DamageType,
-    target?: Target | undefined
+    target?: string
   ): void {
-    const chs = this.getCharacterFromTarget(target ?? Target.oppActive());
+    const chs = this.getCharactersFromSelector(target ?? "!|");
     for (const ch of chs) {
       this.store.dealDamage(this.sourceId, ch.character, value, type);
     }
   }
-  applyElement(type: DamageType, target?: Target): void {
+  applyElement(type: DamageType, target?: string): void {
     // TODO
     throw new Error("Shouldn't called by base class");
   }
-  gainEnergy(value?: number | undefined, target?: Target): number {
-    target ??= Target.myActive();
-    const ctx = this.getCharacterFromTarget(target);
+  gainEnergy(value?: number | undefined, target?: string): number {
+    const ctx = this.getCharactersFromSelector(target ?? "|");
     let sum = 0;
     for (const ch of ctx) {
       sum += ch.gainEnergy(value ?? 0);
@@ -249,8 +246,7 @@ export class ContextImpl implements Context<any, {}, true> {
     return sum;
   }
   loseEnergy(value?: number | undefined, target?: Target): number {
-    target ??= Target.myActive();
-    const ctx = this.getCharacterFromTarget(target);
+    const ctx = this.getCharactersFromSelector(target ?? "|");
     let sum = 0;
     for (const ch of ctx) {
       sum += ch.loseEnergy(value ?? 0);
@@ -259,7 +255,7 @@ export class ContextImpl implements Context<any, {}, true> {
   }
 
   createCombatStatus(status: number, opp: boolean = false): StatusContext<true> {
-    const player = this.store.createPlayer(opp ? flip(this.who) : this.who);
+    const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const st = player.createCombatStatus(status);
     this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
     return new EntityContextImpl(this.store, st, this.caller);
@@ -365,11 +361,15 @@ export class ContextImpl implements Context<any, {}, true> {
 }
 
 class CharacterContextImpl implements CharacterContext<true> {
+  private character: CharacterState;
   constructor(
     private store: Store,
     public readonly path: CharacterPath,
     public readonly caller: EntityPath
-  ) {}
+  ) {
+    this.character = getCharacterAtPath(store.state, path);
+  }
+
   get entityId() {
     return this.character.entityId;
   }
@@ -383,22 +383,20 @@ class CharacterContextImpl implements CharacterContext<true> {
     return this.character.energy;
   }
   get aura() {
-    return this.character.applied;
+    return this.character.aura;
   }
   isAlive() {
-    return this.character.isAlive();
+    return !this.character.defeated;
   }
 
   indexOfPlayer() {
-    return this.store
-      .getPlayer(this.who)
-      .characters.findIndex((c) => c.entityId === this.entityId);
+    return this.store.state.players[this.path.who].characters.findIndex((c) => c.entityId === this.entityId);
   }
 
   findEquipment(
     equipment: number | "artifact" | "weapon"
-  ): EquipmentContext | null {
-    let eq: Equipment | undefined;
+  ): EquipmentContext<true> | null {
+    let eq: EquipmentState | undefined;
     if (typeof equipment === "number") {
       eq = this.character.equipments.find((e) => e.info.id === equipment);
     } else {
@@ -406,7 +404,7 @@ class CharacterContextImpl implements CharacterContext<true> {
     }
     return eq?.info ?? null;
   }
-  equip(equipment: number | EquipmentInfo): void {
+  equip(equipment: number): void {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
     const eq = new Equipment(eqId);
     this.character.equipments.push(eq);
@@ -480,7 +478,7 @@ export class EntityContextImpl implements EntityContext<AllEntityInfo, number, "
   constructor(private store: Store, private path: EntityPath, private caller: EntityPath) {}
 
   private get entity(): AllEntityState {
-    return 
+    return getEntity
   }
 
   get entityId() {
@@ -520,9 +518,9 @@ export class EntityContextImpl implements EntityContext<AllEntityInfo, number, "
     return this.value;
   }
   
-  get master(): CharacterContext<true> {
+  get master(): any {
     if (!("character" in this.path)) {
-      throw new Error("This entity doesn't have a master");
+      return null;
     }
     return new CharacterContextImpl(this.store, this.path.character, this.caller);;
   }
@@ -721,7 +719,7 @@ export class PlayCardContextImpl
       if (obj instanceof Character) {
         this.targetCtxs.push(this.createCharacterContext(obj));
       } else if (obj instanceof Summon) {
-        this.targetCtxs.push(this.createSummonContext(obj));
+        this.targetCtxs.push(this.createEntityContext(obj));
       } else {
         console.error(obj);
         throw new Error(`Unknown target object: ${obj}`);

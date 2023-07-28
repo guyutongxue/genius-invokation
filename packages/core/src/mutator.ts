@@ -7,7 +7,7 @@ export class Mutator {
 
   constructor(
     private store: Store,
-    private playerIO: [PlayerIO | null, PlayerIO | null]
+    private playerIO: readonly [PlayerIO | null, PlayerIO | null]
   ) {
     this.players = [
       new PlayerMutator(store, 0, playerIO[0]),

@@ -16,7 +16,7 @@ interface EntityBaseContext<InfoT, HandleT extends number, MasterT extends Maste
 
 type MasterContext<MasterT extends MasterType, Writable extends boolean> =
   MasterT extends "no"
-  ? never
+  ? null
   : MasterT extends "yes"
   ? CharacterContext<Writable>
   : CharacterContext<Writable> | null;

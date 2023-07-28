@@ -1,19 +1,14 @@
 import {
   DiceType,
-  Event,
   MyPlayerData,
   OppPlayerData,
   PlayerDataBase,
-  RpcMethod,
-  RpcRequest,
-  RpcResponse,
 } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 
 import { Card } from "./card.js";
-import { GameOptions, PlayerConfig } from "./game_interface.js";
-import { Character, characterElementType, characterSkills, getCharacterData, skillDisabled } from "./character.js";
-import { CardTag, SkillInfo, SpecialBits, getSkill } from "@gi-tcg/data";
+import { Character, CharacterPath, characterElementType, characterSkills, createStatus, getCharacterData, loseEnergy, skillDisabled } from "./character.js";
+import { CardTag, SkillInfo, SpecialBits, getSkill, getStatus } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
   EventFactory,
@@ -32,10 +27,10 @@ import {
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
-import { CardState, DraftWithResource, GameState, PlayerState, Store } from "./store.js";
+import { CardState, CharacterState, DraftWithResource, GameState, PlayerState, Store, getCharacterAtPath } from "./store.js";
 import { Draft } from "immer";
 import { IONotAvailableError, PlayerIO } from "./io.js";
-import { EntityPath, getEntityData } from "./entity.js";
+import { AllEntityState, EntityPath, EntityType, StateOfEntity, StatusState, SummonState, SupportState, createEntity, getEntityData, refreshEntity } from "./entity.js";
 
 interface PlayerOptions {
   initialHands: number;
@@ -163,7 +158,7 @@ export class PlayerMutator {
     if (!this.io) {
       throw new IONotAvailableError();
     }
-    const activeId = this.state.active ? this.store.getCharacter(this.state.active).entityId : null;
+    const activeId = this.state.active ? getCharacterAtPath(this.state, this.state.active).entityId : null;
     const { active } = await this.io.rpc("chooseActive", {
       candidates: this.state.characters
         .filter((c) => {
@@ -203,7 +198,7 @@ export class PlayerMutator {
   private diceValue(x: DiceType): number {
     if (x === DiceType.Omni) {
       return 10000;
-    } else if (x === characterElementType(this.activeCharacter())) {
+    } else if (x === characterElementType(this.activeCharacter()[0])) {
       return 1000;
     } else if (this.state.characters.map(characterElementType).includes(x)) {
       return 100 - x;
@@ -275,11 +270,11 @@ export class PlayerMutator {
   //   }
   // }
 
-  private activeCharacter() {
+  private activeCharacter(): [CharacterState, CharacterPath] {
     if (this.state.active === null) {
       throw new Error("No active character");
     }
-    return this.store.getCharacter(this.state.active!);
+    return [getCharacterAtPath(this.state, this.state.active), this.state.active];
   }
 
   // 消耗骰子或能量
@@ -287,13 +282,13 @@ export class PlayerMutator {
     if (!checkDice(required, consumed)) {
       throw new Error("Invalid dice");
     }
-    const activeCh = this.activeCharacter();
+    const [activeCh] = this.activeCharacter();
     const currentEnergy = activeCh.energy;
     const costEnergy = required.filter((c) => c === DiceType.Energy).length;
     if (currentEnergy < costEnergy) {
       throw new Error("Not enough energy");
     }
-    activeCh.energy -= costEnergy;
+    this.store.updateCharacterAtPath(this.state.active!, (c) => loseEnergy(c, costEnergy));
     this.produce((draft) => {
       for (const d of consumed) {
         const idx = this.state.dice.indexOf(d);
@@ -314,20 +309,23 @@ export class PlayerMutator {
       throw new IONotAvailableError();
     }
     this.io.notifyOpp({ type: "oppAction" });
-    const ch = this.activeCharacter();
+    const [ch, chPath] = this.activeCharacter();
     const canUseSkill = !skillDisabled(ch);
     // 检查准备中技能
-    const preparingStatus = ch.statuses.find((st) => st.info.prepare !== null);
-    if (canUseSkill && preparingStatus) {
-      const preparing = preparingStatus.info.prepare!;
-      if (preparing.round === 1) {
-        const skillObj = getSkill(preparing.skillOrStatus);
+    const preparingStatuses = this.store.findEntity(chPath, "status", (st) => st.info.prepare !== null);
+    if (canUseSkill && preparingStatuses.length > 0) {
+      const [preparingStatus] = preparingStatuses[0];
+      const preparConfig = preparingStatus.info.prepare!;
+      if (preparConfig.round === 1) {
+        const skillObj = getSkill(preparConfig.skillOrStatus);
         if (typeof skillObj === "undefined") {
-          throw new Error(`preparing skill ${preparing.skillOrStatus} not found}`);
+          throw new Error(`preparing skill ${preparConfig.skillOrStatus} not found}`);
         }
         await this.useSkill(skillObj);
       } else {
-        ch.createStatus(preparing.skillOrStatus);
+        this.store.updateCharacterAtPath(this.state.active!, (c, p) => {
+          createStatus(c, p, preparConfig.skillOrStatus);
+        });
       }
       preparingStatus.shouldDispose = true;
       await this.ops.doEvent();
@@ -441,6 +439,9 @@ export class PlayerMutator {
   }
 
   async useSkill(skill: SkillInfo, sourceId?: number) {
+    if (skill.type === "passive") {
+      throw new Error("Cannot manually use passive skill");
+    }
     const ch = this.activeCharacter();
     if (skillDisabled(ch)) return; // 下落斩、雷楔等无法提前检测到的技能禁用
     const index = characterSkills(ch).findIndex((s) => s.id === skill.id);
@@ -474,7 +475,7 @@ export class PlayerMutator {
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {
-    const from = this.activeCharacter();
+    const [from, fromPath] = this.activeCharacter();
     const newActiveIndex = this.state.characters.findIndex(
       (c) => c.entityId === targetEntityId
     );
@@ -506,28 +507,43 @@ export class PlayerMutator {
     }
     oppNotify();
     // 取消准备技能
-    const preparingSkill = from.statuses.find((s) => s.info.prepare !== null);
+    const preparing = this.store.findEntity(fromPath, "status", (s) => s.info.prepare !== null);
     if (preparingSkill) {
       preparingSkill.shouldDispose = true;
     }
     this.ops.emitEvent("onSwitchActive", from, to);
   }
 
-  createCombatStatus(statusId: number): EntityPath {
-    const oldStatus = this.state.combatStatuses.find(
-      (s) => s.info.id === statusId
-    );
-    if (oldStatus) {
-      oldStatus.refresh();
-      return oldStatus;
-    } else {
-      // const newStatus = new Status(newStatusId);
-      this.combatStatuses.push(newStatus);
-      return newStatus;
+  private createEntity(type: "status" | "support" | "summon", id: number): EntityPath {
+    if (type !== "support") {
+      const oldStatus = this.store.findEntity(this.who, type, (s) => s.info.id === id);
+      if (oldStatus.length > 0) {
+        this.store.updateEntityAtPath(oldStatus[0][1], (s: Draft<StatusState>) => refreshEntity(s));
+        return oldStatus[0][1];
+      }
     }
+    const newIdx = this.state.combatStatuses.length;
+    const entity = createEntity(type, id);
+    this.produce((draft) => {
+      if (type === 'summon') { draft.summons.push(entity as SummonState); }
+      else if (type === 'support') { draft.supports.push(entity as SupportState); }
+      else { draft.combatStatuses.push(entity as StatusState); }
+    });
+    return {
+      type: type,
+      who: this.who,
+      entityId: entity.entityId,
+      indexHint: newIdx,
+    };
+  }
+  createCombatStatus(statusId: number): EntityPath {
+    return this.createEntity("status", statusId);
   }
   createSummon(summonId: number): EntityPath {
-
+    return this.createEntity("summon", summonId);
+  }
+  createSupport(supportId: number): EntityPath {
+    return this.createEntity("summon", supportId);
   }
   
   /**
@@ -622,39 +638,40 @@ export class PlayerMutator {
   //     support.handleEventSync(event);
   //   }
   // }
-
-  private getDataBase(): PlayerDataBase {
-    return {
-      pileNumber: this.state.piles.length,
-      active: this.state.active ? this.activeCharacter().entityId : null,
-      characters: this.state.characters.map(getCharacterData),
-      combatStatuses: this.state.combatStatuses.map(getEntityData),
-      supports: this.state.supports.map(getEntityData),
-      summons: this.state.summons.map(getEntityData),
-      legendUsed: this.state.legendUsed,
-    };
-  }
-  getData(): MyPlayerData {
-    return {
-      type: "my",
-      hands: this.state.hands.map((c) => ({
-        id: c.info.id,
-        entityId: c.entityId,
-      })),
-      dice: [...this.state.dice],
-      ...this.getDataBase(),
-    };
-  }
-  getDataForOpp(): OppPlayerData {
-    return {
-      type: "opp",
-      hands: this.state.hands.length,
-      dice: this.state.dice.length,
-      ...this.getDataBase(),
-    };
-  }
 }
 
 export function fullSupportArea(state: GameState, who: 0 | 1): boolean {
   return state.players[who].supports.length >= state.config.maxSupports;
+}
+
+export function getPlayerData(state: PlayerState, opp?: false): MyPlayerData 
+export function getPlayerData(state: PlayerState, opp: true): OppPlayerData 
+export function getPlayerData(state: PlayerState, opp = false): MyPlayerData | OppPlayerData {
+  const base: PlayerDataBase = {
+    pileNumber: state.piles.length,
+    active: state.active ? getCharacterAtPath(state, state.active).entityId : null,
+    characters: state.characters.map(getCharacterData),
+    combatStatuses: state.combatStatuses.map(getEntityData),
+    supports: state.supports.map(getEntityData),
+    summons: state.summons.map(getEntityData),
+    legendUsed: state.legendUsed,
+  };
+  if (opp) {
+    return {
+      ...base,
+      type: "opp",
+      hands: state.hands.length,
+      dice: state.dice.length,
+    }
+  } else {
+    return {
+      ...base,
+      type: "my",
+      hands: state.hands.map((c) => ({
+        id: c.info.id,
+        entityId: c.entityId,
+      })),
+      dice: [...state.dice],
+    }
+  }
 }
