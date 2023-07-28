@@ -12,7 +12,7 @@ import {
 } from "@gi-tcg/typings";
 
 import { GameOptions, PlayerConfig } from "./game_interface.js";
-import { Player } from "./player.js";
+import { PlayerMutator } from "./player.js";
 import {
   EventFactory,
   CONTEXT_CREATOR,
@@ -41,7 +41,7 @@ import { Draft } from "immer";
 
 export class Game {
   private store: Store;
-  private players: [Player, Player];
+  private players: [PlayerMutator, PlayerMutator];
 
   constructor(
     private readonly options: GameOptions,
@@ -149,19 +149,7 @@ export class Game {
     return "roll";
   }
   private async rollPhase(): Promise<PhaseType> {
-    await Promise.all([this.players[0].rollDice(), this.players[1].rollDice()]);
-    this.players[0].cleanSpecialBits(
-      SpecialBits.DeclaredEnd,
-      SpecialBits.Defeated,
-      SpecialBits.Plunging,
-      SpecialBits.SkipTurn
-    );
-    this.players[1].cleanSpecialBits(
-      SpecialBits.DeclaredEnd,
-      SpecialBits.Defeated,
-      SpecialBits.Plunging,
-      SpecialBits.SkipTurn
-    );
+    await Promise.all([this.players[0].rollPhase(), this.players[1].rollPhase()]);
     return "action";
   }
   private async actionPhase(): Promise<PhaseType> {
@@ -169,8 +157,8 @@ export class Game {
     await this.doEvent();
     while (
       !(
-        this.players[0].getSpecialBit(SpecialBits.DeclaredEnd) &&
-        this.players[1].getSpecialBit(SpecialBits.DeclaredEnd)
+        this.state.players[0].declaredEnd &&
+        this.state.players[1].declaredEnd
       )
     ) {
       let player = this.players[this.state.currentTurn];

@@ -8,16 +8,12 @@ import {
   RpcRequest,
   RpcResponse,
 } from "@gi-tcg/typings";
-import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 
 import { Card } from "./card.js";
 import { GameOptions, PlayerConfig } from "./game_interface.js";
-import { Character } from "./character.js";
-import { Status } from "./status.js";
-import { Support } from "./support.js";
-import { Summon } from "./summon.js";
-import { CardTag, SkillInfo, SpecialBits } from "@gi-tcg/data";
+import { Character, characterElementType, characterSkills, getCharacterData, skillDisabled } from "./character.js";
+import { CardTag, SkillInfo, SpecialBits, getSkill } from "@gi-tcg/data";
 import {
   EventCreatorArgsForCharacter,
   EventFactory,
@@ -36,9 +32,10 @@ import {
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
 import { Skill } from "./skill.js";
-import { CardState, Store } from "./store.js";
+import { CardState, DraftWithResource, GameState, PlayerState, Store } from "./store.js";
 import { Draft } from "immer";
 import { IONotAvailableError, PlayerIO } from "./io.js";
+import { EntityPath, getEntityData } from "./entity.js";
 
 interface PlayerOptions {
   initialHands: number;
@@ -51,14 +48,12 @@ interface PlayerOptions {
   alwaysOmni: boolean;
 }
 
-export type CharacterPosition = "active" | "prev" | "next";
-
-export class Player {
+export class PlayerMutator {
   private config: PlayerOptions;
   constructor(
     private readonly store: Store,
     private readonly who: 0 | 1,
-    private readonly io?: PlayerIO
+    private readonly io: PlayerIO | null
   ) {
     this.config = {
       maxHands: this.store.state.config.maxHands,
@@ -74,6 +69,17 @@ export class Player {
 
   get state() {
     return this.store.state.players[this.who];
+  }
+  private produce(): DraftWithResource<PlayerState>;
+  private produce(fn: (draft: Draft<PlayerState>) => void): void;
+  private produce(fn?: (draft: Draft<PlayerState>) => void) {
+    if (fn) {
+      this.store.produce((s) => {
+        fn(s.players[this.who]);
+      });
+    } else {
+      return this.store.createDraftForPlayer(this.who);
+    }
   }
 
   initHands() {
@@ -91,7 +97,7 @@ export class Player {
   }
 
   async drawHands(count: number, controlled: number[] = []) {
-    using draft = this.store.createDraftForPlayer(this.who);
+    using draft = this.produce();
     const drawn: Draft<CardState>[] = [];
     for (const cardIdx of controlled) {
       drawn.push(...draft.piles.splice(cardIdx, 1));
@@ -106,9 +112,9 @@ export class Player {
     // "爆牌"
     const discardedCount = Math.max(
       0,
-      draft.hands.length - this.config.game.maxHands
+      draft.hands.length - this.config.maxHands
     );
-    draft.hands.splice(this.config.game.maxHands, discardedCount);
+    draft.hands.splice(this.config.maxHands, discardedCount);
 
     this.io?.notifyMe({ type: "stateUpdated", damages: [] });
     this.io?.notifyOpp({
@@ -128,7 +134,7 @@ export class Player {
 
     // Remove hands
     {
-      using draft = this.store.createDraftForPlayer(this.who);
+      using draft = this.produce();
       for (let i = 0; i < draft.hands.length; i++) {
         if (removedHands.includes(draft.hands[i].entityId)) {
           removed.push(draft.hands[i]);
@@ -157,10 +163,7 @@ export class Player {
     if (!this.io) {
       throw new IONotAvailableError();
     }
-    const activeId =
-      this.state.activeIndex === null
-        ? null
-        : this.state.characters[this.state.activeIndex].entityId;
+    const activeId = this.state.active ? this.store.getCharacter(this.state.active).entityId : null;
     const { active } = await this.io.rpc("chooseActive", {
       candidates: this.state.characters
         .filter((c) => {
@@ -171,41 +174,46 @@ export class Player {
     return this.switchActive(active, delayNotify);
   }
 
-  async rollDice() {
+  async rollPhase() {
+    this.produce((draft) => {
+      draft.declaredEnd = false;
+      draft.canPlunging = false;
+      draft.hasDefeated = false;
+      draft.skipNextTurn = false;
+    });
     const config: RollPhaseConfig = {
       controlled: [],
       times: 1,
     };
-    {
-      using draft = this.store.createDraftForPlayer(this.who);
-      draft.dice = new Array(this.config.game.initialDice).fill(DiceType.Omni);
-    }
+    // TODO onRollPhase
+    this.produce((draft) => {
+      draft.dice = new Array(this.config.initialDice).fill(DiceType.Omni);
+    });
     if (!this.config.alwaysOmni) {
       this.doRollDice(config.controlled);
     }
     await this.rerollDice(config.times);
   }
   sortDice() {
-    using draft = this.store.createDraftForPlayer(this.who);
-    draft.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
+    this.produce((draft) => {
+      draft.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
+    });
     this.io?.notifyMe({ type: "stateUpdated", damages: [] });
   }
   private diceValue(x: DiceType): number {
     if (x === DiceType.Omni) {
       return 10000;
-    } else if (x === this.getCharacter("active").elementType()) {
+    } else if (x === characterElementType(this.activeCharacter())) {
       return 1000;
-    } else if (x === this.getCharacter("next").elementType()) {
-      return 100;
-    } else if (x === this.getCharacter("prev").elementType()) {
-      return 10;
+    } else if (this.state.characters.map(characterElementType).includes(x)) {
+      return 100 - x;
     } else {
       return -x;
     }
   }
   private doRollDice(controlled: DiceType[]) {
     {
-      using draft = this.store.createDraftForPlayer(this.who);
+      using draft = this.produce();
       const rerollCount = draft.dice.length - controlled.length;
       draft.dice = [...controlled];
       for (let i = 0; i < rerollCount; i++) {
@@ -232,39 +240,46 @@ export class Player {
     }
   }
 
-  getCharacter(target: CharacterPosition): Character {
-    let chIndex = (this.state.activeIndex ?? 0) + this.state.characters.length;
-    while (true) {
-      switch (target) {
-        case "next": {
-          chIndex++;
-          const ch = this.state.characters[chIndex % this.state.characters.length];
-          if (!ch.isAlive()) continue;
-          return ch;
-        }
-        case "prev": {
-          chIndex--;
-          const ch = this.state.characters[chIndex % this.state.characters.length];
-          if (ch.defeated) continue;
-          return ch;
-        }
-        case "active":
-          return this.state.characters[chIndex % this.state.characters.length];
-      }
+  // getCharacter(target: CharacterPosition): Character {
+  //   let chIndex = (this.state.activeIndex ?? 0) + this.state.characters.length;
+  //   while (true) {
+  //     switch (target) {
+  //       case "next": {
+  //         chIndex++;
+  //         const ch = this.state.characters[chIndex % this.state.characters.length];
+  //         if (ch.defeated) continue;
+  //         return ch;
+  //       }
+  //       case "prev": {
+  //         chIndex--;
+  //         const ch = this.state.characters[chIndex % this.state.characters.length];
+  //         if (ch.defeated) continue;
+  //         return ch;
+  //       }
+  //       case "active":
+  //         return this.state.characters[chIndex % this.state.characters.length];
+  //     }
+  //   }
+  // }
+  // getCharacterById(id: number, useStaticId = false): Character | undefined {
+  //   return this.state.characters.find((c) =>
+  //     useStaticId ? c.info.id === id : c.entityId === id
+  //   );
+  // }
+  // getCharacterByPos(posIndex: number): Character {
+  //   const ch = this.state.characters[posIndex % 3];
+  //   if (ch.defeated) {
+  //     return this.getCharacterByPos(posIndex + 1);
+  //   } else {
+  //     return ch;
+  //   }
+  // }
+
+  private activeCharacter() {
+    if (this.state.active === null) {
+      throw new Error("No active character");
     }
-  }
-  getCharacterById(id: number, useStaticId = false): Character | undefined {
-    return this.state.characters.find((c) =>
-      useStaticId ? c.info.id === id : c.entityId === id
-    );
-  }
-  getCharacterByPos(posIndex: number): Character {
-    const ch = this.state.characters[posIndex % 3];
-    if (ch.defeated) {
-      return this.getCharacterByPos(posIndex + 1);
-    } else {
-      return ch;
-    }
+    return this.store.getCharacter(this.state.active!);
   }
 
   // 消耗骰子或能量
@@ -272,23 +287,22 @@ export class Player {
     if (!checkDice(required, consumed)) {
       throw new Error("Invalid dice");
     }
-    const activeCh = this.getCharacter("active");
+    const activeCh = this.activeCharacter();
     const currentEnergy = activeCh.energy;
     const costEnergy = required.filter((c) => c === DiceType.Energy).length;
     if (currentEnergy < costEnergy) {
       throw new Error("Not enough energy");
     }
     activeCh.energy -= costEnergy;
-    for (const d of consumed) {
-      const idx = this.state.dice.indexOf(d);
-      if (idx === -1) {
-        throw new Error("Invalid dice");
+    this.produce((draft) => {
+      for (const d of consumed) {
+        const idx = this.state.dice.indexOf(d);
+        if (idx === -1) {
+          throw new Error("Invalid dice");
+        }
+          draft.dice.splice(idx, 1);
       }
-      {
-        using draft = this.store.createDraftForPlayer(this.who);
-        draft.dice.splice(idx, 1);
-      }
-    }
+    });
     this.sortDice();
   }
 
@@ -300,25 +314,20 @@ export class Player {
       throw new IONotAvailableError();
     }
     this.io.notifyOpp({ type: "oppAction" });
-    const ch = this.getCharacter("active");
-    const canUseSkill = !ch.skillDisabled();
+    const ch = this.activeCharacter();
+    const canUseSkill = !skillDisabled(ch);
     // 检查准备中技能
-    const preparingStatus = ch.statuses.find((st) => st.preparing());
+    const preparingStatus = ch.statuses.find((st) => st.info.prepare !== null);
     if (canUseSkill && preparingStatus) {
-      const preparing = preparingStatus.preparing()!;
-      switch (preparing.type) {
-        case "skill": {
-          const skillObj = ch.skills.find((s) => s.entityId === preparing.id);
-          if (typeof skillObj === "undefined") {
-            throw new Error(`preparing skill ${preparing.id} not found}`);
-          }
-          await this.useSkill(skillObj);
-          break;
+      const preparing = preparingStatus.info.prepare!;
+      if (preparing.round === 1) {
+        const skillObj = getSkill(preparing.skillOrStatus);
+        if (typeof skillObj === "undefined") {
+          throw new Error(`preparing skill ${preparing.skillOrStatus} not found}`);
         }
-        case "status": {
-          ch.createStatus(preparing.id);
-          break;
-        }
+        await this.useSkill(skillObj);
+      } else {
+        ch.createStatus(preparing.skillOrStatus);
       }
       preparingStatus.shouldDispose = true;
       await this.ops.doEvent();
@@ -386,8 +395,8 @@ export class Player {
     switch (action.type) {
       case "declareEnd": {
         this.setSpecialBit(SpecialBits.DeclaredEnd, true);
-        this.ops.notifyMe({ type: "declareEnd", opp: false });
-        this.ops.notifyOpp({ type: "declareEnd", opp: true });
+        this.io?.notifyMe({ type: "declareEnd", opp: false });
+        this.io?.notifyOpp({ type: "declareEnd", opp: true });
         this.ops.emitEvent("onDeclareEnd");
         return false;
       }
@@ -405,7 +414,7 @@ export class Player {
         this.hands.splice(cardIdx, 1);
         this.dice[diceIndex] = this.getCharacter("active").elementType();
         this.sortDice();
-        this.ops.notifyOpp({
+        this.io?.notifyOpp({
           type: "oppChangeHands",
           removed: 0,
           added: 0,
@@ -431,17 +440,17 @@ export class Player {
     }
   }
 
-  async useSkill(skill: Skill, sourceId?: number) {
-    const ch = this.getCharacter("active");
-    if (ch.skillDisabled()) return; // 下落斩、雷楔等无法提前检测到的技能禁用
-    const index = ch.skills.findIndex((s) => s.entityId === skill.entityId);
+  async useSkill(skill: SkillInfo, sourceId?: number) {
+    const ch = this.activeCharacter();
+    if (skillDisabled(ch)) return; // 下落斩、雷楔等无法提前检测到的技能禁用
+    const index = characterSkills(ch).findIndex((s) => s.id === skill.id);
     if (index === -1) {
       throw new Error("Invalid skill");
     }
-    this.notifySkill(skill.info);
+    this.notifySkill(skill);
     const ctx = this.ops.getSkillContext(skill, sourceId);
     skill.do(ctx);
-    if (skill.info.gainEnergy) {
+    if (skill.gainEnergy) {
       ch.gainEnergy();
     }
     await this.ops.doEvent();
@@ -450,14 +459,13 @@ export class Player {
   }
 
   async playCard(hand: Card, targets: PlayCardTargetObj[]) {
-    const index = this.hands.findIndex((c) => c.entityId === hand.entityId);
+    const index = this.state.hands.findIndex((c) => c.entityId === hand.entityId);
     if (index === -1) {
       throw new Error("Invalid card");
     }
-    this.playingCard = hand;
     this.hands.splice(index, 1);
-    this.ops.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
-    this.ops.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
+    this.io?.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
+    this.io?.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
     const ctx = this.ops.getCardContext(hand, targets);
     for await (const r of hand.do(ctx)) {
       this.ops.doEvent();
@@ -466,18 +474,28 @@ export class Player {
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {
-    const from = this.getCharacter("active");
-    this.activeIndex = this.characters.findIndex(
+    const from = this.activeCharacter();
+    const newActiveIndex = this.state.characters.findIndex(
       (c) => c.entityId === targetEntityId
     );
-    const to = this.getCharacter("active");
-    this.ops.notifyMe({
+    if (newActiveIndex === -1) {
+      throw new Error("Invalid character");
+    }
+    this.produce((draft) => {
+      draft.active = {
+        who: this.who,
+        entityId: targetEntityId,
+        indexHint: newActiveIndex,
+      }
+    });
+    const to = this.activeCharacter();
+    this.io?.notifyMe({
       type: "switchActive",
       opp: false,
       target: targetEntityId,
     });
     const oppNotify = () => {
-      this.ops.notifyOpp({
+      this.io?.notifyOpp({
         type: "switchActive",
         opp: true,
         target: targetEntityId,
@@ -488,35 +506,36 @@ export class Player {
     }
     oppNotify();
     // 取消准备技能
-    const preparingSkill = from.statuses.find((s) => s.preparing());
+    const preparingSkill = from.statuses.find((s) => s.info.prepare !== null);
     if (preparingSkill) {
       preparingSkill.shouldDispose = true;
     }
     this.ops.emitEvent("onSwitchActive", from, to);
   }
 
-  createCombatStatus(newStatusId: number) {
-    const oldStatus = this.combatStatuses.find(
-      (s) => s.info.id === newStatusId
+  createCombatStatus(statusId: number): EntityPath {
+    const oldStatus = this.state.combatStatuses.find(
+      (s) => s.info.id === statusId
     );
     if (oldStatus) {
       oldStatus.refresh();
       return oldStatus;
     } else {
-      const newStatus = new Status(newStatusId);
+      // const newStatus = new Status(newStatusId);
       this.combatStatuses.push(newStatus);
       return newStatus;
     }
   }
-  fullSupportArea(): boolean {
-    return this.supports.length >= this.config.game.maxSupports;
+  createSummon(summonId: number): EntityPath {
+
   }
+  
   /**
    * 检查标记为“应当弃置”的实体并弃置它们
    */
   checkDispose() {
-    using draft = this.store.createDraftForPlayer(this.who);
-    const activeIndex = draft.activeIndex ?? 0;
+    using draft = this.produce();
+    const activeIndex = draft.active ?? 0;
     for (let i = 0; i < draft.characters.length; i++) {
       const character =
       draft.characters[(activeIndex + i) % draft.characters.length];
@@ -556,111 +575,86 @@ export class Player {
     this.ops.emitEvent(event, ch, ...rest);
   }
   notifySkill(skillInfo: SkillInfo) {
-    this.ops.notifyMe({ type: "useSkill", skill: skillInfo.id, opp: false });
-    this.ops.notifyOpp({ type: "useSkill", skill: skillInfo.id, opp: true });
+    this.io?.notifyMe({ type: "useSkill", skill: skillInfo.id, opp: false });
+    this.io?.notifyOpp({ type: "useSkill", skill: skillInfo.id, opp: true });
   }
 
-  async *handleEvent(event: EventFactory) {
-    const activeIndex = this.activeIndex ?? 0;
-    for (let i = 0; i < this.characters.length; i++) {
-      const character =
-        this.characters[(activeIndex + i) % this.characters.length];
-      if (character.isAlive()) {
-        for await (const r of character.handleEvent(event)) {
-          yield;
-        }
-      }
-    }
-    for (const status of this.combatStatuses) {
-      await status.handleEvent(event);
-      yield;
-    }
-    for (const summon of this.summons) {
-      await summon.handleEvent(event);
-      yield;
-    }
-    for (const support of this.supports) {
-      await support.handleEvent(event);
-      yield;
-    }
-  }
-  handleEventSync(event: EventFactory) {
-    const activeIndex = this.activeIndex ?? 0;
-    for (let i = 0; i < this.characters.length; i++) {
-      const character =
-        this.characters[(activeIndex + i) % this.characters.length];
-      if (character.isAlive()) {
-        character.handleEventSync(event);
-      }
-    }
-    for (const status of this.combatStatuses) {
-      status.handleEventSync(event);
-    }
-    for (const summon of this.summons) {
-      summon.handleEventSync(event);
-    }
-    for (const support of this.supports) {
-      support.handleEventSync(event);
-    }
-  }
-
-  public getSpecialBit(bit: SpecialBits): boolean {
-    return (this.specialBits & (1 << bit)) !== 0;
-  }
-  public setSpecialBit(bit: SpecialBits, value = true) {
-    if (value) {
-      this.specialBits |= 1 << bit;
-    } else {
-      this.specialBits &= ~(1 << bit);
-    }
-  }
-  public cleanSpecialBits(...bits: SpecialBits[]) {
-    for (const bit of bits) {
-      this.specialBits &= ~(1 << bit);
-    }
-  }
+  // async *handleEvent(event: EventFactory) {
+  //   const activeIndex = this.activeIndex ?? 0;
+  //   for (let i = 0; i < this.characters.length; i++) {
+  //     const character =
+  //       this.characters[(activeIndex + i) % this.characters.length];
+  //     if (character.isAlive()) {
+  //       for await (const r of character.handleEvent(event)) {
+  //         yield;
+  //       }
+  //     }
+  //   }
+  //   for (const status of this.combatStatuses) {
+  //     await status.handleEvent(event);
+  //     yield;
+  //   }
+  //   for (const summon of this.summons) {
+  //     await summon.handleEvent(event);
+  //     yield;
+  //   }
+  //   for (const support of this.supports) {
+  //     await support.handleEvent(event);
+  //     yield;
+  //   }
+  // }
+  // handleEventSync(event: EventFactory) {
+  //   const activeIndex = this.activeIndex ?? 0;
+  //   for (let i = 0; i < this.characters.length; i++) {
+  //     const character =
+  //       this.characters[(activeIndex + i) % this.characters.length];
+  //     if (character.isAlive()) {
+  //       character.handleEventSync(event);
+  //     }
+  //   }
+  //   for (const status of this.combatStatuses) {
+  //     status.handleEventSync(event);
+  //   }
+  //   for (const summon of this.summons) {
+  //     summon.handleEventSync(event);
+  //   }
+  //   for (const support of this.supports) {
+  //     support.handleEventSync(event);
+  //   }
+  // }
 
   private getDataBase(): PlayerDataBase {
     return {
-      pileNumber: this.piles.length,
-      active:
-        this.activeIndex === null
-          ? null
-          : this.characters[this.activeIndex].entityId,
-      characters: this.characters.map((c) => c.getData()),
-      combatStatuses: this.combatStatuses.map((s) => s.getData()),
-      supports: this.supports.map((s) => s.getData()),
-      summons: this.summons.map((s) => s.getData()),
-      legendUsed: this.getSpecialBit(SpecialBits.LegendUsed),
+      pileNumber: this.state.piles.length,
+      active: this.state.active ? this.activeCharacter().entityId : null,
+      characters: this.state.characters.map(getCharacterData),
+      combatStatuses: this.state.combatStatuses.map(getEntityData),
+      supports: this.state.supports.map(getEntityData),
+      summons: this.state.summons.map(getEntityData),
+      legendUsed: this.state.legendUsed,
     };
   }
   getData(): MyPlayerData {
     return {
       type: "my",
-      hands: this.hands.map((c) => c.getData()),
-      dice: [...this.dice],
+      hands: this.state.hands.map((c) => ({
+        id: c.info.id,
+        entityId: c.entityId,
+      })),
+      dice: [...this.state.dice],
       ...this.getDataBase(),
     };
   }
   getDataForOpp(): OppPlayerData {
     return {
       type: "opp",
-      hands: this.hands.length,
-      dice: this.dice.length,
+      hands: this.state.hands.length,
+      dice: this.state.dice.length,
       ...this.getDataBase(),
     };
   }
+}
 
-  clone() {
-    const clone = shallowClone(this);
-    // Card is not stateful, no need to deep clone (FOR NOW)
-    // clone.piles = this.piles.map(c => c.clone());
-    // clone.hands = this.hands.map(c => c.clone());
-    // Cloned object shouldn't have side effects
-    clone.characters = this.characters.map((c) => c.clone());
-    clone.combatStatuses = this.combatStatuses.map((s) => s.clone());
-    clone.supports = this.supports.map((s) => s.clone());
-    clone.summons = this.summons.map((s) => s.clone());
-    return clone;
-  }
+export function fullSupportArea(state: GameState, who: 0 | 1): boolean {
+  return state.players[who].supports.length >= state.config.maxSupports;
 }

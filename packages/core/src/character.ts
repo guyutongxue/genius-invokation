@@ -1,10 +1,11 @@
 import {
   CharacterInfo,
   ElementTag,
+  SkillInfo,
   getCharacter,
   getSkill,
 } from "@gi-tcg/data";
-import { Entity } from "./entity.js";
+import { Entity, getEntityData } from "./entity.js";
 import { Equipment } from "./equipment.js";
 import { Status } from "./status.js";
 import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
@@ -15,7 +16,8 @@ import {
   EventHandlerNames1,
 } from "./context.js";
 import { Skill } from "./skill.js";
-import { Player } from "./player.js";
+import { PlayerMutator } from "./player.js";
+import { CharacterState } from "./store.js";
 
 const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
   cryo: DiceType.Cryo,
@@ -27,34 +29,14 @@ const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
   dendro: DiceType.Dendro,
 };
 
-export class Character extends Entity {
-  public readonly info: CharacterInfo;
-  public health: number;
-  private defeated = false;
-  public energy: number = 0;
-  public equipments: Equipment[] = [];
-  public statuses: Status[] = [];
-  public applied: Aura = Aura.None;
-  public skills: Skill[] = [];
-  public passiveSkills: PassiveSkill[] = [];
+export interface CharacterPath {
+  who: 0 | 1;
+  entityId: number;
+  indexHint: number;
+}
 
-  constructor(id: number, private parent: Player) {
-    super(id);
-    this.info = getCharacter(id);
-    this.health = this.info.maxHealth;
-    for (const s of this.info.skills) {
-      const skill = getSkill(s);
-      if (skill.type === "passive") {
-        this.passiveSkills.push(
-          new PassiveSkill(skill, () => {
-            this.parent.notifySkill(skill);
-          })
-        );
-      } else {
-        this.skills.push(new Skill(skill));
-      }
-    }
-  }
+export class Character extends Entity {
+
   private emitEvent<K extends EventHandlerNames1>(
     event: K,
     ...args: EventCreatorArgsForCharacter<K>
@@ -80,14 +62,7 @@ export class Character extends Entity {
     return this.energy === this.info.maxEnergy;
   }
 
-  elementType(): DiceType {
-    const elementTag = this.info.tags.filter((t): t is ElementTag =>
-      Object.keys(ELEMENT_TAG_MAP).includes(t)
-    );
-    if (elementTag.length === 0) return DiceType.Void;
-    const elementType = ELEMENT_TAG_MAP[elementTag[0]] ?? DiceType.Void;
-    return elementType;
-  }
+  // elementType(): DiceType {}
 
   skillDisabled() {
     return this.statuses.some((s) => s.info.tags.includes("disableSkill"));
@@ -130,21 +105,40 @@ export class Character extends Entity {
       st.handleEventSync(event);
     }
   }
+}
 
-  getData(): CharacterData {
-    const weapon = this.equipments.find((e) => e.isWeapon());
-    const artifact = this.equipments.find((e) => e.isArtifact());
-    return {
-      id: this.id,
-      entityId: this.entityId,
-      defeated: this.defeated,
-      health: this.health,
-      energy: this.energy,
-      weapon: weapon?.getData() ?? null,
-      artifact: artifact?.getData() ?? null,
-      equipments: this.equipments.map((e) => e.getData()),
-      statuses: this.statuses.map((s) => s.getData()),
-      applied: this.applied,
-    };
-  }
+export function getCharacterData(ch: CharacterState): CharacterData {
+  const weapon = ch.equipments.find((e) => e.info.type === "weapon");
+  const artifact = ch.equipments.find((e) => e.info.type === "artifact");
+  return {
+    id: ch.info.id,
+    entityId: ch.entityId,
+    defeated: ch.defeated,
+    health: ch.health,
+    energy: ch.energy,
+    weapon: weapon?.info.id ?? null,
+    artifact: artifact?.info.id ?? null,
+    equipments: ch.equipments.map((e) => e.info.id),
+    statuses: ch.statuses.map(getEntityData),
+    applied: ch.aura,
+  };
+}
+
+export function skillDisabled(ch: CharacterState): boolean {
+  return ch.statuses.some((s) => s.info.tags.includes("disableSkill"));
+}
+
+export function characterSkills(ch: CharacterState): SkillInfo[] {
+  return ch.info.skills
+    .map(getSkill)
+    .filter((s) => s.type !== "passive" && !s.hidden);
+}
+
+export function characterElementType(ch: CharacterState): DiceType {
+  const elementTag = ch.info.tags.filter((t): t is ElementTag =>
+    Object.keys(ELEMENT_TAG_MAP).includes(t)
+  );
+  if (elementTag.length === 0) return DiceType.Void;
+  const elementType = ELEMENT_TAG_MAP[elementTag[0]] ?? DiceType.Void;
+  return elementType;
 }

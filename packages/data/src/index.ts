@@ -3,6 +3,7 @@ import "../data/index";
 export * from "./contexts";
 export * from "./events";
 export * from "./global";
+export * from "./entities";
 export { CharacterContext, CharacterInfo, CharacterTag, ElementTag, NationTag, WeaponTag, getCharacter } from "./characters";
 export {
   NormalSkillInfo, SkillInfo, PassiveSkillInfo, UseSkillAction, getSkill

@@ -523,7 +523,7 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
   prepare(skill: SkillHandle): this;
   prepare(status: StatusHandle, round: number): this;
   prepare(skillOrStatus: SkillHandle | StatusHandle, round: number = 1) {
-    this.prepareConfig = { skillOrStatus, round: 1 };
+    this.prepareConfig = { skillOrStatus, round };
     return this;
   }
 

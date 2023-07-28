@@ -17,26 +17,14 @@ export interface CharacterData {
   weapon: number | null;
   artifact: number | null;
   equipments: number[];
-  statuses: StatusData[];
+  statuses: EntityData[];
   applied: Aura;
 }
 
-export interface StatusData {
+export interface EntityData {
   id: number;
   entityId: number;
   value?: number;
-}
-
-export interface SupportData {
-  id: number;
-  entityId: number;
-  value?: number;
-}
-
-export interface SummonData {
-  id: number;
-  entityId: number;
-  value: number;
 }
 
 export interface CardData {
@@ -48,9 +36,9 @@ export interface PlayerDataBase {
   pileNumber: number;
   active: number | null;
   characters: CharacterData[];
-  combatStatuses: StatusData[];
-  supports: SupportData[];
-  summons: SummonData[];
+  combatStatuses: EntityData[];
+  supports: EntityData[];
+  summons: EntityData[];
   legendUsed: boolean;
 }
 

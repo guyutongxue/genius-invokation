@@ -8,15 +8,10 @@
     }
   },
   "scripts": {
-    "build:babel": "babel src -d dist --extensions \".ts\"",
     "build": "tsc"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.9",
-    "@babel/core": "^7.22.9",
-    "@babel/plugin-proposal-explicit-resource-management": "^7.22.6",
     "core-js": "^3.31.1",
-    "@babel/preset-typescript": "^7.22.5",
     "@gi-tcg/data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",

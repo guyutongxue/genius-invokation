@@ -13,8 +13,8 @@ export type ShieldConfig = null | {
 }
 
 export type PrepareConfig = null | {
-  skillOrStatus: SkillHandle | StatusHandle,
-  round: number,
+  skillOrStatus: SkillHandle | StatusHandle;
+  round: number;
 }
 
 type StatusInfoNoId = Omit<StatusInfo, "id">;

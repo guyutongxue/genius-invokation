@@ -11,9 +11,12 @@ import {
   getStatus,
   getSummon,
   getSupport,
+  SHIELD_VALUE,
 } from "@gi-tcg/data";
 import { EventFactory } from "./context.js";
-import { produce } from "immer";
+import { Draft, produce } from "immer";
+import { EntityData } from "@gi-tcg/typings";
+import { CharacterPath } from "./character.js";
 
 const ENTITY_ID_BEGIN = -100;
 
@@ -60,7 +63,8 @@ export type PassiveSkillState = StatefulEntity<PassiveSkillInfo>;
 type InfoTypeOfEntity<T extends EntityType> = ReturnType<
   (typeof ENTITY_INFO_GETTER)[T]
 >;
-export type AllEntityState = StatefulEntity<InfoTypeOfEntity<EntityType>>;
+export type AllEntityInfo = InfoTypeOfEntity<EntityType>;
+export type AllEntityState = StatefulEntity<AllEntityInfo>;
 
 export function createEntity<T extends EntityType>(
   type: T,
@@ -102,8 +106,7 @@ type VirtualEntityPath =
 interface CharacterEntityPath {
   who: 0 | 1;
   type: "passive_skill" | "equipment" | "status";
-  characterEntityId: number;
-  characterIndexHint: number;
+  character: CharacterPath;
   entityId: number;
   indexHint: number;
 }
@@ -114,44 +117,109 @@ export type EntityPath =
   | CharacterEntityPath;
 
 export function handleSyncEvent<T extends AllEntityState>(
-  entity: T,
+  entity: Draft<T>,
   event: EventFactory
-): T {
+): void {
   const candidates = event(entity.entityId);
-  return produce(entity, (draft) => {
-    let r: SyncHandlerResult = undefined;
-    for (const [name, ctx] of candidates) {
-      if (name === "onActionPhase") {
-        draft.duration--;
-        if (draft.duration <= 0) {
-          draft.shouldDispose = true;
-        } else if ("usagePerRound" in draft.info) {
-          draft.usagePerRound = draft.info.usagePerRound;
-        }
-      }
-      const h = entity.info.handler.handler[name];
-      if (
-        typeof h !== "undefined" &&
-        !draft.shouldDispose &&
-        draft.usagePerRound > 0
-      ) {
-        ctx.this;
-        const result = h(ctx as any);
-        if (typeof result === "object" && "then" in result) {
-          throw new Error("Cannot handle async event in sync mode");
-        }
-        r = result;
-        break;
+  let r: SyncHandlerResult = undefined;
+  for (const [name, ctx] of candidates) {
+    if (name === "onActionPhase") {
+      entity.duration--;
+      if (entity.duration <= 0) {
+        entity.shouldDispose = true;
+      } else if ("usagePerRound" in entity.info) {
+        entity.usagePerRound = entity.info.usagePerRound;
       }
     }
-    if (typeof r === "undefined" || r === true) {
-      draft.usage--;
-      draft.usagePerRound--;
-      if (draft.usage <= 0) {
-        draft.shouldDispose = true;
+    const h = entity.info.handler.handler[name];
+    if (
+      typeof h !== "undefined" &&
+      !entity.shouldDispose &&
+      entity.usagePerRound > 0
+    ) {
+      ctx.this;
+      const result = h(ctx as any);
+      if (typeof result === "object" && "then" in result) {
+        throw new Error("Cannot handle async event in sync mode");
       }
+      r = result;
+      break;
     }
-  });
+  }
+  if (typeof r === "undefined" || r === true) {
+    entity.usage--;
+    entity.usagePerRound--;
+    if (entity.usage <= 0) {
+      entity.shouldDispose = true;
+    }
+  }
+}
+
+export type EntityUpdateFn = <T extends AllEntityState>(
+  draft: Draft<T>
+) => void;
+
+export function getVisibleValue(entity: AllEntityState): number | null;
+export function getVisibleValue(
+  entity: AllEntityState,
+  newValue: number
+): EntityUpdateFn;
+export function getVisibleValue(
+  entity: AllEntityState,
+  newValue?: number
+): number | null | EntityUpdateFn {
+  if ("prepare" in entity.info && entity.info.prepare !== null) {
+    if (typeof newValue === "number") {
+      throw new Error("Cannot set value of prepare entity");
+    }
+    return entity.info.prepare.round;
+  }
+  if (
+    "usage" in entity.info &&
+    entity.info.usage !== 1 &&
+    Number.isFinite(entity.usage)
+  ) {
+    if (typeof newValue === "number") {
+      return (draft) => {
+        draft.usage = newValue;
+      };
+    }
+    return entity.usage;
+  }
+  if (
+    "duration" in entity.info &&
+    entity.info.duration !== 1 &&
+    Number.isFinite(entity.duration)
+  ) {
+    if (typeof newValue === "number") {
+      return (draft) => {
+        draft.duration = newValue;
+      };
+    }
+    return entity.duration;
+  }
+  if (SHIELD_VALUE in entity.state) {
+    if (typeof newValue === "number") {
+      return (draft) => {
+        draft.state[SHIELD_VALUE] = newValue;
+      };
+    }
+    return entity.state[SHIELD_VALUE];
+  }
+  for (const [k, v] of Object.entries(entity.state)) {
+    if (!k.startsWith("_") && typeof v === "number" && Number.isFinite(v)) {
+      if (typeof newValue === "number") {
+        return (draft) => {
+          draft.state[k] = newValue;
+        };
+      }
+      return v;
+    }
+  }
+  if (typeof newValue === "number") {
+    throw new Error("This entity has no visible value");
+  }
+  return null;
 }
 
 export class Entity {
@@ -211,4 +279,12 @@ export class Entity {
       return r;
     }
   }
+}
+
+export function getEntityData(entity: AllEntityState): EntityData {
+  return {
+    entityId: entity.entityId,
+    id: entity.info.id,
+    value: getVisibleValue(entity) ?? undefined,
+  };
 }
