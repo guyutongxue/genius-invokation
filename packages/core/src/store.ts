@@ -130,13 +130,13 @@ function createPlayer(playerConfig: PlayerConfig): PlayerState {
   };
 }
 
-function getEntityAtPath(state: GameState, path: EntityPath): AllEntityState;
-function getEntityAtPath<T extends AllEntityState>(
+export function getEntityAtPath(state: GameState, path: EntityPath): AllEntityState;
+export function getEntityAtPath<T extends AllEntityState>(
   state: Draft<GameState>,
   path: EntityPath,
   updateFn: EntityUpdateFn<T>
 ): AllEntityState;
-function getEntityAtPath(
+export function getEntityAtPath(
   state: GameState | Draft<GameState>,
   path: EntityPath,
   updateFn?: EntityUpdateFn
@@ -253,6 +253,14 @@ export class Store {
       ]);
   }
 
+  findCharacter(who: 0 | 1 | "all", pred: (s: CharacterState) => boolean): [CharacterState, CharacterPath][] {
+    if (who === "all") {
+      return this._state.players.flatMap((p, i) => playerCharacterSeq(p, i as 0 | 1)).filter(([a]) => pred(a));
+    } else {
+      return playerCharacterSeq(this._state.players[who], who).filter(([a]) => pred(a));
+    }
+  }
+
   updateEntityAtPath<T extends AllEntityState>(
     path: EntityPath,
     fn: EntityUpdateFn<T>
@@ -301,7 +309,24 @@ export class Store {
     });
     return player as DraftWithResource<PlayerState>;
   }
+}
 
+function playerCharacterSeq(player: PlayerState, who: 0 | 1): [CharacterState, CharacterPath][] {
+  let activeIndex = player.characters.findIndex((ch) => ch.entityId === player.active?.entityId);
+  if (activeIndex === -1) {
+    activeIndex = 0;
+  }
+  const result: [CharacterState, CharacterPath][] = [];
+  for (let i = 0; i < player.characters.length; i++) {
+    const ch = player.characters[(i + activeIndex) % player.characters.length];
+    result.push([ch, {
+      who: who,
+      entityId: ch.entityId,
+      indexHint: i,
+      info: ch.info,
+    }]);
+  }
+  return result;
 }
 
 export function getCharacterAtPath(state: Draft<GameState>, path: CharacterPath, updateFn: CharacterUpdateFn): CharacterState;

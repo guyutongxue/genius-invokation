@@ -34,17 +34,31 @@ import {
   EquipmentContext,
   SupportContext,
   NormalSkillInfo,
+  CharacterTag,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
-import { CharacterState, Store, getCharacterAtPath } from "./store.js";
+import {
+  CharacterState,
+  Store,
+  getCharacterAtPath,
+  getEntityAtPath,
+} from "./store.js";
 import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { PlayerMutator, fullSupportArea } from "./player.js";
-import { CharacterPath } from "./character.js";
+import { CharacterPath, characterElementType } from "./character.js";
 import { Card } from "./card.js";
-import { AllEntityInfo, AllEntityState, Entity, EntityPath, EquipmentState, getVisibleValue } from "./entity.js";
+import {
+  AllEntityInfo,
+  AllEntityState,
+  Entity,
+  EntityPath,
+  EquipmentState,
+  getVisibleValue,
+} from "./entity.js";
 import { ActionConfig, PlayCardTargetObj } from "./action.js";
-import { Skill } from "./skill.js";
+import { Skill, getSkillEx } from "./skill.js";
 import { Damage } from "./damage.js";
+import * as _ from "lodash-es";
 
 type ContextOfEvent<E extends EventNames> = Context<{}, EventMap[E], true>;
 type EventAndContext<E extends EventNames = EventNames> = [
@@ -53,11 +67,208 @@ type EventAndContext<E extends EventNames = EventNames> = [
 ];
 export type EventFactory = (entityId: number) => EventAndContext[];
 
+function getCharactersFromSelector(
+  store: Store,
+  callerWho: 0 | 1,
+  selector: string
+): CharacterPath[] {
+  // entityId
+  if (selector.startsWith("#")) {
+    const entityId = Number(selector.slice(1));
+    if (Number.isNaN(entityId)) {
+      throw new Error(`Invalid character selector: ${selector}`);
+    }
+    return [
+      ...store.findCharacter(0, (ch) => ch.entityId === entityId),
+      ...store.findCharacter(1, (ch) => ch.entityId === entityId),
+    ].map(([ch, chPath]) => chPath);
+  }
+
+  // prefix
+  let who: 0 | 1 | "all" = callerWho;
+  if (selector.startsWith("!")) {
+    who = flip(callerWho);
+    selector = selector.slice(1);
+  } else if (selector.startsWith("+")) {
+    who = "all";
+    selector = selector.slice(1);
+  }
+
+  // directives
+  if (selector.startsWith(":")) {
+    const execR = /:(energy|has|tag\*|recent|exclude|exclude\*)\((.*)\)/.exec(
+      selector
+    );
+    if (!execR) {
+      throw new Error(`Invalid character selector: ${selector}`);
+    }
+    const [, type, arg] = execR;
+    switch (type) {
+      case "energy": {
+        if (arg === "notFull") {
+          return store
+            .findCharacter(
+              who,
+              (ch) => !ch.defeated && ch.energy < ch.info.maxEnergy
+            )
+            .map(([, chPath]) => chPath);
+        } else {
+          const number = Number(arg);
+          if (Number.isNaN(number)) {
+            throw new Error(
+              `Invalid character selector: ${selector}; ${arg} is not a number`
+            );
+          }
+          return store
+            .findCharacter(who, (ch) => !ch.defeated && ch.energy === number)
+            .map(([, chPath]) => chPath);
+        }
+      }
+      case "has": {
+        const id = Number(arg);
+        if (Number.isNaN(id)) {
+          throw new Error(
+            `Invalid character selector: ${selector}; ${arg} is not a number`
+          );
+        }
+        return store
+          .findCharacter(
+            who,
+            (ch) =>
+              !!ch.statuses.find((st) => !ch.defeated && st.info.id === id)
+          )
+          .map(([, chPath]) => chPath);
+      }
+      case "tag*":
+        const tag = arg as CharacterTag;
+        return store
+          .findCharacter(who, (ch) => ch.info.tags.includes(tag))
+          .map(([, chPath]) => chPath);
+      case "recent": {
+        const rel = getCharactersFromSelector(store, callerWho, arg);
+        if (rel.length === 0) {
+          throw new Error(`Relative character not found: ${arg}`);
+        }
+        const base = rel[0];
+        const basePlayer = store.state.players[base.who];
+        const baseLength = basePlayer.characters.length;
+        const targetWho = flip(base.who);
+        const targetLength = store.state.players[targetWho].characters.length;
+        const baseRatio =
+          basePlayer.characters.findIndex(
+            (ch) => ch.entityId === base.entityId
+          ) -
+          (baseLength / 2 - 0.5);
+        const value = (chPath: CharacterPath) => {
+          const index = store.state.players[chPath.who].characters.findIndex(
+            (ch) => ch.entityId === chPath.entityId
+          );
+          const ratio = index - (targetLength / 2 - 0.5);
+          return Math.abs(ratio - baseRatio);
+        };
+        const sorted = _.sortBy(
+          store.findCharacter(targetWho, (ch) => !ch.defeated),
+          ([ch, chPath]) => value(chPath)
+        );
+        return [sorted[0][1]];
+      }
+      case "exclude": {
+        const rel = getCharactersFromSelector(store, callerWho, arg);
+        if (rel.length === 0) {
+          throw new Error(`Relative character not found: ${arg}`);
+        }
+        const excluded = rel.map((ch) => ch.entityId);
+        return store
+          .findCharacter(
+            who,
+            (ch) => !ch.defeated && !excluded.includes(ch.entityId)
+          )
+          .map(([ch, chPath]) => chPath);
+      }
+      case "exclude*": {
+        const rel = getCharactersFromSelector(store, callerWho, arg);
+        if (rel.length === 0) {
+          throw new Error(`Relative character not found: ${arg}`);
+        }
+        const excluded = rel.map((ch) => ch.entityId);
+        return store
+          .findCharacter(who, (ch) => !excluded.includes(ch.entityId))
+          .map(([, chPath]) => chPath);
+      }
+      default:
+        throw new Error(`Invalid character selector: ${selector}`);
+    }
+  }
+
+  const activeIds = [
+    store.state.players[0].active?.entityId,
+    store.state.players[1].active?.entityId,
+  ];
+
+  function activeOffsetChar(who: 0 | 1, offset: number): CharacterPath {
+    const player = store.state.players[who];
+    const activeIndex = player.characters.findIndex(
+      (ch) => ch.entityId === player.active?.entityId
+    );
+    const index =
+      (activeIndex + offset + player.characters.length) %
+      player.characters.length;
+    return {
+      who,
+      entityId: player.characters[index].entityId,
+      indexHint: index,
+      info: player.characters[index].info,
+    };
+  }
+
+  switch (selector) {
+    case "|":
+      return store
+        .findCharacter(
+          who,
+          (ch) => !ch.defeated && activeIds.includes(ch.entityId)
+        )
+        .map(([, chPath]) => chPath);
+    case "<": {
+      const r: CharacterPath[] = [];
+      if (who === "all" || who === 0) {
+        r.push(activeOffsetChar(0, -1));
+      }
+      if (who === "all" || who === 1) {
+        r.push(activeOffsetChar(1, -1));
+      }
+      return r;
+    }
+    case ">": {
+      const r: CharacterPath[] = [];
+      if (who === "all" || who === 0) {
+        r.push(activeOffsetChar(0, 1));
+      }
+      if (who === "all" || who === 1) {
+        r.push(activeOffsetChar(1, 1));
+      }
+      return r;
+    }
+    case "<>":
+      return store
+        .findCharacter(
+          who,
+          (ch) => !ch.defeated && !activeIds.includes(ch.entityId)
+        )
+        .map(([, chPath]) => chPath);
+    case "*":
+      return store
+        .findCharacter(who, (ch) => !ch.defeated)
+        .map(([, chPath]) => chPath);
+    case "**":
+      return store.findCharacter(who, () => true).map(([, chPath]) => chPath);
+    default:
+      throw new Error(`Invalid character selector: ${selector}`);
+  }
+}
+
 export class ContextImpl implements Context<any, {}, true> {
-  constructor(
-    protected store: Store,
-    protected caller: EntityPath
-  ) {}
+  constructor(protected store: Store, protected caller: EntityPath) {}
 
   private get who() {
     return this.caller.who;
@@ -82,11 +293,16 @@ export class ContextImpl implements Context<any, {}, true> {
   }
   checkSpecialBit(bit: SpecialBits): boolean {
     switch (bit) {
-      case SpecialBits.DeclaredEnd: return this.player.declaredEnd;
-      case SpecialBits.Defeated: return this.player.hasDefeated;
-      case SpecialBits.LegendUsed: return this.player.legendUsed;
-      case SpecialBits.Plunging: return this.player.canPlunging;
-      case SpecialBits.SkipTurn: return this.player.skipNextTurn;
+      case SpecialBits.DeclaredEnd:
+        return this.player.declaredEnd;
+      case SpecialBits.Defeated:
+        return this.player.hasDefeated;
+      case SpecialBits.LegendUsed:
+        return this.player.legendUsed;
+      case SpecialBits.Plunging:
+        return this.player.canPlunging;
+      case SpecialBits.SkipTurn:
+        return this.player.skipNextTurn;
     }
   }
 
@@ -96,135 +312,57 @@ export class ContextImpl implements Context<any, {}, true> {
   protected createEntityContext(path: EntityPath): EntityContextImpl {
     return new EntityContextImpl(this.store, path, this.caller);
   }
-  private getCharactersFromSelector(
-    selector: string
-  ): CharacterPath[] {
-    
-    // prefix
-    if (selector.startsWith('#')) {
-      const id = Number(selector.slice(1));
-      if (Number.isNaN(id)) {
-        throw new Error(`Invalid character selector: ${selector}`);
-      }
-      // TODO: Get character by entityId
-      return [/* sth here */];
-    }
-    let includeMy = true;
-    let includeOpp = false;
-    if (selector.startsWith("!")) {
-      includeMy = false;
-      includeOpp = true;
-      selector = selector.slice(1);
-    } else if (selector.startsWith("+")) {
-      includeOpp = true;
-      selector = selector.slice(1);
-    }
-
-    switch (info.type) {
-      case "byPos": {
-        const player = this.store.getPlayer(
-          info.opp ? flip(this.who) : this.who
-        );
-        let positions: CharacterPosition[];
-        if (info.pos === "all") {
-          positions = ["prev", "active", "next"];
-        } else if (info.pos === "standby") {
-          positions = ["prev", "next"];
-        } else {
-          positions = [info.pos];
-        }
-        const characters = new Set(
-          positions.map((pos) => player.getCharacter(pos))
-        );
-        return [...characters].map(this.createCharacterContext.bind(this));
-      }
-      case "oneEnergyNotFull": {
-        const player = this.store.getPlayer(this.who);
-        const try1 = player.getCharacter("active");
-        if (!try1.fullEnergy()) return [this.createCharacterContext(try1)];
-        const try2 = player.getCharacter("next");
-        if (!try2.fullEnergy()) return [this.createCharacterContext(try2)];
-        const try3 = player.getCharacter("prev");
-        if (!try3.fullEnergy()) return [this.createCharacterContext(try3)];
-        return [];
-      }
-      case "byEntityId": {
-        const character = this.store
-          .getPlayer(this.who)
-          .getCharacterById(info.entityId);
-        const character2 = this.store
-          .getPlayer(flip(this.who))
-          .getCharacterById(info.entityId);
-        return character
-          ? [this.createCharacterContext(character)]
-          : character2
-          ? [this.createCharacterContext(character2)]
-          : [];
-      }
-      case "byId": {
-        const player = this.store.getPlayer(
-          info.opp ? flip(this.who) : this.who
-        );
-        const character = player.getCharacterById(info.id, true);
-        return character ? [this.createCharacterContext(character)] : [];
-      }
-      case "recentOpp": {
-        const relativeCtx = this.getCharacterFromTarget(info.relativeTo);
-        if (relativeCtx.length === 0) return [];
-        const relative = relativeCtx[0];
-        const targetPlayer = this.store.getPlayer(flip(relative.who));
-        const targetCharacter = targetPlayer.getCharacterByPos(
-          relative.indexOfPlayer()
-        );
-        return [this.createCharacterContext(targetCharacter)];
-      }
-      default: {
-        const _: never = info;
-        throw new Error(`Unknown target info type: ${_}`);
-      }
-    }
-  }
 
   queryCharacter(selector: string): CharacterContext<true> | null {
     const ctx = this.queryCharacterAll(selector);
     return ctx.length > 0 ? ctx[0] : null;
   }
   queryCharacterAll(selector: string): CharacterContext<true>[] {
-    return this.getCharactersFromSelector(selector).map((c) => this.createCharacterContext(c));
+    return getCharactersFromSelector(this.store, this.who, selector).map((c) =>
+      this.createCharacterContext(c)
+    );
   }
   fullSupportArea(opp: boolean): boolean {
     const who = opp ? flip(this.who) : this.who;
     return fullSupportArea(this.store.state, who);
   }
   findSummon(summon: number): SummonContext<true> | null {
-    const r = this.store.findEntity(this.who, "summon", (s) => s.info.id === summon);
+    const r = this.store.findEntity(
+      this.who,
+      "summon",
+      (s) => s.info.id === summon
+    );
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
   allSummons(includeOpp = false): SummonContext<true>[] {
-    const mySummons = this.player.summons;
+    const mySummons = this.store.findEntity(this.who, "summon", () => true);
     const oppSummons = includeOpp
-      ? this.store.state.players[flip(this.who)].summons
+      ? this.store.findEntity(flip(this.who), "summon", () => true)
       : [];
-    return [...mySummons, ...oppSummons].map(
-      this.createEntityContext.bind(this)
+    return [...mySummons, ...oppSummons].map(([st, path]) =>
+      this.createEntityContext(path)
     );
   }
 
   findCombatStatus(status: number): StatusContext<true> | null {
-    const r = this.store.findEntity(this.who, "status", (st) => st.info.id === status);
+    const r = this.store.findEntity(
+      this.who,
+      "status",
+      (st) => st.info.id === status
+    );
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
   findCombatShield(): StatusContext<true> | null {
-    const r = this.store.findEntity(this.who, "status", (st) => st.info.shield !== null);
+    const r = this.store.findEntity(
+      this.who,
+      "status",
+      (st) => st.info.shield !== null
+    );
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
 
-  dealDamage(
-    value: number,
-    type: DamageType,
-    target?: string
-  ): void {
-    const chs = this.getCharactersFromSelector(target ?? "!|");
+  dealDamage(value: number, type: DamageType, target?: string): void {
+    const chs = getCharactersFromSelector(this.store, this.who, target ?? "!|");
     for (const ch of chs) {
       this.store.dealDamage(this.sourceId, ch.character, value, type);
     }
@@ -250,7 +388,10 @@ export class ContextImpl implements Context<any, {}, true> {
     return sum;
   }
 
-  createCombatStatus(status: number, opp: boolean = false): StatusContext<true> {
+  createCombatStatus(
+    status: number,
+    opp: boolean = false
+  ): StatusContext<true> {
     const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const st = player.createCombatStatus(status);
     // this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
@@ -267,8 +408,14 @@ export class ContextImpl implements Context<any, {}, true> {
     const summon = summons[Math.floor(Math.random() * summons.length)];
     this.summon(summon);
   }
-  createSupport(support: number, opp?: boolean | undefined): SupportContext<true> {
-    const path = this.store.mutator.players[opp ? flip(this.who) : this.who].createSupport(support);
+  createSupport(
+    support: number,
+    opp?: boolean | undefined
+  ): SupportContext<true> {
+    const path =
+      this.store.mutator.players[opp ? flip(this.who) : this.who].createSupport(
+        support
+      );
     // this.store.pushEvent(
     //   createEnterEventContext(this.store, this.who, supportObj)
     // );
@@ -278,13 +425,14 @@ export class ContextImpl implements Context<any, {}, true> {
   get dice(): readonly DiceType[] {
     return this.player.dice;
   }
+  absorbDice(indexes: number[]): DiceType[] {
+    return this.store.mutator.players[this.who].absorbDice(indexes);
+  }
   rollDice(count: number): Promise<void> {
-    return this.store.getPlayer(this.who).rerollDice(count);
+    return this.store.mutator.players[this.who].rerollDice(count);
   }
   generateDice(...dice: DiceType[]): void {
-    const player = this.store.getPlayer(this.who);
-    player.dice.push(...dice);
-    player.sortDice();
+    this.store.mutator.players[this.who].generateDice(...dice);
   }
   generateRandomElementDice(count: number = 1): void {
     const newDice: DiceType[] = [];
@@ -296,79 +444,65 @@ export class ContextImpl implements Context<any, {}, true> {
     }
     this.generateDice(...newDice);
   }
-  removeAllDice(): DiceType[] {
-    const old = this.store.getPlayer(this.who).dice;
-    this.store.getPlayer(this.who).dice = [];
-    return old;
-  }
 
   getCardCount(opp?: boolean | undefined): number {
-    return this.store.getPlayer(opp ? flip(this.who) : this.who).hands.length;
+    return this.store.state.players[opp ? flip(this.who) : this.who].hands
+      .length;
   }
   drawCards(
     count: number,
     opp?: boolean | undefined,
     tag?: CardTag | undefined
   ): void {
-    const player = this.store.getPlayer(opp ? flip(this.who) : this.who);
+    const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const controlled = tag ? player.cardsWithTagFromPile(tag) : [];
     player.drawHands(count, controlled);
   }
   createCards(...ids: number[]): void {
-    const cards = ids.map((id) => new Card(id));
-    this.store.getPlayer(this.who).hands.push(...cards);
+    this.store.mutator.players[this.who].createHands(...ids);
   }
   switchCards(): Promise<void> {
-    return this.store.getPlayer(this.who).switchHands();
+    return this.store.mutator.players[this.who].switchHands();
   }
 
-  switchActive(target: Target): void {
-    const ctx = this.getCharacterFromTarget(target);
-    if (ctx.length === 0) {
+  switchActive(target: string): void {
+    const chPaths = getCharactersFromSelector(this.store, this.who, target);
+    if (chPaths.length === 0) {
       throw new Error(`Switching active: Target not exists: ${target}`);
     }
-    const chCtx = ctx[0];
-    const player = this.store.getPlayer(
-      chCtx.isMine() ? this.who : flip(this.who)
-    );
-    player.switchActive(chCtx.entityId);
+    const chPath = chPaths[0];
+    const player = this.store.mutator.players[chPath.who];
+    player.switchActive(chPath.entityId);
   }
   useSkill(skill: number | "normal"): Promise<void> {
-    const player = this.store.getPlayer(this.who);
-    const ch = player.getCharacter("active");
-    let skillObj: Skill | undefined;
-    if (skill === "normal") {
-      skillObj = ch.skills.find((sk) => sk.info.type === "normal");
-    } else {
-      skillObj = ch.skills.find((sk) => sk.info.id === skill);
-    }
-    if (!skillObj) {
-      throw new Error("NO normal attack defined for active ch");
-    }
-    return player.useSkill(skillObj, this.sourceId);
+    const sk = getSkillEx(this.store.state, this.who, skill);
+    const player = this.store.mutator.players[this.who];
+    return player.useSkill(sk, this.caller);
   }
 
   actionAgain(): void {
-    this.store.getPlayer(flip(this.who)).setSpecialBit(SpecialBits.SkipTurn);
+    this.store.produce((draft) => {
+      draft.players[flip(this.who)].skipNextTurn = true;
+    });
   }
-
 }
 
 class CharacterContextImpl implements CharacterContext<true> {
-  private character: CharacterState;
   constructor(
     private store: Store,
     public readonly path: CharacterPath,
     public readonly caller: EntityPath
-  ) {
-    this.character = getCharacterAtPath(store.state, path);
+  ) {}
+
+  private get character() {
+    return getCharacterAtPath(this.store.state, this.path);
   }
 
   get entityId() {
-    return this.character.entityId;
+    return this.path.entityId;
   }
   get info(): CharacterInfo {
-    return this.character.info;
+    return this.path.info;
   }
   get health() {
     return this.character.health;
@@ -384,19 +518,23 @@ class CharacterContextImpl implements CharacterContext<true> {
   }
 
   indexOfPlayer() {
-    return this.store.state.players[this.path.who].characters.findIndex((c) => c.entityId === this.entityId);
+    return this.store.state.players[this.path.who].characters.findIndex(
+      (c) => c.entityId === this.entityId
+    );
   }
 
   findEquipment(
     equipment: number | "artifact" | "weapon"
   ): EquipmentContext<true> | null {
     let eq: EquipmentState | undefined;
-    if (typeof equipment === "number") {
-      eq = this.character.equipments.find((e) => e.info.id === equipment);
-    } else {
-      eq = this.character.equipments.find((e) => e.info.type === equipment);
-    }
-    return eq?.info ?? null;
+    const eqs = this.store.findEntity(this.path, "equipment", (e) => {
+      if (typeof equipment === "number") {
+        return e.info.id === equipment;
+      } else {
+        return e.info.type === equipment;
+      }
+    });
+    return eqs.length > 0 ? new EntityContextImpl(this.store, eqs[0][1], this.caller) : null;
   }
   equip(equipment: number): void {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
@@ -436,10 +574,10 @@ class CharacterContextImpl implements CharacterContext<true> {
     this.character.statuses.splice(st, 1);
     return true;
   }
-  findStatus(status: number): StatusContext | null {
+  findStatus(status: number): StatusContext<true> | null {
     const st = this.character.statuses.find((s) => s.info.id === status);
     if (!st) return null;
-    return new StatusContextImpl(st);
+    return new EntityContextImpl(this.store, st, this.caller);
   }
   findShield(): StatusContext<true> {
     const st = this.character.statuses.find((s) => s.shield !== null);
@@ -456,23 +594,27 @@ class CharacterContextImpl implements CharacterContext<true> {
     );
   }
   isMine() {
-    return !!this.store
-      .getPlayer(this.who)
-      .characters.find((c) => c.entityId === this.entityId);
+    return this.path.who === this.caller.who;
   }
-  asTarget(): Target {
-    return Target.byEntityId(this.entityId);
+  asTarget(): `#${number}` {
+    return `#${this.path.entityId}`;
   }
   elementType(): DiceType {
-    return this.character.elementType();
+    return characterElementType(this.character);
   }
 }
 
-export class EntityContextImpl implements EntityContext<AllEntityInfo, number, "yes", true> {
-  constructor(private store: Store, private path: EntityPath, private caller: EntityPath) {}
+export class EntityContextImpl
+  implements EntityContext<AllEntityInfo, number, "yes", true>
+{
+  constructor(
+    private store: Store,
+    private path: EntityPath,
+    private caller: EntityPath
+  ) {}
 
   private get entity(): AllEntityState {
-    return getEntity
+    return getEntityAtPath(this.store.state, this.path);
   }
 
   get entityId() {
@@ -511,12 +653,16 @@ export class EntityContextImpl implements EntityContext<AllEntityInfo, number, "
     this.store.updateEntityAtPath(this.path, f);
     return this.value;
   }
-  
+
   get master(): any {
     if (!("character" in this.path)) {
       return null;
     }
-    return new CharacterContextImpl(this.store, this.path.character, this.caller);;
+    return new CharacterContextImpl(
+      this.store,
+      this.path.character,
+      this.caller
+    );
   }
   dispose(): void {
     const env = getEntityById(this.store, this.sourceId);
@@ -966,7 +1112,6 @@ class RequestFastSwitchContextImpl
     }
   }
 }
-
 
 function getContextById(state: GameState, entityId: number) {
   const ee = getEntityById(state, entityId);

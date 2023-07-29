@@ -6,9 +6,8 @@ import {
 } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 
-import { Card } from "./card.js";
 import { CharacterPath, characterElementType, characterSkills, createStatus, gainEnergy, getCharacterData, loseEnergy, skillDisabled } from "./character.js";
-import { CardTag, NormalSkillInfo, PassiveSkillInfo, SkillInfo, SpecialBits, getSkill, getStatus } from "@gi-tcg/data";
+import { CardInfo, CardTag, NormalSkillInfo, PassiveSkillInfo, SkillInfo, SpecialBits, getCard, getSkill } from "@gi-tcg/data";
 import {
   EventFactory,
   EventHandlerNames1,
@@ -25,11 +24,10 @@ import {
   rpcAction,
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
-import { Skill } from "./skill.js";
 import { CardState, CharacterState, DraftWithResource, GameState, PlayerState, Store, getCharacterAtPath } from "./store.js";
 import { Draft } from "immer";
 import { IONotAvailableError, PlayerIO } from "./io.js";
-import { AllEntityState, EntityPath, EntityType, StateOfEntity, StatusState, SummonState, SupportState, createEntity, getEntityData, refreshEntity } from "./entity.js";
+import { AllEntityState, CardPath, EntityPath, EntityType, StateOfEntity, StatusState, SummonState, SupportState, createEntity, getEntityData, newEntityId, refreshEntity } from "./entity.js";
 
 interface PlayerOptions {
   initialHands: number;
@@ -150,6 +148,13 @@ export class PlayerMutator {
 
     this.drawHands(removed.length);
   }
+  createHands(...cardIds: number[]) {
+    using draft = this.produce();
+    draft.hands.push(...cardIds.map((card) => ({
+      entityId: newEntityId(),
+      info: getCard(card) as Draft<CardInfo>, // make TypeScript happy
+    })));
+  }
 
   async chooseActive(delayNotify: false): Promise<void>;
   async chooseActive(delayNotify: true): Promise<() => void>;
@@ -188,7 +193,7 @@ export class PlayerMutator {
     }
     await this.rerollDice(config.times);
   }
-  sortDice() {
+  private sortDice() {
     this.produce((draft) => {
       draft.dice.sort((a, b) => this.diceValue(b) - this.diceValue(a));
     });
@@ -232,6 +237,18 @@ export class PlayerMutator {
         this.doRollDice(controlled);
       }
     }
+  }
+
+  absorbDice(indexes: number[]): DiceType[] {
+    let result: DiceType[] = [];
+    this.produce((draft) => {
+      result = _.pullAt(draft.dice, indexes);
+    });
+    return result;
+  }
+  generateDice(...dice: DiceType[]): void {
+    this.produce((draft) => { draft.dice.push(...dice); });
+    this.sortDice();
   }
 
   // getCharacter(target: CharacterPosition): Character {
@@ -441,7 +458,7 @@ export class PlayerMutator {
       }
       case "useSkill": {
         this.consumeDice(action.dice, action.consumedDice);
-        await this.useSkill(action.skill.info);
+        await this.useSkill(action.skill.info as NormalSkillInfo);
         return false;
       }
       case "playCard": {
@@ -457,7 +474,7 @@ export class PlayerMutator {
     }
   }
 
-  async useSkill(skill: NormalSkillInfo, sourceId?: number) {
+  async useSkill(skill: NormalSkillInfo, caller?: EntityPath) {
     const [ch, chPath] = this.activeCharacter();
     if (skillDisabled(ch)) return; // 下落斩、雷楔等无法提前检测到的技能禁用
     const index = characterSkills(ch).findIndex((s) => s.id === skill.id);
@@ -475,19 +492,19 @@ export class PlayerMutator {
     // await this.ops.doEvent();
   }
 
-  async playCard(hand: Card, targets: PlayCardTargetObj[]) {
+  async playCard(hand: CardPath, targets: PlayCardTargetObj[]) {
     const index = this.state.hands.findIndex((c) => c.entityId === hand.entityId);
     if (index === -1) {
       throw new Error("Invalid card");
     }
-    this.state.hands.splice(index, 1);
+    this.produce((draft) => { draft.hands.splice(index, 1); });
     this.io?.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
     this.io?.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
     const ctx = this.ops.getCardContext(hand, targets);
     for await (const r of hand.do(ctx)) {
-      this.ops.doEvent();
+      // this.ops.doEvent();
     }
-    this.ops.emitEvent("onPlayCard", hand, targets);
+    // this.ops.emitEvent("onPlayCard", hand, targets);
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {

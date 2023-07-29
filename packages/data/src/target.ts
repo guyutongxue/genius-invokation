@@ -1,11 +1,11 @@
 import { CharacterTag } from ".";
 import { CharacterHandle, StatusHandle } from "./builders";
 
-type ByPos = '<' | '|' | '>' | '<>' | '*';
+type ByPos = '<' | '|' | '>' | '<>' | '*' | '**';
 type ById = `@${CharacterHandle}`;
 type NoEnergy = `:energy(${number | "notFull"})`;
 type HasStatus = `:has(${StatusHandle})`;
-type WithTag = `:tag(${CharacterTag})`;
+type WithTag = `:tag*(${CharacterTag})`;
 export type SimpleSelector = ById | ByPos | NoEnergy | HasStatus | WithTag;
 
 type NoPrefixSelector<T extends string> = T extends SimpleSelector
@@ -14,6 +14,8 @@ type NoPrefixSelector<T extends string> = T extends SimpleSelector
   ? `:recent(${ValidSelector<Rel>})`
   : T extends `:exclude(${infer Rel})`
   ? `:exclude(${ValidSelector<Rel>})`
+  : T extends `:exclude*(${infer Rel})`
+  ? `:exclude*(${ValidSelector<Rel>})`
   : never;
 
 type Prefix = "!" | "+";

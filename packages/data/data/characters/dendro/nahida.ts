@@ -107,13 +107,13 @@ const IllusoryHeart = createSkill(17034)
   .do((c) => {
     if (c.character.findEquipment(TheSeedOfStoredKnowledge)) {
       // 摩耶之殿天赋（水）：持续回合+1
-      if (c.queryCharacterAll(":tag(hydro)")) {
+      if (c.queryCharacterAll(":tag*(hydro)")) {
         c.createCombatStatus(ShrineOfMaya01);
       } else {
         c.createCombatStatus(ShrineOfMaya);
       }
       // 摩耶之殿天赋（雷）：蕴种印可用次数+1
-      if (c.queryCharacter(":tag(electro)")) {
+      if (c.queryCharacter(":tag*(electro)")) {
         c.queryCharacterAll("!*").forEach(ch => {
           const seed = ch.findStatus(SeedOfSkadha);
           if (seed) {

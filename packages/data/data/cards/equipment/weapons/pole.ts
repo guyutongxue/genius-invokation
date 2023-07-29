@@ -47,7 +47,7 @@ const LithicSpear = createCard(311402, ["character"])
   .buildToEquipment()
   .on("enter", (c) => {
     const shield = c
-      .queryCharacterAll(":tag(liyue)")
+      .queryCharacterAll(":tag*(liyue)")
       .length;
     const status = c.this.master.createStatus(LithicGuard);
     status.setValue(shield);

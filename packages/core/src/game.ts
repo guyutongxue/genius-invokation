@@ -23,7 +23,6 @@ import {
   DamageContextImpl,
   SkillDescriptionContextImpl,
 } from "./context.js";
-import { Character } from "./character.js";
 import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
 import {
   CardTargetDescriptor,
@@ -35,7 +34,7 @@ import { flip } from "@gi-tcg/utils";
 import { Damage } from "./damage.js";
 import { Skill } from "./skill.js";
 import { Card } from "./card.js";
-import { DraftWithResource, GameState, Store } from "./store.js";
+import { DraftWithResource, GameState, Store, getData } from "./store.js";
 import { Draft } from "immer";
 
 export class Game {
@@ -157,7 +156,9 @@ export class Game {
       if (this.state.players[thisTurn].declaredEnd) {
         thisTurn = flip(thisTurn);
       } else if (this.state.players[thisTurn].skipNextTurn) {
-        player.setSpecialBit(SpecialBits.SkipTurn, false);
+        this.store.produce((draft) => {
+          draft.players[thisTurn].skipNextTurn = false;
+        });
         thisTurn = flip(thisTurn);
       }
       const player = this.mutator.players[thisTurn];
@@ -176,8 +177,8 @@ export class Game {
     this.emitEvent("onEndPhase");
     await this.doEvent();
     await Promise.all([
-      this.players[0].drawHands(2),
-      this.players[1].drawHands(2),
+      this.mutator.players[0].drawHands(2),
+      this.mutator.players[1].drawHands(2),
     ]);
     this.produce((draft) => {
       draft.roundNumber++;
@@ -190,25 +191,24 @@ export class Game {
   }
 
 
-  emitEvent<K extends EventHandlerNames1>(
-    event: K,
-    ...args: EventCreatorArgs<K>
-  ) {
-    const creator = CONTEXT_CREATOR[event];
-    // @ts-expect-error TS SUCKS
-    const e: EventFactory = creator(this, ...args);
-    this.eventWaitingForHandle.push(e);
-  }
-  emitImmediatelyHandledEvent<K extends EventHandlerNames1>(
-    event: K,
-    ...args: EventCreatorArgs<K>
-  ) {
-    const creator = CONTEXT_CREATOR[event];
-    const THIS = event === "onBeforeUseDice" ? this.clone() : this;
-    // @ts-expect-error TS SUCKS
-    const e: EventFactory = creator(THIS, ...args);
-    THIS.handleEventSync(e);
-  }
+  // emitEvent<K extends EventHandlerNames1>(
+  //   event: K,
+  //   ...args: EventCreatorArgs<K>
+  // ) {
+  //   const creator = CONTEXT_CREATOR[event];
+  //   // @ts-expect-error TS SUCKS
+  //   const e: EventFactory = creator(this, ...args);
+  //   this.eventWaitingForHandle.push(e);
+  // }
+  // emitImmediatelyHandledEvent<K extends EventHandlerNames1>(
+  //   event: K,
+  //   ...args: EventCreatorArgs<K>
+  // ) {
+  //   const creator = CONTEXT_CREATOR[event];
+  //   // @ts-expect-error TS SUCKS
+  //   const e: EventFactory = creator(this, ...args);
+  //   this.handleEventSync(e);
+  // }
 
   // async *handleEvent(event: EventFactory) {
   //   for await (const r of this.players[this.statecurrentTurn].handleEvent(event)) {
@@ -230,7 +230,7 @@ export class Game {
   private notifyPlayer(who: 0 | 1, event: Event) {
     const msg: NotificationMessage = {
       event,
-      state: this.getData(who),
+      state: getData(this.state, who),
     };
     verifyNotificationMessage(msg);
     this.playerConfigs[who].onNotify?.(msg);
@@ -433,26 +433,5 @@ export class Game {
       }
     }
     return actions;
-  }
-
-  clone() {
-    const clone = shallowClone(this);
-    clone.players = [this.players[0].clone(), this.players[1].clone()];
-    // @ts-expect-error
-    clone.players[0].ops = {
-      ...clone.createOperationsForPlayer(0),
-      notifyOpp: () => {},
-      notifyMe: () => {},
-    };
-    // @ts-expect-error
-    clone.players[1].ops = {
-      ...clone.createOperationsForPlayer(1),
-      notifyOpp: () => {},
-      notifyMe: () => {},
-    };
-    clone.eventWaitingForHandle = [...this.eventWaitingForHandle];
-    console.log("cloned", clone);
-    console.log("this", this);
-    return clone;
   }
 }

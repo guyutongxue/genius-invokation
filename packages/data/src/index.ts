@@ -6,10 +6,10 @@ export * from "./global";
 export * from "./entities";
 export { CharacterContext, CharacterInfo, CharacterTag, ElementTag, NationTag, WeaponTag, getCharacter } from "./characters";
 export {
-  NormalSkillInfo, SkillInfo, PassiveSkillInfo, UseSkillAction, getSkill
+  NormalSkillInfo, SkillInfo, PassiveSkillInfo, UseSkillAction, getSkill, SkillContext
 } from "./skills";
 export {
-  CardInfo, CardTag, CardTarget, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, getCard
+  CardInfo, CardTag, CardTarget, CardTargetDescriptor, CardType, ContextOfTarget, PlayCardAction, PlayCardFilter, getCard, PlayCardContext
 } from "./cards";
 export { StatusContext, StatusTag, ShieldConfig, PrepareConfig, StatusInfo, getStatus, SHIELD_VALUE } from "./statuses";
 export { SupportContext, SupportType, SupportInfo, getSupport } from "./supports";
