@@ -247,6 +247,7 @@ export class Store {
           who: typeof whoOrCh === "number" ? whoOrCh : whoOrCh.who,
           entityId: a.entityId,
           indexHint: i,
+          info: a.info,
           ... (typeof whoOrCh === "number" ? {} : { character: whoOrCh }),
         }
       ]);

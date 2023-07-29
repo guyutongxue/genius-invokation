@@ -7,10 +7,9 @@ import {
 import * as _ from "lodash-es";
 
 import { Card } from "./card.js";
-import { Character, CharacterPath, characterElementType, characterSkills, createStatus, getCharacterData, loseEnergy, skillDisabled } from "./character.js";
-import { CardTag, SkillInfo, SpecialBits, getSkill, getStatus } from "@gi-tcg/data";
+import { CharacterPath, characterElementType, characterSkills, createStatus, gainEnergy, getCharacterData, loseEnergy, skillDisabled } from "./character.js";
+import { CardTag, NormalSkillInfo, PassiveSkillInfo, SkillInfo, SpecialBits, getSkill, getStatus } from "@gi-tcg/data";
 import {
-  EventCreatorArgsForCharacter,
   EventFactory,
   EventHandlerNames1,
   PlayCardContextImpl,
@@ -276,6 +275,14 @@ export class PlayerMutator {
     }
     return [getCharacterAtPath(this.state, this.state.active), this.state.active];
   }
+  private findCharacter(pred: (c: CharacterState) => boolean): [CharacterState, CharacterPath][] {
+    return this.state.characters.map((c, i): [CharacterState, CharacterPath] => [c, {
+      who: this.who,
+      entityId: c.entityId,
+      indexHint: i,
+      info: c.info
+    }]).filter(([c]) => pred(c));
+  }
 
   // 消耗骰子或能量
   private consumeDice(required: DiceType[], consumed: DiceType[]) {
@@ -314,25 +321,25 @@ export class PlayerMutator {
     // 检查准备中技能
     const preparingStatuses = this.store.findEntity(chPath, "status", (st) => st.info.prepare !== null);
     if (canUseSkill && preparingStatuses.length > 0) {
-      const [preparingStatus] = preparingStatuses[0];
+      const [preparingStatus,path] = preparingStatuses[0];
       const preparConfig = preparingStatus.info.prepare!;
       if (preparConfig.round === 1) {
-        const skillObj = getSkill(preparConfig.skillOrStatus);
-        if (typeof skillObj === "undefined") {
+        const skill = getSkill(preparConfig.skillOrStatus);
+        if (typeof skill === "undefined" || skill.type === "passive") {
           throw new Error(`preparing skill ${preparConfig.skillOrStatus} not found}`);
         }
-        await this.useSkill(skillObj);
+        await this.useSkill(skill);
       } else {
         this.store.updateCharacterAtPath(this.state.active!, (c, p) => {
           createStatus(c, p, preparConfig.skillOrStatus);
         });
       }
-      preparingStatus.shouldDispose = true;
-      await this.ops.doEvent();
+      this.store.updateEntityAtPath(path, (s) => { s.shouldDispose = true; });
+      // await this.ops.doEvent();
       return false; // 以慢速行动跳过本回合
     }
-    this.ops.emitEvent("onBeforeAction");
-    await this.ops.doEvent();
+    // this.ops.emitEvent("onBeforeAction");
+    // await this.ops.doEvent();
     // 收集可用行动
     const actions: ActionConfig[] = [
       {
@@ -342,75 +349,87 @@ export class PlayerMutator {
     const fastSwitchToken: RequestFastToken = {
       resolved: false,
     };
-    this.ops.emitImmediatelyHandledEvent(
-      "onRequestFastSwitchActive",
-      fastSwitchToken
-    );
+    // this.ops.emitImmediatelyHandledEvent(
+    //   "onRequestFastSwitchActive",
+    //   fastSwitchToken
+    // );
     if (canUseSkill) {
+      const skills = ch.info.skills.map(s => getSkill(s)).filter((info): info is NormalSkillInfo => info.type !== "passive");
       actions.push(
-        ...ch.skills
+        ...skills
           .filter(
             // Enough energy
             (s) =>
-              s.info.costs.filter((d) => d === DiceType.Energy).length <=
+              s.costs.filter((d) => d === DiceType.Energy).length <=
               ch.energy
           )
           .map(
             (s): UseSkillConfig => ({
               type: "useSkill",
-              dice: [...s.info.costs],
-              skill: s,
+              dice: [...s.costs],
+              skill: {
+                who: this.who,
+                type: "skill",
+                character: chPath,
+                info: s
+              },
             })
           )
       );
     }
     actions.push(...this.ops.getCardActions());
     actions.push(
-      ...this.characters
-        .filter((c) => c.isAlive() && c.entityId !== ch.entityId)
+      ...this.findCharacter((c) => !c.defeated && c.entityId !== ch.entityId)
         .map(
           (c): SwitchActiveConfig => ({
             type: "switchActive",
             dice: [DiceType.Void],
-            from: ch,
-            to: c,
+            from: chPath,
+            to: c[1],
             fast: fastSwitchToken.resolved,
           })
         )
     );
     actions.push(
-      ...this.hands.map(
+      ...this.state.hands.map(
         (h): ElementalTuningActionConfig => ({
           type: "elementalTuning",
-          card: h,
+          card: {
+            who: this.who,
+            type: "card",
+            entityId: h.entityId,
+            info: h.info,
+          },
         })
       )
     );
-    for (const action of actions) {
-      this.ops.emitImmediatelyHandledEvent("onBeforeUseDice", action);
-    }
-    const action = await rpcAction(actions, (r) => this.rpc("action", r));
+    // for (const action of actions) {
+    //   this.ops.emitImmediatelyHandledEvent("onBeforeUseDice", action);
+    // }
+    const action = await rpcAction(actions, (r) => this.io!.rpc("action", r));
     switch (action.type) {
       case "declareEnd": {
-        this.setSpecialBit(SpecialBits.DeclaredEnd, true);
+        this.produce((draft) => { draft.declaredEnd = true; });
         this.io?.notifyMe({ type: "declareEnd", opp: false });
         this.io?.notifyOpp({ type: "declareEnd", opp: true });
-        this.ops.emitEvent("onDeclareEnd");
+        // this.ops.emitEvent("onDeclareEnd");
         return false;
       }
       case "elementalTuning": {
-        const diceIndex = this.dice.indexOf(action.consumedDice[0]);
+        const diceIndex = this.state.dice.indexOf(action.consumedDice[0]);
         if (diceIndex === -1) {
           throw new Error("Invalid dice");
         }
-        const cardIdx = this.hands.findIndex(
+        const cardIdx = this.state.hands.findIndex(
           (c) => c.entityId === action.card.entityId
         );
         if (cardIdx === -1) {
           throw new Error("Invalid card");
         }
-        this.hands.splice(cardIdx, 1);
-        this.dice[diceIndex] = this.getCharacter("active").elementType();
+        this.produce((draft) => {
+          draft.hands.splice(cardIdx, 1);
+          draft.dice[diceIndex] = characterElementType(this.activeCharacter()[0]);
+        })
         this.sortDice();
         this.io?.notifyOpp({
           type: "oppChangeHands",
@@ -422,7 +441,7 @@ export class PlayerMutator {
       }
       case "useSkill": {
         this.consumeDice(action.dice, action.consumedDice);
-        await this.useSkill(action.skill);
+        await this.useSkill(action.skill.info);
         return false;
       }
       case "playCard": {
@@ -438,11 +457,8 @@ export class PlayerMutator {
     }
   }
 
-  async useSkill(skill: SkillInfo, sourceId?: number) {
-    if (skill.type === "passive") {
-      throw new Error("Cannot manually use passive skill");
-    }
-    const ch = this.activeCharacter();
+  async useSkill(skill: NormalSkillInfo, sourceId?: number) {
+    const [ch, chPath] = this.activeCharacter();
     if (skillDisabled(ch)) return; // 下落斩、雷楔等无法提前检测到的技能禁用
     const index = characterSkills(ch).findIndex((s) => s.id === skill.id);
     if (index === -1) {
@@ -452,10 +468,10 @@ export class PlayerMutator {
     const ctx = this.ops.getSkillContext(skill, sourceId);
     skill.do(ctx);
     if (skill.gainEnergy) {
-      ch.gainEnergy();
+      this.store.updateCharacterAtPath(chPath, (c) => { gainEnergy(c); });
     }
-    await this.ops.doEvent();
-    this.ops.emitEvent("onUseSkill", skill);
+    // await this.ops.doEvent();
+    // this.ops.emitEvent("onUseSkill", skill);
     // await this.ops.doEvent();
   }
 
@@ -464,7 +480,7 @@ export class PlayerMutator {
     if (index === -1) {
       throw new Error("Invalid card");
     }
-    this.hands.splice(index, 1);
+    this.state.hands.splice(index, 1);
     this.io?.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
     this.io?.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
     const ctx = this.ops.getCardContext(hand, targets);
@@ -485,6 +501,7 @@ export class PlayerMutator {
     this.produce((draft) => {
       draft.active = {
         who: this.who,
+        info: draft.characters[newActiveIndex].info,
         entityId: targetEntityId,
         indexHint: newActiveIndex,
       }
@@ -508,10 +525,10 @@ export class PlayerMutator {
     oppNotify();
     // 取消准备技能
     const preparing = this.store.findEntity(fromPath, "status", (s) => s.info.prepare !== null);
-    if (preparingSkill) {
-      preparingSkill.shouldDispose = true;
-    }
-    this.ops.emitEvent("onSwitchActive", from, to);
+    preparing.forEach(([st, p]) => {
+      this.store.updateEntityAtPath(p, (s) => { s.shouldDispose = true; });
+    })
+    // this.ops.emitEvent("onSwitchActive", from, to);
   }
 
   private createEntity(type: "status" | "support" | "summon", id: number): EntityPath {
@@ -532,6 +549,7 @@ export class PlayerMutator {
     return {
       type: type,
       who: this.who,
+      info: entity.info,
       entityId: entity.entityId,
       indexHint: newIdx,
     };
@@ -551,7 +569,7 @@ export class PlayerMutator {
    */
   checkDispose() {
     using draft = this.produce();
-    const activeIndex = draft.active ?? 0;
+    const activeIndex = draft.active?.indexHint ?? 0;
     for (let i = 0; i < draft.characters.length; i++) {
       const character =
       draft.characters[(activeIndex + i) % draft.characters.length];
@@ -582,14 +600,14 @@ export class PlayerMutator {
     }
   }
 
-  emitEventFromCharacter<K extends EventHandlerNames1>(
-    ch: Character,
-    event: K,
-    ...rest: EventCreatorArgsForCharacter<K>
-  ) {
-    // @ts-expect-error TS sucks
-    this.ops.emitEvent(event, ch, ...rest);
-  }
+  // emitEventFromCharacter<K extends EventHandlerNames1>(
+  //   ch: Character,
+  //   event: K,
+  //   ...rest: EventCreatorArgsForCharacter<K>
+  // ) {
+  //   // @ts-expect-error TS sucks
+  //   this.ops.emitEvent(event, ch, ...rest);
+  // }
   notifySkill(skillInfo: SkillInfo) {
     this.io?.notifyMe({ type: "useSkill", skill: skillInfo.id, opp: false });
     this.io?.notifyOpp({ type: "useSkill", skill: skillInfo.id, opp: true });

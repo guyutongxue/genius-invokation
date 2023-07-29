@@ -32,23 +32,19 @@ import {
   RequestFastSwitchContext,
   EntityContext,
   EquipmentContext,
+  SupportContext,
+  NormalSkillInfo,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import { CharacterState, Store, getCharacterAtPath } from "./store.js";
 import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
-import { CharacterPosition, PlayerMutator, fullSupportArea } from "./player.js";
-import { Character, CharacterPath } from "./character.js";
-import { Equipment } from "./equipment.js";
-import { Status } from "./status.js";
-import { Summon } from "./summon.js";
+import { PlayerMutator, fullSupportArea } from "./player.js";
+import { CharacterPath } from "./character.js";
 import { Card } from "./card.js";
-import { AllEntityInfo, AllEntityState, Entity, EntityPath, EquipmentState, SummonState, getVisibleValue } from "./entity.js";
+import { AllEntityInfo, AllEntityState, Entity, EntityPath, EquipmentState, getVisibleValue } from "./entity.js";
 import { ActionConfig, PlayCardTargetObj } from "./action.js";
-import { Support } from "./support.js";
-import { PassiveSkill } from "./passive_skill.js";
 import { Skill } from "./skill.js";
 import { Damage } from "./damage.js";
-import { Game } from "./game.js";
 
 type ContextOfEvent<E extends EventNames> = Context<{}, EventMap[E], true>;
 type EventAndContext<E extends EventNames = EventNames> = [
@@ -238,15 +234,15 @@ export class ContextImpl implements Context<any, {}, true> {
     throw new Error("Shouldn't called by base class");
   }
   gainEnergy(value?: number | undefined, target?: string): number {
-    const ctx = this.getCharactersFromSelector(target ?? "|");
+    const ctx = this.queryCharacterAll(target ?? "|");
     let sum = 0;
     for (const ch of ctx) {
       sum += ch.gainEnergy(value ?? 0);
     }
     return sum;
   }
-  loseEnergy(value?: number | undefined, target?: Target): number {
-    const ctx = this.getCharactersFromSelector(target ?? "|");
+  loseEnergy(value?: number | undefined, target?: string): number {
+    const ctx = this.queryCharacterAll(target ?? "|");
     let sum = 0;
     for (const ch of ctx) {
       sum += ch.loseEnergy(value ?? 0);
@@ -257,32 +253,30 @@ export class ContextImpl implements Context<any, {}, true> {
   createCombatStatus(status: number, opp: boolean = false): StatusContext<true> {
     const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const st = player.createCombatStatus(status);
-    this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
+    // this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
     return new EntityContextImpl(this.store, st, this.caller);
   }
-
-  summon(summon: number): void {
-    const summonObj = new Summon(summon);
-    this.store.getPlayer(this.who).summons.push(summonObj);
-    this.store.pushEvent(
-      createEnterEventContext(this.store, this.who, summonObj)
-    );
+  summon(summon: number): SummonContext<true> {
+    const path = this.store.mutator.players[this.who].createSummon(summon);
+    // this.store.pushEvent(
+    //   createEnterEventContext(this.store, this.who, summonObj)
+    // );
+    return this.createEntityContext(path);
   }
   summonOneOf(...summons: number[]): void {
     const summon = summons[Math.floor(Math.random() * summons.length)];
     this.summon(summon);
   }
-  createSupport(support: number, opp?: boolean | undefined): void {
-    const supportObj = new Support(support);
-    const player = this.store.getPlayer(opp ? flip(this.who) : this.who);
-    player.supports.push(supportObj);
-    this.store.pushEvent(
-      createEnterEventContext(this.store, this.who, supportObj)
-    );
+  createSupport(support: number, opp?: boolean | undefined): SupportContext<true> {
+    const path = this.store.mutator.players[opp ? flip(this.who) : this.who].createSupport(support);
+    // this.store.pushEvent(
+    //   createEnterEventContext(this.store, this.who, supportObj)
+    // );
+    return this.createEntityContext(path);
   }
 
-  getDice(): DiceType[] {
-    return this.store.getPlayer(this.who).dice;
+  get dice(): readonly DiceType[] {
+    return this.player.dice;
   }
   rollDice(count: number): Promise<void> {
     return this.store.getPlayer(this.who).rerollDice(count);
@@ -631,13 +625,13 @@ export class SkillDescriptionContextImpl
     state: GameState,
     who: 0 | 1,
     sourceId: number,
-    protected skill: Skill | PassiveSkill
+    protected skill: NormalSkillInfo
   ) {
     super(state, who, sourceId);
   }
 
   get character() {
-    const player = this.store.getPlayer(this.who);
+    const player = this.store.state.players[this.who];
     const ch = player.characters.find((ch) =>
       ch.info.skills.includes(this.skill.info.id)
     );
@@ -1257,23 +1251,23 @@ export const CONTEXT_CREATOR = {
 type ContextCreator = typeof CONTEXT_CREATOR;
 export type EventHandlerNames1 = keyof ContextCreator;
 
-export type EventCreatorArgs<K extends keyof ContextCreator> =
-  ContextCreator[K] extends (state: GameState, ...args: infer A) => EventFactory
-    ? A
-    : never;
+// export type EventCreatorArgs<K extends keyof ContextCreator> =
+//   ContextCreator[K] extends (state: GameState, ...args: infer A) => EventFactory
+//     ? A
+//     : never;
 
-export type EventCreatorArgsForPlayer<K extends keyof ContextCreator> =
-  ContextCreator[K] extends (
-    state: GameState,
-    sourceWho: 0 | 1,
-    ...args: infer A
-  ) => EventFactory
-    ? A
-    : never;
+// export type EventCreatorArgsForPlayer<K extends keyof ContextCreator> =
+//   ContextCreator[K] extends (
+//     state: GameState,
+//     sourceWho: 0 | 1,
+//     ...args: infer A
+//   ) => EventFactory
+//     ? A
+//     : never;
 
-export type EventCreatorArgsForCharacter<K extends EventHandlerNames1> =
-  EventCreatorArgsForPlayer<K> extends [ch?: infer F, ...rest: infer R]
-    ? Character extends F
-      ? R
-      : never
-    : never;
+// export type EventCreatorArgsForCharacter<K extends EventHandlerNames1> =
+//   EventCreatorArgsForPlayer<K> extends [ch?: infer F, ...rest: infer R]
+//     ? Character extends F
+//       ? R
+//       : never
+//     : never;

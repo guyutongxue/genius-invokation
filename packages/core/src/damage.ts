@@ -1,5 +1,4 @@
 import { DamageType, Reaction } from "@gi-tcg/typings";
-import { Character } from "./character.js";
 
 export class Damage {
   constructor(

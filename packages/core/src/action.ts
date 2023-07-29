@@ -1,6 +1,5 @@
 import { Card } from "./card.js";
-import { Summon } from "./summon.js";
-import { Character } from "./character.js";
+import { CharacterPath } from "./character.js";
 import {
   Action,
   ActionRequest,
@@ -13,33 +12,34 @@ import {
 } from "@gi-tcg/typings";
 import { Skill } from "./skill.js";
 import * as _ from "lodash-es";
+import { CardPath, EntityPath, PlayerEntityPath, SkillPath } from "./entity.js";
 
 export type UseSkillConfig = {
   type: "useSkill";
   dice: DiceType[];
-  skill: Skill;
+  skill: SkillPath;
 };
 
-export type PlayCardTargetObj = Summon | Character;
+export type PlayCardTargetObj = PlayerEntityPath | CharacterPath;
 
 export type PlayCardConfig = {
   type: "playCard";
   dice: DiceType[];
-  card: Card;
+  card: CardPath;
   targets: PlayCardTargetObj[];
 };
 
 export type SwitchActiveConfig = {
   type: "switchActive";
   dice: DiceType[];
-  from: Character;
-  to: Character;
+  from: CharacterPath;
+  to: CharacterPath;
   fast: boolean;
 };
 
 export type ElementalTuningActionConfig = {
   type: "elementalTuning";
-  card: Card;
+  card: CardPath;
 };
 
 export type DeclareEndActionConfig = {

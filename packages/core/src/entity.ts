@@ -12,6 +12,8 @@ import {
   getSummon,
   getSupport,
   SHIELD_VALUE,
+  SkillInfo,
+  CardInfo,
 } from "@gi-tcg/data";
 import { EventFactory } from "./context.js";
 import { Draft, produce } from "immer";
@@ -87,32 +89,35 @@ export function createEntity<T extends EntityType>(
   };
 }
 
-interface PlayerEntityPath {
+export interface PlayerEntityPath {
   who: 0 | 1;
   type: "status" | "summon" | "support";
   entityId: number;
   indexHint: number;
+  info: StatusInfo | SummonInfo | SupportInfo;
 }
 
-type VirtualEntityPath =
-  | {
-      who: 0 | 1;
-      type: "skill";
-      characterId: number;
-      id: number;
-    }
-  | {
-      who: 0 | 1;
-      type: "card";
-      id: number;
-    };
+export interface SkillPath {
+  who: 0 | 1;
+  type: "skill";
+  character: CharacterPath;
+  info: SkillInfo;
+}
+export interface CardPath {
+  who: 0 | 1;
+  type: "card";
+  entityId: number;
+  info: CardInfo;
+}
+export type VirtualEntityPath = SkillPath | CardPath;
 
-interface CharacterEntityPath {
+export interface CharacterEntityPath {
   who: 0 | 1;
   type: "passive_skill" | "equipment" | "status";
   character: CharacterPath;
   entityId: number;
   indexHint: number;
+  info: PassiveSkillInfo | EquipmentInfo | StatusInfo;
 }
 
 export type EntityPath =

@@ -2,21 +2,10 @@ import {
   CharacterInfo,
   ElementTag,
   SkillInfo,
-  getCharacter,
   getSkill,
 } from "@gi-tcg/data";
-import { Entity, EntityPath, createEntity, getEntityData, refreshEntity } from "./entity.js";
-import { Equipment } from "./equipment.js";
-import { Status } from "./status.js";
-import { Aura, CharacterData, DiceType } from "@gi-tcg/typings";
-import { PassiveSkill } from "./passive_skill.js";
-import {
-  EventCreatorArgsForCharacter,
-  EventFactory,
-  EventHandlerNames1,
-} from "./context.js";
-import { Skill } from "./skill.js";
-import { PlayerMutator } from "./player.js";
+import { EntityPath, createEntity, getEntityData, refreshEntity } from "./entity.js";
+import { CharacterData, DiceType } from "@gi-tcg/typings";
 import { CharacterState } from "./store.js";
 import { Draft } from "immer";
 
@@ -32,64 +21,12 @@ const ELEMENT_TAG_MAP: Record<ElementTag, DiceType> = {
 
 export interface CharacterPath {
   who: 0 | 1;
+  info: CharacterInfo;
   entityId: number;
   indexHint: number;
 }
 
 export type CharacterUpdateFn = (draft: Draft<CharacterState>, path: CharacterPath) => void;
-
-export class Character extends Entity {
-
-  revive() {
-    this.defeated = false;
-    this.health = 0;
-    this.emitEvent("onRevive");
-  }
-
-  gainEnergy(energy = 1): number {
-    const oldEnergy = this.energy;
-    this.energy = Math.min(this.energy + energy, this.info.maxEnergy);
-    return this.energy - oldEnergy;
-  }
-
-  createStatus(newStatusId: number) {
-    const oldStatus = this.statuses.find((s) => s.info.id === newStatusId);
-    if (oldStatus) {
-      oldStatus.refresh();
-      return oldStatus;
-    } else {
-      const newStatus = new Status(newStatusId);
-      this.statuses.push(newStatus);
-      return newStatus;
-    }
-  }
-
-  // async *handleEvent(event: EventFactory) {
-  //   for (const sk of this.passiveSkills) {
-  //     await sk.handleEvent(event);
-  //     yield;
-  //   }
-  //   for (const eq of this.equipments) {
-  //     await eq.handleEvent(event);
-  //     yield;
-  //   }
-  //   for (const st of this.statuses) {
-  //     await st.handleEvent(event);
-  //     yield;
-  //   }
-  // }
-  // handleEventSync(event: EventFactory) {
-  //   for (const sk of this.passiveSkills) {
-  //     sk.handleEventSync(event);
-  //   }
-  //   for (const eq of this.equipments) {
-  //     eq.handleEventSync(event);
-  //   }
-  //   for (const st of this.statuses) {
-  //     st.handleEventSync(event);
-  //   }
-  // }
-}
 
 export function createStatus(ch: Draft<CharacterState>, chPath: CharacterPath, statusId: number): EntityPath {
   const idx = ch.statuses.findIndex((s) => s.info.id === statusId);
@@ -101,6 +38,7 @@ export function createStatus(ch: Draft<CharacterState>, chPath: CharacterPath, s
       character: chPath,
       entityId: ch.statuses[idx].entityId,
       indexHint: idx,
+      info: ch.statuses[idx].info,
     };
   } else {
     const newIdx = ch.statuses.length;
@@ -112,10 +50,16 @@ export function createStatus(ch: Draft<CharacterState>, chPath: CharacterPath, s
       character: chPath,
       entityId: newStatus.entityId,
       indexHint: newIdx,
+      info: newStatus.info,
     };
   }
 }
 
+export function revive(ch: Draft<CharacterState>) {
+  ch.defeated = false;
+  ch.health = 0;
+  // emitEvent("onRevive");
+}
 export function gainEnergy(ch: Draft<CharacterState>, value = 1) {
   ch.energy = Math.min(ch.energy + value, ch.info.maxEnergy);
 }
