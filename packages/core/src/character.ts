@@ -2,6 +2,7 @@ import {
   CharacterInfo,
   ElementTag,
   SkillInfo,
+  getEquipment,
   getSkill,
 } from "@gi-tcg/data";
 import { EntityPath, createEntity, getEntityData, refreshEntity } from "./entity.js";
@@ -53,6 +54,33 @@ export function createStatus(ch: Draft<CharacterState>, chPath: CharacterPath, s
       info: newStatus.info,
     };
   }
+}
+
+export function createEquipment(ch: Draft<CharacterState>, chPath: CharacterPath, eqId: number): EntityPath {
+  const newEntity = createEntity("equipment", eqId);
+  const SPECIAL_TYPE = ["weapon", "artifact"] as const;
+  for (const tag of SPECIAL_TYPE) {
+    if (newEntity.info.type === tag) {
+      const oldIdx = ch.equipments.findIndex(c => c.info.type === tag);
+      if (oldIdx !== -1) {
+        ch.equipments.slice(oldIdx, 1);
+      }
+    }
+  }
+  const oldIdx = ch.equipments.findIndex((e) => e.info.id === eqId);
+  if (oldIdx !== -1) {
+    ch.equipments.slice(oldIdx, 1);
+  }
+  const newIdx = ch.equipments.length;
+  ch.equipments.push(newEntity);
+  return {
+    type: "equipment",
+    who: chPath.who,
+    character: chPath,
+    entityId: newEntity.entityId,
+    indexHint: newIdx,
+    info: newEntity.info,
+  };
 }
 
 export function revive(ch: Draft<CharacterState>) {

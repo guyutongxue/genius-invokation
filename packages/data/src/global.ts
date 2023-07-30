@@ -35,6 +35,10 @@ interface GlobalContext<ThisT, Writable extends boolean = false> {
 
   // 本回合中技能使用次数（迪卢克、艾琳）
   skillCount(skill: SkillHandle): number;
+  // 本回合卡牌使用次数（本大爷还不能输）
+  cardCount(card: CardHandle): number;
+
+  randomOne<T>(...items: T[]): T;
 
   this: ThisT;
 }
@@ -45,7 +49,6 @@ interface GlobalAction<ThisT> extends GlobalContext<ThisT, true> {
   createCombatStatus(status: StatusHandle, opp?: boolean): StatusContext<true>;
 
   summon(summon: SummonHandle): void;
-  summonOneOf(...summons: SummonHandle[]): void;
   createSupport(support: SupportHandle, opp?: boolean): SupportContext<true>;
 
   absorbDice(indexes: number[]): DiceType[];

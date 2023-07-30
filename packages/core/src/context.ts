@@ -268,7 +268,14 @@ function getCharactersFromSelector(
 }
 
 export class ContextImpl implements Context<any, {}, true> {
-  constructor(protected store: Store, protected caller: EntityPath) {}
+  readonly this: any;
+  constructor(protected store: Store, protected caller: EntityPath) {
+    if (caller.type === "skill" || caller.type === "card") {
+      this.this = {}; // never
+    } else {
+      this.this = new Proxy(new EntityContextImpl(store, caller, caller), CONTEXT_THIS_PROXY_HANDLER);
+    }
+  }
 
   private get who() {
     return this.caller.who;
@@ -404,10 +411,6 @@ export class ContextImpl implements Context<any, {}, true> {
     // );
     return this.createEntityContext(path);
   }
-  summonOneOf(...summons: number[]): void {
-    const summon = summons[Math.floor(Math.random() * summons.length)];
-    this.summon(summon);
-  }
   createSupport(
     support: number,
     opp?: boolean | undefined
@@ -437,6 +440,7 @@ export class ContextImpl implements Context<any, {}, true> {
   generateRandomElementDice(count: number = 1): void {
     const newDice: DiceType[] = [];
     while (newDice.length < count) {
+      // TODO: use seed
       const dice = Math.floor(Math.random() * 7) + 1;
       if (!newDice.includes(dice)) {
         newDice.push(dice);
@@ -485,6 +489,38 @@ export class ContextImpl implements Context<any, {}, true> {
       draft.players[flip(this.who)].skipNextTurn = true;
     });
   }
+
+  skillCount(skill: number): number {
+    return this.player.skillLog.filter((sk) => sk === skill).length;
+  }
+  cardCount(card: number): number {
+    return this.player.cardLog.filter((c) => c === card).length;
+  }
+
+  randomOne<T>(...items: T[]): T {
+    // TODO: use seed
+    return items[Math.floor(Math.random() * items.length)];
+  }
+}
+
+const CONTEXT_THIS_PROXY_HANDLER: ProxyHandler<EntityContextImpl> = {
+  get(target, prop, receiver) {
+    const state = target.getState();
+    if (prop in state) {
+      return state[prop];
+    } else {
+      return Reflect.get(target, prop, receiver);
+    }
+  },
+  set(target, p, newValue, receiver) {
+    const state = target.getState();
+    if (p in state) {
+      state[p] = newValue;
+      return true;
+    } else {
+      return Reflect.set(target, p, newValue, receiver);
+    }
+  },
 }
 
 class CharacterContextImpl implements CharacterContext<true> {
@@ -537,10 +573,10 @@ class CharacterContextImpl implements CharacterContext<true> {
     return eqs.length > 0 ? new EntityContextImpl(this.store, eqs[0][1], this.caller) : null;
   }
   equip(equipment: number): void {
+    this.store.updateCharacterAtPath(this.path, (ch) => {});
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
-    const eq = new Equipment(eqId);
     this.character.equipments.push(eq);
-    this.store.pushEvent(createEnterEventContext(this.store, this.who, eq));
+    // this.store.pushEvent(createEnterEventContext(this.store, this.who, eq));
   }
   removeEquipment(equipment: number | EquipmentInfo): void {
     const eqId = typeof equipment === "number" ? equipment : equipment.id;
@@ -615,6 +651,15 @@ export class EntityContextImpl
 
   private get entity(): AllEntityState {
     return getEntityAtPath(this.store.state, this.path);
+  }
+
+  getState() {
+    return this.entity.state;
+  }
+  setState(prop: string, newValue: any) {
+    this.store.updateEntityAtPath(this.path, (e) => {
+      e.state[prop] = newValue;
+    });
   }
 
   get entityId() {

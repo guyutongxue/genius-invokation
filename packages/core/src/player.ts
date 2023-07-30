@@ -179,6 +179,8 @@ export class PlayerMutator {
       draft.canPlunging = false;
       draft.hasDefeated = false;
       draft.skipNextTurn = false;
+      draft.skillLog = [];
+      draft.cardLog = [];
     });
     const config: RollPhaseConfig = {
       controlled: [],
@@ -487,6 +489,9 @@ export class PlayerMutator {
     if (skill.gainEnergy) {
       this.store.updateCharacterAtPath(chPath, (c) => { gainEnergy(c); });
     }
+    this.produce((draft) => {
+      draft.skillLog.push(skill.id);
+    })
     // await this.ops.doEvent();
     // this.ops.emitEvent("onUseSkill", skill);
     // await this.ops.doEvent();
@@ -497,7 +502,10 @@ export class PlayerMutator {
     if (index === -1) {
       throw new Error("Invalid card");
     }
-    this.produce((draft) => { draft.hands.splice(index, 1); });
+    this.produce((draft) => {
+      draft.hands.splice(index, 1);
+      draft.cardLog.push(hand.info.id);
+    });
     this.io?.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
     this.io?.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
     const ctx = this.ops.getCardContext(hand, targets);

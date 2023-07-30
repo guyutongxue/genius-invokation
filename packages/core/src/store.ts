@@ -63,6 +63,8 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
+  readonly skillLog: number[];
+  readonly cardLog: number[];
 }
 
 export interface CardState {
@@ -127,6 +129,8 @@ function createPlayer(playerConfig: PlayerConfig): PlayerState {
     canPlunging: false,
     legendUsed: false,
     skipNextTurn: false,
+    skillLog: [],
+    cardLog: [],
   };
 }
 
