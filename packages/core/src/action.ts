@@ -10,9 +10,11 @@ import {
   SwitchActiveActionResponse,
   UseSkillActionResponse,
 } from "@gi-tcg/typings";
-import { Skill } from "./skill.js";
 import * as _ from "lodash-es";
 import { CardPath, EntityPath, PlayerEntityPath, SkillPath } from "./entity.js";
+import { GameState, Store, findCharacter, findEntity, getCharacterAtPath } from "./store.js";
+import { CardTargetDescriptor } from "@gi-tcg/data";
+import { PlayCardContextImpl } from "./context.js";
 
 export type UseSkillConfig = {
   type: "useSkill";
@@ -20,13 +22,13 @@ export type UseSkillConfig = {
   skill: SkillPath;
 };
 
-export type PlayCardTargetObj = PlayerEntityPath | CharacterPath;
+export type PlayCardTargetPath = PlayerEntityPath | CharacterPath;
 
 export type PlayCardConfig = {
   type: "playCard";
   dice: DiceType[];
   card: CardPath;
-  targets: PlayCardTargetObj[];
+  targets: PlayCardTargetPath[];
 };
 
 export type SwitchActiveConfig = {
@@ -53,9 +55,69 @@ export type ActionConfig =
   | ElementalTuningActionConfig
   | DeclareEndActionConfig;
 
+function getCardTarget(
+  state: GameState,
+  descriptor: CardTargetDescriptor,
+): PlayCardTargetPath[][] {
+  if (descriptor.length === 0) {
+    return [[]];
+  }
+  const [first, ...rest] = descriptor;
+  let firstResult: PlayCardTargetPath[] = [];
+  switch (first) {
+    case "character": {
+      firstResult = findCharacter(state, "all", () => true).map(([, chPath]) => chPath);
+      break;
+    }
+    case "summon": {
+      const c0 = findEntity(state, 0, "summon", () => true).map(([, path]) => path);
+      const c1 = findEntity(state, 1, "summon", () => true).map(([, path]) => path);
+      firstResult = [...c0, ...c1] as PlayerEntityPath[];
+      break;
+    }
+  }
+  return firstResult.flatMap((c) =>
+    getCardTarget(state, rest).map((r) => [c, ...r]),
+  );
+}
+
+export function getCardActions(state: GameState, who: 0 | 1): PlayCardConfig[] {
+  const player = state.players[who];
+  const actions: PlayCardConfig[] = [];
+  for (const hand of player.hands) {
+    const path: CardPath = {
+      type: "card",
+      who: who,
+      entityId: hand.entityId,
+      info: hand.info
+    }
+    const currentEnergy = getCharacterAtPath(state, player.active!).energy;
+    const costEnergy = hand.info.costs.filter(
+      (c) => c === DiceType.Energy,
+    ).length;
+    if (currentEnergy < costEnergy) {
+      continue;
+    }
+    const targets = getCardTarget(state, hand.info.target);
+    for (const t of targets) {
+      const store = Store.fromState(state);
+      const ctx = new PlayCardContextImpl(store, path, path, t);
+      if (ctx.enabled()) {
+        actions.push({
+          type: "playCard",
+          dice: [...hand.info.costs],
+          card: path,
+          targets: t,
+        });
+      }
+    }
+  }
+  return actions;
+}
+
 export async function rpcAction(
   actions: ActionConfig[],
-  req2rep: (r: ActionRequest) => Promise<ActionResponse>
+  req2rep: (r: ActionRequest) => Promise<ActionResponse>,
 ): Promise<ActionConfig & { consumedDice: DiceType[] }> {
   const candidates: Action[] = [];
   const cards = new Map<number, PlayCardConfig[]>();
@@ -68,7 +130,7 @@ export async function rpcAction(
       case "elementalTuning": {
         candidates.push({
           type: "elementalTuning",
-          discardedCard: action.card.entityId
+          discardedCard: action.card.entityId,
         });
         break;
       }
@@ -108,7 +170,7 @@ export async function rpcAction(
           a.targets.map((t) => ({
             id: t.info.id,
             entityId: t.entityId,
-          }))
+          })),
         ),
       },
     });
@@ -121,7 +183,11 @@ export async function rpcAction(
       break;
     }
     case "elementalTuning": {
-      cfg = actions.find((c) => c.type === "elementalTuning" && c.card.entityId === response.discardedCard);
+      cfg = actions.find(
+        (c) =>
+          c.type === "elementalTuning" &&
+          c.card.entityId === response.discardedCard,
+      );
       if (response.dice.includes(DiceType.Omni)) {
         throw new Error("Cannot tune omni dice");
       }
@@ -132,20 +198,20 @@ export async function rpcAction(
     }
     case "switchActive": {
       cfg = actions.find(
-        (c) => c.type === "switchActive" && c.to.entityId === response.active
+        (c) => c.type === "switchActive" && c.to.entityId === response.active,
       );
       break;
     }
     case "useSkill": {
       cfg = actions.find(
-        (c) => c.type === "useSkill" && c.skill.info.id === response.skill
+        (c) => c.type === "useSkill" && c.skill.info.id === response.skill,
       );
       break;
     }
     case "playCard": {
       const reqItem = candidates.find(
         (c): c is PlayCardAction =>
-          c.type === "playCard" && c.card === response.card
+          c.type === "playCard" && c.card === response.card,
       );
       if (!reqItem) {
         throw new Error("card action not found");
@@ -158,8 +224,8 @@ export async function rpcAction(
           c.card.entityId === response.card &&
           _.isEqual(
             c.targets.map((t) => t.entityId),
-            reqTargets[resTargetIndex].map((t) => t.entityId)
-          )
+            reqTargets[resTargetIndex].map((t) => t.entityId),
+          ),
       );
     }
   }
@@ -168,7 +234,7 @@ export async function rpcAction(
   }
   return {
     ...cfg,
-    consumedDice: "dice" in response ? response.dice : []
+    consumedDice: "dice" in response ? response.dice : [],
   };
 }
 

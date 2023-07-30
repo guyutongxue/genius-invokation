@@ -11,7 +11,6 @@ import {
   DamageContext,
   RollContext,
   ElementalReactionContext,
-  EquipmentInfo,
   EventNames,
   PlayCardContext,
   SkillContext,
@@ -39,7 +38,10 @@ import {
 import { flip } from "@gi-tcg/utils";
 import {
   CharacterState,
+  GameState,
   Store,
+  findCharacter,
+  findEntity,
   getCharacterAtPath,
   getEntityAtPath,
 } from "./store.js";
@@ -65,7 +67,7 @@ import {
   SkillPath,
   getVisibleValue,
 } from "./entity.js";
-import { ActionConfig, PlayCardTargetObj } from "./action.js";
+import { ActionConfig, PlayCardTargetPath } from "./action.js";
 import { Skill, getSkillEx } from "./skill.js";
 import { Damage } from "./damage.js";
 import * as _ from "lodash-es";
@@ -73,14 +75,14 @@ import * as _ from "lodash-es";
 type ContextOfEvent<E extends EventNames> = Context<{}, EventMap[E], true>;
 type EventAndContext<E extends EventNames = EventNames> = [
   event: E,
-  ctx: ContextOfEvent<E>
+  ctx: ContextOfEvent<E>,
 ];
 export type EventFactory = (entityId: number) => EventAndContext[];
 
 function getCharactersFromSelector(
-  store: Store,
+  state: GameState,
   callerWho: 0 | 1,
-  selector: string
+  selector: string,
 ): CharacterPath[] {
   // entityId
   if (selector.startsWith("#")) {
@@ -89,8 +91,8 @@ function getCharactersFromSelector(
       throw new Error(`Invalid character selector: ${selector}`);
     }
     return [
-      ...store.findCharacter(0, (ch) => ch.entityId === entityId),
-      ...store.findCharacter(1, (ch) => ch.entityId === entityId),
+      ...findCharacter(state, 0, (ch) => ch.entityId === entityId),
+      ...findCharacter(state, 1, (ch) => ch.entityId === entityId),
     ].map(([ch, chPath]) => chPath);
   }
 
@@ -107,7 +109,7 @@ function getCharactersFromSelector(
   // directives
   if (selector.startsWith(":")) {
     const execR = /:(energy|has|tag\*|recent|exclude|exclude\*)\((.*)\)/.exec(
-      selector
+      selector,
     );
     if (!execR) {
       throw new Error(`Invalid character selector: ${selector}`);
@@ -116,94 +118,94 @@ function getCharactersFromSelector(
     switch (type) {
       case "energy": {
         if (arg === "notFull") {
-          return store
-            .findCharacter(
-              who,
-              (ch) => !ch.defeated && ch.energy < ch.info.maxEnergy
-            )
-            .map(([, chPath]) => chPath);
+          return findCharacter(
+            state,
+            who,
+            (ch) => !ch.defeated && ch.energy < ch.info.maxEnergy,
+          ).map(([, chPath]) => chPath);
         } else {
           const number = Number(arg);
           if (Number.isNaN(number)) {
             throw new Error(
-              `Invalid character selector: ${selector}; ${arg} is not a number`
+              `Invalid character selector: ${selector}; ${arg} is not a number`,
             );
           }
-          return store
-            .findCharacter(who, (ch) => !ch.defeated && ch.energy === number)
-            .map(([, chPath]) => chPath);
+          return findCharacter(
+            state,
+            who,
+            (ch) => !ch.defeated && ch.energy === number,
+          ).map(([, chPath]) => chPath);
         }
       }
       case "has": {
         const id = Number(arg);
         if (Number.isNaN(id)) {
           throw new Error(
-            `Invalid character selector: ${selector}; ${arg} is not a number`
+            `Invalid character selector: ${selector}; ${arg} is not a number`,
           );
         }
-        return store
-          .findCharacter(
-            who,
-            (ch) =>
-              !!ch.statuses.find((st) => !ch.defeated && st.info.id === id)
-          )
-          .map(([, chPath]) => chPath);
+        return findCharacter(
+          state,
+          who,
+          (ch) => !!ch.statuses.find((st) => !ch.defeated && st.info.id === id),
+        ).map(([, chPath]) => chPath);
       }
       case "tag*":
         const tag = arg as CharacterTag;
-        return store
-          .findCharacter(who, (ch) => ch.info.tags.includes(tag))
-          .map(([, chPath]) => chPath);
+        return findCharacter(state, who, (ch) =>
+          ch.info.tags.includes(tag),
+        ).map(([, chPath]) => chPath);
       case "recent": {
-        const rel = getCharactersFromSelector(store, callerWho, arg);
+        const rel = getCharactersFromSelector(state, callerWho, arg);
         if (rel.length === 0) {
           throw new Error(`Relative character not found: ${arg}`);
         }
         const base = rel[0];
-        const basePlayer = store.state.players[base.who];
+        const basePlayer = state.players[base.who];
         const baseLength = basePlayer.characters.length;
         const targetWho = flip(base.who);
-        const targetLength = store.state.players[targetWho].characters.length;
+        const targetLength = state.players[targetWho].characters.length;
         const baseRatio =
           basePlayer.characters.findIndex(
-            (ch) => ch.entityId === base.entityId
+            (ch) => ch.entityId === base.entityId,
           ) -
           (baseLength / 2 - 0.5);
         const value = (chPath: CharacterPath) => {
-          const index = store.state.players[chPath.who].characters.findIndex(
-            (ch) => ch.entityId === chPath.entityId
+          const index = state.players[chPath.who].characters.findIndex(
+            (ch) => ch.entityId === chPath.entityId,
           );
           const ratio = index - (targetLength / 2 - 0.5);
           return Math.abs(ratio - baseRatio);
         };
         const sorted = _.sortBy(
-          store.findCharacter(targetWho, (ch) => !ch.defeated),
-          ([ch, chPath]) => value(chPath)
+          findCharacter(state, targetWho, (ch) => !ch.defeated),
+          ([ch, chPath]) => value(chPath),
         );
         return [sorted[0][1]];
       }
       case "exclude": {
-        const rel = getCharactersFromSelector(store, callerWho, arg);
+        const rel = getCharactersFromSelector(state, callerWho, arg);
         if (rel.length === 0) {
           throw new Error(`Relative character not found: ${arg}`);
         }
         const excluded = rel.map((ch) => ch.entityId);
-        return store
-          .findCharacter(
-            who,
-            (ch) => !ch.defeated && !excluded.includes(ch.entityId)
-          )
-          .map(([ch, chPath]) => chPath);
+        return findCharacter(
+          state,
+          who,
+          (ch) => !ch.defeated && !excluded.includes(ch.entityId),
+        ).map(([ch, chPath]) => chPath);
       }
       case "exclude*": {
-        const rel = getCharactersFromSelector(store, callerWho, arg);
+        const rel = getCharactersFromSelector(state, callerWho, arg);
         if (rel.length === 0) {
           throw new Error(`Relative character not found: ${arg}`);
         }
         const excluded = rel.map((ch) => ch.entityId);
-        return store
-          .findCharacter(who, (ch) => !excluded.includes(ch.entityId))
-          .map(([, chPath]) => chPath);
+        return findCharacter(
+          state,
+          who,
+          (ch) => !excluded.includes(ch.entityId),
+        ).map(([, chPath]) => chPath);
       }
       default:
         throw new Error(`Invalid character selector: ${selector}`);
@@ -211,14 +213,14 @@ function getCharactersFromSelector(
   }
 
   const activeIds = [
-    store.state.players[0].active?.entityId,
-    store.state.players[1].active?.entityId,
+    state.players[0].active?.entityId,
+    state.players[1].active?.entityId,
   ];
 
   function activeOffsetChar(who: 0 | 1, offset: number): CharacterPath {
-    const player = store.state.players[who];
+    const player = state.players[who];
     const activeIndex = player.characters.findIndex(
-      (ch) => ch.entityId === player.active?.entityId
+      (ch) => ch.entityId === player.active?.entityId,
     );
     const index =
       (activeIndex + offset + player.characters.length) %
@@ -233,12 +235,11 @@ function getCharactersFromSelector(
 
   switch (selector) {
     case "|":
-      return store
-        .findCharacter(
-          who,
-          (ch) => !ch.defeated && activeIds.includes(ch.entityId)
-        )
-        .map(([, chPath]) => chPath);
+      return findCharacter(
+        state,
+        who,
+        (ch) => !ch.defeated && activeIds.includes(ch.entityId),
+      ).map(([, chPath]) => chPath);
     case "<": {
       const r: CharacterPath[] = [];
       if (who === "all" || who === 0) {
@@ -260,18 +261,17 @@ function getCharactersFromSelector(
       return r;
     }
     case "<>":
-      return store
-        .findCharacter(
-          who,
-          (ch) => !ch.defeated && !activeIds.includes(ch.entityId)
-        )
-        .map(([, chPath]) => chPath);
+      return findCharacter(
+        state,
+        who,
+        (ch) => !ch.defeated && !activeIds.includes(ch.entityId),
+      ).map(([, chPath]) => chPath);
     case "*":
-      return store
-        .findCharacter(who, (ch) => !ch.defeated)
-        .map(([, chPath]) => chPath);
+      return findCharacter(state, who, (ch) => !ch.defeated).map(
+        ([, chPath]) => chPath,
+      );
     case "**":
-      return store.findCharacter(who, () => true).map(([, chPath]) => chPath);
+      return findCharacter(state, who, () => true).map(([, chPath]) => chPath);
     default:
       throw new Error(`Invalid character selector: ${selector}`);
   }
@@ -279,13 +279,16 @@ function getCharactersFromSelector(
 
 export class ContextImpl implements Context<any, {}, true> {
   readonly this: any;
-  constructor(protected store: Store, protected caller: EntityPath) {
+  constructor(
+    private store: Store,
+    private caller: EntityPath,
+  ) {
     if (caller.type === "skill" || caller.type === "card") {
       this.this = {}; // never
     } else {
       this.this = new Proxy(
         new EntityContextImpl(store, caller, caller),
-        CONTEXT_THIS_PROXY_HANDLER
+        CONTEXT_THIS_PROXY_HANDLER,
       );
     }
   }
@@ -338,8 +341,8 @@ export class ContextImpl implements Context<any, {}, true> {
     return ctx.length > 0 ? ctx[0] : null;
   }
   queryCharacterAll(selector: string): CharacterContext<true>[] {
-    return getCharactersFromSelector(this.store, this.who, selector).map((c) =>
-      this.createCharacterContext(c)
+    return getCharactersFromSelector(this.store.state, this.who, selector).map(
+      (c) => this.createCharacterContext(c),
     );
   }
   fullSupportArea(opp: boolean): boolean {
@@ -347,48 +350,64 @@ export class ContextImpl implements Context<any, {}, true> {
     return fullSupportArea(this.store.state, who);
   }
   findSummon(summon: number): SummonContext<true> | null {
-    const r = this.store.findEntity(
+    const r = findEntity(
+      this.store.state,
       this.who,
       "summon",
-      (s) => s.info.id === summon
+      (s) => s.info.id === summon,
     );
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
   allSummons(includeOpp = false): SummonContext<true>[] {
-    const mySummons = this.store.findEntity(this.who, "summon", () => true);
+    const mySummons = findEntity(
+      this.store.state,
+      this.who,
+      "summon",
+      () => true,
+    );
     const oppSummons = includeOpp
-      ? this.store.findEntity(flip(this.who), "summon", () => true)
+      ? findEntity(this.store.state, flip(this.who), "summon", () => true)
       : [];
     return [...mySummons, ...oppSummons].map(([st, path]) =>
-      this.createEntityContext(path)
+      this.createEntityContext(path),
     );
   }
 
   findCombatStatus(status: number): StatusContext<true> | null {
-    const r = this.store.findEntity(
+    const r = findEntity(
+      this.store.state,
       this.who,
       "status",
-      (st) => st.info.id === status
+      (st) => st.info.id === status,
     );
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
   findCombatShield(): StatusContext<true> | null {
-    const r = this.store.findEntity(
+    const r = findEntity(
+      this.store.state,
       this.who,
       "status",
-      (st) => st.info.shield !== null
+      (st) => st.info.shield !== null,
     );
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
 
   dealDamage(value: number, type: DamageType, target?: string): void {
-    const chs = getCharactersFromSelector(this.store, this.who, target ?? "!|");
+    const chs = getCharactersFromSelector(
+      this.store.state,
+      this.who,
+      target ?? "!|",
+    );
     for (const ch of chs) {
       this.store.mutator.dealDamage(this.caller, ch, value, type);
     }
   }
   applyElement(type: DamageType, target?: string): void {
-    const chs = getCharactersFromSelector(this.store, this.who, target ?? "|");
+    const chs = getCharactersFromSelector(
+      this.store.state,
+      this.who,
+      target ?? "|",
+    );
     for (const ch of chs) {
       this.store.mutator.applyElement(this.caller, ch, type);
     }
@@ -412,7 +431,7 @@ export class ContextImpl implements Context<any, {}, true> {
 
   createCombatStatus(
     status: number,
-    opp: boolean = false
+    opp: boolean = false,
   ): StatusContext<true> {
     const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const st = player.createCombatStatus(status);
@@ -428,11 +447,11 @@ export class ContextImpl implements Context<any, {}, true> {
   }
   createSupport(
     support: number,
-    opp?: boolean | undefined
+    opp?: boolean | undefined,
   ): SupportContext<true> {
     const path =
       this.store.mutator.players[opp ? flip(this.who) : this.who].createSupport(
-        support
+        support,
       );
     // this.store.pushEvent(
     //   createEnterEventContext(this.store, this.who, supportObj)
@@ -471,7 +490,7 @@ export class ContextImpl implements Context<any, {}, true> {
   drawCards(
     count: number,
     opp?: boolean | undefined,
-    tag?: CardTag | undefined
+    tag?: CardTag | undefined,
   ): void {
     const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const controlled = tag ? player.cardsWithTagFromPile(tag) : [];
@@ -485,7 +504,11 @@ export class ContextImpl implements Context<any, {}, true> {
   }
 
   switchActive(target: string): void {
-    const chPaths = getCharactersFromSelector(this.store, this.who, target);
+    const chPaths = getCharactersFromSelector(
+      this.store.state,
+      this.who,
+      target,
+    );
     if (chPaths.length === 0) {
       throw new Error(`Switching active: Target not exists: ${target}`);
     }
@@ -500,9 +523,7 @@ export class ContextImpl implements Context<any, {}, true> {
   }
 
   actionAgain(): void {
-    this.store.produce((draft) => {
-      draft.players[flip(this.who)].skipNextTurn = true;
-    });
+    this.store.mutator.players[flip(this.who)].skipNextTurn();
   }
 
   skillCount(skill: number): number {
@@ -542,7 +563,7 @@ class CharacterContextImpl implements CharacterContext<true> {
   constructor(
     private store: Store,
     public readonly caller: EntityPath,
-    public readonly path: CharacterPath
+    public readonly path: CharacterPath,
   ) {}
 
   private get character() {
@@ -570,15 +591,15 @@ class CharacterContextImpl implements CharacterContext<true> {
 
   indexOfPlayer() {
     return this.store.state.players[this.path.who].characters.findIndex(
-      (c) => c.entityId === this.entityId
+      (c) => c.entityId === this.entityId,
     );
   }
 
   findEquipment(
-    equipment: number | "artifact" | "weapon"
+    equipment: number | "artifact" | "weapon",
   ): EquipmentContext<true> | null {
     let eq: EquipmentState | undefined;
-    const eqs = this.store.findEntity(this.path, "equipment", (e) => {
+    const eqs = findEntity(this.store.state, this.path, "equipment", (e) => {
       if (typeof equipment === "number") {
         return e.info.id === equipment;
       } else {
@@ -644,20 +665,22 @@ class CharacterContextImpl implements CharacterContext<true> {
     return result;
   }
   findStatus(status: number): StatusContext<true> | null {
-    const results = this.store.findEntity(
+    const results = findEntity(
+      this.store.state,
       this.path,
       "status",
-      (s) => s.info.id === status
+      (s) => s.info.id === status,
     );
     return results.length > 0
       ? new EntityContextImpl(this.store, this.caller, results[0][1])
       : null;
   }
   findShield(): StatusContext<true> {
-    const results = this.store.findEntity(
+    const results = findEntity(
+      this.store.state,
       this.path,
       "status",
-      (s) => s.info.shield !== null
+      (s) => s.info.shield !== null,
     );
     if (results.length === 0) throw new Error("No shield");
     return new EntityContextImpl(this.store, this.caller, results[0][1]);
@@ -686,7 +709,7 @@ export class EntityContextImpl
   constructor(
     private store: Store,
     private caller: EntityPath,
-    private path: EntityPath
+    private path: EntityPath,
   ) {}
 
   private get entity(): AllEntityState {
@@ -748,7 +771,7 @@ export class EntityContextImpl
     return new CharacterContextImpl(
       this.store,
       this.caller,
-      this.path.character
+      this.path.character,
     );
   }
   dispose(): void {
@@ -765,7 +788,7 @@ class SwitchActiveContextImpl implements SwitchActiveContext<true> {
     store: Store,
     caller: EntityPath,
     from: CharacterPath,
-    to: CharacterPath
+    to: CharacterPath,
   ) {
     // super(store, caller);
     this.from = new CharacterContextImpl(store, caller, from);
@@ -773,23 +796,24 @@ class SwitchActiveContextImpl implements SwitchActiveContext<true> {
   }
 }
 
-export class UseDiceContextImpl
-  extends ContextImpl
-  implements Context<any, UseDiceContext, true>
-{
+export class UseDiceContextImpl implements UseDiceContext {
   switchActiveCtx?: SwitchActiveContext;
   useSkillCtx?: SkillContext;
   playCardCtx?: PlayCardContext;
 
-  constructor(store: Store, caller: EntityPath, private action: ActionConfig) {
-    super(store, caller);
+  constructor(
+    private store: Store,
+    private caller: EntityPath,
+    private action: ActionConfig,
+  ) {
+    // super(store, caller);
     switch (action.type) {
       case "switchActive": {
         this.switchActiveCtx = new SwitchActiveContextImpl(
           store,
           caller,
           action.from,
-          action.to
+          action.to,
         );
         break;
       }
@@ -800,9 +824,9 @@ export class UseDiceContextImpl
       case "playCard": {
         this.playCardCtx = new PlayCardContextImpl(
           store,
-          this.caller,
+          caller,
           action.card,
-          action.targets
+          action.targets,
         );
       }
     }
@@ -834,7 +858,7 @@ export class SkillContextImpl implements SkillContext<true> {
   constructor(
     private store: Store,
     private caller: EntityPath,
-    private skill: SkillPath
+    private skill: SkillPath,
   ) {
     // super(state, caller);
   }
@@ -847,7 +871,7 @@ export class SkillContextImpl implements SkillContext<true> {
     return new CharacterContextImpl(
       this.store,
       this.caller,
-      this.skill.character
+      this.skill.character,
     );
   }
   get target() {
@@ -888,18 +912,42 @@ export class SkillContextImpl implements SkillContext<true> {
   }
 
   get damages(): DamageContext[] {
-    // TODO
-    return [];
+    return this.store.state.skillDamageLog
+      .filter((damage) => damage.source.type === "skill")
+      .map(
+        (dmg) =>
+          new DamageContextImpl(
+            this.store,
+            this.caller,
+            new Damage(
+              dmg.source,
+              dmg.target,
+              dmg.value,
+              dmg.type,
+              dmg.triggeredByReaction ?? undefined,
+            ),
+          ),
+      );
   }
   getAllDescendingDamages(): DamageContext[] {
-    return this.store.damageLog.map(
-      ([dmg]) => new DamageContextImpl(this.store, this.who, 0, dmg)
+    return this.store.state.skillDamageLog.map(
+      (dmg) =>
+        new DamageContextImpl(
+          this.store,
+          this.caller,
+          new Damage(
+            dmg.source,
+            dmg.target,
+            dmg.value,
+            dmg.type,
+            dmg.triggeredByReaction ?? undefined,
+          ),
+        ),
     );
   }
   getAllDescendingReactions(): ElementalReactionContext[] {
-    return this.store.reactionLog.map(
-      ([_, id, reaction]) =>
-        new ElementalReactionContextImpl(this.store, this.who, id, reaction)
+    return this.store.state.skillReactionLog.map(
+      (r) => new ElementalReactionContextImpl(this.store, this.caller, r),
     );
   }
 }
@@ -911,7 +959,7 @@ export class PlayCardContextImpl implements PlayCardContext {
     private store: Store,
     private caller: EntityPath,
     public readonly card: CardPath,
-    private readonly targetObj: PlayCardTargetObj[]
+    private readonly targetObj: PlayCardTargetPath[],
   ) {
     // super(store, caller);
     for (const obj of this.targetObj) {
@@ -965,7 +1013,10 @@ export interface RollPhaseConfig {
 }
 
 class RollContextImpl implements RollContext {
-  constructor(private player: PlayerMutator, private config: RollPhaseConfig) {}
+  constructor(
+    private player: PlayerMutator,
+    private config: RollPhaseConfig,
+  ) {}
 
   fixDice(...dice: DiceType[]): void {
     this.config.controlled.push(...dice);
@@ -977,7 +1028,11 @@ class RollContextImpl implements RollContext {
 }
 
 class ElementalReactionContextImpl implements ElementalReactionContext {
-  constructor(store: Store, caller: EntityPath, private reaction: Reaction) {
+  constructor(
+    private store: Store,
+    private caller: EntityPath,
+    private reaction: Reaction,
+  ) {
     // super(store, caller);
   }
   get reactionType() {
@@ -988,7 +1043,7 @@ class ElementalReactionContextImpl implements ElementalReactionContext {
     const aura = d as number as Aura;
     if (!(aura in REACTION_MAP)) return false;
     return !!Object.values(REACTION_MAP[aura]).find(
-      ([a, r]) => r === this.reaction
+      ([a, r]) => r === this.reaction,
     );
   }
   swirledElement():
@@ -1016,7 +1071,7 @@ export class DamageContextImpl implements DamageContext {
   constructor(
     private store: Store,
     private caller: EntityPath,
-    private damage: Damage
+    private damage: Damage,
   ) {
     // super(store, caller);
   }
@@ -1049,7 +1104,7 @@ export class DamageContextImpl implements DamageContext {
     return new CharacterContextImpl(
       this.store,
       this.caller,
-      this.damage.target
+      this.damage.target,
     );
   }
 
@@ -1108,7 +1163,7 @@ class RequestFastSwitchContextImpl implements RequestFastSwitchContext {
   constructor(
     private store: Store,
     private caller: EntityPath,
-    private token: RequestFastToken
+    private token: RequestFastToken,
   ) {
     // super(store, caller);
   }
@@ -1128,7 +1183,7 @@ function createCommonEventContext(...events: EventNames[]) {
     state: GameState,
     sourceWho?: 0 | 1,
     sourceChar?: Character,
-    sourceEntityId?: number
+    sourceEntityId?: number,
   ): EventFactory => {
     return (entityId: number) => {
       let ctx: ContextImpl;
@@ -1159,7 +1214,7 @@ function checkShouldListen(
   entityEnv: EntityEnv,
   who?: 0 | 1,
   char?: Character,
-  entity?: number
+  entity?: number,
 ) {
   if (typeof entity === "number") {
     return entityEnv.entity.entityId === entity;
@@ -1189,7 +1244,7 @@ function checkShouldListen(
 function createEnterEventContext(
   state: GameState,
   sourceWho: 0 | 1,
-  entityOrCharacter: Entity
+  entityOrCharacter: Entity,
 ): EventFactory {
   const sourceEnv = getEntityById(state, entityOrCharacter.entityId);
   if (sourceEnv === null) return () => [];
@@ -1197,14 +1252,14 @@ function createEnterEventContext(
     state,
     sourceWho,
     sourceEnv.master,
-    entityOrCharacter.entityId
+    entityOrCharacter.entityId,
   );
 }
 
 function createRollPhaseContext(
   state: GameState,
   sourceWho: 0 | 1,
-  rollConfig: RollPhaseConfig
+  rollConfig: RollPhaseConfig,
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId);
@@ -1217,14 +1272,14 @@ function createRollPhaseContext(
 
 function createDamageContext(
   eventName: EventNames,
-  CtxImpl = DamageContextImpl
+  CtxImpl = DamageContextImpl,
 ) {
   return (
     state: GameState,
     damage: Damage,
     sourceWho: 0 | 1,
     targetWho: 0 | 1,
-    sourceCharacter?: Character | undefined
+    sourceCharacter?: Character | undefined,
   ): EventFactory => {
     return (entityId: number) => {
       const env = getEntityById(state, entityId);
@@ -1244,7 +1299,7 @@ function createReactionContext(
   state: GameState,
   sourceWho: 0 | 1,
   sourceId: number,
-  reaction: Reaction
+  reaction: Reaction,
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId);
@@ -1254,7 +1309,7 @@ function createReactionContext(
       state,
       sourceWho,
       sourceId,
-      reaction
+      reaction,
     );
     return [["onElementalReaction", ctx]];
   };
@@ -1263,7 +1318,7 @@ function createReactionContext(
 function createUseSkillContext(
   state: GameState,
   sourceWho: 0 | 1,
-  skill: Skill
+  skill: Skill,
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId);
@@ -1278,7 +1333,7 @@ function createSwitchActiveContext(
   state: GameState,
   sourceWho: 0 | 1,
   from: Character,
-  to: Character
+  to: Character,
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId);
@@ -1294,7 +1349,7 @@ function createSwitchActiveContext(
       sourceWho,
       entityId,
       from,
-      to
+      to,
     );
     return [["onSwitchActive", ctx]];
   };
@@ -1304,7 +1359,7 @@ function createPlayCardContext(
   state: GameState,
   sourceWho: 0 | 1,
   card: Card,
-  targets: PlayCardTargetObj[]
+  targets: PlayCardTargetPath[],
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId);
@@ -1318,7 +1373,7 @@ function createPlayCardContext(
 function createUseDiceContext(
   state: GameState,
   sourceWho: 0 | 1,
-  action: ActionConfig
+  action: ActionConfig,
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId);
@@ -1332,7 +1387,7 @@ function createUseDiceContext(
 function createRequestFastSwitchContext(
   state: GameState,
   sourceWho: 0 | 1,
-  token: RequestFastToken
+  token: RequestFastToken,
 ): EventFactory {
   return (entityId: number) => {
     const env = getEntityById(state, entityId)!;
@@ -1342,7 +1397,7 @@ function createRequestFastSwitchContext(
       state,
       sourceWho,
       entityId,
-      token
+      token,
     );
     return [["onRequestFastSwitchActive", ctx]];
   };
@@ -1370,7 +1425,7 @@ export const CONTEXT_CREATOR = {
   onBeforeDealDamage: createDamageContext("onBeforeDealDamage"),
   onBeforeSkillDamage: createDamageContext(
     "onBeforeSkillDamage",
-    SkillDamageContextImpl
+    SkillDamageContextImpl,
   ),
   onBeforeDamaged: createDamageContext("onBeforeDamaged"),
 

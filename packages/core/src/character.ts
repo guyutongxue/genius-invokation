@@ -88,6 +88,9 @@ export function revive(ch: Draft<CharacterState>) {
   ch.health = 0;
   // emitEvent("onRevive");
 }
+export function heal(ch: Draft<CharacterState>, value: number) {
+  ch.health = Math.max(ch.health + value, ch.info.maxHealth);
+}
 export function gainEnergy(ch: Draft<CharacterState>, value = 1) {
   ch.energy = Math.min(ch.energy + value, ch.info.maxEnergy);
 }

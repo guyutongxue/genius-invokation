@@ -143,8 +143,9 @@ const Tenshukaku = createCard(321007)
   .costSame(2)
   .buildToSupport()
   .on("actionPhase", (c) => {
-    const diceTypeCount = new Set(c.dice).size;
-    if (diceTypeCount >= 5) {
+    const normalDice = new Set(c.dice.filter(d => d !== DiceType.Omni)).size;
+    const omniDice = c.dice.filter(d => d === DiceType.Omni).length;
+    if (normalDice + omniDice >= 5) {
       c.generateDice(DiceType.Omni);
     }
   })

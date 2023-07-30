@@ -2,6 +2,23 @@ import { DamageType, Reaction } from "@gi-tcg/typings";
 import { EntityPath } from "./entity.js";
 import { CharacterPath } from "./character.js";
 
+export interface DamageDetail {
+  readonly source: EntityPath;
+  readonly target: CharacterPath;
+  readonly value: number;
+  readonly type: DamageType;
+  readonly triggeredByReaction: Reaction | null;
+  readonly logs: {
+    readonly changed: readonly SourceAndChange[],
+    readonly added: readonly SourceAndValue[],
+    readonly multiplied: readonly SourceAndValue[],
+    readonly decreased: readonly SourceAndValue[]
+  }
+}
+
+type SourceAndChange = readonly [source: EntityPath, changedTo: DamageType];
+type SourceAndValue = readonly [source: EntityPath, value: number];
+
 export class Damage {
   constructor(
     public source: EntityPath,
@@ -11,10 +28,10 @@ export class Damage {
     public triggeredByReaction?: Reaction
   ) {}
 
-  changedLogs: [source: EntityPath, changedTo: DamageType][] = [];
-  addedLogs: [source: EntityPath, value: number][] = [];
-  multipliedLogs: [source: EntityPath, value: number][] = [];
-  decreasedLogs: [source: EntityPath, value: number][] = [];
+  changedLogs: SourceAndChange[] = [];
+  addedLogs: SourceAndValue[] = [];
+  multipliedLogs: SourceAndValue[] = [];
+  decreasedLogs: SourceAndValue[] = [];
 
   getValue() {
     let v = this.originalValue;

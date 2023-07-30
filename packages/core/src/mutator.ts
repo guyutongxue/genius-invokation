@@ -1,11 +1,12 @@
-import { DamageType } from "@gi-tcg/typings";
-import { CharacterPath } from "./character.js";
+import { DamageData, DamageType } from "@gi-tcg/typings";
+import { CharacterPath, heal } from "./character.js";
 import { EntityPath } from "./entity.js";
 import { PlayerIO } from "./io.js";
 import { PlayerMutator } from "./player.js";
-import { Store } from "./store.js";
+import { Store, getCharacterAtPath } from "./store.js";
 import { DamageContextImpl } from "./context.js";
-import { makeReactionFromDamage } from "@gi-tcg/data";
+import { Context, DamageContext, makeReactionFromDamage } from "@gi-tcg/data";
+import { Damage } from "./damage.js";
 
 export class Mutator {
   readonly players: readonly [PlayerMutator, PlayerMutator];
@@ -20,7 +21,7 @@ export class Mutator {
     ];
   }
   
-  private doElementalReaction(damageCtx: DamageContextImpl) {
+  private doElementalReaction(damageCtx: Context<never, DamageContext, true>) {
     const [newAura, reaction] = makeReactionFromDamage(damageCtx);
     damageCtx.target.character.applied = newAura;
     if (reaction !== null) {
@@ -40,12 +41,8 @@ export class Mutator {
     value: number,
     type: DamageType
   ) {
-    const { who, master, entity } = getEntityById(this, sourceId)!;
-    const targetWho = this.players.findIndex((p) =>
-      p.characters.includes(target)
-    ) as 0 | 1;
-    const damage = new Damage(who, sourceId, target, value, type);
-    const dmgCtx = new DamageContextImpl(this, who, sourceId, damage);
+    const damage = new Damage(source, target, value, type);
+    const dmgCtx = new DamageContextImpl(this.store, source, damage);
     this.doElementalReaction(dmgCtx);
     this.emitImmediatelyHandledEvent(
       "onEarlyBeforeDealDamage",
@@ -63,7 +60,7 @@ export class Mutator {
         targetWho,
         master
       );
-      if (entity instanceof Skill) {
+      if (source.type === "skill") {
         this.emitImmediatelyHandledEvent(
           "onBeforeSkillDamage",
           damage,
@@ -92,24 +89,24 @@ export class Mutator {
       value: damage.getValue(),
       log: [
         {
-          source: entity instanceof Skill ? entity.info.id : entity.entityId,
+          source: source.info.id,
           what: `Original damage ${value} with type ${type}`,
         },
         ...damage.changedLogs.map(([s, c]) => ({
-          source: s,
+          source: JSON.stringify(s),
           what: `Change damage type to ${c}`,
         })),
         ...damage.addedLogs.map(([s, c]) => ({
-          source: s,
-          what: `+${c} by ${s}`,
+          source: JSON.stringify(s),
+          what: `+${c}`,
         })),
         ...damage.multipliedLogs.map(([s, c]) => ({
-          source: s,
-          what: `*${c} by ${s}`,
+          source: JSON.stringify(s),
+          what: `*${c}`,
         })),
         ...damage.decreasedLogs.map(([s, c]) => ({
-          source: s,
-          what: `-${c} by ${s}`,
+          source: JSON.stringify(s),
+          what: `-${c}`,
         })),
       ],
     };
@@ -118,22 +115,30 @@ export class Mutator {
   }
 
   heal(source: EntityPath, target: CharacterPath, value: number) {
-    const oldHealth = target.health;
-    target.health = Math.min(target.health + value, target.info.maxHealth);
-    const diff = target.health - oldHealth;
+    const oldHealth = getCharacterAtPath(this.store.state, target).health;
+    this.store.updateCharacterAtPath(target, (ch) => heal(ch, value));
+    const newHealth = getCharacterAtPath(this.store.state, target).health;
+    const diff = newHealth - oldHealth;
     const damageLog: DamageData = {
       target: target.entityId,
       value: diff,
       type: DamageType.Heal,
       log: [
         {
-          source: sourceId,
+          source: JSON.stringify(source),
           what: `Heal ${value}(${diff}) HP`,
         },
       ],
     };
-    this.notifyPlayer(0, { type: "stateUpdated", damages: [damageLog] });
-    this.notifyPlayer(1, { type: "stateUpdated", damages: [damageLog] });
+    this.playerIO[0]?.notifyMe({ type: "stateUpdated", damages: [damageLog] });
+    this.playerIO[1]?.notifyMe({ type: "stateUpdated", damages: [damageLog] });
+  }
+
+  cleanSkillLog() {
+    this.store._produce((draft) => {
+      draft.skillDamageLog = [];
+      draft.skillReactionLog = [];
+    });
   }
 
   applyElement(source: EntityPath, target: CharacterPath, type: DamageType) {

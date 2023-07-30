@@ -22,7 +22,7 @@ import {
   PlayCardContextImpl,
   DamageContextImpl,
 } from "./context.js";
-import { PlayCardConfig, PlayCardTargetObj } from "./action.js";
+import { PlayCardConfig, PlayCardTargetPath } from "./action.js";
 import {
   CardTargetDescriptor,
   ElementalReactionContext,
@@ -59,7 +59,7 @@ export class Game {
   private produce(fn: (draft: Draft<GameState>) => void): void;
   private produce(fn?: (draft: Draft<GameState>) => void) {
     if (fn) {
-      this.store.produce(fn);
+      this.store._produce(fn);
     } else {
       return this.store.createDraft();
     }
@@ -155,7 +155,7 @@ export class Game {
       if (this.state.players[thisTurn].declaredEnd) {
         thisTurn = flip(thisTurn);
       } else if (this.state.players[thisTurn].skipNextTurn) {
-        this.store.produce((draft) => {
+        this.produce((draft) => {
           draft.players[thisTurn].skipNextTurn = false;
         });
         thisTurn = flip(thisTurn);
@@ -268,56 +268,4 @@ export class Game {
     // TODO check death
   }
 
-  private getCardTarget(
-    ...descriptor: CardTargetDescriptor
-  ): PlayCardTargetObj[][] {
-    if (descriptor.length === 0) {
-      return [[]];
-    }
-    const [first, ...rest] = descriptor;
-    let firstResult: PlayCardTargetObj[] = [];
-    switch (first) {
-      case "character": {
-        const c0 = this.players[0].characters;
-        const c1 = this.players[1].characters;
-        firstResult = [...c0, ...c1];
-        break;
-      }
-      case "summon": {
-        const c0 = this.players[0].summons;
-        const c1 = this.players[1].summons;
-        firstResult = [...c0, ...c1];
-        break;
-      }
-    }
-    return firstResult.flatMap((c) =>
-      this.getCardTarget(...rest).map((r) => [c, ...r])
-    );
-  }
-  getCardActions(who: 0 | 1): PlayCardConfig[] {
-    const player = this.players[who];
-    const actions: PlayCardConfig[] = [];
-    for (const hand of player.hands) {
-      const currentEnergy = player.getCharacter("active").energy;
-      const costEnergy = hand.info.costs.filter(
-        (c) => c === DiceType.Energy
-      ).length;
-      if (currentEnergy < costEnergy) {
-        continue;
-      }
-      const targets = this.getCardTarget(...hand.info.target);
-      for (const t of targets) {
-        const ctx = new PlayCardContextImpl(this, who, hand, t);
-        if (ctx.enabled()) {
-          actions.push({
-            type: "playCard",
-            dice: [...hand.info.costs],
-            card: hand,
-            targets: t,
-          });
-        }
-      }
-    }
-    return actions;
-  }
 }
