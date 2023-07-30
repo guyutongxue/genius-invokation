@@ -45,14 +45,24 @@ import {
 } from "./store.js";
 import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { PlayerMutator, fullSupportArea } from "./player.js";
-import { CharacterPath, characterElementType } from "./character.js";
+import {
+  CharacterPath,
+  characterElementType,
+  createEquipment,
+  createStatus,
+  gainEnergy,
+  loseEnergy,
+  revive,
+} from "./character.js";
 import { Card } from "./card.js";
 import {
   AllEntityInfo,
   AllEntityState,
+  CardPath,
   Entity,
   EntityPath,
   EquipmentState,
+  SkillPath,
   getVisibleValue,
 } from "./entity.js";
 import { ActionConfig, PlayCardTargetObj } from "./action.js";
@@ -273,7 +283,10 @@ export class ContextImpl implements Context<any, {}, true> {
     if (caller.type === "skill" || caller.type === "card") {
       this.this = {}; // never
     } else {
-      this.this = new Proxy(new EntityContextImpl(store, caller, caller), CONTEXT_THIS_PROXY_HANDLER);
+      this.this = new Proxy(
+        new EntityContextImpl(store, caller, caller),
+        CONTEXT_THIS_PROXY_HANDLER
+      );
     }
   }
 
@@ -314,10 +327,10 @@ export class ContextImpl implements Context<any, {}, true> {
   }
 
   protected createCharacterContext(ch: CharacterPath): CharacterContextImpl {
-    return new CharacterContextImpl(this.store, ch, this.caller);
+    return new CharacterContextImpl(this.store, this.caller, ch);
   }
   protected createEntityContext(path: EntityPath): EntityContextImpl {
-    return new EntityContextImpl(this.store, path, this.caller);
+    return new EntityContextImpl(this.store, this.caller, path);
   }
 
   queryCharacter(selector: string): CharacterContext<true> | null {
@@ -371,12 +384,14 @@ export class ContextImpl implements Context<any, {}, true> {
   dealDamage(value: number, type: DamageType, target?: string): void {
     const chs = getCharactersFromSelector(this.store, this.who, target ?? "!|");
     for (const ch of chs) {
-      this.store.dealDamage(this.sourceId, ch.character, value, type);
+      this.store.mutator.dealDamage(this.caller, ch, value, type);
     }
   }
   applyElement(type: DamageType, target?: string): void {
-    // TODO
-    throw new Error("Shouldn't called by base class");
+    const chs = getCharactersFromSelector(this.store, this.who, target ?? "|");
+    for (const ch of chs) {
+      this.store.mutator.applyElement(this.caller, ch, type);
+    }
   }
   gainEnergy(value?: number | undefined, target?: string): number {
     const ctx = this.queryCharacterAll(target ?? "|");
@@ -402,7 +417,7 @@ export class ContextImpl implements Context<any, {}, true> {
     const player = this.store.mutator.players[opp ? flip(this.who) : this.who];
     const st = player.createCombatStatus(status);
     // this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
-    return new EntityContextImpl(this.store, st, this.caller);
+    return new EntityContextImpl(this.store, this.caller, st);
   }
   summon(summon: number): SummonContext<true> {
     const path = this.store.mutator.players[this.who].createSummon(summon);
@@ -521,13 +536,13 @@ const CONTEXT_THIS_PROXY_HANDLER: ProxyHandler<EntityContextImpl> = {
       return Reflect.set(target, p, newValue, receiver);
     }
   },
-}
+};
 
 class CharacterContextImpl implements CharacterContext<true> {
   constructor(
     private store: Store,
-    public readonly path: CharacterPath,
-    public readonly caller: EntityPath
+    public readonly caller: EntityPath,
+    public readonly path: CharacterPath
   ) {}
 
   private get character() {
@@ -570,63 +585,88 @@ class CharacterContextImpl implements CharacterContext<true> {
         return e.info.type === equipment;
       }
     });
-    return eqs.length > 0 ? new EntityContextImpl(this.store, eqs[0][1], this.caller) : null;
+    return eqs.length > 0
+      ? new EntityContextImpl(this.store, this.caller, eqs[0][1])
+      : null;
   }
   equip(equipment: number): void {
-    this.store.updateCharacterAtPath(this.path, (ch) => {});
-    const eqId = typeof equipment === "number" ? equipment : equipment.id;
-    this.character.equipments.push(eq);
+    let eq: EntityPath;
+    this.store.updateCharacterAtPath(this.path, (ch, chPath) => {
+      eq = createEquipment(ch, chPath, equipment);
+    });
     // this.store.pushEvent(createEnterEventContext(this.store, this.who, eq));
   }
-  removeEquipment(equipment: number | EquipmentInfo): void {
-    const eqId = typeof equipment === "number" ? equipment : equipment.id;
-    this.character.equipments = this.character.equipments.filter(
-      (e) => e.info.id !== eqId
-    );
+  removeEquipment(equipment: number): boolean {
+    let result = false;
+    this.store.updateCharacterAtPath(this.path, (ch) => {
+      const idx = ch.equipments.findIndex((st) => st.info.id === equipment);
+      if (idx !== -1) {
+        ch.statuses.splice(idx, 1);
+        result = true;
+      }
+    });
+    return result;
   }
 
   heal(amount: number): void {
     if (this.character.health === 0) {
-      this.character.revive();
+      this.store.updateCharacterAtPath(this.path, revive);
     }
-    this.store.heal(this.character, amount, this.sourceId);
+    this.store.mutator.heal(this.caller, this.path, amount);
   }
   gainEnergy(amount: number): number {
-    return this.character.gainEnergy(amount);
+    const oldEnergy = this.character.energy;
+    this.store.updateCharacterAtPath(this.path, (ch) => gainEnergy(ch, amount));
+    return this.character.energy - oldEnergy;
   }
   loseEnergy(amount: number): number {
     const oldEnergy = this.character.energy;
-    this.character.energy = Math.max(this.character.energy - amount, 0);
+    this.store.updateCharacterAtPath(this.path, (ch) => loseEnergy(ch, amount));
     return oldEnergy - this.character.energy;
   }
   createStatus(status: number): StatusContext<true> {
-    const st = this.character.createStatus(status);
-    this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
-    return new EntityContextImpl(st);
+    let st: EntityPath = null!;
+    this.store.updateCharacterAtPath(this.path, (ch, chPath) => {
+      st = createStatus(ch, chPath, status);
+    });
+    // this.store.pushEvent(createEnterEventContext(this.store, this.who, st));
+    return new EntityContextImpl(this.store, this.caller, st);
   }
   removeStatus(status: number): boolean {
-    const st = this.character.statuses.findIndex((s) => s.info.id === status);
-    if (st === -1) return false;
-    this.character.statuses.splice(st, 1);
-    return true;
+    let result = false;
+    this.store.updateCharacterAtPath(this.path, (ch) => {
+      const idx = ch.statuses.findIndex((st) => st.info.id === status);
+      if (idx !== -1) {
+        ch.statuses.splice(idx, 1);
+        result = true;
+      }
+    });
+    return result;
   }
   findStatus(status: number): StatusContext<true> | null {
-    const st = this.character.statuses.find((s) => s.info.id === status);
-    if (!st) return null;
-    return new EntityContextImpl(this.store, st, this.caller);
+    const results = this.store.findEntity(
+      this.path,
+      "status",
+      (s) => s.info.id === status
+    );
+    return results.length > 0
+      ? new EntityContextImpl(this.store, this.caller, results[0][1])
+      : null;
   }
   findShield(): StatusContext<true> {
-    const st = this.character.statuses.find((s) => s.shield !== null);
-    if (!st) throw new Error("No shield");
-    return new EntityContextImpl(st);
+    const results = this.store.findEntity(
+      this.path,
+      "status",
+      (s) => s.info.shield !== null
+    );
+    if (results.length === 0) throw new Error("No shield");
+    return new EntityContextImpl(this.store, this.caller, results[0][1]);
   }
 
   isActive() {
     return (
-      this.store.getPlayer(this.who).getCharacter("active").entityId ===
-        this.entityId ||
-      this.store.getPlayer(flip(this.who)).getCharacter("active").entityId ===
-        this.entityId
+      this.store.state.players[this.path.who].active?.entityId ===
+      this.path.entityId
     );
   }
   isMine() {
@@ -645,8 +685,8 @@ export class EntityContextImpl
 {
   constructor(
     private store: Store,
-    private path: EntityPath,
-    private caller: EntityPath
+    private caller: EntityPath,
+    private path: EntityPath
   ) {}
 
   private get entity(): AllEntityState {
@@ -682,7 +722,9 @@ export class EntityContextImpl
   }
 
   setUsage(value: number) {
-    // TODO
+    this.store.updateEntityAtPath(this.path, (e) => {
+      e.usage = value;
+    });
     return this.usage;
   }
 
@@ -705,80 +747,60 @@ export class EntityContextImpl
     }
     return new CharacterContextImpl(
       this.store,
-      this.path.character,
-      this.caller
+      this.caller,
+      this.path.character
     );
   }
   dispose(): void {
-    const env = getEntityById(this.store, this.sourceId);
-    if (!env) return;
-    if (
-      env.entity instanceof Status ||
-      env.entity instanceof Support ||
-      env.entity instanceof Summon
-    ) {
-      env.entity.shouldDispose = true;
-    } else {
-      throw new Error("This entity cannot be disposed this way.");
-    }
+    this.store.updateEntityAtPath(this.path, (s) => {
+      s.shouldDispose = true;
+    });
   }
 }
 
-class SwitchActiveContextImpl
-  extends ContextImpl
-  implements SwitchActiveContext
-{
-  from: CharacterContext;
-  to: CharacterContext;
+class SwitchActiveContextImpl implements SwitchActiveContext<true> {
+  from: CharacterContext<true>;
+  to: CharacterContext<true>;
   constructor(
-    state: GameState,
-    who: 0 | 1,
-    sourceId: number,
-    from: Character,
-    to: Character
+    store: Store,
+    caller: EntityPath,
+    from: CharacterPath,
+    to: CharacterPath
   ) {
-    super(state, who, sourceId);
-    this.from = this.createCharacterContext(from);
-    this.to = this.createCharacterContext(to);
+    // super(store, caller);
+    this.from = new CharacterContextImpl(store, caller, from);
+    this.to = new CharacterContextImpl(store, caller, to);
   }
 }
 
-export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
+export class UseDiceContextImpl
+  extends ContextImpl
+  implements Context<any, UseDiceContext, true>
+{
   switchActiveCtx?: SwitchActiveContext;
   useSkillCtx?: SkillContext;
   playCardCtx?: PlayCardContext;
 
-  constructor(
-    state: GameState,
-    who: 0 | 1,
-    sourceId: number,
-    private action: ActionConfig
-  ) {
-    super(state, who, sourceId);
+  constructor(store: Store, caller: EntityPath, private action: ActionConfig) {
+    super(store, caller);
     switch (action.type) {
       case "switchActive": {
         this.switchActiveCtx = new SwitchActiveContextImpl(
-          state,
-          who,
-          sourceId,
+          store,
+          caller,
           action.from,
           action.to
         );
         break;
       }
       case "useSkill": {
-        this.useSkillCtx = new SkillContextImpl(
-          state,
-          who,
-          sourceId,
-          action.skill
-        );
+        this.useSkillCtx = new SkillContextImpl(store, caller, action.skill);
         break;
       }
       case "playCard": {
         this.playCardCtx = new PlayCardContextImpl(
-          state,
-          who,
+          store,
+          this.caller,
           action.card,
           action.targets
         );
@@ -808,72 +830,67 @@ export class UseDiceContextImpl extends ContextImpl implements UseDiceContext {
   }
 }
 
-export class SkillDescriptionContextImpl
-  extends ContextImpl
-  implements SkillDescriptionContext
-{
+export class SkillContextImpl implements SkillContext<true> {
   constructor(
-    state: GameState,
-    who: 0 | 1,
-    sourceId: number,
-    protected skill: NormalSkillInfo
+    private store: Store,
+    private caller: EntityPath,
+    private skill: SkillPath
   ) {
-    super(state, who, sourceId);
+    // super(state, caller);
+  }
+
+  get id(): any {
+    return this.skill.info.id;
   }
 
   get character() {
-    const player = this.store.state.players[this.who];
-    const ch = player.characters.find((ch) =>
-      ch.info.skills.includes(this.skill.info.id)
+    return new CharacterContextImpl(
+      this.store,
+      this.caller,
+      this.skill.character
     );
-    if (!ch) throw new Error("Character not found");
-    return this.createCharacterContext(ch);
   }
   get target() {
-    const player = this.store.getPlayer(flip(this.who));
-    const ch = player.getCharacter("active");
-    return this.createCharacterContext(ch);
-  }
-
-  triggeredByCard(card: number): PlayCardContext | null {
-    const ctx = getContextById(this.store, this.sourceId);
-    if (ctx instanceof PlayCardContextImpl) {
-      if (ctx.card.info.id === card) {
-        return ctx;
-      }
+    const targetPath = this.store.state.players[flip(this.caller.who)].active;
+    if (targetPath === null) {
+      throw new Error(`Opponent has no active character`);
     }
-    return null;
-  }
-  triggeredByStatus(status: number): StatusContext | null {
-    const ctx = getContextById(this.store, this.sourceId);
-    if (ctx instanceof StatusContextImpl) {
-      if (ctx.info.id === status) {
-        return ctx;
-      }
-    }
-    return null;
+    return new CharacterContextImpl(this.store, this.caller, targetPath);
   }
 
-  isCharged(): boolean {
-    const player = this.store.getPlayer(this.who);
-    const bit = player.dice.length % 2 === 0;
-    return bit && this.skill.info.type === "normal";
-  }
-  isPlunging(): boolean {
-    const player = this.store.getPlayer(this.who);
-    const bit = player.getSpecialBit(SpecialBits.Plunging);
-    return bit && this.skill.info.type === "normal";
-  }
-}
-
-export class SkillContextImpl
-  extends SkillDescriptionContextImpl
-  implements SkillContext
-{
   get info() {
     return this.skill.info;
   }
 
+  triggeredByCard(card: number): PlayCardContext | null {
+    if (this.caller.type === "card" && this.caller.info.id === card) {
+      return new PlayCardContextImpl(this.store, this.caller, this.caller, [
+        this.skill.character,
+      ]);
+    }
+    return null;
+  }
+  triggeredByStatus(status: number): StatusContext<true> | null {
+    if (this.caller.type === "status" && this.caller.info.id === status) {
+      return new EntityContextImpl(this.store, this.caller, this.caller);
+    }
+    return null;
+  }
+
+  get charged(): boolean {
+    const bit =
+      this.store.state.players[this.skill.character.who].dice.length % 2 === 0;
+    return bit && this.skill.info.type === "normal";
+  }
+  get plunging(): boolean {
+    const bit = this.store.state.players[this.skill.character.who].canPlunging;
+    return bit && this.skill.info.type === "normal";
+  }
+
+  get damages(): DamageContext[] {
+    // TODO
+    return [];
+  }
   getAllDescendingDamages(): DamageContext[] {
     return this.store.damageLog.map(
       ([dmg]) => new DamageContextImpl(this.store, this.who, 0, dmg)
@@ -887,34 +904,34 @@ export class SkillContextImpl
   }
 }
 
-export class PlayCardContextImpl
-  extends ContextImpl
-  implements PlayCardContext
-{
+export class PlayCardContextImpl implements PlayCardContext {
   targetCtxs: CardTarget[keyof CardTarget][] = [];
 
   constructor(
-    state: GameState,
-    who: 0 | 1,
-    public readonly card: Card,
+    private store: Store,
+    private caller: EntityPath,
+    public readonly card: CardPath,
     private readonly targetObj: PlayCardTargetObj[]
   ) {
-    super(state, who, card.entityId);
+    // super(store, caller);
     for (const obj of this.targetObj) {
-      if (obj instanceof Character) {
-        this.targetCtxs.push(this.createCharacterContext(obj));
-      } else if (obj instanceof Summon) {
-        this.targetCtxs.push(this.createEntityContext(obj));
+      if ("type" in obj) {
+        this.targetCtxs.push(new EntityContextImpl(store, caller, obj));
       } else {
-        console.error(obj);
-        throw new Error(`Unknown target object: ${obj}`);
+        this.targetCtxs.push(new CharacterContextImpl(store, caller, obj));
       }
     }
   }
+
+  get id(): any {
+    return this.card.info.id;
+  }
+
   get info(): CardInfo {
     return this.card.info;
   }
-  get target(): CardTarget[keyof CardTarget][] {
+
+  get target(): any {
     return this.targetCtxs;
   }
 
@@ -927,9 +944,7 @@ export class PlayCardContextImpl
   isTalentOf(charId: number): boolean {
     return (
       this.card.info.tags.includes("talent") &&
-      !!this.targetObj.find(
-        (ch) => ch instanceof Character && ch.info.id === charId
-      )
+      !!this.targetObj.find((ch) => ch.info.id === charId)
     );
   }
   isWeapon(): boolean {
@@ -952,11 +967,6 @@ export interface RollPhaseConfig {
 class RollContextImpl implements RollContext {
   constructor(private player: PlayerMutator, private config: RollPhaseConfig) {}
 
-  get activeCharacterElement() {
-    const ch = this.player.getCharacter("active");
-    return ch.elementType();
-  }
-
   fixDice(...dice: DiceType[]): void {
     this.config.controlled.push(...dice);
   }
@@ -966,17 +976,9 @@ class RollContextImpl implements RollContext {
   }
 }
 
-class ElementalReactionContextImpl
-  extends ContextImpl
-  implements ElementalReactionContext
-{
-  constructor(
-    state: GameState,
-    who: 0 | 1,
-    sourceId: number,
-    private reaction: Reaction
-  ) {
-    super(state, who, sourceId);
+class ElementalReactionContextImpl implements ElementalReactionContext {
+  constructor(store: Store, caller: EntityPath, private reaction: Reaction) {
+    // super(store, caller);
   }
   get reactionType() {
     return this.reaction;
@@ -1010,34 +1012,26 @@ class ElementalReactionContextImpl
   }
 }
 
-export class DamageContextImpl extends ContextImpl implements DamageContext {
+export class DamageContextImpl implements DamageContext {
   constructor(
-    state: GameState,
-    who: 0 | 1,
-    public sourceId: number,
+    private store: Store,
+    private caller: EntityPath,
     private damage: Damage
   ) {
-    super(state, who, sourceId);
-  }
-
-  getSource() {
-    const srcId = this.damage.sourceId;
-    return getContextById(this.store, srcId);
+    // super(store, caller);
   }
 
   get sourceSummon() {
-    const ctx = this.getSource();
-    if (ctx instanceof SummonContextImpl) {
-      return ctx;
+    if (this.damage.source.type === "summon") {
+      return new EntityContextImpl(this.store, this.caller, this.damage.source);
     } else {
       return undefined;
     }
   }
 
   get sourceSkill() {
-    const ctx = this.getSource();
-    if (ctx instanceof SkillContextImpl) {
-      return ctx;
+    if (this.damage.source.type === "skill") {
+      return new SkillContextImpl(this.store, this.caller, this.damage.source);
     } else {
       return undefined;
     }
@@ -1048,18 +1042,15 @@ export class DamageContextImpl extends ContextImpl implements DamageContext {
     if (typeof reaction === "undefined") {
       return undefined;
     }
-    const sourceId = this.damage.sourceId;
-    const { who } = getEntityById(this.store, sourceId)!;
-    return new ElementalReactionContextImpl(
-      this.store,
-      who,
-      sourceId,
-      reaction
-    );
+    return new ElementalReactionContextImpl(this.store, this.caller, reaction);
   }
 
   get target() {
-    return this.createCharacterContext(this.damage.target);
+    return new CharacterContextImpl(
+      this.store,
+      this.caller,
+      this.damage.target
+    );
   }
 
   get damageType() {
@@ -1078,29 +1069,25 @@ export class DamageContextImpl extends ContextImpl implements DamageContext {
     if (type === DamageType.Piercing || type === DamageType.Physical) {
       return null;
     }
-    const reaction = makeReaction(this.damage.target.applied, type)[1];
+    const target = getCharacterAtPath(this.store.state, this.damage.target);
+    const reaction = makeReaction(target.aura, type)[1];
     if (reaction === null) {
       return null;
     }
-    return new ElementalReactionContextImpl(
-      this.store,
-      this.who,
-      this.sourceId,
-      reaction
-    );
+    return new ElementalReactionContextImpl(this.store, this.caller, reaction);
   }
 
   changeDamageType(type: DamageType) {
-    this.damage.changedLogs.push([this.sourceId, type]);
+    this.damage.changedLogs.push([this.caller, type]);
   }
   addDamage(value: number): void {
-    this.damage.addedLogs.push([this.sourceId, value]);
+    this.damage.addedLogs.push([this.caller, value]);
   }
   multiplyDamage(value: number): void {
-    this.damage.multipliedLogs.push([this.sourceId, value]);
+    this.damage.multipliedLogs.push([this.caller, value]);
   }
   decreaseDamage(value: number): void {
-    this.damage.decreasedLogs.push([this.sourceId, value]);
+    this.damage.decreasedLogs.push([this.caller, value]);
   }
 }
 
@@ -1108,25 +1095,8 @@ class SkillDamageContextImpl
   extends DamageContextImpl
   implements SkillDamageContext
 {
-  private getSkillCtx() {
-    const ctx = this.getSource();
-    if (ctx instanceof SkillContextImpl) {
-      return ctx;
-    } else {
-      throw new Error("Damage source is not a skill");
-    }
-  }
-  get skillInfo(): SkillInfo {
-    return this.getSkillCtx().info;
-  }
-  get characterInfo(): CharacterInfo {
-    return this.getSkillCtx().character.info;
-  }
-  isCharged(): boolean {
-    return this.getSkillCtx().isCharged();
-  }
-  isPlunging(): boolean {
-    return this.getSkillCtx().isPlunging();
+  get sourceSkill() {
+    return super.sourceSkill!;
   }
 }
 
@@ -1134,45 +1104,22 @@ export interface RequestFastToken {
   resolved: boolean;
 }
 
-class RequestFastSwitchContextImpl
-  extends ContextImpl
-  implements RequestFastSwitchContext
-{
+class RequestFastSwitchContextImpl implements RequestFastSwitchContext {
   constructor(
-    state: GameState,
-    who: 0 | 1,
-    sourceId: number,
+    private store: Store,
+    private caller: EntityPath,
     private token: RequestFastToken
   ) {
-    super(state, who, sourceId);
+    // super(store, caller);
   }
+
   requestFast(condition?: boolean | undefined): void {
     if (this.token.resolved) {
-      console.warn(
-        "You are calling requestFast TWICE. This might be an error!"
-      );
+      throw new Error("Token already resolved");
     }
     if (typeof condition === "undefined" || condition === true) {
       this.token.resolved = true;
     }
-  }
-}
-
-function getContextById(state: GameState, entityId: number) {
-  const ee = getEntityById(state, entityId);
-  if (ee === null) return null;
-  const { who, entity: object } = ee;
-  if (object instanceof PassiveSkill || object instanceof Skill) {
-    return new SkillContextImpl(state, who, object.entityId, object);
-  } else if (object instanceof Status) {
-    return new StatusContextImpl(object);
-  } else if (object instanceof Summon) {
-    return new SummonContextImpl(state, who, object);
-  } else if (object instanceof Card) {
-    // FIXME targets 为空，因为确实无从得知
-    return new PlayCardContextImpl(state, who, object, []);
-  } else {
-    return null;
   }
 }
 

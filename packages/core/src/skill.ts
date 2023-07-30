@@ -1,6 +1,8 @@
 import {
+  Context,
   NormalSkillInfo,
   PassiveSkillInfo,
+  SkillContext,
   SkillInfo,
   getSkill,
 } from "@gi-tcg/data";
@@ -12,7 +14,7 @@ export class Skill extends Entity {
     super(info.id);
   }
 
-  async do(ctx: SkillDescriptionContext) {
+  async do(ctx: Context<never, SkillContext<true>, true>) {
     return this.info.action(ctx);
   }
 }

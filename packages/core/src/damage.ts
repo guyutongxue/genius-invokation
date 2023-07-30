@@ -1,19 +1,20 @@
 import { DamageType, Reaction } from "@gi-tcg/typings";
+import { EntityPath } from "./entity.js";
+import { CharacterPath } from "./character.js";
 
 export class Damage {
   constructor(
-    public who: 0 | 1,
-    public sourceId: number,
-    public target: Character,
+    public source: EntityPath,
+    public target: CharacterPath,
     private originalValue: number,
     private type: DamageType,
     public triggeredByReaction?: Reaction
   ) {}
 
-  changedLogs: [sourceId: number, changedTo: DamageType][] = [];
-  addedLogs: [sourceId: number, value: number][] = [];
-  multipliedLogs: [sourceId: number, value: number][] = [];
-  decreasedLogs: [sourceId: number, value: number][] = [];
+  changedLogs: [source: EntityPath, changedTo: DamageType][] = [];
+  addedLogs: [source: EntityPath, value: number][] = [];
+  multipliedLogs: [source: EntityPath, value: number][] = [];
+  decreasedLogs: [source: EntityPath, value: number][] = [];
 
   getValue() {
     let v = this.originalValue;
