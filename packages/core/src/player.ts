@@ -695,42 +695,6 @@ export class PlayerMutator {
     });
   }
 
-  /**
-   * 检查标记为“应当弃置”的实体并弃置它们
-   */
-  checkDispose() {
-    const draft = this.produce(); // TODO
-    const activeIndex = draft.active?.indexHint ?? 0;
-    for (let i = 0; i < draft.characters.length; i++) {
-      const character =
-        draft.characters[(activeIndex + i) % draft.characters.length];
-      for (let j = 0; j < character.statuses.length; j++) {
-        if (character.statuses[j].shouldDispose) {
-          character.statuses.splice(j, 1);
-          j--;
-        }
-      }
-    }
-    for (let i = 0; i < draft.combatStatuses.length; i++) {
-      if (draft.combatStatuses[i].shouldDispose) {
-        draft.combatStatuses.splice(i, 1);
-        i--;
-      }
-    }
-    for (let i = 0; i < draft.summons.length; i++) {
-      if (draft.summons[i].shouldDispose) {
-        draft.summons.splice(i, 1);
-        i--;
-      }
-    }
-    for (let i = 0; i < draft.supports.length; i++) {
-      if (draft.supports[i].shouldDispose) {
-        draft.supports.splice(i, 1);
-        i--;
-      }
-    }
-  }
-
   // emitEventFromCharacter<K extends EventHandlerNames1>(
   //   ch: Character,
   //   event: K,

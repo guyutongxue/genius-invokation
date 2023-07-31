@@ -252,7 +252,7 @@ export function refreshEntity(entity: Draft<SummonState> | Draft<StatusState>) {
   }
 }
 
-export class Entity {
+class Entity {
   public readonly entityId: number;
   constructor(protected readonly id: number) {
     this.entityId = newEntityId();

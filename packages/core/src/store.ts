@@ -36,7 +36,7 @@ import { PlayerIO, createIO } from "./io.js";
 import { CharacterPath, CharacterUpdateFn } from "./character.js";
 import { Mutator } from "./mutator.js";
 import { flip } from "@gi-tcg/utils";
-import { DamageDetail } from "./damage.js";
+import { DamageLogType } from "./damage.js";
 
 type ValidConfigKey<Obj extends object> = {
   [K in keyof Obj]: Exclude<Obj[K], undefined> extends Function ? never : K;
@@ -53,7 +53,7 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly skillDamageLog: DamageDetail[]; // 使用技能前清空
+  readonly skillDamageLog: DamageLogType[]; // 使用技能前清空
   readonly skillReactionLog: Reaction[]; // 使用技能前清空
 }
 
