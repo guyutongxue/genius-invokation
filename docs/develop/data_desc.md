@@ -5,7 +5,6 @@
 所有的事件响应器都继承自全局操作语境 `Context`，包括如下接口：
 
 - `dealDamage`：造成伤害
-- `heal`：治疗（造成“治疗”伤害的简便写法）
 - `gainEnergy`：充能（普攻和战技自动完成）
 - `createStatus`：生成状态
 - `createCombatStatus`：生成出战状态
@@ -18,18 +17,10 @@
 - `switchActive`：切换出战角色
 - `useSkill`：使用出战角色的技能
 - `flipNextTurn`：强制修改行动轮轮转（风与自由）
-- `pass`：跳过此回合（准备技能）
 - `dispose`：（状态、支援、召唤物）弃置
 
-## 目标描述语法
+## 目标选择器
 
-对于 `dealDamage` `heal` `createStatus` `switchActive` 等操作，需要指定一个或多个角色。由于数据描述语境缺乏大量信息（比如角色 ID、角色位置等），所以需要一个更适合数据描述的语法。下述语法由 `Target` 类的若干简单工厂函数给出：
+对于 `dealDamage` `heal` `createStatus` `switchActive` 等操作，需要指定一个或多个角色。由于数据描述语境缺乏大量信息（比如角色 ID、角色位置等），所以需要一个更适合数据描述的语法，参见[角色选择器](./selector.md)
 
 **TODO**
-
-目标默认值：
-
-- 对于 `dealDamage`，是对方出战角色 `ACTIVE | OPP`。
-- 对于 `heal`、`gainEnergy`，是己方出战角色 `ACTIVE | ME`。
-- 对于 `createStatus`，是己方出战角色 `ACTIVE | ME`。
-- 对于 `switchActive`，是己方下一出战角色 `NEXT | ME`。
