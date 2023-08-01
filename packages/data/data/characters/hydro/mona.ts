@@ -74,7 +74,7 @@ const StellarisPhantasm = createSkill(12033)
 const IllusoryTorrent = createSkill(12034)
   .setType("passive")
   .withUsagePerRound(1)
-  .on("requestFastSwitchActive", (c) => c.requestFast(c.this.character.isActive()))
+  .on("requestFastSwitchActive", (c) => c.requestFast(c.this.master.isActive()))
   .build();
 
 export const Mona = createCharacter(1203)

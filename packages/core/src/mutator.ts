@@ -1,9 +1,10 @@
-import { DamageData, DamageType } from "@gi-tcg/typings";
+import { DamageData, DamageType, Event } from "@gi-tcg/typings";
 import { CharacterPath, heal } from "./character.js";
 import { AllEntityState, EntityPath } from "./entity.js";
 import { PlayerIO } from "./io.js";
 import { PlayerMutator } from "./player.js";
 import {
+  GameState,
   Store,
   findCharacter,
   findEntity,
@@ -31,12 +32,18 @@ import { Damage, DamageLogType } from "./damage.js";
 import { flip } from "@gi-tcg/utils";
 import { Draft } from "immer";
 import * as _ from "lodash-es";
+import { ActionConfig } from "./action.js";
 
 export class Mutator {
   readonly players: readonly [PlayerMutator, PlayerMutator];
 
   constructor(private store: Store) {
     this.players = [new PlayerMutator(store, 0), new PlayerMutator(store, 1)];
+  }
+
+  private notifyAll(event: Event) {
+    this.store._playerIO[0]?.notifyMe(event);
+    this.store._playerIO[1]?.notifyMe(event);
   }
 
   private doElementalReaction(damage: Damage) {
@@ -105,11 +112,7 @@ export class Mutator {
       }
     }
     const ioData = damage.toData();
-    this.store._playerIO[0]?.notifyMe({
-      type: "stateUpdated",
-      damages: [ioData],
-    });
-    this.store._playerIO[1]?.notifyMe({
+    this.notifyAll({
       type: "stateUpdated",
       damages: [ioData],
     });
@@ -131,11 +134,7 @@ export class Mutator {
         },
       ],
     };
-    this.store._playerIO[0]?.notifyMe({
-      type: "stateUpdated",
-      damages: [damageLog],
-    });
-    this.store._playerIO[1]?.notifyMe({
+    this.notifyAll({
       type: "stateUpdated",
       damages: [damageLog],
     });
@@ -317,7 +316,9 @@ export class Mutator {
     }
   }
   private pendingEvent: AsyncEventDescriptor[] = [];
+  private previousState: GameState | null = null;
   async doEvent() {
+    this.checkDispose();
     const sorted = _.sortBy(this.pendingEvent, ([e]) => {
       if (e === "onSwitchActive") {
         return -100;
@@ -333,6 +334,13 @@ export class Mutator {
         await this.doEvent();
       }
     }
+    if (this.store.state !== this.previousState) {
+      this.notifyAll({
+        type: "stateUpdated",
+        damages: [],
+      });
+      this.previousState = this.store.state;
+    }
   }
 
   emitEvent<E extends keyof AsyncEventMap>(e: E, ...args: CreatorArgs<E>) {
@@ -341,6 +349,12 @@ export class Mutator {
   }
   emitSyncEvent<E extends keyof SyncEventMap>(e: E, ...args: CreatorArgs<E>) {
     const factory = (CONTEXT_CREATORS[e] as any)(...args);
-    this.store.clone().mutator.propagateSyncEvent([e, factory]);
+    this.propagateSyncEvent([e, factory]);
+  }
+  emitBeforeUseDice(who: 0 | 1, action: ActionConfig): GameState {
+    const previewStore = this.store.clone();
+    const factory = CONTEXT_CREATORS.onBeforeUseDice(who, action);
+    previewStore.mutator.propagateSyncEvent(["onBeforeUseDice", factory]);
+    return previewStore.state;
   }
 }

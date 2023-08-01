@@ -21,7 +21,7 @@ export function registerSummon(id: number, info: SummonInfoNoId) {
 }
 export function getSummon(id: number) {
   if (!allSummons.has(id)) {
-    throw new Error(`Status ${id} not found`);
+    throw new Error(`Summon ${id} not found`);
   }
   return allSummons.get(id)!;
 }

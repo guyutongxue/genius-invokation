@@ -120,10 +120,15 @@ export function getCardActions(state: GameState, who: 0 | 1): PlayCardConfig[] {
   return actions;
 }
 
+type RpcActionResult = {
+  configIndex: number,
+  consumedDice: DiceType[],
+}
+
 export async function rpcAction(
   actions: ActionConfig[],
   req2rep: (r: ActionRequest) => Promise<ActionResponse>,
-): Promise<ActionConfig & { consumedDice: DiceType[] }> {
+): Promise<RpcActionResult> {
   const candidates: Action[] = [];
   const cards = new Map<number, PlayCardConfig[]>();
   for (const action of actions) {
@@ -181,14 +186,14 @@ export async function rpcAction(
     });
   }
   const response = await req2rep({ candidates });
-  let cfg: ActionConfig | undefined;
+  let configIndex = -1;
   switch (response.type) {
     case "declareEnd": {
-      cfg = actions.find((c) => c.type === "declareEnd");
+      configIndex = actions.findIndex((c) => c.type === "declareEnd");
       break;
     }
     case "elementalTuning": {
-      cfg = actions.find(
+      configIndex = actions.findIndex(
         (c) =>
           c.type === "elementalTuning" &&
           c.card.entityId === response.discardedCard,
@@ -202,13 +207,13 @@ export async function rpcAction(
       break;
     }
     case "switchActive": {
-      cfg = actions.find(
+      configIndex = actions.findIndex(
         (c) => c.type === "switchActive" && c.to.entityId === response.active,
       );
       break;
     }
     case "useSkill": {
-      cfg = actions.find(
+      configIndex = actions.findIndex(
         (c) => c.type === "useSkill" && c.skill.info.id === response.skill,
       );
       break;
@@ -223,7 +228,7 @@ export async function rpcAction(
       }
       const reqTargets = reqItem.target?.candidates ?? [[]];
       const resTargetIndex = response.targetIndex ?? 0;
-      cfg = actions.find(
+      configIndex = actions.findIndex(
         (c) =>
           c.type === "playCard" &&
           c.card.entityId === response.card &&
@@ -234,11 +239,11 @@ export async function rpcAction(
       );
     }
   }
-  if (typeof cfg === "undefined") {
+  if (configIndex === -1) {
     throw new Error(`Response action could not be found`);
   }
   return {
-    ...cfg,
+    configIndex,
     consumedDice: "dice" in response ? response.dice : [],
   };
 }

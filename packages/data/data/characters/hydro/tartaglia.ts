@@ -113,8 +113,8 @@ const HavocObliteration = createSkill(12043)
  */
 const TideWithholder = createSkill(12044)
   .setType("passive")
-  .on("battleBegin", (c) => { c.this.character.createStatus(RangedStance) })
-  .on("revive", (c) => { c.this.character.createStatus(RangedStance) })
+  .on("battleBegin", (c) => { c.this.master.createStatus(RangedStance) })
+  .on("revive", (c) => { c.this.master.createStatus(RangedStance) })
   .build();
 
 export const Tartaglia = createCharacter(1204)

@@ -61,7 +61,7 @@ const FieryRebirthStaus = createStatus(123022)
  */
 const FieryRebirth = createSkill(23024)
   .setType("passive")
-  .on("battleBegin", (c) => { c.this.character.createStatus(FieryRebirthStaus); })
+  .on("battleBegin", (c) => { c.this.master.createStatus(FieryRebirthStaus); })
   .build();
 
 export const AbyssLectorFathomlessFlames = createCharacter(2302)

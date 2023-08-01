@@ -1,5 +1,5 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { SkillContext, SkillType, UseSkillAction, registerSkill } from "./skills";
+import { PassiveSkillContext, SkillContext, SkillType, UseSkillAction, registerSkill } from "./skills";
 import { EventHandlers, ListenTarget, EventNames, EventHandler, TriggerCondition } from "./events";
 import { CardTag, CardTargetDescriptor, CardType, ContextOfTarget, FuzzyContextOfTarget, PlayCardContext, PlayCardFilter, ShownOption, registerCard } from "./cards";
 import { EquipmentContext, EquipmentType, registerEquipment } from "./equipments";
@@ -443,13 +443,14 @@ class TriggerBuilderBase<ThisT> {
           return false;
         }
       }
+    } else {
+      this.handlers[handlerName] = condOrHandler;
     }
-    this.handlers[handlerName] = handler;
     return this;
   }
 }
 
-class PassiveSkillBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & SkillContext<true>> {
+class PassiveSkillBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & PassiveSkillContext<true>> {
   constructor(private readonly id: number) {
     super();
   }
@@ -475,7 +476,7 @@ class PassiveSkillBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & Ski
       usagePerRound: this.usagePerRound,
       handler: {
         handler: this.handlers,
-        state: this.state
+        state: this.state ?? {}
       }
     });
     return this.id as SkillHandle;
@@ -540,7 +541,7 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
       prepare: this.prepareConfig,
       handler: {
         handler: this.handlers,
-        state: this.state
+        state: this.state ?? {}
       }
     });
     return this.id as CardHandle & StatusHandle;
@@ -575,7 +576,7 @@ class SupportBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & SupportC
       listenTo: this.listenTo === "master" ? "my" : this.listenTo,
       handler: {
         handler: this.handlers,
-        state: this.state
+        state: this.state ?? {}
       }
     })
     return this.id as SupportHandle;
@@ -614,7 +615,7 @@ class EquipmentBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & Equipm
       listenTo: this.listenTo,
       handler: {
         handler: this.handlers,
-        state: this.state
+        state: this.state ?? {}
       }
     });
     return this.id as EquipmentHandle;
@@ -648,7 +649,7 @@ class SummonBuilder<ThisT> extends TriggerBuilderBase<ThisT & SummonContext<true
       listenTo: this.listenTo === "master" ? "my" : this.listenTo,
       handler: {
         handler: this.handlers,
-        state: this.state
+        state: this.state ?? {}
       }
     })
     return this.id as SummonHandle;

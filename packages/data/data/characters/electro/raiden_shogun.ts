@@ -78,8 +78,8 @@ const ChakraDesiderataStatus = createStatus(114072)
  */
 const ChakraDesiderata = createSkill(14074)
   .setType("passive")
-  .on("battleBegin", (c) => { c.this.character.createStatus(ChakraDesiderataStatus); })
-  .on("revive", (c) => { c.this.character.createStatus(ChakraDesiderataStatus); })
+  .on("battleBegin", (c) => { c.this.master.createStatus(ChakraDesiderataStatus); })
+  .on("revive", (c) => { c.this.master.createStatus(ChakraDesiderataStatus); })
   .build();
 
 export const RaidenShogun = createCharacter(1407)

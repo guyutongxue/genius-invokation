@@ -6,6 +6,7 @@ import { CharacterContext } from "./characters";
 import { PlayCardContext } from "./cards";
 import { StatusContext } from "./statuses";
 import { Context } from "./global";
+import { EntityContext } from ".";
 
 export type UseSkillAction = (c: Context<object, SkillContext<true>, true>) => void | Promise<void>;
 
@@ -43,6 +44,8 @@ export interface PassiveSkillInfo {
   readonly usagePerRound: number;
   readonly handler: EventHandlerAndState;
 }
+
+export type PassiveSkillContext<Writable extends boolean> = EntityContext<PassiveSkillInfo, SkillHandle, "yes", Writable>;
 
 export type SkillInfo = NormalSkillInfo | PassiveSkillInfo;
 

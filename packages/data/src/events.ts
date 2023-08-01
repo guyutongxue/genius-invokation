@@ -7,7 +7,8 @@ import { SkillContext } from "./skills";
 export type SyncHandlerResult = boolean | void;
 export type AsyncHandlerResult = SyncHandlerResult | Promise<SyncHandlerResult>;
 
-type SyncHandler<ThisT, ExtPoint> = (c: Context<ThisT, ExtPoint, false>) => SyncHandlerResult;
+// 骰子减费预处理语境，也可以修改全局状态（温迪天赋：协鸣之风）
+type SyncHandler<ThisT, ExtPoint> = (c: Context<ThisT, ExtPoint, true>) => SyncHandlerResult;
 type AsyncHandler<ThisT, ExtPoint> = (c: Context<ThisT, ExtPoint, true>) => AsyncHandlerResult;
 
 // Follow docs/develop/events.md of all events.

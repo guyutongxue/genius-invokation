@@ -455,10 +455,17 @@ export class PlayerMutator {
         }),
       ),
     );
+
+    const usedDiceState: GameState[] = [];
     for (const action of actions) {
-      this.emitSyncEvent("onBeforeUseDice", action);
+      usedDiceState.push(this.store.mutator.emitBeforeUseDice(this.who, action));
     }
-    const action = await rpcAction(actions, (r) => this.io!.rpc("action", r));
+    const { configIndex, consumedDice } = await rpcAction(actions, (r) =>
+      this.io!.rpc("action", r),
+    );
+    const action = actions[configIndex];
+    this.store.apply(usedDiceState[configIndex]);
+
     switch (action.type) {
       case "declareEnd": {
         this.produce((draft) => {
@@ -470,7 +477,7 @@ export class PlayerMutator {
         return false;
       }
       case "elementalTuning": {
-        const diceIndex = this.state.dice.indexOf(action.consumedDice[0]);
+        const diceIndex = this.state.dice.indexOf(consumedDice[0]);
         if (diceIndex === -1) {
           throw new Error("Invalid dice");
         }
@@ -496,17 +503,17 @@ export class PlayerMutator {
         return true;
       }
       case "useSkill": {
-        this.consumeDice(action.dice, action.consumedDice);
+        this.consumeDice(action.dice, consumedDice);
         await this.useSkill(action.skill);
         return false;
       }
       case "playCard": {
-        this.consumeDice(action.dice, action.consumedDice);
+        this.consumeDice(action.dice, consumedDice);
         await this.playCard(action.card, action.targets);
         return !action.card.info.tags.includes("action");
       }
       case "switchActive": {
-        this.consumeDice(action.dice, action.consumedDice);
+        this.consumeDice(action.dice, consumedDice);
         this.switchActive(action.to.entityId);
         return action.fast;
       }
@@ -655,7 +662,7 @@ export class PlayerMutator {
     return this.createEntity("summon", summonId);
   }
   createSupport(supportId: number): EntityPath {
-    return this.createEntity("summon", supportId);
+    return this.createEntity("support", supportId);
   }
 
   skipNextTurn() {

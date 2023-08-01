@@ -75,7 +75,7 @@ export type AllEntityState = StatefulEntity<AllEntityInfo>;
 
 export function createEntity<T extends EntityType>(
   type: T,
-  id: number
+  id: number,
 ): StatefulEntity<EntityTypeMap[T]> {
   const info = ENTITY_INFO_GETTER[type](id) as EntityTypeMap[T];
   return {
@@ -126,20 +126,19 @@ export type EntityPath =
   | VirtualEntityPath
   | CharacterEntityPath;
 
-
 export type EntityUpdateFn<T extends AllEntityState = AllEntityState> = (
   draft: Draft<T>,
-  path: EntityPath
+  path: EntityPath,
 ) => void;
 
 export function getVisibleValue(entity: AllEntityState): number | null;
 export function getVisibleValue(
   entity: AllEntityState,
-  newValue: number
+  newValue: number,
 ): EntityUpdateFn;
 export function getVisibleValue(
   entity: AllEntityState,
-  newValue?: number
+  newValue?: number,
 ): number | null | EntityUpdateFn {
   if ("prepare" in entity.info && entity.info.prepare !== null) {
     if (typeof newValue === "number") {
@@ -199,7 +198,7 @@ export function refreshEntity(entity: Draft<SummonState> | Draft<StatusState>) {
   entity.shouldDispose = false;
   entity.usage = Math.min(
     entity.usage + entity.info.usage,
-    entity.info.maxUsage
+    entity.info.maxUsage,
   );
   if ("usagePerRound" in entity.info) {
     entity.usagePerRound = entity.info.usagePerRound;
@@ -210,7 +209,7 @@ export function refreshEntity(entity: Draft<SummonState> | Draft<StatusState>) {
   if ("shield" in entity.info && entity.info.shield !== null) {
     entity.state[SHIELD_VALUE] = Math.min(
       Number(entity.state[SHIELD_VALUE]) + entity.info.shield.initial,
-      entity.info.shield.recreateMax
+      entity.info.shield.recreateMax,
     );
   }
 }

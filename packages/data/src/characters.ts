@@ -50,6 +50,7 @@ interface CharacterBaseContext<Writable extends boolean = false> {
   readonly aura: Aura;
   isAlive(): boolean;
   isMine(): boolean;
+  skillDisabled(): boolean;
 
   findEquipment(equipment: EquipmentHandle | "artifact" | "weapon"): EquipmentContext<Writable> | null;
   findStatus(status: StatusHandle): StatusContext<Writable> | null;

@@ -49,6 +49,7 @@ import {
   createStatus,
   gainEnergy,
   loseEnergy,
+  skillDisabled,
 } from "./character.js";
 import {
   AllEntityInfo,
@@ -210,6 +211,18 @@ function getCharactersFromSelector(
       default:
         throw new Error(`Invalid character selector: ${selector}`);
     }
+  }
+
+  if (selector.startsWith("@")) {
+    const id = Number(selector.slice(1));
+    if (Number.isNaN(id)) {
+      throw new Error(`Invalid character selector: ${selector}`);
+    }
+    return findCharacter(
+      state,
+      who,
+      (ch) => !ch.defeated && ch.info.id === id,
+    ).map(([, chPath]) => chPath);
   }
 
   const activeIds = [
@@ -502,7 +515,9 @@ export class ContextImpl implements Context<object, object, true> {
     }
     const chPath = chPaths[0];
     const player = this.store.mutator.players[chPath.who];
-    player.switchActive(chPath.entityId);
+    if (chPath.entityId !== this.store.state.players[chPath.who].active?.entityId) {
+      player.switchActive(chPath.entityId);
+    }
   }
   useSkill(skill: number | "normal"): Promise<void> {
     const sk = getSkillEx(this.store.state, this.who, skill);
@@ -536,13 +551,13 @@ const CONTEXT_THIS_PROXY_HANDLER: ProxyHandler<EntityContextImpl> = {
       return Reflect.get(target, prop, receiver);
     }
   },
-  set(target, p, newValue, receiver) {
+  set(target, prop, newValue, receiver) {
     const state = target.getState();
-    if (p in state) {
-      state[p] = newValue;
+    if (prop in state) {
+      target.setState(prop, newValue);
       return true;
     } else {
-      return Reflect.set(target, p, newValue, receiver);
+      return Reflect.set(target, prop, newValue, receiver);
     }
   },
 };
@@ -575,6 +590,9 @@ class CharacterContextImpl implements CharacterContext<true> {
   }
   isAlive() {
     return !this.character.defeated;
+  }
+  skillDisabled() {
+    return skillDisabled(this.character);
   }
 
   indexOfPlayer() {
@@ -708,7 +726,7 @@ export class EntityContextImpl
   getState() {
     return this.entity.state;
   }
-  setState(prop: string, newValue: unknown) {
+  setState(prop: string | symbol, newValue: unknown) {
     this.store.updateEntityAtPath(this.path, (e) => {
       e.state[prop] = newValue;
     });
@@ -1351,7 +1369,7 @@ function damageEventChecker(from: "source" | "target") {
         // 角色状态、装备、被动技能，且只监听自身
         return caller.character.entityId === damage.target.entityId;
       } else {
-        return caller.who === damage.source.who;
+        return caller.who === damage.target.who;
       }
     }
   };
