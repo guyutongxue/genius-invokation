@@ -1,11 +1,24 @@
 import { DamageData, DamageType } from "@gi-tcg/typings";
 import { CharacterPath, heal } from "./character.js";
-import { EntityPath } from "./entity.js";
+import { AllEntityState, EntityPath } from "./entity.js";
 import { PlayerIO } from "./io.js";
 import { PlayerMutator } from "./player.js";
-import { Store, getCharacterAtPath } from "./store.js";
-import { DamageContextImpl } from "./context.js";
-import { Context, DamageContext, makeReactionFromDamage } from "@gi-tcg/data";
+import {
+  Store,
+  findCharacter,
+  findEntity,
+  getCharacterAtPath,
+  getEntityAtPath,
+} from "./store.js";
+import { AnyEventDescriptor, DamageContextImpl } from "./context.js";
+import {
+  AsyncEventMap,
+  Context,
+  DamageContext,
+  SyncEventMap,
+  SyncHandlerResult,
+  makeReactionFromDamage,
+} from "@gi-tcg/data";
 import { Damage, DamageLogType } from "./damage.js";
 import { flip } from "@gi-tcg/utils";
 import { Draft } from "immer";
@@ -35,7 +48,7 @@ export class Mutator {
       );
       this.store._produce((draft) => {
         draft.skillReactionLog.push(reaction);
-      })
+      });
     }
   }
 
@@ -122,7 +135,15 @@ export class Mutator {
   }
 
   applyElement(source: EntityPath, target: CharacterPath, type: DamageType) {
-    if (!(type === DamageType.Cryo || type === DamageType.Hydro || type === DamageType.Electro || type === DamageType.Pyro || type === DamageType.Dendro)) {
+    if (
+      !(
+        type === DamageType.Cryo ||
+        type === DamageType.Hydro ||
+        type === DamageType.Electro ||
+        type === DamageType.Pyro ||
+        type === DamageType.Dendro
+      )
+    ) {
       throw new Error(`Invalid applied element type ${type}`);
     }
     const pseudoDamage = new Damage(source, target, 0, type);
@@ -132,12 +153,12 @@ export class Mutator {
   }
 
   private checkDispose() {
-    const playerIdxs = [
+    const playerSeq = [
       this.store.state.currentTurn,
       flip(this.store.state.currentTurn),
     ];
     this.store._produce((draft) => {
-      for (const idx of playerIdxs) {
+      for (const idx of playerSeq) {
         const player = draft.players[idx];
         const activeIndex = player.characters.findIndex(
           (ch) => ch.entityId === player.active?.entityId,
@@ -172,5 +193,114 @@ export class Mutator {
         }
       }
     });
+  }
+
+  private receiveEvent(
+    target: EntityPath,
+    d: AnyEventDescriptor,
+    async?: false,
+  ): void;
+  private receiveEvent(
+    target: EntityPath,
+    d: AnyEventDescriptor,
+    async: true,
+  ): Promise<void>;
+  private receiveEvent(
+    target: EntityPath,
+    [e, ctxFactory]: AnyEventDescriptor,
+    async = false,
+  ): void | Promise<void> {
+    if (e === "onActionPhase") {
+      this.store.updateEntityAtPath(target, (draft) => {
+        draft.duration--;
+        if (draft.duration <= 0) {
+          draft.shouldDispose = true;
+        } else if ("usagePerRound" in draft.info) {
+          draft.usagePerRound = draft.info.usagePerRound;
+        }
+      });
+    }
+    const ctx = ctxFactory(this.store, target);
+    const entity = getEntityAtPath(this.store.state, target);
+    const h = entity.info.handler.handler[e];
+    if (
+      ctx === null ||
+      typeof h === "undefined" ||
+      entity.shouldDispose ||
+      entity.usagePerRound <= 0
+    ) {
+      return;
+    }
+    const postOp = (result: SyncHandlerResult) => {
+      if (typeof result === "undefined" || result === true) {
+        this.store.updateEntityAtPath(target, (draft) => {
+          draft.usage--;
+          draft.usagePerRound--;
+          if (draft.usage <= 0) {
+            draft.shouldDispose = true;
+          }
+        });
+      }
+    };
+    if (async) {
+      return (async () => await h(ctx as any))().then(postOp);
+    } else {
+      const result = h(ctx as any);
+      if (typeof result === "object" && "then" in result) {
+        throw new Error("Cannot handle async event in sync mode");
+      }
+      postOp(result);
+    }
+  }
+
+  private propagateSyncEvent(ed: AnyEventDescriptor): void {
+    const playerSeq = [
+      this.store.state.currentTurn,
+      flip(this.store.state.currentTurn),
+    ];
+    for (const idx of playerSeq) {
+      for (const [, chPath] of findCharacter(this.store.state, idx)) {
+        for (const type of ["passive_skill", "equipment", "status"] as const) {
+          for (const [, path] of findEntity(this.store.state, chPath, type)) {
+            this.receiveEvent(path, ed);
+          }
+        }
+      }
+      for (const type of ["status", "summon", "support"] as const) {
+        for (const [, path] of findEntity(this.store.state, idx, type)) {
+          this.receiveEvent(path, ed);
+        }
+      }
+    }
+  }
+
+  private async *propagateAsyncEvent(ed: AnyEventDescriptor) {
+    const playerSeq = [
+      this.store.state.currentTurn,
+      flip(this.store.state.currentTurn),
+    ];
+    for (const idx of playerSeq) {
+      for (const [, chPath] of findCharacter(this.store.state, idx)) {
+        for (const type of ["passive_skill", "equipment", "status"] as const) {
+          for (const [, path] of findEntity(this.store.state, chPath, type)) {
+            await this.receiveEvent(path, ed, true);
+            yield;
+          }
+        }
+      }
+      for (const type of ["status", "summon", "support"] as const) {
+        for (const [, path] of findEntity(this.store.state, idx, type)) {
+          await this.receiveEvent(path, ed, true);
+          yield;
+        }
+      }
+    }
+  }
+
+  emitEvent<E extends keyof AsyncEventMap>(e: E) {
+    // TODO
+  }
+  emitSyncEvent<E extends keyof SyncEventMap>(e: E) {
+
   }
 }

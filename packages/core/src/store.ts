@@ -220,7 +220,7 @@ export class Store {
    * 创建正式游戏的 store（包含 IO）
    * @param gameOption 对局选项
    * @param players 玩家选项
-   * @returns 
+   * @returns
    */
   static initialState(
     gameOption: GameOptions,
@@ -252,7 +252,7 @@ export class Store {
 
   /**
    * 等价于 `Store.fromState(this.state)`，复制本对象的 state 以创建一个不含 IO 的临时 store。
-   * 
+   *
    * 用于手牌筛选、beforeUseDice、伤害预览等场合。
    * @returns 临时 store
    */
@@ -369,23 +369,23 @@ export function getCharacterAtPath(
   return ch;
 }
 
-export function findEntity<T extends "equipment" | "status">(
+export function findEntity<T extends "equipment" | "status" | "passive_skill">(
   state: GameState,
   characterPath: CharacterPath,
   type: T,
-  pred: (s: StateOfEntity<T>) => boolean,
+  pred?: (s: StateOfEntity<T>) => boolean,
 ): [StateOfEntity<T>, EntityPath][];
 export function findEntity<T extends "status" | "summon" | "support">(
   state: GameState,
   who: 0 | 1,
   type: T,
-  pred: (s: StateOfEntity<T>) => boolean,
+  pred?: (s: StateOfEntity<T>) => boolean,
 ): [StateOfEntity<T>, EntityPath][];
 export function findEntity(
   state: GameState,
   whoOrCh: 0 | 1 | CharacterPath,
   type: EntityType,
-  pred: (s: any) => boolean,
+  pred: (s: any) => boolean = () => true,
 ): [AllEntityState, EntityPath][] {
   let base: readonly AllEntityState[];
   if (typeof whoOrCh === "number") {
@@ -399,7 +399,11 @@ export function findEntity(
       ];
   } else {
     base = getCharacterAtPath(state, whoOrCh)[
-      type === "status" ? "statuses" : "equipments"
+      type === "status"
+        ? "statuses"
+        : type === "passive_skill"
+        ? "passiveSkills"
+        : "equipments"
     ];
   }
   return base
@@ -421,7 +425,7 @@ export function findEntity(
 export function findCharacter(
   state: GameState,
   who: 0 | 1 | "all",
-  pred: (s: CharacterState) => boolean,
+  pred: (s: CharacterState) => boolean = () => true,
 ): [CharacterState, CharacterPath][] {
   if (who === "all") {
     return state.players

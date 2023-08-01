@@ -15,7 +15,7 @@ import {
   SkillInfo,
   CardInfo,
 } from "@gi-tcg/data";
-import { EventFactory } from "./context.js";
+import { AnyEventDescriptor } from "./context.js";
 import { Draft, produce } from "immer";
 import { EntityData } from "@gi-tcg/typings";
 import { CharacterPath } from "./character.js";
@@ -125,44 +125,6 @@ export type EntityPath =
   | VirtualEntityPath
   | CharacterEntityPath;
 
-export function handleSyncEvent<T extends AllEntityState>(
-  entity: Draft<T>,
-  event: EventFactory
-): void {
-  const candidates = event(entity.entityId);
-  let r: SyncHandlerResult = undefined;
-  for (const [name, ctx] of candidates) {
-    if (name === "onActionPhase") {
-      entity.duration--;
-      if (entity.duration <= 0) {
-        entity.shouldDispose = true;
-      } else if ("usagePerRound" in entity.info) {
-        entity.usagePerRound = entity.info.usagePerRound;
-      }
-    }
-    const h = entity.info.handler.handler[name];
-    if (
-      typeof h !== "undefined" &&
-      !entity.shouldDispose &&
-      entity.usagePerRound > 0
-    ) {
-      ctx.this;
-      const result = h(ctx as any);
-      if (typeof result === "object" && "then" in result) {
-        throw new Error("Cannot handle async event in sync mode");
-      }
-      r = result;
-      break;
-    }
-  }
-  if (typeof r === "undefined" || r === true) {
-    entity.usage--;
-    entity.usagePerRound--;
-    if (entity.usage <= 0) {
-      entity.shouldDispose = true;
-    }
-  }
-}
 
 export type EntityUpdateFn<T extends AllEntityState = AllEntityState> = (
   draft: Draft<T>,

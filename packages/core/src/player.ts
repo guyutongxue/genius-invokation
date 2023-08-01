@@ -5,7 +5,6 @@ import {
   PlayerDataBase,
 } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
-
 import {
   CharacterPath,
   characterElementType,
@@ -26,8 +25,6 @@ import {
   getSkill,
 } from "@gi-tcg/data";
 import {
-  EventFactory,
-  EventHandlerNames1,
   PlayCardContextImpl,
   RequestFastToken,
   RollPhaseConfig,
@@ -38,6 +35,7 @@ import {
   PlayCardTargetPath,
   SwitchActiveConfig,
   UseSkillConfig,
+  getCardActions,
   rpcAction,
 } from "./action.js";
 import { checkDice } from "@gi-tcg/utils";
@@ -461,7 +459,7 @@ export class PlayerMutator {
           ),
       );
     }
-    actions.push(...this.ops.getCardActions());
+    actions.push(...getCardActions(this.store.state, this.who));
     actions.push(
       ...this.findCharacter(
         (c) => !c.defeated && c.entityId !== ch.entityId,

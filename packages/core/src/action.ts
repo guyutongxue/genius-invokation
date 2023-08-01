@@ -12,7 +12,13 @@ import {
 } from "@gi-tcg/typings";
 import * as _ from "lodash-es";
 import { CardPath, EntityPath, PlayerEntityPath, SkillPath } from "./entity.js";
-import { GameState, Store, findCharacter, findEntity, getCharacterAtPath } from "./store.js";
+import {
+  GameState,
+  Store,
+  findCharacter,
+  findEntity,
+  getCharacterAtPath,
+} from "./store.js";
 import { CardTargetDescriptor } from "@gi-tcg/data";
 import { PlayCardContextImpl } from "./context.js";
 
@@ -66,12 +72,12 @@ function getCardTarget(
   let firstResult: PlayCardTargetPath[] = [];
   switch (first) {
     case "character": {
-      firstResult = findCharacter(state, "all", () => true).map(([, chPath]) => chPath);
+      firstResult = findCharacter(state, "all").map(([, chPath]) => chPath);
       break;
     }
     case "summon": {
-      const c0 = findEntity(state, 0, "summon", () => true).map(([, path]) => path);
-      const c1 = findEntity(state, 1, "summon", () => true).map(([, path]) => path);
+      const c0 = findEntity(state, 0, "summon").map(([, path]) => path);
+      const c1 = findEntity(state, 1, "summon").map(([, path]) => path);
       firstResult = [...c0, ...c1] as PlayerEntityPath[];
       break;
     }
@@ -89,8 +95,8 @@ export function getCardActions(state: GameState, who: 0 | 1): PlayCardConfig[] {
       type: "card",
       who: who,
       entityId: hand.entityId,
-      info: hand.info
-    }
+      info: hand.info,
+    };
     const currentEnergy = getCharacterAtPath(state, player.active!).energy;
     const costEnergy = hand.info.costs.filter(
       (c) => c === DiceType.Energy,

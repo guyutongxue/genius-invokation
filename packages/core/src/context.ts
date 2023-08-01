@@ -61,7 +61,6 @@ import {
   AllEntityInfo,
   AllEntityState,
   CardPath,
-  Entity,
   EntityPath,
   EquipmentState,
   SkillPath,
@@ -73,11 +72,18 @@ import { Damage } from "./damage.js";
 import * as _ from "lodash-es";
 
 type ContextOfEvent<E extends EventNames> = Context<{}, EventMap[E], true>;
-type EventAndContext<E extends EventNames = EventNames> = [
+type ContextFactory<Ctx = Context<any, unknown, true>> = (
+  store: Store,
+  caller: EntityPath,
+) => Ctx | null;
+export type EventDescriptor<E extends EventNames> = [
   event: E,
-  ctx: ContextOfEvent<E>,
+  ctxFactory: ContextFactory<ContextOfEvent<E>>,
 ];
-export type EventFactory = (entityId: number) => EventAndContext[];
+export type AnyEventDescriptor = [
+  event: EventNames,
+  ctxFactory: ContextFactory,
+];
 
 function getCharactersFromSelector(
   state: GameState,
@@ -271,7 +277,7 @@ function getCharactersFromSelector(
         ([, chPath]) => chPath,
       );
     case "**":
-      return findCharacter(state, who, () => true).map(([, chPath]) => chPath);
+      return findCharacter(state, who).map(([, chPath]) => chPath);
     default:
       throw new Error(`Invalid character selector: ${selector}`);
   }
@@ -359,14 +365,9 @@ export class ContextImpl implements Context<any, {}, true> {
     return r.length > 0 ? this.createEntityContext(r[0][1]) : null;
   }
   allSummons(includeOpp = false): SummonContext<true>[] {
-    const mySummons = findEntity(
-      this.store.state,
-      this.who,
-      "summon",
-      () => true,
-    );
+    const mySummons = findEntity(this.store.state, this.who, "summon");
     const oppSummons = includeOpp
-      ? findEntity(this.store.state, flip(this.who), "summon", () => true)
+      ? findEntity(this.store.state, flip(this.who), "summon")
       : [];
     return [...mySummons, ...oppSummons].map(([st, path]) =>
       this.createEntityContext(path),
@@ -804,9 +805,9 @@ export class UseDiceContextImpl implements UseDiceContext {
   constructor(
     private store: Store,
     private caller: EntityPath,
+    private who: 0 | 1,
     private action: ActionConfig,
   ) {
-    // super(store, caller);
     switch (action.type) {
       case "switchActive": {
         this.switchActiveCtx = new SwitchActiveContextImpl(
@@ -1014,7 +1015,9 @@ export interface RollPhaseConfig {
 
 class RollContextImpl implements RollContext {
   constructor(
-    private player: PlayerMutator,
+    private store: Store,
+    private caller: EntityPath,
+    private who: 0 | 1,
     private config: RollPhaseConfig,
   ) {}
 
@@ -1032,9 +1035,7 @@ class ElementalReactionContextImpl implements ElementalReactionContext {
     private store: Store,
     private caller: EntityPath,
     private reaction: Reaction,
-  ) {
-    // super(store, caller);
-  }
+  ) {}
   get reactionType() {
     return this.reaction;
   }
@@ -1072,9 +1073,7 @@ export class DamageContextImpl implements DamageContext {
     private store: Store,
     private caller: EntityPath,
     private damage: Damage,
-  ) {
-    // super(store, caller);
-  }
+  ) {}
 
   get sourceSummon() {
     if (this.damage.source.type === "summon") {
@@ -1163,10 +1162,9 @@ class RequestFastSwitchContextImpl implements RequestFastSwitchContext {
   constructor(
     private store: Store,
     private caller: EntityPath,
+    private who: 0 | 1,
     private token: RequestFastToken,
-  ) {
-    // super(store, caller);
-  }
+  ) {}
 
   requestFast(condition?: boolean | undefined): void {
     if (this.token.resolved) {
@@ -1178,44 +1176,63 @@ class RequestFastSwitchContextImpl implements RequestFastSwitchContext {
   }
 }
 
-function createCommonEventContext(...events: EventNames[]) {
-  return (
-    state: GameState,
-    sourceWho?: 0 | 1,
-    sourceChar?: Character,
-    sourceEntityId?: number,
-  ): EventFactory => {
-    return (entityId: number) => {
-      let ctx: ContextImpl;
-      const env = getEntityById(state, entityId);
-      if (env === null) return [];
-      if (
-        typeof sourceWho === "number" &&
-        !checkShouldListen(env, sourceWho, sourceChar, sourceEntityId)
-      ) {
-        return [];
+class TrivialPlayerContextImpl {
+  constructor(
+    private store: Store,
+    private caller: EntityPath,
+    private who: 0 | 1) {}
+}
+
+type ExtCtor = new (store: Store, caller: EntityPath, ...args: any[]) => any;
+type CtorParameter<T> = T extends new (
+  store: Store,
+  caller: EntityPath,
+  ...args: infer Args
+) => any
+  ? Args
+  : [];
+type ListenChecker<T> = (
+  state: GameState,
+  caller: EntityPath,
+  ...args: CtorParameter<T>
+) => boolean;
+
+function createContextFactory<T extends ExtCtor = typeof ContextImpl>(
+  ext?: T,
+  checker?: ListenChecker<T>,
+) {
+  return (...extArgs: CtorParameter<T>): ContextFactory => {
+    return (store: Store, caller: EntityPath) => {
+      if (checker && !checker(store.state, caller, ...extArgs)) {
+        return null;
       }
-      const { entity, master, who } = env;
-      if (
-        entity instanceof Status ||
-        entity instanceof Equipment ||
-        entity instanceof PassiveSkill
-      ) {
-        ctx = new ContextWithMasterImpl(state, who, master ?? null, entity);
+      const ctx = new ContextImpl(store, caller);
+      if (ext) {
+        const extCtx = new ext(store, caller, ...extArgs);
+        return new Proxy(ctx, {
+          get(target, prop, receiver) {
+            if (prop in extCtx) {
+              return Reflect.get(extCtx, prop, receiver);
+            } else {
+              return Reflect.get(target, prop, receiver);
+            }
+          }
+        });
       } else {
-        ctx = new ContextImpl(state, who, entity.entityId);
+        return ctx;
       }
-      return events.map((e) => [e, ctx]);
     };
   };
 }
 
-function checkShouldListen(
-  entityEnv: EntityEnv,
-  who?: 0 | 1,
-  char?: Character,
-  entity?: number,
+function commonPlayerChecker(
+  state: GameState,
+  caller: EntityPath,
+  who: 0 | 1,
 ) {
+  return caller.who === who;
+}
+function (){
   if (typeof entity === "number") {
     return entityEnv.entity.entityId === entity;
   }
@@ -1403,23 +1420,23 @@ function createRequestFastSwitchContext(
   };
 }
 
-type Creator = (state: GameState, ...args: any[]) => EventFactory;
+type Creator = (...args: any[]) => ContextFactory;
 
 export const CONTEXT_CREATOR = {
-  onBattleBegin: createCommonEventContext("onBattleBegin"),
-  onRollPhase: createRollPhaseContext,
-  onActionPhase: createCommonEventContext("onActionPhase"),
-  onEndPhase: createCommonEventContext("onEndPhase"),
+  onBattleBegin: createContextFactory(),
+  onRollPhase: createContextFactory(RollContextImpl, commonPlayerChecker),
+  onActionPhase: createContextFactory(),
+  onEndPhase: createContextFactory(),
 
-  onBeforeAction: createCommonEventContext("onBeforeAction"),
-  onBeforeUseDice: createUseDiceContext,
+  onBeforeAction: createContextFactory(),
+  onBeforeUseDice: createContextFactory(UseDiceContextImpl, commonPlayerChecker),
   onRequestFastSwitchActive: createRequestFastSwitchContext,
 
   onUseSkill: createUseSkillContext,
   onSwitchActive: createSwitchActiveContext,
   onPlayCard: createPlayCardContext,
-  onDeclareEnd: createCommonEventContext("onDeclareEnd"),
-  onAction: createCommonEventContext("onAction"),
+  onDeclareEnd: createContextFactory(TrivialPlayerContextImpl, commonPlayerChecker),
+  onAction: createContextFactory(TrivialPlayerContextImpl, commonPlayerChecker),
 
   onEarlyBeforeDealDamage: createDamageContext("onEarlyBeforeDealDamage"),
   onBeforeDealDamage: createDamageContext("onBeforeDealDamage"),
@@ -1433,33 +1450,11 @@ export const CONTEXT_CREATOR = {
   onDealDamage: createDamageContext("onDealDamage"),
   onElementalReaction: createReactionContext,
 
-  // onBeforeDefeated,
-  // onDefeated,
+  onBeforeDefeated,
+  onDefeated,
 
-  onRevive: createCommonEventContext("onRevive"),
+  onRevive: createContextFactory(/* TODO */),
   onEnter: createEnterEventContext,
-} satisfies Partial<Record<EventNames, Creator>>;
+} satisfies Record<EventNames, Creator>;
 
 type ContextCreator = typeof CONTEXT_CREATOR;
-export type EventHandlerNames1 = keyof ContextCreator;
-
-// export type EventCreatorArgs<K extends keyof ContextCreator> =
-//   ContextCreator[K] extends (state: GameState, ...args: infer A) => EventFactory
-//     ? A
-//     : never;
-
-// export type EventCreatorArgsForPlayer<K extends keyof ContextCreator> =
-//   ContextCreator[K] extends (
-//     state: GameState,
-//     sourceWho: 0 | 1,
-//     ...args: infer A
-//   ) => EventFactory
-//     ? A
-//     : never;
-
-// export type EventCreatorArgsForCharacter<K extends EventHandlerNames1> =
-//   EventCreatorArgsForPlayer<K> extends [ch?: infer F, ...rest: infer R]
-//     ? Character extends F
-//       ? R
-//       : never
-//     : never;
