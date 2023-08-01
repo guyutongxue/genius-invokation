@@ -10,7 +10,15 @@ import {
   getCharacterAtPath,
   getEntityAtPath,
 } from "./store.js";
-import { AnyEventDescriptor, DamageContextImpl } from "./context.js";
+import {
+  AnyEventDescriptor,
+  AsyncEventDescriptor,
+  CONTEXT_CREATORS,
+  CreatorArgs,
+  DamageContextImpl,
+  DefeatedToken,
+  mixinExt,
+} from "./context.js";
 import {
   AsyncEventMap,
   Context,
@@ -22,30 +30,25 @@ import {
 import { Damage, DamageLogType } from "./damage.js";
 import { flip } from "@gi-tcg/utils";
 import { Draft } from "immer";
+import * as _ from "lodash-es";
 
 export class Mutator {
   readonly players: readonly [PlayerMutator, PlayerMutator];
 
-  constructor(
-    private store: Store,
-    private playerIO: readonly [PlayerIO | null, PlayerIO | null],
-  ) {
-    this.players = [
-      new PlayerMutator(store, 0, playerIO[0]),
-      new PlayerMutator(store, 1, playerIO[1]),
-    ];
+  constructor(private store: Store) {
+    this.players = [new PlayerMutator(store, 0), new PlayerMutator(store, 1)];
   }
 
-  private doElementalReaction(damageCtx: Context<never, DamageContext, true>) {
-    const [newAura, reaction] = makeReactionFromDamage(damageCtx);
-    damageCtx.target.character.applied = newAura;
+  private doElementalReaction(damage: Damage) {
+    const dmgCtx = new DamageContextImpl(this.store, damage.source, damage);
+    const [newAura, reaction] = makeReactionFromDamage(
+      mixinExt(this.store, damage.source, dmgCtx),
+    );
+    this.store.updateCharacterAtPath(damage.target, (draft) => {
+      draft.aura = newAura;
+    });
     if (reaction !== null) {
-      this.emitEvent(
-        "onElementalReaction",
-        damageCtx.who,
-        damageCtx.sourceId,
-        reaction,
-      );
+      this.emitEvent("onElementalReaction", reaction);
       this.store._produce((draft) => {
         draft.skillReactionLog.push(reaction);
       });
@@ -59,52 +62,57 @@ export class Mutator {
     type: DamageType,
   ) {
     const damage = new Damage(source, target, value, type);
-    const dmgCtx = new DamageContextImpl(this.store, source, damage);
-    this.doElementalReaction(dmgCtx);
-    this.emitImmediatelyHandledEvent(
-      "onEarlyBeforeDealDamage",
-      damage,
-      who,
-      targetWho,
-      master,
-    );
+    this.doElementalReaction(damage);
+    this.emitSyncEvent("onEarlyBeforeDealDamage", damage);
     const changedType = damage.getType();
     if (changedType !== DamageType.Piercing) {
-      this.emitImmediatelyHandledEvent(
-        "onBeforeDealDamage",
-        damage,
-        who,
-        targetWho,
-        master,
-      );
+      this.emitSyncEvent("onBeforeDealDamage", damage);
       if (source.type === "skill") {
-        this.emitImmediatelyHandledEvent(
-          "onBeforeSkillDamage",
-          damage,
-          who,
-          targetWho,
-          master,
-        );
+        this.emitSyncEvent("onBeforeSkillDamage", damage);
       }
-      this.emitImmediatelyHandledEvent(
-        "onBeforeDamaged",
-        damage,
-        who,
-        targetWho,
-        master,
-      );
+      this.emitSyncEvent("onBeforeDamaged", damage);
     }
-    target.health -= damage.getValue();
-    if (target.health < 0) {
-      target.health = 0;
-    }
-    this.emitEvent("onDamaged", damage, who, targetWho, master);
+    let shouldDefeated = false;
+    this.store.updateCharacterAtPath(target, (draft) => {
+      draft.health -= damage.getValue();
+      if (draft.health <= 0) {
+        draft.health = 0;
+        shouldDefeated = true;
+      }
+    });
+    this.emitEvent("onDamaged", damage);
     this.store._produce((draft) => {
       draft.skillDamageLog.push(damage.toLogType() as Draft<DamageLogType>);
     });
+    if (shouldDefeated) {
+      const defeatedToken: DefeatedToken = {
+        immune: null,
+      };
+      this.emitSyncEvent("onBeforeDefeated", target, defeatedToken);
+      if (defeatedToken.immune === null) {
+        this.store.updateCharacterAtPath(target, (draft) => {
+          draft.defeated = true;
+          draft.statuses = [];
+          draft.equipments = [];
+        });
+        this.emitEvent("onDefeated", target);
+      } else {
+        this.heal(
+          defeatedToken.immune.source,
+          target,
+          defeatedToken.immune.healTo,
+        );
+      }
+    }
     const ioData = damage.toData();
-    this.playerIO[0]?.notifyMe({ type: "stateUpdated", damages: [ioData] });
-    this.playerIO[1]?.notifyMe({ type: "stateUpdated", damages: [ioData] });
+    this.store._playerIO[0]?.notifyMe({
+      type: "stateUpdated",
+      damages: [ioData],
+    });
+    this.store._playerIO[1]?.notifyMe({
+      type: "stateUpdated",
+      damages: [ioData],
+    });
   }
 
   heal(source: EntityPath, target: CharacterPath, value: number) {
@@ -123,8 +131,22 @@ export class Mutator {
         },
       ],
     };
-    this.playerIO[0]?.notifyMe({ type: "stateUpdated", damages: [damageLog] });
-    this.playerIO[1]?.notifyMe({ type: "stateUpdated", damages: [damageLog] });
+    this.store._playerIO[0]?.notifyMe({
+      type: "stateUpdated",
+      damages: [damageLog],
+    });
+    this.store._playerIO[1]?.notifyMe({
+      type: "stateUpdated",
+      damages: [damageLog],
+    });
+  }
+
+  revive(source: EntityPath, target: CharacterPath, value: number) {
+    this.store.updateCharacterAtPath(target, (ch) => {
+      ch.defeated = false;
+      ch.health = 0;
+    });
+    this.heal(source, target, value);
   }
 
   cleanSkillLog() {
@@ -147,9 +169,7 @@ export class Mutator {
       throw new Error(`Invalid applied element type ${type}`);
     }
     const pseudoDamage = new Damage(source, target, 0, type);
-    const ctx = new DamageContextImpl(this.store, this.source, pseudoDamage);
-    this.doElementalReaction();
-    // TODO
+    this.doElementalReaction(pseudoDamage);
   }
 
   private checkDispose() {
@@ -296,11 +316,31 @@ export class Mutator {
       }
     }
   }
-
-  emitEvent<E extends keyof AsyncEventMap>(e: E) {
-    // TODO
+  private pendingEvent: AsyncEventDescriptor[] = [];
+  async doEvent() {
+    const sorted = _.sortBy(this.pendingEvent, ([e]) => {
+      if (e === "onSwitchActive") {
+        return -100;
+      } else if (e === "onDefeated") {
+        return -10;
+      } else {
+        return 0;
+      }
+    });
+    this.pendingEvent = [];
+    for (const desc of sorted) {
+      for await (const _ of this.propagateAsyncEvent(desc)) {
+        await this.doEvent();
+      }
+    }
   }
-  emitSyncEvent<E extends keyof SyncEventMap>(e: E) {
 
+  emitEvent<E extends keyof AsyncEventMap>(e: E, ...args: CreatorArgs<E>) {
+    const factory = (CONTEXT_CREATORS[e] as any)(...args);
+    this.pendingEvent.push([e, factory]);
+  }
+  emitSyncEvent<E extends keyof SyncEventMap>(e: E, ...args: CreatorArgs<E>) {
+    const factory = (CONTEXT_CREATORS[e] as any)(...args);
+    this.store.clone().mutator.propagateSyncEvent([e, factory]);
   }
 }

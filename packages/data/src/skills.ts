@@ -1,13 +1,13 @@
 import { DiceType } from "@gi-tcg/typings";
 import { ElementalReactionContext, DamageReadonlyContext } from "./contexts";
-import { EventHandlerAndState } from "./events";
+import { EventHandlerAndState, ListenTarget } from "./events";
 import { CardHandle, SkillHandle, StatusHandle } from "./builders";
 import { CharacterContext } from "./characters";
 import { PlayCardContext } from "./cards";
 import { StatusContext } from "./statuses";
 import { Context } from "./global";
 
-export type UseSkillAction = (c: Context<never, SkillContext<true>, true>) => void | Promise<void>;
+export type UseSkillAction = (c: Context<object, SkillContext<true>, true>) => void | Promise<void>;
 
 export interface SkillContext<Writable extends boolean = false> {
   readonly id: SkillHandle;
@@ -39,6 +39,7 @@ export interface NormalSkillInfo {
 export interface PassiveSkillInfo {
   readonly id: number;
   readonly type: "passive";
+  readonly listenTo: ListenTarget;
   readonly usagePerRound: number;
   readonly handler: EventHandlerAndState;
 }

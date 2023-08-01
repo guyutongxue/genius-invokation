@@ -14,6 +14,7 @@ import {
   SHIELD_VALUE,
   SkillInfo,
   CardInfo,
+  NormalSkillInfo,
 } from "@gi-tcg/data";
 import { AnyEventDescriptor } from "./context.js";
 import { Draft, produce } from "immer";
@@ -101,7 +102,7 @@ export interface SkillPath {
   who: 0 | 1;
   type: "skill";
   character: CharacterPath;
-  info: SkillInfo;
+  info: NormalSkillInfo;
 }
 export interface CardPath {
   who: 0 | 1;
@@ -211,65 +212,6 @@ export function refreshEntity(entity: Draft<SummonState> | Draft<StatusState>) {
       Number(entity.state[SHIELD_VALUE]) + entity.info.shield.initial,
       entity.info.shield.recreateMax
     );
-  }
-}
-
-class Entity {
-  public readonly entityId: number;
-  constructor(protected readonly id: number) {
-    this.entityId = newEntityId();
-  }
-
-  protected onRoundBegin() {
-    return;
-  }
-
-  protected async doHandleEvent(
-    handler: EventHandlers,
-    event: EventFactory
-  ): Promise<boolean> {
-    let r: boolean | undefined = false;
-    const candidates = event(this.entityId);
-    for (const [name, ctx] of candidates) {
-      if (name === "onActionPhase") {
-        this.onRoundBegin();
-      }
-      const h = handler[name];
-      if (typeof h !== "undefined") {
-        // @ts-expect-error TS SUCKS
-        r = await h.call(handler, ctx);
-        break;
-      }
-    }
-    if (typeof r === "undefined") {
-      return true;
-    } else {
-      return r;
-    }
-  }
-  protected doHandleEventSync(handler: EventHandlers, event: EventFactory) {
-    let r: boolean | undefined = false;
-    const candidates = event(this.entityId);
-    for (const [name, ctx] of candidates) {
-      if (name === "onActionPhase") {
-        this.onRoundBegin();
-      }
-      const h = handler[name];
-      if (typeof h !== "undefined") {
-        // @ts-expect-error TS SUCKS
-        const currentR = h.call(handler, ctx);
-        if (typeof currentR === "object" && "then" in currentR) {
-          throw new Error("Cannot handle async event in sync mode");
-        }
-        r = currentR ?? undefined;
-        break;
-      }
-    }
-    if (typeof r === "undefined") {
-      return true;
-    } else {
-      return r;
-    }
   }
 }
 

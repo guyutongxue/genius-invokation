@@ -19,7 +19,7 @@ export type SummonHandle = number & { readonly _never: unique symbol };
 export type SupportHandle = CardHandle & { readonly _never2: unique symbol };
 export type EquipmentHandle = CardHandle & { readonly _never2: unique symbol };
 
-type CommonAction<ExtPt, Writable extends boolean> = (c: Context<never, ExtPt, Writable>) => void;
+type CommonAction<ExtPt, Writable extends boolean> = (c: Context<object, ExtPt, Writable>) => void;
 
 class CharacterBuilder {
   private readonly tags: CharacterTag[] = [];
@@ -259,13 +259,13 @@ class CardBuilder<
     return self.filterMyTargets((c) => c.info.id === ch && (!requireActive || c.isActive()));
   }
   filterOppTargets(filter: (...targets: ContextOfTarget<TargetT>) => boolean) {
-    this.filters.push((c: Context<never, PlayCardContext<TargetT>, false>) => {
+    this.filters.push((c: Context<object, PlayCardContext<TargetT>, false>) => {
       return (c.target as FuzzyContextOfTarget).every(t => !t.isMine()) && filter(...c.target)
     });
     return this;
   }
   filterMyTargets(filter: (...targets: ContextOfTarget<TargetT>) => boolean, includesDefeated = false) {
-    this.filters.push((c: Context<never, PlayCardContext<TargetT>, false>) => {
+    this.filters.push((c: Context<object, PlayCardContext<TargetT>, false>) => {
       return (c.target as FuzzyContextOfTarget).every(t => t.isMine() &&
         (!("isAlive" in t) || includesDefeated || t.isAlive())) &&
         filter(...c.target)
@@ -449,7 +449,7 @@ class TriggerBuilderBase<ThisT> {
   }
 }
 
-class PassiveSkillBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SkillContext<true>> {
+class PassiveSkillBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & SkillContext<true>> {
   constructor(private readonly id: number) {
     super();
   }
@@ -471,6 +471,7 @@ class PassiveSkillBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SkillCo
   build(): SkillHandle {
     registerSkill(this.id, {
       type: "passive",
+      listenTo: this.listenTo,
       usagePerRound: this.usagePerRound,
       handler: {
         handler: this.handlers,
@@ -546,7 +547,7 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
   }
 }
 
-class SupportBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SupportContext<true>> {
+class SupportBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & SupportContext<true>> {
   private type: SupportType = "other";
   constructor(private readonly id: number) {
     super();
@@ -581,7 +582,7 @@ class SupportBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & SupportConte
   }
 }
 
-class EquipmentBuilder<ThisT = {}> extends TriggerBuilderBase<ThisT & EquipmentContext<true>> {
+class EquipmentBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & EquipmentContext<true>> {
   private type: EquipmentType = "other";
   constructor(private readonly id: number) {
     super();

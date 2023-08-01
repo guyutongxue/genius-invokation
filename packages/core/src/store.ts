@@ -163,7 +163,7 @@ export function getEntityAtPath(
   const player = state.players[path.who];
   let val: readonly AllEntityState[] | AllEntityState[];
   if ("character" in path) {
-    let ch = getCharacterAtPath(state, path.character);
+    const ch = getCharacterAtPath(state, path.character);
     let prop: "equipments" | "statuses" | "passiveSkills";
     switch (path.type) {
       case "equipment":
@@ -206,15 +206,17 @@ export function getEntityAtPath(
   return obj;
 }
 
-export type DraftWithResource<T> = Draft<T> & {
-  [Symbol.dispose]: () => void;
-};
+// export type DraftWithResource<T> = Draft<T> & {
+//   [Symbol.dispose]: () => void;
+// };
 
 export class Store {
-  private playerIO: readonly [PlayerIO | null, PlayerIO | null] = [null, null];
-  private constructor(private _state: GameState) {}
+  public _playerIO: readonly [PlayerIO | null, PlayerIO | null] = [null, null];
+  private constructor(private _state: GameState) {
+    this.mutator = new Mutator(this);
+  }
 
-  readonly mutator = new Mutator(this, this.playerIO);
+  readonly mutator: Mutator;
 
   /**
    * 创建正式游戏的 store（包含 IO）
@@ -237,7 +239,7 @@ export class Store {
       skillReactionLog: [],
     };
     const store = new Store(state);
-    store.playerIO = createIO(store, players);
+    store._playerIO = createIO(store, players);
     return store;
   }
 
@@ -264,7 +266,9 @@ export class Store {
   }
 
   _produce(fn: (draft: Draft<GameState>) => void) {
-    this._state = produce(this._state, fn);
+    this._state = produce(this._state, (draft) => {
+      fn(draft);
+    });
   }
 
   updateEntityAtPath<T extends AllEntityState>(
@@ -281,35 +285,35 @@ export class Store {
     return this._state;
   }
 
-  private drafting = false;
-  private finishDraft(draft: Draft<GameState>) {
-    this._state = finishDraft(draft);
-    this.drafting = false;
-  }
+  // private drafting = false;
+  // private finishDraft(draft: Draft<GameState>) {
+  //   this._state = finishDraft(draft);
+  //   this.drafting = false;
+  // }
 
-  createDraft(): DraftWithResource<GameState> {
-    if (this.drafting) {
-      throw new Error("Cannot create draft while another draft is in progress");
-    }
-    this.drafting = true;
-    const draft = createDraft(this._state);
-    Object.defineProperty(draft, Symbol.dispose, {
-      value: () => this.finishDraft(draft),
-    });
-    return draft as DraftWithResource<GameState>;
-  }
-  createDraftForPlayer(who: 0 | 1): DraftWithResource<PlayerState> {
-    if (this.drafting) {
-      throw new Error("Cannot create draft while another draft is in progress");
-    }
-    this.drafting = true;
-    const draft = createDraft(this._state);
-    const player = draft.players[who];
-    Object.defineProperty(player, Symbol.dispose, {
-      value: () => this.finishDraft(draft),
-    });
-    return player as DraftWithResource<PlayerState>;
-  }
+  // createDraft(): DraftWithResource<GameState> {
+  //   if (this.drafting) {
+  //     throw new Error("Cannot create draft while another draft is in progress");
+  //   }
+  //   this.drafting = true;
+  //   const draft = createDraft(this._state);
+  //   Object.defineProperty(draft, Symbol.dispose, {
+  //     value: () => this.finishDraft(draft),
+  //   });
+  //   return draft as DraftWithResource<GameState>;
+  // }
+  // createDraftForPlayer(who: 0 | 1): DraftWithResource<PlayerState> {
+  //   if (this.drafting) {
+  //     throw new Error("Cannot create draft while another draft is in progress");
+  //   }
+  //   this.drafting = true;
+  //   const draft = createDraft(this._state);
+  //   const player = draft.players[who];
+  //   Object.defineProperty(player, Symbol.dispose, {
+  //     value: () => this.finishDraft(draft),
+  //   });
+  //   return player as DraftWithResource<PlayerState>;
+  // }
 }
 
 function playerCharacterSeq(

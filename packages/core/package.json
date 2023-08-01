@@ -15,11 +15,14 @@
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
     "@types/lodash-es": "^4.17.7",
-    "core-js": "^3.31.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.46.0",
+    "eslint-plugin-only-warn": "^1.1.0",
     "nodemon": "^2.0.22",
     "prettier": "^3.0.0",
     "tsx": "^3.12.7",
-    "typescript": "5.2.0-beta"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "immer": "^10.0.2",

@@ -16,16 +16,16 @@ import {
   skillDisabled,
 } from "./character.js";
 import {
+  AsyncEventMap,
   CardInfo,
   CardTag,
   NormalSkillInfo,
-  PassiveSkillInfo,
-  SkillInfo,
+  SyncEventMap,
   getCard,
   getSkill,
 } from "@gi-tcg/data";
 import {
-  PlayCardContextImpl,
+  CreatorArgsForPlayer,
   RequestFastToken,
   RollPhaseConfig,
 } from "./context.js";
@@ -42,7 +42,6 @@ import { checkDice } from "@gi-tcg/utils";
 import {
   CardState,
   CharacterState,
-  DraftWithResource,
   GameState,
   PlayerState,
   Store,
@@ -52,11 +51,9 @@ import {
 import { Draft } from "immer";
 import { IONotAvailableError, PlayerIO } from "./io.js";
 import {
-  AllEntityState,
   CardPath,
   EntityPath,
-  EntityType,
-  StateOfEntity,
+  SkillPath,
   StatusState,
   SummonState,
   SupportState,
@@ -65,6 +62,8 @@ import {
   newEntityId,
   refreshEntity,
 } from "./entity.js";
+import { playCard } from "./card.js";
+import { useSkill, skillInfoToPath } from "./skill.js";
 
 interface PlayerOptions {
   initialHands: number;
@@ -82,7 +81,6 @@ export class PlayerMutator {
   constructor(
     private readonly store: Store,
     private readonly who: 0 | 1,
-    private readonly io: PlayerIO | null,
   ) {
     this.config = {
       maxHands: this.store.state.config.maxHands,
@@ -96,26 +94,40 @@ export class PlayerMutator {
     };
   }
 
-  get state() {
+  private get io() {
+    return this.store._playerIO[this.who];
+  }
+  private get state() {
     return this.store.state.players[this.who];
   }
-  private produce(): DraftWithResource<PlayerState>;
-  private produce(fn: (draft: Draft<PlayerState>) => void): void;
-  private produce(fn?: (draft: Draft<PlayerState>) => void) {
-    if (fn) {
-      this.store._produce((s) => {
-        fn(s.players[this.who]);
-      });
-    } else {
-      return this.store.createDraftForPlayer(this.who);
-    }
+  private produce(fn: (draft: Draft<PlayerState>) => void) {
+    this.store._produce((s) => {
+      fn(s.players[this.who]);
+    });
+  }
+  private emitEvent<E extends keyof AsyncEventMap>(
+    e: E,
+    ...args: CreatorArgsForPlayer<E>
+  ) {
+    // @ts-expect-error oops
+    this.store.mutator.emitEvent(e, this.who, ...args);
+  }
+  private emitSyncEvent<E extends keyof SyncEventMap>(
+    e: E,
+    ...args: CreatorArgsForPlayer<E>
+  ) {
+    // @ts-expect-error oops
+    this.store.mutator.emitSyncEvent(e, this.who, ...args);
+  }
+  private async doEvent() {
+    await this.store.mutator.doEvent();
   }
 
   initHands() {
     const legends = this.state.piles
       .map((c, i) => [c, i] as const)
       .filter(([c]) => c.info.tags.includes("legend"))
-      .map(([c, i]) => i);
+      .map(([, i]) => i);
     this.drawHands(this.config.initialHands, legends);
   }
 
@@ -196,7 +208,7 @@ export class PlayerMutator {
 
   async chooseActive(delayNotify: false): Promise<void>;
   async chooseActive(delayNotify: true): Promise<() => void>;
-  async chooseActive(delayNotify = false): Promise<any> {
+  async chooseActive(delayNotify = false): Promise<unknown> {
     if (!this.io) {
       throw new IONotAvailableError();
     }
@@ -294,41 +306,6 @@ export class PlayerMutator {
     this.sortDice();
   }
 
-  // getCharacter(target: CharacterPosition): Character {
-  //   let chIndex = (this.state.activeIndex ?? 0) + this.state.characters.length;
-  //   while (true) {
-  //     switch (target) {
-  //       case "next": {
-  //         chIndex++;
-  //         const ch = this.state.characters[chIndex % this.state.characters.length];
-  //         if (ch.defeated) continue;
-  //         return ch;
-  //       }
-  //       case "prev": {
-  //         chIndex--;
-  //         const ch = this.state.characters[chIndex % this.state.characters.length];
-  //         if (ch.defeated) continue;
-  //         return ch;
-  //       }
-  //       case "active":
-  //         return this.state.characters[chIndex % this.state.characters.length];
-  //     }
-  //   }
-  // }
-  // getCharacterById(id: number, useStaticId = false): Character | undefined {
-  //   return this.state.characters.find((c) =>
-  //     useStaticId ? c.info.id === id : c.entityId === id
-  //   );
-  // }
-  // getCharacterByPos(posIndex: number): Character {
-  //   const ch = this.state.characters[posIndex % 3];
-  //   if (ch.defeated) {
-  //     return this.getCharacterByPos(posIndex + 1);
-  //   } else {
-  //     return ch;
-  //   }
-  // }
-
   private activeCharacter(): [CharacterState, CharacterPath] {
     if (this.state.active === null) {
       throw new Error("No active character");
@@ -407,7 +384,7 @@ export class PlayerMutator {
             `preparing skill ${preparConfig.skillOrStatus} not found}`,
           );
         }
-        await this.useSkill(skill);
+        await this.useSkill(skillInfoToPath(chPath, skill));
       } else {
         this.store.updateCharacterAtPath(this.state.active!, (c, p) => {
           createStatus(c, p, preparConfig.skillOrStatus);
@@ -416,11 +393,11 @@ export class PlayerMutator {
       this.store.updateEntityAtPath(path, (s) => {
         s.shouldDispose = true;
       });
-      // await this.ops.doEvent();
+      await this.doEvent();
       return false; // 以慢速行动跳过本回合
     }
-    // this.ops.emitEvent("onBeforeAction");
-    // await this.ops.doEvent();
+    this.emitEvent("onBeforeAction");
+    await this.doEvent();
     // 收集可用行动
     const actions: ActionConfig[] = [
       {
@@ -430,10 +407,7 @@ export class PlayerMutator {
     const fastSwitchToken: RequestFastToken = {
       resolved: false,
     };
-    // this.ops.emitImmediatelyHandledEvent(
-    //   "onRequestFastSwitchActive",
-    //   fastSwitchToken
-    // );
+    this.emitSyncEvent("onRequestFastSwitchActive", fastSwitchToken);
     if (canUseSkill) {
       const skills = ch.info.skills
         .map((s) => getSkill(s))
@@ -449,12 +423,7 @@ export class PlayerMutator {
             (s): UseSkillConfig => ({
               type: "useSkill",
               dice: [...s.costs],
-              skill: {
-                who: this.who,
-                type: "skill",
-                character: chPath,
-                info: s,
-              },
+              skill: skillInfoToPath(chPath, s),
             }),
           ),
       );
@@ -486,9 +455,9 @@ export class PlayerMutator {
         }),
       ),
     );
-    // for (const action of actions) {
-    //   this.ops.emitImmediatelyHandledEvent("onBeforeUseDice", action);
-    // }
+    for (const action of actions) {
+      this.emitSyncEvent("onBeforeUseDice", action);
+    }
     const action = await rpcAction(actions, (r) => this.io!.rpc("action", r));
     switch (action.type) {
       case "declareEnd": {
@@ -497,7 +466,7 @@ export class PlayerMutator {
         });
         this.io?.notifyMe({ type: "declareEnd", opp: false });
         this.io?.notifyOpp({ type: "declareEnd", opp: true });
-        // this.ops.emitEvent("onDeclareEnd");
+        this.emitEvent("onDeclareEnd");
         return false;
       }
       case "elementalTuning": {
@@ -528,7 +497,7 @@ export class PlayerMutator {
       }
       case "useSkill": {
         this.consumeDice(action.dice, action.consumedDice);
-        await this.useSkill(action.skill.info as NormalSkillInfo);
+        await this.useSkill(action.skill);
         return false;
       }
       case "playCard": {
@@ -544,31 +513,30 @@ export class PlayerMutator {
     }
   }
 
-  async useSkill(skill: NormalSkillInfo, caller?: EntityPath) {
+  async useSkill(skill: SkillPath, caller?: EntityPath) {
     const [ch, chPath] = this.activeCharacter();
     if (skillDisabled(ch)) return; // 下落斩、雷楔等无法提前检测到的技能禁用
-    const index = characterSkills(ch).findIndex((s) => s.id === skill.id);
+    const index = characterSkills(ch).findIndex((s) => s.id === skill.info.id);
     if (index === -1) {
       throw new Error("Invalid skill");
     }
 
     this.store.mutator.cleanSkillLog();
-    this.io?.notifyMe({ type: "useSkill", skill: skill.id, opp: false });
-    this.io?.notifyOpp({ type: "useSkill", skill: skill.id, opp: true });
+    this.io?.notifyMe({ type: "useSkill", skill: skill.info.id, opp: false });
+    this.io?.notifyOpp({ type: "useSkill", skill: skill.info.id, opp: true });
 
-    const ctx = this.ops.getSkillContext(skill, sourceId);
-    skill.do(ctx);
-    if (skill.gainEnergy) {
+    await useSkill(this.store, caller ?? skill, skill);
+    if (skill.info.gainEnergy) {
       this.store.updateCharacterAtPath(chPath, (c) => {
         gainEnergy(c);
       });
     }
     this.produce((draft) => {
-      draft.skillLog.push(skill.id);
+      draft.skillLog.push(skill.info.id);
     });
-    // await this.ops.doEvent();
-    // this.ops.emitEvent("onUseSkill", skill);
-    // await this.ops.doEvent();
+    await this.doEvent();
+    this.emitEvent("onUseSkill", skill);
+    await this.doEvent();
   }
 
   async playCard(hand: CardPath, targets: PlayCardTargetPath[]) {
@@ -584,15 +552,14 @@ export class PlayerMutator {
     });
     this.io?.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
     this.io?.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
-    const ctx = this.ops.getCardContext(hand, targets);
-    for await (const r of hand.do(ctx)) {
-      // this.ops.doEvent();
+    for await (const r of playCard(this.store, hand, targets)) {
+      await this.doEvent();
     }
-    // this.ops.emitEvent("onPlayCard", hand, targets);
+    this.emitEvent("onPlayCard", hand, targets);
   }
 
   switchActive(targetEntityId: number, delayNotify = false): any {
-    const [from, fromPath] = this.activeCharacter();
+    const fromPath = this.state.active ? this.activeCharacter()[1] : null;
     const newActiveIndex = this.state.characters.findIndex(
       (c) => c.entityId === targetEntityId,
     );
@@ -607,7 +574,7 @@ export class PlayerMutator {
         indexHint: newActiveIndex,
       };
     });
-    const to = this.activeCharacter();
+    const [to, toPath] = this.activeCharacter();
     this.io?.notifyMe({
       type: "switchActive",
       opp: false,
@@ -625,18 +592,20 @@ export class PlayerMutator {
     }
     oppNotify();
     // 取消准备技能
-    const preparing = findEntity(
-      this.store.state,
-      fromPath,
-      "status",
-      (s) => s.info.prepare !== null,
-    );
-    preparing.forEach(([st, p]) => {
-      this.store.updateEntityAtPath(p, (s) => {
-        s.shouldDispose = true;
+    if (fromPath) {
+      const preparing = findEntity(
+        this.store.state,
+        fromPath,
+        "status",
+        (s) => s.info.prepare !== null,
+      );
+      preparing.forEach(([, path]) => {
+        this.store.updateEntityAtPath(path, (s) => {
+          s.shouldDispose = true;
+        });
       });
-    });
-    // this.ops.emitEvent("onSwitchActive", from, to);
+    }
+    this.emitEvent("onSwitchActive", fromPath, toPath);
   }
 
   private createEntity(
@@ -669,13 +638,15 @@ export class PlayerMutator {
         draft.combatStatuses.push(entity as StatusState);
       }
     });
-    return {
+    const path = {
       type: type,
       who: this.who,
       info: entity.info,
       entityId: entity.entityId,
       indexHint: newIdx,
     };
+    this.store.mutator.emitEvent("onEnter", path);
+    return path;
   }
   createCombatStatus(statusId: number): EntityPath {
     return this.createEntity("status", statusId);
@@ -692,59 +663,6 @@ export class PlayerMutator {
       draft.skipNextTurn = true;
     });
   }
-
-  // emitEventFromCharacter<K extends EventHandlerNames1>(
-  //   ch: Character,
-  //   event: K,
-  //   ...rest: EventCreatorArgsForCharacter<K>
-  // ) {
-  //   // @ts-expect-error TS sucks
-  //   this.ops.emitEvent(event, ch, ...rest);
-  // }
-
-  // async *handleEvent(event: EventFactory) {
-  //   const activeIndex = this.activeIndex ?? 0;
-  //   for (let i = 0; i < this.characters.length; i++) {
-  //     const character =
-  //       this.characters[(activeIndex + i) % this.characters.length];
-  //     if (character.isAlive()) {
-  //       for await (const r of character.handleEvent(event)) {
-  //         yield;
-  //       }
-  //     }
-  //   }
-  //   for (const status of this.combatStatuses) {
-  //     await status.handleEvent(event);
-  //     yield;
-  //   }
-  //   for (const summon of this.summons) {
-  //     await summon.handleEvent(event);
-  //     yield;
-  //   }
-  //   for (const support of this.supports) {
-  //     await support.handleEvent(event);
-  //     yield;
-  //   }
-  // }
-  // handleEventSync(event: EventFactory) {
-  //   const activeIndex = this.activeIndex ?? 0;
-  //   for (let i = 0; i < this.characters.length; i++) {
-  //     const character =
-  //       this.characters[(activeIndex + i) % this.characters.length];
-  //     if (character.isAlive()) {
-  //       character.handleEventSync(event);
-  //     }
-  //   }
-  //   for (const status of this.combatStatuses) {
-  //     status.handleEventSync(event);
-  //   }
-  //   for (const summon of this.summons) {
-  //     summon.handleEventSync(event);
-  //   }
-  //   for (const support of this.supports) {
-  //     support.handleEventSync(event);
-  //   }
-  // }
 }
 
 export function fullSupportArea(state: GameState, who: 0 | 1): boolean {

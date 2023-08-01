@@ -10,6 +10,7 @@ import {
 } from "@gi-tcg/typings";
 import { PlayerConfig } from "./game_interface.js";
 import { Store, getData } from "./store.js";
+import { flip } from "@gi-tcg/utils";
 
 export interface PlayerIO {
   notifyMe: (event: Event) => void;
@@ -40,11 +41,11 @@ export function createIO(
   }
   function forOne(who: 0 | 1): PlayerIO {
     return {
-      notifyMe: (event: Event) => notifyPlayer(0, event),
-      notifyOpp: (event: Event) => notifyPlayer(1, event),
+      notifyMe: (event: Event) => notifyPlayer(who, event),
+      notifyOpp: (event: Event) => notifyPlayer(flip(who), event),
       rpc: async <M extends RpcMethod>(method: M, data: RpcRequest[M]) => {
         verifyRpcRequest(method, data);
-        const resp = await configs[0].handler(method, data);
+        const resp = await configs[who].handler(method, data);
         verifyRpcResponse(method, resp);
         return resp;
       },

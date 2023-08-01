@@ -1,7 +1,7 @@
 import { Context, DamageContext, DamageType, Reaction } from "@gi-tcg";
 import { BurningFlame, CatalyzingField, Crystallize, DendroCore, Frozen } from "../status/reactions";
 
-export type RContext = Context<{}, DamageContext, true>;
+export type RContext = Context<object, DamageContext, true>;
 export type ReactionHandler = (c: RContext) => void;
 
 function swirl(srcElement: DamageType) {

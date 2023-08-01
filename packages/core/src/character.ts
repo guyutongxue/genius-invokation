@@ -83,11 +83,6 @@ export function createEquipment(ch: Draft<CharacterState>, chPath: CharacterPath
   };
 }
 
-export function revive(ch: Draft<CharacterState>) {
-  ch.defeated = false;
-  ch.health = 0;
-  // emitEvent("onRevive");
-}
 export function heal(ch: Draft<CharacterState>, value: number) {
   ch.health = Math.max(ch.health + value, ch.info.maxHealth);
 }

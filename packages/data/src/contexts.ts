@@ -47,12 +47,12 @@ export interface SkillDamageContext extends DamageContext {
   readonly sourceSkill: SkillContext;
 }
 
-export interface BeforeDefeatedContext  {
+export interface BeforeDefeatedContext {
   immune(healTo: number): void;
 }
 
 export interface SwitchActiveContext<Writable extends boolean = false> {
-  readonly from: CharacterContext<Writable>;
+  readonly from?: CharacterContext<Writable>;
   readonly to: CharacterContext<Writable>;
 }
 

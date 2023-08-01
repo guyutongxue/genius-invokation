@@ -1,39 +1,14 @@
 import {
-  DamageData,
-  DamageType,
-  DiceType,
   Event,
   NotificationMessage,
   PhaseType,
   StateData,
   verifyNotificationMessage,
-  verifyRpcRequest,
-  verifyRpcResponse,
 } from "@gi-tcg/typings";
 
 import { GameOptions, PlayerConfig } from "./game_interface.js";
-import { PlayerMutator } from "./player.js";
-import {
-  EventFactory,
-  CONTEXT_CREATOR,
-  EventCreatorArgs,
-  EventCreatorArgsForPlayer,
-  EventHandlerNames1,
-  PlayCardContextImpl,
-  DamageContextImpl,
-} from "./context.js";
-import { PlayCardConfig, PlayCardTargetPath } from "./action.js";
-import {
-  CardTargetDescriptor,
-  ElementalReactionContext,
-  SpecialBits,
-  makeReactionFromDamage,
-} from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
-import { Damage } from "./damage.js";
-import { Skill } from "./skill.js";
-import { Card } from "./card.js";
-import { DraftWithResource, GameState, Store, getData } from "./store.js";
+import { GameState, Store, getData } from "./store.js";
 import { Draft } from "immer";
 
 export class Game {
@@ -41,7 +16,7 @@ export class Game {
 
   constructor(
     private readonly options: GameOptions,
-    private readonly playerConfigs: [PlayerConfig, PlayerConfig]
+    private readonly playerConfigs: [PlayerConfig, PlayerConfig],
   ) {
     this.store = Store.initialState(options, playerConfigs);
     this.start();
@@ -54,15 +29,8 @@ export class Game {
     return this.store.mutator;
   }
 
-
-  private produce(): DraftWithResource<GameState>;
-  private produce(fn: (draft: Draft<GameState>) => void): void;
-  private produce(fn?: (draft: Draft<GameState>) => void) {
-    if (fn) {
-      this.store._produce(fn);
-    } else {
-      return this.store.createDraft();
-    }
+  private produce(fn: (draft: Draft<GameState>) => void) {
+    this.store._produce(fn);
   }
 
   private async start() {
@@ -131,25 +99,22 @@ export class Game {
     ]);
     n0();
     n1();
-    this.emitEvent("onBattleBegin");
-    await this.doEvent();
+    this.store.mutator.emitEvent("onBattleBegin");
+    await this.mutator.doEvent();
     return "roll";
   }
   private async rollPhase(): Promise<PhaseType> {
     await Promise.all([
-      this.mutator.players[0].rollPhase(), 
-      this.mutator.players[1].rollPhase()
+      this.mutator.players[0].rollPhase(),
+      this.mutator.players[1].rollPhase(),
     ]);
     return "action";
   }
   private async actionPhase(): Promise<PhaseType> {
-    this.emitEvent("onActionPhase");
-    await this.doEvent();
+    this.store.mutator.emitEvent("onActionPhase");
+    await this.mutator.doEvent();
     while (
-      !(
-        this.state.players[0].declaredEnd &&
-        this.state.players[1].declaredEnd
-      )
+      !(this.state.players[0].declaredEnd && this.state.players[1].declaredEnd)
     ) {
       let thisTurn = this.state.currentTurn;
       if (this.state.players[thisTurn].declaredEnd) {
@@ -162,7 +127,7 @@ export class Game {
       }
       const player = this.mutator.players[thisTurn];
       const fast = await player.action();
-      await this.doEvent();
+      await this.mutator.doEvent();
       await this.options.pauser();
       if (!fast) {
         this.produce((draft) => {
@@ -173,8 +138,8 @@ export class Game {
     return "end";
   }
   private async endPhase(): Promise<PhaseType> {
-    this.emitEvent("onEndPhase");
-    await this.doEvent();
+    this.store.mutator.emitEvent("onEndPhase");
+    await this.mutator.doEvent();
     await Promise.all([
       this.mutator.players[0].drawHands(2),
       this.mutator.players[1].drawHands(2),
@@ -189,43 +154,6 @@ export class Game {
     }
   }
 
-
-  // emitEvent<K extends EventHandlerNames1>(
-  //   event: K,
-  //   ...args: EventCreatorArgs<K>
-  // ) {
-  //   const creator = CONTEXT_CREATOR[event];
-  //   // @ts-expect-error TS SUCKS
-  //   const e: EventFactory = creator(this, ...args);
-  //   this.eventWaitingForHandle.push(e);
-  // }
-  // emitImmediatelyHandledEvent<K extends EventHandlerNames1>(
-  //   event: K,
-  //   ...args: EventCreatorArgs<K>
-  // ) {
-  //   const creator = CONTEXT_CREATOR[event];
-  //   // @ts-expect-error TS SUCKS
-  //   const e: EventFactory = creator(this, ...args);
-  //   this.handleEventSync(e);
-  // }
-
-  // async *handleEvent(event: EventFactory) {
-  //   for await (const r of this.players[this.statecurrentTurn].handleEvent(event)) {
-  //     yield;
-  //   }
-  //   for await (const r of this.players[flip(this.currentTurn)].handleEvent(
-  //     event
-  //   )) {
-  //     yield;
-  //   }
-  // }
-  // handleEventSync(event: EventFactory) {
-  //   this.players[this.currentTurn].handleEventSync(event);
-  //   this.players[flip(this.currentTurn)].handleEventSync(event);
-  // }
-
-  reactionLog: EventCreatorArgs<"onElementalReaction">[] = [];
-  damageLog: EventCreatorArgs<"onBeforeDamaged">[] = [];
   private notifyPlayer(who: 0 | 1, event: Event) {
     const msg: NotificationMessage = {
       event,
@@ -239,33 +167,4 @@ export class Game {
   preview(who: 0 | 1, skillId: number): StateData {
     throw new Error("Not implemented");
   }
-
-  private eventWaitingForHandle: EventFactory[] = [];
-  pushEvent(event: EventFactory) {
-    this.eventWaitingForHandle.push(event);
-  }
-  
-  async doEvent() {
-    const events = [...this.eventWaitingForHandle];
-    this.eventWaitingForHandle = [];
-    this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
-    this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
-    // 弃置所有标记为弃置的实体
-    this.players[this.currentTurn].checkDispose();
-    this.players[flip(this.currentTurn)].checkDispose();
-    this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
-    this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
-    // 处理剩余事件
-    for (const event of events) {
-      for await (const r of this.handleEvent(event)) {
-        this.notifyPlayer(0, { type: "stateUpdated", damages: [] });
-        this.notifyPlayer(1, { type: "stateUpdated", damages: [] });
-        // 每次处理完一个事件，检查新的状态
-        this.doEvent();
-        // 随后继续处理剩余事件
-      }
-    }
-    // TODO check death
-  }
-
 }

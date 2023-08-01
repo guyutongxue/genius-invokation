@@ -1,4 +1,3 @@
-import { Card } from "./card.js";
 import { CharacterPath } from "./character.js";
 import {
   Action,
@@ -107,7 +106,7 @@ export function getCardActions(state: GameState, who: 0 | 1): PlayCardConfig[] {
     const targets = getCardTarget(state, hand.info.target);
     for (const t of targets) {
       const store = Store.fromState(state);
-      const ctx = new PlayCardContextImpl(store, path, path, t);
+      const ctx = new PlayCardContextImpl(store, path, path.who, path, t);
       if (ctx.enabled()) {
         actions.push({
           type: "playCard",

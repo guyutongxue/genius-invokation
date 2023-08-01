@@ -33,7 +33,7 @@ const ChainsOfWardingThunder = createSummon(124013)
   .withThis({ addCost: true })
   .on("endPhase", (c) => { c.dealDamage(1, DamageType.Electro); })
   .on("beforeUseDice", 
-    (c) => c.this.addCost && !!c.switchActiveCtx && !c.switchActiveCtx.from.isMine(), 
+    (c) => c.this.addCost && !!c.switchActiveCtx && !c.switchActiveCtx.to.isMine(), 
     (c) => {
       c.addCost(DiceType.Void);
       c.this.addCost = false;
