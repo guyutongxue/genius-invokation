@@ -99,6 +99,6 @@ export const TheShrinesSacredShade = createCard(214081, ["character"])
   .addCharacterFilter(YaeMiko)
   .costElectro(3)
   .costEnergy(2)
-  .useSkill(GreatSecretArtTenkoKenshin)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(GreatSecretArtTenkoKenshin) })
   .build();

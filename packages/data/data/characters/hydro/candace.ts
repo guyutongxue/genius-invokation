@@ -84,7 +84,7 @@ const TheOverflow = createCard(-17, ["character"])
   .addCharacterFilter(Candace)
   .costHydro(4)
   .costEnergy(2)
-  .useSkill(SacredRiteWagtailsTide)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(SacredRiteWagtailsTide) })
   // TODO
   .build()

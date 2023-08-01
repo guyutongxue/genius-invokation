@@ -71,6 +71,6 @@ export const LandsOfDandelion = createCard(215021, ["character"])
   .addCharacterFilter(Jean)
   .costAnemo(4)
   .costEnergy(3)
-  .useSkill(DandelionBreeze)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(DandelionBreeze) })
   .build();

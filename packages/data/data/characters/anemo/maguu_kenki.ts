@@ -94,8 +94,8 @@ export const TranscendentAutomaton = createCard(225011, ["character"])
   .requireCharacter(MaguuKenki)
   .addCharacterFilter(MaguuKenki)
   .costAnemo(3)
-  .useSkill(BlusteringBlade)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(BlusteringBlade) })
   .on("useSkill", (c) => {
     if (c.info.id === BlusteringBlade) {
       c.switchActive(">")

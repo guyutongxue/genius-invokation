@@ -97,7 +97,7 @@ export const PoeticsOfFuubutsu = createCard(215051, ["character"])
   .requireCharacter(KaedeharaKazuha)
   .addCharacterFilter(KaedeharaKazuha)
   .costAnemo(3)
-  .useSkill(Chihayaburu)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(Chihayaburu) })
   // TODO
   .build()

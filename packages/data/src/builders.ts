@@ -201,6 +201,17 @@ class SkillBuilder extends ActionBuilderBase<SkillContext> {
   }
 }
 
+export interface CharacterTargetFilterOption {
+  /**
+   * 要求该角色必须为出战角色，默认为 `true`
+   */
+  needActive: boolean;
+  /**
+   * 要求该角色必须可使用技能（未被冻结、石化），默认为 `needActive`
+   */
+  needSkillEnabled: boolean;
+}
+
 class CardBuilder<
   const TargetT extends CardTargetDescriptor = []
 > extends ActionBuilderBase<PlayCardContext> {
@@ -253,10 +264,17 @@ class CardBuilder<
     this.filters.push(filter);
     return this;
   }
-  addCharacterFilter(ch: CharacterHandle, requireActive = true) {
+  addCharacterFilter(ch: CharacterHandle, opt: Partial<CharacterTargetFilterOption> = {}) {
     const self: unknown = this;
     CardBuilder.ensureTargetDescriptor(self);
-    return self.filterMyTargets((c) => c.info.id === ch && (!requireActive || c.isActive()));
+    const needActive = opt.needActive ?? true;
+    const needSkillEnabled = opt.needSkillEnabled ?? needActive;
+    return self.filterMyTargets((c) => {
+      if (c.info.id !== ch) return false;
+      if (needActive && !c.isActive()) return false;
+      if (needSkillEnabled && c.skillDisabled()) return false;
+      return true;
+    });
   }
   filterOppTargets(filter: (...targets: ContextOfTarget<TargetT>) => boolean) {
     this.filters.push((c: Context<object, PlayCardContext<TargetT>, false>) => {

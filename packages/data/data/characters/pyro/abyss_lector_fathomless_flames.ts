@@ -95,7 +95,7 @@ export const EmbersRekindled = createCard(223021, ["character"])
   .setType("equipment")
   .addTags("talent")
   .requireCharacter(AbyssLectorFathomlessFlames)
-  .addCharacterFilter(AbyssLectorFathomlessFlames, false)
+  .addCharacterFilter(AbyssLectorFathomlessFlames, { needActive: false })
   .costPyro(2)
   .do((c) => {
     const ch = c.queryCharacter(`@${AbyssLectorFathomlessFlames}`);

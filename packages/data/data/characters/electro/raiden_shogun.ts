@@ -102,8 +102,8 @@ export const WishesUnnumbered = createCard(214071, ["character"])
   .addCharacterFilter(RaidenShogun)
   .costElectro(4)
   .costEnergy(2)
-  .useSkill(SecretArtMusouShinsetsu)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(SecretArtMusouShinsetsu) })
   .on("beforeSkillDamage", (c) => {
     const status = c.this.master.findStatus(ChakraDesiderataStatus);
     if (status && c.sourceSkill.id === SecretArtMusouShinsetsu) {

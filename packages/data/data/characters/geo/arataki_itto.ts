@@ -124,8 +124,8 @@ export const AratakiIchiban = createCard(216051, ["character"])
   .addCharacterFilter(AratakiItto)
   .costGeo(1)
   .costVoid(2)
-  .useSkill(FightClubLegend)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(FightClubLegend) })
   .withThis({ attackCount: 0 })
   .on("beforeSkillDamage", (c) => {
     if (c.this.attackCount >= 1) {

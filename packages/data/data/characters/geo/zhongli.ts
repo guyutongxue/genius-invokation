@@ -91,8 +91,8 @@ export const DominanceOfEarth = createCard(216031, ["character"])
   .requireCharacter(Zhongli)
   .addCharacterFilter(Zhongli)
   .costGeo(5)
-  .useSkill(DominusLapidisStrikingStone)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(DominusLapidisStrikingStone) })
   .listenToOther()
   .on("beforeDealDamage", (c) => {
     const active = c.queryCharacter("|");

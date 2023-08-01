@@ -76,6 +76,6 @@ export const ThunderingPenance = createCard(214031, ["character"])
   .requireCharacter(Keqing)
   .addCharacterFilter(Keqing)
   .costElectro(3)
-  .useSkill(StellarRestoration)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(StellarRestoration) })
   .build();

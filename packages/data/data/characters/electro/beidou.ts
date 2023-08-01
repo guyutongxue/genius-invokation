@@ -109,8 +109,8 @@ export const LightningStorm = createCard(214051, ["character"])
   .requireCharacter(Beidou)
   .addCharacterFilter(Beidou)
   .costElectro(3)
-  .useSkill(Tidecaller)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(Tidecaller) })
   .on("beforeSkillDamage", (c) => {
     if (c.sourceSkill.info.id === Wavestrider) {
       const status = c.this.master.findStatus(TidecallerSurfEmbrace);

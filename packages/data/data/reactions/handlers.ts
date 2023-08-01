@@ -6,7 +6,7 @@ export type ReactionHandler = (c: RContext) => void;
 
 function swirl(srcElement: DamageType) {
   return (c: RContext) => {
-    c.queryCharacterAll(`:exclude(#${c.target.entityId})`).forEach(ch => {
+    c.queryCharacterAll(`!:exclude(${c.target.asTarget()})`).forEach(ch => {
       c.dealDamage(1, srcElement, ch.asTarget());
     });
   }

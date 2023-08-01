@@ -100,6 +100,6 @@ export const PoundingSurprise = createCard(213061, ["character"])
   .requireCharacter(Klee)
   .addCharacterFilter(Klee)
   .costPyro(3)
-  .useSkill(JumpyDumpty)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(JumpyDumpty) })
   .build();

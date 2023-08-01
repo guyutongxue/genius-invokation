@@ -96,8 +96,8 @@ export const ProphecyOfSubmersion = createCard(212031, ["character"])
   .addCharacterFilter(Mona)
   .costHydro(3)
   .costEnergy(3)
-  .useSkill(StellarisPhantasm)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(StellarisPhantasm) })
   .listenToOther()
   .on("beforeDealDamage", (c) => {
     if (c.this.master.isActive() && c.reaction?.relatedWith(DamageType.Hydro)) {

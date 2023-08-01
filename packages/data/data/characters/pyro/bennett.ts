@@ -89,6 +89,6 @@ export const GrandExpectation = createCard(213031, ["character"])
   .addCharacterFilter(Bennett)
   .costPyro(4)
   .costEnergy(2)
-  .useSkill(FantasticVoyage)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(FantasticVoyage) })
   .build();

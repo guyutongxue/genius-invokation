@@ -128,6 +128,6 @@ export const EmbraceOfWinds = createCard(215031, ["character"])
   .requireCharacter(Venti)
   .addCharacterFilter(Venti)
   .costAnemo(3)
-  .useSkill(SkywardSonnet)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(SkywardSonnet) })
   .build();

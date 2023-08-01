@@ -150,6 +150,6 @@ export const TheSeedOfStoredKnowledge = createCard(217031, ["character"])
   .addCharacterFilter(Nahida)
   .costDendro(3)
   .costEnergy(2)
-  .useSkill(IllusoryHeart)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(IllusoryHeart) })
   .build();

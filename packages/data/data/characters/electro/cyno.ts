@@ -107,6 +107,6 @@ export const FeatherfallJudgment = createCard(214041, ["character"])
   .requireCharacter(Cyno)
   .addCharacterFilter(Cyno)
   .costElectro(3)
-  .useSkill(SecretRiteChasmicSoulfarer)
   .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(SecretRiteChasmicSoulfarer) })
   .build();
