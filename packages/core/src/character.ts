@@ -84,7 +84,7 @@ export function createEquipment(ch: Draft<CharacterState>, chPath: CharacterPath
 }
 
 export function heal(ch: Draft<CharacterState>, value: number) {
-  ch.health = Math.max(ch.health + value, ch.info.maxHealth);
+  ch.health = Math.min(ch.health + value, ch.info.maxHealth);
 }
 export function gainEnergy(ch: Draft<CharacterState>, value = 1) {
   ch.energy = Math.min(ch.energy + value, ch.info.maxEnergy);

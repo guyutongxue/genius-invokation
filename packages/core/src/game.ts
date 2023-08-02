@@ -113,6 +113,9 @@ export class Game {
   private async actionPhase(): Promise<PhaseType> {
     this.store.mutator.emitEvent("onActionPhase");
     await this.mutator.doEvent();
+    if (this.store.state.phase === "gameEnd") {
+      return "gameEnd";
+    }
     while (
       !(this.state.players[0].declaredEnd && this.state.players[1].declaredEnd)
     ) {
@@ -128,6 +131,9 @@ export class Game {
       const player = this.mutator.players[thisTurn];
       const fast = await player.action();
       await this.mutator.doEvent();
+      if (<string>this.store.state.phase === "gameEnd") {
+        return "gameEnd";
+      }
       await this.options.pauser();
       if (!fast) {
         this.produce((draft) => {
@@ -140,6 +146,9 @@ export class Game {
   private async endPhase(): Promise<PhaseType> {
     this.store.mutator.emitEvent("onEndPhase");
     await this.mutator.doEvent();
+    if (this.store.state.phase === "gameEnd") {
+      return "gameEnd";
+    }
     await Promise.all([
       this.mutator.players[0].drawHands(2),
       this.mutator.players[1].drawHands(2),
@@ -163,7 +172,9 @@ export class Game {
     this.playerConfigs[who].onNotify?.(msg);
   }
 
-  giveUp(who: 0 | 1) {}
+  giveUp(who: 0 | 1) {
+    this.store.mutator.gameEnd(flip(who));
+  }
   preview(who: 0 | 1, skillId: number): StateData {
     throw new Error("Not implemented");
   }

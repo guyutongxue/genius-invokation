@@ -206,7 +206,7 @@ export class PlayerMutator {
     });
   }
 
-  async chooseActive(delayNotify: false): Promise<void>;
+  async chooseActive(delayNotify?: false): Promise<void>;
   async chooseActive(delayNotify: true): Promise<() => void>;
   async chooseActive(delayNotify = false): Promise<unknown> {
     if (!this.io) {

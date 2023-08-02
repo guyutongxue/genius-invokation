@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import icons from "../assets/icons.json";
-import { StatusData } from "@gi-tcg/typings";
+import { EntityData } from "@gi-tcg/typings";
 
 const props = defineProps<{
-  status: StatusData;
+  status: EntityData;
 }>();
 
 const iconName = computed(() => {

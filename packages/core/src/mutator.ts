@@ -103,6 +103,10 @@ export class Mutator {
           draft.equipments = [];
         });
         this.emitEvent("onDefeated", target);
+        // 检查是否所有角色均已死亡：游戏结束
+        if (this.store.state.players[target.who].characters.every((ch) => ch.defeated)) {
+          this.gameEnd(flip(target.who));
+        }
       } else {
         this.heal(
           defeatedToken.immune.source,
@@ -294,6 +298,19 @@ export class Mutator {
   }
 
   private async *propagateAsyncEvent(ed: AnyEventDescriptor) {
+    if (ed[0] === "onDefeated") {
+      // 此时检测双方出战角色死亡
+      const pendingChosen: (0 | 1)[] = [];
+      for (const idx of [0, 1] as const) {
+        if (getCharacterAtPath(this.store.state, this.store.state.players[idx].active!).defeated) {
+          this.store._produce((draft) => {
+            draft.players[idx].active = null;
+          })
+          pendingChosen.push(idx);
+        }
+      }
+      await Promise.all(pendingChosen.map((idx) => this.players[idx].chooseActive()));
+    }
     const playerSeq = [
       this.store.state.currentTurn,
       flip(this.store.state.currentTurn),
@@ -318,6 +335,9 @@ export class Mutator {
   private pendingEvent: AsyncEventDescriptor[] = [];
   private previousState: GameState | null = null;
   async doEvent() {
+    if (this.store.state.phase === "gameEnd") {
+      return;
+    }
     this.checkDispose();
     const sorted = _.sortBy(this.pendingEvent, ([e]) => {
       if (e === "onSwitchActive") {
@@ -356,5 +376,12 @@ export class Mutator {
     const factory = CONTEXT_CREATORS.onBeforeUseDice(who, action);
     previewStore.mutator.propagateSyncEvent(["onBeforeUseDice", factory]);
     return previewStore.state;
+  }
+
+  gameEnd(winner: 0 | 1 | null = null) {
+    this.store._produce((draft) => {
+      draft.phase = "gameEnd";
+      draft.winner = winner;
+    });
   }
 }

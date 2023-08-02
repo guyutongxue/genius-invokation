@@ -5,7 +5,7 @@ import {
   CharacterData,
   DiceType,
   PlayCardAction,
-  SummonData,
+  EntityData,
   SwitchActiveAction,
   UseSkillAction,
 } from "@gi-tcg/typings";
@@ -71,7 +71,7 @@ const characters = computed<Array<CharacterData & WithAction>>(() => {
   });
 });
 
-const summons = computed<Array<SummonData & WithAction>>(() => {
+const summons = computed<Array<EntityData & WithAction>>(() => {
   return props.data.summons.map((c) => {
     const idx = props.availableActions.findIndex(
       (a) => a.type === "entity" && a.entityId === c.entityId

@@ -151,11 +151,12 @@ function getCharactersFromSelector(
           (ch) => !!ch.statuses.find((st) => !ch.defeated && st.info.id === id),
         ).map(([, chPath]) => chPath);
       }
-      case "tag*":
+      case "tag*": {
         const tag = arg as CharacterTag;
         return findCharacter(state, who, (ch) =>
           ch.info.tags.includes(tag),
         ).map(([, chPath]) => chPath);
+      }
       case "recent": {
         const rel = getCharactersFromSelector(state, callerWho, arg);
         if (rel.length === 0) {
@@ -186,9 +187,6 @@ function getCharactersFromSelector(
       }
       case "exclude": {
         const rel = getCharactersFromSelector(state, callerWho, arg);
-        if (rel.length === 0) {
-          throw new Error(`Relative character not found: ${arg}`);
-        }
         const excluded = rel.map((ch) => ch.entityId);
         return findCharacter(
           state,
@@ -198,9 +196,6 @@ function getCharactersFromSelector(
       }
       case "exclude*": {
         const rel = getCharactersFromSelector(state, callerWho, arg);
-        if (rel.length === 0) {
-          throw new Error(`Relative character not found: ${arg}`);
-        }
         const excluded = rel.map((ch) => ch.entityId);
         return findCharacter(
           state,
@@ -515,7 +510,9 @@ export class ContextImpl implements Context<object, object, true> {
     }
     const chPath = chPaths[0];
     const player = this.store.mutator.players[chPath.who];
-    if (chPath.entityId !== this.store.state.players[chPath.who].active?.entityId) {
+    if (
+      chPath.entityId !== this.store.state.players[chPath.who].active?.entityId
+    ) {
       player.switchActive(chPath.entityId);
     }
   }
@@ -682,15 +679,16 @@ class CharacterContextImpl implements CharacterContext<true> {
       ? new EntityContextImpl(this.store, this.caller, results[0][1])
       : null;
   }
-  findShield(): StatusContext<true> {
+  findShield(): StatusContext<true> | null {
     const results = findEntity(
       this.store.state,
       this.path,
       "status",
       (s) => s.info.shield !== null,
     );
-    if (results.length === 0) throw new Error("No shield");
-    return new EntityContextImpl(this.store, this.caller, results[0][1]);
+    return results.length > 0
+      ? new EntityContextImpl(this.store, this.caller, results[0][1])
+      : null;
   }
 
   isActive() {

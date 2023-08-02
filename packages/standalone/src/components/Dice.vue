@@ -16,19 +16,19 @@ const COLOR: Record<DiceType, string> = {
 
 const IMAGE: Partial<Record<DiceType, string>> = {
   [DiceType.Anemo]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Wind.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Wind.png",
   [DiceType.Geo]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Rock.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Rock.png",
   [DiceType.Electro]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Electric.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Electric.png",
   [DiceType.Dendro]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Grass.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Grass.png",
   [DiceType.Hydro]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Water.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Water.png",
   [DiceType.Pyro]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Fire.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Fire.png",
   [DiceType.Cryo]:
-    "https://api.ambr.top/assets/UI/UI_Gcg_Buff_Common_Element_Ice.png",
+    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Ice.png",
 };
 
 const props = withDefaults(
