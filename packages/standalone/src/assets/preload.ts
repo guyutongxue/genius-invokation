@@ -11,12 +11,12 @@ async function preloadImage(url: string) {
   });
   progress.value += 1;
 }
+const iconUrls = [...new Set(Object.values(icons))].map(name => "https://guyutongxue.site/gcg-buff-icon-data/Sprite/" + name);
+const imageUrls = [...new Set(Object.values(images))];
 
 export const progress = ref(0);
-export const total = Object.keys(icons).length + Object.keys(images).length;
+export const total = iconUrls.length + imageUrls.length;
 
 export async function preloadAllImages() {
-  const iconUrls = [...new Set(Object.values(icons))].map(name => "https://guyutongxue.site/gcg-buff-icon-data/Sprite/" + name);
-  const imageUrls = [...new Set(Object.values(images))];
   return await Promise.all([...iconUrls, ...imageUrls].map(preloadImage));
 }

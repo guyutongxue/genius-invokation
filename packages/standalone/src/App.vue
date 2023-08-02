@@ -53,14 +53,9 @@ function setDeck(who: 0 | 1) {
 }
 
 onMounted(async () => {
-  try {
-    await preloadAllImages();
-    readDeckFromCache();
-    loaded.value = true;
-  } catch (e) {
-    console.error(e);
-    alert(e instanceof Error ? e.message : e);
-  }
+  readDeckFromCache();
+  loaded.value = true; // 需要一些更好的办法……
+  preloadAllImages();
 });
 </script>
 
