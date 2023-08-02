@@ -53,7 +53,7 @@ const ChangingShifts = createCard(332002)
   .buildToStatus("combat")
   .on("beforeUseDice",
     (c) => !!c.switchActiveCtx,
-    (c) => c.deductCost(DiceType.Void))
+    (c) => c.deductCost(DiceType.Omni).length > 0)
   .build();
 
 /**
@@ -363,7 +363,7 @@ const LeaveItToMe = createCard(332006)
   .setType("event")
   .buildToStatus("combat")
   .withUsage(1)
-  .on("requestFastSwitchActive", (c) => c.requestFast())
+  .on("beforeUseDice", (c) => c.requestFastSwitch())
   .build();
 
 /**

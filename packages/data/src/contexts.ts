@@ -14,7 +14,9 @@ export interface UseDiceContext {
   readonly switchActiveCtx?: SwitchActiveContext;
   readonly playCardCtx?: PlayCardContext;
   addCost(...dice: DiceType[]): void;
-  deductCost(...dice: DiceType[]): void;
+  deductCost(...dice: DiceType[]): DiceType[];
+
+  requestFastSwitch(): boolean;
 }
 
 interface DamageBaseContext {

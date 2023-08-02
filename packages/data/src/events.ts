@@ -17,7 +17,6 @@ export type SyncEventMap = {
   onRollPhase: RollContext,
 
   onBeforeUseDice: UseDiceContext,
-  onRequestFastSwitchActive: RequestFastSwitchContext,
 
   onEarlyBeforeDealDamage: BeforeDamageCalculatedContext,
   onBeforeDealDamage: DamageContext,

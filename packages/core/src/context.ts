@@ -852,20 +852,32 @@ export class UseDiceContextImpl implements UseDiceContext {
       this.action.dice.push(...dice);
     }
   }
-  deductCost(...dice: DiceType[]): void {
+  deductCost(...dice: DiceType[]): DiceType[] {
+    const deduced: DiceType[] = [];
     if ("dice" in this.action) {
       for (const d of dice) {
         let i;
         if (d === DiceType.Omni) {
+          // 优先减有色骰子
           i = this.action.dice.findIndex((d) => d !== DiceType.Void);
+          if (i === -1) {
+            i = this.action.dice.findIndex((d) => d === DiceType.Void);
+          }
         } else {
           i = this.action.dice.indexOf(d);
         }
         if (i !== -1) {
-          this.action.dice.splice(i, 1);
+          deduced.push(...this.action.dice.splice(i, 1));
         }
       }
     }
+    return deduced;
+  }
+  requestFastSwitch(): boolean {
+    if (this.action.type !== "switchActive") return false;
+    if (this.action.fast) return false;
+    this.action.fast = true;
+    return true;
   }
 }
 
@@ -1383,10 +1395,6 @@ export const CONTEXT_CREATORS = {
 
   onBeforeAction: buildCreator(TrivialPlayerContextImpl, commonPlayerChecker),
   onBeforeUseDice: buildCreator(UseDiceContextImpl, commonPlayerChecker),
-  onRequestFastSwitchActive: buildCreator(
-    RequestFastSwitchContextImpl,
-    commonPlayerChecker,
-  ),
   onUseSkill: buildCreator(SkillContextImpl, commonPlayerChecker),
   onSwitchActive: buildCreator(SwitchActiveContextImpl, commonPlayerChecker),
   onPlayCard: buildCreator(PlayCardContextImpl, commonPlayerChecker),

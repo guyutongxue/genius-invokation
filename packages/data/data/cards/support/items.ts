@@ -1,4 +1,4 @@
-import { DamageType, createCard } from '@gi-tcg';
+import { DamageType, DiceType, createCard } from '@gi-tcg';
 
 /**
  * **便携营养袋**
@@ -59,12 +59,14 @@ const RedFeatherFan = createCard(323003)
   .costSame(2)
   .buildToSupport()
   .withUsagePerRound(1)
-  .on("requestFastSwitchActive", (c) => c.requestFast())
   .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
-      c.deductCost(1);
+      const fastResult = c.requestFastSwitch();
+      const deductResult = c.deductCost(DiceType.Void);
+      return fastResult || deductResult.length > 0;
+    } else {
+      return false;
     }
-    return false; // deduct usage at requestFast
   })
   .build();
 

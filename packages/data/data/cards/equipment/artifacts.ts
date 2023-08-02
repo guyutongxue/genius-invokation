@@ -361,7 +361,7 @@ const ShimenawasReminiscence = createCard(312014, ["character"])
   .on("beforeUseDice", (c) => {
     if (c.useSkillCtx?.info.type === "elemental"
       || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
-      c.deductCost(DiceType.Void);
+      c.deductCost(DiceType.Omni);
     } else {
       return false;
     }
@@ -497,7 +497,7 @@ const VermillionHereafter = createCard(312012, ["character"])
   .on("beforeUseDice", (c) => {
     if (c.useSkillCtx?.info.type === "elemental" ||
       c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
-      c.deductCost(DiceType.Void);
+      c.deductCost(DiceType.Omni);
     } else {
       return false;
     }

@@ -74,7 +74,7 @@ const Ellin = createCard(322010)
   .buildToSupport()
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx && c.skillCount(c.useSkillCtx.id) > 0,
-    (c) => c.deductCost(DiceType.Omni))
+    (c) => { c.deductCost(DiceType.Omni) })
   .build();
 
 /**
@@ -114,7 +114,7 @@ const Katheryne = createCard(322002)
   .costSame(1)
   .buildToSupport()
   .withUsagePerRound(1)
-  .on("requestFastSwitchActive", (c) => c.requestFast())
+  .on("beforeUseDice", (c) => c.requestFastSwitch())
   .build();
 
 /**

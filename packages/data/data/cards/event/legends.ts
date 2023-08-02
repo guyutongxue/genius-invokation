@@ -20,7 +20,7 @@ const AncientCourtyard = createCard(330001)
   .on("beforeUseDice", (c) => {
     if (c.playCardCtx?.isWeapon() ||
       c.playCardCtx?.info.tags.includes("artifact")) {
-      c.deductCost(2);
+      c.deductCost(DiceType.Omni, DiceType.Omni);
     }
   })
   .build();

@@ -47,7 +47,7 @@ const SuperlativeSuperstrength = createStatus(116054)
   .withUsage(1, 3)
   .on("beforeUseDice",
     (c) => !!(c.useSkillCtx?.charged && c.this.value > 2),
-    (c) => c.deductCost(DiceType.Void))
+    (c) => { c.deductCost(DiceType.Void) })
   .on("beforeSkillDamage",
     (c) => c.sourceSkill.charged,
     (c) => c.addDamage(1))

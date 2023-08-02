@@ -36,8 +36,10 @@ const StormZone01 = createStatus(115032)
   .withUsage(2)
   .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
-      c.deductCost(DiceType.Void);
-      c.createCombatStatus(WindsOfHarmony);
+      if (c.deductCost(DiceType.Omni).length > 0) {
+        c.createCombatStatus(WindsOfHarmony);
+        return true;
+      }
     }
     return false;
   })

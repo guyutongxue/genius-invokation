@@ -20,7 +20,7 @@ const ExplosiveSpark = createStatus(113061)
   .withUsage(1)
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx?.charged,
-    (c) => c.deductCost(DiceType.Pyro))
+    (c) => { c.deductCost(DiceType.Pyro) })
   .on("beforeSkillDamage",
     (c) => c.sourceSkill.charged,
     (c) => c.addDamage(1))
@@ -35,7 +35,7 @@ const ExplosiveSpark01 = createStatus(113061)
   .withUsage(2)
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx?.charged,
-    (c) => c.deductCost(DiceType.Pyro))
+    (c) => { c.deductCost(DiceType.Pyro) })
   .on("beforeSkillDamage",
     (c) => c.sourceSkill.charged,
     (c) => c.addDamage(1))
