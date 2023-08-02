@@ -579,6 +579,7 @@ const WitchsScorchingHat = createCard(312301, ["character"])
   .addTags("artifact")
   .costSame(2)
   .buildToEquipment()
+  .withUsagePerRound(1)
   .on("beforeUseDice", (c) => {
     if (c.useSkillCtx || c.playCardCtx?.isTalentOf(c.this.master.info.id)) {
       c.deductCost(DiceType.Pyro);

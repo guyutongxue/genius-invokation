@@ -85,9 +85,15 @@ importers:
 
   packages/standalone:
     dependencies:
+      '@genshin-db/tcg':
+        specifier: ^4.3.12
+        version: 4.3.12
       '@gi-tcg/core':
         specifier: workspace:*
         version: link:../core
+      '@gi-tcg/data':
+        specifier: workspace:*
+        version: link:../data
       '@gi-tcg/typings':
         specifier: workspace:*
         version: link:../typings
@@ -664,7 +670,6 @@ packages:
     dependencies:
       fuzzysort: 1.9.0
       pako: 2.1.0
-    dev: true
 
   /@humanwhocodes/config-array@0.11.10:
     resolution: {integrity: sha512-KVVjQmNUepDVGXNuoRRdmmEjruj0KfiGSbS8LVc12LMsWDQzRXJ0qdhN8L8uUigKpfEHRhlaQFY0ib1tnUbNeQ==}
@@ -1835,7 +1840,6 @@ packages:
 
   /fuzzysort@1.9.0:
     resolution: {integrity: sha512-MOxCT0qLTwLqmEwc7UtU045RKef7mc8Qz8eR4r2bLNEq9dy/c3ZKMEFp6IEst69otkQdFZ4FfgH2dmZD+ddX1g==}
-    dev: true
 
   /get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
@@ -2373,7 +2377,6 @@ packages:
 
   /pako@2.1.0:
     resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
-    dev: true
 
   /parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}

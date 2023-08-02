@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { DiceType } from "@gi-tcg/typings";
+import Image from "./Image.vue";
 
 const COLOR: Record<DiceType, string> = {
   [DiceType.Void]: "void",
@@ -12,23 +13,6 @@ const COLOR: Record<DiceType, string> = {
   [DiceType.Cryo]: "cryo",
   [DiceType.Omni]: "omni",
   [DiceType.Energy]: "energy",
-};
-
-const IMAGE: Partial<Record<DiceType, string>> = {
-  [DiceType.Anemo]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Wind.png",
-  [DiceType.Geo]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Rock.png",
-  [DiceType.Electro]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Electric.png",
-  [DiceType.Dendro]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Grass.png",
-  [DiceType.Hydro]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Water.png",
-  [DiceType.Pyro]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Fire.png",
-  [DiceType.Cryo]:
-    "https://guyutongxue.site/gcg-buff-icon-data/Sprite/UI_Gcg_Buff_Common_Element_Ice.png",
 };
 
 const props = withDefaults(
@@ -118,10 +102,11 @@ const props = withDefaults(
     >
       {{ text }}
     </span>
-    <img
-      v-else-if="type in IMAGE"
+    <Image
+      v-else-if="type >= 1 && type <= 7"
       class="absolute"
-      :src="IMAGE[type]"
+      type="icon"
+      :id="type"
       :width="0.6 * size"
     />
   </div>

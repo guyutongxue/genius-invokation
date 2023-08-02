@@ -9,7 +9,6 @@ import {
   SwitchActiveAction,
   UseSkillAction,
 } from "@gi-tcg/typings";
-import images from "../assets/images.json";
 import Dice from "./Dice.vue";
 import Character from "./Character.vue";
 import HandCard from "./HandCard.vue";
@@ -17,6 +16,7 @@ import { computed } from "vue";
 import { MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
 import Aura from "./Aura.vue";
 import Status from "./Status.vue";
+import Image from "./Image.vue";
 
 export type Clickable = (
   | {
@@ -173,7 +173,7 @@ function toCostMap(cost: number[]): [DiceType, number][] {
         >
           <div class="w-10 h-14 relative">
             <div class="absolute right-0 bg-white">{{ support.value }}</div>
-            <img :src="(images as any)[support.id]" />
+            <Image type="card" :id="support.id" />
           </div>
         </div>
       </div>
@@ -217,7 +217,7 @@ function toCostMap(cost: number[]): [DiceType, number][] {
             @click="emitClick(summon.actionIndex)"
           >
             <div class="absolute right-0 bg-white">{{ summon.value }}</div>
-            <img :src="(images as any)[summon.id]" />
+            <Image type="card" :id="summon.id" />
             <span v-if="showMark(summon.actionIndex)" class="check-mark">
             </span>
           </div>

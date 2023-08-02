@@ -126,7 +126,7 @@ const KidKujirai = createCard(322014)
   .buildToSupport()
   .on("actionPhase", (c) => {
     c.generateDice(DiceType.Omni);
-    if (c.fullSupportArea(true)) {
+    if (!c.fullSupportArea(true)) {
       c.createSupport(KidKujirai, true);
       c.this.dispose();
     }
@@ -297,7 +297,7 @@ const MasterZhang = createCard(322018)
     if (c.playCardCtx?.isWeapon()) {
       const hasWeaponChar = c.queryCharacterAll("*").filter(ch => ch.findEquipment("weapon")).length;
       const deduct = new Array(hasWeaponChar + 1).fill(DiceType.Omni);
-      c.deductCost(...deduct);
+      return c.deductCost(...deduct).length > 0;
     } else {
       return false;
     }

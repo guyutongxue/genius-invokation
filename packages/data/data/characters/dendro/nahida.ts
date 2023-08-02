@@ -42,6 +42,7 @@ const SeedOfSkadha = createStatus(117031)
 const AllSchemesToKnow = createSkill(17032)
   .setType("elemental")
   .costDendro(3)
+  .dealDamage(2, DamageType.Dendro)
   .do((c) => {
     if (c.target.findStatus(SeedOfSkadha)) {
       c.queryCharacterAll("!*").forEach(ch => ch.createStatus(SeedOfSkadha));
@@ -58,6 +59,7 @@ const AllSchemesToKnow = createSkill(17032)
 const AllSchemesToKnowTathata = createSkill(17033)
   .setType("elemental")
   .costDendro(5)
+  .dealDamage(3, DamageType.Dendro)
   .do((c) => {
     c.queryCharacterAll("!*").forEach(ch => ch.createStatus(SeedOfSkadha));
   })

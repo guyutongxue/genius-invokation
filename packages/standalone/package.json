@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@genshin-db/tcg": "^4.3.12",
     "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
     "eventemitter3": "^5.0.1",
