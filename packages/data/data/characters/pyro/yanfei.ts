@@ -4,7 +4,7 @@ import { DamageType, DiceType, createCard, createCharacter, createSkill, createS
  * **火漆制印**
  * 造成1点火元素伤害。
  */
-const SealOfApproval = createSkill(-21)
+const SealOfApproval = createSkill(13081)
   .setType("normal")
   .costPyro(1)
   .costVoid(2)
@@ -16,7 +16,7 @@ const SealOfApproval = createSkill(-21)
  * 角色进行重击时，造成的伤害+2。
  * 可用次数：1
  */
-const ScarletSeal = createStatus(-22)
+const ScarletSeal = createStatus(113081)
   .withUsage(1)
   .on("beforeSkillDamage", (c) => {
     if (c.sourceSkill.charged) {
@@ -31,7 +31,7 @@ const ScarletSeal = createStatus(-22)
  * **丹书立约**
  * 造成3点火元素伤害，本角色附属丹火印。
  */
-const SignedEdict = createSkill(-23)
+const SignedEdict = createSkill(13082)
   .setType("elemental")
   .costPyro(3)
   .dealDamage(3, DamageType.Pyro)
@@ -44,7 +44,7 @@ const SignedEdict = createSkill(-23)
  * 结束阶段：角色附属丹火印。
  * 持续回合：2
  */
-const Brilliance = createStatus(-24)
+const Brilliance = createStatus(113082)
   .withDuration(2)
   .withThis({ deductCost: true })
   .on("beforeUseDice",
@@ -65,7 +65,7 @@ const Brilliance = createStatus(-24)
  * **凭此结契**
  * 造成3点火元素伤害，本角色附属丹火印和灼灼。
  */
-const DoneDeal = createSkill(-25)
+const DoneDeal = createSkill(13083)
   .setType("burst")
   .costPyro(3)
   .costEnergy(2)
@@ -74,7 +74,7 @@ const DoneDeal = createSkill(-25)
   .createCharacterStatus(Brilliance)
   .build()
 
-const YanFei = createCharacter(-20)
+const YanFei = createCharacter(1308)
   .addTags("pyro", "catalyst", "liyue")
   .maxEnergy(2)
   .addSkills(SealOfApproval, SignedEdict, DoneDeal)
@@ -87,7 +87,7 @@ const YanFei = createCharacter(-20)
  * 装备有此牌的烟绯进行重击时：对生命值不多于6的敌人造成的伤害+1。
  * （牌组中包含烟绯，才能加入牌组）
  */
-const RightOfFinalInterpretation = createCard(-26, ["character"])
+const RightOfFinalInterpretation = createCard(213081, ["character"])
   .addTags("action", "talent")
   .requireCharacter(YanFei)
   .addCharacterFilter(YanFei)
