@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType, DiceType } from "@gi-tcg";
 
 /**
  * **卷积微尘**
@@ -8,7 +8,7 @@ const WhirlwindThrust = createSkill(15041)
   .setType("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,38 @@ const WhirlwindThrust = createSkill(15041)
 const LemniscaticWindCycling = createSkill(15042)
   .setType("elemental")
   .costAnemo(3)
-  // TODO
+  .dealDamage(3, DamageType.Anemo)
+  .build();
+
+/**
+ * **夜叉傩面**
+ * 所附属角色造成的物理伤害变为风元素伤害，且角色造成的风元素伤害+1。
+ * 所附属角色进行下落攻击时：伤害额外+2。
+ * 所附属角色为出战角色，我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）
+ * 持续回合：2
+ */
+const YakshaMask = createStatus(115041)
+  .withDuration(2)
+  .withThis({ deductCost: false })
+  .on("earlyBeforeDealDamage", (c) => {
+    if (c.damageType === DamageType.Physical) {
+      c.changeDamageType(DamageType.Anemo);
+    }
+  })
+  .on("beforeDealDamage", (c) => {
+    if (c.damageType === DamageType.Anemo) {
+      c.addDamage(1);
+    }
+    if (c.sourceSkill?.plunging) {
+      c.addDamage(2);
+    }
+  })
+  .on("beforeUseDice",
+    (c) => c.this.deductCost && !!c.switchActiveCtx && c.this.master!.isActive(),
+    (c) => {
+      c.deductCost(DiceType.Omni);
+    })
+  .on("actionPhase", (c) => { c.this.deductCost = true; })
   .build();
 
 /**
@@ -29,7 +60,8 @@ const BaneOfAllEvil = createSkill(15043)
   .setType("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .dealDamage(4, DamageType.Anemo)
+  .createCharacterStatus(YakshaMask)
   .build();
 
 export const Xiao = createCharacter(1504)
@@ -48,7 +80,29 @@ export const Xiao = createCharacter(1504)
 export const ConquerorOfEvilGuardianYaksha = createCard(215041, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Xiao)
+  .addCharacterFilter(Xiao)
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(BaneOfAllEvil); })
+  .on("useSkill",
+    (c) => c.info.id === BaneOfAllEvil,
+    (c) => { c.this.master.createStatus(ConquerorOfEvilWrathDeity) })
+  .build();
+
+/**
+ * **降魔·忿怒显相**
+ * 所附属角色使用风轮两立时：少花费1个风元素。
+ * 可用次数：2
+ * 所附属角色不再附属夜叉傩面时：移除此效果。
+ */
+const ConquerorOfEvilWrathDeity = createStatus(115042)
+  .withUsage(2)
+  .withDuration(2) // 夜叉傩面持续回合
+  .on("beforeUseDice", 
+    (c) => c.useSkillCtx?.info.id === LemniscaticWindCycling,
+    (c) => {
+      c.deductCost(DiceType.Anemo);
+    })
   .build();

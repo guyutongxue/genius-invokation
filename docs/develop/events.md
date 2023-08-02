@@ -17,16 +17,15 @@
 
 ### 行动事件
 
-| 事件名                      | 含义（对应卡牌描述）                               |
-| --------------------------- | -------------------------------------------------- |
-| `onBeforeAction`            | 行动前                                             |
-| `onBeforeUseDice`           | 【同步】\*时，少/多花费 \* 个 \* 骰子              |
-| `onRequestFastSwitchActive` | 【同步】切换出战角色时，将此次行动视为「快速行动」 |
-| `onUseSkill`                | 使用技能后                                         |
-| `onSwitchActive`            | 切换出战角色后                                     |
-| `onPlayCard`                | 打出手牌后                                         |
-| `onDeclareEnd`              | 宣布结束后                                         |
-| `onAction`                  | 行动后                                             |
+| 事件名            | 含义（对应卡牌描述）                                |
+| ----------------- | --------------------------------------------------- |
+| `onBeforeAction`  | 行动前                                              |
+| `onBeforeUseDice` | 【同步】少/多花费骰子 <br> 或将切换角色视为快速行动 |
+| `onUseSkill`      | 使用技能后                                          |
+| `onSwitchActive`  | 切换出战角色后                                      |
+| `onPlayCard`      | 打出手牌后                                          |
+| `onDeclareEnd`    | 宣布结束后                                          |
+| `onAction`        | 行动后                                              |
 
 默认情况下，只有当前行动轮玩家场上的实体会收到这些事件，除非(unless)对面场上某个实体的 `listenTo` 属性为 `all`。
 

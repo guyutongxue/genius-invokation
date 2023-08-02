@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **仪典剑术**
@@ -8,7 +8,7 @@ const CeremonialBladework = createSkill(11031)
   .setType("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,19 @@ const CeremonialBladework = createSkill(11031)
 const Frostgnaw = createSkill(11032)
   .setType("elemental")
   .costCryo(3)
-  // TODO
+  .dealDamage(3, DamageType.Cryo)
+  .build();
+
+/**
+ * **寒冰之棱**
+ * 我方切换角色后：造成2点冰元素伤害。
+ * 可用次数：3
+ */
+const Icicle = createStatus(111031)
+  .withUsage(3)
+  .on("switchActive", (c) => {
+    c.dealDamage(2, DamageType.Cryo);
+  })
   .build();
 
 /**
@@ -29,7 +41,8 @@ const GlacialWaltz = createSkill(11033)
   .setType("burst")
   .costCryo(4)
   .costEnergy(2)
-  // TODO
+  .dealDamage(1, DamageType.Cryo)
+  .createCombatStatus(Icicle)
   .build();
 
 export const Kaeya = createCharacter(1103)
@@ -48,6 +61,12 @@ export const Kaeya = createCharacter(1103)
 export const ColdbloodedStrike = createCard(211031, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Kaeya)
+  .addCharacterFilter(Kaeya)
   .costCryo(4)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(Frostgnaw); })
+  .on("useSkill",
+    (c) => c.info.id === Frostgnaw,
+    (c) => { c.this.master.heal(2); })
   .build();

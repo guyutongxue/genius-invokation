@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **菌王舞步**
@@ -8,7 +8,7 @@ const MajesticDance = createSkill(27011)
   .setType("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,7 @@ const MajesticDance = createSkill(27011)
 const VolatileSporeCloud = createSkill(27012)
   .setType("elemental")
   .costDendro(3)
-  // TODO
+  .dealDamage(3, DamageType.Dendro)
   .build();
 
 /**
@@ -29,8 +29,38 @@ const FeatherSpreading = createSkill(27013)
   .setType("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    const vitality = c.character.findStatus(RadicalVitalityStatus)?.value ?? 0;
+    c.dealDamage(4 + vitality, DamageType.Dendro);
+  })
   .build();
+
+/**
+ * **活化激能**
+ * 本角色造成或受到元素伤害后：累积1层「活化激能」。（最多累积3层）\n结束阶段：如果「活化激能」层数已达到上限，就将其清空。同时，角色失去所有充能。
+ */
+const RadicalVitalityStatus = createStatus(127013)
+  .withThis({ vitality: 0 })
+  .on("damaged",
+    (c) => c.damageType !== DamageType.Physical && c.damageType !== DamageType.Piercing,
+    (c) => {
+      const MAX = c.this.master!.findEquipment(ProliferatingSpores) ? 4 : 3;
+      c.this.vitality = Math.min(MAX, c.this.vitality + 1);
+    })
+  .on("dealDamage", (c) => {
+    const MAX = c.this.master!.findEquipment(ProliferatingSpores) ? 4 : 3;
+    c.this.vitality = Math.min(MAX, c.this.vitality + 1);
+  })
+  .on("endPhase", (c) => {
+    const ch = c.this.master!;
+    const MAX = ch.findEquipment(ProliferatingSpores) ? 4 : 3;
+    if (c.this.vitality >= MAX) {
+      c.this.vitality = 0;
+      ch.loseEnergy(ch.energy);
+    }
+  })
+  .build();
+
 
 /**
  * **活化激能**
@@ -38,7 +68,8 @@ const FeatherSpreading = createSkill(27013)
  */
 const RadicalVitality = createSkill(27014)
   .setType("passive")
-  // TODO
+  .on("battleBegin", (c) => { c.this.master.createStatus(RadicalVitalityStatus); })
+  .on("revive", (c) => { c.this.master.createStatus(RadicalVitalityStatus); })
   .build();
 
 export const JadeplumeTerrorshroom = createCharacter(2701)
@@ -56,6 +87,9 @@ export const JadeplumeTerrorshroom = createCharacter(2701)
 export const ProliferatingSpores = createCard(227011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(JadeplumeTerrorshroom)
+  .addCharacterFilter(JadeplumeTerrorshroom)
   .costDendro(3)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(VolatileSporeCloud); })
   .build();

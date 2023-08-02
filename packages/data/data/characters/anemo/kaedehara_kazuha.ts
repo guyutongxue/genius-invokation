@@ -1,4 +1,4 @@
-import { DamageType, createCard, createCharacter, createSkill, createStatus, createSummon } from "@gi-tcg";
+import { Aura, DamageType, StatusHandle, createCard, createCharacter, createSkill, createStatus, createSummon } from "@gi-tcg";
 
 /**
  * **我流剑术**
@@ -11,22 +11,29 @@ const GaryuuBladework = createSkill(15051)
   .dealDamage(2, DamageType.Physical)
   .build()
 
+
+function createMidareRanzan(id: number, type: DamageType) {
+  return createStatus(id)
+    .on("earlyBeforeDealDamage", (c) => {
+      if (c.sourceSkill?.plunging && c.damageType === DamageType.Physical) {
+        c.changeDamageType(type);
+        c.addDamage(1);
+      }
+    })
+    .on("useSkill", (c) => c.this.dispose())
+    .build();
+}
+
 /**
- * 乱岚拨止
- * 所附属角色进行下落攻击时，造成的物理伤害变为风元素伤害，且伤害+1。
+ * **乱岚拨止·\***
+ * 所附属角色进行下落攻击时，造成的物理伤害变为 \* 元素伤害，且伤害+1。
  * 角色使用技能后：移除此效果。
  */
-const MidareRanzan = createStatus(-2)
-  .on("earlyBeforeDealDamage", (c) => {
-    if (c.sourceSkill?.plunging && c.damageType === DamageType.Physical) {
-      c.changeDamageType(DamageType.Anemo);
-      c.addDamage(1);
-    }
-  })
-  .on("useSkill", (c) => c.this.dispose())
-  .build()
-
-// TODO: MAYBE 5 status here? wait for next update data
+const MidareRanzan = createMidareRanzan(115051, DamageType.Anemo);
+const MidareRanzanCryo = createMidareRanzan(115053, DamageType.Cryo);
+const MidareRanzanHydro = createMidareRanzan(115054, DamageType.Hydro);
+const MidareRanzanPyro = createMidareRanzan(115055, DamageType.Pyro);
+const MidareRanzanElectro = createMidareRanzan(115056, DamageType.Electro);
 
 /**
  * **千早振**
@@ -38,10 +45,27 @@ const Chihayaburu = createSkill(15052)
   .setType("elemental")
   .costAnemo(3)
   .dealDamage(3, DamageType.Anemo)
-  .createCharacterStatus(MidareRanzan)
+  .do((c) => {
+    if (c.target.aura === Aura.Cryo || c.target.aura === Aura.CryoDendro) {
+      c.character.createStatus(MidareRanzanCryo);
+    } else if (c.target.aura === Aura.Hydro) {
+      c.character.createStatus(MidareRanzanHydro);
+    } else if (c.target.aura === Aura.Pyro) {
+      c.character.createStatus(MidareRanzanPyro);
+    } else if (c.target.aura === Aura.Electro) {
+      c.character.createStatus(MidareRanzanElectro);
+    } else {
+      c.character.createStatus(MidareRanzan);
+    }
+  })
   .build()
 
-// TODO 被动技能：千早振
+const ChihayaburuPassive = createSkill(15054)
+  .setType("passive")
+  .on("useSkill",
+    (c) => c.info.id === Chihayaburu,
+    (c) => { c.switchActive(">") })
+  .build();
 
 /**
  * **流风秋野**
@@ -49,7 +73,7 @@ const Chihayaburu = createSkill(15052)
  * 可用次数：3
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
-const AutumnWhirlwind = createSummon(-4)
+const AutumnWhirlwind = createSummon(115052)
   .withUsage(3)
   .withThis({ type: DamageType.Anemo })
   .on("endPhase", (c) => {
@@ -81,11 +105,11 @@ const KazuhaSlash = createSkill(15053)
 const KaedeharaKazuha = createCharacter(1505)
   .addTags("anemo", "sword", "inazuma")
   .maxEnergy(2)
-  .addSkills(GaryuuBladework, Chihayaburu, KazuhaSlash)
+  .addSkills(GaryuuBladework, Chihayaburu, KazuhaSlash, ChihayaburuPassive)
   .build()
 
 /**
- * 风物之诗咏
+ * **风物之诗咏**
  * 战斗行动：我方出战角色为枫原万叶时，装备词牌。
  * 枫原万叶装备此牌后，立刻使用一次千早振。
  * 装备有此牌的枫原万叶引发扩散反应后：使我方角色和召唤物接下来2次所造成的被扩散元素类型的伤害+1。
@@ -99,5 +123,36 @@ export const PoeticsOfFuubutsu = createCard(215051, ["character"])
   .costAnemo(3)
   .buildToEquipment()
   .on("enter", (c) => { c.useSkill(Chihayaburu) })
-  // TODO
+  .on("dealDamage", (c) => {
+    const swirled = c.reaction?.swirledElement() ?? null;
+    if (swirled === null) return;
+    let status: StatusHandle;
+    switch (swirled) {
+      case DamageType.Cryo: status = PoeticsOfFuubutsuCryo; break;
+      case DamageType.Hydro: status = PoeticsOfFuubutsuHydro; break;
+      case DamageType.Pyro: status = PoeticsOfFuubutsuPyro; break;
+      case DamageType.Electro: status = PoeticsOfFuubutsuElectro; break;
+    }
+    c.createCombatStatus(status);
+  })
   .build()
+
+function createPoeticsOfFuubutsu(id: number, type: DamageType) {
+  return createStatus(id)
+    .withUsage(2)
+    .on("beforeDealDamage",
+      (c) => !!c.sourceSkill && !!c.sourceSummon && !c.sourceReaction 
+        && c.damageType === type,
+      (c) => c.addDamage(1))
+    .build();
+}
+
+/**
+ * **风物之诗咏·\***
+ * 我方角色和召唤物所造成的 \* 元素伤害+1。
+ * 可用次数：2
+ */
+const PoeticsOfFuubutsuCryo = createPoeticsOfFuubutsu(115057, DamageType.Cryo);
+const PoeticsOfFuubutsuHydro = createPoeticsOfFuubutsu(115058, DamageType.Hydro);
+const PoeticsOfFuubutsuPyro = createPoeticsOfFuubutsu(115059, DamageType.Pyro);
+const PoeticsOfFuubutsuElectro = createPoeticsOfFuubutsu(115050, DamageType.Electro);

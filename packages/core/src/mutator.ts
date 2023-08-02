@@ -46,10 +46,13 @@ export class Mutator {
     this.store._playerIO[1]?.notifyMe(event);
   }
 
-  private doElementalReaction(damage: Damage) {
+  private doElementalReaction(damage: Damage, hasDamage = true) {
     const dmgCtx = new DamageContextImpl(this.store, damage.source, damage);
+    Object.defineProperty(dmgCtx, "hasDamage", {
+      value: hasDamage,
+    });
     const [newAura, reaction] = makeReactionFromDamage(
-      mixinExt(this.store, damage.source, dmgCtx),
+      mixinExt(this.store, damage.source, dmgCtx as DamageContextImpl & { hasDamage: boolean }),
     );
     this.store.updateCharacterAtPath(damage.target, (draft) => {
       draft.aura = newAura;
@@ -104,7 +107,11 @@ export class Mutator {
         });
         this.emitEvent("onDefeated", target);
         // 检查是否所有角色均已死亡：游戏结束
-        if (this.store.state.players[target.who].characters.every((ch) => ch.defeated)) {
+        if (
+          this.store.state.players[target.who].characters.every(
+            (ch) => ch.defeated,
+          )
+        ) {
           this.gameEnd(flip(target.who));
         }
       } else {
@@ -172,7 +179,7 @@ export class Mutator {
       throw new Error(`Invalid applied element type ${type}`);
     }
     const pseudoDamage = new Damage(source, target, 0, type);
-    this.doElementalReaction(pseudoDamage);
+    this.doElementalReaction(pseudoDamage, false);
   }
 
   private checkDispose() {
@@ -259,7 +266,11 @@ export class Mutator {
         this.store.updateEntityAtPath(target, (draft) => {
           draft.usage--;
           draft.usagePerRound--;
-          if (draft.usage <= 0) {
+          if (
+            draft.usage <= 0 &&
+            (!("disposeWhenUsedUp" in draft.info) ||
+              draft.info.disposeWhenUsedUp)
+          ) {
             draft.shouldDispose = true;
           }
         });
@@ -302,14 +313,21 @@ export class Mutator {
       // 此时检测双方出战角色死亡
       const pendingChosen: (0 | 1)[] = [];
       for (const idx of [0, 1] as const) {
-        if (getCharacterAtPath(this.store.state, this.store.state.players[idx].active!).defeated) {
+        if (
+          getCharacterAtPath(
+            this.store.state,
+            this.store.state.players[idx].active!,
+          ).defeated
+        ) {
           this.store._produce((draft) => {
             draft.players[idx].active = null;
-          })
+          });
           pendingChosen.push(idx);
         }
       }
-      await Promise.all(pendingChosen.map((idx) => this.players[idx].chooseActive()));
+      await Promise.all(
+        pendingChosen.map((idx) => this.players[idx].chooseActive()),
+      );
     }
     const playerSeq = [
       this.store.state.currentTurn,

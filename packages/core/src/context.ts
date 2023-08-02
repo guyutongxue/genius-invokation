@@ -22,17 +22,14 @@ import {
   makeReaction,
   REACTION_MAP,
   SkillDamageContext,
-  RequestFastSwitchContext,
   EntityContext,
   EquipmentContext,
   SupportContext,
-  NormalSkillInfo,
   CharacterTag,
   BeforeDefeatedContext,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import {
-  CharacterState,
   GameState,
   Store,
   findCharacter,
@@ -526,11 +523,17 @@ export class ContextImpl implements Context<object, object, true> {
     this.store.mutator.players[flip(this.who)].skipNextTurn();
   }
 
-  skillCount(skill: number): number {
-    return this.player.skillLog.filter((sk) => sk === skill).length;
+  skillCount(skill: number, allRound = false): number {
+    return this.player.skillLog.filter(
+      (sk) =>
+        sk[1] === skill && (allRound || sk[0] === this.store.state.roundNumber),
+    ).length;
   }
-  cardCount(card: number): number {
-    return this.player.cardLog.filter((c) => c === card).length;
+  cardCount(card: number, allRound = false): number {
+    return this.player.cardLog.filter(
+      (c) =>
+        c[1] === card && (allRound || c[0] === this.store.state.roundNumber),
+    ).length;
   }
 
   randomOne<T>(...items: T[]): T {
@@ -1187,28 +1190,6 @@ class SkillDamageContextImpl
 {
   get sourceSkill() {
     return super.sourceSkill!;
-  }
-}
-
-export interface RequestFastToken {
-  resolved: boolean;
-}
-
-class RequestFastSwitchContextImpl implements RequestFastSwitchContext {
-  constructor(
-    private store: Store,
-    private caller: EntityPath,
-    private who: 0 | 1,
-    private token: RequestFastToken,
-  ) {}
-
-  requestFast(condition?: boolean | undefined): void {
-    if (this.token.resolved) {
-      throw new Error("Token already resolved");
-    }
-    if (typeof condition === "undefined" || condition === true) {
-      this.token.resolved = true;
-    }
   }
 }
 

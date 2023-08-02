@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType, Reaction } from "@gi-tcg";
 
 /**
  * **祈颂射艺**
@@ -8,7 +8,7 @@ const SupplicantsBowmanship = createSkill(17011)
   .setType("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,24 @@ const SupplicantsBowmanship = createSkill(17011)
 const FloralBrush = createSkill(17012)
   .setType("elemental")
   .costDendro(3)
-  // TODO
+  .dealDamage(3, DamageType.Dendro)
+  .do((c) => {
+    if (c.character.findEquipment(FloralSidewinder)) {
+      c.character.createStatus(Sprout);
+    }
+  })
+  .build();
+
+/**
+ * **柯里安巴**
+ * "结束阶段：造成2点草元素伤害。
+ * 可用次数：2
+ */
+const CuileinAnbar = createSummon(117011)
+  .withDuration(2)
+  .on("endPhase", (c) => {
+    c.dealDamage(2, DamageType.Dendro);
+  })
   .build();
 
 /**
@@ -29,7 +46,8 @@ const TrumpcardKitty = createSkill(17013)
   .setType("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .dealDamage(2, DamageType.Dendro)
+  .summon(CuileinAnbar)
   .build();
 
 export const Collei = createCharacter(1701)
@@ -48,6 +66,22 @@ export const Collei = createCharacter(1701)
 export const FloralSidewinder = createCard(217011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Collei)
+  .addCharacterFilter(Collei)
   .costDendro(4)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(FloralBrush); })
+  .build();
+
+/**
+ * **新叶**
+ * 我方角色使用技能引发草元素相关反应后：造成1点草元素伤害。（每回合1次）
+ * 持续回合：1
+ */
+const Sprout = createStatus(117012)
+  .withDuration(1)
+  .withUsagePerRound(1)
+  .on("useSkill",
+    (c) => c.getAllDescendingReactions().some((r) => r.relatedWith(DamageType.Dendro)),
+    (c) => { c.dealDamage(1, DamageType.Dendro); })
   .build();

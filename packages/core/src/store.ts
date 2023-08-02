@@ -72,8 +72,8 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
-  readonly skillLog: number[]; // 每回合清空
-  readonly cardLog: number[]; // 每回合清空
+  readonly skillLog: readonly (readonly [round: number, skillId: number])[];
+  readonly cardLog: readonly (readonly [round: number, cardId: number])[];
 }
 
 export interface CardState {

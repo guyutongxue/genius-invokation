@@ -479,7 +479,7 @@ class PassiveSkillBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & Pas
     throw new Error("Cannot set usage for passive skill");
   }
 
-  withThis<NewThisT>(state: NewThisT): PassiveSkillBuilder<NewThisT & SkillContext<true>> {
+  withThis<NewThisT extends object>(state: NewThisT): PassiveSkillBuilder<NewThisT & SkillContext<true>> {
     if (this.state !== null) {
       throw new Error("Cannot set this twice");
     }
@@ -510,7 +510,7 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
     super();
   }
 
-  withThis<NewThisT>(state: NewThisT): StatusBuilder<BuildFromCard, NewThisT & StatusContext<true>> {
+  withThis<NewThisT extends object>(state: NewThisT): StatusBuilder<BuildFromCard, NewThisT & StatusContext<true>> {
     if (this.state !== null) {
       throw new Error("Cannot set this twice");
     }
@@ -526,11 +526,17 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
     this.tags.push("shield");
     this.shieldConfig = {
       initial: initial,
-      recreateMax: recreateMax ?? initial,
+      recreateMax: recreateMax ?? Infinity,
     };
     this
       .withThis({ [SHIELD_VALUE]: initial })
       .on("beforeDamaged", (c) => {
+        if (!c.this.master) {
+          // 出战护盾只保护出战角色
+          if (!c.target.isActive()) {
+            return false;
+          }
+        }
         const deducted = Math.min(c.value, c.this[SHIELD_VALUE]);
         c.decreaseDamage(deducted);
         c.this[SHIELD_VALUE] -= deducted;
@@ -572,7 +578,7 @@ class SupportBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & SupportC
     super();
   }
 
-  withThis<NewThisT>(state: NewThisT): SupportBuilder<NewThisT & SupportContext<true>> {
+  withThis<NewThisT extends object>(state: NewThisT): SupportBuilder<NewThisT & SupportContext<true>> {
     if (this.state !== null) {
       throw new Error("Cannot set this twice");
     }
@@ -607,7 +613,7 @@ class EquipmentBuilder<ThisT = object> extends TriggerBuilderBase<ThisT & Equipm
     super();
   }
 
-  withThis<NewThisT>(state: NewThisT): EquipmentBuilder<NewThisT & EquipmentContext<true>> {
+  withThis<NewThisT extends object>(state: NewThisT): EquipmentBuilder<NewThisT & EquipmentContext<true>> {
     if (this.state !== null) {
       throw new Error("Cannot set this twice");
     }
@@ -646,7 +652,7 @@ class SummonBuilder<ThisT> extends TriggerBuilderBase<ThisT & SummonContext<true
     super();
   }
 
-  withThis<NewThisT>(state: NewThisT): SummonBuilder<NewThisT & SummonContext<true>> {
+  withThis<NewThisT extends object>(state: NewThisT): SummonBuilder<NewThisT & SummonContext<true>> {
     if (this.state !== null) {
       throw new Error("Cannot set this twice");
     }

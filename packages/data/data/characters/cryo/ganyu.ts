@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **流天射术**
@@ -8,7 +8,19 @@ const LiutianArchery = createSkill(11011)
   .setType("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
+  .build();
+
+/**
+ * **冰莲**
+ * 我方出战角色受到伤害时：抵消1点伤害。
+ * 可用次数：2
+ */
+const IceLotus = createStatus(111012)
+  .withUsage(2)
+  .on("beforeDamaged",
+    (c) => c.target.isActive(),
+    (c) => { c.decreaseDamage(1); })
   .build();
 
 /**
@@ -18,7 +30,8 @@ const LiutianArchery = createSkill(11011)
 const TrailOfTheQilin = createSkill(11012)
   .setType("elemental")
   .costCryo(3)
-  // TODO
+  .dealDamage(1, DamageType.Cryo)
+  .createCharacterStatus(IceLotus)
   .build();
 
 /**
@@ -28,7 +41,27 @@ const TrailOfTheQilin = createSkill(11012)
 const FrostflakeArrow = createSkill(11013)
   .setType("normal")
   .costCryo(5)
-  // TODO
+  .do((c) => {
+    if (c.character.findEquipment(UndividedHeart) && c.skillCount(FrostflakeArrow) > 0) {
+      c.dealDamage(3, DamageType.Piercing, "!<>");
+    } else {
+      c.dealDamage(2, DamageType.Piercing, "!<>");
+    }
+    c.dealDamage(2, DamageType.Cryo);
+  })
+  .build();
+
+/**
+ * **冰灵珠**
+ * 结束阶段：造成1点冰元素伤害，对所有敌方后台角色造成1点穿透伤害。
+ * 可用次数：2
+ */
+const SacredCryoPearl = createSummon(111011)
+  .withUsage(2)
+  .on("endPhase", (c) => {
+    c.dealDamage(1, DamageType.Piercing, "!<>");
+    c.dealDamage(1, DamageType.Cryo);
+  })
   .build();
 
 /**
@@ -39,7 +72,9 @@ const CelestialShower = createSkill(11014)
   .setType("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .dealDamage(1, DamageType.Piercing, "!<>")
+  .dealDamage(2, DamageType.Cryo)
+  .summon(SacredCryoPearl)
   .build();
 
 export const Ganyu = createCharacter(1101)
@@ -57,6 +92,8 @@ export const Ganyu = createCharacter(1101)
 export const UndividedHeart = createCard(211011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Ganyu)
+  .addCharacterFilter(Ganyu)
   .costCryo(5)
-  // TODO
+  .buildToEquipment()
   .build();

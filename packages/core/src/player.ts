@@ -26,7 +26,6 @@ import {
 } from "@gi-tcg/data";
 import {
   CreatorArgsForPlayer,
-  RequestFastToken,
   RollPhaseConfig,
 } from "./context.js";
 import {
@@ -404,10 +403,6 @@ export class PlayerMutator {
         type: "declareEnd",
       },
     ];
-    const fastSwitchToken: RequestFastToken = {
-      resolved: false,
-    };
-    this.emitSyncEvent("onRequestFastSwitchActive", fastSwitchToken);
     if (canUseSkill) {
       const skills = ch.info.skills
         .map((s) => getSkill(s))
@@ -438,7 +433,7 @@ export class PlayerMutator {
           dice: [DiceType.Void],
           from: chPath,
           to: c[1],
-          fast: fastSwitchToken.resolved,
+          fast: false,
         }),
       ),
     );
@@ -539,7 +534,8 @@ export class PlayerMutator {
       });
     }
     this.produce((draft) => {
-      draft.skillLog.push(skill.info.id);
+      draft.skillLog.push([this.store.state.roundNumber, skill.info.id]);
+      draft.canPlunging = false;
     });
     await this.doEvent();
     this.emitEvent("onUseSkill", skill);
@@ -555,7 +551,7 @@ export class PlayerMutator {
     }
     this.produce((draft) => {
       draft.hands.splice(index, 1);
-      draft.cardLog.push(hand.info.id);
+      draft.cardLog.push([this.store.state.roundNumber, hand.info.id]);
     });
     this.io?.notifyMe({ type: "playCard", card: hand.info.id, opp: false });
     this.io?.notifyOpp({ type: "playCard", card: hand.info.id, opp: true });
@@ -580,6 +576,7 @@ export class PlayerMutator {
         entityId: targetEntityId,
         indexHint: newActiveIndex,
       };
+      draft.canPlunging = true;
     });
     const [to, toPath] = this.activeCharacter();
     this.io?.notifyMe({

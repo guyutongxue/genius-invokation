@@ -29,8 +29,8 @@ const SearingPrecept = createSkill(23022)
 const DarkfireFurnace = createSummon(123021)
   .withUsage(2)
   .on("endPhase", (c) => {
-    c.dealDamage(1, DamageType.Pyro);
     c.dealDamage(1, DamageType.Piercing, "!<>");
+    c.dealDamage(1, DamageType.Pyro);
   })
   .build();
 

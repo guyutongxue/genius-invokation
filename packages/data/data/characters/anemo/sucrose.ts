@@ -31,6 +31,7 @@ const AstableAnemohypostasisCreation6308 = createSkill(15012)
 const LargeWindSpirit = createSummon(115011)
   .withUsage(3)
   .withThis({ type: DamageType.Anemo })
+  .on("enter", (c) => { c.findSummon(LargeWindSpirit01)?.dispose(); })
   .on("endPhase", (c) => {
     c.dealDamage(2, c.this.type);
   })
@@ -46,6 +47,36 @@ const LargeWindSpirit = createSummon(115011)
   .build();
 
 /**
+ * **大型风灵**
+ * 结束阶段：造成2点风元素伤害。
+ * 可用次数：3
+ * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
+ * 此召唤物在场时：如果此牌的元素类型已转换，则使我方造成的此类元素伤害+1。
+ */
+const LargeWindSpirit01 = createSummon(115012)
+  .withUsage(3)
+  .withThis({ type: DamageType.Anemo })
+  .on("enter", (c) => { c.findSummon(LargeWindSpirit)?.dispose(); })
+  .on("endPhase", (c) => {
+    c.dealDamage(2, c.this.type);
+  })
+  .on("dealDamage", (c) => {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+      const newType = c.reaction?.swirledElement() ?? null;
+      if (newType !== null) {
+        c.this.type = newType;
+      }
+    }
+    return false;
+  })
+  .on("beforeDealDamage", (c) => {
+    if (c.this.type !== DamageType.Anemo && c.damageType === c.this.type) {
+      c.addDamage(1);
+    }
+  })
+  .build();
+
+/**
  * **禁·风灵作成·柒伍同构贰型**
  * 造成1点风元素伤害，召唤大型风灵。
  */
@@ -54,7 +85,13 @@ const ForbiddenCreationIsomer75TypeIi = createSkill(15013)
   .costAnemo(3)
   .costEnergy(2)
   .dealDamage(1, DamageType.Anemo)
-  .summon(LargeWindSpirit)
+  .do((c) => {
+    if (c.character.findEquipment(ChaoticEntropy)) {
+      c.summon(LargeWindSpirit01);
+    } else {
+      c.summon(LargeWindSpirit);
+    }
+  })
   .build();
 
 export const Sucrose = createCharacter(1501)
@@ -73,7 +110,10 @@ export const Sucrose = createCharacter(1501)
 export const ChaoticEntropy = createCard(215011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Sucrose)
+  .addCharacterFilter(Sucrose)
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => c.useSkill(ForbiddenCreationIsomer75TypeIi))
   .build();

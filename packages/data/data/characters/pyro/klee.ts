@@ -18,6 +18,7 @@ const Kaboom = createSkill(13061)
  */
 const ExplosiveSpark = createStatus(113061)
   .withUsage(1)
+  .on("enter", (c) => { c.this.master?.findStatus(ExplosiveSpark01)?.dispose(); })
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx?.charged,
     (c) => { c.deductCost(DiceType.Pyro) })
@@ -33,6 +34,7 @@ const ExplosiveSpark = createStatus(113061)
  */
 const ExplosiveSpark01 = createStatus(113061)
   .withUsage(2)
+  .on("enter", (c) => { c.this.master?.findStatus(ExplosiveSpark)?.dispose(); })
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx?.charged,
     (c) => { c.deductCost(DiceType.Pyro) })

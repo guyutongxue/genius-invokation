@@ -41,8 +41,8 @@ const StarwardSword = createSkill(14033)
   .setType("burst")
   .costElectro(4)
   .costEnergy(3)
-  .dealDamage(4, DamageType.Electro)
   .dealDamage(3, DamageType.Piercing, "!<>")
+  .dealDamage(4, DamageType.Electro)
   .build();
 
 export const Keqing = createCharacter(1403)

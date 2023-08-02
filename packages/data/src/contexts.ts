@@ -63,7 +63,3 @@ export interface ElementalReactionContext {
   relatedWith(d: DamageType): boolean;
   swirledElement(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null;
 }
-
-export interface RequestFastSwitchContext {
-  requestFast(condition?: boolean): void;
-}

@@ -33,10 +33,10 @@ interface GlobalContext<ThisT, Writable extends boolean = false> {
 
   dice: readonly DiceType[];
 
-  // 本回合中技能使用次数（迪卢克、艾琳）
-  skillCount(skill: SkillHandle): number;
-  // 本回合卡牌使用次数（本大爷还不能输）
-  cardCount(card: CardHandle): number;
+  // 技能使用次数（迪卢克、艾琳）
+  skillCount(skill: SkillHandle, allRound?: boolean): number;
+  // 卡牌使用次数（本大爷还不能输）
+  cardCount(card: CardHandle, allRound?: boolean): number;
 
   randomOne<T>(...items: T[]): T;
 

@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, createSummon, DamageType, SummonHandle } from "@gi-tcg";
 
 /**
  * **冰萤棱锥**
@@ -8,7 +8,32 @@ const CicinIcicle = createSkill(21011)
   .setType("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(1, DamageType.Cryo)
+  .build();
+
+/**
+ * **冰萤**
+ * 结束阶段：造成1点冰元素伤害。
+ * 可用次数：2（可叠加，最多叠加到3次）
+ * 愚人众·冰萤术士「普通攻击」后：此牌可用次数+1。
+ * 我方角色受到发生元素反应的伤害后：此牌可用次数-1。
+ */
+const CryoCicins: SummonHandle = createSummon(121011)
+  .withUsage(2, 3)
+  .on("endPhase", (c) => {
+    c.dealDamage(1, DamageType.Cryo);
+  })
+  .on("useSkill",
+    (c) => c.character.info.id === FatuiCryoCicinMage
+      && c.info.type === "normal",
+    (c) => {
+      c.this.setUsage(c.this.usage + 1);
+    })
+  .on("damaged",
+    (c) => !!c.reaction,
+    (c) => {
+      c.this.setUsage(c.this.usage - 1);
+    })
   .build();
 
 /**
@@ -18,7 +43,21 @@ const CicinIcicle = createSkill(21011)
 const MistySummons = createSkill(21012)
   .setType("elemental")
   .costCryo(3)
-  // TODO
+  .dealDamage(1, DamageType.Cryo)
+  .summon(CryoCicins)
+  .build();
+
+/**
+ * **流萤护罩**
+ * 为我方出战角色提供1点护盾。
+ * 创建时：如果我方场上存在冰萤，则额外提供其可用次数的护盾。（最多额外提供3点护盾）
+ */
+const FlowingCicinShield = createStatus(121012)
+  .shield(1)
+  .on("enter", (c) => {
+    const additionalValue = Math.min(3, c.findSummon(CryoCicins)?.usage ?? 0);
+    c.this.setValue(c.this.value + additionalValue);
+  })
   .build();
 
 /**
@@ -29,7 +68,11 @@ const BlizzardBranchBlossom = createSkill(21013)
   .setType("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .dealDamage(5, DamageType.Cryo)
+  .do((c) => {
+    c.applyElement(DamageType.Cryo, c.character.asTarget());
+  })
+  .createCombatStatus(FlowingCicinShield)
   .build();
 
 export const FatuiCryoCicinMage = createCharacter(2101)
@@ -47,6 +90,16 @@ export const FatuiCryoCicinMage = createCharacter(2101)
 export const CicinsColdGlare = createCard(221011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(FatuiCryoCicinMage)
+  .addCharacterFilter(FatuiCryoCicinMage)
   .costCryo(3)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(MistySummons); })
+  .on("useSkill", (c) => {
+    const summon = c.findSummon(CryoCicins);
+    if (!summon) return;
+    if (summon.usage > summon.info.maxUsage) {
+      c.dealDamage(2, DamageType.Cryo);
+    }
+  })
   .build();

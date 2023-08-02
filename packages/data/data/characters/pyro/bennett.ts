@@ -28,6 +28,7 @@ const PassionOverload = createSkill(13032)
  */
 const InspirationField = createStatus(113031)
   .withDuration(2)
+  .on("enter", (c) => { c.findCombatStatus(InspirationField01)?.dispose(); })
   .on("beforeSkillDamage",
     (c) => c.sourceSkill.character.health <= 7,
     (c) => c.addDamage(2))
@@ -43,6 +44,7 @@ const InspirationField = createStatus(113031)
  */
 const InspirationField01 = createStatus(113032)
   .withDuration(2)
+  .on("enter", (c) => { c.findCombatStatus(InspirationField)?.dispose(); })
   .on("beforeSkillDamage",
     (c) => c.addDamage(2))
   .on("useSkill",

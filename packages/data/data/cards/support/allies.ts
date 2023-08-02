@@ -102,7 +102,6 @@ const IronTongueTian = createCard(322011)
   .withUsage(2)
   .on("endPhase", (c) => !!c.queryCharacter(":energy(notFull)")?.gainEnergy(1))
   .build();
-// TODO: 确认：如果所有角色充能已满，是否扣除可用次数
 
 /**
  * **凯瑟琳**

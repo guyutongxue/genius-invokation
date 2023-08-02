@@ -71,6 +71,7 @@ const AllSchemesToKnowTathata = createSkill(17033)
  */
 const ShrineOfMaya = createStatus(117032)
   .withDuration(2)
+  .on("enter", (c) => { c.findCombatStatus(ShrineOfMaya01)?.dispose(); })
   .on("beforeDealDamage", (c) => {
     if (c.reaction) {
       c.addDamage(1);
@@ -87,6 +88,7 @@ const ShrineOfMaya = createStatus(117032)
  */
 const ShrineOfMaya01 = createStatus(117032)
   .withDuration(3)
+  .on("enter", (c) => { c.findCombatStatus(ShrineOfMaya)?.dispose(); })
   .on("beforeDealDamage", (c) => {
     if (c.reaction) {
       c.addDamage(1);
