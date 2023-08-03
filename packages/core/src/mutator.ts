@@ -1,4 +1,4 @@
-import { DamageData, DamageType, Event } from "@gi-tcg/typings";
+import { Aura, DamageData, DamageType, Event } from "@gi-tcg/typings";
 import { CharacterPath, heal } from "./character.js";
 import { AllEntityState, EntityPath } from "./entity.js";
 import { PlayerIO } from "./io.js";
@@ -104,12 +104,9 @@ export class Mutator {
       };
       this.emitSyncEvent("onBeforeDefeated", target, defeatedToken);
       if (defeatedToken.immune === null) {
-        // TODO
-        // this.store.updateCharacterAtPath(target, (draft) => {
-        //   draft.defeated = true;
-        //   draft.statuses = [];
-        //   draft.equipments = [];
-        // });
+        this.store.updateCharacterAtPath(target, (draft) => {
+          draft.defeated = true;
+        });
         this.emitEvent("onDefeated", target);
         // 检查是否所有角色均已死亡：游戏结束
         if (
@@ -193,12 +190,18 @@ export class Mutator {
       flip(this.store.state.currentTurn),
     ];
     for (const idx of playerSeq) {
-      for (const [,chPath] of findCharacter(this.store.state, idx)) {
-        for (const [st, stPath] of findEntity(this.store.state, chPath, "status")) {
+      for (const [, chPath] of findCharacter(this.store.state, idx)) {
+        for (const [st, stPath] of findEntity(
+          this.store.state,
+          chPath,
+          "status",
+        )) {
           if (st.shouldDispose) {
             this.emitSyncEvent("onDispose", stPath);
             this.store.updateCharacterAtPath(chPath, (draft) => {
-              draft.statuses = draft.statuses.filter((s) => s.entityId !== st.entityId);
+              draft.statuses = draft.statuses.filter(
+                (s) => s.entityId !== st.entityId,
+              );
             });
           }
         }
@@ -209,8 +212,15 @@ export class Mutator {
             this.emitSyncEvent("onDispose", path);
             this.store._produce((draft) => {
               const player = draft.players[idx];
-              const prop = type === "status" ? "combatStatuses" : type === "summon" ? "summons" : "supports";
-              player[prop] = (player[prop] as any[]).filter((s) => s.entityId !== e.entityId);
+              const prop =
+                type === "status"
+                  ? "combatStatuses"
+                  : type === "summon"
+                  ? "summons"
+                  : "supports";
+              player[prop] = (player[prop] as any[]).filter(
+                (s) => s.entityId !== e.entityId,
+              );
             });
           }
         }
@@ -302,30 +312,34 @@ export class Mutator {
   }
 
   private async *propagateAsyncEvent(ed: AnyEventDescriptor) {
+    const playerSeq = [
+      this.store.state.currentTurn,
+      flip(this.store.state.currentTurn),
+    ];
+    const defeatedChs = findCharacter(
+      this.store.state,
+      "all",
+      (ch) => ch.defeated,
+    );
     if (ed[0] === "onDefeated") {
-      // 此时检测双方出战角色死亡
+      // 出战角色死亡，需要重新选择的玩家
       const pendingChosen: (0 | 1)[] = [];
-      for (const idx of [0, 1] as const) {
+      for (const [, chPath] of defeatedChs) {
         if (
-          getCharacterAtPath(
-            this.store.state,
-            this.store.state.players[idx].active!,
-          ).defeated
+          chPath.entityId ===
+          this.store.state.players[chPath.who].active?.entityId
         ) {
           this.store._produce((draft) => {
-            draft.players[idx].active = null;
+            draft.players[chPath.who].active = null;
           });
-          pendingChosen.push(idx);
+          pendingChosen.push(chPath.who);
         }
       }
       await Promise.all(
         pendingChosen.map((idx) => this.players[idx].chooseActive()),
       );
     }
-    const playerSeq = [
-      this.store.state.currentTurn,
-      flip(this.store.state.currentTurn),
-    ];
+
     for (const idx of playerSeq) {
       for (const [, chPath] of findCharacter(this.store.state, idx)) {
         for (const type of ["passive_skill", "equipment", "status"] as const) {
@@ -341,6 +355,17 @@ export class Mutator {
           yield;
         }
       }
+    }
+
+    if (ed[0] === "onDefeated") {
+      defeatedChs.forEach(([, chPath]) => {
+        this.store.updateCharacterAtPath(chPath, (draft) => {
+          draft.aura = Aura.None;
+          draft.energy = 0;
+          draft.equipments = [];
+          draft.statuses = [];
+        });
+      });
     }
   }
   private pendingEvent: AsyncEventDescriptor[] = [];

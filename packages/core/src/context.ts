@@ -1294,13 +1294,13 @@ function commonCharacterChecker(
   caller: EntityPath,
   character: CharacterPath,
 ) {
-  if (!("listenTo" in caller)) {
+  if (!("listenTo" in caller.info)) {
     return false;
   }
-  if (caller.listenTo === "all") {
+  if (caller.info.listenTo === "all") {
     return true;
   }
-  if ("character" in caller && caller.listenTo === "master") {
+  if ("character" in caller && caller.info.listenTo === "master") {
     return caller.character.entityId === character.entityId;
   }
   return caller.who === character.who;
