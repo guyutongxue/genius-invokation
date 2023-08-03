@@ -56,7 +56,7 @@ interface GlobalAction<ThisT> extends GlobalContext<ThisT, true> {
   generateDice(...dice: DiceType[]): void;
   generateRandomElementDice(count?: number): void;
 
-  getCardCount(opp?: boolean): number;
+  handLength(opp?: boolean): number;
   drawCards(count: number, opp?: boolean, tag?: CardTag): void;
   createCards(...cards: CardHandle[]): void;
   switchCards(): Promise<void>;

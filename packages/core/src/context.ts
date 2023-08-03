@@ -27,6 +27,7 @@ import {
   SupportContext,
   CharacterTag,
   BeforeDefeatedContext,
+  DisposeContext,
 } from "@gi-tcg/data";
 import { flip } from "@gi-tcg/utils";
 import {
@@ -476,7 +477,7 @@ export class ContextImpl implements Context<object, object, true> {
     this.generateDice(...newDice);
   }
 
-  getCardCount(opp?: boolean | undefined): number {
+  handLength(opp?: boolean | undefined): number {
     return this.store.state.players[opp ? flip(this.who) : this.who].hands
       .length;
   }
@@ -720,6 +721,13 @@ export class EntityContextImpl
     private path: EntityPath,
   ) {}
 
+  get type() {
+    if (this.path.type === "skill" || this.path.type === "card") {
+      throw new Error("Cannot get type of skill or card");
+    }
+    return this.path.type;
+  }
+
   private get entity(): AllEntityState {
     return getEntityAtPath(this.store.state, this.path);
   }
@@ -847,6 +855,14 @@ export class UseDiceContextImpl implements UseDiceContext {
           action.targets,
         );
       }
+    }
+  }
+
+  get currentCost(): DiceType[] {
+    if ("dice" in this.action) {
+      return this.action.dice;
+    } else {
+      return [DiceType.Void];
     }
   }
 
@@ -1216,6 +1232,17 @@ class DefeatedContextImpl implements BeforeDefeatedContext {
   }
 }
 
+class DisposeContextImpl implements DisposeContext {
+  public readonly disposing: EntityContextImpl;
+  constructor(
+    private store: Store,
+    private caller: EntityPath,
+    private path: EntityPath,
+  ) {
+    this.disposing = new EntityContextImpl(store, caller, path);
+  }
+}
+
 class TrivialPlayerContextImpl {
   constructor(
     private store: Store,
@@ -1311,11 +1338,14 @@ function entityEventChecker(
   caller: EntityPath,
   target: EntityPath,
 ) {
-  return (
-    "entityId" in caller &&
-    "entityId" in target &&
-    caller.entityId === target.entityId
-  );
+  if (!("entityId" in caller &&
+  "entityId" in target)) {
+    return false;
+  }
+  if ("listenTo" in caller.info && caller.info.listenTo === "all") {
+    return true;
+  }
+  return caller.entityId === target.entityId;
 }
 
 function damageEventChecker(from: "source" | "target") {
@@ -1396,7 +1426,7 @@ export const CONTEXT_CREATORS = {
   onRevive: buildCreator(TrivialCharacterContextImpl, commonCharacterChecker),
 
   onEnter: buildCreator(EntityContextImpl, entityEventChecker),
-  onDispose: buildCreator(EntityContextImpl, entityEventChecker),
+  onDispose: buildCreator(DisposeContextImpl, entityEventChecker),
 } satisfies Record<EventNames, Creator>;
 
 type ContextCreator = typeof CONTEXT_CREATORS;

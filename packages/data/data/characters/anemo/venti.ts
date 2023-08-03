@@ -91,16 +91,16 @@ const SkywardSonnet = createSkill(15032)
  */
 const Stormeye = createSummon(115034)
   .withUsage(2)
-  .withThis({ type: DamageType.Anemo })
+  .withThis({ dmgType: DamageType.Anemo })
   .on("endPhase", (c) => {
-    c.dealDamage(2, c.this.type);
+    c.dealDamage(2, c.this.dmgType);
     c.switchActive(":recent(|)");
   })
   .on("dealDamage", (c) => {
-    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.dmgType === DamageType.Anemo) {
       const newType = c.reaction?.swirledElement() ?? null;
       if (newType !== null) {
-        c.this.type = newType;
+        c.this.dmgType = newType;
       }
     }
     return false;

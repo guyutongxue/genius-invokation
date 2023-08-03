@@ -86,7 +86,21 @@ const Hanachirusato = createCard(322013)
   .setType("support")
   .addTags("ally")
   .buildToSupport()
-  // TODO
+  .withThis({ progress: 3 })
+  .listenToOpp()
+  .on("dispose",
+    (c) => c.disposing.type === "summon",
+    (c) => {
+      c.this.progress = Math.min(c.this.progress + 1, 3);
+    })
+  .on("beforeUseDice",
+    (c) => !!c.playCardCtx && (c.playCardCtx.isWeapon() || c.playCardCtx.info.tags.includes("artifact")),
+    (c) => {
+      if (c.this.progress >= 3) {
+        c.deductCost(DiceType.Omni, DiceType.Omni);
+        c.this.dispose();
+      }
+    })
   .build();
 
 /**
@@ -142,7 +156,33 @@ const Liben = createCard(322008)
   .setType("support")
   .addTags("ally")
   .buildToSupport()
-  // TODO
+  .withThis({ count: 0 })
+  .on("endPhase", (c) => {
+    const absorbIndexes = [];
+    const diceSet = new Set<DiceType>();
+    for (let i = 0; i < c.dice.length; i++) {
+      const d = c.dice[i];
+      if (d === DiceType.Omni) {
+        absorbIndexes.push(i);
+        c.this.count++;
+      } else if (!diceSet.has(d)) {
+        diceSet.add(d);
+        absorbIndexes.push(i);
+        c.this.count++;
+      }
+      if (c.this.count >= 3) {
+        break;
+      }
+    }
+    c.absorbDice(absorbIndexes);
+  })
+  .on("actionPhase", (c) => {
+    if (c.this.count >= 3) {
+      c.drawCards(2);
+      c.generateDice(DiceType.Omni, DiceType.Omni);
+      c.this.dispose();
+    }
+  })
   .build();
 
 /**
@@ -210,7 +250,23 @@ const Timaeus = createCard(322003)
   .addTags("ally")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withThis({ material: 2 })
+  .withUsagePerRound(1)
+  .on("endPhase", (c) => {
+    c.this.material++;
+    return false;
+  })
+  .on("beforeUseDice",
+    (c) => !!c.playCardCtx && c.playCardCtx.info.tags.includes("artifact"),
+    (c) => {
+      const dice = c.currentCost.length;
+      if (c.this.material < dice) {
+        return false;
+      }
+      const deduct = new Array(dice).fill(DiceType.Omni);
+      c.deductCost(...deduct);
+      c.this.material -= dice;
+    })
   .build();
 
 /**
@@ -263,7 +319,23 @@ const Wagner = createCard(322004)
   .addTags("ally")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withThis({ billet: 2 })
+  .withUsagePerRound(1)
+  .on("endPhase", (c) => {
+    c.this.billet++;
+    return false;
+  })
+  .on("beforeUseDice",
+    (c) => !!c.playCardCtx && c.playCardCtx.isWeapon(),
+    (c) => {
+      const dice = c.currentCost.length;
+      if (c.this.billet < dice) {
+        return false;
+      }
+      const deduct = new Array(dice).fill(DiceType.Omni);
+      c.deductCost(...deduct);
+      c.this.billet -= dice;
+    })
   .build();
 
 /**

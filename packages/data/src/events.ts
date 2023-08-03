@@ -1,5 +1,5 @@
 import { PlayCardContext } from "./cards";
-import { BeforeDamageCalculatedContext, BeforeDefeatedContext, DamageContext, DamageReadonlyContext, ElementalReactionContext, SkillDamageContext, SwitchActiveContext, UseDiceContext, RollContext } from "./contexts";
+import { BeforeDamageCalculatedContext, BeforeDefeatedContext, DamageContext, DamageReadonlyContext, ElementalReactionContext, SkillDamageContext, SwitchActiveContext, UseDiceContext, RollContext, DisposeContext } from "./contexts";
 import { Context } from "./global";
 import { SkillContext } from "./skills";
 
@@ -24,7 +24,7 @@ export type SyncEventMap = {
 
   onBeforeDefeated: BeforeDefeatedContext,
 
-  onDispose: NO_EXTRA,
+  onDispose: DisposeContext,
 }
 
 type NO_EXTRA = Record<never, never>;

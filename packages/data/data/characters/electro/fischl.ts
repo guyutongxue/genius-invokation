@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType } from "@gi-tcg";
 
 /**
  * **罪灭之矢**
@@ -8,7 +8,33 @@ const BoltsOfDownfall = createSkill(14011)
   .setType("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
+  .build();
+
+/**
+ * **奥兹**
+ * 结束阶段：造成1点雷元素伤害。
+ * 可用次数：2
+ */
+const Oz = createSummon(114011)
+  .withUsage(2)
+  .on("enter", (c) => { c.findSummon(Oz01)?.dispose(); })
+  .on("endPhase", (c) => c.dealDamage(1, DamageType.Electro))
+  .build();
+
+/**
+ * **奥兹**
+ * 结束阶段：造成1点雷元素伤害。
+ * 可用次数：2
+ * 菲谢尔普通攻击后：造成2点雷元素伤害。（需消耗可用次数）
+ */
+const Oz01 = createSummon(114012)
+  .withUsage(2)
+  .on("enter", (c) => { c.findSummon(Oz)?.dispose(); })
+  .on("endPhase", (c) => c.dealDamage(1, DamageType.Electro))
+  .on("useSkill",
+    (c) => c.character.info.id === Fischl && c.info.type === "normal",
+    (c) => { c.dealDamage(2, DamageType.Electro); })
   .build();
 
 /**
@@ -18,7 +44,14 @@ const BoltsOfDownfall = createSkill(14011)
 const Nightrider = createSkill(14012)
   .setType("elemental")
   .costElectro(3)
-  // TODO
+  .dealDamage(1, DamageType.Electro)
+  .do((c) => {
+    if (c.character.findEquipment(StellarPredator)) {
+      c.summon(Oz01);
+    } else {
+      c.summon(Oz);
+    }
+  })
   .build();
 
 /**
@@ -29,7 +62,8 @@ const MidnightPhantasmagoria = createSkill(14013)
   .setType("burst")
   .costElectro(3)
   .costEnergy(3)
-  // TODO
+  .dealDamage(2, DamageType.Piercing, "!<>")
+  .dealDamage(4, DamageType.Electro)
   .build();
 
 export const Fischl = createCharacter(1401)
@@ -47,6 +81,9 @@ export const Fischl = createCharacter(1401)
 export const StellarPredator = createCard(214011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Fischl)
+  .addCharacterFilter(Fischl)
   .costElectro(3)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(Nightrider); })
   .build();

@@ -3,6 +3,7 @@ import { SkillContext } from "./skills";
 import { CharacterContext } from "./characters";
 import { PlayCardContext } from "./cards";
 import { SummonContext } from "./summons";
+import { EntityContext } from ".";
 
 export interface RollContext {
   fixDice(...dice: DiceType[]): void;
@@ -13,6 +14,8 @@ export interface UseDiceContext {
   readonly useSkillCtx?: SkillContext;
   readonly switchActiveCtx?: SwitchActiveContext;
   readonly playCardCtx?: PlayCardContext;
+  
+  readonly currentCost: DiceType[];
   addCost(...dice: DiceType[]): void;
   deductCost(...dice: DiceType[]): DiceType[];
 
@@ -62,4 +65,8 @@ export interface ElementalReactionContext {
   readonly reactionType: unknown;
   relatedWith(d: DamageType): boolean;
   swirledElement(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null;
+}
+
+export interface DisposeContext {
+  readonly disposing: EntityContext<unknown, number, "possible", false>;
 }

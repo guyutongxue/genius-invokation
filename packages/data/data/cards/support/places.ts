@@ -26,7 +26,7 @@ const DawnWinery = createCard(321004)
   .costSame(2)
   .buildToSupport()
   .withUsagePerRound(1)
-  .on("beforeUseDice", 
+  .on("beforeUseDice",
     (c) => !!c.switchActiveCtx,
     (c) => c.deductCost(DiceType.Omni).length > 0)
   .build();
@@ -130,7 +130,16 @@ const SumeruCity = createCard(321010)
   .addTags("place")
   .costSame(2)
   .buildToSupport()
-  // TODO
+  .withUsagePerRound(1)
+  .on("beforeUseDice",
+    (c) => !!c.useSkillCtx || (!!c.playCardCtx && c.playCardCtx.info.tags.includes("talent")),
+    (c) => {
+      if (c.dice.length <= c.handLength()) {
+        c.deductCost(DiceType.Omni);
+      } else {
+        return false;
+      }
+    })
   .build();
 
 /**
@@ -162,14 +171,14 @@ const Vanarana = createCard(321011)
   .buildToSupport()
   .withThis({ collected: [] as DiceType[], collectedLength: 0 })
   .on("endPhase", (c) => {
-      const length = Math.min(2, c.dice.length);
-      const removed: number[] = [];
-      for (let i = 0; i < length; i++) {
-        removed.push(i);
-      }
-      c.this.collected = c.absorbDice(removed);
-      c.this.collectedLength = length;
-    })
+    const length = Math.min(2, c.dice.length);
+    const removed: number[] = [];
+    for (let i = 0; i < length; i++) {
+      removed.push(i);
+    }
+    c.this.collected = c.absorbDice(removed);
+    c.this.collectedLength = length;
+  })
   .on("actionPhase", (c) => {
     c.generateDice(...c.this.collected);
     c.this.collected = [];

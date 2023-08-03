@@ -78,7 +78,10 @@ const StoneForce = createStatus(126012)
  */
 const InfusedStonehide = createSkill(26014)
   .setType("passive")
-  // TODO
+  .on("battleBegin", (c) => {
+    c.this.master.createStatus(Stonehide);
+    c.this.master.createStatus(StoneForce);
+  })
   .build();
 
 export const StonehideLawachurl = createCharacter(2601)
@@ -98,7 +101,16 @@ export const StonehideLawachurl = createCharacter(2601)
 export const StonehideReforged = createCard(226011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(StonehideLawachurl)
+  .addCharacterFilter(StonehideLawachurl)
   .costGeo(4)
   .costEnergy(2)
-  // TODO
+  .buildToEquipment()
+  .listenToOpp()
+  .on("defeated",
+    (c) => !c.target.isMine() && !!c.sourceSkill && c.sourceSkill.character.entityId === c.this.entityId,
+    (c) => {
+      c.this.master.createStatus(Stonehide);
+      c.this.master.createStatus(StoneForce);
+    })
   .build();

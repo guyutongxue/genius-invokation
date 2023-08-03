@@ -30,19 +30,19 @@ const AstableAnemohypostasisCreation6308 = createSkill(15012)
  */
 const LargeWindSpirit = createSummon(115011)
   .withUsage(3)
-  .withThis({ type: DamageType.Anemo })
+  .withThis({ dmgType: DamageType.Anemo })
   .on("enter", (c) => {
     c.findSummon(LargeWindSpirit01)?.dispose();
     return false;
   })
   .on("endPhase", (c) => {
-    c.dealDamage(2, c.this.type);
+    c.dealDamage(2, c.this.dmgType);
   })
   .on("dealDamage", (c) => {
-    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.dmgType === DamageType.Anemo) {
       const newType = c.reaction?.swirledElement() ?? null;
       if (newType !== null) {
-        c.this.type = newType;
+        c.this.dmgType = newType;
       }
     }
     return false;
@@ -58,25 +58,25 @@ const LargeWindSpirit = createSummon(115011)
  */
 const LargeWindSpirit01 = createSummon(115012)
   .withUsage(3)
-  .withThis({ type: DamageType.Anemo })
+  .withThis({ dmgType: DamageType.Anemo })
   .on("enter", (c) => {
     c.findSummon(LargeWindSpirit)?.dispose();
     return false;
   })
   .on("endPhase", (c) => {
-    c.dealDamage(2, c.this.type);
+    c.dealDamage(2, c.this.dmgType);
   })
   .on("dealDamage", (c) => {
-    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.dmgType === DamageType.Anemo) {
       const newType = c.reaction?.swirledElement() ?? null;
       if (newType !== null) {
-        c.this.type = newType;
+        c.this.dmgType = newType;
       }
     }
     return false;
   })
   .on("beforeDealDamage", (c) => {
-    if (c.this.type !== DamageType.Anemo && c.damageType === c.this.type) {
+    if (c.this.dmgType !== DamageType.Anemo && c.damageType === c.this.dmgType) {
       c.addDamage(1);
     }
     return false;

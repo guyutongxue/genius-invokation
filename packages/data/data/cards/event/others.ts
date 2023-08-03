@@ -298,11 +298,11 @@ const FriendshipEternal = createCard(332020)
   .setType("event")
   .costSame(2)
   .do((c) => {
-    let cnt = c.getCardCount();
+    let cnt = c.handLength();
     if (cnt < 4) {
       c.drawCards(4 - cnt);
     }
-    cnt = c.getCardCount(true);
+    cnt = c.handLength(true);
     if (cnt < 4) {
       c.drawCards(4 - cnt, true);
     }

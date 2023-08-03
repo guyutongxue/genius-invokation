@@ -75,15 +75,15 @@ const ChihayaburuPassive = createSkill(15054)
  */
 const AutumnWhirlwind = createSummon(115052)
   .withUsage(3)
-  .withThis({ type: DamageType.Anemo })
+  .withThis({ dmgType: DamageType.Anemo })
   .on("endPhase", (c) => {
-    c.dealDamage(1, c.this.type);
+    c.dealDamage(1, c.this.dmgType);
   })
   .on("dealDamage", (c) => {
-    if ((c.sourceSkill || c.sourceSummon) && c.this.type === DamageType.Anemo) {
+    if ((c.sourceSkill || c.sourceSummon) && c.this.dmgType === DamageType.Anemo) {
       const newType = c.reaction?.swirledElement() ?? null;
       if (newType !== null) {
-        c.this.type = newType;
+        c.this.dmgType = newType;
       }
     }
     return false;
@@ -141,7 +141,7 @@ function createPoeticsOfFuubutsu(id: number, type: DamageType) {
   return createStatus(id)
     .withUsage(2)
     .on("beforeDealDamage",
-      (c) => !!c.sourceSkill && !!c.sourceSummon && !c.sourceReaction 
+      (c) => !!c.sourceSkill && !!c.sourceSummon && !c.sourceReaction
         && c.damageType === type,
       (c) => c.addDamage(1))
     .build();

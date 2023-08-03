@@ -6,6 +6,7 @@ interface EntityBaseContext<InfoT, HandleT extends number, MasterT extends Maste
   readonly entityId: number;
   readonly id: HandleT;
   readonly info: InfoT;
+  readonly type: "passive_skill" | "equipment" | "status" | "summon" | "support";
 
   readonly master: MasterContext<MasterT, Writable>;
   isMine(): boolean;

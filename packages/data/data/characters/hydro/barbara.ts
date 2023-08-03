@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createSummon, DamageType, DiceType, SummonHandle } from "@gi-tcg";
 
 /**
  * **水之浅唱**
@@ -8,7 +8,32 @@ const WhisperOfWater = createSkill(12011)
   .setType("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(1, DamageType.Hydro)
+  .build();
+
+/**
+ * **歌声之环**
+ * 结束阶段：治疗所有我方角色1点，然后对我方出战角色附着水元素。
+ * 可用次数：2
+ */
+const MelodyLoop: SummonHandle = createSummon(112011)
+  .withUsage(2)
+  .on("endPhase", (c) => {
+    c.queryCharacterAll("*").forEach(ch => ch.heal(1));
+    c.applyElement(DamageType.Hydro, "|");
+  })
+  .withThis({ deductCost: true })
+  .on("beforeUseDice",
+    (c) => !!c.switchActiveCtx
+      && c.queryCharacterAll(`@${Barbara}`).some((ch) => ch.findEquipment(GloriousSeason))
+      && c.this.deductCost,
+    (c) => {
+      c.deductCost(DiceType.Omni);
+      c.this.deductCost = false;
+    })
+  .on("actionPhase", (c) => {
+    c.this.deductCost = true;
+  })
   .build();
 
 /**
@@ -18,7 +43,8 @@ const WhisperOfWater = createSkill(12011)
 const LetTheShowBegin = createSkill(12012)
   .setType("elemental")
   .costHydro(3)
-  // TODO
+  .dealDamage(1, DamageType.Hydro)
+  .summon(MelodyLoop)
   .build();
 
 /**
@@ -29,7 +55,7 @@ const ShiningMiracle = createSkill(12013)
   .setType("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .heal(4, "*")
   .build();
 
 export const Barbara = createCharacter(1201)
@@ -47,6 +73,9 @@ export const Barbara = createCharacter(1201)
 export const GloriousSeason = createCard(212011, ["character"])
   .setType("equipment")
   .addTags("talent", "action")
+  .requireCharacter(Barbara)
+  .addCharacterFilter(Barbara)
   .costHydro(4)
-  // TODO
+  .buildToEquipment()
+  .on("enter", (c) => { c.useSkill(LetTheShowBegin); })
   .build();
