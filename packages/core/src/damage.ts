@@ -1,4 +1,4 @@
-import { DamageData, DamageType, Reaction } from "@gi-tcg/typings";
+import { Aura, DamageData, DamageType, Reaction } from "@gi-tcg/typings";
 import { EntityPath } from "./entity.js";
 import { CharacterPath } from "./character.js";
 
@@ -7,6 +7,7 @@ export interface DamageLogType {
   readonly target: CharacterPath;
   readonly value: number;
   readonly type: DamageType;
+  readonly targetAura: Aura;
   readonly triggeredByReaction: Reaction | null;
 }
 
@@ -15,11 +16,12 @@ type SourceAndValue = readonly [source: EntityPath, value: number];
 
 export class Damage {
   constructor(
-    public source: EntityPath,
-    public target: CharacterPath,
-    private originalValue: number,
-    private type: DamageType,
-    public triggeredByReaction?: Reaction
+    public readonly source: EntityPath,
+    public readonly target: CharacterPath,
+    private readonly originalValue: number,
+    private readonly type: DamageType,
+    public readonly targetAura: Aura,
+    public triggeredByReaction: Reaction | null = null
   ) {}
 
   changedLogs: SourceAndChange[] = [];
@@ -85,7 +87,8 @@ export class Damage {
       target: this.target,
       triggeredByReaction: this.triggeredByReaction ?? null,
       type: this.getType(),
+      targetAura: this.targetAura,
       value: this.getValue(),
-    }
+    };
   }
 }

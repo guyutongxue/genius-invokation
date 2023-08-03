@@ -75,7 +75,8 @@ export class Mutator {
     value: number,
     type: DamageType,
   ) {
-    const damage = new Damage(source, target, value, type);
+    const targetAura = getCharacterAtPath(this.store.state, target).aura;
+    const damage = new Damage(source, target, value, type, targetAura);
     this.emitSyncEvent("onEarlyBeforeDealDamage", damage);
     this.doElementalReaction(damage);
     const changedType = damage.getType();
@@ -177,7 +178,8 @@ export class Mutator {
     ) {
       throw new Error(`Invalid applied element type ${type}`);
     }
-    const pseudoDamage = new Damage(source, target, 0, type);
+    const targetAura = getCharacterAtPath(this.store.state, target).aura;
+    const pseudoDamage = new Damage(source, target, 0, type, targetAura);
     this.doElementalReaction(pseudoDamage, false);
   }
 

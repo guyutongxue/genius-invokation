@@ -15,6 +15,8 @@ export function makeReactionFromDamage(c: RContext): [Aura, Reaction | null] {
   }
   const [newAura, reaction] = REACTION_MAP[aura][damage];
   if (reaction !== null) {
+    // @ts-expect-error internal method
+    c.setTriggeredByReaction(reaction);
     REACTION_HANDLERS[reaction](c);
   }
   return [newAura, reaction];

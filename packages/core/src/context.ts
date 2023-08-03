@@ -973,7 +973,8 @@ export class SkillContextImpl implements SkillContext<true> {
               dmg.target,
               dmg.value,
               dmg.type,
-              dmg.triggeredByReaction ?? undefined,
+              dmg.targetAura,
+              dmg.triggeredByReaction,
             ),
           ),
       );
@@ -989,7 +990,8 @@ export class SkillContextImpl implements SkillContext<true> {
             dmg.target,
             dmg.value,
             dmg.type,
-            dmg.triggeredByReaction ?? undefined,
+            dmg.targetAura,
+            dmg.triggeredByReaction,
           ),
         ),
     );
@@ -1125,6 +1127,10 @@ export class DamageContextImpl implements DamageContext {
     private damage: Damage,
   ) {}
 
+  setTriggeredByReaction(reaction: Reaction) {
+    this.damage.triggeredByReaction = reaction;
+  }
+
   get sourceSummon() {
     if (this.damage.source.type === "summon") {
       return new EntityContextImpl(this.store, this.caller, this.damage.source);
@@ -1148,7 +1154,7 @@ export class DamageContextImpl implements DamageContext {
 
   get sourceReaction() {
     const reaction = this.damage.triggeredByReaction;
-    if (typeof reaction === "undefined") {
+    if (reaction === null) {
       return undefined;
     }
     return new ElementalReactionContextImpl(this.store, this.caller, reaction);
@@ -1178,8 +1184,7 @@ export class DamageContextImpl implements DamageContext {
     if (type === DamageType.Piercing || type === DamageType.Physical) {
       return null;
     }
-    const target = getCharacterAtPath(this.store.state, this.damage.target);
-    const reaction = makeReaction(target.aura, type)[1];
+    const reaction = makeReaction(this.damage.targetAura, type)[1];
     if (reaction === null) {
       return null;
     }

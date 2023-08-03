@@ -1,4 +1,4 @@
-import type { DamageType, DiceType } from "@gi-tcg/typings";
+import type { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { SkillContext } from "./skills";
 import { CharacterContext } from "./characters";
 import { PlayCardContext } from "./cards";
@@ -28,6 +28,7 @@ interface DamageBaseContext {
   readonly sourceReaction?: ElementalReactionContext;
   readonly target: CharacterContext<true>;
   readonly damageType: DamageType;
+  // setTriggeredByReaction(reaction: Reaction): void;
 }
 
 export interface DamageReadonlyContext extends DamageBaseContext {
