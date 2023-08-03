@@ -223,14 +223,17 @@ function getCharactersFromSelector(
     state.players[1].active?.entityId,
   ];
 
-  function activeOffsetChar(who: 0 | 1, offset: number): CharacterPath {
+  function activeOffsetChar(who: 0 | 1, offset: 1 | -1): CharacterPath {
     const player = state.players[who];
     const activeIndex = player.characters.findIndex(
       (ch) => ch.entityId === player.active?.entityId,
     );
-    const index =
-      (activeIndex + offset + player.characters.length) %
+    let index = activeIndex;
+    do {
+      index = (index + offset + player.characters.length) %
       player.characters.length;
+    } while (player.characters[index].defeated);
+    
     return {
       who,
       entityId: player.characters[index].entityId,

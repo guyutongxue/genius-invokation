@@ -104,9 +104,6 @@ export class Mutator {
       };
       this.emitSyncEvent("onBeforeDefeated", target, defeatedToken);
       if (defeatedToken.immune === null) {
-        this.store.updateCharacterAtPath(target, (draft) => {
-          draft.defeated = true;
-        });
         this.emitEvent("onDefeated", damage);
         // 检查是否所有角色均已死亡：游戏结束
         if (
@@ -319,7 +316,7 @@ export class Mutator {
     const defeatedChs = findCharacter(
       this.store.state,
       "all",
-      (ch) => ch.defeated,
+      (ch) => ch.health === 0,
     );
     if (ed[0] === "onDefeated") {
       // 出战角色死亡，需要重新选择的玩家
@@ -329,6 +326,9 @@ export class Mutator {
           chPath.entityId ===
           this.store.state.players[chPath.who].active?.entityId
         ) {
+          this.store.updateCharacterAtPath(chPath, (draft) => {
+            draft.defeated = true;
+          });
           this.store._produce((draft) => {
             draft.players[chPath.who].active = null;
           });

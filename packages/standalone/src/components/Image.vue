@@ -18,12 +18,22 @@ const imageLink = computed<string>(() =>
 const iconLink = computed<string>(() =>
   props.id === null
     ? "https://placehold.co/100x100"
-    : "https://guyutongxue.site/gcg-buff-icon-data/Sprite/" + (icons as any)[props.id],
+    : "https://guyutongxue.site/gcg-buff-icon-data/Sprite/" +
+      (icons as any)[props.id],
 );
-
 </script>
 
 <template>
-  <img v-if="type === 'card'" :src="imageLink" :style="{ width: `${width}px`, height: `${height}px` }" />
-  <img v-else-if="id !== null" :src="iconLink" :style="{ width: `${width}px`, height: `${height}px` }" />
+  <div>
+    <img
+      v-if="type === 'card'"
+      :src="imageLink"
+      :style="{ width: width && `${width}px`, height: height && `${height}px` }"
+    />
+    <img
+      v-else-if="id !== null"
+      :src="iconLink"
+      :style="{ width: width && `${width}px`, height: height && `${height}px` }"
+    />
+  </div>
 </template>

@@ -31,9 +31,15 @@ const props = defineProps<{
     <div class="absolute right-0 top-0 bg-yellow-500">
       {{ character.energy }}
     </div>
-    <Image type="card" :id="character.id" />
+    <Image type="card" :id="character.id" :class="{ 'brightness-50': character.defeated }" />
     <div class="absolute bottom-0 flex flex-row gap-1 p-1">
       <Status v-for="st of character.statuses" :status="st"></Status>
+    </div>
+    <div
+      v-if="character.defeated"
+      class="absolute top-[50%] left-0 w-full text-center text-5xl font-bold text-red-600 translate-y-[-50%]"
+    >
+      &#9760;
     </div>
   </div>
 </template>

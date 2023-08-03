@@ -479,7 +479,9 @@ const TravelingDoctorsHandkerchief = createCard(312003, ["character"])
  */
 const VermillionHereafterStatus = createStatus(301203)
   .withDuration(1)
-  .on("beforeSkillDamage", (c) => c.addDamage(1))
+  .on("beforeSkillDamage",
+    (c) => c.sourceSkill.info.type === "normal",
+    (c) => c.addDamage(1))
   .build()
 
 /**
