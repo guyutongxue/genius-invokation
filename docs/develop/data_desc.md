@@ -163,7 +163,7 @@ export const KantenSenmyouBlessing = createCard(211051, ["character"])
 
 如「本大爷还不能输」、秘传牌等，需要满足一定条件才可使用，则通过 builder 方法 `addFilter` 查询全局状态以判断是否可以使用。
 
-```cpp
+```ts
 /**
  * **磐岩盟契**
  * 我方剩余元素骰数量为0时，才能打出：
