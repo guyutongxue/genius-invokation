@@ -23,6 +23,8 @@ export type SyncEventMap = {
   onBeforeDamaged: DamageContext,
 
   onBeforeDefeated: BeforeDefeatedContext,
+
+  onDispose: NO_EXTRA,
 }
 
 type NO_EXTRA = Record<never, never>;

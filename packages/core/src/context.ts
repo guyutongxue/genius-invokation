@@ -57,7 +57,7 @@ import {
   SkillPath,
   getVisibleValue,
 } from "./entity.js";
-import { ActionConfig, PlayCardTargetPath } from "./action.js";
+import { ActionConfig, PlayCardTargetPath, UseSkillConfig } from "./action.js";
 import { getSkillEx } from "./skill.js";
 import { Damage } from "./damage.js";
 import * as _ from "lodash-es";
@@ -935,13 +935,10 @@ export class SkillContextImpl implements SkillContext<true> {
   }
 
   get charged(): boolean {
-    const bit =
-      this.store.state.players[this.skill.character.who].dice.length % 2 === 0;
-    return bit && this.skill.info.type === "normal";
+    return this.skill.charged;
   }
   get plunging(): boolean {
-    const bit = this.store.state.players[this.skill.character.who].canPlunging;
-    return bit && this.skill.info.type === "normal";
+    return this.skill.plunging;
   }
 
   get damages(): DamageContext[] {
@@ -1235,14 +1232,6 @@ class TrivialCharacterContextImpl {
   ) {}
 }
 
-class EnterContextImpl {
-  constructor(
-    private store: Store,
-    private caller: EntityPath,
-    private target: EntityPath,
-  ) {}
-}
-
 type ExtCtor = new (store: Store, caller: EntityPath, ...args: any[]) => object;
 type CtorParameter<T> = T extends new (
   store: Store,
@@ -1317,7 +1306,7 @@ function commonCharacterChecker(
   return caller.who === character.who;
 }
 
-function enterEventChecker(
+function entityEventChecker(
   state: GameState,
   caller: EntityPath,
   target: EntityPath,
@@ -1406,7 +1395,8 @@ export const CONTEXT_CREATORS = {
   onDefeated: buildCreator(TrivialCharacterContextImpl, commonCharacterChecker),
   onRevive: buildCreator(TrivialCharacterContextImpl, commonCharacterChecker),
 
-  onEnter: buildCreator(EnterContextImpl, enterEventChecker),
+  onEnter: buildCreator(EntityContextImpl, entityEventChecker),
+  onDispose: buildCreator(EntityContextImpl, entityEventChecker),
 } satisfies Record<EventNames, Creator>;
 
 type ContextCreator = typeof CONTEXT_CREATORS;

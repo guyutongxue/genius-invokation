@@ -25,7 +25,7 @@ function createFood(id: number) {
  */
 const AdeptusTemptation = createFood(333002)
   .costVoid(2)
-  .buildToStatus("target0")
+  .buildToStatus("target0", 303302)
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", 
@@ -55,7 +55,7 @@ const ButterCrab = createCard(333012)
   })
   .build();
 
-const ButterCrabStatus = createStatus(333012)
+const ButterCrabStatus = createStatus(303310)
   .withUsage(1)
   .withDuration(1)
   .on("beforeDamaged", (c) => c.decreaseDamage(2))
@@ -67,7 +67,7 @@ const ButterCrabStatus = createStatus(333012)
  * （每回合每个角色最多食用1次「料理」）
  */
 const JueyunGuoba = createFood(333001)
-  .buildToStatus("target0")
+  .buildToStatus("target0", 303301)
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", 
@@ -82,7 +82,7 @@ const JueyunGuoba = createFood(333001)
  */
 const LotusFlowerCrisp = createFood(333003)
   .costSame(1)
-  .buildToStatus("target0")
+  .buildToStatus("target0", 303303)
   .withUsage(1)
   .withDuration(1)
   .on("beforeDamaged", (c) => c.decreaseDamage(3))
@@ -95,7 +95,7 @@ const LotusFlowerCrisp = createFood(333003)
  */
 const MintyMeatRolls = createFood(333008)
   .costSame(1)
-  .buildToStatus("target0")
+  .buildToStatus("target0", 303306)
   .withUsage(3)
   .withDuration(1)
   .on("beforeUseDice", (c) => {
@@ -136,7 +136,7 @@ const MushroomPizza = createFood(333007)
  * （每回合每个角色最多食用1次「料理」）
  */
 const NorthernSmokedChicken = createFood(333004)
-  .buildToStatus("target0")
+  .buildToStatus("target0", 303304)
   .withUsage(1)
   .withDuration(1)
   .on("beforeUseDice", (c) => {
@@ -155,7 +155,7 @@ const NorthernSmokedChicken = createFood(333004)
  */
 const SashimiPlatter = createFood(333010)
   .costSame(1)
-  .buildToStatus("target0")
+  .buildToStatus("target0", 303308)
   .withDuration(1)
   .on("beforeSkillDamage", 
     (c) => c.sourceSkill.info.type === "normal",
@@ -191,7 +191,7 @@ const TandooriRoastChicken = createCard(333011)
   })
   .build();
 
-const TandooriRoastChickenStatus = createStatus(333011)
+const TandooriRoastChickenStatus = createStatus(303309)
   .withUsage(1)
   .withDuration(1)
   .on("beforeSkillDamage", 

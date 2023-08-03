@@ -103,6 +103,8 @@ export interface SkillPath {
   type: "skill";
   character: CharacterPath;
   info: NormalSkillInfo;
+  charged: boolean;
+  plunging: boolean;
 }
 export interface CardPath {
   who: 0 | 1;
@@ -146,11 +148,7 @@ export function getVisibleValue(
     }
     return entity.info.prepare.round;
   }
-  if (
-    "usage" in entity.info &&
-    entity.info.usage !== 1 &&
-    Number.isFinite(entity.usage)
-  ) {
+  if ("usage" in entity.info && Number.isFinite(entity.usage)) {
     if (typeof newValue === "number") {
       return (draft) => {
         draft.usage = newValue;
@@ -158,11 +156,7 @@ export function getVisibleValue(
     }
     return entity.usage;
   }
-  if (
-    "duration" in entity.info &&
-    entity.info.duration !== 1 &&
-    Number.isFinite(entity.duration)
-  ) {
+  if ("duration" in entity.info && Number.isFinite(entity.duration)) {
     if (typeof newValue === "number") {
       return (draft) => {
         draft.duration = newValue;

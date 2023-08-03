@@ -31,7 +31,10 @@ const AstableAnemohypostasisCreation6308 = createSkill(15012)
 const LargeWindSpirit = createSummon(115011)
   .withUsage(3)
   .withThis({ type: DamageType.Anemo })
-  .on("enter", (c) => { c.findSummon(LargeWindSpirit01)?.dispose(); })
+  .on("enter", (c) => {
+    c.findSummon(LargeWindSpirit01)?.dispose();
+    return false;
+  })
   .on("endPhase", (c) => {
     c.dealDamage(2, c.this.type);
   })
@@ -56,7 +59,10 @@ const LargeWindSpirit = createSummon(115011)
 const LargeWindSpirit01 = createSummon(115012)
   .withUsage(3)
   .withThis({ type: DamageType.Anemo })
-  .on("enter", (c) => { c.findSummon(LargeWindSpirit)?.dispose(); })
+  .on("enter", (c) => {
+    c.findSummon(LargeWindSpirit)?.dispose();
+    return false;
+  })
   .on("endPhase", (c) => {
     c.dealDamage(2, c.this.type);
   })
@@ -73,6 +79,7 @@ const LargeWindSpirit01 = createSummon(115012)
     if (c.this.type !== DamageType.Anemo && c.damageType === c.this.type) {
       c.addDamage(1);
     }
+    return false;
   })
   .build();
 

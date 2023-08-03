@@ -18,7 +18,10 @@ const DawnstarPiercer = createSkill(11071)
  */
 const IceQuill = createStatus(111071)
   .withUsage(3)
-  .on("enter", (c) => { c.findCombatStatus(IceQuill01)?.dispose(); })
+  .on("enter", (c) => {
+    c.findCombatStatus(IceQuill01)?.dispose();
+    return false;
+  })
   .on("beforeDealDamage",
     (c) => !!c.sourceSkill && c.damageType === DamageType.Cryo,
     (c) => { c.addDamage(1); })
@@ -30,9 +33,12 @@ const IceQuill = createStatus(111071)
  * 可用次数：3
  * 我方角色通过「普通攻击」触发此效果时，不消耗可用次数。（每回合1次）
  */
-const IceQuill01 = createStatus(111071)
+const IceQuill01 = createStatus(111072)
   .withUsage(3)
-  .on("enter", (c) => { c.findCombatStatus(IceQuill)?.dispose(); })
+  .on("enter", (c) => {
+    c.findCombatStatus(IceQuill)?.dispose();
+    return false;
+  })
   .on("beforeDealDamage",
     (c) => !!c.sourceSkill && c.damageType === DamageType.Cryo,
     (c) => {

@@ -450,11 +450,12 @@ class TriggerBuilderBase<ThisT> {
     : this;
   on(event: string, condOrHandler: any, handler?: any) {
     const handlerName = addPrefix(event) as EventNames;
-    if (this.handlers[handlerName]) {
-      throw new Error(`Handler for event ${event} already exists`);
-    }
+    const oldHandler = this.handlers[handlerName];
     if (typeof handler === "function") {
       this.handlers[handlerName] = (c: any) => {
+        if (oldHandler) {
+          oldHandler(c);
+        }
         if (condOrHandler(c)) {
           handler(c);
         } else {

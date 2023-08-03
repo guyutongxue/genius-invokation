@@ -18,10 +18,16 @@ const Kaboom = createSkill(13061)
  */
 const ExplosiveSpark = createStatus(113061)
   .withUsage(1)
-  .on("enter", (c) => { c.this.master?.findStatus(ExplosiveSpark01)?.dispose(); })
+  .on("enter", (c) => {
+    c.this.master?.findStatus(ExplosiveSpark01)?.dispose();
+    return false;
+  })
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx?.charged,
-    (c) => { c.deductCost(DiceType.Pyro) })
+    (c) => {
+      c.deductCost(DiceType.Pyro);
+      return false;
+    })
   .on("beforeSkillDamage",
     (c) => c.sourceSkill.charged,
     (c) => c.addDamage(1))
@@ -32,12 +38,18 @@ const ExplosiveSpark = createStatus(113061)
  * 所附属角色进行重击时：少花费1个火元素，并且伤害+1。
  * 可用次数：2
  */
-const ExplosiveSpark01 = createStatus(113061)
+const ExplosiveSpark01 = createStatus(113062)
   .withUsage(2)
-  .on("enter", (c) => { c.this.master?.findStatus(ExplosiveSpark)?.dispose(); })
+  .on("enter", (c) => {
+    c.this.master?.findStatus(ExplosiveSpark)?.dispose();
+    return false;
+  })
   .on("beforeUseDice",
     (c) => !!c.useSkillCtx?.charged,
-    (c) => { c.deductCost(DiceType.Pyro) })
+    (c) => {
+      c.deductCost(DiceType.Pyro);
+      return false;
+    })
   .on("beforeSkillDamage",
     (c) => c.sourceSkill.charged,
     (c) => c.addDamage(1))

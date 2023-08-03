@@ -55,6 +55,9 @@ type SkillInfoNoId = Omit<NormalSkillInfo, "id"> | Omit<PassiveSkillInfo, "id">;
 
 const allSkills = new Map<number, SkillInfo>();
 export function registerSkill(id: number, info: SkillInfoNoId) {
+  if (allSkills.has(id)) {
+    throw new Error(`Skill ${id} already registered`);
+  }
   allSkills.set(id, { ...info, id });
 }
 export function getSkill(id: number): SkillInfo {

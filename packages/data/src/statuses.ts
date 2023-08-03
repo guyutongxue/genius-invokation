@@ -36,6 +36,9 @@ export type StatusContext<Writable extends boolean> = EntityContext<StatusInfo, 
 
 const allStatuses = new Map<number, StatusInfo>();
 export function registerStatus(id: number, info: StatusInfoNoId) {
+  if (allStatuses.has(id)) {
+    throw new Error(`Status ${id} already registered`);
+  }
   allStatuses.set(id, { ...info, id });
 }
 export function getStatus(id: number) {

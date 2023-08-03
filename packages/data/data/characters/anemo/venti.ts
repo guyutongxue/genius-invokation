@@ -18,7 +18,10 @@ const DivineMarksmanship = createSkill(15031)
  */
 const StormZone = createStatus(115031)
   .withUsage(2)
-  .on("enter", (c) => { c.findCombatStatus(StormZone01)?.dispose(); })
+  .on("enter", (c) => {
+    c.findCombatStatus(StormZone01)?.dispose();
+    return false;
+  })
   .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
       c.deductCost(DiceType.Void);
@@ -35,7 +38,10 @@ const StormZone = createStatus(115031)
  */
 const StormZone01 = createStatus(115032)
   .withUsage(2)
-  .on("enter", (c) => { c.findCombatStatus(StormZone)?.dispose(); })
+  .on("enter", (c) => {
+    c.findCombatStatus(StormZone)?.dispose();
+    return false;
+  })
   .on("beforeUseDice", (c) => {
     if (c.switchActiveCtx) {
       if (c.deductCost(DiceType.Omni).length > 0) {

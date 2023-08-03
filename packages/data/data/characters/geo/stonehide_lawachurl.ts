@@ -1,4 +1,4 @@
-import { createCard, createCharacter, createSkill, DamageType } from "@gi-tcg";
+import { createCard, createCharacter, createSkill, createStatus, DamageType } from "@gi-tcg";
 
 /**
  * **Plama Lawa**
@@ -8,7 +8,7 @@ const PlamaLawa = createSkill(26011)
   .setType("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .dealDamage(2, DamageType.Physical)
   .build();
 
 /**
@@ -18,7 +18,7 @@ const PlamaLawa = createSkill(26011)
 const MovoLawa = createSkill(26012)
   .setType("elemental")
   .costGeo(3)
-  // TODO
+  .dealDamage(3, DamageType.Physical)
   .build();
 
 /**
@@ -29,7 +29,47 @@ const UpaShato = createSkill(26013)
   .setType("burst")
   .costGeo(3)
   .costEnergy(2)
-  // TODO
+  .dealDamage(5, DamageType.Physical)
+  .build();
+
+/**
+ * **岩盔**
+ * 所附属角色受到伤害时：抵消1点伤害。抵消岩元素伤害时，需额外消耗1次可用次数。
+ * 可用次数：3
+ */
+const Stonehide = createStatus(126011)
+  .withUsage(3)
+  .on("beforeDamaged", (c) => {
+    if (c.damageType === DamageType.Geo) {
+      c.this.setUsage(c.this.usage - 1);
+    }
+    c.decreaseDamage(1);
+  })
+  .on("dispose", (c) => {
+    c.this.master?.findStatus(StoneForce)?.dispose();
+  })
+  .build();
+
+/**
+ * **坚岩之力**
+ * 角色造成的物理伤害变为岩元素伤害。
+ * 每回合1次：角色造成的伤害+1。
+ * 角色所附属的「岩盔」被移除后：也移除此状态。
+ */
+const StoneForce = createStatus(126012)
+  .withThis({ addDamage: true })
+  .on("earlyBeforeDealDamage", (c) => {
+    if (c.damageType === DamageType.Physical) {
+      c.changeDamageType(DamageType.Geo);
+    }
+  })
+  .on("beforeDealDamage",
+    (c) => c.this.addDamage,
+    (c) => {
+      c.addDamage(1);
+      c.this.addDamage = false;
+    })
+  .on("actionPhase", (c) => { c.this.addDamage = true; })
   .build();
 
 /**

@@ -52,7 +52,11 @@ export class Mutator {
       value: hasDamage,
     });
     const [newAura, reaction] = makeReactionFromDamage(
-      mixinExt(this.store, damage.source, dmgCtx as DamageContextImpl & { hasDamage: boolean }),
+      mixinExt(
+        this.store,
+        damage.source,
+        dmgCtx as DamageContextImpl & { hasDamage: boolean },
+      ),
     );
     this.store.updateCharacterAtPath(damage.target, (draft) => {
       draft.aura = newAura;
@@ -72,8 +76,8 @@ export class Mutator {
     type: DamageType,
   ) {
     const damage = new Damage(source, target, value, type);
-    this.doElementalReaction(damage);
     this.emitSyncEvent("onEarlyBeforeDealDamage", damage);
+    this.doElementalReaction(damage);
     const changedType = damage.getType();
     if (changedType !== DamageType.Piercing) {
       this.emitSyncEvent("onBeforeDealDamage", damage);
@@ -100,11 +104,12 @@ export class Mutator {
       };
       this.emitSyncEvent("onBeforeDefeated", target, defeatedToken);
       if (defeatedToken.immune === null) {
-        this.store.updateCharacterAtPath(target, (draft) => {
-          draft.defeated = true;
-          draft.statuses = [];
-          draft.equipments = [];
-        });
+        // TODO
+        // this.store.updateCharacterAtPath(target, (draft) => {
+        //   draft.defeated = true;
+        //   draft.statuses = [];
+        //   draft.equipments = [];
+        // });
         this.emitEvent("onDefeated", target);
         // 检查是否所有角色均已死亡：游戏结束
         if (
@@ -187,42 +192,30 @@ export class Mutator {
       this.store.state.currentTurn,
       flip(this.store.state.currentTurn),
     ];
-    this.store._produce((draft) => {
-      for (const idx of playerSeq) {
-        const player = draft.players[idx];
-        const activeIndex = player.characters.findIndex(
-          (ch) => ch.entityId === player.active?.entityId,
-        );
-        for (let i = 0; i < player.characters.length; i++) {
-          const character =
-            player.characters[(activeIndex + i) % player.characters.length];
-          for (let j = 0; j < character.statuses.length; j++) {
-            if (character.statuses[j].shouldDispose) {
-              character.statuses.splice(j, 1);
-              j--;
-            }
-          }
-        }
-        for (let i = 0; i < player.combatStatuses.length; i++) {
-          if (player.combatStatuses[i].shouldDispose) {
-            player.combatStatuses.splice(i, 1);
-            i--;
-          }
-        }
-        for (let i = 0; i < player.summons.length; i++) {
-          if (player.summons[i].shouldDispose) {
-            player.summons.splice(i, 1);
-            i--;
-          }
-        }
-        for (let i = 0; i < player.supports.length; i++) {
-          if (player.supports[i].shouldDispose) {
-            player.supports.splice(i, 1);
-            i--;
+    for (const idx of playerSeq) {
+      for (const [,chPath] of findCharacter(this.store.state, idx)) {
+        for (const [st, stPath] of findEntity(this.store.state, chPath, "status")) {
+          if (st.shouldDispose) {
+            this.emitSyncEvent("onDispose", stPath);
+            this.store.updateCharacterAtPath(chPath, (draft) => {
+              draft.statuses = draft.statuses.filter((s) => s.entityId !== st.entityId);
+            });
           }
         }
       }
-    });
+      for (const type of ["status", "summon", "support"] as const) {
+        for (const [e, path] of findEntity(this.store.state, idx, type)) {
+          if (e.shouldDispose) {
+            this.emitSyncEvent("onDispose", path);
+            this.store._produce((draft) => {
+              const player = draft.players[idx];
+              const prop = type === "status" ? "combatStatuses" : type === "summon" ? "summons" : "supports";
+              player[prop] = (player[prop] as any[]).filter((s) => s.entityId !== e.entityId);
+            });
+          }
+        }
+      }
+    }
   }
 
   private receiveEvent(

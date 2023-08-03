@@ -20,6 +20,9 @@ export type SupportContext<Writable extends boolean> = EntityContext<SupportInfo
 
 const allStatuses = new Map<number, SupportInfo>();
 export function registerSupport(id: number, info: SupportInfoNoId) {
+  if (allStatuses.has(id)) {
+    throw new Error(`Support ${id} already registered`);
+  }
   allStatuses.set(id, { ...info, id });
 }
 export function getSupport(id: number) {

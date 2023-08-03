@@ -43,7 +43,8 @@ const RangedStance = createStatus(112041)
  * 持续回合：2
  */
 const MeleeStance = createStatus(112042)
-  .withThis({ duration: 2, _piercingCount: 2 })
+  .withDuration(2)
+  .withThis({ piercingCount: 2 })
   .on("earlyBeforeDealDamage", (c) => {
     if (c.damageType === DamageType.Physical) {
       c.changeDamageType(DamageType.Hydro);
@@ -55,18 +56,16 @@ const MeleeStance = createStatus(112042)
     }
   })
   .on("useSkill", (c) => {
-    if (c.this._piercingCount && c.target.findStatus(Riptide)) {
+    if (c.this.piercingCount && c.target.findStatus(Riptide)) {
       c.dealDamage(1, DamageType.Piercing, "!>");
-      c.this._piercingCount--;
+      c.this.piercingCount--;
     }
   })
   .on("actionPhase", (c) => {
-    c.this._piercingCount = 2;
-    c.this.duration--;
-    if (c.this.duration === 0) {
-      c.this.master!.createStatus(RangedStance);
-      c.this.dispose();
-    }
+    c.this.piercingCount = 2;
+  })
+  .on("dispose", (c) => {
+    c.this.master!.createStatus(RangedStance);
   })
   .build();
 

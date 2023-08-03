@@ -88,7 +88,7 @@ const ShrineOfMaya = createStatus(117032)
  * 我方引发元素反应时：伤害额外+1。
  * 持续回合：3
  */
-const ShrineOfMaya01 = createStatus(117032)
+const ShrineOfMaya01 = createStatus(117033)
   .withDuration(3)
   .on("enter", (c) => { c.findCombatStatus(ShrineOfMaya)?.dispose(); })
   .on("beforeDealDamage", (c) => {

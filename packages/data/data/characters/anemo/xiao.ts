@@ -50,6 +50,9 @@ const YakshaMask = createStatus(115041)
       c.deductCost(DiceType.Omni);
     })
   .on("actionPhase", (c) => { c.this.deductCost = true; })
+  .on("dispose", (c) => {
+    c.this.master?.findStatus(ConquerorOfEvilWrathDeity)?.dispose();
+  })
   .build();
 
 /**
@@ -99,7 +102,6 @@ export const ConquerorOfEvilGuardianYaksha = createCard(215041, ["character"])
  */
 const ConquerorOfEvilWrathDeity = createStatus(115042)
   .withUsage(2)
-  .withDuration(2) // 夜叉傩面持续回合
   .on("beforeUseDice", 
     (c) => c.useSkillCtx?.info.id === LemniscaticWindCycling,
     (c) => {

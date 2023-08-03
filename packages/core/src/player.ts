@@ -24,10 +24,7 @@ import {
   getCard,
   getSkill,
 } from "@gi-tcg/data";
-import {
-  CreatorArgsForPlayer,
-  RollPhaseConfig,
-} from "./context.js";
+import { CreatorArgsForPlayer, RollPhaseConfig } from "./context.js";
 import {
   ActionConfig,
   ElementalTuningActionConfig,
@@ -62,7 +59,7 @@ import {
   refreshEntity,
 } from "./entity.js";
 import { playCard } from "./card.js";
-import { useSkill, skillInfoToPath } from "./skill.js";
+import { useSkill, getSkillEx } from "./skill.js";
 
 interface PlayerOptions {
   initialHands: number;
@@ -346,7 +343,7 @@ export class PlayerMutator {
     );
     this.produce((draft) => {
       for (const d of consumed) {
-        const idx = this.state.dice.indexOf(d);
+        const idx = draft.dice.indexOf(d);
         if (idx === -1) {
           throw new Error("Invalid dice");
         }
@@ -377,13 +374,9 @@ export class PlayerMutator {
       const [preparingStatus, path] = preparingStatuses[0];
       const preparConfig = preparingStatus.info.prepare!;
       if (preparConfig.round === 1) {
-        const skill = getSkill(preparConfig.skillOrStatus);
-        if (typeof skill === "undefined" || skill.type === "passive") {
-          throw new Error(
-            `preparing skill ${preparConfig.skillOrStatus} not found}`,
-          );
-        }
-        await this.useSkill(skillInfoToPath(chPath, skill));
+        await this.useSkill(
+          getSkillEx(this.store.state, chPath, preparConfig.skillOrStatus),
+        );
       } else {
         this.store.updateCharacterAtPath(this.state.active!, (c, p) => {
           createStatus(c, p, preparConfig.skillOrStatus);
@@ -418,7 +411,7 @@ export class PlayerMutator {
             (s): UseSkillConfig => ({
               type: "useSkill",
               dice: [...s.costs],
-              skill: skillInfoToPath(chPath, s),
+              skill: getSkillEx(this.store.state, chPath, s.id),
             }),
           ),
       );
@@ -453,7 +446,9 @@ export class PlayerMutator {
 
     const usedDiceState: GameState[] = [];
     for (const action of actions) {
-      usedDiceState.push(this.store.mutator.emitBeforeUseDice(this.who, action));
+      usedDiceState.push(
+        this.store.mutator.emitBeforeUseDice(this.who, action),
+      );
     }
     const { configIndex, consumedDice } = await rpcAction(actions, (r) =>
       this.io!.rpc("action", r),

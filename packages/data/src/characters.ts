@@ -79,6 +79,9 @@ export type CharacterContext<Writable extends boolean = false> = Writable extend
 
 const allCharacters = new Map<number, CharacterInfo>();
 export function registerCharacter(id: number, info: CharacterInfoNoId) {
+  if (allCharacters.has(id)) {
+    throw new Error(`Character ${id} already registered`);
+  }
   allCharacters.set(id, { id, ...info });
 }
 export function getCharacter(id: number) {

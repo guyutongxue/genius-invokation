@@ -37,7 +37,7 @@ const ChonghuaFrostField = createStatus(111041)
  * 我方单手剑、双手剑或长柄武器角色造成的物理伤害变为冰元素伤害，普通攻击造成的伤害+1。
  * 持续回合：3
  */
-const ChonghuaFrostField01 = createStatus(111041)
+const ChonghuaFrostField01 = createStatus(111042)
   .withDuration(2)
   .on("enter", (c) => { c.findCombatStatus(ChonghuaFrostField)?.dispose(); })
   .on("earlyBeforeDealDamage",

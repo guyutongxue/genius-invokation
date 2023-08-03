@@ -17,6 +17,9 @@ export type SummonContext<Writable extends boolean> = EntityContext<SummonInfo, 
 
 const allSummons = new Map<number, SummonInfo>();
 export function registerSummon(id: number, info: SummonInfoNoId) {
+  if (allSummons.has(id)) {
+    throw new Error(`Summon ${id} already registered`);
+  }
   allSummons.set(id, { ...info, id });
 }
 export function getSummon(id: number) {
