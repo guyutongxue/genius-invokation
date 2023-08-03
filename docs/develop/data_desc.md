@@ -98,7 +98,7 @@ const BlessingOfTheDivineRelicsInstallation = createCard(332011, ["character", "
   .do(...)
 ```
 
-`filterMyTargets` 和 `filterOppTargets` builder 方法可用于筛选目标，并提供辅助的筛选条件。如果无额外筛选条件，可填入 `() => true`：
+`filterMyTargets` 和 `filterOppTargets` builder 链方法可用于筛选目标，并提供辅助的筛选条件。如果无额外筛选条件，可填入 `() => true`：
 
 ```ts
 /**
@@ -118,7 +118,7 @@ const QuickKnit = createCard(332012, ["summon"])
 
 #### 天赋牌筛选器
 
-天赋牌通常作为装备牌，要求只能装备到某一角色上。大部分的天赋牌，还要求该角色必须是出战角色。为此，提供了简便的 builder 方法 `addCharacterFilter`：
+天赋牌通常作为装备牌，要求只能装备到某一角色上。大部分的天赋牌，还要求该角色必须是出战角色。为此，提供了简便的 builder 链方法 `addCharacterFilter`：
 
 ```ts
 /**
@@ -161,7 +161,7 @@ export const KantenSenmyouBlessing = createCard(211051, ["character"])
 
 ### 卡牌可使用性筛选器
 
-如「本大爷还不能输」、秘传牌等，需要满足一定条件才可使用，则通过 builder 方法 `addFilter` 查询全局状态以判断是否可以使用。
+如「本大爷还不能输」、秘传牌等，需要满足一定条件才可使用，则通过 builder 链方法 `addFilter` 查询全局状态以判断是否可以使用。
 
 ```ts
 /**
@@ -282,6 +282,26 @@ const TreasureseekingSeelie = createCard(323004)
 
 类似地，`buildToEquipment` 自动调用目标角色的 `equip`，并返回新的 builder —— 将后续的 builder 链转换为装备牌的描述方法。
 
+#### 护盾状态
+
+builder 链方法 `shield` 指明一个护盾状态。其第一实参指明初始护盾值，第二可选实参指明最多叠加护盾值。
+
+护盾状态本质上是对 `onBeforeDamaged` 事件的相应程序，并使用 `withThis` 添加一个特殊属性 `[SHIELD_VALUE]` 记录“盾量”，在“盾量”清空时调用 `c.this.dispose` 来弃置实体。
+
+特别地，`shield` 可以与 `on("beforeDamaged")` 共存；同时提供时，请务必将 `on("beforeDamaged")` 放在 `shield` 的前面。
+
+#### 准备技能状态
+
+角色准备技能总是由一个状态来指定。这个状态在行动时会自动进行如下操作：
+- 直接使用某隐藏技能；
+- 跳过本行动轮并附着某准备技能状态（多轮准备）
+
+builder 链方法 `prepare` 提供两种调用方式，分别指明上述场合：
+- `prepare(skillHandle)` 下一行动轮自动使用技能
+- `prepare(statusHandle, 2)` 跳过行动，附着某状态（即准备两个行动轮）
+
+> 目前没有自机角色会准备两个或更多行动轮的技能。
+
 ## 全局操作语境 `c`
 
 所有的事件响应器都继承自全局操作语境 `Context`，包括如下接口：
@@ -315,9 +335,28 @@ const TreasureseekingSeelie = createCard(323004)
 - `findCombatStatus` 查找出战状态
 - `findCombatShield` 查找具有护盾的出战状态（坚定之岩、贯虹之槊）
 
+### `c.this`
+
+一个操作语境，用于指代调用者自身。如实体的 `on` 的 `c.this`，就是 `EntityContext`。
+
+此外，该属性也承接 `withThis` 中的自定义属性的读写。
+
 ## 角色选择器语法
 
 修改角色数据的操作在 `CharacterContext` 里定义。使用 `queryCharacter` 或 `queryCharacterAll` 和角色选择器语法来指定角色。对于 `dealDamage` `heal` `createStatus` `switchActive` 等操作，也需要用该语法来指定一个或多个角色。
 
 - [角色选择器语法参考](./selector.md)
 - [角色操作语境](./context_details.md#角色操作语境)
+
+## 操作语境扩展点
+
+例如 `onBeforeDealDamage` 等事件的相应，需要增减伤害值，这些操作由该事件的扩展点（Extension point）提供。`c` 中会混合这些扩展点提供的方法，因此直接调用 `c.addDamage` 即可修改伤害值。
+
+以下事件有扩展点：
+- `onRollPhase`（修改掷骰流程）
+- `onBeforeUseDice`（修改骰子需求数量、快速切换角色）
+- damage 相关的所有事件（提供或修改伤害信息）
+- `onUseSkill`（提供该技能信息）
+- `onSwitchActive`（提供切人信息）
+- `onPlayCard`（提供使用手牌信息）
+- `onDispose`（被弃置的实体信息）
