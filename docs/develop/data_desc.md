@@ -302,6 +302,10 @@ builder 链方法 `prepare` 提供两种调用方式，分别指明上述场合�
 
 > 目前没有自机角色会准备两个或更多行动轮的技能。
 
+### 修改事件监听范围
+
+为简化数据描述，默认情况下，实体只会监听它所处位置引发的相关事件；比如角色 A 附着的角色状态只会监听 A 引发的 `onBeforeDealDamage` 和 A 遭受的 `onBeforeDamaged`。但是确实有角色状态监听其它角色、我方场上实体监听对方场上事件的情况，因此 builder 链方法 `listenToOthers` 和 `listenToOpp` 用来处理这些情形。[`listenTo` 属性](./events.md#listento-属性) 一节有更具体的描述。
+
 ## 全局操作语境 `c`
 
 所有的事件响应器都继承自全局操作语境 `Context`，包括如下接口：
