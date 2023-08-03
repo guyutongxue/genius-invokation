@@ -107,7 +107,7 @@ export class Mutator {
         this.store.updateCharacterAtPath(target, (draft) => {
           draft.defeated = true;
         });
-        this.emitEvent("onDefeated", target);
+        this.emitEvent("onDefeated", damage);
         // 检查是否所有角色均已死亡：游戏结束
         if (
           this.store.state.players[target.who].characters.every(
@@ -364,6 +364,9 @@ export class Mutator {
           draft.energy = 0;
           draft.equipments = [];
           draft.statuses = [];
+        });
+        this.store._produce((draft) => {
+          draft.players[chPath.who].hasDefeated = true;
         });
       });
     }

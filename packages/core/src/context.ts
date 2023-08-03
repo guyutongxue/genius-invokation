@@ -1392,7 +1392,7 @@ export const CONTEXT_CREATORS = {
   onDamaged: buildCreator(DamageContextImpl, damageEventChecker("target")),
   onElementalReaction: buildCreator(ElementalReactionContextImpl),
   onBeforeDefeated: buildCreator(DefeatedContextImpl, commonCharacterChecker),
-  onDefeated: buildCreator(TrivialCharacterContextImpl, commonCharacterChecker),
+  onDefeated: buildCreator(DamageContextImpl, damageEventChecker("target")),
   onRevive: buildCreator(TrivialCharacterContextImpl, commonCharacterChecker),
 
   onEnter: buildCreator(EntityContextImpl, entityEventChecker),

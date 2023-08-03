@@ -450,14 +450,10 @@ class TriggerBuilderBase<ThisT> {
     : this;
   on(event: string, condOrHandler: any, handler?: any) {
     const handlerName = addPrefix(event) as EventNames;
-    const oldHandler = this.handlers[handlerName];
     if (typeof handler === "function") {
       this.handlers[handlerName] = (c: any) => {
-        if (oldHandler) {
-          oldHandler(c);
-        }
         if (condOrHandler(c)) {
-          handler(c);
+          return handler(c);
         } else {
           return false;
         }
@@ -529,9 +525,13 @@ class StatusBuilder<BuildFromCard extends boolean = false, ThisT = {}> extends T
       initial: initial,
       recreateMax: recreateMax ?? Infinity,
     };
+    const originalDamageHandler = this.handlers.onBeforeDamaged;
     this
       .withThis({ [SHIELD_VALUE]: initial })
       .on("beforeDamaged", (c) => {
+        if (originalDamageHandler) {
+          originalDamageHandler(c);
+        }
         if (!c.this.master) {
           // 出战护盾只保护出战角色
           if (!c.target.isActive()) {
