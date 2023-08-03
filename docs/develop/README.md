@@ -50,8 +50,13 @@ function handler<M extends RpcMethod>(method: M, request: RpcRequest[M]) => Prom
 
 ## 暂时目录
 
+### 数据描述（`@gi-tcg/data`）相关
+
+- [数据描述方法](./data_desc.md)
 - [事件](./events.md)
-<!-- - [角色](./character.md)
-- [手牌](./card.md)
-- [状态与出战状态](./status.md)
-- [通用数据描述](./data_desc.md) 数据描述的通用部分 -->
+- [角色选择器](./selector.md)
+- [子操作语境](./context_details.md)
+
+### 核心（`@gi-tcg/core`）相关
+
+- [游戏状态数据](./state.md)

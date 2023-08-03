@@ -57,7 +57,6 @@ interface CharacterBaseContext<Writable extends boolean = false> {
   findShield(): StatusContext<Writable> | null;
 
   isActive(): boolean;
-  isMine(): boolean;
 
   asTarget(): `#${number}`;
   elementType(): DiceType;

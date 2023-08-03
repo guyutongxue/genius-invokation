@@ -419,7 +419,7 @@ const PlungingStrike = createCard(332017, ["character"])
 const QuickKnit = createCard(332012, ["summon"])
   .setType("event")
   .costSame(1)
-  .filterMyTargets((t) => true)
+  .filterMyTargets(() => true)
   .do((c) => {
     const summon = c.target[0];
     summon.setUsage(summon.usage + 1);

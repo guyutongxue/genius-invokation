@@ -32,6 +32,8 @@ interface GlobalContext<ThisT, Writable extends boolean = false> {
   findCombatShield(): StatusContext<Writable> | null;
 
   dice: readonly DiceType[];
+  // 手牌数量
+  handLength(opp?: boolean): number;
 
   // 技能使用次数（迪卢克、艾琳）
   skillCount(skill: SkillHandle, allRound?: boolean): number;
@@ -56,7 +58,6 @@ interface GlobalAction<ThisT> extends GlobalContext<ThisT, true> {
   generateDice(...dice: DiceType[]): void;
   generateRandomElementDice(count?: number): void;
 
-  handLength(opp?: boolean): number;
   drawCards(count: number, opp?: boolean, tag?: CardTag): void;
   createCards(...cards: CardHandle[]): void;
   switchCards(): Promise<void>;

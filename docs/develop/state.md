@@ -4,7 +4,7 @@
 
 若要修改数据，则应当对 `GameState` 做重新赋值。类 `Store` 管理 `GameState` 的赋值操作。
 
-`Store` 使用 `immer` 库进行不可变状态管理。其成员方法 `_produce` 接受改动草稿，并应用到内部状态字段 `_state` 上。
+`Store` 使用 Immer 库进行不可变状态管理。其成员方法 `_produce` 接受改动草稿，并应用到内部状态字段 `_state` 上。
 
 `Store` 提供两个方面的接口：
 1. `state` 只读的数据访问接口；
