@@ -71,7 +71,6 @@ const GrandNarukamiShrine = createCard(321008)
 const JadeChamber = createCard(321003)
   .setType("support")
   .addTags("place")
-  .costSame(1)
   .buildToSupport()
   .on("rollPhase", (c) => {
     const d = c.queryCharacter("|")!.elementType();

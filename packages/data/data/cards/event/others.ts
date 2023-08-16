@@ -1,4 +1,4 @@
-import { DiceType, createCard, SpecialBits, DamageType } from '@gi-tcg';
+import { DiceType, createCard, SpecialBits, DamageType, CardHandle } from '@gi-tcg';
 import { BurningFlame, CatalyzingField, DendroCore } from '../../status/reactions';
 
 /**
@@ -50,6 +50,7 @@ const CalxsArts = createCard(332009)
  */
 const ChangingShifts = createCard(332002)
   .setType("event")
+  .addFilter(c => c.queryCharacterAll("*").length > 1)
   .buildToStatus("combat")
   .on("beforeUseDice",
     (c) => !!c.switchActiveCtx,
@@ -347,10 +348,12 @@ const HeavyStrike = createCard(332018)
  * **本大爷还没有输！**
  * 本回合有我方角色被击倒，才能打出：
  * 生成1个万能元素，我方当前出战角色获得1点充能。
+ * （每回合限制使用1次）
  */
-const IHaventLostYet = createCard(332005)
+const IHaventLostYet: CardHandle = createCard(332005)
   .setType("event")
   .addFilter(c => c.checkSpecialBit(SpecialBits.Defeated))
+  .addFilter(c => c.cardCount(IHaventLostYet) === 0)
   .generateDice(DiceType.Omni)
   .gainEnergyToActive(1)
   .build();
@@ -361,6 +364,7 @@ const IHaventLostYet = createCard(332005)
  */
 const LeaveItToMe = createCard(332006)
   .setType("event")
+  .addFilter(c => c.queryCharacterAll("*").length > 1)
   .buildToStatus("combat")
   .withUsage(1)
   .on("beforeUseDice", (c) => c.requestFastSwitch())
@@ -498,7 +502,7 @@ const TheLegendOfVennessa = createCard(332019)
 
 /**
  * **雷与永恒**
- * 将我方所有元素骰转换为当前出战角色的类型。
+ * 将我方所有元素骰转换为万能元素。
  * （牌组包含至少2个「稻妻」角色，才能加入牌组）
  */
 const ThunderAndEternity = createCard(331803)
@@ -511,7 +515,7 @@ const ThunderAndEternity = createCard(331803)
       removed.push(i);
     }
     c.absorbDice(removed);
-    c.generateDice(...Array(length).fill(c.queryCharacter("|")!.elementType()));
+    c.generateDice(...Array(length).fill(DiceType.Omni));
   })
   .build();
 
@@ -531,6 +535,7 @@ const TossUp = createCard(332003)
 const WhenTheCraneReturned = createCard(332007)
   .setType("event")
   .costSame(1)
+  .addFilter(c => c.queryCharacterAll("*").length > 1)
   .buildToStatus("combat")
   .withUsage(1)
   .on("useSkill", (c) => c.switchActive(">"))
