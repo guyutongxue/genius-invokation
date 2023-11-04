@@ -1,8 +1,13 @@
 {
-  "name": "@gi-tcg/data",
+  "name": "@gi-tcg/data-new",
   "version": "0.0.0",
   "type": "module",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build:entry": "node ./scripts/generate_imports.js",
     "build:ts": "tsup src/index.ts --format esm --dts --sourcemap",
