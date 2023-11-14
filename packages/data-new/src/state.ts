@@ -1,6 +1,7 @@
 import { PhaseType, DiceType, Aura } from "@gi-tcg/typings";
 
 export interface GameState {
+  readonly config: GameConfig;
   readonly phase: PhaseType;
   readonly roundNumber: number;
   readonly currentTurn: 0 | 1;
@@ -28,12 +29,12 @@ export interface PlayerState {
 
 export interface CardState {
   readonly id: number;
-  readonly typeId: number;
+  readonly definition: CardDefinition;
 }
 
 export interface CharacterState {
   readonly id: number;
-  readonly typeId: number;
+  readonly definition: CharacterDefinition;
   readonly defeated: boolean;
   readonly entities: readonly EntityState[];
   readonly variables: CharacterVariables;
@@ -41,7 +42,7 @@ export interface CharacterState {
 
 export interface EntityState {
   readonly id: number;
-  readonly typeId: number;
+  readonly definition: EntityDefinition;
   readonly variables: EntityVariables;
 }
 
