@@ -1,6 +1,6 @@
 import { DiceType } from "@gi-tcg/typings";
 import { CharacterTag } from "./character";
-import { SkillDescription } from "./skill";
+import { SkillDescription, SkillFilter } from "./skill";
 
 export type CardTag =
   | "legend" // 秘传
@@ -28,7 +28,8 @@ export interface DeckRequirement {
 
 export type CardTargetKind = ("character" | "entity")[];
 
-export type PlayCardAction = (...targets: unknown[]) => SkillDescription; // ???
+export type PlayCardAction = (...targets: number[]) => SkillDescription;
+export type PlayCardFilter = (...targets: number[]) => SkillFilter;
 
 export interface CardDefinition {
   readonly id: number;

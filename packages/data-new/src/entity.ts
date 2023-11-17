@@ -7,6 +7,7 @@ export type EntityTag =
 
 
 export interface EntityDefinition {
+  readonly type: "status" | "equipment" | "support" | "summon";
   readonly id: number;
   readonly tags: EntityTag[];
   readonly constants: EntityVariables;

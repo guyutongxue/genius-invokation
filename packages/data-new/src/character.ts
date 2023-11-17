@@ -30,6 +30,7 @@ export type NationTag =
 export type CharacterTag = ElementTag | WeaponTag | NationTag;
 
 export interface CharacterDefinition {
+  readonly type: "character";
   readonly id: number;
   readonly tags: CharacterTag[];
   readonly constants: CharacterConstants;
