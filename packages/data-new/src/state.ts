@@ -1,4 +1,22 @@
-import { PhaseType, DiceType, Aura } from "@gi-tcg/typings";
+import { PhaseType, DiceType } from "@gi-tcg/typings";
+import { CardDefinition } from "./card";
+import { CharacterDefinition, CharacterVariables } from "./character";
+import { EntityDefinition, EntityVariables } from "./entity";
+
+export interface GameConfig {
+  initialHands: number;
+  maxHands: number;
+  maxRounds: number;
+  maxSupports: number;
+  maxSummons: number;
+  initialDice: number;
+  maxDice: number;
+}
+
+// export interface PlayerConfig {
+//   noShuffle: boolean;
+//   alwaysOmni: boolean;
+// }
 
 export interface GameState {
   readonly config: GameConfig;
@@ -45,17 +63,3 @@ export interface EntityState {
   readonly definition: EntityDefinition;
   readonly variables: EntityVariables;
 }
-
-interface EntityVariables {
-  readonly usagePerRound: number;
-  readonly usage: number;
-  readonly duration: number;
-  readonly [key: string]: number;
-};
-
-interface CharacterVariables {
-  readonly health: number;
-  readonly energy: number;
-  readonly aura: Aura;
-  readonly [key: string]: number;
-};
