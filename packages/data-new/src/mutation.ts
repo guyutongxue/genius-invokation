@@ -119,6 +119,9 @@ export type Mutation =
   | SetPlayerFlagM;
 
 export function applyMutation(state: GameState, m: Mutation): GameState {
+  state = produce(state, (draft) => {
+    draft.mutationLog.push(m as Draft<Mutation>);
+  });
   switch (m.type) {
     case "changePhase": {
       return produce(state, (draft) => {
