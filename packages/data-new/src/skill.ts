@@ -1,7 +1,8 @@
+import { GameState } from "./state";
 
 
 export type EventHandlers = unknown;
 
-export type SkillDescription = unknown;
+export type SkillDescription = (state: GameState) => GameState;
 
-export type SkillFilter = unknown;
+export type SkillFilter = (state: GameState) => boolean;

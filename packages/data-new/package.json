@@ -2,28 +2,15 @@
   "name": "@gi-tcg/data-new",
   "version": "0.0.0",
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
+  "exports": "./src/index.ts",
   "scripts": {
     "build:entry": "node ./scripts/generate_imports.js",
     "build:ts": "tsup src/index.ts --format esm --dts --sourcemap",
     "build": "pnpm build:entry && pnpm build:ts"
   },
   "dependencies": {
-    "@gi-tcg/typings": "workspace:*"
-  },
-  "devDependencies": {
-    "@genshin-db/tcg": "^4.3.12",
-    "case-anything": "^2.1.13",
-    "glob": "^10.2.7",
-    "puppeteer-core": "^20.8.2",
-    "tsup": "^7.1.0",
-    "tsx": "^3.12.7",
-    "typescript": "^5.1.6",
-    "wikijs": "^6.4.1"
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "immer": "^10.0.3"
   }
 }

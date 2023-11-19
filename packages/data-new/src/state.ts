@@ -31,7 +31,7 @@ export interface GameState {
 
 export interface PlayerState {
   readonly piles: readonly CardState[];
-  readonly activeCharacterIndex: number;
+  readonly activeCharacterId: number;
   readonly hands: readonly CardState[];
   readonly characters: readonly CharacterState[];
   readonly combatStatuses: readonly EntityState[];
