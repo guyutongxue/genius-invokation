@@ -3,6 +3,7 @@ import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariables } from "./character";
 import { EntityDefinition, EntityVariables } from "./entity";
 import { Mutation } from "./mutation";
+import { SkillDefinition } from "./skill";
 
 export interface GameConfig {
   initialHands: number;
@@ -26,7 +27,7 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly skillLog: readonly SkillInfo[];
+  readonly skillLog: readonly SkillDefinition<never>[];
   readonly mutationLog: readonly Mutation[];
 }
 
