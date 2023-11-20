@@ -8,6 +8,24 @@ interface SkillDefinitionBase<Ctx> {
   readonly action: SkillDescription<Ctx>;
 }
 
+type SkillDescription<Ctx> = (
+  state: GameState,
+  emitted: InSkillEventPayload[],
+  ctx?: Ctx,
+) => GameState | PromiseLike<GameState>;
+
+interface SyncSkillDefinitionBase<Ctx = any> {
+  readonly type: "skill";
+  readonly id: number;
+  readonly action: SyncSkillDescription<Ctx>;
+}
+
+type SyncSkillDescription<Ctx> = (
+  state: GameState,
+  emitted: readonly [],
+  ctx?: Ctx,
+) => GameState;
+
 export interface InitiativeSkillDefinition<Ctx = never>
   extends SkillDefinitionBase<Ctx> {
   readonly triggerOn: null;
@@ -117,6 +135,11 @@ type AsyncEventMap = {
   onRevive: 0;
 };
 
+type InSkillEvent = "onSwitchActive" | "onDamage" | "onElementalReaction";
+type InSkillEventPayload = {
+  [E in InSkillEvent]: [E, AsyncEventMap[E]];
+}[InSkillEvent];
+
 export type TriggeredSkillDefinition = ({
   [E in keyof SyncEventMap]: SyncSkillDefinitionBase<SyncEventMap[E]> & {
     triggerOn: E;
@@ -130,16 +153,5 @@ export type TriggeredSkillDefinition = ({
 export type SkillDefinition =
   | InitiativeSkillDefinition
   | TriggeredSkillDefinition;
-
-interface SyncSkillDefinitionBase<Ctx = any> {
-  readonly type: "skill";
-  readonly id: number;
-  readonly action: (state: GameState, ctx?: Ctx) => GameState;
-}
-
-type SkillDescription<Ctx> = (
-  state: GameState,
-  ctx?: Ctx,
-) => GameState | PromiseLike<GameState>;
 
 export type SkillFilter<Ctx> = (state: GameState, ctx?: Ctx) => boolean;

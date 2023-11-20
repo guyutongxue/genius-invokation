@@ -11,7 +11,7 @@
     "skipLibCheck": true,
 
     "paths": {
-      "@gi-tcg": ["./src/data_interface.ts"]
+      "@gi-tcg": ["./src/builder/index.ts"]
     },
   }
 }
