@@ -2,10 +2,15 @@ import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
 
-export interface SkillDefinition<Ctx = any> {
+interface SkillDefinitionBase<Ctx> {
   readonly type: "skill";
   readonly id: number;
   readonly action: SkillDescription<Ctx>;
+}
+
+export interface InitiativeSkillDefinition<Ctx = never>
+  extends SkillDefinitionBase<Ctx> {
+  readonly triggerOn: null;
 }
 
 export interface RollModifier {
@@ -88,7 +93,12 @@ export interface DeclareEndInfo {
   readonly who: 0 | 1;
 }
 
-export type ActionInfo = UseSkillInfo | PlayCardInfo | SwitchActiveInfo | ElementalTuningInfo | DeclareEndInfo;
+export type ActionInfo =
+  | UseSkillInfo
+  | PlayCardInfo
+  | SwitchActiveInfo
+  | ElementalTuningInfo
+  | DeclareEndInfo;
 
 type AsyncEventMap = {
   onBattleBegin: 0;
@@ -107,15 +117,25 @@ type AsyncEventMap = {
   onRevive: 0;
 };
 
-export type EventHandlers = Partial<
-  {
-    [E in keyof SyncEventMap]: SyncSkillDescription<SyncEventMap[E]>;
-  } & {
-    [E in keyof AsyncEventMap]: SkillDefinition<AsyncEventMap[E]>;
-  }
->;
+export type TriggeredSkillDefinition = ({
+  [E in keyof SyncEventMap]: SyncSkillDefinitionBase<SyncEventMap[E]> & {
+    triggerOn: E;
+  };
+} & {
+  [E in keyof AsyncEventMap]: SkillDefinitionBase<AsyncEventMap[E]> & {
+    triggerOn: E;
+  };
+})[keyof SyncEventMap | keyof AsyncEventMap];
 
-type SyncSkillDescription<Ctx> = (state: GameState, ctx?: Ctx) => GameState;
+export type SkillDefinition =
+  | InitiativeSkillDefinition
+  | TriggeredSkillDefinition;
+
+interface SyncSkillDefinitionBase<Ctx = any> {
+  readonly type: "skill";
+  readonly id: number;
+  readonly action: (state: GameState, ctx?: Ctx) => GameState;
+}
 
 type SkillDescription<Ctx> = (
   state: GameState,

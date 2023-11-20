@@ -1,4 +1,4 @@
-import { EventHandlers } from "./skill";
+import { TriggeredSkillDefinition } from "./skill";
 
 export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
@@ -11,7 +11,7 @@ export interface EntityDefinition {
   readonly id: number;
   readonly tags: EntityTag[];
   readonly constants: EntityVariables;
-  readonly skills: EventHandlers;
+  readonly skills: TriggeredSkillDefinition[];
 }
 
 export interface EntityVariables {

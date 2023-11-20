@@ -27,7 +27,7 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly skillLog: readonly SkillDefinition<never>[];
+  readonly skillLog: readonly SkillDefinition[];
   readonly mutationLog: readonly Mutation[];
 }
 

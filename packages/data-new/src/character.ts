@@ -1,5 +1,5 @@
 import { Aura } from "@gi-tcg/typings";
-import { EventHandlers, SkillDefinition } from "./skill";
+import { TriggeredSkillDefinition, InitiativeSkillDefinition } from "./skill";
 
 export type ElementTag =
   | "cryo"
@@ -34,8 +34,8 @@ export interface CharacterDefinition {
   readonly id: number;
   readonly tags: CharacterTag[];
   readonly constants: CharacterConstants;
-  readonly initiativeSkills: SkillDefinition[];
-  readonly skills: EventHandlers;
+  readonly initiativeSkills: InitiativeSkillDefinition[];
+  readonly skills: TriggeredSkillDefinition[];
 }
 
 export interface CharacterVariables {
