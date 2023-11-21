@@ -2,6 +2,8 @@ import { DiceType } from "@gi-tcg/typings";
 import { CharacterTag } from "./character";
 import { InitiativeSkillDefinition, SkillDefinition, SkillFilter } from "./skill";
 
+export type EquipmentTag =;
+
 export type CardTag =
   | "legend" // 秘传
   | "action" // 出战行动

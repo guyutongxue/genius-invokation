@@ -4,6 +4,7 @@ import { DiceType, PhaseType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { disposeEntity, getEntityById } from "./util";
+import { EntityArea } from "./entity";
 
 export interface ChangePhaseM {
   readonly type: "changePhase";
@@ -59,20 +60,10 @@ export interface CreateCharacterM {
   readonly value: CharacterState;
 }
 
-export type EntityCreationArea =
-  | {
-      readonly type: "combatStatuses" | "supports" | "summons";
-      readonly who: 0 | 1;
-    }
-  | {
-      readonly type: "characters";
-      readonly characterId: number;
-    };
-
 export interface CreateEntityM {
   readonly type: "createEntity";
   readonly who: 0 | 1;
-  readonly where: EntityCreationArea;
+  readonly where: EntityArea;
   readonly value: EntityState;
 }
 
@@ -232,7 +223,7 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
       });
     }
     default: {
-      const _check: never = m;
+      const _: never = m;
       throw new Error(`Unknown mutation type: ${JSON.stringify(m)}`);
     }
   }

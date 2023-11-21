@@ -135,8 +135,8 @@ type AsyncEventMap = {
   onRevive: 0;
 };
 
-type InSkillEvent = "onSwitchActive" | "onDamage" | "onElementalReaction";
-type InSkillEventPayload = {
+export type InSkillEvent = "onSwitchActive" | "onDamage" | "onElementalReaction";
+export type InSkillEventPayload = {
   [E in InSkillEvent]: [E, AsyncEventMap[E]];
 }[InSkillEvent];
 

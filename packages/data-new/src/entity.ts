@@ -5,9 +5,10 @@ export type EntityTag =
   | "shield"       // 护盾
   ;
 
+export type EntityType = "status" | "equipment" | "support" | "summon";
 
 export interface EntityDefinition {
-  readonly type: "status" | "equipment" | "support" | "summon";
+  readonly type: EntityType;
   readonly id: number;
   readonly tags: EntityTag[];
   readonly constants: EntityVariables;
@@ -20,3 +21,14 @@ export interface EntityVariables {
   readonly duration: number;
   readonly [key: string]: number;
 };
+
+export type EntityArea =
+  | {
+      readonly type: "combatStatuses" | "supports" | "summons";
+      readonly who: 0 | 1;
+    }
+  | {
+      readonly type: "characters";
+      readonly who: 0 | 1;
+      readonly characterId: number;
+    };

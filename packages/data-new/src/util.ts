@@ -1,7 +1,8 @@
 import { Draft } from "immer";
 import { CharacterState, EntityState, GameState } from "./state";
+import { EntityArea } from "./entity";
 
-export function getEntityById(state: GameState, id: number, includeCharacter: false): EntityState;
+export function getEntityById(state: GameState, id: number, includeCharacter?: false): EntityState;
 export function getEntityById(state: GameState, id: number, includeCharacter: true): EntityState | CharacterState;
 export function getEntityById(state: GameState, id: number, includeCharacter = false): EntityState | CharacterState {
   for (const player of state.players) {
@@ -20,6 +21,30 @@ export function getEntityById(state: GameState, id: number, includeCharacter = f
       for (const entity of area) {
         if (entity.id === id) {
           return entity;
+        }
+      }
+    }
+  }
+  throw new Error(`Cannot found such entity`);
+}
+
+export function getEntityArea(state: GameState, id: number): EntityArea {
+  for (const who of [0, 1] as const) {
+    const player = state.players[who];
+    for (const ch of player.characters) {
+      if (ch.id === id || ch.entities.find((e) => e.id === id)) {
+        return {
+          type: "characters",
+          who,
+          characterId: ch.id
+        };
+      } 
+    }
+    for (const key of ["combatStatuses", "summons", "supports"] as const) {
+      if (player[key].find((e) => e.id === id)) {
+        return {
+          type: key,
+          who
         }
       }
     }
