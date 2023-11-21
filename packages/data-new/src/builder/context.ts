@@ -5,6 +5,7 @@ import { InSkillEventPayload } from "../skill";
 import { CharacterState, EntityState, GameState } from "../state";
 import { getEntityArea, getEntityById } from "../util";
 import { QueryBuilder } from "./query";
+import { ExEntityType } from "./type";
 
 export class SkillContext {
   private eventPayloads: InSkillEventPayload[] = [];
@@ -29,8 +30,8 @@ export class SkillContext {
     return this._state.currentTurn === this.callerArea.who;
   }
 
-  query(type: "character" | EntityType) {
-    return new QueryBuilder(this, type, this.callerArea.who);
+  query<TypeT extends ExEntityType>(type: TypeT) {
+    return new QueryBuilder(this, this.callerArea.who).type(type);
   }
 
   // MUTATIONS
@@ -53,30 +54,32 @@ export class SkillContext {
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
 export class CharacterContext {
-  private _who: 0 | 1;
+  private readonly area: EntityArea;
   constructor(
-    private skillContext: SkillContext,
-    private id: number,
+    private readonly skillContext: SkillContext,
+    private readonly _id: number,
   ) {
-    this._who = getEntityArea(skillContext.state, id).who;
+    this.area = getEntityArea(skillContext.state, _id);
   }
 
   get state(): CharacterState {
-    const entity = getEntityById(this.skillContext.state, this.id, true);
+    const entity = getEntityById(this.skillContext.state, this._id, true);
     if (entity.definition.type !== "character") {
       throw new Error("Expected character");
     }
     return entity as CharacterState;
   }
-
   get who() {
-    return this._who;
+    return this.area.who;
+  }
+  get id() {
+    return this._id;
   }
 
   positionIndex() {
     const state = this.skillContext.state;
-    const player = state.players[this._who];
-    const thisIdx = player.characters.findIndex((ch) => ch.id === this.id);
+    const player = state.players[this.who];
+    const thisIdx = player.characters.findIndex((ch) => ch.id === this._id);
     if (thisIdx === -1) {
       throw new Error("Invalid character index");
     }
@@ -84,7 +87,7 @@ export class CharacterContext {
   }
   satisfyPosition(pos: CharacterPosition) {
     const state = this.skillContext.state;
-    const player = state.players[this._who];
+    const player = state.players[this.who];
     const activeIdx = player.characters.findIndex(
       (ch) => ch.id === player.activeCharacterId,
     );
@@ -95,9 +98,9 @@ export class CharacterContext {
     const length = player.characters.length;
     switch (pos) {
       case "active":
-        return player.activeCharacterId === this.id;
+        return player.activeCharacterId === this._id;
       case "standby":
-        return player.activeCharacterId !== this.id;
+        return player.activeCharacterId !== this._id;
       case "next":
         return (thisIdx - activeIdx + length) % length === 1;
       case "prev":
@@ -119,21 +122,30 @@ export class CharacterContext {
   }
 
   query() {
-    return this.skillContext.query("character").byId(this.id).into();
+    return this.skillContext.query("character").byId(this._id).into();
   }
 }
 
 export class EntityContext<TypeT extends EntityType = EntityType> {
+  private readonly area: EntityArea;
   constructor(
-    private skillContext: SkillContext,
-    private id: number,
-  ) {}
+    private readonly skillContext: SkillContext,
+    private readonly id: number,
+  ) {
+    this.area = getEntityArea(skillContext.state, id);
+  }
 
   get state(): EntityState {
     return getEntityById(this.skillContext.state, this.id);
   }
+  get who() {
+    return this.area.who;
+  }
 
-  area(): EntityArea {
-    return getEntityArea(this.skillContext.state, this.id);
+  master() {
+    if (this.area.type !== "characters") {
+      throw new Error("master() expect a character area");
+    }
+    return new CharacterContext(this.skillContext, this.area.characterId);
   }
 }

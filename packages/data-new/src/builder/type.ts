@@ -16,15 +16,15 @@ export type SupportHandle = EntityHandle &
 export type EquipmentHandle = EntityHandle &
   CardHandle & { readonly _equip: unique symbol };
 
-export type EntityTypeEx = "character" | EntityType;
+export type ExEntityType = "character" | EntityType;
 
-export type ExContextType<TypeT extends EntityTypeEx> =
+export type ExContextType<TypeT extends ExEntityType> =
   TypeT extends "character"
     ? CharacterContext
     : TypeT extends EntityType
     ? EntityContext<TypeT>
     : never;
-export type HandleT<T extends EntityTypeEx> = T extends "character"
+export type HandleT<T extends ExEntityType> = T extends "character"
   ? CharacterHandle
   : T extends "status"
   ? StatusHandle
@@ -34,7 +34,7 @@ export type HandleT<T extends EntityTypeEx> = T extends "character"
   ? SupportHandle
   : never;
 
-export type ExTag<TypeT extends EntityTypeEx> = TypeT extends "character"
+export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"
   ? CharacterTag
   : TypeT extends EntityType
   ? EntityTag

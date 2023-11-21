@@ -1,11 +1,13 @@
+import { EquipmentTag } from "./card";
 import { TriggeredSkillDefinition } from "./skill";
 
 export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
-  | "shield"       // 护盾
-  ;
+  | "immuneControl" // 免疫冻结石化眩晕
+  | "shield" // 护盾
+  | EquipmentTag;
 
-export type EntityType = "status" | "equipment" | "support" | "summon";
+export type EntityType = "status" | "combatStatus" | "equipment" | "support" | "summon";
 
 export interface EntityDefinition {
   readonly type: EntityType;
@@ -20,7 +22,7 @@ export interface EntityVariables {
   readonly usage: number;
   readonly duration: number;
   readonly [key: string]: number;
-};
+}
 
 export type EntityArea =
   | {

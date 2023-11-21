@@ -1,6 +1,6 @@
 import { flip } from "@gi-tcg/utils";
 import { EntityTag } from "../entity";
-import { EntityTypeEx, ExContextType, ExTag, HandleT } from "./type";
+import { ExEntityType, ExContextType, ExTag, HandleT } from "./type";
 import {
   CharacterContext,
   CharacterPosition,
@@ -8,21 +8,38 @@ import {
   SkillContext,
 } from "./context";
 
-type Filter<TypeT extends EntityTypeEx> = (e: ExContextType<TypeT>) => boolean;
-type OrderFn<TypeT extends EntityTypeEx> = (e: ExContextType<TypeT>) => number;
+type Filter<TypeT extends ExEntityType> = (e: ExContextType<TypeT>) => boolean;
+type ValuePred = number | ((v: number) => boolean);
+type OrderFn<TypeT extends ExEntityType> = (e: ExContextType<TypeT>) => number;
 
-export class QueryBuilder<TypeT extends EntityTypeEx> {
+export class QueryBuilder<TypeT extends ExEntityType> {
   private _all = false;
   private _includeDefeated = false;
-  private _requireCombat = false;
-  private filters: Filter<TypeT>[];
+  private filters: Filter<TypeT>[] = [];
   private _orderFn: OrderFn<TypeT> | null = null;
   constructor(
-    private skillContext: SkillContext,
-    private type: TypeT,
+    private readonly skillContext: SkillContext,
     private callerWho: 0 | 1,
-  ) {
-    this.filters = [(e) => e.state.definition.type === type];
+  ) {}
+
+  type<NewT extends ExEntityType>(type: NewT): QueryBuilder<NewT> {
+    const self = this as unknown as QueryBuilder<NewT>;
+    return self.filter((e) => e.state.definition.type === type);
+  }
+  character() {
+    return this.type("character");
+  }
+  combat() {
+    return this.type("combatStatus");
+  }
+  equipment() {
+    return this.type("equipment");
+  }
+  summon() {
+    return this.type("support");
+  }
+  support() {
+    return this.type("support");
   }
 
   all() {
@@ -50,8 +67,15 @@ export class QueryBuilder<TypeT extends EntityTypeEx> {
     );
   }
 
-  valued(prop: string, val: number) {
-    return this.filter((e) => e.state.variables[prop] === val);
+  valued(prop: string, valOrPred: ValuePred) {
+    return this.filter((e) => {
+      const v = e.state.variables[prop];
+      if (typeof valOrPred === "function") {
+        return valOrPred(v);
+      } else {
+        return v === valOrPred;
+      }
+    });
   }
 
   byId(id: number) {
@@ -74,30 +98,24 @@ export class QueryBuilder<TypeT extends EntityTypeEx> {
     }
     for (const who of whoList) {
       const player = state.players[who];
-      if (!this._requireCombat) {
-        const activeIdx = player.characters.findIndex(
-          (ch) => ch.id === player.activeCharacterId,
-        );
-        if (activeIdx === -1) {
-          throw new Error("Invalid active character index");
-        }
-        for (let i = 0; i < player.characters.length; i++) {
-          const idx = (activeIdx + i) % player.characters.length;
-          const ch = player.characters[idx];
-          if (!this._includeDefeated && ch.defeated) {
-            continue;
-          }
-          if (this.type === "character") {
-            result.push(new CharacterContext(this.skillContext, ch.id));
-          } else {
-            result.push(
-              ...ch.entities.map(
-                (e) => new EntityContext(this.skillContext, e.id),
-              ),
-            );
-          }
-        }
+      const activeIdx = player.characters.findIndex(
+        (ch) => ch.id === player.activeCharacterId,
+      );
+      if (activeIdx === -1) {
+        throw new Error("Invalid active character index");
       }
+      for (let i = 0; i < player.characters.length; i++) {
+        const idx = (activeIdx + i) % player.characters.length;
+        const ch = player.characters[idx];
+        if (!this._includeDefeated && ch.defeated) {
+          continue;
+        }
+        result.push(new CharacterContext(this.skillContext, ch.id));
+        result.push(
+          ...ch.entities.map((e) => new EntityContext(this.skillContext, e.id)),
+        );
+      }
+
       for (const area of ["combatStatuses", "summons", "supports"] as const) {
         result.push(
           ...player[area].map(
@@ -158,7 +176,8 @@ export class QueryBuilder<TypeT extends EntityTypeEx> {
       const ratio = idx - (len / 2 - 0.5);
       return Math.abs(ratio - baseRatio);
     };
-    return new QueryBuilder(this.skillContext, "character", this.callerWho)
+    return new QueryBuilder(this.skillContext, this.callerWho)
+      .character()
       .filter((e) => e.who === flip(targetCh.who))
       .orderBy(orderFn);
   }
@@ -168,29 +187,18 @@ export class QueryBuilder<TypeT extends EntityTypeEx> {
     if (!(targetCh instanceof CharacterContext)) {
       throw new Error("into() expected a character here");
     }
-    return new QueryBuilder(this.skillContext, "status", this.callerWho).filter(
-      (e) => {
-        const area = e.area();
-        return (
-          area.type === "characters" && area.characterId === targetCh.state.id
-        );
-      },
-    );
+    return new QueryBuilder(this.skillContext, this.callerWho).filter((e) => {
+      if (!(e instanceof EntityContext)) {
+        return false;
+      }
+      return e.master().id === targetCh.id;
+    });
   }
 
   // STATUS ONLY
 
-  combat() {
-    this._requireCombat = true;
-    return this;
-  }
-
   shield() {
     const self = this as QueryBuilder<"status">;
     return self.tagged("shield");
-  }
-  equipment() {
-    const self = this as QueryBuilder<"status">;
-    return self.tagged("equipment");
   }
 }
