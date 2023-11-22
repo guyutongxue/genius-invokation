@@ -7,7 +7,7 @@ import { SkillHandle } from "./type";
 
 type SkillDescription = SkillDefinition["action"];
 type SkillTriggerOn = SkillDefinition["triggerOn"];
-type SkillOperation = (c: SkillContext) => void;
+type SkillOperation = (c: SkillContext) => void | Promise<void>;
 
 class SkillBuilder {
   private operations: SkillOperation[] = [];
@@ -22,10 +22,10 @@ class SkillBuilder {
   }
 
   build(): SkillHandle {
-    const action: SkillDescription = (st: GameState, callerId: number) => {
+    const action: SkillDescription = async (st: GameState, callerId: number) => {
       const ctx = new SkillContext(st, this.id, callerId);
       for (const op of this.operations) {
-        op(ctx);
+        await op(ctx);
       }
       return [ctx.state, ctx.events] as const;
     };

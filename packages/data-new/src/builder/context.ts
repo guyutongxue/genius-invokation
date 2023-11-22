@@ -173,7 +173,7 @@ export class SkillContext<Variables = {}> {
     const id2 = id as number;
     const def = getEntityDefinition(id2);
     const initState: EntityState = {
-      id: id2,
+      id: Date.now() * 1000 + Math.random() * 1000, // TODO: Errrr, how?
       definition: def,
       variables: def.constants,
     };

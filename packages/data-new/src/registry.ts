@@ -12,7 +12,6 @@ function register(type: "character" | "entity" | "skill", store: Map<number, any
   }
   store.set(value.id, value);
 }
-
 export function registerCharacter(value: CharacterDefinition) {
   register("character", allCharacters, value);
 }
@@ -23,17 +22,19 @@ export function registerSkill(value: SkillDefinition) {
   register("skill", allSkills, value);
 }
 
-export function getSkillDefinition(id: number) {
-  const result = allSkills.get(id);
+function getDefinition<T>(type: "character" | "entity" | "skill", store: Map<number, T>, id: number): T {
+  const result = store.get(id);
   if (typeof result === "undefined") {
-    throw new Error(`Unknown skill id ${id}`);
+    throw new Error(`Unknown ${type} id ${id}`);
   }
   return result;
 }
+export function getCharacterDefinition(id: number) {
+  return getDefinition("character", allCharacters, id);
+}
 export function getEntityDefinition(id: number) {
-  const result = allEntities.get(id);
-  if (typeof result === "undefined") {
-    throw new Error(`Unknown entity id ${id}`);
-  }
-  return result;
+  return getDefinition("entity", allEntities, id);
+}
+export function getSkillDefinition(id: number) {
+  return getDefinition("skill", allSkills, id);
 }
