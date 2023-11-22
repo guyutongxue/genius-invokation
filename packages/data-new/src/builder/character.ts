@@ -1,5 +1,6 @@
+import { Aura } from "@gi-tcg/typings";
 import { CharacterTag } from "../character";
-import { getSkill, registerCharacter } from "../registry";
+import { getSkillDefinition, registerCharacter } from "../registry";
 import {
   InitiativeSkillDefinition,
   TriggeredSkillDefinition,
@@ -7,25 +8,25 @@ import {
 import { CharacterHandle, SkillHandle } from "./type";
 
 class CharacterBuilder {
-  private readonly tags: CharacterTag[] = [];
+  private readonly _tags: CharacterTag[] = [];
   private _maxHealth = 10;
   private _maxEnergy = 3;
-  private readonly initiativeSkills: InitiativeSkillDefinition[] = [];
-  private readonly skills: TriggeredSkillDefinition[] = [];
+  private readonly _initiativeSkills: InitiativeSkillDefinition[] = [];
+  private readonly _skills: TriggeredSkillDefinition[] = [];
   constructor(private readonly id: number) {}
 
-  addTags(...tags: CharacterTag[]) {
-    this.tags.push(...tags);
+  tags(...tags: CharacterTag[]) {
+    this._tags.push(...tags);
     return this;
   }
 
-  addSkills(...skills: SkillHandle[]) {
+  skills(...skills: SkillHandle[]) {
     for (const sk of skills) {
-      const def = getSkill(sk);
+      const def = getSkillDefinition(sk);
       if (def.triggerOn === null) {
-        this.initiativeSkills.push(def);
+        this._initiativeSkills.push(def);
       } else {
-        this.skills.push(def);
+        this._skills.push(def);
       }
     }
     return this;
@@ -44,13 +45,16 @@ class CharacterBuilder {
     registerCharacter({
       type: "character",
       id: this.id,
-      tags: this.tags,
+      tags: this._tags,
       constants: {
+        health: this._maxHealth,
+        energy: 0,
+        aura: Aura.None,
         maxHealth: this._maxHealth,
         maxEnergy: this._maxEnergy,
       },
-      initiativeSkills: this.initiativeSkills,
-      skills: this.skills,
+      initiativeSkills: this._initiativeSkills,
+      skills: this._skills,
     });
     return this.id as CharacterHandle;
   }

@@ -22,12 +22,15 @@ export class QueryBuilder<TypeT extends ExEntityType> {
     private callerWho: 0 | 1,
   ) {}
 
-  type<NewT extends ExEntityType>(type: NewT): QueryBuilder<NewT> {
+  type<NewT extends ExEntityType>(type: NewT): StrictlyTypedQueryBuilder<NewT> {
     const self = this as unknown as QueryBuilder<NewT>;
     return self.filter((e) => e.state.definition.type === type);
   }
   character() {
     return this.type("character");
+  }
+  status() {
+    return this.type("status");
   }
   combat() {
     return this.type("combatStatus");
@@ -36,23 +39,23 @@ export class QueryBuilder<TypeT extends ExEntityType> {
     return this.type("equipment");
   }
   summon() {
-    return this.type("support");
+    return this.type("summon");
   }
   support() {
     return this.type("support");
   }
 
-  all() {
+  all(): StrictlyTypedQueryBuilder<TypeT> {
     this._all = true;
     return this;
   }
 
-  opp() {
+  opp(): StrictlyTypedQueryBuilder<TypeT> {
     this.callerWho = flip(this.callerWho);
     return this;
   }
 
-  filter(...filters: Filter<TypeT>[]) {
+  filter(...filters: Filter<TypeT>[]): StrictlyTypedQueryBuilder<TypeT> {
     this.filters.push(...filters);
     return this;
   }
@@ -67,7 +70,12 @@ export class QueryBuilder<TypeT extends ExEntityType> {
     );
   }
 
-  valued(prop: string, valOrPred: ValuePred) {
+  valued(
+    prop: CommonVariableName[TypeT],
+    valOrPred: ValuePred,
+  ): StrictlyTypedQueryBuilder<TypeT>;
+  valued(prop: string, valOrPred: ValuePred): StrictlyTypedQueryBuilder<TypeT>;
+  valued(prop: string, valOrPred: ValuePred): StrictlyTypedQueryBuilder<TypeT> {
     return this.filter((e) => {
       const v = e.state.variables[prop];
       if (typeof valOrPred === "function") {
@@ -78,11 +86,14 @@ export class QueryBuilder<TypeT extends ExEntityType> {
     });
   }
 
-  byId(id: number) {
+  byId(id: number): StrictlyTypedQueryBuilder<TypeT> {
     return this.filter((e) => e.state.id === id);
   }
+  self(): StrictlyTypedQueryBuilder<TypeT> {
+    return this.byId(this.callerWho);
+  }
 
-  orderBy(fn: OrderFn<TypeT>) {
+  orderBy(fn: OrderFn<TypeT>): StrictlyTypedQueryBuilder<TypeT> {
     this._orderFn = fn;
     return this;
   }
@@ -143,7 +154,7 @@ export class QueryBuilder<TypeT extends ExEntityType> {
 
   // CHARACTER ONLY
 
-  includeDefeated() {
+  includeDefeated(): StrictlyTypedQueryBuilder<TypeT> {
     this._includeDefeated = true;
     return this;
   }
@@ -152,7 +163,7 @@ export class QueryBuilder<TypeT extends ExEntityType> {
     return this.filter((e) => e instanceof CharacterContext && e.fullEnergy());
   }
 
-  position(pos: CharacterPosition) {
+  position(pos: CharacterPosition): StrictlyTypedQueryBuilder<TypeT> {
     return this.filter(
       (e) => e instanceof CharacterContext && e.satisfyPosition(pos),
     );
@@ -160,8 +171,17 @@ export class QueryBuilder<TypeT extends ExEntityType> {
   active() {
     return this.position("active");
   }
+  standby() {
+    return this.position("standby");
+  }
+  next() {
+    return this.position("next");
+  }
+  prev() {
+    return this.position("prev");
+  }
 
-  recentOpp(): QueryBuilder<"character"> {
+  recentOpp(): StrictlyTypedQueryBuilder<"character"> {
     const targetCh = this.one();
     if (!(targetCh instanceof CharacterContext)) {
       throw new Error("recentOpp() expected a character here");
@@ -182,23 +202,73 @@ export class QueryBuilder<TypeT extends ExEntityType> {
       .orderBy(orderFn);
   }
 
-  into(): QueryBuilder<"status"> {
+  into(): StrictlyTypedQueryBuilder<"status"> {
     const targetCh = this.one();
     if (!(targetCh instanceof CharacterContext)) {
       throw new Error("into() expected a character here");
     }
-    return new QueryBuilder(this.skillContext, this.callerWho).filter((e) => {
-      if (!(e instanceof EntityContext)) {
-        return false;
-      }
-      return e.master().id === targetCh.id;
-    });
+    return new QueryBuilder<"status">(this.skillContext, this.callerWho).filter(
+      (e) => {
+        if (!(e instanceof EntityContext)) {
+          return false;
+        }
+        return e.master().id === targetCh.id;
+      },
+    );
   }
 
   // STATUS ONLY
 
-  shield() {
-    const self = this as QueryBuilder<"status">;
+  shield(): StrictlyTypedQueryBuilder<"status"> {
+    const self = this as unknown as QueryBuilder<"status">;
     return self.tagged("shield");
   }
 }
+
+type CommonQueryBuilderOmitProp =
+  | "character"
+  | "status"
+  | "combat"
+  | "equipment"
+  | "summon"
+  | "support";
+type CharacterOnlyProp =
+  | "energyNotFull"
+  | "position"
+  | "active"
+  | "standby"
+  | "next"
+  | "prev"
+  | "recentOpp"
+  | "into";
+type StatusOnlyProp = "shield";
+
+type CommonVariableName = {
+  character: "health" | "energy" | "aura";
+  status: "duration" | "usage" | "usagePerRound";
+  combatStatus: "duration" | "usage" | "usagePerRound";
+  equipment: "usage" | "usagePerRound";
+  summon: "duration" | "usage" | "usagePerRound";
+  support: "duration" | "usage" | "usagePerRound";
+};
+
+type QueryBuilderOmitProp = {
+  character: CommonQueryBuilderOmitProp | StatusOnlyProp;
+  status: CommonQueryBuilderOmitProp | CharacterOnlyProp;
+  combatStatus: CommonQueryBuilderOmitProp | CharacterOnlyProp;
+  equipment: CommonQueryBuilderOmitProp | CharacterOnlyProp | StatusOnlyProp;
+  summon: CommonQueryBuilderOmitProp | CharacterOnlyProp | StatusOnlyProp;
+  support: CommonQueryBuilderOmitProp | CharacterOnlyProp | StatusOnlyProp;
+};
+
+export type StrictlyTypedQueryBuilder<TypeT extends ExEntityType> = Omit<
+  QueryBuilder<TypeT>,
+  QueryBuilderOmitProp[TypeT]
+>;
+
+export type TargetQueryFn = (
+  $: StrictlyTypedQueryBuilder<"character">,
+) =>
+  | StrictlyTypedQueryBuilder<"character">
+  | CharacterContext[]
+  | CharacterContext;

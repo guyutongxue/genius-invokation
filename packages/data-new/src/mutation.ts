@@ -62,7 +62,6 @@ export interface CreateCharacterM {
 
 export interface CreateEntityM {
   readonly type: "createEntity";
-  readonly who: 0 | 1;
   readonly where: EntityArea;
   readonly value: EntityState;
 }
@@ -181,10 +180,10 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
       });
     }
     case "createEntity": {
-      const { who, where, value } = m;
+      const { where, value } = m;
       if (where.type === "characters") {
         return produce(state, (draft) => {
-          const character = draft.players[who].characters.find(
+          const character = draft.players[where.who].characters.find(
             (c) => c.id === where.characterId,
           );
           if (!character) {
@@ -194,7 +193,7 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
         });
       } else {
         return produce(state, (draft) => {
-          const area = draft.players[who][where.type];
+          const area = draft.players[where.who][where.type];
           area.push(value);
         });
       }

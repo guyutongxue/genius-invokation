@@ -23,10 +23,17 @@ export function registerSkill(value: SkillDefinition) {
   register("skill", allSkills, value);
 }
 
-export function getSkill(id: number) {
+export function getSkillDefinition(id: number) {
   const result = allSkills.get(id);
   if (typeof result === "undefined") {
     throw new Error(`Unknown skill id ${id}`);
+  }
+  return result;
+}
+export function getEntityDefinition(id: number) {
+  const result = allEntities.get(id);
+  if (typeof result === "undefined") {
+    throw new Error(`Unknown entity id ${id}`);
   }
   return result;
 }

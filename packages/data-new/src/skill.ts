@@ -2,29 +2,33 @@ import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
 
+type SkillId = number;
+
 interface SkillDefinitionBase<Ctx> {
   readonly type: "skill";
-  readonly id: number;
+  readonly id: SkillId;
   readonly action: SkillDescription<Ctx>;
 }
 
+type SkillResult = readonly [GameState, InSkillEventPayload[]];
+
 type SkillDescription<Ctx> = (
   state: GameState,
-  emitted: InSkillEventPayload[],
+  callerId: number,
   ctx?: Ctx,
-) => GameState | PromiseLike<GameState>;
+) => SkillResult | PromiseLike<SkillResult>;
 
 interface SyncSkillDefinitionBase<Ctx = any> {
   readonly type: "skill";
-  readonly id: number;
+  readonly id: SkillId;
   readonly action: SyncSkillDescription<Ctx>;
 }
 
 type SyncSkillDescription<Ctx> = (
   state: GameState,
-  emitted: readonly [],
+  callerId: number,
   ctx?: Ctx,
-) => GameState;
+) => SkillResult;
 
 export interface InitiativeSkillDefinition<Ctx = never>
   extends SkillDefinitionBase<Ctx> {
@@ -65,13 +69,21 @@ export interface DamageInfo {
   readonly type: DamageType;
   readonly value: number;
   readonly source: CharacterState | EntityState;
-  readonly via: SkillDefinition;
+  readonly via: SkillId;
+  readonly target: CharacterState;
+}
+
+export interface HealInfo {
+  readonly expectedValue: number;
+  readonly finalValue: number;
+  readonly source: CharacterState | EntityState;
+  readonly via: SkillId;
   readonly target: CharacterState;
 }
 
 export interface ReactionInfo {
   readonly type: Reaction;
-  readonly via: SkillDefinition;
+  readonly via: SkillId;
   readonly target: CharacterState;
   readonly damage?: DamageInfo;
 }
@@ -80,7 +92,7 @@ export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
   readonly source: CharacterState;
-  readonly via?: SkillDefinition;
+  readonly via?: SkillId;
   readonly skill: SkillDefinition;
 }
 
@@ -95,7 +107,7 @@ export interface SwitchActiveInfo {
   readonly type: "switchActive";
   readonly who: 0 | 1;
   readonly from: CharacterState;
-  readonly via?: SkillDefinition;
+  readonly via?: SkillId;
   readonly to: CharacterState;
 }
 
@@ -128,16 +140,26 @@ type AsyncEventMap = {
 
   onSwitchActive: SwitchActiveInfo;
   onDamage: DamageInfo;
+  onHeal: HealInfo;
   onElementalReaction: ReactionInfo;
 
-  onEnter: 0;
-  onDispose: 0;
-  onRevive: 0;
+  onEnter: CharacterState | EntityState;
+  onDispose: EntityState;
+  onDefeated: CharacterState;
+  onRevive: CharacterState;
 };
 
-export type InSkillEvent = "onSwitchActive" | "onDamage" | "onElementalReaction";
+export type InSkillEvent =
+  | "onSwitchActive"
+  | "onDamage"
+  | "onHeal"
+  | "onElementalReaction"
+  | "onEnter"
+  | "onDispose"
+  | "onDefeated"
+  | "onRevive";
 export type InSkillEventPayload = {
-  [E in InSkillEvent]: [E, AsyncEventMap[E]];
+  [E in InSkillEvent]: [eventName: E, eventArg: AsyncEventMap[E]];
 }[InSkillEvent];
 
 export type TriggeredSkillDefinition = ({

@@ -45,8 +45,7 @@ export interface CharacterVariables {
   readonly [key: string]: number;
 };
 
-export interface CharacterConstants {
+export interface CharacterConstants extends CharacterVariables {
   readonly maxHealth: number;
   readonly maxEnergy: number;
-  readonly [key: string]: number;
 }
