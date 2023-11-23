@@ -12,7 +12,7 @@ interface SkillDefinitionBase<Ctx> {
 
 type SkillResult = readonly [GameState, InSkillEventPayload[]];
 
-type SkillDescription<Ctx> = (
+export type SkillDescription<Ctx> = (
   state: GameState,
   callerId: number,
   ctx?: Ctx,
@@ -30,8 +30,11 @@ type SyncSkillDescription<Ctx> = (
   ctx?: Ctx,
 ) => SkillResult;
 
+export type SkillType = "normal" | "elemental" | "burst";
+
 export interface InitiativeSkillDefinition<Ctx = never>
   extends SkillDefinitionBase<Ctx> {
+  readonly skillType: SkillType;
   readonly triggerOn: null;
 }
 

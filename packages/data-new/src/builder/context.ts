@@ -1,25 +1,28 @@
 import { DamageType } from "@gi-tcg/typings";
-import { CharacterDefinition } from "../character";
+
 import { EntityArea, EntityDefinition, EntityType } from "../entity";
 import { Mutation, applyMutation } from "../mutation";
 import { InSkillEventPayload } from "../skill";
 import { CharacterState, EntityState, GameState } from "../state";
 import { getEntityArea, getEntityById } from "../util";
-import { QueryBuilder, TargetQueryFn } from "./query";
-import { ExEntityType, HandleT, SummonHandle } from "./type";
+import { QueryBuilder, TargetQueryArg } from "./query";
+import {
+  AppliableDamageType,
+  ExEntityType,
+  HandleT,
+  SummonHandle,
+} from "./type";
 import { getEntityDefinition } from "../registry";
 
-export class SkillContext<Variables = {}> {
+export class SkillContext<Readonly extends boolean> {
   private eventPayloads: InSkillEventPayload[] = [];
-  private callerDef: EntityDefinition | CharacterDefinition;
   private callerArea: EntityArea;
 
   constructor(
     private _state: GameState,
-    private skillId: number,
-    private callerId: number,
+    private readonly skillId: number,
+    private readonly callerId: number,
   ) {
-    this.callerDef = this.callerState.definition;
     this.callerArea = getEntityArea(_state, callerId);
   }
   get state() {
@@ -36,19 +39,30 @@ export class SkillContext<Variables = {}> {
   }
 
   query<TypeT extends ExEntityType>(type: TypeT) {
-    return new QueryBuilder(this, this.callerArea.who).type(type);
+    return new QueryBuilder<Readonly, TypeT>(this, this.callerArea.who).type(
+      type,
+    );
   }
 
-  private doTargetQuery(fn: TargetQueryFn) {
-    const query = new QueryBuilder(this, this.callerArea.who).type("character");
-    const fnResult = fn(query);
-    let result: CharacterContext[];
+  private doTargetQuery(
+    arg: TargetQueryArg<boolean>,
+  ): StrictlyTypedCharacterContext<boolean>[] {
+    let fnResult;
+    if (typeof arg === "function") {
+      const query = new QueryBuilder(this, this.callerArea.who).type(
+        "character",
+      );
+      fnResult = arg(query);
+    } else {
+      fnResult = arg;
+    }
+    let result: StrictlyTypedCharacterContext<boolean>[];
     if (fnResult instanceof QueryBuilder) {
-      result = fnResult.many() as CharacterContext[];
+      result = fnResult.many() as StrictlyTypedCharacterContext<boolean>[];
     } else if (Array.isArray(fnResult)) {
       result = fnResult;
     } else {
-      result = [fnResult as CharacterContext];
+      result = [fnResult as StrictlyTypedCharacterContext<boolean>];
     }
     return result;
   }
@@ -69,7 +83,7 @@ export class SkillContext<Variables = {}> {
     this.eventPayloads.push(payloads);
   }
 
-  switchActive(target: TargetQueryFn) {
+  switchActive(target: TargetQueryArg<false>) {
     const targets = this.doTargetQuery(target);
     if (targets.length !== 1) {
       throw new Error("Expected exactly one target");
@@ -90,7 +104,7 @@ export class SkillContext<Variables = {}> {
     });
   }
 
-  gainEnergy(value: number, target: TargetQueryFn) {
+  gainEnergy(value: number, target: TargetQueryArg<false>) {
     const targets = this.doTargetQuery(target);
     for (const t of targets) {
       const targetState = t.state;
@@ -108,7 +122,7 @@ export class SkillContext<Variables = {}> {
     }
   }
 
-  heal(value: number, target: TargetQueryFn) {
+  heal(value: number, target: TargetQueryArg<false>) {
     const targets = this.doTargetQuery(target);
     for (const t of targets) {
       const targetState = t.state;
@@ -135,7 +149,7 @@ export class SkillContext<Variables = {}> {
   damage(
     value: number,
     type: DamageType,
-    target: TargetQueryFn = ($) => $.opp().active(),
+    target: TargetQueryArg<false> = ($) => $.opp().active(),
   ) {
     const targets = this.doTargetQuery(target);
     for (const t of targets) {
@@ -158,10 +172,7 @@ export class SkillContext<Variables = {}> {
     }
   }
 
-  apply(
-    type: AppliableDamageType,
-    target: TargetQueryFn = ($) => $.opp().active(),
-  ) {
+  apply(type: AppliableDamageType, target: TargetQueryArg<false>) {
     // TODO
   }
 
@@ -225,20 +236,31 @@ export class SkillContext<Variables = {}> {
   }
 }
 
-type AppliableDamageType =
-  | DamageType.Cryo
-  | DamageType.Hydro
-  | DamageType.Pyro
-  | DamageType.Electro
-  | DamageType.Dendro;
+type SkillContextMutativeProps =
+  | "mutate"
+  | "events"
+  | "emitEvent"
+  | "switchActive"
+  | "gainEnergy"
+  | "heal"
+  | "damage"
+  | "apply"
+  | "createEntity"
+  | "summon"
+  | "disposeEntity";
+
+export type StrictlyTypedSkillContext<Readonly extends boolean> =
+  Readonly extends true
+    ? Omit<SkillContext<Readonly>, SkillContextMutativeProps>
+    : SkillContext<Readonly>;
 
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
-export class CharacterContext {
+export class CharacterContext<Readonly extends boolean> {
   private readonly area: EntityArea;
-  private readonly SELF_QUERY: TargetQueryFn = ($) => $.byId(this._id);
+  private readonly SELF_QUERY: TargetQueryArg<false> = ($) => $.byId(this._id);
   constructor(
-    private readonly skillContext: SkillContext,
+    private readonly skillContext: SkillContext<Readonly>,
     private readonly _id: number,
   ) {
     this.area = getEntityArea(skillContext.state, _id);
@@ -307,6 +329,8 @@ export class CharacterContext {
     return this.skillContext.query("character").byId(this._id).into();
   }
 
+  // MUTATIONS
+
   gainEnergy(value = 1) {
     this.skillContext.gainEnergy(value, this.SELF_QUERY);
   }
@@ -321,10 +345,20 @@ export class CharacterContext {
   }
 }
 
-export class EntityContext<TypeT extends EntityType = EntityType> {
+type CharacterContextMutativeProps = "gainEnergy" | "heal" | "damage" | "apply";
+
+export type StrictlyTypedCharacterContext<Readonly extends boolean> =
+  Readonly extends true
+    ? Omit<CharacterContext<Readonly>, CharacterContextMutativeProps>
+    : CharacterContext<Readonly>;
+
+export class EntityContext<
+  Readonly extends boolean,
+  TypeT extends EntityType = EntityType,
+> {
   private readonly area: EntityArea;
   constructor(
-    private readonly skillContext: SkillContext,
+    private readonly skillContext: SkillContext<Readonly>,
     private readonly id: number,
   ) {
     this.area = getEntityArea(skillContext.state, id);
@@ -341,7 +375,10 @@ export class EntityContext<TypeT extends EntityType = EntityType> {
     if (this.area.type !== "characters") {
       throw new Error("master() expect a character area");
     }
-    return new CharacterContext(this.skillContext, this.area.characterId);
+    return new CharacterContext<Readonly>(
+      this.skillContext,
+      this.area.characterId,
+    );
   }
 
   dispose(): never {

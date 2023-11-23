@@ -7,7 +7,7 @@ export type EntityTag =
   | "shield" // 护盾
   | EquipmentTag;
 
-export type EntityType = "status" | "combatStatus" | "equipment" | "support" | "summon";
+export type EntityType = "passiveSkill" | "status" | "combatStatus" | "equipment" | "support" | "summon";
 
 export interface EntityDefinition {
   readonly type: EntityType;
@@ -18,8 +18,6 @@ export interface EntityDefinition {
 }
 
 export interface EntityVariables {
-  readonly usagePerRound: number;
-  readonly usage: number;
   readonly duration: number;
   readonly [key: string]: number;
 }

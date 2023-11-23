@@ -3,16 +3,39 @@ import { getCharacterDefinition, getSkillDefinition } from "../src/registry";
 import { GameState, PlayerState } from "../src/state";
 
 const TestSkill = skill(10011)
-  .do((c) => {
-    c.damage(1, DamageType.Physical);
-    // c.damage(1, DamageType.Piercing, $ => $.opp().standby());
-  })
-  .build();
+  .damage(1, DamageType.Piercing, $ => $.opp().standby())
+  .damage(3, DamageType.Cryo)
+  // .if((c) => {
+  //   c.query("character").one();
+  // })
+  .done();
+
+// const TestSkill = skill(10012)
+//   .apply(DamageType.Hydro, $ => $.self())
+//   .done();
+// const TestCard = card(20011)
+
+// const TestStatus = status(114053)
+//   .duration(2)
+//   .on("useSkill")
+//   .if((c) => c.definition.type === "normal")
+//   .damage(1, DamageType.Electro)
+//   .on("beforeDamaged")
+//   .if((c) => c.value >= 3)
+//   .decreaseDamage(1)
+//   .done()
+
+// const TestStatus2 = status(123456)
+//   .variable("testVar", 0)
+//   .on("useSkill")
+//   .if((c) => c.definition.type === "burst")
+//   .do((c) => c.variables.testVar += 1)
+//   .done()
 
 const TestCharacter = character(1001)
   .tags("cryo", "mondstadt", "sword")
   .skills(TestSkill)
-  .build();
+  .done();
 
 async function test() {
   const ch = getCharacterDefinition(TestCharacter);
@@ -59,6 +82,20 @@ async function test() {
         characters: [
           {
             id: -101,
+            definition: ch,
+            entities: [],
+            variables: ch.constants,
+            defeated: false,
+          },
+          {
+            id: -102,
+            definition: ch,
+            entities: [],
+            variables: ch.constants,
+            defeated: false,
+          },
+          {
+            id: -103,
             definition: ch,
             entities: [],
             variables: ch.constants,

@@ -41,7 +41,7 @@ class CharacterBuilder {
     return this;
   }
 
-  build(): CharacterHandle {
+  done(): CharacterHandle {
     registerCharacter({
       type: "character",
       id: this.id,

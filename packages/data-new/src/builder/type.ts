@@ -1,6 +1,7 @@
+import { DamageType } from "@gi-tcg/typings";
 import { CharacterTag } from "../character";
 import { EntityTag, EntityType } from "../entity";
-import { CharacterContext, EntityContext } from "./context";
+import { EntityContext, StrictlyTypedCharacterContext } from "./context";
 
 export type CharacterHandle = number & { readonly _char: unique symbol };
 export type SkillHandle = number & { readonly _skill: unique symbol };
@@ -18,11 +19,11 @@ export type EquipmentHandle = EntityHandle &
 
 export type ExEntityType = "character" | EntityType;
 
-export type ExContextType<TypeT extends ExEntityType> =
+export type ExContextType<Readonly extends boolean, TypeT extends ExEntityType> =
   TypeT extends "character"
-    ? CharacterContext
+    ? StrictlyTypedCharacterContext<Readonly>
     : TypeT extends EntityType
-    ? EntityContext<TypeT>
+    ? EntityContext<Readonly, TypeT>
     : never;
 export type HandleT<T extends ExEntityType> = T extends "character"
   ? CharacterHandle
@@ -39,3 +40,10 @@ export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"
   : TypeT extends EntityType
   ? EntityTag
   : never;
+
+export type AppliableDamageType =
+  | DamageType.Cryo
+  | DamageType.Hydro
+  | DamageType.Pyro
+  | DamageType.Electro
+  | DamageType.Dendro;
