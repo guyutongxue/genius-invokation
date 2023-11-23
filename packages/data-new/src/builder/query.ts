@@ -171,6 +171,11 @@ export class QueryBuilder<
     }
     return result[0];
   }
+  
+  count(): number {
+    return this.many().length;
+  }
+
 
   // CHARACTER ONLY
 

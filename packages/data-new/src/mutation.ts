@@ -171,7 +171,7 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
     }
     case "createCard": {
       return produce(state, (draft) => {
-        draft.players[m.who][m.target].push(m.value);
+        draft.players[m.who][m.target].push(m.value as Draft<CardState>);
       });
     }
     case "createCharacter": {

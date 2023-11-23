@@ -1,6 +1,7 @@
-import { character, skill, DamageType } from "@gi-tcg";
-import { getCharacterDefinition, getSkillDefinition } from "../src/registry";
+import { character, skill, DamageType, card } from "@gi-tcg";
+import { getCardDefinition, getCharacterDefinition, getSkillDefinition } from "../src/registry";
 import { GameState, PlayerState } from "../src/state";
+import { InitiativeSkillDefinition } from "../src/skill";
 
 const TestSkill = skill(10011)
   .damage(1, DamageType.Piercing, $ => $.opp().standby())
@@ -13,7 +14,11 @@ const TestSkill = skill(10011)
 // const TestSkill = skill(10012)
 //   .apply(DamageType.Hydro, $ => $.self())
 //   .done();
-// const TestCard = card(20011)
+const TestCard = card(20011, ["character"])
+  .do((c) => {
+    c.targets[0].heal(1);
+  })
+  .done();
 
 // const TestStatus = status(114053)
 //   .duration(2)
@@ -114,9 +119,12 @@ async function test() {
       },
     ],
   };
-  const skillDef = getSkillDefinition(TestSkill);
+  const skillDef = getSkillDefinition(TestSkill) as InitiativeSkillDefinition;
   const [newState, events] = await skillDef.action(initGameState, -100);
-  console.log({ newState, events });
+  const cardDef = getCardDefinition(TestCard);
+  const [newState2, events2] = await cardDef.action.action(newState, -101, { ids: [-101] });
+  // console.log({ newState, events });
+  console.log("ff")
 }
 
 test();

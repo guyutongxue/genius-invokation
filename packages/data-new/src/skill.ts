@@ -15,7 +15,7 @@ type SkillResult = readonly [GameState, InSkillEventPayload[]];
 export type SkillDescription<Ctx> = (
   state: GameState,
   callerId: number,
-  ctx?: Ctx,
+  ctx: Ctx,
 ) => SkillResult | PromiseLike<SkillResult>;
 
 interface SyncSkillDefinitionBase<Ctx = any> {
@@ -27,14 +27,15 @@ interface SyncSkillDefinitionBase<Ctx = any> {
 type SyncSkillDescription<Ctx> = (
   state: GameState,
   callerId: number,
-  ctx?: Ctx,
+  ctx: Ctx,
 ) => SkillResult;
 
-export type SkillType = "normal" | "elemental" | "burst";
+export type SkillType = "normal" | "elemental" | "burst" | "prepared" | "card";
 
-export interface InitiativeSkillDefinition<Ctx = never>
+export interface InitiativeSkillDefinition<Ctx = void>
   extends SkillDefinitionBase<Ctx> {
   readonly skillType: SkillType;
+  readonly costs: DiceType[];
   readonly triggerOn: null;
 }
 
@@ -177,6 +178,5 @@ export type TriggeredSkillDefinition = ({
 
 export type SkillDefinition =
   | InitiativeSkillDefinition
+  | InitiativeSkillDefinition<CardTarget>
   | TriggeredSkillDefinition;
-
-export type SkillFilter<Ctx> = (state: GameState, ctx?: Ctx) => boolean;

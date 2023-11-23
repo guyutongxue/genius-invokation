@@ -254,6 +254,8 @@ export type StrictlyTypedSkillContext<Readonly extends boolean> =
     ? Omit<SkillContext<Readonly>, SkillContextMutativeProps>
     : SkillContext<Readonly>;
 
+export type ExtendedSkillContext<Readonly extends boolean, Ext extends object> = StrictlyTypedSkillContext<Readonly> & Ext;
+
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
 export class CharacterContext<Readonly extends boolean> {

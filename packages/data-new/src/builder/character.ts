@@ -24,7 +24,7 @@ class CharacterBuilder {
     for (const sk of skills) {
       const def = getSkillDefinition(sk);
       if (def.triggerOn === null) {
-        this._initiativeSkills.push(def);
+        this._initiativeSkills.push(def as InitiativeSkillDefinition);
       } else {
         this._skills.push(def);
       }

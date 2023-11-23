@@ -2,8 +2,8 @@ import { DiceType } from "@gi-tcg/typings";
 import { CharacterTag } from "./character";
 import {
   InitiativeSkillDefinition,
-  SkillFilter,
 } from "./skill";
+import { GameState } from "./state";
 
 export type EquipmentTag =
   | "talent"
@@ -33,19 +33,18 @@ export interface DeckRequirement {
   character?: number;
 }
 
-export type CardTargetKind = ("character" | "entity")[];
+export type CardTargetKind = readonly ("character" | "summon")[];
 
 export interface CardTarget {
   ids: number[];
 }
 
 export type PlayCardAction = InitiativeSkillDefinition<CardTarget>;
-export type PlayCardFilter = SkillFilter<CardTarget>;
+export type PlayCardFilter = (state: GameState, ctx: CardTarget) => boolean;
 
 export interface CardDefinition {
   readonly id: number;
   readonly type: CardType;
-  readonly costs: DiceType[];
   readonly tags: CardTag[];
   readonly deckRequirement: DeckRequirement;
   readonly target: CardTargetKind;
