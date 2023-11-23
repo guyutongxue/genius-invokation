@@ -15,6 +15,7 @@ const TestSkill = skill(10011)
 //   .apply(DamageType.Hydro, $ => $.self())
 //   .done();
 const TestCard = card(20011, ["character"])
+  .costVoid(2)
   .do((c) => {
     c.targets[0].heal(1);
   })

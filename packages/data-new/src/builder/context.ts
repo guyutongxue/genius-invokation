@@ -14,10 +14,20 @@ import {
 } from "./type";
 import { getEntityDefinition } from "../registry";
 
+/**
+ * 用于描述技能的上下文对象。
+ * 它们出现在 `.do()` 形式内，将其作为第一参数传入（第二参数通常是触发事件的相关信息）。
+ */
 export class SkillContext<Readonly extends boolean> {
   private eventPayloads: InSkillEventPayload[] = [];
   private callerArea: EntityArea;
 
+  /**
+   * 
+   * @param _state 触发此技能之前的游戏状态
+   * @param skillId 技能编号（保证和传入 `registerSkill` 的编号一致）
+   * @param callerId 调用者 ID。主动技能的调用者是角色 ID，卡牌技能的调用者是当前玩家的前台角色 ID。
+   */
   constructor(
     private _state: GameState,
     private readonly skillId: number,
@@ -249,6 +259,11 @@ type SkillContextMutativeProps =
   | "summon"
   | "disposeEntity";
 
+/**
+ * 所谓 `StrictlyTyped` 是指，若 `Readonly` 则忽略那些可以改变游戏状态的方法。
+ * 
+ * `StrictlyTypedCharacterContext` 等同理。
+ */
 export type StrictlyTypedSkillContext<Readonly extends boolean> =
   Readonly extends true
     ? Omit<SkillContext<Readonly>, SkillContextMutativeProps>
@@ -265,6 +280,9 @@ export class CharacterContext<Readonly extends boolean> {
     private readonly skillContext: SkillContext<Readonly>,
     private readonly _id: number,
   ) {
+    /**
+     * 所谓 `StrictlyTyped` 是指
+     */
     this.area = getEntityArea(skillContext.state, _id);
   }
 
@@ -383,8 +401,7 @@ export class EntityContext<
     );
   }
 
-  dispose(): never {
+  dispose() {
     this.skillContext.disposeEntity(this.id);
-    return void 0 as never;
   }
 }

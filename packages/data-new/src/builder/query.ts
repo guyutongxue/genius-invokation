@@ -1,10 +1,10 @@
 import { flip } from "@gi-tcg/utils";
-import { EntityTag } from "../entity";
 import { ExEntityType, ExContextType, ExTag, HandleT } from "./type";
 import {
   CharacterContext,
   CharacterPosition,
   EntityContext,
+  ExtendedSkillContext,
   SkillContext,
   StrictlyTypedCharacterContext,
 } from "./context";
@@ -17,6 +17,11 @@ type OrderFn<Readonly extends boolean, TypeT extends ExEntityType> = (
   e: ExContextType<Readonly, TypeT>,
 ) => number;
 
+/**
+ * 查询实体或角色的 builder。
+ * @tparam Readonly 指示其查询结果是否是只读的类型。
+ * @tparam TypeT 其查询的实体或角色类型，使用 `StrictlyQueryBuilder` 提供更好的类型信息。
+ */
 export class QueryBuilder<
   Readonly extends boolean,
   TypeT extends ExEntityType,
@@ -171,11 +176,10 @@ export class QueryBuilder<
     }
     return result[0];
   }
-  
+
   count(): number {
     return this.many().length;
   }
-
 
   // CHARACTER ONLY
 
@@ -294,6 +298,14 @@ export type StrictlyTypedQueryBuilder<
   TypeT extends ExEntityType,
 > = Omit<QueryBuilder<Readonly, TypeT>, QueryBuilderOmitProp[TypeT]>;
 
+/**
+ * 在指定某个角色目标时，可传入的参数类型：
+ * - Query Lambda 形如 `$ => $.active()`
+ *   - 该 Lambda 可返回 `QueryBuilder` 如上；
+ *   - 也可返回具体的对象上下文，如 `$ => $.opp().one()`。
+ * - ~~给定 `SkillContext` 返回具体对象的函数，如 `c => c.targets[0]`~~
+ * - 直接传入具体的对象上下文。
+ */
 export type TargetQueryArg<Readonly extends boolean> =
   | StrictlyTypedCharacterContext<Readonly>[]
   | StrictlyTypedCharacterContext<Readonly>

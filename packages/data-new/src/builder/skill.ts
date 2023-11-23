@@ -62,6 +62,14 @@ class SkillBuilder<Ext extends object, EventArg> {
     return this.do((c) => c.summon(id));
   }
 
+  /**
+   * 生成内部技能描述函数。
+   * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点或第二参数。
+   * 这些参数将传递给用户。
+   * @param extGenerator 生成扩展点的函数
+   * @param evaGenerator 生成事件参数（用户第二参数）的函数
+   * @returns 内部技能描述函数
+   */
   protected getAction(
     extGenerator: (skillCtx: SkillContext<false>) => Ext,
     evaGenerator: (skillCtx: SkillContext<false>) => EventArg,
@@ -79,6 +87,12 @@ class SkillBuilder<Ext extends object, EventArg> {
   }
 }
 
+/**
+ * 
+ * @param ctx 原 `SkillContext`
+ * @param ext 扩展点
+ * @returns 通过 `Proxy` 扩展后的 `SkillContext`
+ */
 export function extendSKillContext<Readonly extends boolean, Ext extends object>(ctx: ExtendedSkillContext<Readonly, {}>, ext: Ext): ExtendedSkillContext<Readonly, Ext> {
   return new Proxy(ctx, {
     get(target, prop, receiver) {
@@ -102,9 +116,39 @@ class TriggeredSkillBuilder<Ext extends object = {}> extends SkillBuilder<
 
 export class SkillBuilderWithCost<Ext extends object> extends SkillBuilder<Ext, void> {
   protected _cost: DiceType[] = [];
-  private cost(...dice: DiceType[]) {
-    this._cost.push(...dice);
+  private cost(type: DiceType, count: number) {
+    this._cost.push(...Array(count).fill(type));
     return this;
+  }
+  costVoid(count: number) {
+    return this.cost(DiceType.Void, count);
+  }
+  costCryo(count: number) {
+    return this.cost(DiceType.Cryo, count);
+  }
+  costHydro(count: number) {
+    return this.cost(DiceType.Hydro, count);
+  }
+  costPyro(count: number) {
+    return this.cost(DiceType.Pyro, count);
+  }
+  costElectro(count: number) {
+    return this.cost(DiceType.Electro, count);
+  }
+  costAnemo(count: number) {
+    return this.cost(DiceType.Anemo, count);
+  }
+  costGeo(count: number) {
+    return this.cost(DiceType.Geo, count);
+  }
+  costDendro(count: number) {
+    return this.cost(DiceType.Dendro, count);
+  }
+  costSame(count: number) {
+    return this.cost(DiceType.Same, count);
+  }
+  costEnergy(count: number) {
+    return this.cost(DiceType.Energy, count);
   }
 }
 
