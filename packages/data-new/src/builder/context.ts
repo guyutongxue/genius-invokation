@@ -5,7 +5,11 @@ import { Mutation, applyMutation } from "../base/mutation";
 import { InSkillEventPayload } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getEntityArea, getEntityById } from "../util";
-import { QueryBuilder, StrictlyTypedQueryBuilder, TargetQueryArg } from "./query";
+import {
+  QueryBuilder,
+  StrictlyTypedQueryBuilder,
+  TargetQueryArg,
+} from "./query";
 import {
   AppliableDamageType,
   CombatStatusHandle,
@@ -15,6 +19,7 @@ import {
   SummonHandle,
 } from "./type";
 import { getEntityDefinition } from "../registry";
+import { GlobalOps } from "..";
 
 /**
  * 用于描述技能的上下文对象。
@@ -36,6 +41,7 @@ export class SkillContext<
    */
   constructor(
     private _state: GameState,
+    private readonly globalOps: GlobalOps,
     private readonly skillId: number,
     public readonly callerId: number,
   ) {
@@ -54,8 +60,12 @@ export class SkillContext<
     return this._state.currentTurn === this.callerArea.who;
   }
 
-  query<TypeT extends ExEntityType>(type: TypeT): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
-    return new QueryBuilder(this as SkillContext<Readonly, Ext, CallerType>).type(type);
+  query<TypeT extends ExEntityType>(
+    type: TypeT,
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
+    return new QueryBuilder(
+      this as SkillContext<Readonly, Ext, CallerType>,
+    ).type(type);
   }
 
   private doTargetQuery(
@@ -186,7 +196,10 @@ export class SkillContext<
     }
   }
 
-  apply(type: AppliableDamageType, target: TargetQueryArg<false, Ext, CallerType>) {
+  apply(
+    type: AppliableDamageType,
+    target: TargetQueryArg<false, Ext, CallerType>,
+  ) {
     // TODO
   }
 
@@ -198,7 +211,7 @@ export class SkillContext<
     const id2 = id as number;
     const def = getEntityDefinition(id2);
     const initState: EntityState = {
-      id: Date.now() * 1000 + Math.random() * 1000, // TODO: Errrr, how?
+      id: this.globalOps.nextId(),
       definition: def,
       variables: def.constants,
     };
@@ -259,18 +272,39 @@ export class SkillContext<
   }
 
   async switchCards(): Promise<void> {
-    // TODO
+    this._state = await this.globalOps.switchCards(
+      this._state,
+      this.callerArea.who,
+    );
   }
   async reroll(times: number): Promise<void> {
-    // TODO
+    this._state = await this.globalOps.reroll(this._state, this.callerArea.who, times);
   }
   async useSkill(skill: SkillHandle | "normal"): Promise<void> {
-    // TODO
+    let skillId;
+    if (skill === "normal") {
+      const normalSkills = this.query("character")
+        .active()
+        .one()
+        .state.definition.initiativeSkills.filter(
+          (sk) => sk.skillType === "normal",
+        );
+      if (normalSkills.length !== 1) {
+        throw new Error("Expected exactly one normal skill");
+      }
+      skillId = normalSkills[0].id;
+    } else {
+      skillId = skill;
+    }
+    this._state = await this.globalOps.useSkill(
+      this._state,
+      this.callerArea.who,
+      skillId,
+    );
   }
 
   random<T>(...items: T[]): T {
-    // TODO (use global random generator)
-    return items[Math.floor(Math.random() * items.length)];
+    return items[Math.floor(this.globalOps.random() * items.length)];
   }
 }
 

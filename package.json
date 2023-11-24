@@ -3,5 +3,8 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@stdlib/random-iter-minstd": "^0.1.0"
+  }
 }

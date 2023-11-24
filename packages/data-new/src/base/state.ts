@@ -6,6 +6,7 @@ import { Mutation } from "./mutation";
 import { SkillDefinition } from "./skill";
 
 export interface GameConfig {
+  randomSeed: number,
   initialHands: number;
   maxHands: number;
   maxRounds: number;

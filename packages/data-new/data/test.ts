@@ -47,6 +47,7 @@ async function test() {
   const ch = getCharacterDefinition(TestCharacter);
   const initGameState: GameState = {
     config: {
+      randomSeed: 0,
       initialDice: 8,
       initialHands: 5,
       maxDice: 16,
