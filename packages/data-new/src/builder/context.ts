@@ -1,9 +1,9 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 
-import { EntityArea, EntityDefinition, EntityType } from "../entity";
-import { Mutation, applyMutation } from "../mutation";
-import { InSkillEventPayload } from "../skill";
-import { CharacterState, EntityState, GameState } from "../state";
+import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
+import { Mutation, applyMutation } from "../base/mutation";
+import { InSkillEventPayload } from "../base/skill";
+import { CharacterState, EntityState, GameState } from "../base/state";
 import { getEntityArea, getEntityById } from "../util";
 import { QueryBuilder, StrictlyTypedQueryBuilder, TargetQueryArg } from "./query";
 import {

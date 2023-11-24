@@ -1,7 +1,7 @@
-import { CardDefinition } from "./card";
-import { CharacterDefinition } from "./character";
-import { EntityDefinition } from "./entity";
-import { SkillDefinition } from "./skill";
+import { CardDefinition } from "./base/card";
+import { CharacterDefinition } from "./base/character";
+import { EntityDefinition } from "./base/entity";
+import { SkillDefinition } from "./base/skill";
 
 const allCharacters = new Map<number, CharacterDefinition>();
 const allEntities = new Map<number, EntityDefinition>();

@@ -1,7 +1,7 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { registerSkill } from "../registry";
-import { SkillDescription, SkillType } from "../skill";
-import { GameState } from "../state";
+import { SkillDescription, SkillType } from "../base/skill";
+import { GameState } from "../base/state";
 import { SkillContext, ExtendedSkillContext } from "./context";
 import { TargetQueryArg } from "./query";
 import {

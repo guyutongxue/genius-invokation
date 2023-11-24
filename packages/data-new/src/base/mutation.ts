@@ -3,7 +3,7 @@ import { Draft, produce } from "immer";
 import { DiceType, PhaseType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
-import { disposeEntity, getEntityById } from "./util";
+import { disposeEntity, getEntityById } from "../util";
 import { EntityArea } from "./entity";
 
 export interface ChangePhaseM {

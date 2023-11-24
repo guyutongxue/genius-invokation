@@ -1,6 +1,6 @@
 import { Draft } from "immer";
-import { CharacterState, EntityState, GameState } from "./state";
-import { EntityArea } from "./entity";
+import { CharacterState, EntityState, GameState } from "./base/state";
+import { EntityArea } from "./base/entity";
 
 export function getEntityById(state: GameState, id: number, includeCharacter?: false): EntityState;
 export function getEntityById(state: GameState, id: number, includeCharacter: true): EntityState | CharacterState;

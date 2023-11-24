@@ -1,10 +1,10 @@
 import { Aura } from "@gi-tcg/typings";
-import { CharacterTag } from "../character";
+import { CharacterTag } from "../base/character";
 import { getSkillDefinition, registerCharacter } from "../registry";
 import {
   InitiativeSkillDefinition,
   TriggeredSkillDefinition,
-} from "../skill";
+} from "../base/skill";
 import { CharacterHandle, SkillHandle } from "./type";
 
 class CharacterBuilder {

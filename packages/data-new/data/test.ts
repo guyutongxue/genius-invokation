@@ -1,7 +1,7 @@
 import { character, skill, DamageType, card } from "@gi-tcg";
 import { getCardDefinition, getCharacterDefinition, getSkillDefinition } from "../src/registry";
-import { GameState, PlayerState } from "../src/state";
-import { InitiativeSkillDefinition } from "../src/skill";
+import { GameState, PlayerState } from "../src/base/state";
+import { InitiativeSkillDefinition } from "../src/base/skill";
 
 const TestSkill = skill(10011)
   .damage(1, DamageType.Piercing, $ => $.opp().standby())

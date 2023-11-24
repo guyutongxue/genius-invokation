@@ -1,6 +1,6 @@
-import { CardTarget, CardTargetKind, CardType, PlayCardFilter } from "../card";
+import { CardTarget, CardTargetKind, CardType, PlayCardFilter } from "../base/card";
 import { registerCard, registerSkill } from "../registry";
-import { SkillDescription } from "../skill";
+import { SkillDescription } from "../base/skill";
 import { ExtendedSkillContext, SkillContext } from "./context";
 import { SkillBuilderWithCost, extendSkillContext } from "./skill";
 import { CardHandle, ExContextType, ExEntityType } from "./type";
