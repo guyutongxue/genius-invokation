@@ -123,7 +123,7 @@ async function test() {
   const skillDef = getSkillDefinition(TestSkill) as InitiativeSkillDefinition;
   const [newState, events] = await skillDef.action(initGameState, -100);
   const cardDef = getCardDefinition(TestCard);
-  const [newState2, events2] = await cardDef.action.action(newState, -101, { ids: [-102] });
+  const [newState2, events2] = await cardDef.skillDefinition.action(newState, -101, { ids: [-102] });
   // console.log({ newState, events });
   console.log("ff")
 }

@@ -337,7 +337,6 @@ export type StrictlyTypedQueryBuilder<
  * - Query Lambda 形如 `$ => $.active()`
  *   - 该 Lambda 可返回 `QueryBuilder` 如上；
  *   - 也可返回具体的对象上下文，如 `$ => $.opp().one()`。
- * - ~~给定 `SkillContext` 返回具体对象的函数，如 `c => c.targets[0]`~~
  * - 直接传入具体的对象上下文。
  */
 export type TargetQueryArg<

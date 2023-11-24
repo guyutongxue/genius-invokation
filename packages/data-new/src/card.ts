@@ -39,7 +39,7 @@ export interface CardTarget {
   ids: number[];
 }
 
-export type PlayCardAction = InitiativeSkillDefinition<CardTarget>;
+export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardTarget>;
 export type PlayCardFilter = (state: GameState, ctx: CardTarget) => boolean;
 
 export interface CardDefinition {
@@ -49,5 +49,5 @@ export interface CardDefinition {
   readonly deckRequirement: DeckRequirement;
   readonly target: CardTargetKind;
   readonly filter: PlayCardFilter;
-  readonly action: PlayCardAction;
+  readonly skillDefinition: PlayCardSkillDefinition;
 }

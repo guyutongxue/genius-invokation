@@ -98,7 +98,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       deckRequirement: {}, // TODO
       target: this.targetKinds,
       filter: filterFn,
-      action: skillDef,
+      skillDefinition: skillDef,
     });
     return this.cardId as CardHandle;
   }
