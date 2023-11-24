@@ -24,21 +24,30 @@ type OrderFn<Readonly extends boolean, TypeT extends ExEntityType> = (
  */
 export class QueryBuilder<
   Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
   TypeT extends ExEntityType,
 > {
   private _all = false;
   private _includeDefeated = false;
   private filters: Filter<Readonly, TypeT>[] = [];
   private _orderFn: OrderFn<Readonly, TypeT> | null = null;
+  private callerWho: 0 | 1;
   constructor(
-    private readonly skillContext: SkillContext<Readonly>,
-    private callerWho: 0 | 1,
-  ) {}
+    private readonly skillContext: SkillContext<Readonly, Ext, CallerType>,
+  ) {
+    this.callerWho = this.skillContext.callerArea.who;
+  }
 
   type<NewT extends ExEntityType>(
     type: NewT,
-  ): StrictlyTypedQueryBuilder<Readonly, NewT> {
-    const self = this as unknown as QueryBuilder<Readonly, NewT>;
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, NewT> {
+    const self = this as unknown as QueryBuilder<
+      Readonly,
+      Ext,
+      CallerType,
+      NewT
+    >;
     return self.filter((e) => e.state.definition.type === type);
   }
   character() {
@@ -60,19 +69,19 @@ export class QueryBuilder<
     return this.type("support");
   }
 
-  all(): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  all(): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     this._all = true;
     return this;
   }
 
-  opp(): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  opp(): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     this.callerWho = flip(this.callerWho);
     return this;
   }
 
   filter(
     ...filters: Filter<Readonly, TypeT>[]
-  ): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     this.filters.push(...filters);
     return this;
   }
@@ -90,15 +99,15 @@ export class QueryBuilder<
   valued(
     prop: CommonVariableName[TypeT],
     valOrPred: ValuePred,
-  ): StrictlyTypedQueryBuilder<Readonly, TypeT>;
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT>;
   valued(
     prop: string,
     valOrPred: ValuePred,
-  ): StrictlyTypedQueryBuilder<Readonly, TypeT>;
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT>;
   valued(
     prop: string,
     valOrPred: ValuePred,
-  ): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     return this.filter((e) => {
       const v = e.state.variables[prop];
       if (typeof valOrPred === "function") {
@@ -109,16 +118,21 @@ export class QueryBuilder<
     });
   }
 
-  byId(id: number): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  byId(
+    id: number,
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     return this.filter((e) => e.state.id === id);
   }
-  self(): StrictlyTypedQueryBuilder<Readonly, TypeT> {
-    return this.byId(this.callerWho);
+  self(): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, CallerType> {
+    return this.byId(this.skillContext.callerId) as any;
+  }
+  get context(): ExtendedSkillContext<Readonly, Ext, CallerType> {
+    return this.skillContext as any;
   }
 
   orderBy(
     fn: OrderFn<Readonly, TypeT>,
-  ): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     this._orderFn = fn;
     return this;
   }
@@ -183,7 +197,12 @@ export class QueryBuilder<
 
   // CHARACTER ONLY
 
-  includeDefeated(): StrictlyTypedQueryBuilder<Readonly, TypeT> {
+  includeDefeated(): StrictlyTypedQueryBuilder<
+    Readonly,
+    Ext,
+    CallerType,
+    TypeT
+  > {
     this._includeDefeated = true;
     return this;
   }
@@ -192,8 +211,10 @@ export class QueryBuilder<
     return this.filter((e) => e instanceof CharacterContext && e.fullEnergy());
   }
 
-  position(pos: CharacterPosition): StrictlyTypedQueryBuilder<Readonly, TypeT> {
-    return this.filter(
+  position(
+    pos: CharacterPosition,
+  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, "character"> {
+    return this.type("character").filter(
       (e) => e instanceof CharacterContext && e.satisfyPosition(pos),
     );
   }
@@ -210,7 +231,12 @@ export class QueryBuilder<
     return this.position("prev");
   }
 
-  recentOpp(): StrictlyTypedQueryBuilder<Readonly, "character"> {
+  recentOpp(): StrictlyTypedQueryBuilder<
+    Readonly,
+    Ext,
+    CallerType,
+    "character"
+  > {
     const targetCh = this.one();
     if (!(targetCh instanceof CharacterContext)) {
       throw new Error("recentOpp() expected a character here");
@@ -225,20 +251,22 @@ export class QueryBuilder<
       const ratio = idx - (len / 2 - 0.5);
       return Math.abs(ratio - baseRatio);
     };
-    return new QueryBuilder(this.skillContext, this.callerWho)
+    return new QueryBuilder<Readonly, Ext, CallerType, ExEntityType>(
+      this.skillContext,
+    )
+      .all()
       .character()
       .filter((e) => e.who === flip(targetCh.who))
       .orderBy(orderFn);
   }
 
-  into(): StrictlyTypedQueryBuilder<Readonly, "status"> {
+  into(): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, "status"> {
     const targetCh = this.one();
     if (!(targetCh instanceof CharacterContext)) {
       throw new Error("into() expected a character here");
     }
-    return new QueryBuilder<Readonly, "status">(
+    return new QueryBuilder<Readonly, Ext, CallerType, "status">(
       this.skillContext,
-      this.callerWho,
     ).filter((e) => {
       if (!(e instanceof EntityContext)) {
         return false;
@@ -249,9 +277,8 @@ export class QueryBuilder<
 
   // STATUS ONLY
 
-  shield(): StrictlyTypedQueryBuilder<Readonly, "status"> {
-    const self = this as unknown as QueryBuilder<Readonly, "status">;
-    return self.tagged("shield");
+  shield(): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, "status"> {
+    return this.type("status").tagged("shield");
   }
 }
 
@@ -295,8 +322,15 @@ type QueryBuilderOmitProp = {
 
 export type StrictlyTypedQueryBuilder<
   Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
   TypeT extends ExEntityType,
-> = Omit<QueryBuilder<Readonly, TypeT>, QueryBuilderOmitProp[TypeT]>;
+> = ExEntityType extends TypeT
+  ? QueryBuilder<Readonly, Ext, CallerType, TypeT>
+  : Omit<
+      QueryBuilder<Readonly, Ext, CallerType, TypeT>,
+      QueryBuilderOmitProp[TypeT]
+    >;
 
 /**
  * 在指定某个角色目标时，可传入的参数类型：
@@ -306,12 +340,16 @@ export type StrictlyTypedQueryBuilder<
  * - ~~给定 `SkillContext` 返回具体对象的函数，如 `c => c.targets[0]`~~
  * - 直接传入具体的对象上下文。
  */
-export type TargetQueryArg<Readonly extends boolean> =
+export type TargetQueryArg<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+> =
   | StrictlyTypedCharacterContext<Readonly>[]
   | StrictlyTypedCharacterContext<Readonly>
   | ((
-      $: StrictlyTypedQueryBuilder<Readonly, "character">,
+      $: StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, any>,
     ) =>
-      | StrictlyTypedQueryBuilder<Readonly, "character">
+      | StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, "character">
       | StrictlyTypedCharacterContext<Readonly>[]
       | StrictlyTypedCharacterContext<Readonly>);

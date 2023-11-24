@@ -1,29 +1,35 @@
-import { DamageType } from "@gi-tcg/typings";
+import { DamageType, DiceType } from "@gi-tcg/typings";
 
 import { EntityArea, EntityDefinition, EntityType } from "../entity";
 import { Mutation, applyMutation } from "../mutation";
 import { InSkillEventPayload } from "../skill";
 import { CharacterState, EntityState, GameState } from "../state";
 import { getEntityArea, getEntityById } from "../util";
-import { QueryBuilder, TargetQueryArg } from "./query";
+import { QueryBuilder, StrictlyTypedQueryBuilder, TargetQueryArg } from "./query";
 import {
   AppliableDamageType,
+  CombatStatusHandle,
   ExEntityType,
   HandleT,
+  SkillHandle,
   SummonHandle,
 } from "./type";
 import { getEntityDefinition } from "../registry";
 
 /**
  * 用于描述技能的上下文对象。
- * 它们出现在 `.do()` 形式内，将其作为第一参数传入（第二参数通常是触发事件的相关信息）。
+ * 它们出现在 `.do()` 形式内，将其作为参数传入。
  */
-export class SkillContext<Readonly extends boolean> {
-  private eventPayloads: InSkillEventPayload[] = [];
-  private callerArea: EntityArea;
+export class SkillContext<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+> {
+  private readonly eventPayloads: InSkillEventPayload[] = [];
+  public readonly callerArea: EntityArea;
 
   /**
-   * 
+   *
    * @param _state 触发此技能之前的游戏状态
    * @param skillId 技能编号（保证和传入 `registerSkill` 的编号一致）
    * @param callerId 调用者 ID。主动技能的调用者是角色 ID，卡牌技能的调用者是当前玩家的前台角色 ID。
@@ -31,7 +37,7 @@ export class SkillContext<Readonly extends boolean> {
   constructor(
     private _state: GameState,
     private readonly skillId: number,
-    private readonly callerId: number,
+    public readonly callerId: number,
   ) {
     this.callerArea = getEntityArea(_state, callerId);
   }
@@ -48,19 +54,17 @@ export class SkillContext<Readonly extends boolean> {
     return this._state.currentTurn === this.callerArea.who;
   }
 
-  query<TypeT extends ExEntityType>(type: TypeT) {
-    return new QueryBuilder<Readonly, TypeT>(this, this.callerArea.who).type(
-      type,
-    );
+  query<TypeT extends ExEntityType>(type: TypeT): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
+    return new QueryBuilder(this as SkillContext<Readonly, Ext, CallerType>).type(type);
   }
 
   private doTargetQuery(
-    arg: TargetQueryArg<boolean>,
+    arg: TargetQueryArg<boolean, Ext, CallerType>,
   ): StrictlyTypedCharacterContext<boolean>[] {
     let fnResult;
     if (typeof arg === "function") {
-      const query = new QueryBuilder(this, this.callerArea.who).type(
-        "character",
+      const query = new QueryBuilder<Readonly, Ext, CallerType, ExEntityType>(
+        this,
       );
       fnResult = arg(query);
     } else {
@@ -93,13 +97,13 @@ export class SkillContext<Readonly extends boolean> {
     this.eventPayloads.push(payloads);
   }
 
-  switchActive(target: TargetQueryArg<false>) {
+  switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
     const targets = this.doTargetQuery(target);
     if (targets.length !== 1) {
       throw new Error("Expected exactly one target");
     }
     const { who, id: targetId } = targets[0];
-    const from = new QueryBuilder(this, who).character().active().one();
+    const from = new QueryBuilder(this).character().active().one();
     this.emitEvent("onSwitchActive", {
       type: "switchActive",
       who,
@@ -114,7 +118,7 @@ export class SkillContext<Readonly extends boolean> {
     });
   }
 
-  gainEnergy(value: number, target: TargetQueryArg<false>) {
+  gainEnergy(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
     const targets = this.doTargetQuery(target);
     for (const t of targets) {
       const targetState = t.state;
@@ -132,7 +136,7 @@ export class SkillContext<Readonly extends boolean> {
     }
   }
 
-  heal(value: number, target: TargetQueryArg<false>) {
+  heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
     const targets = this.doTargetQuery(target);
     for (const t of targets) {
       const targetState = t.state;
@@ -159,7 +163,7 @@ export class SkillContext<Readonly extends boolean> {
   damage(
     value: number,
     type: DamageType,
-    target: TargetQueryArg<false> = ($) => $.opp().active(),
+    target: TargetQueryArg<false, Ext, CallerType> = ($) => $.opp().active(),
   ) {
     const targets = this.doTargetQuery(target);
     for (const t of targets) {
@@ -182,7 +186,7 @@ export class SkillContext<Readonly extends boolean> {
     }
   }
 
-  apply(type: AppliableDamageType, target: TargetQueryArg<false>) {
+  apply(type: AppliableDamageType, target: TargetQueryArg<false, Ext, CallerType>) {
     // TODO
   }
 
@@ -231,9 +235,11 @@ export class SkillContext<Readonly extends boolean> {
       value: initState,
     });
   }
-
   summon(id: SummonHandle) {
     this.createEntity("summon", id);
+  }
+  combatStatus(id: CombatStatusHandle) {
+    this.createEntity("combatStatus", id);
   }
 
   disposeEntity(id: number) {
@@ -244,7 +250,31 @@ export class SkillContext<Readonly extends boolean> {
       id,
     });
   }
+
+  absorbDice(strategy: "seq" | "diff", count: number) {
+    // TODO return DiceType[]
+  }
+  generateDice(type: DiceType | "randomElement", count: number) {
+    // TODO
+  }
+
+  async switchCards(): Promise<void> {
+    // TODO
+  }
+  async reroll(times: number): Promise<void> {
+    // TODO
+  }
+  async useSkill(skill: SkillHandle | "normal"): Promise<void> {
+    // TODO
+  }
+
+  random<T>(...items: T[]): T {
+    // TODO (use global random generator)
+    return items[Math.floor(Math.random() * items.length)];
+  }
 }
+
+type InternalProp = "callerId" | "callerArea";
 
 type SkillContextMutativeProps =
   | "mutate"
@@ -257,27 +287,42 @@ type SkillContextMutativeProps =
   | "apply"
   | "createEntity"
   | "summon"
-  | "disposeEntity";
+  | "combatStatus"
+  | "disposeEntity"
+  | "absorbDice"
+  | "generateDice"
+  | "switchCards"
+  | "reroll"
+  | "useSkill";
 
 /**
  * 所谓 `StrictlyTyped` 是指，若 `Readonly` 则忽略那些可以改变游戏状态的方法。
- * 
+ *
  * `StrictlyTypedCharacterContext` 等同理。
  */
-export type StrictlyTypedSkillContext<Readonly extends boolean> =
+export type StrictlyTypedSkillContext<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+> = Omit<
   Readonly extends true
-    ? Omit<SkillContext<Readonly>, SkillContextMutativeProps>
-    : SkillContext<Readonly>;
+    ? Omit<SkillContext<Readonly, Ext, CallerType>, SkillContextMutativeProps>
+    : SkillContext<Readonly, Ext, CallerType>,
+  InternalProp
+>;
 
-export type ExtendedSkillContext<Readonly extends boolean, Ext extends object> = StrictlyTypedSkillContext<Readonly> & Ext;
+export type ExtendedSkillContext<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+> = StrictlyTypedSkillContext<Readonly, Ext, CallerType> & Ext;
 
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
 export class CharacterContext<Readonly extends boolean> {
   private readonly area: EntityArea;
-  private readonly SELF_QUERY: TargetQueryArg<false> = ($) => $.byId(this._id);
   constructor(
-    private readonly skillContext: SkillContext<Readonly>,
+    private readonly skillContext: SkillContext<Readonly, any, any>,
     private readonly _id: number,
   ) {
     /**
@@ -352,16 +397,16 @@ export class CharacterContext<Readonly extends boolean> {
   // MUTATIONS
 
   gainEnergy(value = 1) {
-    this.skillContext.gainEnergy(value, this.SELF_QUERY);
+    this.skillContext.gainEnergy(value, this as CharacterContext<boolean>);
   }
   heal(value: number) {
-    this.skillContext.heal(value, this.SELF_QUERY);
+    this.skillContext.heal(value, this as CharacterContext<boolean>);
   }
   damage(value: number, type: DamageType) {
-    this.skillContext.damage(value, type, this.SELF_QUERY);
+    this.skillContext.damage(value, type, this as CharacterContext<boolean>);
   }
   apply(type: AppliableDamageType) {
-    this.skillContext.apply(type, this.SELF_QUERY);
+    this.skillContext.apply(type, this as CharacterContext<boolean>);
   }
 }
 
@@ -378,7 +423,7 @@ export class EntityContext<
 > {
   private readonly area: EntityArea;
   constructor(
-    private readonly skillContext: SkillContext<Readonly>,
+    private readonly skillContext: SkillContext<Readonly, any, any>,
     private readonly id: number,
   ) {
     this.area = getEntityArea(skillContext.state, id);

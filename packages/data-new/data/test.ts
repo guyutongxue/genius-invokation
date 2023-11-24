@@ -6,6 +6,7 @@ import { InitiativeSkillDefinition } from "../src/skill";
 const TestSkill = skill(10011)
   .damage(1, DamageType.Piercing, $ => $.opp().standby())
   .damage(3, DamageType.Cryo)
+  .heal(1, $ => $.self())
   // .if((c) => {
   //   c.query("character").one();
   // })
@@ -16,9 +17,7 @@ const TestSkill = skill(10011)
 //   .done();
 const TestCard = card(20011, ["character"])
   .costVoid(2)
-  .do((c) => {
-    c.targets[0].heal(1);
-  })
+  .heal(1, $ => $.context.targets[0])
   .done();
 
 // const TestStatus = status(114053)
@@ -34,6 +33,7 @@ const TestCard = card(20011, ["character"])
 // const TestStatus2 = status(123456)
 //   .variable("testVar", 0)
 //   .on("useSkill")
+//   .damage(1, DamageType.Piercing, $ => $.self().master())
 //   .if((c) => c.definition.type === "burst")
 //   .do((c) => c.variables.testVar += 1)
 //   .done()
@@ -123,7 +123,7 @@ async function test() {
   const skillDef = getSkillDefinition(TestSkill) as InitiativeSkillDefinition;
   const [newState, events] = await skillDef.action(initGameState, -100);
   const cardDef = getCardDefinition(TestCard);
-  const [newState2, events2] = await cardDef.action.action(newState, -101, { ids: [-101] });
+  const [newState2, events2] = await cardDef.action.action(newState, -101, { ids: [-102] });
   // console.log({ newState, events });
   console.log("ff")
 }

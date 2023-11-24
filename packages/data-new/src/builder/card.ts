@@ -2,7 +2,7 @@ import { CardTarget, CardTargetKind, CardType, PlayCardFilter } from "../card";
 import { registerCard, registerSkill } from "../registry";
 import { SkillDescription } from "../skill";
 import { ExtendedSkillContext, SkillContext } from "./context";
-import { SkillBuilderWithCost, extendSKillContext } from "./skill";
+import { SkillBuilderWithCost, extendSkillContext } from "./skill";
 import { CardHandle, ExContextType, ExEntityType } from "./type";
 
 type ContextOf<
@@ -23,7 +23,7 @@ interface CardTargetExt<
 }
 
 type PredFn<KindTs extends CardTargetKind> = (
-  ctx: ExtendedSkillContext<true, CardTargetExt<true, KindTs>>,
+  ctx: ExtendedSkillContext<true, CardTargetExt<true, KindTs>, "character">,
 ) => boolean;
 
 class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
@@ -46,7 +46,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   done(): CardHandle {
     // 将卡牌目标 ID 列表转换为扩展点 `CardTargetExt`
     const cardTargetToExt = (
-      skillCtx: SkillContext<boolean>,
+      skillCtx: SkillContext<boolean, any, "character">,
       ids: number[],
     ): CardTargetExt<boolean, KindTs> => {
       const targets = [];
@@ -59,20 +59,22 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     };
     const action: SkillDescription<CardTarget> = (state, callerId, { ids }) => {
       const targetExtGenerator = (
-        skillCtx: SkillContext<false>,
+        skillCtx: SkillContext<false, any, any>,
       ): CardTargetExt<false, KindTs> => {
         return cardTargetToExt(skillCtx, ids);
       };
-      const innerAction: SkillDescription<void> = this.getAction(
-        targetExtGenerator,
-        () => {},
-      );
+      const innerAction: SkillDescription<void> =
+        this.getAction(targetExtGenerator);
       return innerAction(state, callerId);
     };
     const filterFn: PlayCardFilter = (state, { ids }) => {
-      const ctx = new SkillContext(state, this.cardId, this.cardId);
+      const ctx = new SkillContext<true, any, any>(state, this.cardId, this.cardId);
       const ext = cardTargetToExt(ctx, ids);
-      const wrappedCtx = extendSKillContext(ctx, ext);
+      const wrappedCtx = extendSkillContext<
+        true,
+        CardTargetExt<true, KindTs>,
+        "character"
+      >(ctx, ext);
       for (const filter of this._filters) {
         if (!filter(wrappedCtx)) {
           return false;

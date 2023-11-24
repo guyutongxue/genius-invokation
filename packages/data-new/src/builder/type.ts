@@ -27,6 +27,8 @@ export type ExContextType<Readonly extends boolean, TypeT extends ExEntityType> 
     : never;
 export type HandleT<T extends ExEntityType> = T extends "character"
   ? CharacterHandle
+  : T extends "combatStatus"
+  ? CombatStatusHandle
   : T extends "status"
   ? StatusHandle
   : T extends "summon"

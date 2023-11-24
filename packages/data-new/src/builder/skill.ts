@@ -1,61 +1,66 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { registerSkill } from "../registry";
-import {
-  SkillDescription,
-  SkillType,
-} from "../skill";
+import { SkillDescription, SkillType } from "../skill";
 import { GameState } from "../state";
-import {
-  SkillContext,
-  ExtendedSkillContext,
-} from "./context";
+import { SkillContext, ExtendedSkillContext } from "./context";
 import { TargetQueryArg } from "./query";
 import {
   AppliableDamageType,
+  ExEntityType,
   SkillHandle,
   SummonHandle,
 } from "./type";
 
-type SkillOperation<Ext extends object, EventArg> = (
-  c: ExtendedSkillContext<false, Ext>,
-  e: EventArg,
+type EventArgOf<Ext extends object> = Ext extends { eventArg: infer T }
+  ? T
+  : void;
+
+type SkillOperation<Ext extends object, CallerType extends ExEntityType> = (
+  c: ExtendedSkillContext<false, Ext, CallerType>,
+  e: EventArgOf<Ext>,
 ) => void | Promise<void>;
 
-type SkillFilter<Ext extends object, EventArg> = (
-  c: ExtendedSkillContext<true, Ext>,
-  e: EventArg,
+type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
+  c: ExtendedSkillContext<true, Ext, CallerType>,
+  e: EventArgOf<Ext>,
 ) => boolean;
 
-class SkillBuilder<Ext extends object, EventArg> {
-  protected operations: SkillOperation<Ext, EventArg>[] = [];
-  constructor(private readonly id: number) {}
+class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
+  protected operations: SkillOperation<Ext, CallerType>[] = [];
+  constructor(
+    private readonly callerType: CallerType,
+    private readonly id: number,
+  ) {}
 
-  if(filter: SkillFilter<Ext, EventArg>) {
+  if(filter: SkillFilter<Ext, CallerType>) {
     // TODO
   }
 
-  do(op: SkillOperation<Ext, EventArg>) {
+  do(op: SkillOperation<Ext, CallerType>) {
     this.operations.push(op);
     return this;
   }
 
-  switchActive(target: TargetQueryArg<false>) {
+  switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
     return this.do((c) => c.switchActive(target));
   }
-  gainEnergy(value: number, target: TargetQueryArg<false>) {
+  gainEnergy(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
     return this.do((c) => c.gainEnergy(value, target));
   }
-  heal(value: number, target: TargetQueryArg<false>) {
+  heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
     return this.do((c) => c.heal(value, target));
   }
   damage(
     value: number,
     type: DamageType,
-    target: TargetQueryArg<false> = ($) => $.opp().active(),
+    target: TargetQueryArg<false, Ext, CallerType> = ($) => $.opp().active(),
   ) {
     return this.do((c) => c.damage(value, type, target));
   }
-  apply(type: AppliableDamageType, target: TargetQueryArg<false>) {
+  apply(
+    type: AppliableDamageType,
+    target: TargetQueryArg<false, Ext, CallerType>,
+  ) {
     return this.do((c) => c.apply(type, target));
   }
   summon(id: SummonHandle) {
@@ -64,23 +69,24 @@ class SkillBuilder<Ext extends object, EventArg> {
 
   /**
    * 生成内部技能描述函数。
-   * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点或第二参数。
+   * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点或事件参数。
    * 这些参数将传递给用户。
    * @param extGenerator 生成扩展点的函数
-   * @param evaGenerator 生成事件参数（用户第二参数）的函数
    * @returns 内部技能描述函数
    */
   protected getAction(
-    extGenerator: (skillCtx: SkillContext<false>) => Ext,
-    evaGenerator: (skillCtx: SkillContext<false>) => EventArg,
+    extGenerator: (skillCtx: SkillContext<false, Ext, CallerType>) => Ext,
   ): SkillDescription<any> {
     return async (st: GameState, callerId: number) => {
-      const ctx = new SkillContext<false>(st, this.id, callerId);
+      const ctx = new SkillContext<false, Ext, CallerType>(
+        st,
+        this.id,
+        callerId,
+      );
       const ext = extGenerator(ctx);
-      const eva = evaGenerator(ctx);
-      const wrapped = extendSKillContext(ctx, ext);
+      const wrapped = extendSkillContext<false, Ext, CallerType>(ctx, ext);
       for (const op of this.operations) {
-        await op(wrapped, eva);
+        await op(wrapped, (ext as any)?.eventArg);
       }
       return [ctx.state, ctx.events] as const;
     };
@@ -88,12 +94,19 @@ class SkillBuilder<Ext extends object, EventArg> {
 }
 
 /**
- * 
+ *
  * @param ctx 原 `SkillContext`
  * @param ext 扩展点
  * @returns 通过 `Proxy` 扩展后的 `SkillContext`
  */
-export function extendSKillContext<Readonly extends boolean, Ext extends object>(ctx: ExtendedSkillContext<Readonly, {}>, ext: Ext): ExtendedSkillContext<Readonly, Ext> {
+export function extendSkillContext<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+>(
+  ctx: ExtendedSkillContext<Readonly, any, CallerType>,
+  ext: Ext,
+): ExtendedSkillContext<Readonly, Ext, CallerType> {
   return new Proxy(ctx, {
     get(target, prop, receiver) {
       if (prop in ext) {
@@ -102,19 +115,28 @@ export function extendSKillContext<Readonly extends boolean, Ext extends object>
         return Reflect.get(target, prop, receiver);
       }
     },
-  }) as ExtendedSkillContext<Readonly, Ext>;
+  }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 
-class TriggeredSkillBuilder<Ext extends object = {}> extends SkillBuilder<
-  Ext,
-  void
-> {
-  constructor(private readonly skillId: number) {
-    super(skillId);
+class TriggeredSkillBuilder<
+  Ext extends object,
+  CallerType extends ExEntityType,
+> extends SkillBuilder<Ext, CallerType> {
+  constructor(
+    private readonly callerType2: CallerType,
+    private readonly id2: number,
+  ) {
+    super(callerType2, id2);
   }
 }
 
-export class SkillBuilderWithCost<Ext extends object> extends SkillBuilder<Ext, void> {
+export class SkillBuilderWithCost<Ext extends object> extends SkillBuilder<
+  Ext,
+  "character"
+> {
+  constructor(skillId: number) {
+    super("character", skillId);
+  }
   protected _cost: DiceType[] = [];
   private cost(type: DiceType, count: number) {
     this._cost.push(...Array(count).fill(type));
@@ -160,10 +182,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   }
 
   done(): SkillHandle {
-    const action: SkillDescription<void> = this.getAction(
-      () => ({}),
-      () => {},
-    );
+    const action: SkillDescription<void> = this.getAction(() => ({}));
     registerSkill({
       type: "skill",
       skillType: this._skillType,
