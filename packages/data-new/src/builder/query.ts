@@ -348,7 +348,7 @@ export type TargetQueryArg<
   | StrictlyTypedCharacterContext<Readonly>[]
   | StrictlyTypedCharacterContext<Readonly>
   | ((
-      $: StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, any>,
+      $: StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, ExEntityType>,
     ) =>
       | StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, "character">
       | StrictlyTypedCharacterContext<Readonly>[]
