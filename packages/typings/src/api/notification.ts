@@ -10,31 +10,28 @@ export type PhaseType =
 
 export interface CharacterData {
   id: number;
-  entityId: number;
+  definitionId: number;
   defeated: boolean;
+  entities: EntityData[];
   health: number;
   energy: number;
-  weapon: number | null;
-  artifact: number | null;
-  equipments: number[];
-  statuses: EntityData[];
-  applied: Aura;
+  aura: Aura;
 }
 
 export interface EntityData {
   id: number;
-  entityId: number;
+  definitionId: number;
   value?: number;
 }
 
 export interface CardData {
   id: number;
-  entityId: number;
+  definitionId: number;
 }
 
 export interface PlayerDataBase {
   pileNumber: number;
-  active: number | null;
+  activeCharacterId: number | null;
   characters: CharacterData[];
   combatStatuses: EntityData[];
   supports: EntityData[];
@@ -56,7 +53,8 @@ export interface OppPlayerData extends PlayerDataBase {
 
 export interface StateData {
   phase: PhaseType;
-  turn: number;
+  roundNumber: number;
+  currentTurn: number;
   players: [MyPlayerData, OppPlayerData];
 }
 
@@ -74,7 +72,7 @@ export interface DamageData {
   value: number;
   target: number;
   log: {
-    source: number | string; // id or "elementalReaction" or ...
+    source: number;
     what: string;
   }[];
 }
