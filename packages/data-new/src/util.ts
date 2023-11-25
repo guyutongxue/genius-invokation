@@ -1,10 +1,28 @@
 import { Draft } from "immer";
-import { CharacterState, EntityState, GameState } from "./base/state";
+import minstd from "@stdlib/random-base-minstd";
+import {
+  CharacterState,
+  EntityState,
+  GameState,
+  IteratorState,
+} from "./base/state";
 import { EntityArea } from "./base/entity";
 
-export function getEntityById(state: GameState, id: number, includeCharacter?: false): EntityState;
-export function getEntityById(state: GameState, id: number, includeCharacter: true): EntityState | CharacterState;
-export function getEntityById(state: GameState, id: number, includeCharacter = false): EntityState | CharacterState {
+export function getEntityById(
+  state: GameState,
+  id: number,
+  includeCharacter?: false,
+): EntityState;
+export function getEntityById(
+  state: GameState,
+  id: number,
+  includeCharacter: true,
+): EntityState | CharacterState;
+export function getEntityById(
+  state: GameState,
+  id: number,
+  includeCharacter = false,
+): EntityState | CharacterState {
   for (const player of state.players) {
     for (const ch of player.characters) {
       if (includeCharacter && ch.id === id) {
@@ -36,16 +54,16 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
         return {
           type: "characters",
           who,
-          characterId: ch.id
+          characterId: ch.id,
         };
-      } 
+      }
     }
     for (const key of ["combatStatuses", "summons", "supports"] as const) {
       if (player[key].find((e) => e.id === id)) {
         return {
           type: key,
-          who
-        }
+          who,
+        };
       }
     }
   }
@@ -71,4 +89,22 @@ export function disposeEntity(state: Draft<GameState>, id: number) {
     }
   }
   throw new Error(`Cannot found such entity`);
+}
+
+export function nextRandom(
+  oldState: IteratorState,
+): readonly [number, IteratorState] {
+  const factory = minstd.factory({
+    state: oldState.random,
+  });
+  // [1, 2147483646]
+  const randInt = factory();
+  const result = (randInt - 1) / 2147483647;
+  return [
+    result,
+    {
+      random: factory.state,
+      id: oldState.id,
+    },
+  ];
 }

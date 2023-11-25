@@ -2,7 +2,7 @@ import { DamageType, DiceType } from "@gi-tcg/typings";
 
 import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
-import { InSkillEventPayload } from "../base/skill";
+import { DeferredActions } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getEntityArea, getEntityById } from "../util";
 import {
@@ -19,7 +19,6 @@ import {
   SummonHandle,
 } from "./type";
 import { getEntityDefinition } from "../registry";
-import { GlobalOps } from "..";
 
 /**
  * 用于描述技能的上下文对象。
@@ -30,7 +29,7 @@ export class SkillContext<
   Ext extends object,
   CallerType extends ExEntityType,
 > {
-  private readonly eventPayloads: InSkillEventPayload[] = [];
+  private readonly eventPayloads: DeferredActions[] = [];
   public readonly callerArea: EntityArea;
 
   /**
@@ -41,7 +40,6 @@ export class SkillContext<
    */
   constructor(
     private _state: GameState,
-    private readonly globalOps: GlobalOps,
     private readonly skillId: number,
     public readonly callerId: number,
   ) {
@@ -103,7 +101,7 @@ export class SkillContext<
     }
   }
 
-  emitEvent(...payloads: InSkillEventPayload) {
+  emitEvent(...payloads: DeferredActions) {
     this.eventPayloads.push(payloads);
   }
 
@@ -210,8 +208,7 @@ export class SkillContext<
   ) {
     const id2 = id as number;
     const def = getEntityDefinition(id2);
-    const initState: EntityState = {
-      id: this.globalOps.nextId(),
+    const initState: Omit<EntityState, "id"> = {
       definition: def,
       variables: def.constants,
     };
@@ -241,7 +238,8 @@ export class SkillContext<
           );
       }
     }
-    this.emitEvent("onEnter", initState);
+    const newState = getEntityById(this._state, id2);
+    this.emitEvent("onEnter", newState);
     this.mutate({
       type: "createEntity",
       where: area,
@@ -271,16 +269,13 @@ export class SkillContext<
     // TODO
   }
 
-  async switchCards(): Promise<void> {
-    this._state = await this.globalOps.switchCards(
-      this._state,
-      this.callerArea.who,
-    );
+  switchCards() {
+    this.emitEvent("requestSwitchCards")
   }
-  async reroll(times: number): Promise<void> {
-    this._state = await this.globalOps.reroll(this._state, this.callerArea.who, times);
+  reroll(times: number) {
+    this.emitEvent("requestReroll", times);
   }
-  async useSkill(skill: SkillHandle | "normal"): Promise<void> {
+  useSkill(skill: SkillHandle | "normal") {
     let skillId;
     if (skill === "normal") {
       const normalSkills = this.query("character")
@@ -296,15 +291,16 @@ export class SkillContext<
     } else {
       skillId = skill;
     }
-    this._state = await this.globalOps.useSkill(
-      this._state,
-      this.callerArea.who,
-      skillId,
-    );
+    this.emitEvent("requestUseSkill", skillId);
   }
 
   random<T>(...items: T[]): T {
-    return items[Math.floor(this.globalOps.random() * items.length)];
+    const mutation: Mutation = {
+      type: "stepRandom",
+      value: -1
+    };
+    this.mutate(mutation);
+    return items[Math.floor(mutation.value * items.length)];
   }
 }
 

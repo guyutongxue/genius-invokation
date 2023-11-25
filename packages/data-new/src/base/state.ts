@@ -1,4 +1,5 @@
 import { PhaseType, DiceType } from "@gi-tcg/typings";
+
 import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariables } from "./character";
 import { EntityDefinition, EntityVariables } from "./entity";
@@ -6,7 +7,7 @@ import { Mutation } from "./mutation";
 import { SkillDefinition } from "./skill";
 
 export interface GameConfig {
-  randomSeed: number,
+  randomSeed: number;
   initialHands: number;
   maxHands: number;
   maxRounds: number;
@@ -16,6 +17,11 @@ export interface GameConfig {
   maxDice: number;
 }
 
+export interface IteratorState {
+  readonly random: Int32Array,
+  readonly id: number,
+}
+
 // export interface PlayerConfig {
 //   noShuffle: boolean;
 //   alwaysOmni: boolean;
@@ -23,6 +29,7 @@ export interface GameConfig {
 
 export interface GameState {
   readonly config: GameConfig;
+  readonly iterators: IteratorState;
   readonly phase: PhaseType;
   readonly roundNumber: number;
   readonly currentTurn: 0 | 1;

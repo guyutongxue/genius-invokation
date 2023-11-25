@@ -10,21 +10,9 @@ interface SkillDefinitionBase<Ctx> {
   readonly action: SkillDescription<Ctx>;
 }
 
-type SkillResult = readonly [GameState, InSkillEventPayload[]];
+type SkillResult = readonly [GameState, DeferredActions[]];
 
 export type SkillDescription<Ctx> = (
-  state: GameState,
-  callerId: number,
-  ctx: Ctx,
-) => SkillResult | PromiseLike<SkillResult>;
-
-interface SyncSkillDefinitionBase<Ctx = any> {
-  readonly type: "skill";
-  readonly id: SkillId;
-  readonly action: SyncSkillDescription<Ctx>;
-}
-
-type SyncSkillDescription<Ctx> = (
   state: GameState,
   callerId: number,
   ctx: Ctx,
@@ -153,7 +141,7 @@ type AsyncEventMap = {
   onRevive: CharacterState;
 };
 
-export type InSkillEvent =
+type InSkillEvent =
   | "onSwitchActive"
   | "onDamage"
   | "onHeal"
@@ -162,12 +150,19 @@ export type InSkillEvent =
   | "onDispose"
   | "onDefeated"
   | "onRevive";
-export type InSkillEventPayload = {
-  [E in InSkillEvent]: [eventName: E, eventArg: AsyncEventMap[E]];
+type InSkillEventPayload = {
+  [E in InSkillEvent]: readonly [eventName: E, eventArg: AsyncEventMap[E]];
 }[InSkillEvent];
 
+export type AsyncRequest =
+  | readonly [type: "requestSwitchCards"]
+  | readonly [type: "requestReroll", times: number]
+  | readonly [type: "requestUseSkill", skillId: number]
+
+export type DeferredActions = InSkillEventPayload | AsyncRequest;
+
 export type TriggeredSkillDefinition = ({
-  [E in keyof SyncEventMap]: SyncSkillDefinitionBase<SyncEventMap[E]> & {
+  [E in keyof SyncEventMap]: SkillDefinitionBase<SyncEventMap[E]> & {
     triggerOn: E;
   };
 } & {

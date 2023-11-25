@@ -3,8 +3,13 @@ import { Draft, produce } from "immer";
 import { DiceType, PhaseType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
-import { disposeEntity, getEntityById } from "../util";
+import { disposeEntity, getEntityById, nextRandom } from "../util";
 import { EntityArea } from "./entity";
+
+export interface StepRandomM {
+  readonly type: "stepRandom";
+  value: number; // output
+}
 
 export interface ChangePhaseM {
   readonly type: "changePhase";
@@ -50,20 +55,20 @@ export interface DisposeCardM {
 export interface CreateCardM {
   readonly type: "createCard";
   readonly who: 0 | 1;
-  readonly value: CardState;
+  readonly value: Omit<CardState, "id">;
   readonly target: "hands" | "piles";
 }
 
 export interface CreateCharacterM {
   readonly type: "createCharacter";
   readonly who: 0 | 1;
-  readonly value: CharacterState;
+  readonly value: Omit<CharacterState, "id">;
 }
 
 export interface CreateEntityM {
   readonly type: "createEntity";
   readonly where: EntityArea;
-  readonly value: EntityState;
+  readonly value: Omit<EntityState, "id">;
 }
 
 export interface DisposeEntityM {
@@ -92,6 +97,7 @@ export interface SetPlayerFlagM {
 }
 
 export type Mutation =
+  | StepRandomM
   | ChangePhaseM
   | StepRoundM
   | SwitchTurnM
@@ -113,6 +119,11 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
     draft.mutationLog.push(m as Draft<Mutation>);
   });
   switch (m.type) {
+    case "stepRandom": {
+      return produce(state, (draft) => {
+        [m.value, draft.iterators] = nextRandom(draft.iterators);
+      });
+    }
     case "changePhase": {
       return produce(state, (draft) => {
         draft.phase = m.newPhase;
@@ -171,12 +182,20 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
     }
     case "createCard": {
       return produce(state, (draft) => {
-        draft.players[m.who][m.target].push(m.value as Draft<CardState>);
+        const newState: CardState = {
+          id: draft.iterators.id--,
+          ...m.value
+        }
+        draft.players[m.who][m.target].push(newState as Draft<CardState>);
       });
     }
     case "createCharacter": {
       return produce(state, (draft) => {
-        draft.players[m.who].characters.push(m.value as Draft<CharacterState>);
+        const newState: CharacterState = {
+          id: draft.iterators.id--,
+          ...m.value,
+        };
+        draft.players[m.who].characters.push(newState as Draft<CharacterState>);
       });
     }
     case "createEntity": {
@@ -189,12 +208,18 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
           if (!character) {
             throw new Error(`Character ${where.characterId} not found`);
           }
-          character.entities.push(value);
+          character.entities.push({
+            id: draft.iterators.id--,
+            ...value,
+          });
         });
       } else {
         return produce(state, (draft) => {
           const area = draft.players[where.who][where.type];
-          area.push(value);
+          area.push({
+            id: draft.iterators.id--,
+            ...value,
+          });
         });
       }
     }

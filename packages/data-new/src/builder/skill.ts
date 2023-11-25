@@ -18,7 +18,7 @@ type EventArgOf<Ext extends object> = Ext extends { eventArg: infer T }
 type SkillOperation<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<false, Ext, CallerType>,
   e: EventArgOf<Ext>,
-) => void | Promise<void>;
+) => void;
 
 type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<true, Ext, CallerType>,
@@ -77,7 +77,7 @@ class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
   protected getAction(
     extGenerator: (skillCtx: SkillContext<false, Ext, CallerType>) => Ext,
   ): SkillDescription<any> {
-    return async (st: GameState, callerId: number) => {
+    return (st: GameState, callerId: number) => {
       const ctx = new SkillContext<false, Ext, CallerType>(
         st,
         this.id,
@@ -86,7 +86,7 @@ class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
       const ext = extGenerator(ctx);
       const wrapped = extendSkillContext<false, Ext, CallerType>(ctx, ext);
       for (const op of this.operations) {
-        await op(wrapped, (ext as any)?.eventArg);
+        op(wrapped, (ext as any)?.eventArg);
       }
       return [ctx.state, ctx.events] as const;
     };

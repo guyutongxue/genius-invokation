@@ -1,6 +1,8 @@
 import { GameConfig, GameState, PlayerState } from "./base/state";
 import randomIter from "@stdlib/random-iter-minstd";
 import { getCardDefinition, getCharacterDefinition } from "./registry";
+import minstd from "@stdlib/random-base-minstd";
+import { applyMutation } from "./base/mutation";
 
 interface PlayerConfig {
   readonly cards: number[];
@@ -9,99 +11,81 @@ interface PlayerConfig {
   readonly alwaysOmni?: boolean;
 }
 
-export interface GlobalOps {
-  nextId(): number;
-  random(): number;
-  switchCards(oldState: GameState, who: 0 | 1): Promise<GameState>;
-  reroll(oldState: GameState, who: 0 | 1, times: number): Promise<GameState>;
-  useSkill(
-    oldState: GameState,
-    who: 0 | 1,
-    skillId: number,
-  ): Promise<GameState>;
-}
+const INITIAL_ID = -500000;
+const INITIAL_PLAYER_STATE: PlayerState = {
+  activeCharacterId: 0,
+  characters: [],
+  piles: [],
+  // config.cards.map((c) => {
+  //   const def = getCardDefinition(c);
+  //   return {
+  //     id: this.nextId(),
+  //     definition: def,
+  //   };
+  // }),
+  hands: [],
+  dice: [],
+  combatStatuses: [],
+  summons: [],
+  supports: [],
+  declaredEnd: false,
+  legendUsed: false,
+  skipNextTurn: false,
+};
 
-class Game implements GlobalOps {
-  private readonly state: GameState;
-
-  private _nextId = -500000;
-  private _random: Iterator<number, number>;
-  nextId(): number {
-    return this._nextId--;
-  }
-  random(): number {
-    return this._random.next().value;
-  }
-
-  private initPlayerState(config: PlayerConfig): PlayerState {
-    return {
-      activeCharacterId: 0,
-      characters: config.characters.map((c) => {
-        const def = getCharacterDefinition(c);
-        return {
-          id: this.nextId(),
+class Game {
+  private state: GameState;
+  private initPlayerCards(who: 0 | 1) {
+    const config = this.playerConfigs[who];
+    for (const ch of config.characters) {
+      const def = getCharacterDefinition(ch);
+      this.state = applyMutation(this.state, {
+        type: "createCharacter",
+        who,
+        value: {
           definition: def,
-          entities: [],
           variables: def.constants,
+          entities: [],
           defeated: false,
-        };
-      }),
-      piles: config.cards.map((c) => {
-        const def = getCardDefinition(c);
-        return {
-          id: this.nextId(),
+        },
+      });
+    }
+    for (const card of config.cards) {
+      const def = getCardDefinition(card);
+      this.state = applyMutation(this.state, {
+        type: "createCard",
+        who,
+        value: {
           definition: def,
-        };
-      }),
-      hands: [],
-      dice: [],
-      combatStatuses: [],
-      summons: [],
-      supports: [],
-      declaredEnd: false,
-      legendUsed: false,
-      skipNextTurn: false,
-    };
+        },
+        target: "piles",
+      });
+    }
   }
 
   constructor(
     private readonly config: GameConfig,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig],
   ) {
-    this._random = randomIter({
-      seed: this.config.randomSeed,
-      normalized: true,
-    }) as Iterator<number, number>;
+    const initRandomState = minstd.factory({
+      seed: config.randomSeed,
+    }).state;
     this.state = {
       config,
+      iterators: {
+        random: initRandomState,
+        id: INITIAL_ID,
+      },
       phase: "initHands",
       currentTurn: 0,
       roundNumber: 1,
       skillLog: [],
       mutationLog: [],
       winner: null,
-      players: [
-        this.initPlayerState(playerConfigs[0]),
-        this.initPlayerState(playerConfigs[1]),
-      ],
+      players: [INITIAL_PLAYER_STATE, INITIAL_PLAYER_STATE],
     };
-  }
-
-  async switchCards(oldState: GameState, who: 0 | 1): Promise<GameState> {
-    // TODO
-    return oldState;
-  }
-  async reroll(oldState: GameState, who: 0 | 1, times: number): Promise<GameState> {
-    // TODO
-    return oldState;
-  }
-  async useSkill(
-    oldState: GameState,
-    who: 0 | 1,
-    skillId: number,
-  ): Promise<GameState> {
-    // TODO
-    return oldState;
+    this.initPlayerCards(0);
+    this.initPlayerCards(1);
   }
 }
 

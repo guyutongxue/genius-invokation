@@ -11,6 +11,7 @@
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
-    "immer": "^10.0.3"
+    "immer": "^10.0.3",
+    "@stdlib/random-base-minstd": "^0.1.0"
   }
 }
