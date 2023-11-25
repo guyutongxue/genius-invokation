@@ -2,7 +2,8 @@ import minstd from "@stdlib/random-base-minstd";
 
 import { GameConfig, GameState, PlayerState } from "./base/state";
 import { getCardDefinition, getCharacterDefinition } from "./registry";
-import { applyMutation } from "./base/mutation";
+import { Mutation, applyMutation } from "./base/mutation";
+import { GameIO } from "./io";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -36,16 +37,20 @@ const INITIAL_PLAYER_STATE: PlayerState = {
 };
 
 class Game {
-  private state: GameState;
+  private _state: GameState;
+  get state() {
+    return this._state;
+  }
 
   constructor(
     private readonly config: GameConfig,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig],
+    private readonly io: GameIO,
   ) {
     const initRandomState = minstd.factory({
       seed: config.randomSeed,
     }).state;
-    this.state = {
+    this._state = {
       config,
       iterators: {
         random: initRandomState,
@@ -63,11 +68,15 @@ class Game {
     this.initPlayerCards(1);
   }
 
+  private mutate(mutation: Mutation) {
+    this._state = applyMutation(this._state, mutation);
+  }
+
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
       const def = getCharacterDefinition(ch);
-      this.state = applyMutation(this.state, {
+      this.mutate({
         type: "createCharacter",
         who,
         value: {
@@ -80,7 +89,7 @@ class Game {
     }
     for (const card of config.cards) {
       const def = getCardDefinition(card);
-      this.state = applyMutation(this.state, {
+      this.mutate({
         type: "createCard",
         who,
         value: {
@@ -91,5 +100,33 @@ class Game {
     }
   }
 
+  async start() {
+    await this.io.pause(this._state);
+  }
 
+}
+
+export interface StartOption {
+  gameConfig?: GameConfig;
+  playerConfigs: [PlayerConfig, PlayerConfig];
+  io: GameIO;
+}
+
+export async function startGame(opt: StartOption): Promise<0 | 1 | null> {
+  const game = new Game(
+    opt.gameConfig ?? {
+      initialDice: 8,
+      initialHands: 5,
+      maxDice: 16,
+      maxHands: 10,
+      maxRounds: 15,
+      maxSummons: 4,
+      maxSupports: 4,
+      randomSeed: Math.random(),
+    },
+    opt.playerConfigs,
+    opt.io,
+  );
+  await game.start();
+  return game.state.winner;
 }
