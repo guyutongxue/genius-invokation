@@ -2,7 +2,7 @@ import { PhaseType, DiceType } from "@gi-tcg/typings";
 
 import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariables } from "./character";
-import { EntityDefinition, EntityVariables } from "./entity";
+import { EntityArea, EntityDefinition, EntityVariables } from "./entity";
 import { Mutation } from "./mutation";
 import { SkillDefinition } from "./skill";
 
@@ -18,14 +18,21 @@ export interface GameConfig {
 }
 
 export interface IteratorState {
-  readonly random: Int32Array,
-  readonly id: number,
+  readonly random: Int32Array;
+  readonly id: number;
 }
 
-// export interface PlayerConfig {
-//   noShuffle: boolean;
-//   alwaysOmni: boolean;
-// }
+export interface SkillLogEntry {
+  readonly roundNumber: number;
+  readonly caller: CharacterState | EntityState;
+  readonly callerArea: EntityArea;
+  readonly skill: SkillDefinition;
+}
+
+export interface MutationLogEntry {
+  readonly roundNumber: number;
+  readonly mutation: Mutation;
+}
 
 export interface GameState {
   readonly config: GameConfig;
@@ -35,8 +42,8 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly skillLog: readonly SkillDefinition[];
-  readonly mutationLog: readonly Mutation[];
+  readonly skillLog: readonly SkillLogEntry[];
+  readonly mutationLog: readonly MutationLogEntry[];
 }
 
 export interface PlayerState {
@@ -49,8 +56,8 @@ export interface PlayerState {
   readonly summons: readonly EntityState[];
   readonly dice: readonly DiceType[];
   readonly declaredEnd: boolean;
-  // readonly hasDefeated: boolean;
-  // readonly canPlunging: boolean;
+  readonly hasDefeated: boolean;
+  readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
 }

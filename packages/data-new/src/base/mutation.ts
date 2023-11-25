@@ -2,9 +2,22 @@ import { Draft, produce } from "immer";
 
 import { DiceType, PhaseType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
-import { CardState, CharacterState, EntityState, GameState } from "./state";
-import { disposeEntity, getEntityById, nextRandom } from "../util";
+import {
+  CardState,
+  CharacterState,
+  EntityState,
+  GameState,
+  PlayerState,
+  SkillLogEntry,
+} from "./state";
+import {
+  disposeEntity,
+  getEntityArea,
+  getEntityById,
+  nextRandom,
+} from "../util";
 import { EntityArea } from "./entity";
+import { SkillDefinition } from "./skill";
 
 export interface StepRandomM {
   readonly type: "stepRandom";
@@ -31,7 +44,8 @@ export interface SetWinnerM {
 
 export interface PushSkillM {
   readonly type: "pushSkill";
-  // TODO
+  readonly caller: number;
+  readonly skill: SkillDefinition;
 }
 
 export interface ExtractPileToHandM {
@@ -89,10 +103,14 @@ export interface ResetDiceM {
   readonly value: readonly DiceType[];
 }
 
+export type PlayerFlag = {
+  [P in keyof PlayerState]: PlayerState[P] extends boolean ? P : never;
+}[keyof PlayerState];
+
 export interface SetPlayerFlagM {
   readonly type: "setPlayerFlag";
   readonly who: 0 | 1;
-  readonly flagName: "declaredEnd" | "legendUsed" | "skipNextTurn";
+  readonly flagName: PlayerFlag;
   readonly value: boolean;
 }
 
@@ -116,7 +134,10 @@ export type Mutation =
 
 export function applyMutation(state: GameState, m: Mutation): GameState {
   state = produce(state, (draft) => {
-    draft.mutationLog.push(m as Draft<Mutation>);
+    draft.mutationLog.push({
+      roundNumber: state.roundNumber,
+      mutation: m as Draft<Mutation>,
+    });
   });
   switch (m.type) {
     case "stepRandom": {
@@ -145,8 +166,17 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
       });
     }
     case "pushSkill": {
-      // TODO
-      return state;
+      const caller = getEntityById(state, m.caller, true);
+      const area = getEntityArea(state, m.caller);
+      const entry: SkillLogEntry = {
+        roundNumber: state.roundNumber,
+        caller,
+        callerArea: area,
+        skill: m.skill,
+      };
+      return produce(state, (draft) => {
+        draft.skillLog.push(entry as Draft<SkillLogEntry>);
+      });
     }
     case "extractPileToHand": {
       return produce(state, (draft) => {
@@ -184,8 +214,8 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
       return produce(state, (draft) => {
         const newState: CardState = {
           id: draft.iterators.id--,
-          ...m.value
-        }
+          ...m.value,
+        };
         draft.players[m.who][m.target].push(newState as Draft<CardState>);
       });
     }
