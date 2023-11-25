@@ -1,4 +1,3 @@
-// @ts-check
 import { fileURLToPath } from "node:url";
 import * as path from "node:path";
 import * as TJS from "typescript-json-schema";
@@ -25,12 +24,11 @@ const generator = TJS.buildGenerator(program, {
 const notifySchema = generator?.getSchemaForSymbol("NotificationMessage");
 await writeFile(
   path.join(basePath, "notification.json"),
-  JSON.stringify(notifySchema)
+  JSON.stringify(notifySchema),
 );
 
 const rpcMethods = ["rerollDice", "switchHands", "chooseActive", "action"];
-/** @type {Record<string, { request: any, response: any}>} */
-const rpcSchemas = {};
+const rpcSchemas: Record<string, { request: any; response: any }> = {};
 for (const m of rpcMethods) {
   const reqType = pascalCase(m + "Request");
   const resType = pascalCase(m + "Response");
@@ -39,7 +37,4 @@ for (const m of rpcMethods) {
     response: generator?.getSchemaForSymbol(resType),
   };
 }
-await writeFile(
-  path.join(basePath, "rpc.json"),
-  JSON.stringify(rpcSchemas)
-);
+await writeFile(path.join(basePath, "rpc.json"), JSON.stringify(rpcSchemas));
