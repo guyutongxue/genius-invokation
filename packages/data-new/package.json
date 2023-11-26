@@ -13,5 +13,8 @@
     "@gi-tcg/utils": "workspace:*",
     "immer": "^10.0.3",
     "@stdlib/random-base-minstd": "^0.1.0"
+  },
+  "devDependencies": {
+    "case-anything": "^2.1.13"
   }
 }

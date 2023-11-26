@@ -4,7 +4,7 @@ import { GameConfig, GameState, PlayerState } from "./base/state";
 import { getCardDefinition, getCharacterDefinition } from "./registry";
 import { Mutation, applyMutation } from "./base/mutation";
 import { GameIO, exposeMutation, exposeState } from "./io";
-import { Event, ExposedMutation } from "@gi-tcg/typings";
+import { Event } from "@gi-tcg/typings";
 
 export interface PlayerConfig {
   readonly cards: number[];
