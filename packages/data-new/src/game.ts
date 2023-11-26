@@ -3,7 +3,8 @@ import minstd from "@stdlib/random-base-minstd";
 import { GameConfig, GameState, PlayerState } from "./base/state";
 import { getCardDefinition, getCharacterDefinition } from "./registry";
 import { Mutation, applyMutation } from "./base/mutation";
-import { GameIO } from "./io";
+import { GameIO, exposeMutation, exposeState } from "./io";
+import { Event, ExposedMutation } from "@gi-tcg/typings";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -101,10 +102,25 @@ class Game {
     }
   }
 
-  async start() {
-    await this.io.pause(this._state);
+  private notify(events: Event[]) {
+    for (const i of [0, 1] as const) {
+      const player = this.io.players[i];
+      player.notify({
+        events,
+        mutations: this.state.mutationLog
+          .flatMap((m) => {
+            const ex = exposeMutation(i, m.mutation);
+            return ex ? [ex] : [];
+          }),
+        newState: exposeState(i, this.state),
+      });
+    }
   }
 
+  async start() {
+    await this.io.pause(this._state);
+    this.notify([]);
+  }
 }
 
 export interface StartOption {
@@ -123,7 +139,7 @@ export async function startGame(opt: StartOption): Promise<0 | 1 | null> {
       maxRounds: 15,
       maxSummons: 4,
       maxSupports: 4,
-      randomSeed: Math.random(),
+      randomSeed: Math.floor(Math.random() * 21474836) + 1,
     },
     opt.playerConfigs,
     opt.io,

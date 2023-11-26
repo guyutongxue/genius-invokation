@@ -72,7 +72,7 @@ export interface ElementalReactionEvent {
 export interface UseSkillEvent {
   type: "useSkill";
   skill: number;
-  opp: boolean;
+  who: 0 | 1;
 }
 export interface OtherEvent {
   type: "oppChoosingActive" | "oppAction"

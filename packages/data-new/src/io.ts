@@ -4,6 +4,7 @@ import {
   EntityData,
   Event,
   ExposedMutation,
+  NotificationMessage,
   PlayerData,
   RpcMethod,
   RpcRequest,
@@ -15,7 +16,7 @@ import { Mutation } from "./base/mutation";
 
 export interface PlayerIO {
   giveUp: boolean;
-  notify: (event: Event) => void;
+  notify: (notification: NotificationMessage) => void;
   rpc: <M extends RpcMethod>(
     method: M,
     data: RpcRequest[M],
