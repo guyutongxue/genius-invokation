@@ -18,7 +18,8 @@ export type SkillDescription<Ctx> = (
   ctx: Ctx,
 ) => SkillResult;
 
-export type SkillType = "normal" | "elemental" | "burst" | "prepared" | "card";
+export type CommonSkillType = "normal" | "elemental" | "burst";
+export type SkillType = CommonSkillType | "card";
 
 export interface InitiativeSkillDefinition<Ctx = void>
   extends SkillDefinitionBase<Ctx> {

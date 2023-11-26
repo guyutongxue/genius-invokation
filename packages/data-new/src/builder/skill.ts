@@ -1,6 +1,6 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { registerSkill } from "../registry";
-import { SkillDescription, SkillType } from "../base/skill";
+import { CommonSkillType, SkillDescription, SkillType } from "../base/skill";
 import { GameState } from "../base/state";
 import { SkillContext, ExtendedSkillContext } from "./context";
 import { TargetQueryArg } from "./query";
@@ -179,6 +179,11 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   protected _cost: DiceType[] = [];
   constructor(private readonly skillId: number) {
     super(skillId);
+  }
+
+  type(type: CommonSkillType) {
+    this._skillType = type;
+    return this;
   }
 
   done(): SkillHandle {

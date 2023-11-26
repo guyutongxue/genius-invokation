@@ -157,7 +157,7 @@ export class QueryBuilder<
       for (let i = 0; i < player.characters.length; i++) {
         const idx = (activeIdx + i) % player.characters.length;
         const ch = player.characters[idx];
-        if (!this._includeDefeated && ch.defeated) {
+        if (!this._includeDefeated && !ch.variables.alive) {
           continue;
         }
         result.push(new CharacterContext(this.skillContext, ch.id));

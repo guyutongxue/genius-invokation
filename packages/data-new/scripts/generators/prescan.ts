@@ -19,7 +19,7 @@ function read(name: keyof typeof CATEGORY_KEYS): any[] {
     const mixed = {
       ...value,
       zhName: zh.name,
-      zhDescription: zh.description
+      zhDescription: zh.description ?? zh.storytext
     };
     if ("skills" in value) {
       const enSkills = [ ...value.skills ];

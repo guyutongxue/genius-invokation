@@ -110,19 +110,19 @@ export class SkillContext<
     if (targets.length !== 1) {
       throw new Error("Expected exactly one target");
     }
-    const { who, id: targetId } = targets[0];
+    const switchToTarget = targets[0] as CharacterContext<false>;
     const from = new QueryBuilder(this).character().active().one();
     this.emitEvent("onSwitchActive", {
       type: "switchActive",
-      who,
+      who: switchToTarget.who,
       from: from.state,
       via: this.skillId,
-      to: targets[0].state,
+      to: switchToTarget.state,
     });
     this.mutate({
       type: "switchActive",
-      who,
-      targetId,
+      who: switchToTarget.who,
+      value: switchToTarget.state,
     });
   }
 
@@ -137,7 +137,7 @@ export class SkillContext<
       );
       this.mutate({
         type: "modifyEntityVar",
-        id: t.id,
+        oldState: targetState,
         varName: "energy",
         value: targetState.variables.energy + finalValue,
       });
@@ -161,7 +161,7 @@ export class SkillContext<
       });
       this.mutate({
         type: "modifyEntityVar",
-        id: t.id,
+        oldState: targetState,
         varName: "health",
         value: targetState.variables.health + finalValue,
       });
@@ -187,7 +187,7 @@ export class SkillContext<
       });
       this.mutate({
         type: "modifyEntityVar",
-        id: t.id,
+        oldState: targetState,
         varName: "health",
         value: finalHealth,
       });
@@ -208,7 +208,8 @@ export class SkillContext<
   ) {
     const id2 = id as number;
     const def = getEntityDefinition(id2);
-    const initState: Omit<EntityState, "id"> = {
+    const initState: EntityState = {
+      id: 0,
       definition: def,
       variables: def.constants,
     };
@@ -258,7 +259,7 @@ export class SkillContext<
     this.emitEvent("onDispose", state);
     this.mutate({
       type: "disposeEntity",
-      id,
+      oldState: state,
     });
   }
 
@@ -270,7 +271,7 @@ export class SkillContext<
   }
 
   switchCards() {
-    this.emitEvent("requestSwitchCards")
+    this.emitEvent("requestSwitchCards");
   }
   reroll(times: number) {
     this.emitEvent("requestReroll", times);
@@ -297,7 +298,7 @@ export class SkillContext<
   random<T>(...items: T[]): T {
     const mutation: Mutation = {
       type: "stepRandom",
-      value: -1
+      value: -1,
     };
     this.mutate(mutation);
     return items[Math.floor(mutation.value * items.length)];
