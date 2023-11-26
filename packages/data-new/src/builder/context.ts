@@ -112,17 +112,18 @@ export class SkillContext<
     }
     const switchToTarget = targets[0] as CharacterContext<false>;
     const from = new QueryBuilder(this).character().active().one();
+    this.mutate({
+      type: "switchActive",
+      who: switchToTarget.who,
+      value: switchToTarget.state,
+    });
     this.emitEvent("onSwitchActive", {
       type: "switchActive",
       who: switchToTarget.who,
       from: from.state,
       via: this.skillId,
       to: switchToTarget.state,
-    });
-    this.mutate({
-      type: "switchActive",
-      who: switchToTarget.who,
-      value: switchToTarget.state,
+      state: this.state,
     });
   }
 
@@ -152,18 +153,19 @@ export class SkillContext<
         targetState.definition.constants.maxHealth -
         targetState.variables.health;
       const finalValue = Math.min(value, targetInjury);
+      this.mutate({
+        type: "modifyEntityVar",
+        oldState: targetState,
+        varName: "health",
+        value: targetState.variables.health + finalValue,
+      });
       this.emitEvent("onHeal", {
         expectedValue: value,
         finalValue,
         source: this.callerState,
         via: this.skillId,
         target: targetState,
-      });
-      this.mutate({
-        type: "modifyEntityVar",
-        oldState: targetState,
-        varName: "health",
-        value: targetState.variables.health + finalValue,
+        state: this.state,
       });
     }
   }
@@ -184,6 +186,7 @@ export class SkillContext<
         source: this.callerState,
         via: this.skillId,
         target: targetState,
+        state: this.state,
       });
       this.mutate({
         type: "modifyEntityVar",
@@ -240,11 +243,14 @@ export class SkillContext<
       }
     }
     const newState = getEntityById(this._state, id2);
-    this.emitEvent("onEnter", newState);
     this.mutate({
       type: "createEntity",
       where: area,
       value: initState,
+    });
+    this.emitEvent("onEnter", {
+      entity: newState,
+      state: this.state,
     });
   }
   summon(id: SummonHandle) {
@@ -256,10 +262,13 @@ export class SkillContext<
 
   disposeEntity(id: number) {
     const state = getEntityById(this._state, id);
-    this.emitEvent("onDispose", state);
     this.mutate({
       type: "disposeEntity",
       oldState: state,
+    });
+    this.emitEvent("onDispose", {
+      entity: state,
+      state: this.state,
     });
   }
 

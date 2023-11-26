@@ -136,11 +136,15 @@ type AsyncEventMap = {
   onHeal: HealInfo;
   onElementalReaction: ReactionInfo;
 
-  onEnter: CharacterState | EntityState;
-  onDispose: EntityState;
-  onDefeated: CharacterState;
-  onRevive: CharacterState;
+  onEnter: { entity: CharacterState | EntityState };
+  onDispose: { entity: EntityState };
+  onDefeated: { character: CharacterState };
+  onRevive: { character: CharacterState };
 };
+
+// state 为引发事件后的现场状态
+type SyncEventArg<E extends keyof SyncEventMap> = SyncEventMap[E] & { state: GameState };
+type AsyncEventArg<E extends keyof AsyncEventMap> = AsyncEventMap[E] & { state: GameState };
 
 type InSkillEvent =
   | "onSwitchActive"
@@ -152,7 +156,7 @@ type InSkillEvent =
   | "onDefeated"
   | "onRevive";
 type InSkillEventPayload = {
-  [E in InSkillEvent]: readonly [eventName: E, eventArg: AsyncEventMap[E]];
+  [E in InSkillEvent]: readonly [eventName: E, eventArg: AsyncEventArg<E>];
 }[InSkillEvent];
 
 export type AsyncRequest =
@@ -163,11 +167,11 @@ export type AsyncRequest =
 export type DeferredActions = InSkillEventPayload | AsyncRequest;
 
 export type TriggeredSkillDefinition = ({
-  [E in keyof SyncEventMap]: SkillDefinitionBase<SyncEventMap[E]> & {
+  [E in keyof SyncEventMap]: SkillDefinitionBase<SyncEventArg<E>> & {
     triggerOn: E;
   };
 } & {
-  [E in keyof AsyncEventMap]: SkillDefinitionBase<AsyncEventMap[E]> & {
+  [E in keyof AsyncEventMap]: SkillDefinitionBase<AsyncEventArg<E>> & {
     triggerOn: E;
   };
 })[keyof SyncEventMap | keyof AsyncEventMap];

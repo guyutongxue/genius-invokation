@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*.ts", "data/**/*.ts", "temp/**/*.ts"],
+  "include": ["src/**/*.ts", "data/**/*.ts"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
