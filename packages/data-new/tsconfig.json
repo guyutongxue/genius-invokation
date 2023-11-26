@@ -13,5 +13,6 @@
     "paths": {
       "@gi-tcg": ["./src/builder/index.ts"]
     },
-  }
+  },
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -15,6 +15,7 @@
     "@stdlib/random-base-minstd": "^0.1.0"
   },
   "devDependencies": {
+    "typescript": "^5.3.2",
     "case-anything": "^2.1.13"
   }
 }
