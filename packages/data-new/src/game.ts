@@ -80,10 +80,10 @@ class Game {
         type: "createCharacter",
         who,
         value: {
+          id: 0,
           definition: def,
           variables: def.constants,
           entities: [],
-          defeated: false,
         },
       });
     }
@@ -93,6 +93,7 @@ class Game {
         type: "createCard",
         who,
         value: {
+          id: 0,
           definition: def,
         },
         target: "piles",

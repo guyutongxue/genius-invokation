@@ -45,3 +45,4 @@ export * from "./api/notification";
 export * from "./api/request";
 export * from "./api/response";
 export * from "./api/user";
+export * from "./api/mutation";

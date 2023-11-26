@@ -42,6 +42,7 @@ export interface CharacterVariables {
   readonly health: number;
   readonly energy: number;
   readonly aura: Aura;
+  readonly alive: 0 | 1;
   readonly [key: string]: number;
 };
 

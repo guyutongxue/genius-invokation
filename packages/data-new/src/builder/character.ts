@@ -49,6 +49,7 @@ class CharacterBuilder {
       constants: {
         health: this._maxHealth,
         energy: 0,
+        alive: 1,
         aura: Aura.None,
         maxHealth: this._maxHealth,
         maxEnergy: this._maxEnergy,

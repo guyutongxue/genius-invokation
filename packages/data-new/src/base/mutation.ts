@@ -19,6 +19,8 @@ import {
 import { EntityArea } from "./entity";
 import { SkillDefinition } from "./skill";
 
+type Writable<T> = { -readonly [P in keyof T]: T[P] };
+
 export interface StepRandomM {
   readonly type: "stepRandom";
   value: number; // output
@@ -48,51 +50,53 @@ export interface PushSkillM {
   readonly skill: SkillDefinition;
 }
 
-export interface ExtractPileToHandM {
-  readonly type: "extractPileToHand";
+export interface TransferCardM {
+  readonly type: "transferCard";
+  readonly path: "pilesToHands" | "handsToPiles";
   readonly who: 0 | 1;
-  readonly cardId: number;
+  readonly value: CardState;
 }
 
 export interface SwitchActiveM {
   readonly type: "switchActive";
   readonly who: 0 | 1;
-  readonly targetId: number;
+  readonly value: CharacterState;
 }
 
 export interface DisposeCardM {
   readonly type: "disposeCard";
   readonly who: 0 | 1;
-  readonly cardId: number;
+  readonly used: boolean;
+  readonly oldState: CardState;
 }
 
 export interface CreateCardM {
   readonly type: "createCard";
   readonly who: 0 | 1;
-  readonly value: Omit<CardState, "id">;
+  readonly value: Writable<CardState>;
   readonly target: "hands" | "piles";
 }
 
 export interface CreateCharacterM {
   readonly type: "createCharacter";
   readonly who: 0 | 1;
-  readonly value: Omit<CharacterState, "id">;
+  readonly value: Writable<CharacterState>;
 }
 
 export interface CreateEntityM {
   readonly type: "createEntity";
   readonly where: EntityArea;
-  readonly value: Omit<EntityState, "id">;
+  readonly value: Writable<EntityState>;
 }
 
 export interface DisposeEntityM {
   readonly type: "disposeEntity";
-  readonly id: number;
+  readonly oldState: EntityState | CharacterState;
 }
 
 export interface ModifyEntityVarM {
   readonly type: "modifyEntityVar";
-  readonly id: number;
+  readonly oldState: EntityState | CharacterState;
   readonly varName: string;
   readonly value: number;
 }
@@ -121,7 +125,7 @@ export type Mutation =
   | SwitchTurnM
   | SetWinnerM
   | PushSkillM
-  | ExtractPileToHandM
+  | TransferCardM
   | SwitchActiveM
   | DisposeCardM
   | CreateCardM
@@ -132,13 +136,7 @@ export type Mutation =
   | ResetDiceM
   | SetPlayerFlagM;
 
-export function applyMutation(state: GameState, m: Mutation): GameState {
-  state = produce(state, (draft) => {
-    draft.mutationLog.push({
-      roundNumber: state.roundNumber,
-      mutation: m as Draft<Mutation>,
-    });
-  });
+function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
     case "stepRandom": {
       return produce(state, (draft) => {
@@ -178,16 +176,18 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
         draft.skillLog.push(entry as Draft<SkillLogEntry>);
       });
     }
-    case "extractPileToHand": {
+    case "transferCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
-        const cardIdx = player.piles.findIndex((c) => c.id === m.cardId);
+        const src = m.path === "pilesToHands" ? player.piles : player.hands;
+        const dst = m.path === "pilesToHands" ? player.hands : player.piles;
+        const cardIdx = src.findIndex((c) => c.id === m.value.id);
         if (cardIdx === -1) {
-          throw new Error(`Card ${m.cardId} not found in pile`);
+          throw new Error(`Card ${m.value.id} not found in source`);
         }
-        const card = player.piles[cardIdx];
-        player.piles.splice(cardIdx, 1);
-        player.hands.push(card);
+        const card = src[cardIdx];
+        src.splice(cardIdx, 1);
+        dst.push(card);
       });
     }
     case "switchActive": {
@@ -197,35 +197,29 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
         // if (characterIdx === -1) {
         //   throw new Error(`Character ${targetId} not found in characters`);
         // }
-        player.activeCharacterId = m.targetId;
+        player.activeCharacterId = m.value.id;
       });
     }
     case "disposeCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
-        const cardIdx = player.hands.findIndex((c) => c.id === m.cardId);
+        const cardIdx = player.hands.findIndex((c) => c.id === m.oldState.id);
         if (cardIdx === -1) {
-          throw new Error(`Card ${m.cardId} not found in hands`);
+          throw new Error(`Card ${m.oldState.id} not found in hands`);
         }
         player.hands.splice(cardIdx, 1);
       });
     }
     case "createCard": {
       return produce(state, (draft) => {
-        const newState: CardState = {
-          id: draft.iterators.id--,
-          ...m.value,
-        };
-        draft.players[m.who][m.target].push(newState as Draft<CardState>);
+        m.value.id = draft.iterators.id--;
+        draft.players[m.who][m.target].push(m.value as Draft<CardState>);
       });
     }
     case "createCharacter": {
       return produce(state, (draft) => {
-        const newState: CharacterState = {
-          id: draft.iterators.id--,
-          ...m.value,
-        };
-        draft.players[m.who].characters.push(newState as Draft<CharacterState>);
+        m.value.id = draft.iterators.id--;
+        draft.players[m.who].characters.push(m.value as Draft<CharacterState>);
       });
     }
     case "createEntity": {
@@ -238,29 +232,25 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
           if (!character) {
             throw new Error(`Character ${where.characterId} not found`);
           }
-          character.entities.push({
-            id: draft.iterators.id--,
-            ...value,
-          });
+          value.id = draft.iterators.id--;
+          character.entities.push(value as Draft<EntityState>);
         });
       } else {
         return produce(state, (draft) => {
           const area = draft.players[where.who][where.type];
-          area.push({
-            id: draft.iterators.id--,
-            ...value,
-          });
+          value.id = draft.iterators.id--;
+          area.push(value as Draft<EntityState>);
         });
       }
     }
     case "disposeEntity": {
       return produce(state, (draft) => {
-        disposeEntity(draft, m.id);
+        disposeEntity(draft, m.oldState.id);
       });
     }
     case "modifyEntityVar": {
       return produce(state, (draft) => {
-        const entity = getEntityById(draft, m.id, true) as Draft<
+        const entity = getEntityById(draft, m.oldState.id, true) as Draft<
           CharacterState | EntityState
         >;
         entity.variables[m.varName] = m.value;
@@ -281,4 +271,13 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
       throw new Error(`Unknown mutation type: ${JSON.stringify(m)}`);
     }
   }
+}
+
+export function applyMutation(state: GameState, m: Mutation): GameState {
+  return produce(doMutation(state, m), (draft) => {
+    draft.mutationLog.push({
+      roundNumber: state.roundNumber,
+      mutation: m as Draft<Mutation>,
+    });
+  });
 }

@@ -1,3 +1,4 @@
+import { ExposedMutation } from "..";
 import { DiceType, DamageType, Aura, Reaction } from "../enums";
 
 export type PhaseType =
@@ -21,7 +22,7 @@ export interface CharacterData {
 export interface EntityData {
   id: number;
   definitionId: number;
-  value?: number;
+  variables: Record<string, number>;
 }
 
 export interface CardData {
@@ -30,14 +31,15 @@ export interface CardData {
 }
 
 export interface PlayerData {
-  pileNumber: number;
   activeCharacterId: number | null;
   characters: CharacterData[];
+  piles: CardData[];
   hands: CardData[];
   dice: DiceType[];
   combatStatuses: EntityData[];
   supports: EntityData[];
   summons: EntityData[];
+  declaredEnd: boolean;
   legendUsed: boolean;
 }
 
@@ -45,6 +47,7 @@ export interface StateData {
   phase: PhaseType;
   roundNumber: number;
   currentTurn: number;
+  winner: 0 | 1 | null;
   players: [PlayerData, PlayerData];
 }
 
@@ -82,5 +85,6 @@ export type Event =
 
 export type NotificationMessage = {
   events: Event[];
-  state: StateData;
+  mutations: ExposedMutation[];
+  newState: StateData;
 };

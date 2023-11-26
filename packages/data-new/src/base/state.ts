@@ -70,7 +70,6 @@ export interface CardState {
 export interface CharacterState {
   readonly id: number;
   readonly definition: CharacterDefinition;
-  readonly defeated: boolean;
   readonly entities: readonly EntityState[];
   readonly variables: CharacterVariables;
 }
