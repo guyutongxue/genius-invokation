@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg";
  * 可用次数：3
  * 所附属角色造成的物理伤害变为火元素伤害。
  */
-const Stealth = status(123012)
+const StealthStatus = status(123012)
   // TODO
   .done();
 

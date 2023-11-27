@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg";
  * 我方角色使用技能时：此技能伤害+2；技能结算后，如果该角色生命值不多于6，则治疗该角色2点。
  * 持续回合：2
  */
-const InspirationField = combatStatus(113032)
+const InspirationField01 = combatStatus(113032)
   // TODO
   .done();
 

@@ -21,7 +21,7 @@ const HeronShield = status(112071)
  * 我方角色普通攻击后：造成1点水元素伤害。（每回合1次）
  * 持续回合：2
  */
-const PrayerOfTheCrimsonCrown = combatStatus(112073)
+const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
   // TODO
   .done();
 

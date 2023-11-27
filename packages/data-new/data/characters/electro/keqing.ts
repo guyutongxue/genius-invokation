@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg";
  * 所附属角色造成的物理伤害变为雷元素伤害，且角色造成的雷元素伤害+1。
  * 持续回合：3
  */
-const ElectroElementalInfusion = status(114034)
+const ElectroElementalInfusion01 = status(114034)
   // TODO
   .done();
 

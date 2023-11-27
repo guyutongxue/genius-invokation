@@ -18,7 +18,7 @@ const ChainsOfWardingThunder = summon(124013)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到6点生命值。
  */
-const ElectroCrystalCore = status(124015)
+const ElectroCrystalCore01 = status(124015)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const ElectroCrystalCore = status(124015)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到10点生命值。
  */
-const ElectroCrystalCore = status(124016)
+const ElectroCrystalCore02 = status(124016)
   // TODO
   .done();
 
@@ -48,7 +48,7 @@ const ElectroCrystalCore = status(124014)
  * @description
  * 本角色将在下次行动时，直接使用技能：猜拳三连击·布。
  */
-const RockpaperscissorsComboPaper = status(124012)
+const RockpaperscissorsComboPaperStatus = status(124012)
   // TODO
   .done();
 
@@ -58,7 +58,7 @@ const RockpaperscissorsComboPaper = status(124012)
  * @description
  * 本角色将在下次行动时，直接使用技能：猜拳三连击·剪刀。
  */
-const RockpaperscissorsComboScissors = status(124011)
+const RockpaperscissorsComboScissorsStatus = status(124011)
   // TODO
   .done();
 
@@ -106,7 +106,7 @@ const LightningLockdown = skill(24013)
  * @description
  * 【被动】战斗开始时，初始附属雷晶核心。
  */
-const ElectroCrystalCore = skill(24014)
+const ElectroCrystalCoreSkill = skill(24014)
   .type("passive")
   // TODO
   .done();
@@ -142,7 +142,7 @@ const RockpaperscissorsComboPaper = skill(24016)
  */
 const ElectroHypostasis = character(2401)
   .tags("electro", "monster")
-  .skills(ElectroCrystalProjection, RockpaperscissorsCombo, LightningLockdown, ElectroCrystalCore, RockpaperscissorsComboScissors, RockpaperscissorsComboPaper)
+  .skills(ElectroCrystalProjection, RockpaperscissorsCombo, LightningLockdown, ElectroCrystalCoreSkill, RockpaperscissorsComboScissors, RockpaperscissorsComboPaper)
   .done();
 
 /**

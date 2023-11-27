@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg";
  * 我方单手剑、双手剑或长柄武器角色造成的物理伤害变为冰元素伤害，普通攻击造成的伤害+1。
  * 持续回合：2
  */
-const ChonghuaFrostField = combatStatus(111042)
+const ChonghuaFrostField01 = combatStatus(111042)
   // TODO
   .done();
 

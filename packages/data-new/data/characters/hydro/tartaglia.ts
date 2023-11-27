@@ -82,7 +82,7 @@ const HavocObliteration = skill(12043)
  * 【被动】战斗开始时，初始附属远程状态。
  * 角色所附属的近战状态效果结束时，重新附属远程状态。
  */
-const TideWithholder = skill(12044)
+const TideWithholder01 = skill(12044)
   .type("passive")
   // TODO
   .done();
@@ -93,7 +93,7 @@ const TideWithholder = skill(12044)
  * @description
  * 
  */
-const RangedStance = skill(12045)
+const RangedStanceSkill = skill(12045)
   .type("passive")
   // TODO
   .done();
@@ -117,7 +117,7 @@ const TideWithholder = skill(12046)
  */
 const Tartaglia = character(1204)
   .tags("hydro", "bow", "fatui")
-  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder, RangedStance, TideWithholder)
+  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder01, RangedStanceSkill, TideWithholder)
   .done();
 
 /**

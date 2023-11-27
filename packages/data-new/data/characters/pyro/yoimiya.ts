@@ -8,7 +8,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 所附属角色使用普通攻击后：造成1点火元素伤害。
  * 可用次数：3
  */
-const NiwabiEnshou = status(113053)
+const NiwabiEnshou01 = status(113053)
   // TODO
   .done();
 

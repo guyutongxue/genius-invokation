@@ -20,7 +20,7 @@ const TalismanSpirit = summon(111073)
  * 可用次数：2
  * 我方角色通过「普通攻击」触发此效果时，不消耗可用次数。（每回合1次）
  */
-const IcyQuill = combatStatus(111072)
+const IcyQuill01 = combatStatus(111072)
   // TODO
   .done();
 

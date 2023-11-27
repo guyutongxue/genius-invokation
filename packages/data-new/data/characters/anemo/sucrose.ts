@@ -9,7 +9,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg";
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  * 此召唤物在场时：如果此牌的元素类型已转换，则使我方造成的此类元素伤害+1。
  */
-const LargeWindSpirit = summon(115012)
+const LargeWindSpirit01 = summon(115012)
   // TODO
   .done();
 

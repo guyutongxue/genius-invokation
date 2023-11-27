@@ -8,7 +8,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 角色普通攻击造成的伤害+2，造成的物理伤害变为岩元素伤害。
  * 持续回合：2
  */
-const SweepingTime = status(116022)
+const SweepingTimeStatus = status(116022)
   // TODO
   .done();
 

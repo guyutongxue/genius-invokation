@@ -18,7 +18,7 @@ const SeedOfSkandha = status(117031)
  * 我方引发元素反应时：伤害额外+1。
  * 持续回合：3
  */
-const ShrineOfMaya = combatStatus(117033)
+const ShrineOfMaya01 = combatStatus(117033)
   // TODO
   .done();
 

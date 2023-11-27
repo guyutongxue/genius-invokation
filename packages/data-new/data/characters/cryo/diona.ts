@@ -17,7 +17,7 @@ const DrunkenMist = summon(111023)
  * @description
  * 为我方出战角色提供2点护盾。
  */
-const CatclawShield = combatStatus(111022)
+const CatclawShield01 = combatStatus(111022)
   // TODO
   .done();
 

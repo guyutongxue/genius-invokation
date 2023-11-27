@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg";
  * 我方出战角色受到至少为2的伤害时：抵消1点伤害。
  * 可用次数：2
  */
-const JadeScreen = combatStatus(116011)
+const JadeScreenStatus = combatStatus(116011)
   // TODO
   .done();
 

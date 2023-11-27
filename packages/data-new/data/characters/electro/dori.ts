@@ -19,7 +19,7 @@ const AftersalesServiceRounds = summon(114101)
  * 治疗生命值不多于6的角色时，治疗量+1；使没有充能的角色获得充能时，获得量+1。
  * 可用次数：2
  */
-const Jinni = summon(114103)
+const Jinni01 = summon(114103)
   // TODO
   .done();
 

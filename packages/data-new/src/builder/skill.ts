@@ -11,6 +11,7 @@ import {
   SkillHandle,
   SummonHandle,
 } from "./type";
+import { EntityType } from "../base/entity";
 
 type EventArgOf<Ext extends object> = Ext extends { eventArg: infer T }
   ? T
@@ -121,7 +122,7 @@ export function extendSkillContext<
 
 export class TriggeredSkillBuilder<
   Ext extends object,
-  CallerType extends ExEntityType,
+  CallerType extends EntityType,
 > extends SkillBuilder<Ext, CallerType> {
   constructor(
     private readonly callerType2: CallerType,
@@ -187,11 +188,11 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     super(skillId);
   }
 
-  type(type: "passive"): TriggeredSkillBuilder<object, "character">;
+  type(type: "passive"): TriggeredSkillBuilder<object, "passiveSkill">;
   type(type: CommonSkillType): this;
   type(type: CommonSkillType | "passive"): any {
     if (type === "passive") {
-      return new TriggeredSkillBuilder("character", this.skillId);
+      return new TriggeredSkillBuilder("passiveSkill", this.skillId);
     }
     this._skillType = type;
     return this;

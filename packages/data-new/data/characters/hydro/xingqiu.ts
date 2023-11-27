@@ -18,7 +18,7 @@ const RainbowBladework = combatStatus(112022)
  * 我方出战角色受到至少为2的伤害时：抵消1点伤害。
  * 可用次数：3
  */
-const RainSword = combatStatus(112023)
+const RainSword01 = combatStatus(112023)
   // TODO
   .done();
 

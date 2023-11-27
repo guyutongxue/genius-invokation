@@ -35,6 +35,8 @@ export type HandleT<T extends ExEntityType> = T extends "character"
   ? SummonHandle
   : T extends "support"
   ? SupportHandle
+  : T extends "passiveSkill"
+  ? SkillHandle
   : never;
 
 export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"

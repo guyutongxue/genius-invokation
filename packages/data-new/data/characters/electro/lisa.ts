@@ -7,7 +7,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg";
  * 结束阶段：造成2点雷元素伤害。
  * 可用次数：2
  */
-const LightningRose = summon(114092)
+const LightningRoseSummon = summon(114092)
   // TODO
   .done();
 

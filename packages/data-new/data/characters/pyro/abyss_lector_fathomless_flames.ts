@@ -28,7 +28,7 @@ const AegisOfAbyssalFlame = status(123024)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到3点生命值。
  */
-const FieryRebirth = status(123022)
+const FieryRebirthStatus = status(123022)
   // TODO
   .done();
 

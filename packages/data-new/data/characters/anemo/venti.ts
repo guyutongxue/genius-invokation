@@ -19,7 +19,7 @@ const Stormeye = summon(115034)
  * 我方执行「切换角色」行动时：少花费1个元素骰。触发该效果后，使本回合中我方角色下次「普通攻击」少花费1个无色元素。
  * 可用次数：2
  */
-const Stormzone = combatStatus(115032)
+const Stormzone01 = combatStatus(115032)
   // TODO
   .done();
 

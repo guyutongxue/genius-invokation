@@ -9,7 +9,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg";
  * 持续回合：3
  * （同一方场上最多存在一个此状态）
  */
-const Refraction = status(122022)
+const Refraction01 = status(122022)
   // TODO
   .done();
 

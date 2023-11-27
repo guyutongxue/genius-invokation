@@ -7,7 +7,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：造成1点草元素伤害，治疗我方受伤最多的角色1点；如果可用次数仅剩余1，则此效果造成的伤害和治疗各+1。
  * 可用次数：2
  */
-const YueguiThrowingMode = summon(117042)
+const YueguiThrowingMode01 = summon(117042)
   // TODO
   .done();
 

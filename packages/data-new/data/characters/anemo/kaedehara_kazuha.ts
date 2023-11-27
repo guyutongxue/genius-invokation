@@ -157,7 +157,7 @@ const KazuhaSlash = skill(15053)
  * @description
  * 
  */
-const Chihayaburu = skill(15054)
+const ChihayaburuPassive = skill(15054)
   .type("passive")
   // TODO
   .done();

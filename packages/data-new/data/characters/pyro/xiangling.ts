@@ -18,7 +18,7 @@ const Guoba = summon(113021)
  * 我方角色使用技能后：造成2点火元素伤害。
  * 可用次数：2
  */
-const Pyronado = combatStatus(113022)
+const PyronadoStatus = combatStatus(113022)
   // TODO
   .done();
 

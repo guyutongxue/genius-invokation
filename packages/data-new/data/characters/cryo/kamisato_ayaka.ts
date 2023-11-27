@@ -18,7 +18,7 @@ const FrostflakeSekiNoTo = summon(111051)
  * 所附属角色造成的物理伤害变为冰元素伤害，且角色造成的冰元素伤害+1。
  * （持续到回合结束）
  */
-const CryoElementalInfusion = status(111053)
+const CryoElementalInfusion01 = status(111053)
   // TODO
   .done();
 

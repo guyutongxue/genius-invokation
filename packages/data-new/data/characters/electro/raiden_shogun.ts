@@ -19,7 +19,7 @@ const EyeOfStormyJudgment = summon(114071)
  * 其他我方角色使用「元素爆发」后：累积1点「愿力」。（最多累积3点）
  * 所附属角色使用奥义·梦想真说时：消耗所有「愿力」，每点「愿力」使造成的伤害+1。
  */
-const ChakraDesiderata = status(114072)
+const ChakraDesiderataStatus = status(114072)
   // TODO
   .done();
 

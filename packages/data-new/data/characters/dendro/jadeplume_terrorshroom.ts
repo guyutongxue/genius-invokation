@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg";
  * 本角色造成或受到元素伤害后：累积1层「活化激能」。（最多累积3层）
  * 结束阶段：如果「活化激能」层数已达到上限，就将其清空。同时，角色失去所有充能。
  */
-const RadicalVitality = status(127011)
+const RadicalVitalityStatus = status(127011)
   // TODO
   .done();
 

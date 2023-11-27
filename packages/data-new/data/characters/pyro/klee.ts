@@ -7,7 +7,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 所附属角色进行重击时：少花费1个火元素，并且伤害+1。
  * 可用次数：2
  */
-const ExplosiveSpark = status(113062)
+const ExplosiveSpark01 = status(113062)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const ExplosiveSpark = status(113061)
  * 所在阵营的角色使用技能后：对所在阵营的出战角色造成2点火元素伤害。
  * 可用次数：2
  */
-const SparksNSplash = combatStatus(113063)
+const SparksNSplashStatus = combatStatus(113063)
   // TODO
   .done();
 
