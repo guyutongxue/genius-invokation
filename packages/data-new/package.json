@@ -4,7 +4,7 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "build:entry": "node ./scripts/generate_imports.js",
+    "regenerate_data": "bun ./scripts/generators/index.ts",
     "check": "tsc --noEmit",
     "build": "bun build:entry"
   },

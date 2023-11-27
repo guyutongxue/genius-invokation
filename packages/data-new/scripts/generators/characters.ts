@@ -115,9 +115,9 @@ export async function generateCharacters() {
           name: sk.zhName,
           description: sk.zhDescription,
           code: `const ${pascalCase(sk.name)} = skill(${sk.id})
-    .type("${TYPE_MAP[sk.typetag]}")${getCostCode(sk.playcost)}
-    // TODO
-    .done();`,
+  .type("${TYPE_MAP[sk.typetag]}")${getCostCode(sk.playcost)}
+  // TODO
+  .done();`,
         };
       }),
     );
@@ -133,9 +133,9 @@ export async function generateCharacters() {
       name: ch.zhName,
       description: ch.zhDescription,
       code: `const ${pascalCase(ch.name)} = character(${ch.id})
-    .tags(${tagCode})
-    .skills(${skills.map((sk) => pascalCase(sk.name)).join(", ")})
-    .done();`,
+  .tags(${tagCode})
+  .skills(${skills.map((sk) => pascalCase(sk.name)).join(", ")})
+  .done();`,
     });
     items.push(...getTalentCard(ch.id, ch.name));
 
