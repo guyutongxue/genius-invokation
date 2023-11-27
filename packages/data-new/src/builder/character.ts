@@ -1,6 +1,6 @@
 import { Aura } from "@gi-tcg/typings";
 import { CharacterTag } from "../base/character";
-import { getSkillDefinition, registerCharacter } from "../registry";
+import { getSkillDefinition, getSkillDefinitionIncludePassive, registerCharacter } from "../registry";
 import {
   InitiativeSkillDefinition,
   TriggeredSkillDefinition,
@@ -22,11 +22,11 @@ class CharacterBuilder {
 
   skills(...skills: SkillHandle[]) {
     for (const sk of skills) {
-      const def = getSkillDefinition(sk);
-      if (def.triggerOn === null) {
+      const def = getSkillDefinitionIncludePassive(sk);
+      if (def.type === "skill") {
         this._initiativeSkills.push(def as InitiativeSkillDefinition);
       } else {
-        this._skills.push(def);
+        this._skills.push(...def.skills);
       }
     }
     return this;

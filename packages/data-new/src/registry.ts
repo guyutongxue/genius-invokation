@@ -48,3 +48,14 @@ export function getSkillDefinition(id: number) {
 export function getCardDefinition(id: number) {
   return getDefinition("card", allCards, id);
 }
+
+export function getSkillDefinitionIncludePassive(id: number) : SkillDefinition | EntityDefinition {
+  try {
+    return getSkillDefinition(id);
+  } catch {}
+  const def = getEntityDefinition(id);
+  if (def.type !== "passiveSkill") {
+    throw new Error(`Unknown skill id ${id}`);
+  }
+  return def;
+}
