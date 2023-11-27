@@ -2,7 +2,7 @@ import { DamageType, DiceType } from "@gi-tcg/typings";
 
 import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
-import { DeferredActions } from "../base/skill";
+import { DeferredActions, SkillInfo } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getEntityArea, getEntityById } from "../util";
 import {
@@ -121,7 +121,6 @@ export class SkillContext<
       type: "switchActive",
       who: switchToTarget.who,
       from: from.state,
-      via: this.skillId,
       to: switchToTarget.state,
       state: this.state,
     });
@@ -163,7 +162,6 @@ export class SkillContext<
         expectedValue: value,
         finalValue,
         source: this.callerState,
-        via: this.skillId,
         target: targetState,
         state: this.state,
       });
@@ -184,7 +182,6 @@ export class SkillContext<
         value,
         type,
         source: this.callerState,
-        via: this.skillId,
         target: targetState,
         state: this.state,
       });
@@ -262,13 +259,14 @@ export class SkillContext<
 
   disposeEntity(id: number) {
     const state = getEntityById(this._state, id);
+    const stateBeforeDispose = this.state;
     this.mutate({
       type: "disposeEntity",
       oldState: state,
     });
-    this.emitEvent("onDispose", {
+    this.emitEvent("onDisposing", {
       entity: state,
-      state: this.state,
+      state: stateBeforeDispose,
     });
   }
 

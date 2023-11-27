@@ -8,7 +8,9 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg";
  * 可用次数：2
  */
 const DandelionField = summon(115021)
-  // TODO
+  .on("endPhase")
+  .damage(1, DamageType.Anemo)
+  .heal(1, $ => $.active())
   .done();
 
 /**

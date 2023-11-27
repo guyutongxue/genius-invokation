@@ -1,6 +1,13 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
 import { registerSkill } from "../registry";
-import { CommonSkillType, SkillDescription, SkillType } from "../base/skill";
+import {
+  CommonSkillType,
+  SkillDescription,
+  SkillType,
+  EventNames,
+  EventArg,
+  SkillInfo,
+} from "../base/skill";
 import { GameState } from "../base/state";
 import { SkillContext, ExtendedSkillContext } from "./context";
 import { TargetQueryArg } from "./query";
@@ -11,27 +18,208 @@ import {
   SkillHandle,
   SummonHandle,
 } from "./type";
-import { EntityType } from "../base/entity";
+import { EntityArea, EntityType } from "../base/entity";
+import { EntityBuilder, UnprefixEventName } from "./entity";
+import { getEntityArea } from "../util";
 
-type EventArgOf<Ext extends object> = Ext extends { eventArg: infer T }
+type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
   ? T
   : void;
 
 type SkillOperation<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<false, Ext, CallerType>,
-  e: EventArgOf<Ext>,
+  e: EventArgOfExt<Ext>,
 ) => void;
 
 type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<true, Ext, CallerType>,
-  e: EventArgOf<Ext>,
+  e: EventArgOfExt<Ext>,
 ) => boolean;
+
+enum ListenTo {
+  Myself,
+  SameArea,
+  SamePlayer,
+  All,
+}
+
+interface RelativeArg {
+  callerId: number;
+  callerArea: EntityArea;
+  listenTo: ListenTo;
+}
+
+function checkRelative(
+  state: GameState,
+  entityIdOrWhoIntf: number | { who: 0 | 1 },
+  r: RelativeArg,
+): boolean {
+  if (typeof entityIdOrWhoIntf === "number") {
+    const entityArea = getEntityArea(state, entityIdOrWhoIntf);
+    switch (r.listenTo) {
+      case ListenTo.Myself:
+        return r.callerId === entityIdOrWhoIntf;
+      case ListenTo.SameArea:
+        if (
+          r.callerArea.type === "characters" &&
+          entityArea.type === "characters"
+        ) {
+          return r.callerArea.characterId === entityArea.characterId;
+        }
+      // passthrough
+      case ListenTo.SamePlayer:
+        return r.callerArea.who === entityArea.who;
+      case ListenTo.All:
+        return true;
+      default:
+        const _: never = r.listenTo;
+        throw new Error(`Unknown listenTo: ${_}`);
+    }
+  } else {
+    if (r.listenTo === ListenTo.All) {
+      return true;
+    } else {
+      return r.callerArea.who === entityIdOrWhoIntf.who;
+    }
+  }
+}
+
+type Descriptor<E extends EventNames> = readonly [
+  E,
+  (e: EventArg<E>, listen: RelativeArg) => boolean,
+];
+
+function defineDescriptor<E extends EventNames>(
+  name: E,
+  filter?: Descriptor<E>[1],
+): Descriptor<E> {
+  return [name, filter ?? ((e) => true)];
+}
+
+/**
+ * 检查此技能使用是否适用于通常意义上的“使用技能后”。
+ *
+ * 通常意义上的使用技能后是指：
+ * 1. 该技能为主动技能；且
+ * 2. 该技能不是准备技能触发的。
+ * 3. Note: 通过使用卡牌（天赋等）触发的技能也适用。
+ *
+ * 第 2 条检测的方法是查看 `skillInfo.requestBy`。对于准备技能，
+ * `skillInfo.requestBy` 是准备状态，其不可能包含 `fromCard` 值；
+ * 第 3 条所述的技能则包含 `fromCard`。
+ */
+function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
+  if (
+    skillInfo.definition.triggerOn === null &&
+    skillInfo.definition.skillType !== "card"
+  ) {
+    // 主动技能且并非卡牌描述
+    const requestBy = skillInfo.requestBy;
+    if (
+      requestBy &&
+      requestBy.caller.definition.type !== "character" &&
+      requestBy.caller.definition.tags.includes("preparing")
+    ) {
+      // 准备技能不触发
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 定义数据描述中的触发事件名。
+ * 
+ * 系统内部的事件名数量较少，
+ * 提供给数据描述的事件名可解释为内部事件+筛选条件。
+ * 比如 `onDamaged` 可解释为 `onDamage` 发生且伤害目标
+ * 在监听范围内。
+ */
+const detailedEventDictionary = {
+  roll: defineDescriptor("onRoll", (e, r) => {
+    return checkRelative(e.state, e.who, r);
+  }),
+  beforeUseDice: defineDescriptor("onBeforeUseDice", (e, r) => {
+    return checkRelative(e.state, e.who, r);
+  }),
+  beforeDamageType: defineDescriptor("onBeforeDamage0", (e, r) => {
+    return checkRelative(e.state, e.info.source.id, r);
+  }),
+  beforeDealDamage: defineDescriptor("onBeforeDamage1", (e, r) => {
+    return (
+      e.info.type !== DamageType.Piercing &&
+      checkRelative(e.state, e.info.source.id, r)
+    );
+  }),
+  beforeSkillDamage: defineDescriptor("onBeforeDamage1", (e, r) => {
+    return (
+      e.info.type !== DamageType.Piercing &&
+      checkRelative(e.state, e.info.source.id, r) &&
+      commonInitiativeSkillCheck(e.info.via)
+    );
+  }),
+  beforeDamaged: defineDescriptor("onBeforeDamage1", (e, r) => {
+    return (
+      e.info.type !== DamageType.Piercing &&
+      checkRelative(e.state, e.info.target.id, r)
+    );
+  }),
+  beforeDefeated: defineDescriptor("onBeforeDefeated", (e, r) => {
+    return checkRelative(e.state, e.info.target.id, r);
+  }),
+
+  battleBegin: defineDescriptor("onBattleBegin"),
+  actionPhase: defineDescriptor("onActionPhase"),
+  endPhase: defineDescriptor("onEndPhase"),
+  beforeAction: defineDescriptor("onBeforeAction", (e, r) => {
+    return checkRelative(e.state, e.who, r);
+  }),
+  action: defineDescriptor("onAction", (e, r) => {
+    return checkRelative(e.state, e.who, r);
+  }),
+  playCard: defineDescriptor("onAction", (e, r) => {
+    if (!checkRelative(e.state, e.who, r)) return false;
+    return e.type === "playCard";
+  }),
+  declareEnd: defineDescriptor("onAction", (e, r) => {
+    if (!checkRelative(e.state, e.who, r)) return false;
+    return e.type === "declareEnd";
+  }),
+  skill: defineDescriptor("onSkill", (e, r) => {
+    if (!checkRelative(e.state, e.caller.id, r)) return false;
+    return commonInitiativeSkillCheck(e);
+  }),
+  switchActive: defineDescriptor("onSwitchActive", (e, r) => {
+    return (
+      checkRelative(e.state, e.from.id, r) || checkRelative(e.state, e.to.id, r)
+    );
+  }),
+  dealDamage: defineDescriptor("onDamage", (e, r) => {
+    return checkRelative(e.state, e.source.id, r);
+  }),
+  damaged: defineDescriptor("onDamage", (e, r) => {
+    return checkRelative(e.state, e.target.id, r);
+  }),
+  healed: defineDescriptor("onHeal", (e, r) => {
+    return checkRelative(e.state, e.target.id, r);
+  }),
+  elementalReaction: defineDescriptor("onElementalReaction", (e, r) => {
+    return checkRelative(e.state, e.target.id, r);
+  }),
+  enter: defineDescriptor("onEnter", (e, r) => {
+    return e.entity.id === r.callerId;
+  }),
+  dispose: defineDescriptor("onDisposing", (e, r) => {
+    return checkRelative(e.state, e.entity.id, r);
+  }),
+} satisfies Record<string, Descriptor<any>>;
 
 class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(
-    private readonly callerType: CallerType,
-    private readonly id: number,
+    protected readonly callerType: CallerType,
+    protected readonly id: number,
   ) {}
 
   if(filter: SkillFilter<Ext, CallerType>) {
@@ -125,15 +313,20 @@ export class TriggeredSkillBuilder<
   CallerType extends EntityType,
 > extends SkillBuilder<Ext, CallerType> {
   constructor(
-    private readonly callerType2: CallerType,
-    private readonly id2: number,
+    callerType: CallerType,
+    id: number,
+    private readonly parent: EntityBuilder<Ext, CallerType>,
   ) {
-    super(callerType2, id2);
+    super(callerType, id);
+  }
+
+  on<E extends UnprefixEventName<EventNames>>(event: E) {
+    // TODO done
+    return this.parent.on(event);
   }
 
   done(): HandleT<CallerType> {
-    // TODO: FIX ME
-    return this.id2 as HandleT<CallerType>;
+    return this.parent.done();
   }
 }
 
@@ -192,7 +385,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   type(type: CommonSkillType): this;
   type(type: CommonSkillType | "passive"): any {
     if (type === "passive") {
-      return new TriggeredSkillBuilder("passiveSkill", this.skillId);
+      return new EntityBuilder("passiveSkill", this.skillId);
     }
     this._skillType = type;
     return this;

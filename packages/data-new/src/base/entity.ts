@@ -5,6 +5,7 @@ export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
   | "immuneControl" // 免疫冻结石化眩晕
   | "shield" // 护盾
+  | "preparing" // 准备技能中
   | EquipmentTag;
 
 export type EntityType = "passiveSkill" | "status" | "combatStatus" | "equipment" | "support" | "summon";

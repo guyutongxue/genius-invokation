@@ -2,11 +2,9 @@ import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
 
-type SkillId = number;
-
 interface SkillDefinitionBase<Ctx> {
   readonly type: "skill";
-  readonly id: SkillId;
+  readonly id: number;
   readonly action: SkillDescription<Ctx>;
 }
 
@@ -29,11 +27,13 @@ export interface InitiativeSkillDefinition<Ctx = void>
 }
 
 export interface RollModifier {
+  readonly who: 0 | 1;
   fixDice(...dice: DiceType[]): void;
   addRerollCount(count: number): void;
 }
 
 export interface UseDiceModifier {
+  readonly who: 0 | 1;
   readonly action: ActionInfo;
   readonly currentCost: DiceType[];
   addCost(...dice: DiceType[]): void;
@@ -49,20 +49,38 @@ export interface DamageModifier {
   decreaseDamage(value: number): void;
 }
 
+export interface DefeatedModifier {
+  readonly info: DamageInfo;
+  immune(): void;
+}
+
 type SyncEventMap = {
   onRoll: RollModifier;
   onBeforeUseDice: UseDiceModifier;
-  onEarlyBeforeDealDamage: DamageModifier;
-  onBeforeDealDamage: DamageModifier;
-  onBeforeDamaged: DamageModifier;
-  onBeforeDefeated: DamageModifier;
+  onBeforeDamage0: DamageModifier;
+  onBeforeDamage1: DamageModifier;
+  onBeforeDefeated: DefeatedModifier;
 };
+
+export interface SkillInfo {
+  readonly caller: CharacterState | EntityState;
+  /**
+   * 仅当此技能是作为卡牌描述的一部分时才有值。
+   */
+  readonly fromCard: CardState | null;
+  readonly definition: SkillDefinition;
+  /**
+   * 若此技能通过 `requestSkill` 如准备技能、天赋牌等触发，
+   * 则此字段指定编写了上述 `useSkill` 的技能的 `SkillInfo`
+   */
+  readonly requestBy: SkillInfo | null;
+}
 
 export interface DamageInfo {
   readonly type: DamageType;
   readonly value: number;
   readonly source: CharacterState | EntityState;
-  readonly via: SkillId;
+  readonly via: SkillInfo;
   readonly target: CharacterState;
 }
 
@@ -70,13 +88,13 @@ export interface HealInfo {
   readonly expectedValue: number;
   readonly finalValue: number;
   readonly source: CharacterState | EntityState;
-  readonly via: SkillId;
+  readonly via: SkillInfo;
   readonly target: CharacterState;
 }
 
 export interface ReactionInfo {
   readonly type: Reaction;
-  readonly via: SkillId;
+  readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly damage?: DamageInfo;
 }
@@ -84,9 +102,7 @@ export interface ReactionInfo {
 export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
-  readonly source: CharacterState;
-  readonly via?: SkillId;
-  readonly skill: SkillDefinition;
+  readonly skill: SkillInfo;
 }
 
 export interface PlayCardInfo {
@@ -100,7 +116,7 @@ export interface SwitchActiveInfo {
   readonly type: "switchActive";
   readonly who: 0 | 1;
   readonly from: CharacterState;
-  readonly via?: SkillId;
+  readonly via?: SkillInfo;
   readonly to: CharacterState;
 }
 
@@ -123,28 +139,33 @@ export type ActionInfo =
   | ElementalTuningInfo
   | DeclareEndInfo;
 
-type AsyncEventMap = {
-  onBattleBegin: 0;
-  onActionPhase: 0;
-  onEndPhase: 0;
+type NULL = Record<never, never>;
 
-  onBeforeAction: 0;
+type AsyncEventMap = {
+  onBattleBegin: NULL;
+  onActionPhase: NULL;
+  onEndPhase: NULL;
+
+  onBeforeAction: { who: 0 | 1 };
   onAction: ActionInfo;
 
+  onSkill: SkillInfo;
   onSwitchActive: SwitchActiveInfo;
   onDamage: DamageInfo;
   onHeal: HealInfo;
   onElementalReaction: ReactionInfo;
 
   onEnter: { entity: CharacterState | EntityState };
-  onDispose: { entity: EntityState };
+  onDisposing: { entity: EntityState };
   onDefeated: { character: CharacterState };
   onRevive: { character: CharacterState };
 };
 
+export type EventMap = SyncEventMap & AsyncEventMap;
+export type EventNames = keyof EventMap;
+
 // state 为引发事件后的现场状态
-type SyncEventArg<E extends keyof SyncEventMap> = SyncEventMap[E] & { state: GameState };
-type AsyncEventArg<E extends keyof AsyncEventMap> = AsyncEventMap[E] & { state: GameState };
+export type EventArg<E extends EventNames> = EventMap[E] & { state: GameState };
 
 type InSkillEvent =
   | "onSwitchActive"
@@ -152,29 +173,28 @@ type InSkillEvent =
   | "onHeal"
   | "onElementalReaction"
   | "onEnter"
-  | "onDispose"
+  | "onDisposing"
   | "onDefeated"
   | "onRevive";
 type InSkillEventPayload = {
-  [E in InSkillEvent]: readonly [eventName: E, eventArg: AsyncEventArg<E>];
+  [E in InSkillEvent]: readonly [
+    eventName: E,
+    eventArg: Omit<EventArg<E>, "via">,
+  ];
 }[InSkillEvent];
 
 export type AsyncRequest =
   | readonly [type: "requestSwitchCards"]
   | readonly [type: "requestReroll", times: number]
-  | readonly [type: "requestUseSkill", skillId: number]
+  | readonly [type: "requestUseSkill", skillId: number];
 
 export type DeferredActions = InSkillEventPayload | AsyncRequest;
 
-export type TriggeredSkillDefinition = ({
-  [E in keyof SyncEventMap]: SkillDefinitionBase<SyncEventArg<E>> & {
+export type TriggeredSkillDefinition = {
+  [E in EventNames]: SkillDefinitionBase<EventArg<E>> & {
     triggerOn: E;
   };
-} & {
-  [E in keyof AsyncEventMap]: SkillDefinitionBase<AsyncEventArg<E>> & {
-    triggerOn: E;
-  };
-})[keyof SyncEventMap | keyof AsyncEventMap];
+}[EventNames];
 
 export type SkillDefinition =
   | InitiativeSkillDefinition
