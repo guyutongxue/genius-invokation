@@ -1,14 +1,17 @@
 import {
+  CardTag,
   CardTarget,
   CardTargetKind,
   CardType,
   PlayCardFilter,
+  SupportTag,
+  WeaponCardTag,
 } from "../base/card";
 import { registerCard, registerSkill } from "../registry";
 import { SkillDescription } from "../base/skill";
 import { ExtendedSkillContext, SkillContext } from "./context";
 import { SkillBuilderWithCost, extendSkillContext } from "./skill";
-import { CardHandle, ExContextType, ExEntityType } from "./type";
+import { CardHandle, CharacterHandle, ExContextType, ExEntityType } from "./type";
 
 type ContextOf<
   Readonly extends boolean,
@@ -35,12 +38,49 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   CardTargetExt<false, KindTs>
 > {
   private _type: CardType = "event";
+  private _tags: CardTag[] = [];
   private _filters: PredFn<KindTs>[] = [];
+  private _talentCh: number | null = null;
   constructor(
     private readonly cardId: number,
     private readonly targetKinds: CardTargetKind,
   ) {
     super(cardId);
+  }
+
+  tags(...tags: CardTag[]) {
+    this._tags.push(...tags);
+    return this;
+  }
+  type(type: CardType) {
+    this._type = type;
+    return this;
+  }
+  equipment() {
+    this.type("equipment");
+    return this; // TODO
+  }
+  weapon(type: WeaponCardTag) {
+    return this.tags("weapon", type).equipment();
+  }
+  artifact() {
+    return this.tags("artifact").equipment();
+  }
+  support(type: SupportTag) {
+    this.type("support").tags(type);
+    return this; // TODO
+  }
+
+  legend() {
+    return this.tags("legend");
+  }
+
+  talentOf(ch: CharacterHandle, opt?: { action?: boolean }) {
+    this._talentCh = ch;
+    const action = opt?.action ?? true;
+    // TODO: deck requirements
+    // TODO: action: set tag; set active ch filter
+    return this;
   }
 
   filter(pred: PredFn<KindTs>) {

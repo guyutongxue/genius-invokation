@@ -1,30 +1,21 @@
 import { DiceType } from "@gi-tcg/typings";
-import { CharacterTag } from "./character";
-import {
-  InitiativeSkillDefinition,
-} from "./skill";
+import { CharacterTag, WeaponTag } from "./character";
+import { InitiativeSkillDefinition } from "./skill";
 import { GameState } from "./state";
 
-export type EquipmentTag =
-  | "talent"
-  | "artifact"
-  | "weapon"
-  | "bow"
-  | "sword"
-  | "catalyst"
-  | "pole"
-  | "claymore"
-  | "artifact";
+export type WeaponCardTag = Exclude<WeaponTag, "other">;
+
+export type EquipmentTag = "talent" | "artifact" | "weapon" | WeaponCardTag;
+
+export type SupportTag = "ally" | "place" | "item";
 
 export type CardTag =
   | "legend" // 秘传
   | "action" // 出战行动
   | "food"
   | "resonance" // 元素共鸣
-  | "ally"
-  | "place"
-  | "item"
-  | EquipmentTag;
+  | EquipmentTag
+  | SupportTag;
 
 export type CardType = "event" | "support" | "equipment";
 

@@ -7,6 +7,7 @@ import { TargetQueryArg } from "./query";
 import {
   AppliableDamageType,
   ExEntityType,
+  HandleT,
   SkillHandle,
   SummonHandle,
 } from "./type";
@@ -118,7 +119,7 @@ export function extendSkillContext<
   }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 
-class TriggeredSkillBuilder<
+export class TriggeredSkillBuilder<
   Ext extends object,
   CallerType extends ExEntityType,
 > extends SkillBuilder<Ext, CallerType> {
@@ -127,6 +128,11 @@ class TriggeredSkillBuilder<
     private readonly id2: number,
   ) {
     super(callerType2, id2);
+  }
+
+  done(): HandleT<CallerType> {
+    // TODO: FIX ME
+    return this.id2 as HandleT<CallerType>;
   }
 }
 
@@ -181,7 +187,12 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     super(skillId);
   }
 
-  type(type: CommonSkillType) {
+  type(type: "passive"): TriggeredSkillBuilder<object, "character">;
+  type(type: CommonSkillType): this;
+  type(type: CommonSkillType | "passive"): any {
+    if (type === "passive") {
+      return new TriggeredSkillBuilder("character", this.skillId);
+    }
     this._skillType = type;
     return this;
   }
