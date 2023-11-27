@@ -1,4 +1,9 @@
-import { CardTarget, CardTargetKind, CardType, PlayCardFilter } from "../base/card";
+import {
+  CardTarget,
+  CardTargetKind,
+  CardType,
+  PlayCardFilter,
+} from "../base/card";
 import { registerCard, registerSkill } from "../registry";
 import { SkillDescription } from "../base/skill";
 import { ExtendedSkillContext, SkillContext } from "./context";
@@ -68,7 +73,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return innerAction(state, callerId);
     };
     const filterFn: PlayCardFilter = (state, { ids }) => {
-      const ctx = new SkillContext<true, any, any>(state, this.cardId, this.cardId);
+      const ctx = new SkillContext<true, any, any>(
+        state,
+        this.cardId,
+        this.cardId,
+      );
       const ext = cardTargetToExt(ctx, ids);
       const wrappedCtx = extendSkillContext<
         true,
@@ -106,9 +115,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
 export function card<const KindTs extends CardTargetKind>(
   id: number,
-  targetKinds: KindTs,
-): CardBuilder<KindTs>;
-export function card(id: number): CardBuilder<readonly []>;
-export function card(id: number, targetKinds: CardTargetKind = []) {
+  ...targetKinds: KindTs
+): CardBuilder<KindTs> {
   return new CardBuilder(id, targetKinds);
 }

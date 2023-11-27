@@ -9,6 +9,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { BASE_PATH } from "./config";
 
 const config = new TSDocConfiguration();
 const tagDefs = [
@@ -175,11 +176,6 @@ function sameDescription(a: string, b: string) {
   const bArr = b.split("\n").map((l) => l.trim()).filter((l) => !!l);
   return sameArray(aArr, bArr);
 }
-
-const BASE_PATH = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../temp/data",
-);
 
 export async function writeSourceCode(
   filepath: string,
