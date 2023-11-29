@@ -1,6 +1,16 @@
 import { EntityType } from "../base/entity";
-import { EventArg, EventMap, EventNames } from "../base/skill";
-import { DetailedEventArg, DetailedEventNames, TriggeredSkillBuilder } from "./skill";
+import {
+  EventArg,
+  EventMap,
+  EventNames,
+  TriggeredSkillDefinition,
+} from "../base/skill";
+import { registerEntity } from "../registry";
+import {
+  DetailedEventArg,
+  DetailedEventNames,
+  TriggeredSkillBuilder,
+} from "./skill";
 import { HandleT } from "./type";
 
 type EventExt<E extends DetailedEventNames> = {
@@ -9,26 +19,36 @@ type EventExt<E extends DetailedEventNames> = {
 
 export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   private _skillNo = 0;
+  private _skillList: TriggeredSkillDefinition[] = [];
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
   }
 
   constructor(
-    private callerType: CallerType,
+    private type: CallerType,
     private id: number,
   ) {}
 
   on<E extends DetailedEventNames>(event: E) {
-    return new TriggeredSkillBuilder<EventExt<E>, CallerType>(
-      this.callerType,
+    return new TriggeredSkillBuilder<EventExt<E>, CallerType, E>(
+      this.type,
       this.generateSkillId(),
+      event,
       this,
     );
   }
 
   done(): HandleT<CallerType> {
-    // TODO
+    registerEntity({
+      id: this.id,
+      constants: {
+        duration: Infinity,
+      }, // TODO
+      skills: this._skillList,
+      tags: [], // TODO
+      type: this.type,
+    });
     return this.id as HandleT<CallerType>;
   }
 }

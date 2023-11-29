@@ -2,25 +2,25 @@ import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
 
-interface SkillDefinitionBase<Ctx> {
+interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
   readonly id: number;
-  readonly action: SkillDescription<Ctx>;
+  readonly action: SkillDescription<Arg>;
 }
 
 type SkillResult = readonly [GameState, DeferredActions[]];
 
-export type SkillDescription<Ctx> = (
+export type SkillDescription<Arg> = (
   state: GameState,
   callerId: number,
-  ctx: Ctx,
+  ctx: Arg,
 ) => SkillResult;
 
 export type CommonSkillType = "normal" | "elemental" | "burst";
 export type SkillType = CommonSkillType | "card";
 
-export interface InitiativeSkillDefinition<Ctx = void>
-  extends SkillDefinitionBase<Ctx> {
+export interface InitiativeSkillDefinition<Arg = void>
+  extends SkillDefinitionBase<Arg> {
   readonly skillType: SkillType;
   readonly costs: DiceType[];
   readonly triggerOn: null;

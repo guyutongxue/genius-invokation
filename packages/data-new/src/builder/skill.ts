@@ -7,6 +7,7 @@ import {
   EventNames,
   EventArg,
   SkillInfo,
+  TriggeredSkillDefinition,
 } from "../base/skill";
 import { GameState } from "../base/state";
 import { SkillContext, ExtendedSkillContext } from "./context";
@@ -130,7 +131,7 @@ function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
 
 /**
  * 定义数据描述中的触发事件名。
- * 
+ *
  * 系统内部的事件名数量较少，
  * 提供给数据描述的事件名可解释为内部事件+筛选条件。
  * 比如 `onDamaged` 可解释为 `onDamage` 发生且伤害目标
@@ -265,14 +266,14 @@ class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
 
   /**
    * 生成内部技能描述函数。
-   * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点或事件参数。
+   * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点。
    * 这些参数将传递给用户。
    * @param extGenerator 生成扩展点的函数
    * @returns 内部技能描述函数
    */
   protected getAction(
     extGenerator: (skillCtx: SkillContext<false, Ext, CallerType>) => Ext,
-  ): SkillDescription<any> {
+  ): SkillDescription<void> {
     return (st: GameState, callerId: number) => {
       const ctx = new SkillContext<false, Ext, CallerType>(
         st,
@@ -317,17 +318,40 @@ export function extendSkillContext<
 export class TriggeredSkillBuilder<
   Ext extends object,
   CallerType extends EntityType,
+  EN extends DetailedEventNames,
 > extends SkillBuilder<Ext, CallerType> {
   constructor(
     callerType: CallerType,
     id: number,
+    private readonly triggerOn: EN,
     private readonly parent: EntityBuilder<Ext, CallerType>,
   ) {
     super(callerType, id);
   }
 
+  private buildSkill() {
+    const eventName = detailedEventDictionary[this.triggerOn][0];
+    const action: SkillDescription<any> = (state, callerId, arg) => {
+      const innerAction = this.getAction((ctx) => {
+        return {
+          eventArgs: arg,
+        } as Ext;
+      });
+      return innerAction(state, callerId);
+    };
+    const def: TriggeredSkillDefinition = {
+      type: "skill",
+      id: this.id,
+      triggerOn: eventName,
+      action,
+    };
+    registerSkill(def);
+    // Accessing private field
+    ((this.parent as any)._skillList as TriggeredSkillDefinition[]).push(def);
+  }
+
   on<E extends DetailedEventNames>(event: E) {
-    // TODO done
+    this.buildSkill();
     return this.parent.on(event);
   }
 
@@ -387,7 +411,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     super(skillId);
   }
 
-  type(type: "passive"): TriggeredSkillBuilder<object, "passiveSkill">;
+  type(type: "passive"): EntityBuilder<object, "passiveSkill">;
   type(type: CommonSkillType): this;
   type(type: CommonSkillType | "passive"): any {
     if (type === "passive") {
