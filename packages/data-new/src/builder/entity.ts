@@ -1,15 +1,11 @@
-import { GameState } from "..";
 import { EntityType } from "../base/entity";
 import { EventArg, EventMap, EventNames } from "../base/skill";
-import { TriggeredSkillBuilder } from "./skill";
+import { DetailedEventArg, DetailedEventNames, TriggeredSkillBuilder } from "./skill";
 import { HandleT } from "./type";
 
-type EventExt<E extends EventNames> = {
-  eventArg: EventArg<E>;
+type EventExt<E extends DetailedEventNames> = {
+  eventArg: DetailedEventArg<E>;
 };
-
-export type UnprefixEventName<E> = E extends `on${infer R}` ? Uncapitalize<R> : never;
-export type UnUnprefixEventName<E extends string> = `on${Capitalize<E>}`;
 
 export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   private _skillNo = 0;
@@ -23,9 +19,8 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
     private id: number,
   ) {}
 
-  on<E extends UnprefixEventName<EventNames>>(event: E) {
-    type OriginalE = UnUnprefixEventName<E>;
-    return new TriggeredSkillBuilder<EventExt<OriginalE>, CallerType>(
+  on<E extends DetailedEventNames>(event: E) {
+    return new TriggeredSkillBuilder<EventExt<E>, CallerType>(
       this.callerType,
       this.generateSkillId(),
       this,

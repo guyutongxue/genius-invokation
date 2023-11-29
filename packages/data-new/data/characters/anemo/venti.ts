@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg";
+import { character, skill, summon, combatStatus, card, DamageType, DiceType } from "@gi-tcg";
 
 /**
  * @id 115034
@@ -20,6 +20,8 @@ const Stormeye = summon(115034)
  * 可用次数：2
  */
 const Stormzone01 = combatStatus(115032)
+  .on("beforeUseDice")
+  .do((_, e) => e.deductCost(DiceType.Void))
   // TODO
   .done();
 

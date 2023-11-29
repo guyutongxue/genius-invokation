@@ -19,7 +19,7 @@ import {
   SummonHandle,
 } from "./type";
 import { EntityArea, EntityType } from "../base/entity";
-import { EntityBuilder, UnprefixEventName } from "./entity";
+import { EntityBuilder } from "./entity";
 import { getEntityArea } from "../util";
 
 type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
@@ -215,6 +215,12 @@ const detailedEventDictionary = {
   }),
 } satisfies Record<string, Descriptor<any>>;
 
+type DetailedEventDictionary = typeof detailedEventDictionary;
+export type DetailedEventNames = keyof DetailedEventDictionary;
+export type DetailedEventArg<E extends DetailedEventNames> = EventArg<
+  DetailedEventDictionary[E][0]
+>;
+
 class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(
@@ -320,7 +326,7 @@ export class TriggeredSkillBuilder<
     super(callerType, id);
   }
 
-  on<E extends UnprefixEventName<EventNames>>(event: E) {
+  on<E extends DetailedEventNames>(event: E) {
     // TODO done
     return this.parent.on(event);
   }
