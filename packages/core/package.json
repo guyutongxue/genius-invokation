@@ -1,5 +1,5 @@
 {
-  "name": "@gi-tcg/data-new",
+  "name": "@gi-tcg/core",
   "version": "0.0.0",
   "type": "module",
   "exports": "./dist/index.js",

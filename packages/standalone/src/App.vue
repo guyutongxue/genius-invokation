@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import mitt from "mitt";
-import { startGame, PlayerIO } from "@gi-tcg/data-new";
+import { startGame, PlayerIO } from "@gi-tcg/core";
 import { StateData, RpcMethod, RpcRequest, RpcResponse } from "@gi-tcg/typings";
 import Chessboard from "./components/Chessboard.vue";
 

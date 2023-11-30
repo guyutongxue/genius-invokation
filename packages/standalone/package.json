@@ -1,5 +1,5 @@
 {
-  "name": "@gi-tcg/standalone-new",
+  "name": "@gi-tcg/standalone",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,7 @@
     "vue": "^3.3.8",
     "mitt": "^3.0.1",
     "@gi-tcg/typings": "workspace:*",
-    "@gi-tcg/data-new": "workspace:*"
+    "@gi-tcg/core": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.0",
