@@ -1,8 +1,8 @@
 # 七圣召唤模拟器（未完成/随缘）
 
-项目状态：大部分核心功能已完成。
+项目状态：大部分核心功能已完成。https://guyutongxue.site/genius-invokation/
 
-https://guyutongxue.site/genius-invokation/
+**代码正在重构和重写中**，请查看 [v4](https://github.com/Guyutongxue/genius-invokation/tree/v4) 分支。最新版本的集成 Web 前端部署在 Vercel，戳 https://genius-invokation-v4.vercel.app/
 
 ## 已完成内容
 
