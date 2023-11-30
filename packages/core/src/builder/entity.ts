@@ -5,7 +5,7 @@ import {
   EventNames,
   TriggeredSkillDefinition,
 } from "../base/skill";
-import { registerEntity } from "../registry";
+import { registerEntity } from "./registry";
 import {
   DetailedEventArg,
   DetailedEventNames,

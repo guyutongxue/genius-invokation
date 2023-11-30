@@ -1,0 +1,19 @@
+{
+  "name": "@gi-tcg/data",
+  "version": "4.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "regenerate_data": "bun ./scripts/generators/index.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gi-tcg/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.2",
+    "@microsoft/tsdoc": "^0.14.2",
+    "case-anything": "^2.1.13",
+    "@genshin-db/tcg": "^5.0.1"
+  }
+}

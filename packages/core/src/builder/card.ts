@@ -7,7 +7,7 @@ import {
   SupportTag,
   WeaponCardTag,
 } from "../base/card";
-import { registerCard, registerSkill } from "../registry";
+import { registerCard, registerSkill } from "./registry";
 import { SkillDescription } from "../base/skill";
 import { ExtendedSkillContext, SkillContext } from "./context";
 import { SkillBuilderWithCost, extendSkillContext } from "./skill";

@@ -13,9 +13,9 @@ export type EntityType = "passiveSkill" | "status" | "combatStatus" | "equipment
 export interface EntityDefinition {
   readonly type: EntityType;
   readonly id: number;
-  readonly tags: EntityTag[];
+  readonly tags: readonly EntityTag[];
   readonly constants: EntityVariables;
-  readonly skills: TriggeredSkillDefinition[];
+  readonly skills: readonly TriggeredSkillDefinition[];
 }
 
 export interface EntityVariables {

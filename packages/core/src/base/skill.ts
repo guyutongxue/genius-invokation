@@ -22,7 +22,7 @@ export type SkillType = CommonSkillType | "card";
 export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
   readonly skillType: SkillType;
-  readonly costs: DiceType[];
+  readonly costs: readonly DiceType[];
   readonly triggerOn: null;
 }
 

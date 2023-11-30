@@ -2,23 +2,17 @@
   "name": "@gi-tcg/core",
   "version": "0.0.0",
   "type": "module",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./src/index.ts",
+    "./builder": "./src/builder/index.ts"
+  },
   "scripts": {
-    "regenerate_data": "bun ./scripts/generators/index.ts",
-    "check": "tsc --noEmit",
-    "watch": "bun build src/index.ts --outdir ./dist --watch",
-    "build": "bun build src/index.ts --outdir ./dist"
+    "check": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
     "immer": "^10.0.3",
     "@stdlib/random-base-minstd": "^0.1.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.2",
-    "@microsoft/tsdoc": "^0.14.2",
-    "case-anything": "^2.1.13",
-    "@genshin-db/tcg": "^5.0.1"
   }
 }

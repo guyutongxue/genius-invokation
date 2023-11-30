@@ -19,7 +19,9 @@ import {
 import { EntityArea } from "./entity";
 import { SkillDefinition } from "./skill";
 
-type Writable<T> = { -readonly [P in keyof T]: T[P] };
+type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
+  id: number;
+};
 
 export interface ClearMutationLogM {
   readonly type: "clearMutationLog";
@@ -81,20 +83,20 @@ export interface DisposeCardM {
 export interface CreateCardM {
   readonly type: "createCard";
   readonly who: 0 | 1;
-  readonly value: Writable<CardState>;
+  readonly value: IdWritable<CardState>;
   readonly target: "hands" | "piles";
 }
 
 export interface CreateCharacterM {
   readonly type: "createCharacter";
   readonly who: 0 | 1;
-  readonly value: Writable<CharacterState>;
+  readonly value: IdWritable<CharacterState>;
 }
 
 export interface CreateEntityM {
   readonly type: "createEntity";
   readonly where: EntityArea;
-  readonly value: Writable<EntityState>;
+  readonly value: IdWritable<EntityState>;
 }
 
 export interface DisposeEntityM {

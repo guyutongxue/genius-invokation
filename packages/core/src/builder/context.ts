@@ -18,7 +18,7 @@ import {
   SkillHandle,
   SummonHandle,
 } from "./type";
-import { getEntityDefinition } from "../registry";
+import { getEntityDefinition } from "./registry";
 
 /**
  * 用于描述技能的上下文对象。

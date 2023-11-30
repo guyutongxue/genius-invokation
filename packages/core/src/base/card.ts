@@ -1,4 +1,3 @@
-import { DiceType } from "@gi-tcg/typings";
 import { CharacterTag, WeaponTag } from "./character";
 import { InitiativeSkillDefinition } from "./skill";
 import { GameState } from "./state";
@@ -36,7 +35,7 @@ export type PlayCardFilter = (state: GameState, ctx: CardTarget) => boolean;
 export interface CardDefinition {
   readonly id: number;
   readonly type: CardType;
-  readonly tags: CardTag[];
+  readonly tags: readonly CardTag[];
   readonly deckRequirement: DeckRequirement;
   readonly target: CardTargetKind;
   readonly filter: PlayCardFilter;

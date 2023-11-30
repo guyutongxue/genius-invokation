@@ -1,5 +1,5 @@
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { registerSkill } from "../registry";
+import { registerSkill } from "./registry";
 import {
   CommonSkillType,
   SkillDescription,

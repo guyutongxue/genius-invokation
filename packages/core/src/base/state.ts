@@ -7,14 +7,14 @@ import { Mutation } from "./mutation";
 import { SkillDefinition } from "./skill";
 
 export interface GameConfig {
-  randomSeed: number;
-  initialHands: number;
-  maxHands: number;
-  maxRounds: number;
-  maxSupports: number;
-  maxSummons: number;
-  initialDice: number;
-  maxDice: number;
+  readonly randomSeed: number;
+  readonly initialHands: number;
+  readonly maxHands: number;
+  readonly maxRounds: number;
+  readonly maxSupports: number;
+  readonly maxSummons: number;
+  readonly initialDice: number;
+  readonly maxDice: number;
 }
 
 export interface IteratorState {

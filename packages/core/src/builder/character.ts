@@ -1,6 +1,6 @@
 import { Aura } from "@gi-tcg/typings";
 import { CharacterTag } from "../base/character";
-import { getSkillDefinition, getSkillDefinitionIncludePassive, registerCharacter } from "../registry";
+import { getSkillDefinitionIncludePassive, registerCharacter } from "./registry";
 import {
   InitiativeSkillDefinition,
   TriggeredSkillDefinition,

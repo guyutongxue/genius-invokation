@@ -6,7 +6,6 @@ import {
   GameState,
   PlayerState,
 } from "./base/state";
-import { getCardDefinition, getCharacterDefinition } from "./registry";
 import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
 import { GameIO, exposeMutation, exposeState } from "./io";
 import {
@@ -19,6 +18,7 @@ import {
   verifyRpcResponse,
 } from "@gi-tcg/typings";
 import { getEntityById } from "./util";
+import { ReadonlyDataStore } from "./builder/registry";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -32,13 +32,6 @@ const INITIAL_PLAYER_STATE: PlayerState = {
   activeCharacterId: 0,
   characters: [],
   piles: [],
-  // config.cards.map((c) => {
-  //   const def = getCardDefinition(c);
-  //   return {
-  //     id: this.nextId(),
-  //     definition: def,
-  //   };
-  // }),
   hands: [],
   dice: [],
   combatStatuses: [],
@@ -58,6 +51,7 @@ class Game {
   }
 
   constructor(
+    private readonly data: ReadonlyDataStore,
     private readonly config: GameConfig,
     private readonly playerConfigs: [PlayerConfig, PlayerConfig],
     private readonly io: GameIO,
@@ -90,7 +84,7 @@ class Game {
   private randomDice(count: number): DiceType[] {
     const mut: StepRandomM = {
       type: "stepRandom",
-      value: 0
+      value: 0,
     };
     const result: DiceType[] = [];
     for (let i = 0; i < count; i++) {
@@ -103,7 +97,10 @@ class Game {
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
-      const def = getCharacterDefinition(ch);
+      const def = this.data.character.get(ch);
+      if (typeof def === "undefined") {
+        throw new Error(`Unknown character id ${ch}`);
+      }
       this.mutate({
         type: "createCharacter",
         who,
@@ -116,7 +113,10 @@ class Game {
       });
     }
     for (const card of config.cards) {
-      const def = getCardDefinition(card);
+      const def = this.data.card.get(card);
+      if (typeof def === "undefined") {
+        throw new Error(`Unknown card id ${card}`);
+      }
       this.mutate({
         type: "createCard",
         who,
@@ -234,12 +234,12 @@ class Game {
     this.mutate({
       type: "resetDice",
       who: 0,
-      value: r0
+      value: r0,
     });
     this.mutate({
       type: "resetDice",
       who: 1,
-      value: r1
+      value: r1,
     });
     this.mutate({
       type: "changePhase",
@@ -261,6 +261,7 @@ class Game {
 }
 
 export interface StartOption {
+  data: ReadonlyDataStore;
   gameConfig?: GameConfig;
   playerConfigs: [PlayerConfig, PlayerConfig];
   io: GameIO;
@@ -268,6 +269,7 @@ export interface StartOption {
 
 export async function startGame(opt: StartOption): Promise<0 | 1 | null> {
   const game = new Game(
+    opt.data,
     opt.gameConfig ?? {
       initialDice: 8,
       initialHands: 5,

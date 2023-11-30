@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import mitt from "mitt";
-import { startGame, PlayerIO } from "@gi-tcg/core";
-import { StateData, RpcMethod, RpcRequest, RpcResponse } from "@gi-tcg/typings";
+
+import {
+  startGame,
+  PlayerIO,
+  StateData,
+  RpcMethod,
+  RpcRequest,
+  RpcResponse,
+} from "@gi-tcg/core";
+import data from "@gi-tcg/data";
 import Chessboard from "./components/Chessboard.vue";
 
 const state0 = ref<StateData>();
@@ -41,6 +49,7 @@ const player1Io: PlayerIO = {
 
 onMounted(() => {
   startGame({
+    data,
     io: {
       pause: async () => {
         enableStep.value = true;

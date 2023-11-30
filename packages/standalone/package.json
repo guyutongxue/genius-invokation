@@ -10,7 +10,7 @@
   "dependencies": {
     "vue": "^3.3.8",
     "mitt": "^3.0.1",
-    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/data": "workspace:*",
     "@gi-tcg/core": "workspace:*"
   },
   "devDependencies": {

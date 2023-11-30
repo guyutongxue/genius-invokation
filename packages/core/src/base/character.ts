@@ -32,10 +32,10 @@ export type CharacterTag = ElementTag | WeaponTag | NationTag;
 export interface CharacterDefinition {
   readonly type: "character";
   readonly id: number;
-  readonly tags: CharacterTag[];
+  readonly tags: readonly CharacterTag[];
   readonly constants: CharacterConstants;
-  readonly initiativeSkills: InitiativeSkillDefinition[];
-  readonly skills: TriggeredSkillDefinition[];
+  readonly initiativeSkills: readonly InitiativeSkillDefinition[];
+  readonly skills: readonly TriggeredSkillDefinition[];
 }
 
 export interface CharacterVariables {
