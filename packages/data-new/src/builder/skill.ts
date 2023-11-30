@@ -356,6 +356,7 @@ export class TriggeredSkillBuilder<
   }
 
   done(): HandleT<CallerType> {
+    this.buildSkill();
     return this.parent.done();
   }
 }

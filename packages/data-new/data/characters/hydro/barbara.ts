@@ -8,7 +8,9 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg";
  * 可用次数：2
  */
 const MelodyLoop = summon(112011)
-  // TODO
+  .on("endPhase")
+  .heal(1, $ => $.mine())
+  .apply(DamageType.Hydro, $ => $.active())
   .done();
 
 /**
@@ -21,7 +23,7 @@ const WhisperOfWater = skill(12011)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(1, DamageType.Hydro)
   .done();
 
 /**
@@ -33,7 +35,8 @@ const WhisperOfWater = skill(12011)
 const LetTheShowBegin = skill(12012)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(1, DamageType.Hydro)
+  .summon(MelodyLoop)
   .done();
 
 /**
@@ -46,7 +49,7 @@ const ShiningMiracle = skill(12013)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .heal(4, $ => $.mine())
   .done();
 
 /**

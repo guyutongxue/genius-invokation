@@ -99,9 +99,8 @@ export function nextRandom(
   });
   // [1, 2147483646]
   const randInt = factory();
-  const result = (randInt - 1) / 2147483647;
   return [
-    result,
+    randInt,
     {
       random: factory.state,
       id: oldState.id,

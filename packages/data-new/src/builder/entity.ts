@@ -1,4 +1,4 @@
-import { EntityType } from "../base/entity";
+import { EntityType, EntityTag } from "../base/entity";
 import {
   EventArg,
   EventMap,
@@ -20,6 +20,7 @@ type EventExt<E extends DetailedEventNames> = {
 export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
+  private _tags: EntityTag[] = [];
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -39,6 +40,11 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
     );
   }
 
+  tags(...tags: EntityTag[]) {
+    this._tags.push(...tags);
+    return this;
+  }
+
   done(): HandleT<CallerType> {
     registerEntity({
       id: this.id,
@@ -46,7 +52,7 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
         duration: Infinity,
       }, // TODO
       skills: this._skillList,
-      tags: [], // TODO
+      tags: this._tags,
       type: this.type,
     });
     return this.id as HandleT<CallerType>;

@@ -8,14 +8,17 @@ import Dice from "./Dice.vue";
 
 const props = defineProps<{
   data: PlayerData;
+  opp?: boolean;
 }>();
 </script>
 
 <template>
-  <div class="flex flex-row">
-    <div>{{ data.piles.length }}</div>
-    <div class="flex flex-col">
-      <div class="flex flex-row">
+  <div class="w-full flex flex-row">
+    <div class="bg-yellow-800 text-white">
+      piles = {{ data.piles.length }}
+    </div>
+    <div class="flex-grow flex" :class="opp ? 'flex-col-reverse' : 'flex-col'">
+      <div class="flex flex-row justify-center">
         <div>
           <Support
             v-for="support of data.supports"
@@ -23,11 +26,11 @@ const props = defineProps<{
             :data="support"
           ></Support>
         </div>
-        <div>
-          <CharacterArea
-            v-for="ch of data.characters"
-            :key="ch.id"
-          ></CharacterArea>
+        <div class="flex flex-row gap-2 items-end">
+          <div v-for="ch of data.characters" class="flex flex-col">
+            <CharacterArea :key="ch.id" :data="ch"></CharacterArea>
+            <div v-if="ch.id === data.activeCharacterId" class="h-6"></div>
+          </div>
         </div>
         <div>
           <Summon
@@ -41,7 +44,10 @@ const props = defineProps<{
         <Card v-for="card of data.hands" :key="card.id" :data="card"></Card>
       </div>
     </div>
-    <div>
+    <div v-if="opp" class="bg-yellow-800 text-white">
+      oppDice = {{ data.dice.length }}
+    </div>
+    <div v-else class="flex flex-col bg-yellow-800">
       <Dice v-for="d of data.dice" :value="d"></Dice>
     </div>
   </div>

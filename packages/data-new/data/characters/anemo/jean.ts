@@ -23,7 +23,7 @@ const FavoniusBladework = skill(15021)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(2, DamageType.Physical)
   .done();
 
 /**
@@ -35,7 +35,8 @@ const FavoniusBladework = skill(15021)
 const GaleBlade = skill(15022)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(3, DamageType.Anemo)
+  .switchActive($ => $.opp().next())
   .done();
 
 /**
@@ -48,7 +49,8 @@ const DandelionBreeze = skill(15023)
   .type("burst")
   .costAnemo(4)
   .costEnergy(2)
-  // TODO
+  .heal(2, $ => $.mine())
+  .summon(DandelionField)
   .done();
 
 /**

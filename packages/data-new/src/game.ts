@@ -1,10 +1,24 @@
 import minstd from "@stdlib/random-base-minstd";
 
-import { GameConfig, GameState, PlayerState } from "./base/state";
+import {
+  CharacterState,
+  GameConfig,
+  GameState,
+  PlayerState,
+} from "./base/state";
 import { getCardDefinition, getCharacterDefinition } from "./registry";
-import { Mutation, applyMutation } from "./base/mutation";
+import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
 import { GameIO, exposeMutation, exposeState } from "./io";
-import { Event } from "@gi-tcg/typings";
+import {
+  DiceType,
+  Event,
+  RpcMethod,
+  RpcRequest,
+  RpcResponse,
+  verifyRpcRequest,
+  verifyRpcResponse,
+} from "@gi-tcg/typings";
+import { getEntityById } from "./util";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -73,6 +87,19 @@ class Game {
     this._state = applyMutation(this._state, mutation);
   }
 
+  private randomDice(count: number): DiceType[] {
+    const mut: StepRandomM = {
+      type: "stepRandom",
+      value: 0
+    };
+    const result: DiceType[] = [];
+    for (let i = 0; i < count; i++) {
+      this.mutate(mut);
+      result.push(mut.value % 8);
+    }
+    return result;
+  }
+
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
@@ -107,19 +134,129 @@ class Game {
       const player = this.io.players[i];
       player.notify({
         events,
-        mutations: this.state.mutationLog
-          .flatMap((m) => {
-            const ex = exposeMutation(i, m.mutation);
-            return ex ? [ex] : [];
-          }),
+        mutations: this.state.mutationLog.flatMap((m) => {
+          const ex = exposeMutation(i, m.mutation);
+          return ex ? [ex] : [];
+        }),
         newState: exposeState(i, this.state),
       });
     }
+    this.mutate({ type: "clearMutationLog" });
   }
 
   async start() {
     await this.io.pause(this._state);
-    this.notify([]);
+    while (this._state.phase !== "gameEnd") {
+      if (this._state.mutationLog.length > 1) {
+        this.notify([]);
+      }
+      switch (this._state.phase) {
+        case "initHands":
+          await this.initHands();
+          break;
+        case "initActives":
+          await this.initActives();
+        case "roll":
+          await this.rollPhase();
+          break;
+        case "action":
+          await this.actionPhase();
+          break;
+        case "end":
+          await this.endPhase();
+          break;
+        default:
+          break;
+      }
+      await this.io.pause(this._state);
+    }
+  }
+
+  private async rpc<M extends RpcMethod>(
+    who: 0 | 1,
+    method: M,
+    req: RpcRequest[M],
+  ): Promise<RpcResponse[M]> {
+    verifyRpcRequest(method, req);
+    const resp = await this.io.players[who].rpc(method, req);
+    verifyRpcResponse(method, resp);
+    return resp;
+  }
+
+  private async initHands() {
+    this.mutate({
+      type: "changePhase",
+      newPhase: "initActives",
+    });
+  }
+
+  private async initActives() {
+    const [a0, a1] = await Promise.all(
+      ([0, 1] as const).map(async (i) => {
+        const player = this.state.players[i];
+        const { active } = await this.rpc(i, "chooseActive", {
+          candidates: player.characters.map((c) => c.id),
+        });
+        return getEntityById(this._state, active, true) as CharacterState;
+      }),
+    );
+    this.mutate({
+      type: "switchActive",
+      who: 0,
+      value: a0,
+    });
+    this.mutate({
+      type: "switchActive",
+      who: 1,
+      value: a1,
+    });
+    this.mutate({
+      type: "changePhase",
+      newPhase: "roll",
+    });
+  }
+
+  private async rollPhase() {
+    const [r0, r1] = await Promise.all(
+      ([0, 1] as const).map(async (i) => {
+        const player = this.state.players[i];
+        const dice = this.randomDice(this.config.initialDice);
+        // let rollCount = 2;
+        // for (let j = 1; j < rollCount; j++) {
+        //   const { rerollIndexes } = await this.rpc(i, "rerollDice", {
+        //     dice,
+        //   });
+        // }
+        console.log(dice);
+        return dice;
+      }),
+    );
+    this.mutate({
+      type: "resetDice",
+      who: 0,
+      value: r0
+    });
+    this.mutate({
+      type: "resetDice",
+      who: 1,
+      value: r1
+    });
+    this.mutate({
+      type: "changePhase",
+      newPhase: "action",
+    });
+  }
+  private async actionPhase() {
+    this.mutate({
+      type: "changePhase",
+      newPhase: "end",
+    });
+  }
+  private async endPhase() {
+    this.mutate({
+      type: "changePhase",
+      newPhase: "gameEnd",
+    });
   }
 }
 

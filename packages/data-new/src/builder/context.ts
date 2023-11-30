@@ -80,7 +80,7 @@ export class SkillContext<
     }
     let result: StrictlyTypedCharacterContext<boolean>[];
     if (fnResult instanceof QueryBuilder) {
-      result = fnResult.many() as StrictlyTypedCharacterContext<boolean>[];
+      result = fnResult.character().many();
     } else if (Array.isArray(fnResult)) {
       result = fnResult;
     } else {

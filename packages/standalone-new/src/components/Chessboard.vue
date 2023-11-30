@@ -1,16 +1,21 @@
 <script lang="ts" setup>
-import { ref } from "vue";
 import { StateData } from "@gi-tcg/typings";
 
 import PlayerArea from "./PlayerArea.vue";
 
-const state = ref<StateData>();
+defineProps<{
+  data: StateData
+  who: 0 | 1
+}>();
 
 </script>
 
 <template>
-  <div v-if="state">
-    <PlayerArea :data="state.players[0]"></PlayerArea>
-    <PlayerArea :data="state.players[1]"></PlayerArea>
+  <div class="w-full b-solid b-black b-2 flex" :class="who === 0 ? 'flex-col-reverse' : 'flex-col'">
+    <PlayerArea :data="data.players[0]" :opp="who !== 0"></PlayerArea>
+    <div class="bg-yellow-100">
+      phase = {{ data.phase }}
+    </div>
+    <PlayerArea :data="data.players[1]" :opp="who !== 1"></PlayerArea>
   </div>
 </template>

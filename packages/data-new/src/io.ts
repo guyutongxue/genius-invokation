@@ -34,6 +34,9 @@ export function exposeMutation(
 ): ExposedMutation | null {
   switch (m.type) {
     case "stepRandom":
+    case "clearMutationLog":
+    case "pushSkillLog":
+    case "clearSkillLog":
       return null;
     case "changePhase":
       return m;
@@ -43,8 +46,6 @@ export function exposeMutation(
       return m;
     case "setWinner":
       return m;
-    case "pushSkill":
-      return null;
     case "transferCard": {
       return {
         type: "transferCard",

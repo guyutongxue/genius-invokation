@@ -7,7 +7,9 @@
 
 import { DiceType } from "../enums";
 
-export interface RerollDiceRequest {}
+export interface RerollDiceRequest {
+  dice: DiceType[];
+}
 
 export interface SwitchHandsRequest {}
 
@@ -25,21 +27,11 @@ export interface SwitchActiveAction {
   cost: DiceType[];
 }
 
-export interface PlayCardSingleTarget {
-  id: number;
-  entityId: number;
-}
-
-export interface PlayCardTargets {
-  hint?: string[];
-  candidates: PlayCardSingleTarget[][];
-};
-
 export interface PlayCardAction {
   type: "playCard";
   card: number;
   cost: DiceType[];
-  target?: PlayCardTargets;
+  targets: number[];
 }
 
 export interface UseSkillAction {

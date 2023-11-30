@@ -21,6 +21,10 @@ import { SkillDefinition } from "./skill";
 
 type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
+export interface ClearMutationLogM {
+  readonly type: "clearMutationLog";
+}
+
 export interface StepRandomM {
   readonly type: "stepRandom";
   value: number; // output
@@ -44,10 +48,14 @@ export interface SetWinnerM {
   readonly winner: 0 | 1;
 }
 
-export interface PushSkillM {
-  readonly type: "pushSkill";
+export interface PushSkillLogM {
+  readonly type: "pushSkillLog";
   readonly caller: number;
   readonly skill: SkillDefinition;
+}
+
+export interface ClearSkillLogM {
+  readonly type: "clearSkillLog";
 }
 
 export interface TransferCardM {
@@ -119,12 +127,14 @@ export interface SetPlayerFlagM {
 }
 
 export type Mutation =
+  | ClearMutationLogM
   | StepRandomM
   | ChangePhaseM
   | StepRoundM
   | SwitchTurnM
   | SetWinnerM
-  | PushSkillM
+  | PushSkillLogM
+  | ClearSkillLogM
   | TransferCardM
   | SwitchActiveM
   | DisposeCardM
@@ -138,6 +148,11 @@ export type Mutation =
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
+    case "clearMutationLog": {
+      return produce(state, (draft) => {
+        draft.mutationLog = [];
+      })
+    }
     case "stepRandom": {
       return produce(state, (draft) => {
         [m.value, draft.iterators] = nextRandom(draft.iterators);
@@ -163,7 +178,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
         draft.winner = m.winner;
       });
     }
-    case "pushSkill": {
+    case "pushSkillLog": {
       const caller = getEntityById(state, m.caller, true);
       const area = getEntityArea(state, m.caller);
       const entry: SkillLogEntry = {
@@ -174,6 +189,11 @@ function doMutation(state: GameState, m: Mutation): GameState {
       };
       return produce(state, (draft) => {
         draft.skillLog.push(entry as Draft<SkillLogEntry>);
+      });
+    }
+    case "clearSkillLog": {
+      return produce(state, (draft) => {
+        draft.skillLog = []
       });
     }
     case "transferCard": {
@@ -277,7 +297,7 @@ export function applyMutation(state: GameState, m: Mutation): GameState {
   return produce(doMutation(state, m), (draft) => {
     draft.mutationLog.push({
       roundNumber: state.roundNumber,
-      mutation: m as Draft<Mutation>,
+      mutation: { ...m } as Draft<Mutation>,
     });
   });
 }

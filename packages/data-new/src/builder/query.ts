@@ -78,6 +78,10 @@ export class QueryBuilder<
     this.callerWho = flip(this.callerWho);
     return this;
   }
+  mine() {
+    // no-op
+    return this;
+  }
 
   filter(
     ...filters: Filter<Readonly, TypeT>[]
@@ -350,5 +354,6 @@ export type TargetQueryArg<
       $: StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, ExEntityType>,
     ) =>
       | StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, "character">
+      | StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, ExEntityType>
       | StrictlyTypedCharacterContext<Readonly>[]
       | StrictlyTypedCharacterContext<Readonly>);
