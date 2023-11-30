@@ -47,8 +47,8 @@ const player1Io: PlayerIO = {
   rpc: rpc,
 };
 
-onMounted(() => {
-  startGame({
+onMounted(async () => {
+  const winner = await startGame({
     data,
     io: {
       pause: async () => {
@@ -74,6 +74,7 @@ onMounted(() => {
       },
     ],
   });
+  console.log("Winner is", winner);
 });
 
 const emitter = mitt<{

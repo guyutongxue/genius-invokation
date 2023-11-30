@@ -145,11 +145,9 @@ class Game {
   }
 
   async start() {
-    await this.io.pause(this._state);
+    this.notify([]);
     while (this._state.phase !== "gameEnd") {
-      if (this._state.mutationLog.length > 1) {
-        this.notify([]);
-      }
+      await this.io.pause(this._state);
       switch (this._state.phase) {
         case "initHands":
           await this.initHands();
@@ -166,9 +164,12 @@ class Game {
           await this.endPhase();
           break;
         default:
+          const _check: never = this._state.phase;
           break;
       }
-      await this.io.pause(this._state);
+      if (this._state.mutationLog.length > 1) {
+        this.notify([]);
+      }
     }
   }
 
@@ -227,7 +228,6 @@ class Game {
         //     dice,
         //   });
         // }
-        console.log(dice);
         return dice;
       }),
     );
