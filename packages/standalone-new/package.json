@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build"
+    "dev": "bun run --bun vite",
+    "build": "bun run --bun vite build"
   },
   "dependencies": {
     "vue": "^3.3.8",
