@@ -1,5 +1,5 @@
-import { ExposedMutation } from "..";
-import { DiceType, DamageType, Aura, Reaction } from "../enums";
+import type { ExposedMutation } from "./mutation";
+import type { DiceType, DamageType, Aura, Reaction } from "../enums";
 
 export type PhaseType =
   | "initHands"

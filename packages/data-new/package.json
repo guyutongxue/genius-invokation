@@ -2,11 +2,12 @@
   "name": "@gi-tcg/data-new",
   "version": "0.0.0",
   "type": "module",
-  "exports": "./out/index.js",
+  "exports": "./dist/index.js",
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",
     "check": "tsc --noEmit",
-    "build": "bun build:entry"
+    "watch": "bun build src/index.ts --outdir ./dist --watch",
+    "build": "bun build src/index.ts --outdir ./dist"
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",

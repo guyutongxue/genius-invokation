@@ -4,7 +4,7 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "build:schema": "bun scripts/generate_schema.ts"
+    "build": "bun scripts/generate_schema.ts"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",

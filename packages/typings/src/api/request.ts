@@ -1,11 +1,4 @@
-// type JsonRpcRequest<M extends string, P> = {
-//   jsonrpc: "2.0";
-//   method: M;
-//   params: P;
-//   id: number;
-// };
-
-import { DiceType } from "../enums";
+import type { DiceType } from "../enums";
 
 export interface RerollDiceRequest {
   dice: DiceType[];

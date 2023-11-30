@@ -1,7 +1,7 @@
 // 与 base 中 mutation 几乎一致，但删去了具体的 state 信息
 
-import { DiceType } from "../enums";
-import { PhaseType, PlayerData } from "./notification";
+import type { DiceType } from "../enums";
+import type { PhaseType } from "./notification";
 
 interface ChangePhaseM {
   readonly type: "changePhase";

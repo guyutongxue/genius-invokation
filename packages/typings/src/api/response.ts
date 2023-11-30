@@ -1,9 +1,3 @@
-// type JsonRpcResponse<R> = {
-//   jsonrpc: "2.0";
-//   result: R;
-//   id: number;
-// }
-
 import type { RpcMethod, RpcRequest } from "./request";
 import type { DiceType } from "../enums";
 
