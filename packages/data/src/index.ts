@@ -76,5 +76,4 @@ import "./characters/pyro/xiangling";
 import "./characters/pyro/yanfei";
 import "./characters/pyro/yoimiya";
 
-import { result } from "./end";
-export default result;
+export { default } from "./end";

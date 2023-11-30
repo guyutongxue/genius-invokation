@@ -91,7 +91,7 @@ async function getExistsComments(path: string): Promise<CommentInfo[]> {
     const text = content.substring(range.pos, range.end);
     const parseCtx = parser.parseString(text);
     if (parseCtx.log.messages.length > 0) {
-      throw new Error("Syntax error: " + parseCtx.log.messages[0].text);
+      throw new Error(`Syntax error in file ${path}: ${parseCtx.log.messages[0].text}`);
     }
     const blocks = parseCtx.docComment.customBlocks;
     let id: number | null = null;
@@ -151,12 +151,12 @@ function replaceBetween(
   );
 }
 
+function descriptionToLines(description: string): string[] {
+  return description.split("\n").map((l) => l.replace(/\{/g, "").trim()).filter((l) => !!l);
+}
+
 function writeDescriptionAsComment(description: string) {
-  return description
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => !!l)
-    .join("\n * ");
+  return descriptionToLines(description).join("\n * ");
 }
 
 function sameArray<T>(a: T[], b: T[]): boolean {
@@ -172,9 +172,7 @@ function sameArray<T>(a: T[], b: T[]): boolean {
 }
 
 function sameDescription(a: string, b: string) {
-  const aArr = a.split("\n").map((l) => l.trim()).filter((l) => !!l);
-  const bArr = b.split("\n").map((l) => l.trim()).filter((l) => !!l);
-  return sameArray(aArr, bArr);
+  return sameArray(descriptionToLines(a), descriptionToLines(b));
 }
 
 export async function writeSourceCode(
@@ -236,5 +234,6 @@ ${item.code}
 `,
       )
       .join("\n");
+  resultText = resultText.trim() + "\n";
   await writeFile(filepath, resultText, "utf-8");
 }

@@ -6,10 +6,8 @@
   ],
   "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",
   "scripts": {
-    "regenerate_data": "bun ./scripts/generators/index.ts",
     "build:typings": "cd packages/typings && bun run build",
-    "build:core": "cd packages/core && bun run build",
     "build:frontend": "cd packages/standalone && bun run build",
-    "build:all": "bun build:typings && bun build:core && bun build:frontend"
+    "build:all": "bun build:typings && bun build:frontend"
   }
 }
