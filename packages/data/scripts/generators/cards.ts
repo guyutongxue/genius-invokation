@@ -2,7 +2,7 @@ import { pascalCase } from "case-anything";
 
 import { getCostCode, isLegend } from "./cost";
 import { SourceInfo, writeSourceCode } from "./source";
-import { cards } from "./prescan";
+import { cards } from "../prescan";
 
 function getCardTypeAndTags(card: any) {
   const TAG_MAP: Record<string, string> = {

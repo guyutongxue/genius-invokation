@@ -1,7 +1,7 @@
 import db from "@genshin-db/tcg/src/min/data.min.json";
 
 // @ts-ignore
-const { data } = db;
+const { data, image } = db;
 const { English, ChineseSimplified } = data;
 
 const CATEGORY_KEYS = {
@@ -16,8 +16,10 @@ function read(name: keyof typeof CATEGORY_KEYS): any[] {
   const result: any[] = [];
   for (const [key, value] of Object.entries<any>(English[category])) {
     const zh = ChineseSimplified[category][key];
+    const imageObj = image[category]?.[key];
     const mixed = {
       ...value,
+      image: imageObj,
       zhName: zh.name,
       zhDescription: zh.description ?? zh.storytext
     };
@@ -26,7 +28,6 @@ function read(name: keyof typeof CATEGORY_KEYS): any[] {
       const zhSkills = zh.skills;
       const mixedSkills: any[] = [];
       for (let i = 0; i < enSkills.length; i++) {
-        const en = { ...enSkills[i] };
         const zh = zhSkills[i];
         mixedSkills.push({
           ...enSkills[i],

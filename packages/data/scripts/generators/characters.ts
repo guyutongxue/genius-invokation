@@ -1,4 +1,4 @@
-import { characters, statuses, summons, cards } from "./prescan";
+import { characters, statuses, summons, cards } from "../prescan";
 import { pascalCase, snakeCase } from "case-anything";
 import { writeSourceCode, SourceInfo } from "./source";
 import { getCostCode } from "./cost";

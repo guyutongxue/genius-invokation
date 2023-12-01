@@ -1,5 +1,5 @@
 {
-  "include": ["scripts/**/*.ts"],
+  "include": ["scripts/**/*.ts", "scripts/**/*.json"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
