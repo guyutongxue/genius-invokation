@@ -54,9 +54,7 @@ onMounted(async () => {
       pause: async () => {
         enableStep.value = true;
         await new Promise<void>((resolve) => {
-          emitter.on("step", () => {
-            resolve();
-          });
+          emitter.on("step", resolve);
         });
         emitter.off("step");
         enableStep.value = false;
@@ -81,18 +79,17 @@ const emitter = mitt<{
   step: void;
 }>();
 const enableStep = ref(false);
-function step() {
-  emitter.emit("step");
-}
 </script>
 
 <template>
   <div class="w-[100vw] h-[100vh] overflow-auto">
-    <Chessboard v-if="state0" :data="state0" :who="0"></Chessboard>
     <div class="flex items-center gap-2">
       <h4>Debug</h4>
-      <button :disabled="!enableStep" @click="step">Step</button>
+      <button :disabled="!enableStep" @click="emitter.emit('step')">
+        Step
+      </button>
     </div>
+    <Chessboard v-if="state0" :data="state0" :who="0"></Chessboard>
     <Chessboard v-if="state1" :data="state1" :who="1"></Chessboard>
   </div>
 </template>

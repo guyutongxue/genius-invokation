@@ -1,5 +1,5 @@
 // @ts-check
-import db from "@genshin-db/tcg/src/min/data.min.json" assert { type: "json" };
+import db from "@genshin-db/tcg/src/min/data.min.json";
 import { fileURLToPath } from "node:url";
 import { writeFile } from "node:fs/promises";
 import * as path from "node:path";
