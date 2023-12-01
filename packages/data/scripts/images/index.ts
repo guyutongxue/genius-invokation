@@ -13,6 +13,13 @@ import statusImages from "./status.json";
 const dirname = path.join(fileURLToPath(import.meta.url), "..");
 
 const filenameMap = new Map<string, string>([
+  ["1", "UI_Gcg_Buff_Common_Element_Ice"],
+  ["2", "UI_Gcg_Buff_Common_Element_Water"],
+  ["3", "UI_Gcg_Buff_Common_Element_Fire"],
+  ["4", "UI_Gcg_Buff_Common_Element_Electric"],
+  ["5", "UI_Gcg_Buff_Common_Element_Wind"],
+  ["6", "UI_Gcg_Buff_Common_Element_Rock"],
+  ["7", "UI_Gcg_Buff_Common_Element_Grass"],
   ...Object.entries(skillImages),
   ...Object.entries(statusImages),
 ]);
