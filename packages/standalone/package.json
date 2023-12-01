@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --bun vite",
-    "build:image": "cd ../data && bun run generate_images_for_standalone",
-    "build:vite": "bun run --bun vite build",
-    "build": "bun run build:image && bun run build:vite"
+    "build": "bun run --bun vite build"
   },
   "dependencies": {
     "vue": "^3.3.8",
