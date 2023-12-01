@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 import { writeFile } from "node:fs/promises";
 
 const skillImageMap = new Map<number, string>([
-  [24012, "Skill_ElectroHypostasis_1"],
-  [24013, "Skill_ElectroHypostasis_2"],
-  [24014, "Skill_ElectroHypostasis_3"],
+  [24012, "MonsterSkill_S_EffigyElectric_01"],
+  [24013, "MonsterSkill_E_EffigyElectric_01_HD"],
+  [24014, "MonsterSkill_S_EffigyElectric_04"],
 ] as const);
 
 for (const ch of characters) {
@@ -31,6 +31,8 @@ for (const ch of characters) {
 }
 
 console.log(skillImageMap);
+
+
 
 await writeFile(
   path.join(fileURLToPath(import.meta.url), "../skill.json"),
