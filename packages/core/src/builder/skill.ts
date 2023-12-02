@@ -407,6 +407,7 @@ export class SkillBuilderWithCost<Ext extends object> extends SkillBuilder<
 
 class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   private _skillType: SkillType = "normal";
+  private _gainEnergy = true;
   protected _cost: DiceType[] = [];
   constructor(private readonly skillId: number) {
     super(skillId);
@@ -423,6 +424,9 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   }
 
   done(): SkillHandle {
+    if (this._gainEnergy) {
+      this.gainEnergy(1, ($) => $.self());
+    }
     const action: SkillDescription<void> = this.getAction(() => ({}));
     registerSkill({
       type: "skill",

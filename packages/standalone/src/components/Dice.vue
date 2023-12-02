@@ -30,6 +30,7 @@ const props = withDefaults(
 </script>
 <template>
   <div class="relative select-none flex items-center justify-center">
+    <!-- 能量图标 -->
     <svg
       v-if="value === DiceType.Energy"
       width="14"
@@ -59,6 +60,7 @@ const props = withDefaults(
         fill="#ffffdf"
       ></path>
     </svg>
+    <!-- 骰子图标 -->
     <svg
       v-else
       width="14"

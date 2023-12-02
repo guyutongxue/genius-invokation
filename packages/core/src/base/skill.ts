@@ -2,7 +2,7 @@ import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
 
-interface SkillDefinitionBase<Arg> {
+export interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
   readonly id: number;
   readonly action: SkillDescription<Arg>;

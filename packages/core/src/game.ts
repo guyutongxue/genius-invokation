@@ -19,6 +19,7 @@ import {
 } from "@gi-tcg/typings";
 import { getActiveCharacterIndex, getEntityById, sortDice } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
+import { SkillDefinitionBase } from "./base/skill";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -273,10 +274,7 @@ class Game {
     } else {
       const activeCh = player.characters[getActiveCharacterIndex(player)];
       const skill = activeCh.definition.initiativeSkills[0];
-      const [newState, eventList] = skill.action(this._state, activeCh.id);
-      this._state = newState;
-      this.notify([]);
-      await this.io.pause(this._state);
+      await this.useSkill(skill, activeCh.id, void 0);
     }
     this.mutate({
       type: "switchTurn",
@@ -293,6 +291,13 @@ class Game {
       type: "changePhase",
       newPhase: "gameEnd",
     });
+  }
+
+  private async useSkill<Args>(skill: SkillDefinitionBase<Args>, caller: number, args: Args) {
+    const [newState, eventList] = skill.action(this._state, caller, args);
+    this._state = newState;
+    this.notify([]);
+    await this.io.pause(this._state);
   }
 }
 
