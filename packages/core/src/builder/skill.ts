@@ -60,6 +60,7 @@ function checkRelative(
     switch (r.listenTo) {
       case ListenTo.Myself:
         return r.callerId === entityIdOrWhoIntf;
+      // @ts-expect-error fallthrough
       case ListenTo.SameArea:
         if (
           r.callerArea.type === "characters" &&
@@ -67,7 +68,6 @@ function checkRelative(
         ) {
           return r.callerArea.characterId === entityArea.characterId;
         }
-      // passthrough
       case ListenTo.SamePlayer:
         return r.callerArea.who === entityArea.who;
       case ListenTo.All:

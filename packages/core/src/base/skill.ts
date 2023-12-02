@@ -132,12 +132,15 @@ export interface DeclareEndInfo {
   readonly who: 0 | 1;
 }
 
-export type ActionInfo =
+export type ActionInfo = (
   | UseSkillInfo
   | PlayCardInfo
   | SwitchActiveInfo
   | ElementalTuningInfo
-  | DeclareEndInfo;
+  | DeclareEndInfo
+) & {
+  cost: DiceType[];
+};
 
 type NULL = Record<never, never>;
 

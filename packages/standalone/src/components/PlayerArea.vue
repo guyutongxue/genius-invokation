@@ -17,8 +17,8 @@ const props = defineProps<{
     <div class="bg-yellow-800 text-white">
       piles = {{ data.piles.length }}
     </div>
-    <div class="flex-grow flex" :class="opp ? 'flex-col-reverse' : 'flex-col'">
-      <div class="flex flex-row justify-center">
+    <div class="flex-grow flex gap-2" :class="opp ? 'flex-col-reverse' : 'flex-col'">
+      <div class="min-h-46 flex flex-row justify-center">
         <div>
           <Support
             v-for="support of data.supports"
@@ -26,7 +26,7 @@ const props = defineProps<{
             :data="support"
           ></Support>
         </div>
-        <div class="flex flex-row gap-2 items-end">
+        <div class="flex flex-row gap-6 items-end">
           <div v-for="ch of data.characters" class="flex flex-col">
             <CharacterArea :key="ch.id" :data="ch"></CharacterArea>
             <div v-if="ch.id === data.activeCharacterId" class="h-6"></div>
@@ -40,14 +40,14 @@ const props = defineProps<{
           ></Summon>
         </div>
       </div>
-      <div class="flex flex-row">
+      <div class="min-h-30 flex flex-row gap-2 justify-center">
         <Card v-for="card of data.hands" :key="card.id" :data="card"></Card>
       </div>
     </div>
-    <div v-if="opp" class="bg-yellow-800 text-white">
+    <div v-if="opp" class="w-8 bg-yellow-800 text-white">
       oppDice = {{ data.dice.length }}
     </div>
-    <div v-else class="flex flex-col bg-yellow-800">
+    <div v-else class="w-8 flex flex-col bg-yellow-800">
       <Dice v-for="d of data.dice" :value="d"></Dice>
     </div>
   </div>

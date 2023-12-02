@@ -1,4 +1,5 @@
 import {
+  Action,
   CardData,
   CharacterData,
   EntityData,
@@ -13,6 +14,7 @@ import {
 } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from ".";
 import { Mutation } from "./base/mutation";
+import { ActionInfo } from "./base/skill";
 
 export interface PlayerIO {
   giveUp: boolean;
@@ -181,4 +183,40 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
       legendUsed: p.legendUsed,
     })) as [PlayerData, PlayerData],
   };
+}
+
+export function exposeAction(action: ActionInfo): Action {
+  switch (action.type) {
+    case "useSkill": {
+      return {
+        type: "useSkill",
+        skill: action.skill.definition.id,
+        cost: action.cost,
+      };
+    }
+    case "playCard": {
+      return {
+        type: "playCard",
+        card: action.card.id,
+        cost: action.cost,
+        targets: action.target.ids,
+      };
+    }
+    case "switchActive":
+      return {
+        type: "switchActive",
+        active: action.to.id,
+        cost: action.cost,
+      };
+    case "elementalTuning":
+      return {
+        type: "elementalTuning",
+        discardedCard: action.card.id,
+      };
+    case "declareEnd": {
+      return {
+        type: "declareEnd",
+      };
+    }
+  }
 }

@@ -11,7 +11,7 @@ const props = defineProps<{
 
 <template>
   <div>
-    <div class="m-2 h-40 relative" :title="`id=${data.id}`">
+    <div class="h-40 relative" :title="`id=${data.id}`">
       <div class="absolute left-[-15px] top-[-20px] flex items-center justify-center">
         <!-- 水滴 -->
         <svg

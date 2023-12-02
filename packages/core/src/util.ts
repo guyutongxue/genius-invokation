@@ -156,3 +156,13 @@ export function sortDice(player: PlayerState, dice: readonly DiceType[]): DiceTy
 export function shiftLeft<T>(arr: readonly T[], idx: number): readonly T[] {
   return [...arr.slice(idx), ...arr.slice(0, idx)];
 }
+
+// Shuffle an array. No use of state random generator
+export function shuffle<T>(arr: readonly T[]): readonly T[] {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}

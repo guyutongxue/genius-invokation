@@ -17,9 +17,9 @@ import {
   verifyRpcRequest,
   verifyRpcResponse,
 } from "@gi-tcg/typings";
-import { getActiveCharacterIndex, getEntityById, sortDice } from "./util";
+import { getActiveCharacterIndex, getEntityById, shuffle, sortDice } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
-import { SkillDefinitionBase } from "./base/skill";
+import { ActionInfo, SkillDefinitionBase, UseSkillInfo } from "./base/skill";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -44,6 +44,8 @@ const INITIAL_PLAYER_STATE: PlayerState = {
   legendUsed: false,
   skipNextTurn: false,
 };
+
+type ActionInfoWithNewState = ActionInfo & { newState: GameState };
 
 class Game {
   private _state: GameState;
@@ -82,7 +84,7 @@ class Game {
     this._state = applyMutation(this._state, mutation);
   }
 
-  private randomDice(count: number, who: 0 | 1): DiceType[] {
+  private randomDice(count: number, who: 0 | 1): readonly DiceType[] {
     const mut: StepRandomM = {
       type: "stepRandom",
       value: 0,
@@ -90,7 +92,7 @@ class Game {
     const result: DiceType[] = [];
     for (let i = 0; i < count; i++) {
       this.mutate(mut);
-      result.push(mut.value % 8 + 1);
+      result.push((mut.value % 8) + 1);
     }
     return sortDice(this._state.players[who], result);
   }
@@ -113,7 +115,7 @@ class Game {
         },
       });
     }
-    for (const card of config.cards) {
+    for (const card of shuffle(config.cards)) {
       const def = this.data.card.get(card);
       if (typeof def === "undefined") {
         throw new Error(`Unknown card id ${card}`);
@@ -187,6 +189,22 @@ class Game {
   }
 
   private async initHands() {
+    for (let who of [0, 1] as const) {
+      const player = this._state.players[who];
+      // TODO legend
+      for (let i = 0; i < this.config.initialHands; i++) {
+        const card = this._state.players[who].piles[0];
+        if (typeof card === "undefined") {
+          throw new Error(`Wrong config; deck count is less than initialHands`);
+        }
+        this.mutate({
+          type: "transferCard",
+          who,
+          path: "pilesToHands",
+          value: card,
+        });
+      }
+    }
     this.mutate({
       type: "changePhase",
       newPhase: "initActives",
@@ -221,28 +239,16 @@ class Game {
 
   private async rollPhase() {
     const [r0, r1] = await Promise.all(
-      ([0, 1] as const).map(async (i) => {
-        const player = this.state.players[i];
+      ([0, 1] as const).map(async (who) => {
+        const player = this.state.players[who];
         const controlled: DiceType[] = [];
         // TODO onRoll event
-        let randomDice = this.randomDice(this.config.initialDice, i);
+        let randomDice = this.randomDice(this.config.initialDice, who);
         let rollCount = 2;
-        for (let j = 1; j < rollCount; j++) {
-          const { rerollIndexes } = await this.rpc(i, "rerollDice", {
-            dice: randomDice,
-          });
-          if (rerollIndexes.length === 0) {
-            break;
-          }
-          for (let k = 0; k < randomDice.length; k++) {
-            if (!rerollIndexes.includes(k)) {
-              controlled.push(randomDice[k]);
-            }
-          }
-          randomDice = this.randomDice(rerollIndexes.length, i);
+        for (let i = 1; i < rollCount; i++) {
+          randomDice = await this.reroll(who, randomDice);
         }
-        controlled.push(...randomDice);
-        return controlled;
+        return randomDice;
       }),
     );
     this.mutate({
@@ -279,7 +285,10 @@ class Game {
     this.mutate({
       type: "switchTurn",
     });
-    if (this._state.players[0].declaredEnd && this._state.players[1].declaredEnd) {
+    if (
+      this._state.players[0].declaredEnd &&
+      this._state.players[1].declaredEnd
+    ) {
       this.mutate({
         type: "changePhase",
         newPhase: "end",
@@ -293,11 +302,79 @@ class Game {
     });
   }
 
-  private async useSkill<Args>(skill: SkillDefinitionBase<Args>, caller: number, args: Args) {
+  private availableAction(): ActionInfoWithNewState[] {
+    const who = this._state.currentTurn;
+    const player = this._state.players[who];
+    const activeCh = player.characters[getActiveCharacterIndex(player)];
+    const result: ActionInfo[] = [];
+
+    // Skills
+    result.push(
+      ...activeCh.definition.initiativeSkills
+        .map<UseSkillInfo>((s) => ({
+          type: "useSkill",
+          who,
+          skill: {
+            caller: activeCh,
+            definition: s,
+            fromCard: null,
+            requestBy: null,
+          },
+        }))
+        .map((s) => ({
+          ...s,
+          cost:
+            "costs" in s.skill.definition ? [...s.skill.definition.costs] : [],
+        })),
+    );
+
+    // Cards
+
+    // Switch Active
+
+    // Elemental Tuning
+
+    // Declare End
+    result.push({
+      type: "declareEnd",
+      who,
+      cost: [],
+    });
+    // TODO onBeforeUseDice event
+    return result.map((x) => ({ ...x, newState: this._state }));
+  }
+
+  private async useSkill<Args>(
+    skill: SkillDefinitionBase<Args>,
+    caller: number,
+    args: Args,
+  ) {
     const [newState, eventList] = skill.action(this._state, caller, args);
     this._state = newState;
     this.notify([]);
     await this.io.pause(this._state);
+  }
+
+  private async switchCard(who: 0 | 1) {
+    // TODO
+  }
+  private async reroll(
+    who: 0 | 1,
+    dice: readonly DiceType[],
+  ): Promise<readonly DiceType[]> {
+    const { rerollIndexes } = await this.rpc(who, "rerollDice", {
+      dice: [...dice],
+    });
+    if (rerollIndexes.length === 0) {
+      return dice;
+    }
+    const controlled: DiceType[] = [];
+    for (let k = 0; k < dice.length; k++) {
+      if (!rerollIndexes.includes(k)) {
+        controlled.push(dice[k]);
+      }
+    }
+    return [...controlled, ...this.randomDice(rerollIndexes.length, who)];
   }
 }
 
