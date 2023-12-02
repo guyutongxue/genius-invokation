@@ -4,7 +4,7 @@ import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import { DeferredActions, SkillInfo } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
-import { getEntityArea, getEntityById } from "../util";
+import { getActiveCharacterIndex, getEntityArea, getEntityById } from "../util";
 import {
   QueryBuilder,
   StrictlyTypedQueryBuilder,
@@ -19,6 +19,7 @@ import {
   SummonHandle,
 } from "./type";
 import { getEntityDefinition } from "./registry";
+import { CardTag } from "../base/card";
 
 /**
  * 用于描述技能的上下文对象。
@@ -277,6 +278,22 @@ export class SkillContext<
     // TODO
   }
 
+  drawCards(count: number, withTag?: CardTag) {
+    const piles = this.player.piles;
+    const candidates = withTag ? piles.filter((c) => c.definition.tags.includes(withTag)) : [...piles];
+    for (let i = 0; i < count; i++) {
+      const value = candidates.pop();
+      if (typeof value === "undefined") {
+        break;
+      }
+      this.mutate({
+        type: "transferCard",
+        path: "pilesToHands",
+        who: this.callerArea.who,
+        value
+      });
+    }
+  }
   switchCards() {
     this.emitEvent("requestSwitchCards");
   }
@@ -395,28 +412,31 @@ export class CharacterContext<Readonly extends boolean> {
   satisfyPosition(pos: CharacterPosition) {
     const state = this.skillContext.state;
     const player = state.players[this.who];
-    const activeIdx = player.characters.findIndex(
-      (ch) => ch.id === player.activeCharacterId,
-    );
-    const thisIdx = this.positionIndex();
-    if (activeIdx === -1) {
-      throw new Error("Invalid active character index");
-    }
+    const activeIdx = getActiveCharacterIndex(player);
     const length = player.characters.length;
+    let dx;
     switch (pos) {
       case "active":
         return player.activeCharacterId === this._id;
       case "standby":
         return player.activeCharacterId !== this._id;
       case "next":
-        return (thisIdx - activeIdx + length) % length === 1;
+        dx = 1;
+        break;
       case "prev":
-        return (activeIdx - thisIdx + length) % length === 1;
+        dx = -1;
+        break;
       default: {
         const _: never = pos;
         throw new Error(`Invalid position ${pos}`);
       }
     }
+    // find correct next and prev index
+    let currentIdx = activeIdx;
+    do {
+      currentIdx = (currentIdx + dx + length) % length;
+    } while (player.characters[currentIdx].variables.alive);
+    return player.characters[currentIdx].id === this._id;
   }
   isActive() {
     return this.satisfyPosition("active");

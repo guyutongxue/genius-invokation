@@ -15,6 +15,7 @@ import {
   getEntityArea,
   getEntityById,
   nextRandom,
+  sortDice,
 } from "../util";
 import { EntityArea } from "./entity";
 import { SkillDefinition } from "./skill";
@@ -153,7 +154,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "clearMutationLog": {
       return produce(state, (draft) => {
         draft.mutationLog = [];
-      })
+      });
     }
     case "stepRandom": {
       return produce(state, (draft) => {
@@ -195,7 +196,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "clearSkillLog": {
       return produce(state, (draft) => {
-        draft.skillLog = []
+        draft.skillLog = [];
       });
     }
     case "transferCard": {
@@ -280,7 +281,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "resetDice": {
       return produce(state, (draft) => {
-        draft.players[m.who].dice = m.value as DiceType[];
+        draft.players[m.who].dice = sortDice(state.players[m.who], m.value);
       });
     }
     case "setPlayerFlag": {

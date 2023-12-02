@@ -16,27 +16,43 @@ import Chessboard from "./components/Chessboard.vue";
 const state0 = ref<StateData>();
 const state1 = ref<StateData>();
 
-async function rpc<M extends RpcMethod>(
+async function doRpc<M extends RpcMethod>(
   m: M,
   req: RpcRequest[M],
-): Promise<RpcResponse[M]> {
+  who: 0 | 1,
+): Promise<RpcResponse[RpcMethod]> {
   switch (m) {
     case "chooseActive":
       const { candidates } = req as RpcRequest["chooseActive"];
       return {
         active: candidates[0],
-      } as RpcResponse["chooseActive"] as any;
+      } as RpcResponse["chooseActive"];
+    case "rerollDice":
+      return {
+        rerollIndexes: [],
+      } as RpcResponse["rerollDice"];
     default:
       throw new Error("Not implemented");
   }
 }
 
+async function rpc<M extends RpcMethod>(
+  m: M,
+  req: RpcRequest[M],
+  who: 0 | 1,
+): Promise<RpcResponse[M]> {
+  const res = await doRpc(m, req, who);
+  console.log("RPC", m, req, who, res);
+  return res as any;
+}
+
 const player0Io: PlayerIO = {
   giveUp: false,
-  notify: ({ newState }) => {
+  notify: ({ newState, events, mutations }) => {
+    console.log(mutations);
     state0.value = newState;
   },
-  rpc: rpc,
+  rpc: (m, r) => rpc(m, r, 0),
 };
 
 const player1Io: PlayerIO = {
@@ -44,7 +60,7 @@ const player1Io: PlayerIO = {
   notify: ({ newState }) => {
     state1.value = newState;
   },
-  rpc: rpc,
+  rpc: (m, r) => rpc(m, r, 1),
 };
 
 onMounted(async () => {
@@ -64,11 +80,11 @@ onMounted(async () => {
     playerConfigs: [
       {
         characters: [1303, 1201, 1502],
-        cards: [],
+        cards: [331502, 332004, 332001, 332019, 331502, 332004, 332001, 332019],
       },
       {
         characters: [1502, 1201, 1303],
-        cards: [],
+        cards: [331502, 332004, 332001, 332019, 331502, 332004, 332001, 332019],
       },
     ],
   });

@@ -77,7 +77,8 @@ export function exposeMutation(
         type: "createCard",
         who: m.who,
         id: m.value.id,
-        definitionId: m.who === who ? m.value.definition.id : 0,
+        definitionId:
+          m.who === who && m.target === "hands" ? m.value.definition.id : 0,
         target: m.target,
       };
     }

@@ -1,9 +1,12 @@
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-* {
-  box-sizing: border-box;
+:root {
+  --c-void: #4a4a4a;
+  --c-electro: #b380ff;
+  --c-pyro: #ff9955;
+  --c-dendro: #a5c83b;
+  --c-cryo: #55ddff;
+  --c-geo: #ffcc00;
+  --c-hydro: #3e99ff;
+  --c-anemo: #80ffe6;
+  --c-omni: #dcd4c2;
+  --c-energy: #eab308
 }

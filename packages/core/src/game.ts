@@ -17,7 +17,7 @@ import {
   verifyRpcRequest,
   verifyRpcResponse,
 } from "@gi-tcg/typings";
-import { getEntityById } from "./util";
+import { getActiveCharacterIndex, getEntityById, sortDice } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 
 export interface PlayerConfig {
@@ -81,7 +81,7 @@ class Game {
     this._state = applyMutation(this._state, mutation);
   }
 
-  private randomDice(count: number): DiceType[] {
+  private randomDice(count: number, who: 0 | 1): DiceType[] {
     const mut: StepRandomM = {
       type: "stepRandom",
       value: 0,
@@ -89,9 +89,9 @@ class Game {
     const result: DiceType[] = [];
     for (let i = 0; i < count; i++) {
       this.mutate(mut);
-      result.push(mut.value % 8);
+      result.push(mut.value % 8 + 1);
     }
-    return result;
+    return sortDice(this._state.players[who], result);
   }
 
   private initPlayerCards(who: 0 | 1) {
@@ -154,6 +154,7 @@ class Game {
           break;
         case "initActives":
           await this.initActives();
+          break;
         case "roll":
           await this.rollPhase();
           break;
@@ -221,14 +222,26 @@ class Game {
     const [r0, r1] = await Promise.all(
       ([0, 1] as const).map(async (i) => {
         const player = this.state.players[i];
-        const dice = this.randomDice(this.config.initialDice);
-        // let rollCount = 2;
-        // for (let j = 1; j < rollCount; j++) {
-        //   const { rerollIndexes } = await this.rpc(i, "rerollDice", {
-        //     dice,
-        //   });
-        // }
-        return dice;
+        const controlled: DiceType[] = [];
+        // TODO onRoll event
+        let randomDice = this.randomDice(this.config.initialDice, i);
+        let rollCount = 2;
+        for (let j = 1; j < rollCount; j++) {
+          const { rerollIndexes } = await this.rpc(i, "rerollDice", {
+            dice: randomDice,
+          });
+          if (rerollIndexes.length === 0) {
+            break;
+          }
+          for (let k = 0; k < randomDice.length; k++) {
+            if (!rerollIndexes.includes(k)) {
+              controlled.push(randomDice[k]);
+            }
+          }
+          randomDice = this.randomDice(rerollIndexes.length, i);
+        }
+        controlled.push(...randomDice);
+        return controlled;
       }),
     );
     this.mutate({
@@ -247,10 +260,33 @@ class Game {
     });
   }
   private async actionPhase() {
+    const player = this._state.players[this._state.currentTurn];
+    if (player.declaredEnd) {
+      // skip
+    } else if (player.skipNextTurn) {
+      this.mutate({
+        type: "setPlayerFlag",
+        who: this._state.currentTurn,
+        flagName: "skipNextTurn",
+        value: false,
+      });
+    } else {
+      const activeCh = player.characters[getActiveCharacterIndex(player)];
+      const skill = activeCh.definition.initiativeSkills[0];
+      const [newState, eventList] = skill.action(this._state, activeCh.id);
+      this._state = newState;
+      this.notify([]);
+      await this.io.pause(this._state);
+    }
     this.mutate({
-      type: "changePhase",
-      newPhase: "end",
+      type: "switchTurn",
     });
+    if (this._state.players[0].declaredEnd && this._state.players[1].declaredEnd) {
+      this.mutate({
+        type: "changePhase",
+        newPhase: "end",
+      });
+    }
   }
   private async endPhase() {
     this.mutate({

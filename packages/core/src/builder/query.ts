@@ -8,6 +8,7 @@ import {
   SkillContext,
   StrictlyTypedCharacterContext,
 } from "./context";
+import { getActiveCharacterIndex, shiftLeft } from "../util";
 
 type Filter<Readonly extends boolean, TypeT extends ExEntityType> = (
   e: ExContextType<Readonly, TypeT>,
@@ -152,15 +153,8 @@ export class QueryBuilder<
     }
     for (const who of whoList) {
       const player = state.players[who];
-      const activeIdx = player.characters.findIndex(
-        (ch) => ch.id === player.activeCharacterId,
-      );
-      if (activeIdx === -1) {
-        throw new Error("Invalid active character index");
-      }
-      for (let i = 0; i < player.characters.length; i++) {
-        const idx = (activeIdx + i) % player.characters.length;
-        const ch = player.characters[idx];
+      const activeIdx = getActiveCharacterIndex(player);
+      for (const ch of shiftLeft(player.characters, activeIdx)) {
         if (!this._includeDefeated && !ch.variables.alive) {
           continue;
         }

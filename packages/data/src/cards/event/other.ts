@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card } from "@gi-tcg/core/builder";
 
 /**
  * @id 332015
@@ -89,10 +89,12 @@ const ElementalResonanceHighVoltage = card(331402)
  * 切换到目标角色，并生成1点万能元素。
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
-const ElementalResonanceImpetuousWinds = card(331502)
+const ElementalResonanceImpetuousWinds = card(331502, "character")
   .costAnemo(1)
   .tags("resonance")
-  // TODO
+  // TODO My target
+  .switchActive($ => $.context.targets[0])
+  .do(c => c.generateDice(DiceType.Omni, 1))
   .done();
 
 /**
@@ -404,6 +406,7 @@ const StoneAndContracts = card(331802)
 const Strategize = card(332004)
   .costSame(1)
   // TODO
+  .do((c) => c.drawCards(1))
   .done();
 
 /**
@@ -415,6 +418,7 @@ const Strategize = card(332004)
 const TheBestestTravelCompanion = card(332001)
   .costVoid(2)
   // TODO
+  .do(c => c.generateDice(DiceType.Omni, 2))
   .done();
 
 /**
@@ -426,6 +430,7 @@ const TheBestestTravelCompanion = card(332001)
 const TheLegendOfVennessa = card(332019)
   .costSame(3)
   // TODO
+  .do(c => c.generateDice("randomElement", 4))
   .done();
 
 /**
