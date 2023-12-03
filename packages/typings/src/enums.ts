@@ -36,7 +36,7 @@ export enum Aura {
 }
 
 export enum Reaction {
-  Melt = 1,
+  Melt = 101,
   Vaporize,
   Overloaded,
   Superconduct,
