@@ -13,9 +13,11 @@ import {
 import {
   AppliableDamageType,
   CombatStatusHandle,
+  ExContextType,
   ExEntityType,
   HandleT,
   SkillHandle,
+  StatusHandle,
   SummonHandle,
 } from "./type";
 import { getEntityDefinition } from "./registry";
@@ -54,6 +56,10 @@ export class SkillContext<
   }
   private get callerState(): CharacterState | EntityState {
     return getEntityById(this._state, this.callerId, true);
+  }
+  self(): ExContextType<Readonly, CallerType> {
+    // @ts-ignore
+    return this.query(this.callerState.definition.type).self().one();
   }
   isMyTurn() {
     return this._state.currentTurn === this.callerArea.who;
@@ -254,6 +260,12 @@ export class SkillContext<
   summon(id: SummonHandle) {
     this.createEntity("summon", id);
   }
+  characterStatus(id: StatusHandle) {
+    if (this.callerState.definition.type !== "character") {
+      throw new Error(`Only character caller can use .characterStatus() method`)
+    }
+    this.createEntity("status", id, this.callerArea);
+  }
   combatStatus(id: CombatStatusHandle) {
     this.createEntity("combatStatus", id);
   }
@@ -380,9 +392,6 @@ export class CharacterContext<Readonly extends boolean> {
     private readonly skillContext: SkillContext<Readonly, any, any>,
     private readonly _id: number,
   ) {
-    /**
-     * 所谓 `StrictlyTyped` 是指
-     */
     this.area = getEntityArea(skillContext.state, _id);
   }
 
@@ -465,6 +474,9 @@ export class CharacterContext<Readonly extends boolean> {
   }
   apply(type: AppliableDamageType) {
     this.skillContext.apply(type, this as CharacterContext<boolean>);
+  }
+  addStatus(status: StatusHandle) {
+    this.skillContext.createEntity("status", status, this.area);
   }
 }
 

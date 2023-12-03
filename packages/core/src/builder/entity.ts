@@ -1,22 +1,18 @@
 import { EntityType, EntityTag } from "../base/entity";
 import {
-  EventArg,
+  EventExt,
   EventMap,
   EventNames,
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { registerEntity } from "./registry";
 import {
-  DetailedEventArg,
+  DetailedEventExt,
   DetailedEventNames,
   TriggeredSkillBuilder,
   enableShortcut,
 } from "./skill";
 import { HandleT } from "./type";
-
-type EventExt<E extends DetailedEventNames> = {
-  eventArg: DetailedEventArg<E>;
-};
 
 export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   private _skillNo = 0;
@@ -33,12 +29,28 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   ) {}
 
   on<E extends DetailedEventNames>(event: E) {
-    return enableShortcut(new TriggeredSkillBuilder<EventExt<E>, CallerType, E>(
+    return enableShortcut(new TriggeredSkillBuilder<DetailedEventExt<E>, CallerType, E>(
       this.type,
       this.generateSkillId(),
       event,
       this,
     ));
+  }
+
+  duration(count: number): this {
+    // TODO
+    return this;
+  }
+
+  usage(count: number, max?: number): this {
+    // TODO
+    return this;
+  }
+
+  shield(count: number, max?: number): this {
+    // TODO
+    this.tags("shield");
+    return this;
   }
 
   tags(...tags: EntityTag[]): this {

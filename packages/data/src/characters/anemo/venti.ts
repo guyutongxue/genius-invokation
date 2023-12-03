@@ -21,7 +21,7 @@ const Stormeye = summon(115034)
  */
 const Stormzone01 = combatStatus(115032)
   .on("beforeUseDice")
-  .do((_, e) => e.deductCost(DiceType.Void))
+  .deductCost(DiceType.Void)
   // TODO
   .done();
 

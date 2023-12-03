@@ -323,6 +323,7 @@ class Game {
         }))
         .map((s) => ({
           ...s,
+          fast: false,
           cost:
             "costs" in s.skill.definition ? [...s.skill.definition.costs] : [],
         })),
@@ -338,6 +339,7 @@ class Game {
     result.push({
       type: "declareEnd",
       who,
+      fast: false,
       cost: [],
     });
     // TODO onBeforeUseDice event

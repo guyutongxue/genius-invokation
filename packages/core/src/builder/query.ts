@@ -128,6 +128,9 @@ export class QueryBuilder<
   ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
     return this.filter((e) => e.state.id === id);
   }
+  notId(id: number): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
+    return this.filter((e) => e.state.id !== id);
+  }
   self(): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, CallerType> {
     return this.byId(this.skillContext.callerId) as any;
   }

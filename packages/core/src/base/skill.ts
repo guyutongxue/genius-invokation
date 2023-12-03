@@ -27,38 +27,42 @@ export interface InitiativeSkillDefinition<Arg = void>
 }
 
 export interface RollModifier {
-  readonly who: 0 | 1;
+  readonly eventWho: 0 | 1;
   fixDice(...dice: DiceType[]): void;
   addRerollCount(count: number): void;
 }
 
 export interface UseDiceModifier {
-  readonly who: 0 | 1;
-  readonly action: ActionInfo;
+  readonly eventWho: 0 | 1;
+  readonly currentAction: ActionInfo;
   readonly currentCost: DiceType[];
   addCost(...dice: DiceType[]): void;
-  deductCost(...dice: DiceType[]): DiceType[];
-  requestFastSwitch(): boolean;
+  deductCost(...dice: DiceType[]): void;
+  requestFastSwitch(): void;
 }
 
-export interface DamageModifier {
-  readonly info: DamageInfo;
+export interface DamageModifier0 {
+  readonly damageInfo: DamageInfo;
   changeDamageType(type: DamageType): void;
+}
+
+export interface DamageModifier1 {
+  readonly damageInfo: DamageInfo;
   increaseDamage(value: number): void;
   multiplyDamage(multiplier: number): void;
   decreaseDamage(value: number): void;
 }
 
 export interface DefeatedModifier {
-  readonly info: DamageInfo;
+  readonly damageInfo: DamageInfo;
   immune(): void;
 }
 
 type SyncEventMap = {
   onRoll: RollModifier;
   onBeforeUseDice: UseDiceModifier;
-  onBeforeDamage0: DamageModifier;
-  onBeforeDamage1: DamageModifier;
+  onBeforeDamage0: DamageModifier0;
+  onBeforeDamage1: DamageModifier1;
   onBeforeDefeated: DefeatedModifier;
 };
 
@@ -140,6 +144,7 @@ export type ActionInfo = (
   | DeclareEndInfo
 ) & {
   cost: DiceType[];
+  fast: boolean;
 };
 
 type NULL = Record<never, never>;
@@ -167,8 +172,19 @@ type AsyncEventMap = {
 export type EventMap = SyncEventMap & AsyncEventMap;
 export type EventNames = keyof EventMap;
 
-// state 为引发事件后的现场状态
-export type EventArg<E extends EventNames> = EventMap[E] & { state: GameState };
+export type EventArg<E extends EventNames> = E extends keyof SyncEventMap
+  ? SyncEventMap[E]
+  : E extends keyof AsyncEventMap
+  ? AsyncEventMap[E] & { state: GameState } // 引发事件时的游戏状态
+  : never;
+
+export type EventExt<E extends EventNames> = E extends keyof SyncEventMap
+  ? EventArg<E>
+  : E extends keyof AsyncEventMap
+  ? {
+      eventArg: EventArg<E>;
+    }
+  : never;
 
 type InSkillEvent =
   | "onSwitchActive"

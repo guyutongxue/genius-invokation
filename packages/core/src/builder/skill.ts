@@ -5,7 +5,7 @@ import {
   SkillDescription,
   SkillType,
   EventNames,
-  EventArg,
+  EventExt,
   SkillInfo,
   TriggeredSkillDefinition,
 } from "../base/skill";
@@ -87,7 +87,10 @@ function checkRelative(
 
 type Descriptor<E extends EventNames> = readonly [
   E,
-  (e: EventArg<E>, listen: RelativeArg) => boolean,
+  (
+    e: ExtendedSkillContext<true, EventExt<E>, ExEntityType>,
+    listen: RelativeArg,
+  ) => boolean,
 ];
 
 function defineDescriptor<E extends EventNames>(
@@ -104,10 +107,6 @@ function defineDescriptor<E extends EventNames>(
  * 1. 该技能为主动技能；且
  * 2. 该技能不是准备技能触发的。
  * 3. Note: 通过使用卡牌（天赋等）触发的技能也适用。
- *
- * 第 2 条检测的方法是查看 `skillInfo.requestBy`。对于准备技能，
- * `skillInfo.requestBy` 是准备状态，其不可能包含 `fromCard` 值；
- * 第 3 条所述的技能则包含 `fromCard`。
  */
 function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
   if (
@@ -138,99 +137,101 @@ function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
  * 在监听范围内。
  */
 const detailedEventDictionary = {
-  roll: defineDescriptor("onRoll", (e, r) => {
-    return checkRelative(e.state, e.who, r);
+  roll: defineDescriptor("onRoll", (c, r) => {
+    return checkRelative(c.state, c.eventWho, r);
   }),
-  beforeUseDice: defineDescriptor("onBeforeUseDice", (e, r) => {
-    return checkRelative(e.state, e.who, r);
+  beforeUseDice: defineDescriptor("onBeforeUseDice", (c, r) => {
+    return checkRelative(c.state, c.eventWho, r);
   }),
-  beforeDamageType: defineDescriptor("onBeforeDamage0", (e, r) => {
-    return checkRelative(e.state, e.info.source.id, r);
+  beforeDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
+    return checkRelative(c.state, c.damageInfo.source.id, r);
   }),
-  beforeDealDamage: defineDescriptor("onBeforeDamage1", (e, r) => {
+  beforeDealDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
     return (
-      e.info.type !== DamageType.Piercing &&
-      checkRelative(e.state, e.info.source.id, r)
+      c.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, c.damageInfo.source.id, r)
     );
   }),
-  beforeSkillDamage: defineDescriptor("onBeforeDamage1", (e, r) => {
+  beforeSkillDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
     return (
-      e.info.type !== DamageType.Piercing &&
-      checkRelative(e.state, e.info.source.id, r) &&
-      commonInitiativeSkillCheck(e.info.via)
+      c.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, c.damageInfo.source.id, r) &&
+      commonInitiativeSkillCheck(c.damageInfo.via)
     );
   }),
-  beforeDamaged: defineDescriptor("onBeforeDamage1", (e, r) => {
+  beforeDamaged: defineDescriptor("onBeforeDamage1", (c, r) => {
     return (
-      e.info.type !== DamageType.Piercing &&
-      checkRelative(e.state, e.info.target.id, r)
+      c.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, c.damageInfo.target.id, r)
     );
   }),
-  beforeDefeated: defineDescriptor("onBeforeDefeated", (e, r) => {
-    return checkRelative(e.state, e.info.target.id, r);
+  beforeDefeated: defineDescriptor("onBeforeDefeated", (c, r) => {
+    return checkRelative(c.state, c.damageInfo.target.id, r);
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),
   actionPhase: defineDescriptor("onActionPhase"),
   endPhase: defineDescriptor("onEndPhase"),
-  beforeAction: defineDescriptor("onBeforeAction", (e, r) => {
-    return checkRelative(e.state, e.who, r);
+  beforeAction: defineDescriptor("onBeforeAction", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.who, r);
   }),
-  action: defineDescriptor("onAction", (e, r) => {
-    return checkRelative(e.state, e.who, r);
+  action: defineDescriptor("onAction", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.who, r);
   }),
-  playCard: defineDescriptor("onAction", (e, r) => {
-    if (!checkRelative(e.state, e.who, r)) return false;
-    return e.type === "playCard";
+  playCard: defineDescriptor("onAction", (c, r) => {
+    if (!checkRelative(c.eventArg.state, c.eventArg.who, r)) return false;
+    return c.eventArg.type === "playCard";
   }),
-  declareEnd: defineDescriptor("onAction", (e, r) => {
-    if (!checkRelative(e.state, e.who, r)) return false;
-    return e.type === "declareEnd";
+  declareEnd: defineDescriptor("onAction", (c, r) => {
+    if (!checkRelative(c.eventArg.state, c.eventArg.who, r)) return false;
+    return c.eventArg.type === "declareEnd";
   }),
-  skill: defineDescriptor("onSkill", (e, r) => {
-    if (!checkRelative(e.state, e.caller.id, r)) return false;
-    return commonInitiativeSkillCheck(e);
+  skill: defineDescriptor("onSkill", (c, r) => {
+    if (!checkRelative(c.eventArg.state, c.eventArg.caller.id, r)) return false;
+    return commonInitiativeSkillCheck(c.eventArg);
   }),
-  switchActive: defineDescriptor("onSwitchActive", (e, r) => {
+  switchActive: defineDescriptor("onSwitchActive", (c, r) => {
     return (
-      checkRelative(e.state, e.from.id, r) || checkRelative(e.state, e.to.id, r)
+      checkRelative(c.eventArg.state, c.eventArg.from.id, r) ||
+      checkRelative(c.eventArg.state, c.eventArg.to.id, r)
     );
   }),
-  dealDamage: defineDescriptor("onDamage", (e, r) => {
-    return checkRelative(e.state, e.source.id, r);
+  dealDamage: defineDescriptor("onDamage", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.source.id, r);
   }),
-  damaged: defineDescriptor("onDamage", (e, r) => {
-    return checkRelative(e.state, e.target.id, r);
+  damaged: defineDescriptor("onDamage", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.target.id, r);
   }),
-  healed: defineDescriptor("onHeal", (e, r) => {
-    return checkRelative(e.state, e.target.id, r);
+  healed: defineDescriptor("onHeal", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.target.id, r);
   }),
-  elementalReaction: defineDescriptor("onElementalReaction", (e, r) => {
-    return checkRelative(e.state, e.target.id, r);
+  elementalReaction: defineDescriptor("onElementalReaction", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.target.id, r);
   }),
-  enter: defineDescriptor("onEnter", (e, r) => {
-    return e.entity.id === r.callerId;
+  enter: defineDescriptor("onEnter", (c, r) => {
+    return c.eventArg.entity.id === r.callerId;
   }),
-  dispose: defineDescriptor("onDisposing", (e, r) => {
-    return checkRelative(e.state, e.entity.id, r);
+  dispose: defineDescriptor("onDisposing", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.entity.id, r);
   }),
 } satisfies Record<string, Descriptor<any>>;
 
 type DetailedEventDictionary = typeof detailedEventDictionary;
 export type DetailedEventNames = keyof DetailedEventDictionary;
-export type DetailedEventArg<E extends DetailedEventNames> = EventArg<
+export type DetailedEventExt<E extends DetailedEventNames> = EventExt<
   DetailedEventDictionary[E][0]
 >;
 
-class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
+export class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(
     protected readonly callerType: CallerType,
     protected readonly id: number,
   ) {}
 
-  if(filter: SkillFilter<Ext, CallerType>) {
+  if(filter: SkillFilter<Ext, CallerType>): this {
     // TODO
+    return this;
   }
 
   do(op: SkillOperation<Ext, CallerType>) {
@@ -328,7 +329,9 @@ type BuilderWithShortcut<
   ) => BuilderWithShortcut<Ext, CallerType, Original>;
 };
 
-type ExtractTArgs<T> = T extends SkillBuilder<infer Ext, infer CallerType> ? [Ext, CallerType] : [never, never];
+type ExtractTArgs<T> = T extends SkillBuilder<infer Ext, infer CallerType>
+  ? [Ext, CallerType]
+  : [never, never];
 
 /**
  * 为 Builder 添加直达 SkillContext 的函数，即可
@@ -343,12 +346,12 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
       if (prop in target) {
         return Reflect.get(target, prop, receiver);
       } else {
-        return function(this: T, ...args: any[]) {
+        return function (this: T, ...args: any[]) {
           return this.do((c) => c[prop](...args));
-        }
+        };
       }
-    }
-  }); 
+    },
+  });
   return proxy as BuilderWithShortcut<TArgs[0], TArgs[1], T>;
 }
 
@@ -370,9 +373,13 @@ export class TriggeredSkillBuilder<
     const eventName = detailedEventDictionary[this.triggerOn][0];
     const action: SkillDescription<any> = (state, callerId, arg) => {
       const innerAction = this.getAction((ctx) => {
-        return {
-          eventArgs: arg,
-        } as Ext;
+        if ("state" in arg) {
+          return {
+            eventArg: arg
+          } as Ext;
+        } else {
+          return arg;
+        }
       });
       return innerAction(state, callerId);
     };
@@ -448,6 +455,11 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   protected _cost: DiceType[] = [];
   constructor(private readonly skillId: number) {
     super(skillId);
+  }
+
+  noEnergy(): this {
+    this._gainEnergy = false;
+    return this;
   }
 
   type(type: "passive"): EntityBuilder<object, "passiveSkill">;
