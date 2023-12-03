@@ -94,7 +94,7 @@ const ElementalResonanceImpetuousWinds = card(331502, "character")
   .tags("resonance")
   // TODO My target
   .switchActive($ => $.context.targets[0])
-  .do(c => c.generateDice(DiceType.Omni, 1))
+  .generateDice(DiceType.Omni, 1)
   .done();
 
 /**
@@ -406,7 +406,7 @@ const StoneAndContracts = card(331802)
 const Strategize = card(332004)
   .costSame(1)
   // TODO
-  .do((c) => c.drawCards(1))
+  .drawCards(1)
   .done();
 
 /**
@@ -418,7 +418,7 @@ const Strategize = card(332004)
 const TheBestestTravelCompanion = card(332001)
   .costVoid(2)
   // TODO
-  .do(c => c.generateDice(DiceType.Omni, 2))
+  .generateDice(DiceType.Omni, 2)
   .done();
 
 /**
@@ -430,7 +430,7 @@ const TheBestestTravelCompanion = card(332001)
 const TheLegendOfVennessa = card(332019)
   .costSame(3)
   // TODO
-  .do(c => c.generateDice("randomElement", 4))
+  .generateDice("randomElement", 4)
   .done();
 
 /**

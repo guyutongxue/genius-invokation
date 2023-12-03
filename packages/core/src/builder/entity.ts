@@ -10,6 +10,7 @@ import {
   DetailedEventArg,
   DetailedEventNames,
   TriggeredSkillBuilder,
+  enableShortcut,
 } from "./skill";
 import { HandleT } from "./type";
 
@@ -32,15 +33,15 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   ) {}
 
   on<E extends DetailedEventNames>(event: E) {
-    return new TriggeredSkillBuilder<EventExt<E>, CallerType, E>(
+    return enableShortcut(new TriggeredSkillBuilder<EventExt<E>, CallerType, E>(
       this.type,
       this.generateSkillId(),
       event,
       this,
-    );
+    ));
   }
 
-  tags(...tags: EntityTag[]) {
+  tags(...tags: EntityTag[]): this {
     this._tags.push(...tags);
     return this;
   }

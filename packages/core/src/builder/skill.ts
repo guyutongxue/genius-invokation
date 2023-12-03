@@ -238,32 +238,6 @@ class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
     return this;
   }
 
-  switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
-    return this.do((c) => c.switchActive(target));
-  }
-  gainEnergy(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
-    return this.do((c) => c.gainEnergy(value, target));
-  }
-  heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
-    return this.do((c) => c.heal(value, target));
-  }
-  damage(
-    value: number,
-    type: DamageType,
-    target: TargetQueryArg<false, Ext, CallerType> = ($) => $.opp().active(),
-  ) {
-    return this.do((c) => c.damage(value, type, target));
-  }
-  apply(
-    type: AppliableDamageType,
-    target: TargetQueryArg<false, Ext, CallerType>,
-  ) {
-    return this.do((c) => c.apply(type, target));
-  }
-  summon(id: SummonHandle) {
-    return this.do((c) => c.summon(id));
-  }
-
   /**
    * 生成内部技能描述函数。
    * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点。
@@ -313,6 +287,71 @@ export function extendSkillContext<
       }
     },
   }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
+}
+
+// 找到所有返回 void 的方法
+type AvailablePropImpl<
+  Obj extends object,
+  K extends keyof Obj,
+> = Obj[K] extends (...args: any[]) => void
+  ? ReturnType<Obj[K]> extends void
+    ? K
+    : never
+  : never;
+type AvailablePropOf<Ctx extends object> = {
+  [K in keyof Ctx]: AvailablePropImpl<Ctx, K>;
+}[keyof Ctx];
+type SkillContextShortcutProps<
+  Ext extends object,
+  CallerType extends ExEntityType,
+> = AvailablePropOf<ExtendedSkillContext<false, Ext, CallerType>>;
+
+// 所有返回 void 的方法的参数类型
+type SkillContextShortcutArgs<
+  Ext extends object,
+  CallerType extends ExEntityType,
+  K extends keyof ExtendedSkillContext<false, Ext, CallerType>,
+> = ExtendedSkillContext<false, Ext, CallerType>[K] extends (
+  ...args: infer Args
+) => void
+  ? Args
+  : never;
+
+/**
+ * 带有直达方法的 Builder，使用 `enableShortcut` 生成
+ */
+type BuilderWithShortcut<
+  Ext extends object,
+  CallerType extends ExEntityType,
+  Original extends SkillBuilder<Ext, CallerType>,
+> = Original & {
+  [K in SkillContextShortcutProps<Ext, CallerType>]: (
+    ...args: SkillContextShortcutArgs<Ext, CallerType, K>
+  ) => BuilderWithShortcut<Ext, CallerType, Original>;
+};
+
+type ExtractTArgs<T> = T extends SkillBuilder<infer Ext, infer CallerType> ? [Ext, CallerType] : [never, never];
+
+/**
+ * 为 Builder 添加直达 SkillContext 的函数，即可
+ * `.do((c) => c.PROP(ARGS))`
+ * 直接简写为
+ * `.PROP(ARGS)`
+ */
+export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
+  type TArgs = ExtractTArgs<T>;
+  const proxy = new Proxy(original, {
+    get(target, prop, receiver) {
+      if (prop in target) {
+        return Reflect.get(target, prop, receiver);
+      } else {
+        return function(this: T, ...args: any[]) {
+          return this.do((c) => c[prop](...args));
+        }
+      }
+    }
+  }); 
+  return proxy as BuilderWithShortcut<TArgs[0], TArgs[1], T>;
 }
 
 export class TriggeredSkillBuilder<
@@ -369,7 +408,7 @@ export class SkillBuilderWithCost<Ext extends object> extends SkillBuilder<
     super("character", skillId);
   }
   protected _cost: DiceType[] = [];
-  private cost(type: DiceType, count: number) {
+  private cost(type: DiceType, count: number): this {
     this._cost.push(...Array(count).fill(type));
     return this;
   }
@@ -425,7 +464,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
 
   done(): SkillHandle {
     if (this._gainEnergy) {
-      this.gainEnergy(1, ($) => $.self());
+      this.do((c) => c.gainEnergy(1, ($) => $.self()));
     }
     const action: SkillDescription<void> = this.getAction(() => ({}));
     registerSkill({
@@ -441,5 +480,5 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
 }
 
 export function skill(id: number) {
-  return new InitiativeSkillBuilder(id);
+  return enableShortcut(new InitiativeSkillBuilder(id));
 }

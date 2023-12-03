@@ -10,8 +10,17 @@ import {
 import { registerCard, registerSkill } from "./registry";
 import { SkillDescription } from "../base/skill";
 import { ExtendedSkillContext, SkillContext } from "./context";
-import { SkillBuilderWithCost, extendSkillContext } from "./skill";
-import { CardHandle, CharacterHandle, ExContextType, ExEntityType } from "./type";
+import {
+  SkillBuilderWithCost,
+  extendSkillContext,
+  enableShortcut,
+} from "./skill";
+import {
+  CardHandle,
+  CharacterHandle,
+  ExContextType,
+  ExEntityType,
+} from "./type";
 
 type ContextOf<
   Readonly extends boolean,
@@ -48,11 +57,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     super(cardId);
   }
 
-  tags(...tags: CardTag[]) {
+  tags(...tags: CardTag[]): this {
     this._tags.push(...tags);
     return this;
   }
-  type(type: CardType) {
+  type(type: CardType): this {
     this._type = type;
     return this;
   }
@@ -71,11 +80,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this; // TODO
   }
 
-  legend() {
+  legend(): this {
     return this.tags("legend");
   }
 
-  talentOf(ch: CharacterHandle, opt?: { action?: boolean }) {
+  talentOf(ch: CharacterHandle, opt?: { action?: boolean }): this {
     this._talentCh = ch;
     const action = opt?.action ?? true;
     // TODO: deck requirements
@@ -83,7 +92,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
-  filter(pred: PredFn<KindTs>) {
+  filter(pred: PredFn<KindTs>): this {
     this._filters.push(pred);
     return this;
   }
@@ -156,6 +165,6 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 export function card<const KindTs extends CardTargetKind>(
   id: number,
   ...targetKinds: KindTs
-): CardBuilder<KindTs> {
-  return new CardBuilder(id, targetKinds);
+) {
+  return enableShortcut(new CardBuilder<KindTs>(id, targetKinds));
 }
