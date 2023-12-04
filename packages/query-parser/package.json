@@ -1,0 +1,10 @@
+{
+  "name": "@gi-tcg/query-parser",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": "./src/main.ts",
+  "dependencies": {
+    "chevrotain": "^11.0.3"
+  }
+}
