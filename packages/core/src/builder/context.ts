@@ -5,11 +5,7 @@ import { Mutation, applyMutation } from "../base/mutation";
 import { DeferredActions, SkillInfo } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getActiveCharacterIndex, getEntityArea, getEntityById } from "../util";
-import {
-  QueryBuilder,
-  StrictlyTypedQueryBuilder,
-  TargetQueryArg,
-} from "./query";
+import { doQuery } from "./query";
 import {
   AppliableDamageType,
   CombatStatusHandle,
@@ -22,6 +18,31 @@ import {
 } from "./type";
 import { getEntityDefinition } from "./registry";
 import { CardTag } from "../base/card";
+import { GuessedTypeOfQuery } from "@gi-tcg/query-parser";
+
+type WrapArray<T> = T extends readonly any[] ? T : T[];
+
+type QueryFn<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+  Ret,
+> = (ctx: SkillContext<Readonly, Ext, CallerType>) => Ret;
+
+type TargetQueryArg<
+  Readonly extends boolean,
+  Ext extends object,
+  CallerType extends ExEntityType,
+> =
+  | QueryFn<
+      Readonly,
+      Ext,
+      CallerType,
+      CharacterContext<Readonly> | CharacterContext<Readonly>[]
+    >
+  | CharacterContext<Readonly>[]
+  | CharacterContext<Readonly>
+  | string;
 
 /**
  * 用于描述技能的上下文对象。
@@ -65,35 +86,48 @@ export class SkillContext<
     return this._state.currentTurn === this.callerArea.who;
   }
 
-  query<TypeT extends ExEntityType>(
-    type: TypeT,
-  ): StrictlyTypedQueryBuilder<Readonly, Ext, CallerType, TypeT> {
-    return new QueryBuilder(
-      this as SkillContext<Readonly, Ext, CallerType>,
-    ).type(type);
+  $<Ret>(arg: QueryFn<Readonly, Ext, CallerType, Ret>): Ret;
+  $<const Q extends string>(
+    arg: Q,
+  ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>;
+  $<T>(arg: T): T;
+  $(arg: any): any {
+    const result = this.$$(arg);
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      throw new Error(`No entity selected`);
+    }
   }
 
-  private doTargetQuery(
-    arg: TargetQueryArg<boolean, Ext, CallerType>,
-  ): StrictlyTypedCharacterContext<boolean>[] {
-    let fnResult;
+  /**
+   * 在指定某个角色目标时，可传入的参数类型：
+   * - Query Lambda 形如 `$ => $.active()`
+   *   - 该 Lambda 可返回 `QueryBuilder` 如上；
+   *   - 也可返回具体的对象上下文，如 `$ => $.opp().one()`。
+   * - 直接传入具体的对象上下文。
+   */
+
+  $$<Ret>(arg: QueryFn<Readonly, Ext, CallerType, Ret>): WrapArray<Ret>;
+  $$<const Q extends string>(
+    arg: Q,
+  ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[];
+  $$<T>(arg: T): WrapArray<T>;
+  $$(arg: any): any {
     if (typeof arg === "function") {
-      const query = new QueryBuilder<Readonly, Ext, CallerType, ExEntityType>(
-        this,
-      );
-      fnResult = arg(query);
+      const fnResult = arg(this);
+      if (Array.isArray(fnResult)) {
+        return fnResult;
+      } else {
+        return [fnResult];
+      }
+    } else if (typeof arg === "string") {
+      return doQuery(this, arg);
+    } else if (Array.isArray(arg)) {
+      return arg;
     } else {
-      fnResult = arg;
+      return [arg];
     }
-    let result: StrictlyTypedCharacterContext<boolean>[];
-    if (fnResult instanceof QueryBuilder) {
-      result = fnResult.character().many();
-    } else if (Array.isArray(fnResult)) {
-      result = fnResult;
-    } else {
-      result = [fnResult as StrictlyTypedCharacterContext<boolean>];
-    }
-    return result;
   }
 
   // MUTATIONS
@@ -113,12 +147,12 @@ export class SkillContext<
   }
 
   switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
-    const targets = this.doTargetQuery(target);
+    const targets = this.$$(target as "character");
     if (targets.length !== 1) {
       throw new Error("Expected exactly one target");
     }
     const switchToTarget = targets[0] as CharacterContext<false>;
-    const from = new QueryBuilder(this).character().active().one();
+    const from = this.$("active character");
     this.mutate({
       type: "switchActive",
       who: switchToTarget.who,
@@ -134,7 +168,7 @@ export class SkillContext<
   }
 
   gainEnergy(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
-    const targets = this.doTargetQuery(target);
+    const targets = this.$$(target as "character");
     for (const t of targets) {
       const targetState = t.state;
       const finalValue = Math.min(
@@ -152,7 +186,7 @@ export class SkillContext<
   }
 
   heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
-    const targets = this.doTargetQuery(target);
+    const targets = this.$$(target as "character");
     for (const t of targets) {
       const targetState = t.state;
       const targetInjury =
@@ -178,9 +212,9 @@ export class SkillContext<
   damage(
     value: number,
     type: DamageType,
-    target: TargetQueryArg<false, Ext, CallerType> = ($) => $.opp().active(),
+    target: TargetQueryArg<false, Ext, CallerType> = "active",
   ) {
-    const targets = this.doTargetQuery(target);
+    const targets = this.$$(target as "character");
     for (const t of targets) {
       const targetState = t.state;
       // TODO: sync events, elemental reaction, etc.
@@ -262,7 +296,9 @@ export class SkillContext<
   }
   characterStatus(id: StatusHandle) {
     if (this.callerState.definition.type !== "character") {
-      throw new Error(`Only character caller can use .characterStatus() method`)
+      throw new Error(
+        `Only character caller can use .characterStatus() method`,
+      );
     }
     this.createEntity("status", id, this.callerArea);
   }
@@ -292,7 +328,9 @@ export class SkillContext<
 
   drawCards(count: number, withTag?: CardTag) {
     const piles = this.player.piles;
-    const candidates = withTag ? piles.filter((c) => c.definition.tags.includes(withTag)) : [...piles];
+    const candidates = withTag
+      ? piles.filter((c) => c.definition.tags.includes(withTag))
+      : [...piles];
     for (let i = 0; i < count; i++) {
       const value = candidates.pop();
       if (typeof value === "undefined") {
@@ -302,7 +340,7 @@ export class SkillContext<
         type: "transferCard",
         path: "pilesToHands",
         who: this.callerArea.who,
-        value
+        value,
       });
     }
   }
@@ -315,12 +353,11 @@ export class SkillContext<
   useSkill(skill: SkillHandle | "normal") {
     let skillId;
     if (skill === "normal") {
-      const normalSkills = this.query("character")
-        .active()
-        .one()
-        .state.definition.initiativeSkills.filter(
-          (sk) => sk.skillType === "normal",
-        );
+      const normalSkills = this.$(
+        "active character",
+      ).state.definition.initiativeSkills.filter(
+        (sk) => sk.skillType === "normal",
+      );
       if (normalSkills.length !== 1) {
         throw new Error("Expected exactly one normal skill");
       }
@@ -457,8 +494,8 @@ export class CharacterContext<Readonly extends boolean> {
     );
   }
 
-  query() {
-    return this.skillContext.query("character").byId(this._id).into();
+  $$<const Q extends string>(arg: Q) {
+    return this.skillContext.$(`(${arg}) at (character with id ${this._id})`);
   }
 
   // MUTATIONS

@@ -208,7 +208,7 @@ class QueryVisitor extends BaseVisitorWithDefaults {
 
 const visitorInstance = new QueryVisitor();
 
-export function toAst(inputText: string) {
+export function toAst(inputText: string): AST.Query {
   // Lex
   const lexResult = QueryLexer.tokenize(inputText);
   parserInstance.input = lexResult.tokens;
