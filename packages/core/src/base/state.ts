@@ -5,6 +5,7 @@ import { CharacterDefinition, CharacterVariables } from "./character";
 import { EntityArea, EntityDefinition, EntityVariables } from "./entity";
 import { Mutation } from "./mutation";
 import { SkillDefinition } from "./skill";
+import { ReadonlyDataStore } from "../builder/registry";
 
 export interface GameConfig {
   readonly randomSeed: number;
@@ -35,6 +36,7 @@ export interface MutationLogEntry {
 }
 
 export interface GameState {
+  readonly data: ReadonlyDataStore;
   readonly config: GameConfig;
   readonly iterators: IteratorState;
   readonly phase: PhaseType;

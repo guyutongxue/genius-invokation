@@ -247,7 +247,10 @@ export class SkillContext<
     area?: EntityArea,
   ) {
     const id2 = id as number;
-    const def = getEntityDefinition(id2);
+    const def = this._state.data.entity.get(id2);
+    if (typeof def === "undefined") {
+      throw new Error(`Unknown entity id ${id2}`);
+    }
     const initState: EntityState = {
       id: 0,
       definition: def,
@@ -279,12 +282,12 @@ export class SkillContext<
           );
       }
     }
-    const newState = getEntityById(this._state, id2);
     this.mutate({
       type: "createEntity",
       where: area,
       value: initState,
     });
+    const newState = getEntityById(this._state, initState.id);
     this.emitEvent("onEnter", {
       entity: newState,
       state: this.state,

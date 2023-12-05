@@ -17,15 +17,15 @@ class QueryVisitor extends BaseVisitorWithDefaults {
   query(ctx: any): AST.Query {
     return {
       type: "or",
-      children: ctx.orQuery.map((c: any) => this.visit(c)),
+      children: this.visit(ctx.orQuery[0]),
       orderBy: ctx.orderByClause
         ? ctx.orderByClause.map((c: any) => this.visit(c))
-        : null,
+        : [],
     };
   }
 
-  orQuery(ctx: any): AST.AndQuery {
-    return this.visit(ctx.andQuery);
+  orQuery(ctx: any): AST.AndQuery[] {
+    return ctx.andQuery.map((c: any) => this.visit(c));
   }
 
   andQuery(ctx: any): AST.AndQuery {
@@ -90,10 +90,14 @@ class QueryVisitor extends BaseVisitorWithDefaults {
       return {
         type: "atomic",
         subtype: "paren",
-        query: this.visit(ctx.orQuery),
+        query: {
+          type: "or",
+          children: this.visit(ctx.orQuery[0]),
+          orderBy: []
+        }
       };
     }
-    const [entityType, position, includesDefeated] = this.visit(
+    const [entityType, position, defeated] = this.visit(
       ctx.typeSpecifier,
     );
     return {
@@ -102,22 +106,23 @@ class QueryVisitor extends BaseVisitorWithDefaults {
       who: this.visit(ctx.whoClause),
       entityType,
       position,
-      includesDefeated,
+      defeated,
       rule: ctx.withClause ? this.visit(ctx.withClause) : null,
     };
   }
 
-  typeSpecifier(ctx: any): [AST.EntityType, AST.Position | null, boolean] {
+  typeSpecifier(ctx: any): [AST.EntityType, AST.Position | null, AST.DefeatedOption] {
     let entityType: AST.EntityType = "character";
     let position: AST.Position | null = null;
-    let includesDefeated = false;
+    let defeated: AST.DefeatedOption = "no";
     if (ctx.characterSpecifier) {
-      [position, includesDefeated] = this.visit(ctx.characterSpecifier);
+      [position, defeated] = this.visit(ctx.characterSpecifier);
     } else {
-      if (ctx.Combat) {
+      if (ctx.Any) {
+        entityType = "any";
+      } else if (ctx.Combat) {
         entityType = "combatStatus";
-      }
-      if (ctx.Summon) {
+      } else if (ctx.Summon) {
         entityType = "summon";
       } else if (ctx.Status) {
         entityType = "status";
@@ -127,13 +132,13 @@ class QueryVisitor extends BaseVisitorWithDefaults {
         entityType = "equipment";
       }
     }
-    return [entityType, position, includesDefeated];
+    return [entityType, position, defeated];
   }
 
-  characterSpecifier(ctx: any): [AST.Position | null, boolean] {
+  characterSpecifier(ctx: any): [AST.Position | null, AST.DefeatedOption] {
     return [
       ctx.positionSpecifier ? this.visit(ctx.positionSpecifier) : null,
-      !!ctx.IncludesDefeated,
+      ctx.Includes ? "includes" : ctx.Defeated ? "only" : "no",
     ];
   }
 
@@ -191,8 +196,8 @@ class QueryVisitor extends BaseVisitorWithDefaults {
     const identifiers: string[] = ctx.identifier.map((c: any) => this.visit(c));
     return new Function(
       "$",
-      `for (const t of ${this.getter.tags}) {
-  if (![${identifiers.map((i) => JSON.stringify(i)).join()}].includes(t)) {
+      `for (const t of [${identifiers.map((i) => JSON.stringify(i)).join()}]) {
+  if (!${this.getter.tags}.includes(t)) {
     return false;
   }
   return true;
@@ -221,6 +226,9 @@ class QueryVisitor extends BaseVisitorWithDefaults {
       const name = this.parseIdentifier(ctx);
       return f.call(this.getter, name);
     }
+  }
+  identifier(ctx: any): string {
+    return this.parseIdentifier(ctx);
   }
 
   parseIdentifier(ctx: any): string {

@@ -38,10 +38,11 @@ export type AtomicQuery =
       who: Who;
       entityType: EntityType;
       position: Position | null;
-      includesDefeated: boolean;
+      defeated: DefeatedOption;
       rule: Rule | null;
     };
 
+export type DefeatedOption = "includes" | "only" | "no";
 export type Who = "my" | "opp" | "all";
 export type EntityType =
   | "character"

@@ -14,13 +14,13 @@ import { flip } from "@gi-tcg/utils";
 const getter: AST.StateGetter = {
   id: `$.id`,
   definitionId: `$.definition.id`,
-  tags: `$.tags`,
+  tags: `$.definition.tags`,
   getConstant(name) {
     return `$.definition.constant[${JSON.stringify(name)}]`;
   },
   getVariableOrConstant(name) {
     const quoted = JSON.stringify(name);
-    return `($.variable[${quoted}] ?? $.definition.constant[${quoted}])`;
+    return `($.variables[${quoted}] ?? $.definition.constant[${quoted}])`;
   },
 };
 
@@ -66,7 +66,10 @@ export function queryToFilter(
           if (!subjectFilter(ctx, st)) return false;
           const objects = doFilter(ctx, objectFilter);
           const area = getEntityArea(ctx.state, st.id);
-          if (area.type === "characters" && objects.map(c => c.state.id).includes(area.characterId)) {
+          if (
+            area.type === "characters" &&
+            objects.map((c) => c.state.id).includes(area.characterId)
+          ) {
             return true;
           }
           return false;
@@ -93,7 +96,7 @@ export function queryToFilter(
     if (node.prefixes.length === 0) {
       return queryToFilter(node.target);
     }
-    const first = prefixes.pop()!;
+    const first = prefixes.shift()!;
     if (first === "not") {
       const filter = queryToFilter({
         ...node,
@@ -111,12 +114,17 @@ export function queryToFilter(
     return queryToFilter(node.query);
   }
   const filter: Filter = (ctx, st) => {
+    if (node.entityType === "any") return true;
     const { who } = getEntityArea(ctx.state, st.id);
-    const sameType = node.entityType === "any" || st.definition.type === node.entityType;
-    const sameWho = node.who === "all" || who === (node.who === "opp" ? flip(ctx.callerArea.who) : ctx.callerArea.who);
+    const sameType = st.definition.type === node.entityType;
+    const sameWho =
+      node.who === "all" ||
+      who ===
+        (node.who === "opp" ? flip(ctx.callerArea.who) : ctx.callerArea.who);
     const defeatedOk =
-      st.definition.type === "character" &&
-      (!!st.variables.alive || node.includesDefeated);
+      st.definition.type !== "character" ||
+      node.defeated === "includes" ||
+      !(node.defeated === "only" ? st.variables.alive : !st.variables.alive);
     let positionOk = node.position === null;
     if (node.position === "active") {
       positionOk = ctx.state.players[who].activeCharacterId === st.id;
@@ -171,6 +179,7 @@ export function executeQuery<
   s: Q,
 ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[] {
   const ast = toAst(s, getter);
+  console.log("ast: ", ast);
   const filter = queryToFilter(ast);
   return doFilter(ctx as any, filter) as any;
 }

@@ -12,7 +12,9 @@ const props = defineProps<{
 <template>
   <div>
     <div class="h-40 relative" :title="`id=${data.id}`">
-      <div class="absolute left-[-15px] top-[-20px] flex items-center justify-center">
+      <div
+        class="absolute left-[-15px] top-[-20px] flex items-center justify-center"
+      >
         <!-- 水滴 -->
         <svg
           viewBox="0 0 1024 1024"
@@ -38,6 +40,13 @@ const props = defineProps<{
         :total="maxEnergyData[data.definitionId]"
       ></EnergyBar>
       <Image :id="data.definitionId" class="h-full"></Image>
+      <div class="absolute left-0 bottom-0">
+        <Image
+          v-for="st of data.entities"
+          :id="st.definitionId"
+          class="w-5"
+        ></Image>
+      </div>
     </div>
   </div>
 </template>

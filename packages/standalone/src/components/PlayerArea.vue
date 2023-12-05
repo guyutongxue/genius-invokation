@@ -5,6 +5,7 @@ import Summon from "./Summon.vue";
 import Support from "./Support.vue";
 import Card from "./Card.vue";
 import Dice from "./Dice.vue";
+import Image from "./Image.vue";
 
 const props = defineProps<{
   data: PlayerData;
@@ -14,10 +15,11 @@ const props = defineProps<{
 
 <template>
   <div class="w-full flex flex-row">
-    <div class="bg-yellow-800 text-white">
-      piles = {{ data.piles.length }}
-    </div>
-    <div class="flex-grow flex gap-2" :class="opp ? 'flex-col-reverse' : 'flex-col'">
+    <div class="bg-yellow-800 text-white">piles = {{ data.piles.length }}</div>
+    <div
+      class="flex-grow flex gap-2"
+      :class="opp ? 'flex-col-reverse' : 'flex-col'"
+    >
       <div class="min-h-46 flex flex-row justify-center">
         <div>
           <Support
@@ -29,7 +31,13 @@ const props = defineProps<{
         <div class="flex flex-row gap-6 items-end">
           <div v-for="ch of data.characters" class="flex flex-col">
             <CharacterArea :key="ch.id" :data="ch"></CharacterArea>
-            <div v-if="ch.id === data.activeCharacterId" class="h-6"></div>
+            <div v-if="ch.id === data.activeCharacterId" class="h-6 pt-1">
+              <Image
+                v-for="st of data.combatStatuses"
+                :id="st.definitionId"
+                class="h-5"
+              ></Image>
+            </div>
           </div>
         </div>
         <div>

@@ -91,12 +91,28 @@ export class QueryParser extends CstParser {
     });
     $.RULE("characterSpecifier", () => {
       $.OR([
-        { ALT: () => $.CONSUME2(Token.Character) },
         {
           ALT: () => {
+            // character [includes defeated]
+            $.CONSUME(Token.Character);
+            $.OPTION(() => {
+              $.CONSUME(Token.Includes);
+              $.CONSUME2(Token.Defeated);
+            });
+          },
+        },
+        {
+          ALT: () => {
+            // active | standby ... [character]
             $.SUBRULE($.positionSpecifier);
-            $.OPTION(() => $.CONSUME(Token.Character));
-            $.OPTION2(() => $.CONSUME(Token.IncludesDefeated));
+            $.OPTION2(() => $.CONSUME2(Token.Character));
+          },
+        },
+        {
+          ALT: () => {
+            // defeated [character]
+            $.CONSUME3(Token.Defeated);
+            $.OPTION3(() => $.CONSUME3(Token.Character));
           },
         },
       ]);
@@ -180,13 +196,13 @@ export class QueryParser extends CstParser {
         { ALT: () => $.CONSUME(Token.Multiply) },
         { ALT: () => $.CONSUME(Token.Divide) },
       ]);
-    })
+    });
     $.RULE("additiveOperator", () => {
       $.OR([
         { ALT: () => $.CONSUME(Token.Plus) },
         { ALT: () => $.CONSUME(Token.Minus) },
       ]);
-    })
+    });
     $.RULE("multiplicativeExpression", () => {
       $.SUBRULE($.atomicExpression);
       $.MANY(() => {

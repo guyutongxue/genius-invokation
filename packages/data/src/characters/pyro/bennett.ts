@@ -58,10 +58,8 @@ const FantasticVoyage = skill(13033)
   .costPyro(4)
   .costEnergy(2)
   .damage(2, DamageType.Pyro)
-  .do((c) => {
-    // TODO
-    c.createEntity("combatStatus", InspirationField);
-  })
+  // TODO
+  .combatStatus(InspirationField)
   .done();
 
 /**

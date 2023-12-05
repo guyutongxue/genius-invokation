@@ -20,6 +20,7 @@ import {
 import { getActiveCharacterIndex, getEntityById, shuffle, sortDice } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 import { ActionInfo, SkillDefinitionBase, UseSkillInfo } from "./base/skill";
+import { SkillContext } from "./builder/context";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -63,6 +64,7 @@ class Game {
       seed: config.randomSeed,
     }).state;
     this._state = {
+      data,
       config,
       iterators: {
         random: initRandomState,
@@ -265,6 +267,8 @@ class Game {
       type: "changePhase",
       newPhase: "action",
     });
+    // @ts-expect-error
+    window.$$ = (arg: any) => new SkillContext(this._state, 0, this._state.players[0].activeCharacterId).$$(arg).map((x) => x.state);
   }
   private async actionPhase() {
     const player = this._state.players[this._state.currentTurn];
@@ -279,7 +283,7 @@ class Game {
       });
     } else {
       const activeCh = player.characters[getActiveCharacterIndex(player)];
-      const skill = activeCh.definition.initiativeSkills[0];
+      const skill = activeCh.definition.initiativeSkills[2];
       await this.useSkill(skill, activeCh.id, void 0);
     }
     this.mutate({

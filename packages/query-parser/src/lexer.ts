@@ -74,9 +74,13 @@ export const Standby = createToken({
   longer_alt: Identifier,
 });
 
-export const IncludesDefeated = createToken({
-  name: "IncludesDefeated",
-  pattern: /includes\s+defeated/i,
+export const Includes = createToken({
+  name: "Includes",
+  pattern: /includes/i,
+});
+export const Defeated = createToken({
+  name: "Defeated",
+  pattern: /defeated/i,
 });
 export const With = createToken({
   name: "With",
@@ -192,7 +196,8 @@ export const allTokens = [
   Next,
   Prev,
   Standby,
-  IncludesDefeated,
+  Includes,
+  Defeated,
   With,
   Tag,
   Id,
