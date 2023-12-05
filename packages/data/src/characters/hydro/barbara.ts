@@ -9,8 +9,8 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  */
 const MelodyLoop = summon(112011)
   .on("endPhase")
-  .heal(1, $ => $.mine())
-  .apply(DamageType.Hydro, $ => $.active())
+  .heal(1, "all my characters")
+  .apply(DamageType.Hydro, "active")
   .done();
 
 /**
@@ -49,7 +49,7 @@ const ShiningMiracle = skill(12013)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  .heal(4, $ => $.mine())
+  .heal(4, "all my characters")
   .done();
 
 /**

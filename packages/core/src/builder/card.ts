@@ -105,7 +105,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     ): CardTargetExt<boolean, KindTs> => {
       const targets = [];
       for (let i = 0; i < this.targetKinds.length; i++) {
-        targets.push(skillCtx.query(this.targetKinds[i]).byId(ids[i]).one());
+        targets.push(skillCtx.$(`any with id ${ids[i]}`));
       }
       return {
         targets: targets as any,

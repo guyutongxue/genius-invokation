@@ -5,7 +5,7 @@ import { Mutation, applyMutation } from "../base/mutation";
 import { DeferredActions, SkillInfo } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getActiveCharacterIndex, getEntityArea, getEntityById } from "../util";
-import { doQuery } from "./query";
+import { executeQuery } from "./query";
 import {
   AppliableDamageType,
   CombatStatusHandle,
@@ -27,7 +27,7 @@ type QueryFn<
   Ext extends object,
   CallerType extends ExEntityType,
   Ret,
-> = (ctx: SkillContext<Readonly, Ext, CallerType>) => Ret;
+> = (ctx: ExtendedSkillContext<Readonly, Ext, CallerType>) => Ret;
 
 type TargetQueryArg<
   Readonly extends boolean,
@@ -79,8 +79,7 @@ export class SkillContext<
     return getEntityById(this._state, this.callerId, true);
   }
   self(): ExContextType<Readonly, CallerType> {
-    // @ts-ignore
-    return this.query(this.callerState.definition.type).self().one();
+    return this.$(`any with id ${this.callerId}`) as any;
   }
   isMyTurn() {
     return this._state.currentTurn === this.callerArea.who;
@@ -122,7 +121,7 @@ export class SkillContext<
         return [fnResult];
       }
     } else if (typeof arg === "string") {
-      return doQuery(this, arg);
+      return executeQuery(this, arg);
     } else if (Array.isArray(arg)) {
       return arg;
     } else {
@@ -212,7 +211,7 @@ export class SkillContext<
   damage(
     value: number,
     type: DamageType,
-    target: TargetQueryArg<false, Ext, CallerType> = "active",
+    target: TargetQueryArg<false, Ext, CallerType> = "opp active",
   ) {
     const targets = this.$$(target as "character");
     for (const t of targets) {

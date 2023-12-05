@@ -47,6 +47,11 @@ export const Equipment = createToken({
   pattern: /equipments?/i,
   longer_alt: Identifier,
 });
+export const Any = createToken({
+  name: "Any",
+  pattern: /any/i,
+  longer_alt: Identifier,
+});
 
 export const Active = createToken({
   name: "Active",
@@ -108,6 +113,12 @@ export const RecentFrom = createToken({
   pattern: /recent\s+opp\s+from/i,
 });
 
+export const OrderBy = createToken({
+  name: "OrderBy",
+  pattern: /order\s+by/i,
+  longer_alt: Identifier,
+});
+
 export const Not = createToken({
   name: "Not",
   pattern: /not/i,
@@ -121,6 +132,11 @@ export const And = createToken({
 export const Or = createToken({
   name: "Or",
   pattern: /or/i,
+  longer_alt: Identifier,
+});
+export const As = createToken({
+  name: "As",
+  pattern: /as/i,
   longer_alt: Identifier,
 });
 
@@ -144,6 +160,11 @@ export const GreaterThan = createToken({ name: "GreaterThan", pattern: />/ });
 export const LessThan = createToken({ name: "LessThan", pattern: /</ });
 export const Equal = createToken({ name: "Equal", pattern: /=/ });
 
+export const Plus = createToken({ name: "Add", pattern: /\+/ });
+export const Minus = createToken({ name: "Subtract", pattern: /-/ });
+export const Multiply = createToken({ name: "Multiply", pattern: /\*/ });
+export const Divide = createToken({ name: "Divide", pattern: /\// });
+
 export const LParen = createToken({ name: "LParen", pattern: /\(/ });
 export const RParen = createToken({ name: "RParen", pattern: /\)/ });
 export const Comma = createToken({ name: "Comma", pattern: /,/ });
@@ -166,6 +187,7 @@ export const allTokens = [
   Support,
   Status,
   Equipment,
+  Any,
   Active,
   Next,
   Prev,
@@ -176,11 +198,13 @@ export const allTokens = [
   Id,
   Definition,
   RecentFrom,
+  OrderBy,
   At,
   Has,
   Not,
   And,
   Or,
+  As,
   // Other
   IntegerLiteral,
   StringLiteral,
@@ -196,6 +220,10 @@ export const allTokens = [
   LParen,
   RParen,
   Comma,
+  Plus,
+  Minus,
+  Multiply,
+  Divide
 ];
 
 export const QueryLexer = new Lexer(allTokens);

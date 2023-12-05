@@ -1,6 +1,7 @@
 export interface Query {
   type: "or";
   children: AndQuery[];
+  orderBy: OrderBy[];
 }
 export interface AndQuery {
   type: "and";
@@ -48,44 +49,22 @@ export type EntityType =
   | "combatStatus"
   | "support"
   | "status"
-  | "equipment";
+  | "equipment"
+  | "any";
 export type Position = "active" | "next" | "prev" | "standby";
 
 export interface Rule {
   type: "rule";
-  negative: boolean;
-  how: RuleDetail;
+  how: WithRule;
 }
 
-export type RuleDetail =
-  | {
-      type: "ruleDetail";
-      subtype: "id";
-      id: number;
-    }
-  | {
-      type: "ruleDetail";
-      subtype: "tag";
-      tags: string[];
-    }
-  | {
-      type: "ruleDetail";
-      subtype: "expression";
-      lhs: Variable;
-      operator: Operator;
-      rhs: Variable;
-    };
+export interface StateGetter {
+  id: string;
+  definitionId: string;
+  tags: string;
+  getVariableOrConstant(name: string): string;
+  getConstant(name: string): string;
+}
 
-export type Variable =
-  | {
-      type: "variable";
-      subtype: "variable" | "constant";
-      value: string;
-    }
-  | {
-      type: "variable";
-      subtype: "number";
-      value: number;
-    };
-
-export type Operator = "<" | "<=" | "=" | ">=" | ">" | "!=";
+export type OrderBy = (state: any) => number;
+export type WithRule = (state: any) => boolean;

@@ -133,7 +133,7 @@ const DendroCore = combatStatus(116)
   .if(
     (c) =>
       [D.Pyro, D.Electro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.query("character").opp().active().one().id,
+      c.damageInfo.target.id === c.$("opp active character").id,
   )
   .increaseDamage(1)
   .done();
@@ -151,7 +151,7 @@ const CatalyzingField = combatStatus(117)
   .if(
     (c) =>
       [D.Electro, D.Dendro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.query("character").opp().active().one().id,
+      c.damageInfo.target.id === c.$("opp active character").id,
   )
   .increaseDamage(1)
   .done();
@@ -172,7 +172,7 @@ class ReactionBuilder extends SkillBuilder<DamageModifierR, "character"> {
     REACTION_DESCRIPTION[this.reaction] = (st, id, d) => {
       const action = this.getAction(() => d);
       return action(st, id);
-    }
+    };
   }
 }
 
@@ -187,7 +187,9 @@ type ReactionAction = (
 const pierceToOther: ReactionAction = (c) => {
   if (c.damageInfo) {
     c.increaseDamage(1);
-    c.damage(1, D.Piercing, ($) => $.character().notId(c.self().id));
+    c.damage(1, D.Piercing, (c) =>
+      c.$$(`my character not with id ${c.self().id}`),
+    );
   }
 };
 
@@ -199,7 +201,9 @@ const crystallize: ReactionAction = (c) => {
 const swirl = (srcElement: D): ReactionAction => {
   return (c) => {
     if (c.damageInfo) {
-      c.damage(1, srcElement, ($) => $.character().notId(c.self().id));
+      c.damage(1, srcElement, (c) =>
+        c.$$(`my character not with id ${c.self().id}`),
+      );
     }
   };
 };
@@ -216,7 +220,7 @@ reaction(R.Vaporize)
 
 reaction(R.Overloaded)
   .if((c) => c.self().isActive())
-  .switchActive(($) => $.next())
+  .switchActive("next")
   .done();
 
 reaction(R.Superconduct)
@@ -259,16 +263,9 @@ reaction(R.Bloom)
   .if((c) => !!c.damageInfo)
   .increaseDamage(1)
   // Nilou
-  .if(
-    (c) =>
-      !!c
-        .query("combatStatus")
-        .def(0 as any)
-        .many().length,
-  )
+  .if((c) => !!c.$$(`combat status with id 0`).length)
   .combatStatus(DendroCore);
 
 reaction(R.Quicken)
   .if((c) => !!c.damageInfo)
   .combatStatus(CatalyzingField);
-

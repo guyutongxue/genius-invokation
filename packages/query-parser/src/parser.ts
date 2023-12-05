@@ -8,8 +8,9 @@ export class QueryParser extends CstParser {
     const $ = this as this & Record<any, any>;
     $.RULE("query", () => {
       $.SUBRULE($.orQuery);
+      $.OPTION(() => $.SUBRULE($.orderByClause));
     });
-    $.RULE("tagClause", () => {
+    $.RULE("tagRule", () => {
       $.CONSUME(Token.Tag);
       $.CONSUME(Token.LParen);
       $.AT_LEAST_ONE_SEP({
@@ -31,9 +32,8 @@ export class QueryParser extends CstParser {
         { ALT: () => $.CONSUME(Token.IntegerLiteral) },
       ]);
       $.OPTION(() => {
-        $.CONSUME(Token.LParen);
+        $.CONSUME(Token.As);
         $.CONSUME(Token.Definition);
-        $.CONSUME(Token.RParen);
       });
     });
     $.RULE("relativeOperator", () => {
@@ -46,24 +46,24 @@ export class QueryParser extends CstParser {
         { ALT: () => $.CONSUME(Token.NotEqual) },
       ]);
     });
-    $.RULE("variableClause", () => {
+    $.RULE("variableRule", () => {
       $.SUBRULE($.varname);
       $.SUBRULE($.relativeOperator);
       $.SUBRULE2($.varname);
     });
-    $.RULE("withRule", () => {
+    $.RULE("withClause", () => {
       $.OPTION(() => $.CONSUME(Token.Not));
       $.CONSUME(Token.With),
         $.OR([
-          { ALT: () => $.SUBRULE($.variableClause) },
-          { ALT: () => $.SUBRULE($.tagClause) },
-          { ALT: () => $.SUBRULE($.idClause) },
+          { ALT: () => $.SUBRULE($.variableRule) },
+          { ALT: () => $.SUBRULE($.tagRule) },
+          { ALT: () => $.SUBRULE($.idRule) },
         ]);
     });
-    $.RULE("idClause", () => {
+    $.RULE("idRule", () => {
       $.OPTION(() => $.CONSUME(Token.Definition));
       $.CONSUME(Token.Id);
-      $.CONSUME(Token.Equal);
+      $.OPTION2(() => $.CONSUME(Token.Equal));
       $.CONSUME(Token.IntegerLiteral);
     });
     $.RULE("typeSpecifier", () => {
@@ -78,6 +78,7 @@ export class QueryParser extends CstParser {
         },
         { ALT: () => $.CONSUME(Token.Support) },
         { ALT: () => $.CONSUME(Token.Equipment) },
+        { ALT: () => $.CONSUME(Token.Any) },
       ]);
     });
     $.RULE("positionSpecifier", () => {
@@ -100,7 +101,7 @@ export class QueryParser extends CstParser {
         },
       ]);
     });
-    $.RULE("whoRule", () => {
+    $.RULE("whoClause", () => {
       $.OPTION(() => $.CONSUME(Token.All));
       $.OPTION2(() => {
         $.OR([
@@ -113,9 +114,9 @@ export class QueryParser extends CstParser {
       $.OR([
         {
           ALT: () => {
-            $.SUBRULE($.whoRule);
+            $.SUBRULE($.whoClause);
             $.SUBRULE($.typeSpecifier);
-            $.OPTION(() => $.SUBRULE($.withRule));
+            $.OPTION(() => $.SUBRULE($.withClause));
           },
         },
         {
@@ -132,7 +133,7 @@ export class QueryParser extends CstParser {
         $.OR([
           { ALT: () => $.CONSUME(Token.Not) },
           { ALT: () => $.CONSUME(Token.RecentFrom) },
-        ])
+        ]),
       );
       $.SUBRULE($.atomicQuery);
     });
@@ -162,6 +163,56 @@ export class QueryParser extends CstParser {
       });
     });
 
+    $.RULE("atomicExpression", () => {
+      $.OR([
+        { ALT: () => $.SUBRULE($.varname) },
+        {
+          ALT: () => {
+            $.CONSUME(Token.LParen);
+            $.SUBRULE($.expression);
+            $.CONSUME(Token.RParen);
+          },
+        },
+      ]);
+    });
+    $.RULE("multiplicativeOperator", () => {
+      $.OR([
+        { ALT: () => $.CONSUME(Token.Multiply) },
+        { ALT: () => $.CONSUME(Token.Divide) },
+      ]);
+    })
+    $.RULE("additiveOperator", () => {
+      $.OR([
+        { ALT: () => $.CONSUME(Token.Plus) },
+        { ALT: () => $.CONSUME(Token.Minus) },
+      ]);
+    })
+    $.RULE("multiplicativeExpression", () => {
+      $.SUBRULE($.atomicExpression);
+      $.MANY(() => {
+        $.SUBRULE($.multiplicativeOperator);
+        $.SUBRULE2($.atomicExpression);
+      });
+    });
+    $.RULE("additiveExpression", () => {
+      $.SUBRULE($.multiplicativeExpression);
+      $.MANY(() => {
+        $.SUBRULE($.additiveOperator);
+        $.SUBRULE2($.multiplicativeExpression);
+      });
+    });
+    $.RULE("expression", () => {
+      $.SUBRULE($.additiveExpression);
+    });
+    $.RULE("orderByClause", () => {
+      $.CONSUME(Token.OrderBy);
+      // $.CONSUME(Token.LParen);
+      $.AT_LEAST_ONE_SEP({
+        SEP: Token.Comma,
+        DEF: () => $.SUBRULE($.expression),
+      });
+      // $.CONSUME(Token.RParen);
+    });
     this.performSelfAnalysis();
   }
 }

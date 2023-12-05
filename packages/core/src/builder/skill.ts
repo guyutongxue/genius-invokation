@@ -11,7 +11,6 @@ import {
 } from "../base/skill";
 import { GameState } from "../base/state";
 import { SkillContext, ExtendedSkillContext } from "./context";
-import { TargetQueryArg } from "./query";
 import {
   AppliableDamageType,
   ExEntityType,

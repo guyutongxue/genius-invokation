@@ -10,7 +10,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
 const DandelionField = summon(115021)
   .on("endPhase")
   .damage(1, DamageType.Anemo)
-  .heal(1, $ => $.active())
+  .heal(1, "active")
   .done();
 
 /**
@@ -36,7 +36,7 @@ const GaleBlade = skill(15022)
   .type("elemental")
   .costAnemo(3)
   .damage(3, DamageType.Anemo)
-  .switchActive($ => $.opp().next())
+  .switchActive("opp next")
   .done();
 
 /**
@@ -49,7 +49,7 @@ const DandelionBreeze = skill(15023)
   .type("burst")
   .costAnemo(4)
   .costEnergy(2)
-  .heal(2, $ => $.mine())
+  .heal(2, "all my characters")
   .summon(DandelionField)
   .done();
 

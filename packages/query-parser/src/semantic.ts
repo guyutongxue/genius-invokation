@@ -12,11 +12,15 @@ class QueryVisitor extends BaseVisitorWithDefaults {
     super();
     this.validateVisitor();
   }
+  getter: AST.StateGetter = null!;
 
   query(ctx: any): AST.Query {
     return {
       type: "or",
       children: ctx.orQuery.map((c: any) => this.visit(c)),
+      orderBy: ctx.orderByClause
+        ? ctx.orderByClause.map((c: any) => this.visit(c))
+        : null,
     };
   }
 
@@ -89,15 +93,17 @@ class QueryVisitor extends BaseVisitorWithDefaults {
         query: this.visit(ctx.orQuery),
       };
     }
-    const [entityType, position, includesDefeated] = this.visit(ctx.typeSpecifier);
+    const [entityType, position, includesDefeated] = this.visit(
+      ctx.typeSpecifier,
+    );
     return {
       type: "atomic",
       subtype: "atomic",
-      who: this.visit(ctx.whoRule),
+      who: this.visit(ctx.whoClause),
       entityType,
       position,
       includesDefeated,
-      rule: ctx.withRule ? this.visit(ctx.withRule) : null,
+      rule: ctx.withClause ? this.visit(ctx.withClause) : null,
     };
   }
 
@@ -110,7 +116,8 @@ class QueryVisitor extends BaseVisitorWithDefaults {
     } else {
       if (ctx.Combat) {
         entityType = "combatStatus";
-      } if (ctx.Summon) {
+      }
+      if (ctx.Summon) {
         entityType = "summon";
       } else if (ctx.Status) {
         entityType = "status";
@@ -126,7 +133,7 @@ class QueryVisitor extends BaseVisitorWithDefaults {
   characterSpecifier(ctx: any): [AST.Position | null, boolean] {
     return [
       ctx.positionSpecifier ? this.visit(ctx.positionSpecifier) : null,
-      !!ctx.IncludesDefeated
+      !!ctx.IncludesDefeated,
     ];
   }
 
@@ -143,7 +150,7 @@ class QueryVisitor extends BaseVisitorWithDefaults {
     return null;
   }
 
-  whoRule(ctx: any): AST.Who {
+  whoClause(ctx: any): AST.Who {
     if (ctx.My) {
       return "my";
     } else if (ctx.Opp) {
@@ -154,61 +161,131 @@ class QueryVisitor extends BaseVisitorWithDefaults {
     return "my";
   }
 
-  withRule(ctx: any): AST.Rule {
-    let ruleDetail: AST.RuleDetail;
-    if (ctx.variableClause) {
-      ruleDetail = this.visit(ctx.variableClause);
-    } else if (ctx.tagClause) {
-      ruleDetail = this.visit(ctx.tagClause);
+  withClause(ctx: any): AST.Rule {
+    let ruleDetail: AST.WithRule;
+    if (ctx.variableRule) {
+      ruleDetail = this.visit(ctx.variableRule);
+    } else if (ctx.tagRule) {
+      ruleDetail = this.visit(ctx.tagRule);
     } else {
-      ruleDetail = this.visit(ctx.idClause);
+      ruleDetail = this.visit(ctx.idRule);
     }
 
     return {
       type: "rule",
-      negative: !!ctx.Not,
-      how: ruleDetail
-    }
-  }
-
-  variableClause(ctx: any): AST.RuleDetail {
-    return {
-      type: "ruleDetail",
-      subtype: "expression",
-      lhs: this.visit(ctx.varname[0]),
-      operator: this.visit(ctx.relativeOperator[0]),
-      rhs: this.visit(ctx.varname[1]),
+      how: ctx.Not ? (st) => !ruleDetail(st) : ruleDetail,
     };
   }
 
-  relativeOperator(ctx: any): AST.Operator {
-    return Object.values<any>(ctx)[0][0].image;
+  variableRule(ctx: any): AST.WithRule {
+    const lhs = this.visit(ctx.varname[0]);
+    const operator = this.visit(ctx.relativeOperator[0]);
+    const rhs = this.visit(ctx.varname[1]);
+    return new Function(
+      "$",
+      `return ${lhs} ${operator} ${rhs};`,
+    ) as AST.WithRule;
   }
 
-  varname(ctx: any): AST.Variable {
+  tagRule(ctx: any): AST.WithRule {
+    const identifiers: string[] = ctx.identifier.map((c: any) => this.visit(c));
+    return new Function(
+      "$",
+      `for (const t of ${this.getter.tags}) {
+  if (![${identifiers.map((i) => JSON.stringify(i)).join()}].includes(t)) {
+    return false;
+  }
+  return true;
+}`,
+    ) as AST.WithRule;
+  }
+
+  idRule(ctx: any): AST.WithRule {
+    const idStr = ctx.Definition ? this.getter.definitionId : this.getter.id;
+    const lit = ctx.IntegerLiteral[0].image;
+    return new Function("$", `return ${idStr} === ${lit};`) as AST.WithRule;
+  }
+
+  relativeOperator(ctx: any): string {
+    const str = Object.values<any>(ctx)[0][0].image;
+    return str === "=" ? "==" : str;
+  }
+
+  varname(ctx: any): string {
     if (ctx.IntegerLiteral) {
-      return {
-        type: "variable",
-        subtype: "number",
-        value: this.parseLiteral(ctx.IntegerLiteral)
-      };
+      return ctx.IntegerLiteral[0].image;
     } else {
-      return {
-        type: "variable",
-        subtype: ctx.Definition ? "constant" : "variable",
-        value: ctx.Identifier ? ctx.Identifier[0].image : this.parseLiteral(ctx.StringLiteral),
-      };
+      const f = ctx.Definition
+        ? this.getter.getConstant
+        : this.getter.getVariableOrConstant;
+      const name = this.parseIdentifier(ctx);
+      return f.call(this.getter, name);
     }
   }
 
-  parseLiteral(ctx: any): any {
-    return new Function(`return ${ctx[0].image}`)();
+  parseIdentifier(ctx: any): string {
+    if (ctx.Identifier) {
+      return ctx.Identifier[0].image;
+    } else if (ctx.StringLiteral) {
+      return new Function(`return ${ctx.StringLiteral[0].image}`)();
+    } else {
+      throw Error("Unexpected identifier");
+    }
+  }
+
+  orderByClause(ctx: any): AST.OrderBy {
+    // console.log(ctx);
+    return new Function(
+      "$",
+      `return ${this.visit(ctx.expression)};`,
+    ) as AST.OrderBy;
+  }
+
+  atomicExpression(ctx: any): string {
+    if (ctx.expression) {
+      return `(${this.visit(ctx.expression)})`;
+    }
+    return this.visit(ctx.varname);
+  }
+  expression(ctx: any): string {
+    return this.visit(ctx.additiveExpression);
+  }
+  additiveExpression(ctx: any): string {
+    const exprStrs: string[] = ctx.multiplicativeExpression.map((c: any) =>
+      this.visit(c),
+    );
+    const operators: string[] =
+      ctx.additiveOperator?.map((c: any) => this.visit(c)) ?? [];
+    let result = exprStrs.pop()!;
+    for (let i = 0; i < operators.length; i++) {
+      result += ` ${operators[i]} ${exprStrs[i]}`;
+    }
+    return result;
+  }
+  multiplicativeExpression(ctx: any): string {
+    const exprStrs: string[] = ctx.atomicExpression.map((c: any) =>
+      this.visit(c),
+    );
+    const operators: string[] =
+      ctx.multiplicativeOperator?.map((c: any) => this.visit(c)) ?? [];
+    let result = exprStrs.pop()!;
+    for (let i = 0; i < operators.length; i++) {
+      result += ` ${operators[i]} ${exprStrs[i]}`;
+    }
+    return result;
+  }
+
+  additiveOperator(ctx: any): string {
+    return Object.values<any>(ctx)[0][0].image;
+  }
+  multiplicativeOperator(ctx: any): string {
+    return Object.values<any>(ctx)[0][0].image;
   }
 }
 
 const visitorInstance = new QueryVisitor();
 
-export function toAst(inputText: string): AST.Query {
+export function toAst(inputText: string, getter: AST.StateGetter): AST.Query {
   // Lex
   const lexResult = QueryLexer.tokenize(inputText);
   parserInstance.input = lexResult.tokens;
@@ -217,13 +294,18 @@ export function toAst(inputText: string): AST.Query {
   // @ts-expect-error `query` is not typed
   const cst = parserInstance.query();
   if (parserInstance.errors.length > 0) {
-    throw Error(
-      "Sad sad panda, parsing errors detected!\n" +
-        parserInstance.errors[0].message
-    );
+    const e = parserInstance.errors[0];
+    const { startOffset, endOffset = startOffset } = e.token;
+    const space = " ".repeat(startOffset);
+    const squiggle = "~".repeat(endOffset - startOffset);
+    throw Error(`Parsing query got error:
+${inputText}
+${space}^${squiggle}
+${e.message}`);
   }
 
   // Visit
+  visitorInstance.getter = getter;
   const ast = visitorInstance.visit(cst);
   return ast;
 }

@@ -93,7 +93,7 @@ const ElementalResonanceImpetuousWinds = card(331502, "character")
   .costAnemo(1)
   .tags("resonance")
   // TODO My target
-  .switchActive($ => $.context.targets[0])
+  .switchActive(c => c.targets[0])
   .generateDice(DiceType.Omni, 1)
   .done();
 

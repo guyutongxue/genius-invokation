@@ -4,6 +4,8 @@
     "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "strict": true,
-    "useDefineForClassFields": true
-  }
+    "useDefineForClassFields": true,
+
+    "types": ["bun-types"]
+  },
 }
