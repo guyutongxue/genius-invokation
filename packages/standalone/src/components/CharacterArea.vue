@@ -10,7 +10,19 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col gap-1 items-center">
+    <div class="h-5 flex flex-row items-end gap-2">
+      <Image
+        v-if="data.aura & 0xf"
+        :id="data.aura & 0xf"
+        class="w-5"
+      ></Image>
+      <Image
+        v-if="(data.aura >> 4) & 0xf"
+        :id="(data.aura >> 4) & 0xf"
+        class="w-5"
+      ></Image>
+    </div>
     <div class="h-40 relative" :title="`id=${data.id}`">
       <div
         class="absolute left-[-15px] top-[-20px] flex items-center justify-center"

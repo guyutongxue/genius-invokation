@@ -11,7 +11,7 @@ export type StatusHandle = EntityHandle & { readonly _stat: unique symbol };
 export type CombatStatusHandle = EntityHandle & {
   readonly _cStat: unique symbol;
 };
-export type SummonHandle = { readonly sm: unique symbol };
+export type SummonHandle = number & { readonly sm: unique symbol };
 export type SupportHandle = EntityHandle &
   CardHandle & { readonly _support: unique symbol };
 export type EquipmentHandle = EntityHandle &

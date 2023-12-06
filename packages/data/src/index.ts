@@ -3,6 +3,7 @@
 
 import "./begin";
 
+import "./commons";
 import "./cards/equipment/artifacts";
 import "./cards/equipment/weapon/bow";
 import "./cards/equipment/weapon/catalyst";

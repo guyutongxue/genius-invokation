@@ -8,10 +8,11 @@ import { DamageInfo, DamageModifier1, SkillDescription } from "../base/skill";
 import { SkillBuilder, enableShortcut } from "./skill";
 import { ExtendedSkillContext } from "./context";
 import { status, combatStatus, summon } from "./entity";
+import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
 
-type NontrivialDamage = Exclude<D, D.Physical | D.Piercing | D.Heal>;
+export type NontrivialDamageType = Exclude<D, D.Physical | D.Piercing | D.Heal>;
 
-export type ReactionMap = Record<A, Record<NontrivialDamage, [A, R | null]>>;
+export type ReactionMap = Record<A, Record<NontrivialDamageType, [A, R | null]>>;
 
 export const REACTION_MAP: ReactionMap = {
   [A.None]: {
@@ -79,82 +80,11 @@ export const REACTION_MAP: ReactionMap = {
   },
 };
 
-/**
- * @id 106
- * @name 冻结
- * @description
- * 角色无法使用技能。（持续到回合结束）
- * 角色受到火元素伤害或物理伤害时，移除此效果，使该伤害+2。
- */
-const Frozen = status(106)
-  .duration(1)
-  .tags("disableSkill")
-  .on("beforeDamaged")
-  .if((c) => c.damageInfo.type === D.Pyro || c.damageInfo.type === D.Physical)
-  .do((c) => {
-    c.increaseDamage(1);
-    c.self().dispose();
-  })
-  .done();
-
-/**
- * @id 111
- * @name 结晶
- * @description
- * 为我方出战角色提供1点护盾。（可叠加，最多叠加到2点）
- */
-const Crystallize = combatStatus(111)
-  .shield(1, 2) //
-  .done();
-
-/**
- * @id 115
- * @name 燃烧烈焰
- * @description
- * 结束阶段：造成1点火元素伤害。
- * 可用次数：1（可叠加，最多叠加到2次）
- */
-const BurningFlame = summon(115)
-  .usage(1, 2)
-  .on("endPhase")
-  .damage(1, DamageType.Pyro)
-  .done();
-
-/**
- * @id 116
- * @name 草原核
- * @description
- * 我方对敌方出战角色造成火元素伤害或雷元素伤害时，伤害值+2。
- * 可用次数：1
- */
-const DendroCore = combatStatus(116)
-  .usage(1)
-  .on("beforeDealDamage")
-  .if(
-    (c) =>
-      [D.Pyro, D.Electro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.$("opp active character").id,
-  )
-  .increaseDamage(1)
-  .done();
-
-/**
- * @id 117
- * @name 激化领域
- * @description
- * 我方对敌方出战角色造成雷元素伤害或草元素伤害时，伤害值+1。
- * 可用次数：2
- */
-const CatalyzingField = combatStatus(117)
-  .usage(2)
-  .on("beforeDealDamage")
-  .if(
-    (c) =>
-      [D.Electro, D.Dendro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.$("opp active character").id,
-  )
-  .increaseDamage(1)
-  .done();
+const Frozen = 106 as StatusHandle;
+const Crystallize = 111 as CombatStatusHandle;
+const BurningFlame = 115 as SummonHandle;
+const DendroCore = 116 as CombatStatusHandle;
+const CatalyzingField = 117 as CombatStatusHandle;
 
 type DamageModifierR = Omit<DamageModifier1, "damageInfo"> & {
   damageInfo?: DamageInfo;

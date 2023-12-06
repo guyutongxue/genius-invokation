@@ -32,7 +32,7 @@ export enum Aura {
   Pyro = 3,
   Electro = 4,
   Dendro = 7,
-  CryoDendro = 8
+  CryoDendro = Aura.Cryo | (Aura.Dendro << 4)
 }
 
 export enum Reaction {

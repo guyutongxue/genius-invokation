@@ -1,8 +1,8 @@
-import { DamageType, DiceType } from "@gi-tcg/typings";
+import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
 
 import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
-import { DeferredActions, SkillInfo } from "../base/skill";
+import { DamageInfo, DeferredActions, SkillInfo } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getActiveCharacterIndex, getEntityArea, getEntityById } from "../util";
 import { executeQuery } from "./query";
@@ -19,6 +19,7 @@ import {
 import { getEntityDefinition } from "./registry";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "@gi-tcg/query-parser";
+import { NontrivialDamageType, REACTION_MAP } from "./reaction";
 
 type WrapArray<T> = T extends readonly any[] ? T : T[];
 
@@ -129,6 +130,20 @@ export class SkillContext<
     }
   }
 
+  private queryCoerceToCharacters(
+    arg: TargetQueryArg<false, Ext, CallerType>,
+  ): CharacterContext<Readonly>[] {
+    const result = this.$$(arg);
+    for (const r of result) {
+      if (r instanceof CharacterContext) {
+        continue;
+      } else {
+        throw new Error(`Expected character`);
+      }
+    }
+    return result as CharacterContext<Readonly>[];
+  }
+
   // MUTATIONS
 
   get events() {
@@ -146,7 +161,7 @@ export class SkillContext<
   }
 
   switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
-    const targets = this.$$(target as "character");
+    const targets = this.queryCoerceToCharacters(target);
     if (targets.length !== 1) {
       throw new Error("Expected exactly one target");
     }
@@ -167,7 +182,7 @@ export class SkillContext<
   }
 
   gainEnergy(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
-    const targets = this.$$(target as "character");
+    const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
       const finalValue = Math.min(
@@ -185,7 +200,7 @@ export class SkillContext<
   }
 
   heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
-    const targets = this.$$(target as "character");
+    const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
       const targetInjury =
@@ -213,10 +228,19 @@ export class SkillContext<
     type: DamageType,
     target: TargetQueryArg<false, Ext, CallerType> = "opp active",
   ) {
-    const targets = this.$$(target as "character");
+    if (type === DamageType.Heal) {
+      return this.heal(value, target);
+    }
+    const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
-      // TODO: sync events, elemental reaction, etc.
+      if (type !== DamageType.Piercing) {
+        // TODO Calculate damage change (sync events) here
+        if (type !== DamageType.Physical) {
+          this.doApply(t, type/** TODO */);
+        }
+      }
+
       const finalHealth = Math.max(0, targetState.variables.health - value);
       this.emitEvent("onDamage", {
         value,
@@ -238,7 +262,25 @@ export class SkillContext<
     type: AppliableDamageType,
     target: TargetQueryArg<false, Ext, CallerType>,
   ) {
-    // TODO
+    const characters = this.queryCoerceToCharacters(target);
+    for (const ch of characters) {
+      this.doApply(ch, type);
+    }
+  }
+
+  private doApply(
+    target: CharacterContext<Readonly>,
+    type: NontrivialDamageType,
+    damage?: DamageInfo,
+  ) {
+    const aura = target.state.variables.aura;
+    const [newAura, reaction] = REACTION_MAP[aura][type];
+    this.mutate({
+      type: "modifyEntityVar",
+      oldState: target.state,
+      varName: "aura",
+      value: newAura
+    });
   }
 
   createEntity<TypeT extends EntityType>(

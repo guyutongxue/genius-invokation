@@ -20,7 +20,7 @@ const props = defineProps<{
       class="flex-grow flex gap-2"
       :class="opp ? 'flex-col-reverse' : 'flex-col'"
     >
-      <div class="min-h-52 flex flex-row justify-center">
+      <div class="min-h-58 flex flex-row justify-center">
         <div>
           <Support
             v-for="support of data.supports"
