@@ -153,7 +153,7 @@ export function sortDice(player: PlayerState, dice: readonly DiceType[]): DiceTy
   return [...dice].sort((a, b) => value(a) - value(b));
 }
 
-export function shiftLeft<T>(arr: readonly T[], idx: number): readonly T[] {
+export function shiftLeft<T>(arr: readonly T[], idx: number): T[] {
   return [...arr.slice(idx), ...arr.slice(0, idx)];
 }
 

@@ -8,7 +8,7 @@ import {
 } from "./context";
 import { ExContextType, ExEntityType } from "./type";
 import { CharacterState, EntityState } from "../base/state";
-import { getEntityArea } from "../util";
+import { getActiveCharacterIndex, getEntityArea, shiftLeft } from "../util";
 import { flip } from "@gi-tcg/utils";
 
 const getter: AST.StateGetter = {
@@ -24,12 +24,10 @@ const getter: AST.StateGetter = {
   },
 };
 
-type Filter = (
-  ctx: SkillContext<false, {}, any>,
-  st: CharacterState | EntityState,
-) => boolean;
+type Filter = (st: CharacterState | EntityState) => boolean;
 
 export function queryToFilter(
+  ctx: SkillContext<false, {}, any>,
   node:
     | AST.Query
     | AST.AndQuery
@@ -38,7 +36,7 @@ export function queryToFilter(
     | AST.AtomicQuery,
 ): Filter {
   if (node.type === "or") {
-    const filters = node.children.map(queryToFilter);
+    const filters = node.children.map((n) => queryToFilter(ctx, n));
     return (...args) => {
       for (const f of filters) {
         if (f(...args)) return true;
@@ -47,24 +45,24 @@ export function queryToFilter(
     };
   }
   if (node.type === "and") {
-    const filters = node.children.map(queryToFilter);
-    return (...args) => {
+    const filters = node.children.map((n) => queryToFilter(ctx, n));
+    return (st) => {
       for (const f of filters) {
-        if (!f(...args)) return false;
+        if (!f(st)) return false;
       }
       return true;
     };
   }
   if (node.type === "relation") {
     if (node.subtype === "leaf") {
-      return queryToFilter(node.query);
+      return queryToFilter(ctx, node.query);
     } else {
-      const subjectFilter = queryToFilter(node.subject);
-      const objectFilter = queryToFilter(node.object);
+      const subjectFilter = queryToFilter(ctx, node.subject);
+      const objectFilter = queryToFilter(ctx, node.object);
+      const objects = doFilter(ctx, objectFilter);
       if (node.subtype === "at") {
-        return (ctx, st) => {
-          if (!subjectFilter(ctx, st)) return false;
-          const objects = doFilter(ctx, objectFilter);
+        return (st) => {
+          if (!subjectFilter(st)) return false;
           const area = getEntityArea(ctx.state, st.id);
           if (
             area.type === "characters" &&
@@ -75,13 +73,12 @@ export function queryToFilter(
           return false;
         };
       } else {
-        return (ctx, st) => {
-          if (!subjectFilter(ctx, st)) return false;
+        return (st) => {
+          if (!subjectFilter(st)) return false;
           if (st.definition.type !== "character") return false;
-          const objects = doFilter(ctx, objectFilter);
           for (const obj of objects) {
             if (obj.state.definition.type === "character") continue;
-            const area = getEntityArea(ctx.state, obj.state.id);
+            const area = obj.area;
             if (area.type == "characters" && area.characterId === st.id) {
               return true;
             }
@@ -94,11 +91,11 @@ export function queryToFilter(
   if (node.type === "prefix") {
     const prefixes = [...node.prefixes];
     if (node.prefixes.length === 0) {
-      return queryToFilter(node.target);
+      return queryToFilter(ctx, node.target);
     }
     const first = prefixes.shift()!;
     if (first === "not") {
-      const filter = queryToFilter({
+      const filter = queryToFilter(ctx, {
         ...node,
         prefixes,
       });
@@ -106,14 +103,46 @@ export function queryToFilter(
         return !filter(...args);
       };
     } else {
-      // recent opp TODO
-      return () => false;
+      const state = ctx.state;
+      const baseChFilter = queryToFilter(ctx, node.target);
+      const baseChs = doFilter(ctx, baseChFilter);
+      const recentChs: number[] = [];
+      for (const baseCh of baseChs) {
+        if (!(baseCh instanceof CharacterContext)) {
+          continue;
+        }
+        const baseIdx = baseCh.positionIndex();
+        const baseLen = state.players[baseCh.who].characters.length;
+        const baseRatio = baseIdx - (baseLen / 2 - 0.5);
+        const targetWho = flip(baseCh.who);
+        const targetLen = state.players[targetWho].characters.length;
+        const targetActiveIndex = getActiveCharacterIndex(
+          state.players[targetWho],
+        );
+        const targetChs = state.players[targetWho].characters.map((ch, i) => ({
+          ...ch,
+          index: i,
+        }));
+        const shiftedTargetChs = shiftLeft(targetChs, targetActiveIndex);
+        const orderFn = (ch: CharacterState & { index: number }) => {
+          if (!ch.variables.alive) {
+            return Infinity;
+          }
+          const ratio = ch.index - (targetLen / 2 - 0.5);
+          return Math.abs(ratio - baseRatio);
+        };
+        shiftedTargetChs.sort((a, b) => orderFn(a) - orderFn(b));
+        recentChs.push(shiftedTargetChs[0].id);
+      }
+      return (st) => {
+        return recentChs.includes(st.id);
+      };
     }
   }
   if (node.subtype === "paren") {
-    return queryToFilter(node.query);
+    return queryToFilter(ctx, node.query);
   }
-  const filter: Filter = (ctx, st) => {
+  const filter: Filter = (st) => {
     if (node.entityType === "any") return true;
     const { who } = getEntityArea(ctx.state, st.id);
     const sameType = st.definition.type === node.entityType;
@@ -125,16 +154,16 @@ export function queryToFilter(
       st.definition.type !== "character" ||
       node.defeated === "includes" ||
       !(node.defeated === "only" ? st.variables.alive : !st.variables.alive);
-    let positionOk = node.position === null;
-    if (node.position === "active") {
-      positionOk = ctx.state.players[who].activeCharacterId === st.id;
-    }
-    node.position;
-    return sameType && sameWho && defeatedOk && positionOk;
+    if (!(sameType && sameWho && defeatedOk)) return false;
+    if (st.definition.type !== "character") return true;
+    const chCtx = new CharacterContext(ctx, st.id);
+    const positionOk =
+      node.position === null || chCtx.satisfyPosition(node.position);
+    return positionOk;
   };
   if (node.rule) {
     const how = node.rule.how;
-    return (ctx, st) => filter(ctx, st) && how(st);
+    return (st) => filter(st) && how(st);
   } else {
     return filter;
   }
@@ -144,15 +173,16 @@ function doFilter(
   ctx: SkillContext<false, {}, any>,
   filter: Filter,
 ): ExContextType<false, any>[] {
-  const cb = (st: EntityState | CharacterState) => filter(ctx as any, st);
   const result: ExContextType<false, any>[] = [];
   for (const player of ctx.state.players) {
-    for (const ch of player.characters) {
-      if (cb(ch)) {
+    const activeIndex = getActiveCharacterIndex(player);
+    const characters = shiftLeft(player.characters, activeIndex);
+    for (const ch of characters) {
+      if (filter(ch)) {
         result.push(new CharacterContext(ctx, ch.id));
       }
       for (const entity of ch.entities) {
-        if (cb(entity)) {
+        if (filter(entity)) {
           result.push(new EntityContext(ctx, entity.id));
         }
       }
@@ -160,7 +190,7 @@ function doFilter(
     for (const key of ["combatStatuses", "summons", "supports"] as const) {
       const area = player[key];
       for (const entity of area) {
-        if (cb(entity)) {
+        if (filter(entity)) {
           result.push(new EntityContext(ctx, entity.id));
         }
       }
@@ -180,6 +210,6 @@ export function executeQuery<
 ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[] {
   const ast = toAst(s, getter);
   console.log("ast: ", ast);
-  const filter = queryToFilter(ast);
+  const filter = queryToFilter(ctx as any, ast);
   return doFilter(ctx as any, filter) as any;
 }

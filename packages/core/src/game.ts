@@ -283,7 +283,7 @@ class Game {
       });
     } else {
       const activeCh = player.characters[getActiveCharacterIndex(player)];
-      const skill = activeCh.definition.initiativeSkills[2];
+      const skill = activeCh.definition.initiativeSkills[1];
       await this.useSkill(skill, activeCh.id, void 0);
     }
     this.mutate({

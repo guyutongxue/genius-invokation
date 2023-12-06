@@ -20,7 +20,7 @@ const props = defineProps<{
       class="flex-grow flex gap-2"
       :class="opp ? 'flex-col-reverse' : 'flex-col'"
     >
-      <div class="min-h-46 flex flex-row justify-center">
+      <div class="min-h-52 flex flex-row justify-center">
         <div>
           <Support
             v-for="support of data.supports"
@@ -31,13 +31,14 @@ const props = defineProps<{
         <div class="flex flex-row gap-6 items-end">
           <div v-for="ch of data.characters" class="flex flex-col">
             <CharacterArea :key="ch.id" :data="ch"></CharacterArea>
-            <div v-if="ch.id === data.activeCharacterId" class="h-6 pt-1">
+            <div v-if="ch.id === data.activeCharacterId" class="h-6">
               <Image
                 v-for="st of data.combatStatuses"
                 :id="st.definitionId"
                 class="h-5"
               ></Image>
             </div>
+            <div v-else-if="opp" class="h-12"></div>
           </div>
         </div>
         <div>

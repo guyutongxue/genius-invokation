@@ -426,12 +426,12 @@ export type ExtendedSkillContext<
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
 export class CharacterContext<Readonly extends boolean> {
-  private readonly area: EntityArea;
+  private readonly _area: EntityArea;
   constructor(
     private readonly skillContext: SkillContext<Readonly, any, any>,
     private readonly _id: number,
   ) {
-    this.area = getEntityArea(skillContext.state, _id);
+    this._area = getEntityArea(skillContext.state, _id);
   }
 
   get state(): CharacterState {
@@ -441,8 +441,11 @@ export class CharacterContext<Readonly extends boolean> {
     }
     return entity as CharacterState;
   }
+  get area() {
+    return this._area;
+  }
   get who() {
-    return this.area.who;
+    return this._area.who;
   }
   get id() {
     return this._id;
@@ -483,7 +486,7 @@ export class CharacterContext<Readonly extends boolean> {
     let currentIdx = activeIdx;
     do {
       currentIdx = (currentIdx + dx + length) % length;
-    } while (player.characters[currentIdx].variables.alive);
+    } while (!player.characters[currentIdx].variables.alive);
     return player.characters[currentIdx].id === this._id;
   }
   isActive() {
@@ -515,7 +518,7 @@ export class CharacterContext<Readonly extends boolean> {
     this.skillContext.apply(type, this as CharacterContext<boolean>);
   }
   addStatus(status: StatusHandle) {
-    this.skillContext.createEntity("status", status, this.area);
+    this.skillContext.createEntity("status", status, this._area);
   }
 }
 
@@ -530,28 +533,31 @@ export class EntityContext<
   Readonly extends boolean,
   TypeT extends EntityType = EntityType,
 > {
-  private readonly area: EntityArea;
+  private readonly _area: EntityArea;
   constructor(
     private readonly skillContext: SkillContext<Readonly, any, any>,
     private readonly id: number,
   ) {
-    this.area = getEntityArea(skillContext.state, id);
+    this._area = getEntityArea(skillContext.state, id);
   }
 
   get state(): EntityState {
     return getEntityById(this.skillContext.state, this.id);
   }
+  get area(): EntityArea {
+    return this._area;
+  }
   get who() {
-    return this.area.who;
+    return this._area.who;
   }
 
   master() {
-    if (this.area.type !== "characters") {
+    if (this._area.type !== "characters") {
       throw new Error("master() expect a character area");
     }
     return new CharacterContext<Readonly>(
       this.skillContext,
-      this.area.characterId,
+      this._area.characterId,
     );
   }
 
