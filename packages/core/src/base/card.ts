@@ -1,6 +1,6 @@
 import { CharacterTag, WeaponTag } from "./character";
 import { InitiativeSkillDefinition } from "./skill";
-import { GameState } from "./state";
+import { CharacterState, GameState } from "./state";
 
 export type WeaponCardTag = Exclude<WeaponTag, "other">;
 
@@ -30,7 +30,7 @@ export interface CardTarget {
 }
 
 export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardTarget>;
-export type PlayCardFilter = (state: GameState, ctx: CardTarget) => boolean;
+export type PlayCardFilter = (state: GameState, caller: CharacterState, ctx: CardTarget) => boolean;
 
 export interface CardDefinition {
   readonly id: number;

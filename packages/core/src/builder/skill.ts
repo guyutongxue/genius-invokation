@@ -221,7 +221,9 @@ export type DetailedEventExt<E extends DetailedEventNames> = EventExt<
   DetailedEventDictionary[E][0]
 >;
 
-export class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
+export type SkillInfoGetter = () => SkillInfo;
+
+export abstract class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(
     protected readonly callerType: CallerType,
@@ -248,11 +250,10 @@ export class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
   protected getAction(
     extGenerator: (skillCtx: SkillContext<false, Ext, CallerType>) => Ext,
   ): SkillDescription<void> {
-    return (st: GameState, callerId: number) => {
+    return (st, skillInfo) => {
       const ctx = new SkillContext<false, Ext, CallerType>(
         st,
-        this.id,
-        callerId,
+        skillInfo,
       );
       const ext = extGenerator(ctx);
       const wrapped = extendSkillContext<false, Ext, CallerType>(ctx, ext);
@@ -262,6 +263,8 @@ export class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
       return [ctx.state, ctx.events] as const;
     };
   }
+
+  // protected abstract getSkillInfo(): SkillInfo;
 }
 
 /**

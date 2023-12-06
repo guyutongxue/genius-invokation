@@ -65,10 +65,9 @@ export class SkillContext<
    */
   constructor(
     private _state: GameState,
-    private readonly skillId: number,
-    public readonly callerId: number,
+    private readonly skillInfo: SkillInfo,
   ) {
-    this.callerArea = getEntityArea(_state, callerId);
+    this.callerArea = getEntityArea(_state, skillInfo.caller.id);
   }
   get state() {
     return this._state;
@@ -77,10 +76,10 @@ export class SkillContext<
     return this._state.players[this.callerArea.who];
   }
   private get callerState(): CharacterState | EntityState {
-    return getEntityById(this._state, this.callerId, true);
+    return getEntityById(this._state, this.skillInfo.caller.id, true);
   }
   self(): ExContextType<Readonly, CallerType> {
-    return this.$(`any with id ${this.callerId}`) as any;
+    return this.$(`any with id ${this.skillInfo.caller.id}`) as any;
   }
   isMyTurn() {
     return this._state.currentTurn === this.callerArea.who;
@@ -217,6 +216,7 @@ export class SkillContext<
         expectedValue: value,
         finalValue,
         source: this.callerState,
+        via: this.skillInfo,
         target: targetState,
         state: this.state,
       });
@@ -246,6 +246,7 @@ export class SkillContext<
         value,
         type,
         source: this.callerState,
+        via: this.skillInfo,
         target: targetState,
         state: this.state,
       });

@@ -12,7 +12,7 @@ type SkillResult = readonly [GameState, DeferredActions[]];
 
 export type SkillDescription<Arg> = (
   state: GameState,
-  callerId: number,
+  skillInfo: SkillInfo,
   ctx: Arg,
 ) => SkillResult;
 
@@ -41,6 +41,8 @@ export interface UseDiceModifier {
   requestFastSwitch(): void;
 }
 
+export type SyncDamageInfo = Omit<DamageInfo, "via">
+
 export interface DamageModifier0 {
   readonly damageInfo: DamageInfo;
   changeDamageType(type: DamageType): void;
@@ -52,6 +54,18 @@ export interface DamageModifier1 {
   multiplyDamage(multiplier: number): void;
   decreaseDamage(value: number): void;
 }
+
+// export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
+//   constructor(private readonly _damageInfo: DamageInfo) {}
+//   get damageInfo() {
+//     return this._damageInfo;
+//   }
+//   private mutations: { type: "change" | "increase" | "multiply" | "decrease", value: number}[] = [];
+//   changeDamageType(type: DamageType) {
+//     this.mutations.push({ type: "change", value: type });
+//     this._damageInfo
+//   }
+// }
 
 export interface DefeatedModifier {
   readonly damageInfo: DamageInfo;
@@ -198,7 +212,7 @@ type InSkillEvent =
 type InSkillEventPayload = {
   [E in InSkillEvent]: readonly [
     eventName: E,
-    eventArg: Omit<EventArg<E>, "via">,
+    eventArg: EventArg<E>,
   ];
 }[InSkillEvent];
 

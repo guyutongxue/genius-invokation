@@ -121,12 +121,13 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
         this.getAction(targetExtGenerator);
       return innerAction(state, callerId);
     };
-    const filterFn: PlayCardFilter = (state, { ids }) => {
-      const ctx = new SkillContext<true, any, any>(
-        state,
-        this.cardId,
-        this.cardId,
-      );
+    const filterFn: PlayCardFilter = (state, caller, { ids }) => {
+      const ctx = new SkillContext<true, any, any>(state, {
+        caller,
+        definition: null!,
+        fromCard: null,
+        requestBy: null,
+      });
       const ext = cardTargetToExt(ctx, ids);
       const wrappedCtx = extendSkillContext<
         true,

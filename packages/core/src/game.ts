@@ -19,7 +19,7 @@ import {
 } from "@gi-tcg/typings";
 import { getActiveCharacterIndex, getEntityById, shuffle, sortDice } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
-import { ActionInfo, SkillDefinitionBase, UseSkillInfo } from "./base/skill";
+import { ActionInfo, SkillDefinitionBase, SkillInfo, UseSkillInfo } from "./base/skill";
 import { SkillContext } from "./builder/context";
 
 export interface PlayerConfig {
@@ -284,7 +284,13 @@ class Game {
     } else {
       const activeCh = player.characters[getActiveCharacterIndex(player)];
       const skill = activeCh.definition.initiativeSkills[1];
-      await this.useSkill(skill, activeCh.id, void 0);
+      const skillInfo: SkillInfo = {
+        caller: activeCh,
+        definition: skill,
+        fromCard: null,
+        requestBy: null
+      };
+      await this.useSkill(skill, skillInfo, void 0);
     }
     this.mutate({
       type: "switchTurn",
@@ -352,10 +358,10 @@ class Game {
 
   private async useSkill<Args>(
     skill: SkillDefinitionBase<Args>,
-    caller: number,
+    skillInfo: SkillInfo,
     args: Args,
   ) {
-    const [newState, eventList] = skill.action(this._state, caller, args);
+    const [newState, eventList] = skill.action(this._state, skillInfo, args);
     this._state = newState;
     this.notify([]);
     await this.io.pause(this._state);
