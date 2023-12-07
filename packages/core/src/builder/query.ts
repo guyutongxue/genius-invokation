@@ -3,6 +3,7 @@ import { AST, GuessedTypeOfQuery, toAst } from "@gi-tcg/query-parser";
 import {
   CharacterContext,
   EntityContext,
+  ExtendedSkillContext,
   SkillContext,
   StrictlyTypedCharacterContext,
 } from "./context";
@@ -26,6 +27,22 @@ const getter: AST.StateGetter = {
 
 type Filter = (st: CharacterState | EntityState) => boolean;
 
+type Iota = [-1, 0, 1, 2, 3, 4, 5, 6, 7];
+type Dec<N extends number> = Iota[N];
+type AtomicExternalQuery = (
+  c: ExtendedSkillContext<boolean, Record<string, any>, any>,
+) => CharacterState | EntityState;
+type ExternalQueryDictionary<N extends number = 3> = N extends 0
+  ? AtomicExternalQuery
+  : Record<string, ExternalQueryDictionary<Dec<N>> | AtomicExternalQuery>;
+
+const externalQueries: ExternalQueryDictionary = {
+  self: (c) => c.skillInfo.caller,
+  event: {
+    skillCaller: (c) => c.eventArg.skillInfo.caller,
+  }
+};
+
 export function queryToFilter(
   ctx: SkillContext<false, {}, any>,
   node:
@@ -43,8 +60,7 @@ export function queryToFilter(
       }
       return false;
     };
-  }
-  if (node.type === "and") {
+  } else if (node.type === "and") {
     const filters = node.children.map((n) => queryToFilter(ctx, n));
     return (st) => {
       for (const f of filters) {
@@ -52,8 +68,7 @@ export function queryToFilter(
       }
       return true;
     };
-  }
-  if (node.type === "relation") {
+  } else if (node.type === "relation") {
     if (node.subtype === "leaf") {
       return queryToFilter(ctx, node.query);
     } else {
@@ -87,8 +102,7 @@ export function queryToFilter(
         };
       }
     }
-  }
-  if (node.type === "prefix") {
+  } else if (node.type === "prefix") {
     const prefixes = [...node.prefixes];
     if (node.prefixes.length === 0) {
       return queryToFilter(ctx, node.target);
@@ -138,8 +152,22 @@ export function queryToFilter(
         return recentChs.includes(st.id);
       };
     }
-  }
-  if (node.subtype === "paren") {
+  } else if (node.type === "external") {
+    const keys = [...node.identifiers];
+    let dict: any = externalQueries;
+    while (keys.length > 0) {
+      const key = keys.shift()!;
+      if (typeof dict === "function") {
+        throw new Error(`external query "@${node.identifiers.join(".")}" not found`);
+      }
+      dict = dict[key];
+      if (typeof dict === "undefined") {
+        throw new Error(`external query "@${node.identifiers.join(".")}" not found`);
+      }
+    }
+    const targetId = (dict as AtomicExternalQuery)(ctx).id;
+    return (st) => st.id === targetId;
+  } else if (node.subtype === "paren") {
     return queryToFilter(ctx, node.query);
   }
   const filter: Filter = (st) => {
@@ -211,5 +239,5 @@ export function executeQuery<
   const ast = toAst(s, getter);
   console.log("ast: ", ast);
   const filter = queryToFilter(ctx as any, ast);
-  return doFilter(ctx as any, filter) as any;
+  return doFilter(ctx as any, filter).toSpliced(ast.limit) as any;
 }

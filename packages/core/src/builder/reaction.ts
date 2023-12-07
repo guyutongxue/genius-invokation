@@ -118,7 +118,7 @@ const pierceToOther: ReactionAction = (c) => {
   if (c.damageInfo) {
     c.increaseDamage(1);
     c.damage(1, D.Piercing, (c) =>
-      c.$$(`my character not with id ${c.self().id}`),
+      c.$$(`my character not @self`),
     );
   }
 };
@@ -132,7 +132,7 @@ const swirl = (srcElement: D): ReactionAction => {
   return (c) => {
     if (c.damageInfo) {
       c.damage(1, srcElement, (c) =>
-        c.$$(`my character not with id ${c.self().id}`),
+        c.$$(`my character not @self`),
       );
     }
   };
@@ -149,7 +149,7 @@ reaction(R.Vaporize)
   .done();
 
 reaction(R.Overloaded)
-  .if((c) => c.self().isActive())
+  .if((c) => c.$$(`@self and active`).length > 0)
   .switchActive("next")
   .done();
 

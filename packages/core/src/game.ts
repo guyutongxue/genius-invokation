@@ -17,9 +17,19 @@ import {
   verifyRpcRequest,
   verifyRpcResponse,
 } from "@gi-tcg/typings";
-import { getActiveCharacterIndex, getEntityById, shuffle, sortDice } from "./util";
+import {
+  getActiveCharacterIndex,
+  getEntityById,
+  shuffle,
+  sortDice,
+} from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
-import { ActionInfo, SkillDefinitionBase, SkillInfo, UseSkillInfo } from "./base/skill";
+import {
+  ActionInfo,
+  SkillDefinitionBase,
+  SkillInfo,
+  UseSkillInfo,
+} from "./base/skill";
 import { SkillContext } from "./builder/context";
 
 export interface PlayerConfig {
@@ -267,7 +277,17 @@ class Game {
       type: "changePhase",
       newPhase: "action",
     });
-    window.$$ = (arg: any) => new SkillContext(this._state, { caller: this._state.players[0].characters[0] }).$$(arg).map((x) => x.state);
+    // @ts-expect-error
+    window.$$ = (arg: any) => {
+      return new SkillContext(this._state, {
+        caller: this._state.players[0].characters[0],
+        fromCard: null,
+        definition: { id: 0 } as any,
+        requestBy: null,
+      })
+        .$$(arg)
+        .map((x) => x.state);
+    };
   }
   private async actionPhase() {
     const player = this._state.players[this._state.currentTurn];
@@ -287,7 +307,7 @@ class Game {
         caller: activeCh,
         definition: skill,
         fromCard: null,
-        requestBy: null
+        requestBy: null,
       };
       await this.useSkill(skill, skillInfo, void 0);
     }

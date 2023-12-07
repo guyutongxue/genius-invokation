@@ -483,7 +483,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
 
   done(): SkillHandle {
     if (this._gainEnergy) {
-      this.do((c) => c.gainEnergy(1, ($) => $.self()));
+      this.do((c) => c.gainEnergy(1, "@self"));
     }
     const action: SkillDescription<void> = this.getAction(() => ({}));
     registerSkill({

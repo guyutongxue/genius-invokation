@@ -21,6 +21,7 @@ class QueryVisitor extends BaseVisitorWithDefaults {
       orderBy: ctx.orderByClause
         ? ctx.orderByClause.map((c: any) => this.visit(c))
         : [],
+      limit: ctx.limitClause ? this.visit(ctx.limitClause[0]) : Infinity
     };
   }
 
@@ -86,6 +87,9 @@ class QueryVisitor extends BaseVisitorWithDefaults {
   }
 
   atomicQuery(ctx: any): AST.AtomicQuery {
+    if (ctx.externalQuery) {
+      return this.visit(ctx.externalQuery);
+    }
     if (ctx.LParen) {
       return {
         type: "atomic",
@@ -93,7 +97,8 @@ class QueryVisitor extends BaseVisitorWithDefaults {
         query: {
           type: "or",
           children: this.visit(ctx.orQuery[0]),
-          orderBy: []
+          orderBy: [],
+          limit: Infinity
         }
       };
     }
@@ -109,6 +114,13 @@ class QueryVisitor extends BaseVisitorWithDefaults {
       defeated,
       rule: ctx.withClause ? this.visit(ctx.withClause) : null,
     };
+  }
+
+  externalQuery(ctx: any): AST.AtomicQuery {
+    return {
+      type: "external",
+      identifiers: ctx.Identifier.map((c: any) => c.image)
+    }
   }
 
   typeSpecifier(ctx: any): [AST.EntityType, AST.Position | null, AST.DefeatedOption] {
@@ -247,6 +259,10 @@ class QueryVisitor extends BaseVisitorWithDefaults {
       "$",
       `return ${this.visit(ctx.expression)};`,
     ) as AST.OrderBy;
+  }
+
+  limitClause(ctx: any): number {
+    return Number(ctx.IntegerLiteral[0].image);
   }
 
   atomicExpression(ctx: any): string {

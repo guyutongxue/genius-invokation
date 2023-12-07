@@ -122,6 +122,11 @@ export const OrderBy = createToken({
   pattern: /order\s+by/i,
   longer_alt: Identifier,
 });
+export const Limit = createToken({
+  name: "Limit",
+  pattern: /limit/i,
+  longer_alt: Identifier,
+});
 
 export const Not = createToken({
   name: "Not",
@@ -173,6 +178,9 @@ export const LParen = createToken({ name: "LParen", pattern: /\(/ });
 export const RParen = createToken({ name: "RParen", pattern: /\)/ });
 export const Comma = createToken({ name: "Comma", pattern: /,/ });
 
+export const AtSign = createToken({ name: "AtSign", pattern: /@/ });
+export const Dot = createToken({ name: "Dot", pattern: /\./ });
+
 export const Whitespace = createToken({
   name: "Whitespace",
   pattern: /\s+/,
@@ -204,6 +212,7 @@ export const allTokens = [
   Definition,
   RecentFrom,
   OrderBy,
+  Limit,
   At,
   Has,
   Not,
@@ -225,6 +234,8 @@ export const allTokens = [
   LParen,
   RParen,
   Comma,
+  AtSign,
+  Dot,
   Plus,
   Minus,
   Multiply,

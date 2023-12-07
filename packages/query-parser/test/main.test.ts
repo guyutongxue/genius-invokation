@@ -20,9 +20,22 @@ test("grammar check", () => {
   toAst("status with definition id 35001 at any with id -50000", getter);
 });
 
-test("semantic check", () => {
+test("order by semantic check", () => {
   const result = toAst("my characters order by maxHealth - health", getter);
   expect(result.orderBy[0].toString()).toInclude(
     `return ($.variable["health"] ?? $.definition.constant["health"]) - ($.variable["maxHealth"] ?? $.definition.constant["maxHealth"]);`,
   );
 });
+
+test("external rule check", () => {
+  const result = toAst("@skill.caller", getter).children[0].children[0];
+  expect(result.subtype === "leaf" && result.query.target.type === "external").toBe(true);
+  const externalIds = (result as any).query.target.identifiers;
+  expect(externalIds).toEqual(["skill", "caller"]);
+})
+
+
+test("limit clause", () => {
+  const result = toAst("any limit 1", getter);
+  expect(result.limit).toBe(1);
+})

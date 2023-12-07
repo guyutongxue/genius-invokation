@@ -71,7 +71,7 @@ export class SkillContext<
    */
   constructor(
     private _state: GameState,
-    private readonly skillInfo: SkillInfo,
+    public readonly skillInfo: SkillInfo,
   ) {
     this.callerArea = getEntityArea(_state, skillInfo.caller.id);
   }
@@ -83,9 +83,6 @@ export class SkillContext<
   }
   private get callerState(): CharacterState | EntityState {
     return getEntityById(this._state, this.skillInfo.caller.id, true);
-  }
-  self(): ExContextType<Readonly, CallerType> {
-    return this.$(`any with id ${this.skillInfo.caller.id}`) as any;
   }
   isMyTurn() {
     return this._state.currentTurn === this.callerArea.who;

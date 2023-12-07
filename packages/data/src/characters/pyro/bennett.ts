@@ -24,7 +24,7 @@ const InspirationField = combatStatus(113031)
   .increaseDamage(2)
   .on("skill")
   .if((c, e) => e.caller.variables.health <= 6)
-  .heal(2, (c) => c.$(`character with id ${c.eventArg.caller.id}`))
+  .heal(2, "@event.skillCaller")
   // TODO
   .done();
 

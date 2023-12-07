@@ -9,6 +9,7 @@ export class QueryParser extends CstParser {
     $.RULE("query", () => {
       $.SUBRULE($.orQuery);
       $.OPTION(() => $.SUBRULE($.orderByClause));
+      $.OPTION2(() => $.SUBRULE($.limitClause));
     });
     $.RULE("tagRule", () => {
       $.CONSUME(Token.Tag);
@@ -126,6 +127,14 @@ export class QueryParser extends CstParser {
         ]);
       });
     });
+    $.RULE("externalQuery", () => {
+      $.CONSUME(Token.AtSign);
+      $.CONSUME(Token.Identifier);
+      $.MANY(() => {
+        $.CONSUME(Token.Dot);
+        $.CONSUME2(Token.Identifier);
+      });
+    });
     $.RULE("atomicQuery", () => {
       $.OR([
         {
@@ -142,6 +151,7 @@ export class QueryParser extends CstParser {
             $.CONSUME(Token.RParen);
           },
         },
+        { ALT: () => $.SUBRULE($.externalQuery) },
       ]);
     });
     $.RULE("prefixQuery", () => {
@@ -228,6 +238,10 @@ export class QueryParser extends CstParser {
         DEF: () => $.SUBRULE($.expression),
       });
       // $.CONSUME(Token.RParen);
+    });
+    $.RULE("limitClause", () => {
+      $.CONSUME(Token.Limit);
+      $.CONSUME(Token.IntegerLiteral);
     });
     this.performSelfAnalysis();
   }

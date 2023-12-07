@@ -2,6 +2,7 @@ export interface Query {
   type: "or";
   children: AndQuery[];
   orderBy: OrderBy[];
+  limit: number;
 }
 export interface AndQuery {
   type: "and";
@@ -27,6 +28,10 @@ export interface PrefixQuery {
 }
 
 export type AtomicQuery =
+  | {
+    type: "external";
+    identifiers: string[]
+  }
   | {
       type: "atomic";
       subtype: "paren";
