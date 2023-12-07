@@ -267,8 +267,7 @@ class Game {
       type: "changePhase",
       newPhase: "action",
     });
-    // @ts-expect-error
-    window.$$ = (arg: any) => new SkillContext(this._state, 0, this._state.players[0].activeCharacterId).$$(arg).map((x) => x.state);
+    window.$$ = (arg: any) => new SkillContext(this._state, { caller: this._state.players[0].characters[0] }).$$(arg).map((x) => x.state);
   }
   private async actionPhase() {
     const player = this._state.players[this._state.currentTurn];
@@ -283,7 +282,7 @@ class Game {
       });
     } else {
       const activeCh = player.characters[getActiveCharacterIndex(player)];
-      const skill = activeCh.definition.initiativeSkills[1];
+      const skill = activeCh.definition.initiativeSkills[2];
       const skillInfo: SkillInfo = {
         caller: activeCh,
         definition: skill,

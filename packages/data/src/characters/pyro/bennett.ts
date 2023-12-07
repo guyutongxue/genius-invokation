@@ -19,6 +19,12 @@ const InspirationField01 = combatStatus(113032)
  * 持续回合：2
  */
 const InspirationField = combatStatus(113031)
+  .on("beforeSkillDamage")
+  .if((c) => c.damageInfo.source.variables.health >= 7)
+  .increaseDamage(2)
+  .on("skill")
+  .if((c, e) => e.caller.variables.health <= 6)
+  .heal(2, (c) => c.$(`character with id ${c.eventArg.caller.id}`))
   // TODO
   .done();
 

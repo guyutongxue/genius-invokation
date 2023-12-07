@@ -284,11 +284,18 @@ export function extendSkillContext<
   return new Proxy(ctx, {
     get(target, prop, receiver) {
       if (prop in ext) {
-        return Reflect.get(ext, prop, receiver);
+        return Reflect.get(ext, prop, ext);
       } else {
         return Reflect.get(target, prop, receiver);
       }
     },
+    set(target, prop, newValue, receiver) {
+      if (prop in ext) {
+        return Reflect.set(ext, prop, newValue, ext);
+      } else {
+        return Reflect.set(target, prop, newValue, receiver);
+      }
+    }
   }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 

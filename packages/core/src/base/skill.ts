@@ -1,6 +1,8 @@
 import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
+import { flip } from "@gi-tcg/utils";
+import { allEntities, getActiveCharacterIndex, shiftLeft } from "../util";
 
 export interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
@@ -41,7 +43,7 @@ export interface UseDiceModifier {
   requestFastSwitch(): void;
 }
 
-export type SyncDamageInfo = Omit<DamageInfo, "via">
+export type SyncDamageInfo = Omit<DamageInfo, "via">;
 
 export interface DamageModifier0 {
   readonly damageInfo: DamageInfo;
@@ -55,17 +57,63 @@ export interface DamageModifier1 {
   decreaseDamage(value: number): void;
 }
 
-// export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
-//   constructor(private readonly _damageInfo: DamageInfo) {}
-//   get damageInfo() {
-//     return this._damageInfo;
-//   }
-//   private mutations: { type: "change" | "increase" | "multiply" | "decrease", value: number}[] = [];
-//   changeDamageType(type: DamageType) {
-//     this.mutations.push({ type: "change", value: type });
-//     this._damageInfo
-//   }
-// }
+export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
+  private caller: CharacterState | EntityState | null = null;
+  constructor(private readonly _damageInfo: DamageInfo) {}
+  private newDamageType: DamageType | null = null;
+  private increased = 0;
+  private multiplier = 1;
+  private decreased = 0;
+  private log = "";
+
+  setCaller(caller: CharacterState | EntityState) {
+    this.caller = caller;
+  }
+
+  changeDamageType(type: DamageType) {
+    if (this.caller === null) {
+      throw new Error("caller not set");
+    }
+    this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) change damage type from ${this._damageInfo.type} to ${type}.\n`;
+    if (this.newDamageType !== null) {
+      console.warn("Potential error: damage type already changed");
+    }
+    this.newDamageType = type;
+  }
+  increaseDamage(value: number) {
+    if (this.caller === null) {
+      throw new Error("caller not set");
+    }
+    this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) increase damage by ${value}.\n`;
+    this.increased += value;
+  }
+  multiplyDamage(multiplier: number) {
+    if (this.caller === null) {
+      throw new Error("caller not set");
+    }
+    this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) multiply damage by ${multiplier}.\n`;
+    this.multiplier *= multiplier;
+  }
+  decreaseDamage(value: number) {
+    if (this.caller === null) {
+      throw new Error("caller not set");
+    }
+    this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) decrease damage by ${value}.\n`;
+    this.decreased += value;
+  }
+
+  get damageInfo(): DamageInfo & { log: string } {
+    return {
+      ...this._damageInfo,
+      type: this.newDamageType ?? this._damageInfo.type,
+      value: Math.ceil(
+        (this._damageInfo.value + this.increased) * this.multiplier -
+          this.decreased,
+      ),
+      log: this.log,
+    };
+  }
+}
 
 export interface DefeatedModifier {
   readonly damageInfo: DamageInfo;
@@ -210,10 +258,7 @@ type InSkillEvent =
   | "onDefeated"
   | "onRevive";
 type InSkillEventPayload = {
-  [E in InSkillEvent]: readonly [
-    eventName: E,
-    eventArg: EventArg<E>,
-  ];
+  [E in InSkillEvent]: readonly [eventName: E, eventArg: EventArg<E>];
 }[InSkillEvent];
 
 export type AsyncRequest =
@@ -223,13 +268,39 @@ export type AsyncRequest =
 
 export type DeferredActions = InSkillEventPayload | AsyncRequest;
 
-export type TriggeredSkillDefinition = {
-  [E in EventNames]: SkillDefinitionBase<EventArg<E>> & {
+export type TriggeredSkillDefinition<E extends EventNames = EventNames> =
+  SkillDefinitionBase<EventArg<E>> & {
     triggerOn: E;
   };
-}[EventNames];
 
 export type SkillDefinition =
   | InitiativeSkillDefinition
   | InitiativeSkillDefinition<CardTarget>
   | TriggeredSkillDefinition;
+
+export function useSyncSkill<E extends keyof SyncEventMap>(
+  state: GameState,
+  event: E,
+  argFn: (caller: CharacterState | EntityState) => EventArg<E>,
+  requestBy?: SkillInfo,
+): GameState {
+  const entities = allEntities(state);
+  const infos = entities
+    .flatMap((e) =>
+      e.definition.skills
+        .filter((s) => s.triggerOn === event)
+        .map((s) => [e, s] as const),
+    )
+    .map<SkillInfo>(([e, s]) => ({
+      caller: e,
+      definition: s,
+      fromCard: null,
+      requestBy: requestBy ?? null,
+    }));
+  for (const info of infos) {
+    const desc = info.definition.action as SkillDescription<EventArg<E>>;
+    const arg = argFn(info.caller);
+    desc(state, info, arg);
+  }
+  return state;
+}

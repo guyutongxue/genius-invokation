@@ -11,6 +11,7 @@ import {
 } from "./base/state";
 import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
+import { flip } from "@gi-tcg/utils";
 
 export function getEntityById(
   state: GameState,
@@ -48,6 +49,27 @@ export function getEntityById(
     }
   }
   throw new Error(`Cannot found such entity`);
+}
+
+/**
+ * 查找所有实体，按照通常响应顺序排序
+ * @param state 游戏状态
+ * @returns 实体状态列表
+ */
+export function allEntities(state: GameState): (CharacterState | EntityState)[] {
+  const result: (CharacterState | EntityState)[] = [];
+  for (const who of [state.currentTurn, flip(state.currentTurn)]) {
+    const player = state.players[who];
+    const activeIdx = getActiveCharacterIndex(player);
+    for (const ch of shiftLeft(player.characters, activeIdx)) {
+      result.push(ch);
+      result.push(...ch.entities);
+    }
+    for (const key of ["combatStatuses", "summons", "supports"] as const) {
+      result.push(...player[key]);
+    }
+  }
+  return result;
 }
 
 export function getEntityArea(state: GameState, id: number): EntityArea {

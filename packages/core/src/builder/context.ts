@@ -2,7 +2,13 @@ import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
 
 import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
-import { DamageInfo, DeferredActions, SkillInfo } from "../base/skill";
+import {
+  DamageInfo,
+  DamageModifierImpl,
+  DeferredActions,
+  SkillInfo,
+  useSyncSkill,
+} from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getActiveCharacterIndex, getEntityArea, getEntityById } from "../util";
 import { executeQuery } from "./query";
@@ -234,22 +240,50 @@ export class SkillContext<
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
+      let damageInfo: DamageInfo = {
+        source: this.skillInfo.caller,
+        target: targetState,
+        type,
+        value,
+        via: this.skillInfo,
+      };
       if (type !== DamageType.Piercing) {
-        // TODO Calculate damage change (sync events) here
-        if (type !== DamageType.Physical) {
-          this.doApply(t, type/** TODO */);
+        const damageModifier = new DamageModifierImpl(damageInfo);
+        useSyncSkill(
+          this._state,
+          "onBeforeDamage0",
+          (st) => {
+            damageModifier.setCaller(st);
+            return damageModifier;
+          },
+          this.skillInfo,
+        );
+        useSyncSkill(
+          this._state,
+          "onBeforeDamage1",
+          (st) => {
+            damageModifier.setCaller(st);
+            return damageModifier;
+          },
+          this.skillInfo,
+        );
+        damageInfo = damageModifier.damageInfo;
+        console.log(damageModifier.damageInfo.log);
+
+        if (
+          damageInfo.type !== DamageType.Physical &&
+          damageInfo.type !== DamageType.Piercing &&
+          damageInfo.type !== DamageType.Heal
+        ) {
+          this.doApply(t, damageInfo.type, damageInfo);
         }
       }
 
-      const finalHealth = Math.max(0, targetState.variables.health - value);
-      this.emitEvent("onDamage", {
-        value,
-        type,
-        source: this.callerState,
-        via: this.skillInfo,
-        target: targetState,
-        state: this.state,
-      });
+      const finalHealth = Math.max(
+        0,
+        targetState.variables.health - damageInfo.value,
+      );
+      this.emitEvent("onDamage", { ...damageInfo, state: this._state });
       this.mutate({
         type: "modifyEntityVar",
         oldState: targetState,
@@ -280,7 +314,7 @@ export class SkillContext<
       type: "modifyEntityVar",
       oldState: target.state,
       varName: "aura",
-      value: newAura
+      value: newAura,
     });
   }
 
@@ -339,13 +373,18 @@ export class SkillContext<
   summon(id: SummonHandle) {
     this.createEntity("summon", id);
   }
-  characterStatus(id: StatusHandle) {
-    if (this.callerState.definition.type !== "character") {
-      throw new Error(
-        `Only character caller can use .characterStatus() method`,
-      );
+  characterStatus(
+    id: StatusHandle,
+    target?: TargetQueryArg<false, Ext, CallerType>,
+  ) {
+    if (target) {
+      const targets = this.queryCoerceToCharacters(target);
+      for (const t of targets) {
+        this.createEntity("status", id, t.area);
+      }
+    } else {
+      this.createEntity("status", id, this.callerArea);
     }
-    this.createEntity("status", id, this.callerArea);
   }
   combatStatus(id: CombatStatusHandle) {
     this.createEntity("combatStatus", id);
@@ -492,6 +531,10 @@ export class CharacterContext<Readonly extends boolean> {
   }
   get id() {
     return this._id;
+  }
+
+  get health() {
+    return this.state.variables.health;
   }
 
   positionIndex() {
