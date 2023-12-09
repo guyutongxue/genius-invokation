@@ -2,7 +2,8 @@
 import { CharacterData } from "@gi-tcg/typings";
 import Image from "./Image.vue";
 import EnergyBar from "./EnergyBar.vue";
-import { maxEnergyData } from "../max_energy";
+import { maxEnergyData } from "../static_data";
+import Status from "./Status.vue";
 
 const props = defineProps<{
   data: CharacterData;
@@ -12,11 +13,7 @@ const props = defineProps<{
 <template>
   <div class="flex flex-col gap-1 items-center">
     <div class="h-5 flex flex-row items-end gap-2">
-      <Image
-        v-if="data.aura & 0xf"
-        :id="data.aura & 0xf"
-        class="w-5"
-      ></Image>
+      <Image v-if="data.aura & 0xf" :id="data.aura & 0xf" class="w-5"></Image>
       <Image
         v-if="(data.aura >> 4) & 0xf"
         :id="(data.aura >> 4) & 0xf"
@@ -53,11 +50,7 @@ const props = defineProps<{
       ></EnergyBar>
       <Image :id="data.definitionId" class="h-full"></Image>
       <div class="absolute left-0 bottom-0">
-        <Image
-          v-for="st of data.entities"
-          :id="st.definitionId"
-          class="w-5"
-        ></Image>
+        <Status v-for="st of data.entities" :data="st"></Status>
       </div>
     </div>
   </div>

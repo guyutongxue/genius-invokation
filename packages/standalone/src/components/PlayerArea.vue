@@ -5,7 +5,7 @@ import Summon from "./Summon.vue";
 import Support from "./Support.vue";
 import Card from "./Card.vue";
 import Dice from "./Dice.vue";
-import Image from "./Image.vue";
+import Status from "./Status.vue";
 
 const props = defineProps<{
   data: PlayerData;
@@ -32,11 +32,7 @@ const props = defineProps<{
           <div v-for="ch of data.characters" class="flex flex-col">
             <CharacterArea :key="ch.id" :data="ch"></CharacterArea>
             <div v-if="ch.id === data.activeCharacterId" class="h-6">
-              <Image
-                v-for="st of data.combatStatuses"
-                :id="st.definitionId"
-                class="h-5"
-              ></Image>
+              <Status v-for="st of data.combatStatuses" :data="st"></Status>
             </div>
             <div v-else-if="opp" class="h-12"></div>
           </div>

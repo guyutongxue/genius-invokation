@@ -1,4 +1,4 @@
-import { EntityType, EntityTag } from "../base/entity";
+import { EntityType, EntityTag, EntityVariables } from "../base/entity";
 import {
   EventExt,
   EventMap,
@@ -13,11 +13,21 @@ import {
   enableShortcut,
 } from "./skill";
 import { HandleT } from "./type";
+import { Draft } from "immer";
 
-export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
+export type ExtOfEntity<Vars extends string, Event extends DetailedEventNames> = {
+  setVariable<V extends Vars>(prop: V, value: number): void;
+  addVariable<V extends Vars>(prop: V, value: number): void;
+} & DetailedEventExt<Event>;
+
+export class EntityBuilder<CallerType extends EntityType, Vars extends string = never> {
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
   private _tags: EntityTag[] = [];
+  private _constants: Draft<EntityVariables> = {
+    duration: Infinity,
+  };
+  private _visibleVarName: string | null = null;
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -29,28 +39,43 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   ) {}
 
   on<E extends DetailedEventNames>(event: E) {
-    return enableShortcut(new TriggeredSkillBuilder<DetailedEventExt<E>, CallerType, E>(
-      this.type,
-      this.generateSkillId(),
-      event,
-      this,
-    ));
+    return enableShortcut(
+      new TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>(
+        this.type,
+        this.generateSkillId(),
+        event,
+        this,
+      ),
+    );
+  }
+
+  variable<const Name extends string>(name: Name, value: number, max?: number): EntityBuilder<CallerType, Vars | Name> {
+    this._constants[name] = value;
+    if (typeof max === "number") {
+      this._constants[name + "$max"] = max;
+    }
+    this._visibleVarName = name;
+    return this;
   }
 
   duration(count: number): this {
-    // TODO
+    this._constants.duration = count;
     return this;
   }
 
   usage(count: number, max?: number): this {
+    this._constants.usage = count;
+    if (typeof max === "number") {
+      this._constants.usage$max = max;
+    }
     // TODO
     return this;
   }
 
-  shield(count: number, max?: number): this {
+  shield(count: number, max?: number) {
     // TODO
     this.tags("shield");
-    return this;
+    return this.variable("shield", count, max);
   }
 
   tags(...tags: EntityTag[]): this {
@@ -61,9 +86,8 @@ export class EntityBuilder<Ext extends object, CallerType extends EntityType> {
   done(): HandleT<CallerType> {
     registerEntity({
       id: this.id,
-      constants: {
-        duration: Infinity,
-      }, // TODO
+      visibleVarName: this._visibleVarName,
+      constants: this._constants, // TODO
       skills: this._skillList,
       tags: this._tags,
       type: this.type,

@@ -370,7 +370,7 @@ export class SkillContext<
             type: "modifyEntityVar",
             oldState: existEntity,
             varName: prop,
-            value: Math.max(
+            value: Math.min(
               def.constants[prop] + existEntity.variables[prop],
               valueLimit,
             ),

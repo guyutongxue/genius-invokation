@@ -31,6 +31,8 @@ const PulsingClarity = combatStatus(117052)
  */
 const SeamlessShield = combatStatus(117053)
   // TODO
+  .shield(1)
+  .on("dispose")
   .done();
 
 /**

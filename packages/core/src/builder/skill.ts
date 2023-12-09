@@ -9,7 +9,7 @@ import {
   SkillInfo,
   TriggeredSkillDefinition,
 } from "../base/skill";
-import { GameState } from "../base/state";
+import { EntityState, GameState } from "../base/state";
 import { SkillContext, ExtendedSkillContext } from "./context";
 import {
   AppliableDamageType,
@@ -223,7 +223,10 @@ export type DetailedEventExt<E extends DetailedEventNames> = EventExt<
 
 export type SkillInfoGetter = () => SkillInfo;
 
-export abstract class SkillBuilder<Ext extends object, CallerType extends ExEntityType> {
+export abstract class SkillBuilder<
+  Ext extends object,
+  CallerType extends ExEntityType,
+> {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(
     protected readonly callerType: CallerType,
@@ -251,10 +254,7 @@ export abstract class SkillBuilder<Ext extends object, CallerType extends ExEnti
     extGenerator: (skillCtx: SkillContext<false, Ext, CallerType>) => Ext,
   ): SkillDescription<void> {
     return (st, skillInfo) => {
-      const ctx = new SkillContext<false, Ext, CallerType>(
-        st,
-        skillInfo,
-      );
+      const ctx = new SkillContext<false, Ext, CallerType>(st, skillInfo);
       const ext = extGenerator(ctx);
       const wrapped = extendSkillContext<false, Ext, CallerType>(ctx, ext);
       for (const op of this.operations) {
@@ -295,7 +295,7 @@ export function extendSkillContext<
       } else {
         return Reflect.set(target, prop, newValue, receiver);
       }
-    }
+    },
   }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 
@@ -368,12 +368,13 @@ export class TriggeredSkillBuilder<
   Ext extends object,
   CallerType extends EntityType,
   EN extends DetailedEventNames,
+  V extends string,
 > extends SkillBuilder<Ext, CallerType> {
   constructor(
     callerType: CallerType,
     id: number,
     private readonly triggerOn: EN,
-    private readonly parent: EntityBuilder<Ext, CallerType>,
+    private readonly parent: EntityBuilder<CallerType, V>,
   ) {
     super(callerType, id);
   }
@@ -382,13 +383,36 @@ export class TriggeredSkillBuilder<
     const eventName = detailedEventDictionary[this.triggerOn][0];
     const action: SkillDescription<any> = (state, callerId, arg) => {
       const innerAction = this.getAction((ctx) => {
+        let result: any;
         if ("state" in arg) {
-          return {
-            eventArg: arg
-          } as Ext;
+          result = {
+            eventArg: arg,
+          };
         } else {
-          return arg;
+          result = arg;
         }
+        result.setVariable = (prop: string, value: number) => {
+          this.do((c) =>
+            c.mutate({
+              type: "modifyEntityVar",
+              oldState: c.$("@self").state as EntityState,
+              varName: prop,
+              value: value,
+            }),
+          );
+        };
+        result.addVariable = (prop: string, value: number) => {
+          this.do((c) => {
+            const state = c.$("@self").state as EntityState;
+            c.mutate({
+              type: "modifyEntityVar",
+              oldState: state,
+              varName: prop,
+              value: value + state.variables[prop],
+            });
+          });
+        };
+        return result;
       });
       return innerAction(state, callerId);
     };
@@ -471,7 +495,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     return this;
   }
 
-  type(type: "passive"): EntityBuilder<object, "passiveSkill">;
+  type(type: "passive"): EntityBuilder<"passiveSkill">;
   type(type: CommonSkillType): this;
   type(type: CommonSkillType | "passive"): any {
     if (type === "passive") {
