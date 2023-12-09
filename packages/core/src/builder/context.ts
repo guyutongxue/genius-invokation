@@ -10,7 +10,12 @@ import {
   useSyncSkill,
 } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
-import { getActiveCharacterIndex, getEntityArea, getEntityById } from "../util";
+import {
+  allEntitiesAtArea,
+  getActiveCharacterIndex,
+  getEntityArea,
+  getEntityById,
+} from "../util";
 import { executeQuery } from "./query";
 import {
   AppliableDamageType,
@@ -22,7 +27,6 @@ import {
   StatusHandle,
   SummonHandle,
 } from "./type";
-import { getEntityDefinition } from "./registry";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "@gi-tcg/query-parser";
 import { NontrivialDamageType, REACTION_MAP } from "./reaction";
@@ -325,11 +329,6 @@ export class SkillContext<
     if (typeof def === "undefined") {
       throw new Error(`Unknown entity id ${id2}`);
     }
-    const initState: EntityState = {
-      id: 0,
-      definition: def,
-      variables: def.constants,
-    };
     if (typeof area === "undefined") {
       switch (type) {
         case "combatStatus":
@@ -356,16 +355,47 @@ export class SkillContext<
           );
       }
     }
-    this.mutate({
-      type: "createEntity",
-      where: area,
-      value: initState,
-    });
-    const newState = getEntityById(this._state, initState.id);
-    this.emitEvent("onEnter", {
-      entity: newState,
-      state: this.state,
-    });
+    const existEntity = allEntitiesAtArea(this._state, area).find(
+      (e) => e.definition.id === id2,
+    );
+    if (existEntity) {
+      // refresh exist entity's variable
+      for (const prop in existEntity.variables) {
+        if (prop in def.constants) {
+          const valueLimit =
+            `${prop}$max` in def.constants
+              ? def.constants[`${prop}$max`]
+              : def.constants[prop];
+          this.mutate({
+            type: "modifyEntityVar",
+            oldState: existEntity,
+            varName: prop,
+            value: Math.max(
+              def.constants[prop] + existEntity.variables[prop],
+              valueLimit,
+            ),
+          });
+        }
+      }
+    } else {
+      const initState: EntityState = {
+        id: 0,
+        definition: def,
+        variables: Object.fromEntries(
+          Object.entries(def.constants).filter(([k]) => !k.includes("$")),
+        ) as any,
+      };
+      this.mutate({
+        type: "createEntity",
+        where: area,
+        value: initState,
+      });
+      const newState = getEntityById(this._state, initState.id);
+      this.emitEvent("onEnter", {
+        entity: newState,
+        state: this.state,
+      });
+    }
   }
   summon(id: SummonHandle) {
     this.createEntity("summon", id);

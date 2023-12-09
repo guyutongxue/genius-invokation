@@ -96,6 +96,26 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
   throw new Error(`Cannot found such entity`);
 }
 
+export function allEntitiesAtArea(
+  state: GameState,
+  area: EntityArea,
+): (CharacterState | EntityState)[] {
+  const result: (CharacterState | EntityState)[] = [];
+  const player = state.players[area.who];
+  if (area.type === "characters") {
+    const characters = player.characters;
+    const idx = characters.findIndex((ch) => ch.id === area.characterId);
+    if (idx === -1) {
+      throw new Error(`Cannot found such entity`);
+    }
+    result.push(characters[idx]);
+    result.push(...characters[idx].entities);
+  } else {
+    result.push(...player[area.type]);
+  }
+  return result;
+}
+
 export function disposeEntity(state: Draft<GameState>, id: number) {
   for (const player of state.players) {
     for (const ch of player.characters) {

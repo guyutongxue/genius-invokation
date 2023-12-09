@@ -237,7 +237,7 @@ export function executeQuery<
   s: Q,
 ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[] {
   const ast = toAst(s, getter);
-  console.log("ast: ", ast);
+  // console.log("ast: ", ast);
   const filter = queryToFilter(ctx as any, ast);
   return doFilter(ctx as any, filter).toSpliced(ast.limit) as any;
 }
