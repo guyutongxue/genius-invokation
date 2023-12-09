@@ -241,10 +241,10 @@ export abstract class SkillBuilder<
     protected readonly id: number,
   ) {}
   protected applyFilter = false;
-  protected filter: SkillFilter<Ext, CallerType> = () => true;
+  protected _filter: SkillFilter<Ext, CallerType> = () => true;
 
   if(filter: SkillFilter<Ext, CallerType>): this {
-    this.filter = filter;
+    this._filter = filter;
     this.applyFilter = true;
     return this;
   }
@@ -252,7 +252,7 @@ export abstract class SkillBuilder<
   do(op: SkillOperation<Ext, CallerType>): this {
     if (this.applyFilter) {
       this.operations.push((c, e) => {
-        if (!this.filter(c as any, e)) return;
+        if (!this._filter(c as any, e)) return;
         return op(c, e);
       });
     } else {
@@ -263,8 +263,8 @@ export abstract class SkillBuilder<
   }
 
   else(): this {
-    const ifFilter = this.filter;
-    this.filter = (c, e) => !ifFilter(c, e);
+    const ifFilter = this._filter;
+    this._filter = (c, e) => !ifFilter(c, e);
     this.applyFilter = true;
     return this;
   }

@@ -20,17 +20,20 @@ import {
 import {
   getActiveCharacterIndex,
   getEntityById,
+  shiftLeft,
   shuffle,
   sortDice,
 } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionInfo,
+  DeferredAction,
   SkillDefinitionBase,
   SkillInfo,
   UseSkillInfo,
 } from "./base/skill";
 import { SkillContext } from "./builder/context";
+import { flip } from "@gi-tcg/utils";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -312,7 +315,7 @@ class Game {
         fromCard: null,
         requestBy: null,
       };
-      await this.useSkill(skill, skillInfo, void 0);
+      await this.useSkill(skillInfo, void 0);
     }
     this.mutate({
       type: "switchTurn",
@@ -378,15 +381,19 @@ class Game {
     return result.map((x) => ({ ...x, newState: this._state }));
   }
 
-  private async useSkill<Args>(
-    skill: SkillDefinitionBase<Args>,
-    skillInfo: SkillInfo,
-    args: Args,
-  ) {
-    const [newState, eventList] = skill.action(this._state, skillInfo, args);
+  private async useSkill<Args>(skillInfo: SkillInfo, args: Args) {
+    const oldState = this._state;
+    const [newState, eventList] = (0, skillInfo.definition.action)(
+      this._state,
+      skillInfo,
+      args as any,
+    );
     this._state = newState;
-    this.notify([]);
-    await this.io.pause(this._state);
+    this.notify([]); // TODO ?
+    if (oldState !== newState) {
+      await this.io.pause(this._state);
+    }
+    return eventList;
   }
 
   private async switchCard(who: 0 | 1) {
@@ -409,6 +416,102 @@ class Game {
       }
     }
     return [...controlled, ...this.randomDice(rerollIndexes.length, who)];
+  }
+
+  private async *doHandleEvents(
+    actions: DeferredAction[],
+  ): AsyncGenerator<DeferredAction[], void> {
+    for (const [name, arg] of actions) {
+      // TODO request part
+      if (name === "requestReroll") {
+        for (let i = 0; i < arg.times; i++) {
+          const newDice = await this.reroll(
+            arg.who,
+            this._state.players[arg.who].dice,
+          );
+          this.mutate({
+            type: "resetDice",
+            who: arg.who,
+            value: newDice,
+          });
+        }
+      } else if (name === "requestSwitchCards") {
+        await this.switchCard(arg.who);
+      } else if (name === "requestUseSkill") {
+        const def = this.data.skill.get(arg.requestingSkillId);
+        if (typeof def === "undefined") {
+          throw new Error(`Unknown skill id ${arg.requestingSkillId}`);
+        }
+        if (def.triggerOn !== null) {
+          throw new Error(`Cannot request skill with trigger event`);
+        }
+        const skillInfo: SkillInfo = {
+          caller: arg.via.caller,
+          definition: def,
+          fromCard: null,
+          requestBy: arg.via,
+        };
+        yield this.useSkill(skillInfo, void 0);
+      } else {
+        // TODO defeat logic
+        const currentTurn = this._state.currentTurn;
+        for (const who of [currentTurn, flip(currentTurn)]) {
+          const player = this._state.players[who];
+          const activeIdx = getActiveCharacterIndex(player);
+          for (const ch of shiftLeft(player.characters, activeIdx)) {
+            for (const sk of ch.definition.skills) {
+              if (sk.triggerOn === name) {
+                const skillInfo: SkillInfo = {
+                  caller: ch,
+                  definition: sk,
+                  fromCard: null,
+                  requestBy: null,
+                };
+                yield this.useSkill(skillInfo, arg);
+              }
+            }
+            for (const et of ch.entities) {
+              for (const sk of et.definition.skills) {
+                if (sk.triggerOn === name) {
+                  const skillInfo: SkillInfo = {
+                    caller: et,
+                    definition: sk,
+                    fromCard: null,
+                    requestBy: null,
+                  };
+                  yield this.useSkill(skillInfo, arg);
+                }
+              }
+            }
+          }
+          for (const key of [
+            "combatStatuses",
+            "summons",
+            "supports",
+          ] as const) {
+            for (const et of player[key]) {
+              for (const sk of et.definition.skills) {
+                if (sk.triggerOn === name) {
+                  const skillInfo: SkillInfo = {
+                    caller: et,
+                    definition: sk,
+                    fromCard: null,
+                    requestBy: null,
+                  };
+                  yield this.useSkill(skillInfo, arg);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private async handleEvents(...actions: DeferredAction[]) {
+    for await (const events of this.doHandleEvents(actions)) {
+      await this.handleEvents(...events);
+    }
   }
 }
 

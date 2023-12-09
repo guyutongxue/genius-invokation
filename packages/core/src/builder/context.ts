@@ -5,7 +5,7 @@ import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
   DamageModifierImpl,
-  DeferredActions,
+  DeferredAction,
   SkillInfo,
   useSyncSkill,
 } from "../base/skill";
@@ -64,7 +64,7 @@ export class SkillContext<
   Ext extends object,
   CallerType extends ExEntityType,
 > {
-  private readonly eventPayloads: DeferredActions[] = [];
+  private readonly eventPayloads: DeferredAction[] = [];
   public readonly callerArea: EntityArea;
 
   /**
@@ -176,7 +176,7 @@ export class SkillContext<
     }
   }
 
-  emitEvent(...payloads: DeferredActions) {
+  emitEvent(...payloads: DeferredAction) {
     this.eventPayloads.push(payloads);
   }
 
@@ -494,10 +494,17 @@ export class SkillContext<
     }
   }
   switchCards() {
-    this.emitEvent("requestSwitchCards");
+    this.emitEvent("requestSwitchCards", {
+      who: this.callerArea.who,
+      via: this.skillInfo,
+    });
   }
   reroll(times: number) {
-    this.emitEvent("requestReroll", times);
+    this.emitEvent("requestReroll", {
+      who: this.callerArea.who,
+      via: this.skillInfo,
+      times,
+    });
   }
   useSkill(skill: SkillHandle | "normal") {
     let skillId;
@@ -514,7 +521,10 @@ export class SkillContext<
     } else {
       skillId = skill;
     }
-    this.emitEvent("requestUseSkill", skillId);
+    this.emitEvent("requestUseSkill", {
+      via: this.skillInfo,
+      requestingSkillId: skillId,
+    });
   }
 
   random<T>(...items: T[]): T {

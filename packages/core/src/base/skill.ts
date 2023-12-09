@@ -10,7 +10,7 @@ export interface SkillDefinitionBase<Arg> {
   readonly action: SkillDescription<Arg>;
 }
 
-type SkillResult = readonly [GameState, DeferredActions[]];
+type SkillResult = readonly [GameState, DeferredAction[]];
 
 export type SkillDescription<Arg> = (
   state: GameState,
@@ -248,25 +248,16 @@ export type EventExt<E extends EventNames> = E extends keyof SyncEventMap
     }
   : never;
 
-type InSkillEvent =
-  | "onSwitchActive"
-  | "onDamage"
-  | "onHeal"
-  | "onElementalReaction"
-  | "onEnter"
-  | "onDisposing"
-  | "onDefeated"
-  | "onRevive";
 type InSkillEventPayload = {
-  [E in InSkillEvent]: readonly [eventName: E, eventArg: EventArg<E>];
-}[InSkillEvent];
+  [E in keyof AsyncEventMap]: readonly [eventName: E, eventArg: EventArg<E>];
+}[keyof AsyncEventMap];
 
 export type AsyncRequest =
-  | readonly [type: "requestSwitchCards"]
-  | readonly [type: "requestReroll", times: number]
-  | readonly [type: "requestUseSkill", skillId: number];
+  | readonly [name: "requestSwitchCards", arg: { readonly who: 0 | 1, readonly via: SkillInfo } ]
+  | readonly [name: "requestReroll", arg: { readonly who: 0 | 1, readonly via: SkillInfo, readonly times: number }]
+  | readonly [name: "requestUseSkill", arg: { readonly via: SkillInfo, readonly requestingSkillId: number }];
 
-export type DeferredActions = InSkillEventPayload | AsyncRequest;
+export type DeferredAction = InSkillEventPayload | AsyncRequest;
 
 export type TriggeredSkillDefinition<E extends EventNames = EventNames> =
   SkillDefinitionBase<EventArg<E>> & {
