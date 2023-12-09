@@ -82,7 +82,7 @@ class Game {
       },
       phase: "initHands",
       currentTurn: 0,
-      roundNumber: 1,
+      roundNumber: 0,
       skillLog: [],
       mutationLog: [],
       winner: null,
@@ -274,6 +274,9 @@ class Game {
       value: r1,
     });
     this.mutate({
+      type: "stepRound",
+    });
+    this.mutate({
       type: "changePhase",
       newPhase: "action",
     });
@@ -327,7 +330,7 @@ class Game {
   private async endPhase() {
     this.mutate({
       type: "changePhase",
-      newPhase: "gameEnd",
+      newPhase: "roll",
     });
   }
 

@@ -19,14 +19,13 @@ const InspirationField01 = combatStatus(113032)
  * 持续回合：2
  */
 const InspirationField = combatStatus(113031)
-  .variable("test", 0, Infinity)
+  .duration(2)
   .on("beforeSkillDamage")
   .if((c) => c.damageInfo.source.variables.health >= 7)
   .increaseDamage(2)
   .on("skill")
   .if((c, e) => e.caller.variables.health <= 6)
   .heal(2, "@event.skillCaller")
-  .addVariable("test", 1)
   // TODO
   .done();
 

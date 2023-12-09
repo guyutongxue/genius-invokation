@@ -20,8 +20,8 @@ const props = defineProps<{
       class="flex-grow flex gap-2"
       :class="opp ? 'flex-col-reverse' : 'flex-col'"
     >
-      <div class="min-h-58 flex flex-row justify-center">
-        <div>
+      <div class="min-h-58 flex flex-row justify-center gap-6">
+        <div class="min-w-40">
           <Support
             v-for="support of data.supports"
             :key="support.id"
@@ -37,7 +37,7 @@ const props = defineProps<{
             <div v-else-if="opp" class="h-12"></div>
           </div>
         </div>
-        <div>
+        <div class="min-w-40">
           <Summon
             v-for="summon of data.summons"
             :key="summon.id"

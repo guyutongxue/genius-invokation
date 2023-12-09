@@ -300,7 +300,7 @@ export function useSyncSkill<E extends keyof SyncEventMap>(
   for (const info of infos) {
     const desc = info.definition.action as SkillDescription<EventArg<E>>;
     const arg = argFn(info.caller);
-    desc(state, info, arg);
+    [state] = desc(state, info, arg);
   }
   return state;
 }

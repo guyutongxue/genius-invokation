@@ -9,6 +9,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  */
 const DandelionField = summon(115021)
   .on("endPhase")
+  .usage(2)
   .damage(1, DamageType.Anemo)
   .heal(1, "active")
   .done();

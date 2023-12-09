@@ -108,9 +108,8 @@ export class SkillContext<
 
   /**
    * 在指定某个角色目标时，可传入的参数类型：
-   * - Query Lambda 形如 `$ => $.active()`
-   *   - 该 Lambda 可返回 `QueryBuilder` 如上；
-   *   - 也可返回具体的对象上下文，如 `$ => $.opp().one()`。
+   * - Query string 形如 `my active character`
+   * - Lambda 返回具体的对象上下文，如 `c => c.targets[0]`。
    * - 直接传入具体的对象上下文。
    */
 
@@ -134,6 +133,21 @@ export class SkillContext<
     } else {
       return [arg];
     }
+  }
+
+  // Get context of given entity state
+  of(entityState: EntityState): EntityContext<Readonly>;
+  of(entityState: CharacterState): CharacterContext<Readonly>;
+  of(entityState: EntityState | CharacterState): any {
+    if (entityState.definition.type === "character") {
+      return new CharacterContext<Readonly>(this, entityState.id);
+    } else {
+      return new EntityContext<Readonly, any>(this, entityState.id);
+    }
+  }
+
+  caller(): ExContextType<Readonly, CallerType> {
+    return this.of(this.callerState as any) as any;
   }
 
   private queryCoerceToCharacters(
@@ -250,7 +264,7 @@ export class SkillContext<
       };
       if (type !== DamageType.Piercing) {
         const damageModifier = new DamageModifierImpl(damageInfo);
-        useSyncSkill(
+        this._state = useSyncSkill(
           this._state,
           "onBeforeDamage0",
           (st) => {
@@ -259,7 +273,7 @@ export class SkillContext<
           },
           this.skillInfo,
         );
-        useSyncSkill(
+        this._state = useSyncSkill(
           this._state,
           "onBeforeDamage1",
           (st) => {
@@ -428,6 +442,30 @@ export class SkillContext<
       entity: state,
       state: stateBeforeDispose,
     });
+  }
+
+  setVariable(
+    prop: string,
+    value: number,
+    target?: CharacterState | EntityState,
+  ) {
+    target ??= this.callerState;
+    this.mutate({
+      type: "modifyEntityVar",
+      oldState: target,
+      varName: prop,
+      value: value,
+    });
+  }
+
+  addVariable(
+    prop: string,
+    value: number,
+    target?: CharacterState | EntityState,
+  ) {
+    target ??= this.callerState;
+    const finalValue = value + target.variables[prop];
+    this.setVariable(prop, finalValue, target);
   }
 
   absorbDice(strategy: "seq" | "diff", count: number) {
@@ -672,6 +710,13 @@ export class EntityContext<
       this.skillContext,
       this._area.characterId,
     );
+  }
+
+  setVariable(prop: string, value: number) {
+    this.skillContext.setVariable(prop, value, this.state);
+  }
+  addVariable(prop: string, value: number) {
+    this.skillContext.addVariable(prop, value, this.state);
   }
 
   dispose() {

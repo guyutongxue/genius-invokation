@@ -14,7 +14,8 @@ const Frozen = status(106)
   .if((c) => c.damageInfo.type === DamageType.Pyro || c.damageInfo.type === DamageType.Physical)
   .do((c) => {
     c.increaseDamage(1);
-    c.self().dispose();
+    c.caller().dispose();
+    return true;
   })
   .done();
 
@@ -36,8 +37,8 @@ const Crystallize = combatStatus(111)
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 const BurningFlame = summon(115)
-  .usage(1, 2)
   .on("endPhase")
+  .usage(1, { recreateMax: 2 })
   .damage(1, DamageType.Pyro)
   .done();
 
@@ -49,8 +50,8 @@ const BurningFlame = summon(115)
  * 可用次数：1
  */
 const DendroCore = combatStatus(116)
-  .usage(1)
   .on("beforeDealDamage")
+  .usage(1)
   .if(
     (c) =>
       [DamageType.Pyro, DamageType.Electro].includes(c.damageInfo.type) &&
@@ -67,8 +68,8 @@ const DendroCore = combatStatus(116)
  * 可用次数：2
  */
 const CatalyzingField = combatStatus(117)
-  .usage(2)
   .on("beforeDealDamage")
+  .usage(2)
   .if(
     (c) =>
       [DamageType.Electro, DamageType.Dendro].includes(c.damageInfo.type) &&

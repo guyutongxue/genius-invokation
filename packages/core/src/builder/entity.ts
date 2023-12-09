@@ -15,14 +15,26 @@ import {
 import { HandleT } from "./type";
 import { Draft } from "immer";
 
-export type ExtOfEntity<Vars extends string, Event extends DetailedEventNames> = {
+export type ExtOfEntity<
+  Vars extends string,
+  Event extends DetailedEventNames,
+> = {
   setVariable<V extends Vars>(prop: V, value: number): void;
   addVariable<V extends Vars>(prop: V, value: number): void;
 } & DetailedEventExt<Event>;
 
-export class EntityBuilder<CallerType extends EntityType, Vars extends string = never> {
+export interface VariableOptions {
+  recreateMax?: number;
+  visible?: boolean;
+}
+
+export class EntityBuilder<
+  CallerType extends EntityType,
+  Vars extends string = never,
+> {
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
+  private _usagePerRoundVarNames: string[] = [];
   private _tags: EntityTag[] = [];
   private _constants: Draft<EntityVariables> = {
     duration: Infinity,
@@ -49,33 +61,31 @@ export class EntityBuilder<CallerType extends EntityType, Vars extends string = 
     );
   }
 
-  variable<const Name extends string>(name: Name, value: number, max?: number): EntityBuilder<CallerType, Vars | Name> {
+  variable<const Name extends string>(
+    name: Name,
+    value: number,
+    opt?: VariableOptions,
+  ): EntityBuilder<CallerType, Vars | Name> {
     this._constants[name] = value;
-    if (typeof max === "number") {
-      this._constants[name + "$max"] = max;
+    if (typeof opt?.recreateMax === "number") {
+      this._constants[name + "$max"] = opt.recreateMax;
     }
-    this._visibleVarName = name;
+    const visible = opt?.visible ?? true;
+    if (visible) {
+      this._visibleVarName = name;
+    }
     return this;
   }
 
   duration(count: number): this {
-    this._constants.duration = count;
-    return this;
-  }
-
-  usage(count: number, max?: number): this {
-    this._constants.usage = count;
-    if (typeof max === "number") {
-      this._constants.usage$max = max;
-    }
-    // TODO
+    this.variable("duration", count);
     return this;
   }
 
   shield(count: number, max?: number) {
     // TODO
     this.tags("shield");
-    return this.variable("shield", count, max);
+    return this.variable("shield", count, { recreateMax: max });
   }
 
   tags(...tags: EntityTag[]): this {
@@ -84,6 +94,21 @@ export class EntityBuilder<CallerType extends EntityType, Vars extends string = 
   }
 
   done(): HandleT<CallerType> {
+    // on action phase clean up
+    this.on("actionPhase")
+      .do((c, e) => {
+        const self = c.caller();
+        for (const prop of this._usagePerRoundVarNames) {
+          self.setVariable(prop, 0);
+        }
+        self.addVariable("duration", -1);
+        if (self.state.variables.duration <= 0) {
+          self.dispose();
+        }
+        return false;
+      })
+      // @ts-expect-error private prop
+      .buildSkill();
     registerEntity({
       id: this.id,
       visibleVarName: this._visibleVarName,

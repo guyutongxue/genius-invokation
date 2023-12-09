@@ -16,7 +16,11 @@ defineProps<{
   >
     <PlayerArea :data="data.players[0]" :opp="who !== 0"></PlayerArea>
     <div class="bg-yellow-100">
-      phase = {{ data.phase }}; turn = {{ data.currentTurn }} ({{
+      round = {{ data.roundNumber }};
+      <!-- -->
+      phase = {{ data.phase }};
+      <!-- -->
+      turn = {{ data.currentTurn }} ({{
         data.currentTurn === who ? "me" : "opp"
       }})
     </div>

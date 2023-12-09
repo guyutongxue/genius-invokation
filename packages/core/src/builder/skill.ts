@@ -19,7 +19,7 @@ import {
   SummonHandle,
 } from "./type";
 import { EntityArea, EntityType } from "../base/entity";
-import { EntityBuilder } from "./entity";
+import { EntityBuilder, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
 
 type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
@@ -29,7 +29,15 @@ type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
 type SkillOperation<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<false, Ext, CallerType>,
   e: EventArgOfExt<Ext>,
-) => void;
+) => any;
+
+type SkillOperationWithRetVal<
+  Ext extends object,
+  CallerType extends ExEntityType,
+> = (
+  c: ExtendedSkillContext<false, Ext, CallerType>,
+  e: EventArgOfExt<Ext>,
+) => boolean;
 
 type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<true, Ext, CallerType>,
@@ -232,14 +240,32 @@ export abstract class SkillBuilder<
     protected readonly callerType: CallerType,
     protected readonly id: number,
   ) {}
+  protected applyFilter = false;
+  protected filter: SkillFilter<Ext, CallerType> = () => true;
 
   if(filter: SkillFilter<Ext, CallerType>): this {
-    // TODO
+    this.filter = filter;
+    this.applyFilter = true;
     return this;
   }
 
-  do(op: SkillOperation<Ext, CallerType>) {
-    this.operations.push(op);
+  do(op: SkillOperation<Ext, CallerType>): this {
+    if (this.applyFilter) {
+      this.operations.push((c, e) => {
+        if (!this.filter(c as any, e)) return;
+        return op(c, e);
+      });
+    } else {
+      this.operations.push(op);
+    }
+    this.applyFilter = false;
+    return this;
+  }
+
+  else(): this {
+    const ifFilter = this.filter;
+    this.filter = (c, e) => !ifFilter(c, e);
+    this.applyFilter = true;
     return this;
   }
 
@@ -263,8 +289,6 @@ export abstract class SkillBuilder<
       return [ctx.state, ctx.events] as const;
     };
   }
-
-  // protected abstract getSkillInfo(): SkillInfo;
 }
 
 /**
@@ -356,12 +380,18 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
         return Reflect.get(target, prop, receiver);
       } else {
         return function (this: T, ...args: any[]) {
-          return this.do((c) => c[prop](...args));
+          // returning true for counting usage
+          return this.do((c) => (c[prop](...args), true));
         };
       }
     },
   });
   return proxy as BuilderWithShortcut<TArgs[0], TArgs[1], T>;
+}
+
+interface UsageOptions extends VariableOptions {
+  name?: string;
+  perRound?: boolean;
 }
 
 export class TriggeredSkillBuilder<
@@ -378,6 +408,38 @@ export class TriggeredSkillBuilder<
   ) {
     super(callerType, id);
   }
+  private _usageName: string | null = null;
+  private _usagePerRoundName: string | null = null;
+
+  override do(opWithRetVal: SkillOperationWithRetVal<Ext, CallerType>): this {
+    super.do((c, e) => {
+      const ret = opWithRetVal(c, e);
+      if (this._usageName) {
+        if (ret) {
+          c.addVariable(this._usageName, -1);
+        }
+        const self = c.caller();
+        if (self.state.variables[this._usageName] <= 0) {
+          self.dispose();
+        }
+      }
+    });
+    return this;
+  }
+
+  usage(count: number, opt?: UsageOptions): this {
+    const perRound = opt?.perRound ?? false;
+    if (perRound) {
+      this._usagePerRoundName = opt?.name ?? `usage_${this.id}`;
+      this.parent.variable(this._usagePerRoundName, count, opt);
+      // @ts-expect-error private prop
+      this.parent._usagePerRoundVarNames.push(this._usagePerRoundName);
+    } else {
+      this._usageName = opt?.name ?? `usagePR_${this.id}`;
+      this.parent.variable(this._usageName, count, opt);
+    }
+    return this;
+  }
 
   private buildSkill() {
     const eventName = detailedEventDictionary[this.triggerOn][0];
@@ -391,27 +453,6 @@ export class TriggeredSkillBuilder<
         } else {
           result = arg;
         }
-        result.setVariable = (prop: string, value: number) => {
-          this.do((c) =>
-            c.mutate({
-              type: "modifyEntityVar",
-              oldState: c.$("@self").state as EntityState,
-              varName: prop,
-              value: value,
-            }),
-          );
-        };
-        result.addVariable = (prop: string, value: number) => {
-          this.do((c) => {
-            const state = c.$("@self").state as EntityState;
-            c.mutate({
-              type: "modifyEntityVar",
-              oldState: state,
-              varName: prop,
-              value: value + state.variables[prop],
-            });
-          });
-        };
         return result;
       });
       return innerAction(state, callerId);
@@ -423,8 +464,8 @@ export class TriggeredSkillBuilder<
       action,
     };
     registerSkill(def);
-    // Accessing private field
-    ((this.parent as any)._skillList as TriggeredSkillDefinition[]).push(def);
+    // @ts-expect-error private prop
+    this.parent._skillList.push(def);
   }
 
   on<E extends DetailedEventNames>(event: E) {
