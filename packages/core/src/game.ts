@@ -381,17 +381,32 @@ class Game {
     return result.map((x) => ({ ...x, newState: this._state }));
   }
 
-  private async useSkill<Args>(skillInfo: SkillInfo, args: Args) {
+  private async useSkill(
+    skillInfo: SkillInfo,
+    args: any,
+  ): Promise<DeferredAction[]> {
+    // If caller not exists (consumed by previous skills), do nothing
+    try {
+      getEntityById(this._state, skillInfo.caller.id, true);
+    } catch {
+      return [];
+    }
+    this.mutate({ type: "pushSkillLog", skillInfo });
     const oldState = this._state;
     const [newState, eventList] = (0, skillInfo.definition.action)(
       this._state,
       skillInfo,
-      args as any,
+      args,
     );
     this._state = newState;
-    this.notify([]); // TODO ?
-    if (oldState !== newState) {
+    if (oldState.players !== newState.players) {
+      this.notify([]); // TODO ?
       await this.io.pause(this._state);
+      const hasDefeated = await this.checkDefeated();
+      if (hasDefeated) {
+        this.notify([]);
+        await this.io.pause(this._state);
+      }
     }
     return eventList;
   }
@@ -506,6 +521,58 @@ class Game {
         }
       }
     }
+  }
+
+  // 检查倒下角色，若有返回 `true`
+  private async checkDefeated(): Promise<boolean> {
+    const currentTurn = this._state.currentTurn;
+    const hasDefeated: [boolean, boolean] = [false, false];
+    for (const who of [currentTurn, flip(currentTurn)]) {
+      const player = this._state.players[who];
+      for (const ch of player.characters) {
+        if (ch.variables.alive && ch.variables.health <= 0) {
+          // TODO beforeDefeated
+          let mut: Mutation = {
+            type: "modifyEntityVar",
+            state: ch,
+            varName: "alive",
+            value: 0,
+          };
+          this.mutate(mut);
+          for (const et of ch.entities) {
+            this.mutate({
+              type: "disposeEntity",
+              oldState: et,
+            });
+          }
+          mut = {
+            ...mut,
+            varName: "aura",
+            value: 0,
+          };
+          this.mutate(mut);
+          mut = {
+            ...mut,
+            varName: "energy",
+            value: 0,
+          };
+          this.mutate(mut);
+          if (ch.id === player.activeCharacterId) {
+            // TODO switch active
+          }
+          hasDefeated[who] = true;
+        }
+      }
+      if (hasDefeated[who]) {
+        this.mutate({
+          type: "setPlayerFlag",
+          who,
+          flagName: "hasDefeated",
+          value: true,
+        });
+      }
+    }
+    return hasDefeated[0] || hasDefeated[1];
   }
 
   private async handleEvents(...actions: DeferredAction[]) {

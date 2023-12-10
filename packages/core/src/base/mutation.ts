@@ -18,7 +18,7 @@ import {
   sortDice,
 } from "../util";
 import { EntityArea } from "./entity";
-import { SkillDefinition } from "./skill";
+import { SkillDefinition, SkillInfo } from "./skill";
 
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
@@ -53,8 +53,7 @@ export interface SetWinnerM {
 
 export interface PushSkillLogM {
   readonly type: "pushSkillLog";
-  readonly caller: number;
-  readonly skill: SkillDefinition;
+  readonly skillInfo: SkillInfo;
 }
 
 export interface ClearSkillLogM {
@@ -107,7 +106,7 @@ export interface DisposeEntityM {
 
 export interface ModifyEntityVarM {
   readonly type: "modifyEntityVar";
-  readonly oldState: EntityState | CharacterState;
+  state: EntityState | CharacterState;
   readonly varName: string;
   readonly value: number;
 }
@@ -182,13 +181,13 @@ function doMutation(state: GameState, m: Mutation): GameState {
       });
     }
     case "pushSkillLog": {
-      const caller = getEntityById(state, m.caller, true);
-      const area = getEntityArea(state, m.caller);
+      const caller = m.skillInfo.caller;
+      const area = getEntityArea(state, caller.id);
       const entry: SkillLogEntry = {
         roundNumber: state.roundNumber,
         caller,
         callerArea: area,
-        skill: m.skill,
+        skill: m.skillInfo.definition,
       };
       return produce(state, (draft) => {
         draft.skillLog.push(entry as Draft<SkillLogEntry>);
@@ -272,12 +271,14 @@ function doMutation(state: GameState, m: Mutation): GameState {
       });
     }
     case "modifyEntityVar": {
-      return produce(state, (draft) => {
-        const entity = getEntityById(draft, m.oldState.id, true) as Draft<
+      const newState = produce(state, (draft) => {
+        const entity = getEntityById(draft, m.state.id, true) as Draft<
           CharacterState | EntityState
         >;
         entity.variables[m.varName] = m.value;
       });
+      m.state = getEntityById(newState, m.state.id, true);
+      return newState;
     }
     case "resetDice": {
       return produce(state, (draft) => {

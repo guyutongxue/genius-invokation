@@ -22,7 +22,7 @@ const props = defineProps<{
     </div>
     <div class="h-40 relative" :title="`id=${data.id}`">
       <div
-        class="absolute left-[-15px] top-[-20px] flex items-center justify-center"
+        class="absolute z-10 left-[-15px] top-[-20px] flex items-center justify-center"
       >
         <!-- 水滴 -->
         <svg
@@ -44,13 +44,23 @@ const props = defineProps<{
         </div>
       </div>
       <EnergyBar
-        class="absolute right-[-10px] top-0"
+        class="absolute z-10 right-[-10px] top-0"
         :current="data.energy"
         :total="maxEnergyData[data.definitionId]"
       ></EnergyBar>
-      <Image :id="data.definitionId" class="h-full"></Image>
+      <Image
+        :id="data.definitionId"
+        class="h-full"
+        :class="{ 'brightness-50': data.defeated }"
+      ></Image>
       <div class="absolute left-0 bottom-0">
         <Status v-for="st of data.entities" :data="st"></Status>
+      </div>
+      <div
+        v-if="data.defeated"
+        class="absolute z-10 top-[50%] left-0 w-full text-center text-5xl font-bold translate-y-[-50%] font-[var(--font-emoji)]"
+      >
+        &#9760;
       </div>
     </div>
   </div>

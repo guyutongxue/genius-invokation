@@ -212,7 +212,7 @@ export class SkillContext<
       );
       this.mutate({
         type: "modifyEntityVar",
-        oldState: targetState,
+        state: targetState,
         varName: "energy",
         value: targetState.variables.energy + finalValue,
       });
@@ -229,7 +229,7 @@ export class SkillContext<
       const finalValue = Math.min(value, targetInjury);
       this.mutate({
         type: "modifyEntityVar",
-        oldState: targetState,
+        state: targetState,
         varName: "health",
         value: targetState.variables.health + finalValue,
       });
@@ -301,7 +301,7 @@ export class SkillContext<
       this.emitEvent("onDamage", { ...damageInfo, state: this._state });
       this.mutate({
         type: "modifyEntityVar",
-        oldState: targetState,
+        state: targetState,
         varName: "health",
         value: finalHealth,
       });
@@ -327,7 +327,7 @@ export class SkillContext<
     const [newAura, reaction] = REACTION_MAP[aura][type];
     this.mutate({
       type: "modifyEntityVar",
-      oldState: target.state,
+      state: target.state,
       varName: "aura",
       value: newAura,
     });
@@ -382,7 +382,7 @@ export class SkillContext<
               : def.constants[prop];
           this.mutate({
             type: "modifyEntityVar",
-            oldState: existEntity,
+            state: existEntity,
             varName: prop,
             value: Math.min(
               def.constants[prop] + existEntity.variables[prop],
@@ -452,7 +452,7 @@ export class SkillContext<
     target ??= this.callerState;
     this.mutate({
       type: "modifyEntityVar",
-      oldState: target,
+      state: target,
       varName: prop,
       value: value,
     });

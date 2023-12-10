@@ -109,8 +109,8 @@ export function exposeMutation(
     case "modifyEntityVar": {
       return {
         type: "modifyEntityVar",
-        id: m.oldState.id,
-        definitionId: m.oldState.definition.id,
+        id: m.state.id,
+        definitionId: m.state.definition.id,
         varName: m.varName,
         value: m.value,
       };
@@ -156,7 +156,7 @@ function exposeCharacter(ch: CharacterState): CharacterData {
   return {
     id: ch.id,
     definitionId: ch.definition.id,
-    defeated: !!ch.variables.alive,
+    defeated: !ch.variables.alive,
     entities: ch.entities.map(exposeEntity),
     health: ch.variables.health,
     energy: ch.variables.energy,
