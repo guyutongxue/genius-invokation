@@ -82,7 +82,7 @@ const SangonomiyaKokomi = character(1205)
  * 仪来羽衣存在期间，化海月造成的伤害+1。
  * （牌组中包含珊瑚宫心海，才能加入牌组）
  */
-const TamakushiCasket = card(212051, "character")
+const TamakushiCasket = card(212051)
   .costHydro(3)
   .costEnergy(2)
   .talentOf(SangonomiyaKokomi)

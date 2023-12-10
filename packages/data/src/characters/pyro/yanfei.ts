@@ -81,7 +81,7 @@ const Yanfei = character(1308)
  * 装备有此牌的烟绯进行重击时：对生命值不多于6的敌人造成的伤害+1；如果触发了丹火印，则在技能结算后抓1张牌。
  * （牌组中包含烟绯，才能加入牌组）
  */
-const RightOfFinalInterpretation = card(213081, "character")
+const RightOfFinalInterpretation = card(213081)
   .costPyro(1)
   .costVoid(2)
   .talentOf(Yanfei)

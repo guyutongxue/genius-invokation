@@ -40,7 +40,9 @@ const externalQueries: ExternalQueryDictionary = {
   self: (c) => c.skillInfo.caller,
   event: {
     skillCaller: (c) => c.eventArg.skillInfo.caller,
-  }
+  },
+  target0: (c) => c.targets[0],
+  target1: (c) => c.targets[1]
 };
 
 export function queryToFilter(

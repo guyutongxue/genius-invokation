@@ -108,7 +108,7 @@ const Candace = character(1207)
  * 装备有此牌的坎蒂丝生成的赤冕祝祷额外具有以下效果：我方角色普通攻击后：造成1点水元素伤害。（每回合1次）
  * （牌组中包含坎蒂丝，才能加入牌组）
  */
-const TheOverflow = card(212071, "character")
+const TheOverflow = card(212071)
   .costHydro(3)
   .costEnergy(2)
   .talentOf(Candace)

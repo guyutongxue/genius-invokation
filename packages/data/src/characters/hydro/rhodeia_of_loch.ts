@@ -104,7 +104,7 @@ const RhodeiaOfLoch = character(2201)
  * 装备有此牌的纯水精灵·洛蒂娅使用潮涌与激流时：我方所有召唤物可用次数+1。
  * （牌组中包含纯水精灵·洛蒂娅，才能加入牌组）
  */
-const StreamingSurge = card(222011, "character")
+const StreamingSurge = card(222011)
   .costHydro(4)
   .costEnergy(3)
   .talentOf(RhodeiaOfLoch)

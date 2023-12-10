@@ -89,7 +89,7 @@ const Bennett = character(1303)
  * 装备有此牌的班尼特生成的鼓舞领域，其伤害提升效果改为总是生效，不再具有生命值限制。
  * （牌组中包含班尼特，才能加入牌组）
  */
-const GrandExpectation = card(213031, "character")
+const GrandExpectation = card(213031)
   .costPyro(4)
   .costEnergy(2)
   .talentOf(Bennett)

@@ -80,7 +80,7 @@ const JadeplumeTerrorshroom = character(2701)
  * 装备有此牌的翠翎恐蕈，可累积的「活化激能」层数+1。
  * （牌组中包含翠翎恐蕈，才能加入牌组）
  */
-const ProliferatingSpores = card(227011, "character")
+const ProliferatingSpores = card(227011)
   .costDendro(3)
   .talentOf(JadeplumeTerrorshroom)
   .equipment()

@@ -91,7 +91,7 @@ const Yaoyao = character(1704)
  * 装备有此牌的瑶瑶生成的月桂·抛掷型，在可用次数仅剩余最后1次时造成的伤害和治疗各+1。
  * （牌组中包含瑶瑶，才能加入牌组）
  */
-const Beneficent = card(217041, "character")
+const Beneficent = card(217041)
   .costDendro(3)
   .talentOf(Yaoyao)
   .equipment()

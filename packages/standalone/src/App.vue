@@ -12,6 +12,7 @@ import {
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
 import Chessboard from "./components/Chessboard.vue";
+import { Player } from "./player";
 
 const state0 = ref<StateData>();
 const state1 = ref<StateData>();
@@ -63,6 +64,17 @@ const player1Io: PlayerIO = {
   rpc: (m, r) => rpc(m, r, 1),
 };
 
+const playerConfig0 = {
+  characters: [1303, 1201, 1502],
+  cards: [331502, 332004, 332001, 332019, 331502, 332004, 332001, 332019],
+};
+const playerConfig1 = {
+  characters: [1502, 1201, 1303],
+  cards: [331502, 332004, 332001, 332019, 331502, 332004, 332001, 332019],
+};
+const player0 = new Player(playerConfig0, 0);
+const player1 = new Player(playerConfig1, 1);
+
 onMounted(async () => {
   const winner = await startGame({
     data,
@@ -75,18 +87,9 @@ onMounted(async () => {
         emitter.off("step");
         enableStep.value = false;
       },
-      players: [player0Io, player1Io],
+      players: [player0.io, player1.io],
     },
-    playerConfigs: [
-      {
-        characters: [1303, 1201, 1502],
-        cards: [331502, 332004, 332001, 332019, 331502, 332004, 332001, 332019],
-      },
-      {
-        characters: [1502, 1201, 1303],
-        cards: [331502, 332004, 332001, 332019, 331502, 332004, 332001, 332019],
-      },
-    ],
+    playerConfigs: [playerConfig0, playerConfig1],
   });
   console.log("Winner is", winner);
 });
@@ -105,7 +108,7 @@ const enableStep = ref(false);
         Step
       </button>
     </div>
-    <Chessboard v-if="state0" :data="state0" :who="0"></Chessboard>
-    <Chessboard v-if="state1" :data="state1" :who="1"></Chessboard>
+    <Chessboard :player="player0"></Chessboard>
+    <Chessboard :player="player1"></Chessboard>
   </div>
 </template>

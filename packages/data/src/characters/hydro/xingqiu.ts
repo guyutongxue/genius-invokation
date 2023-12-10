@@ -91,7 +91,7 @@ const Xingqiu = character(1202)
  * 装备有此牌的行秋生成的雨帘剑改为可以抵挡至少为2的伤害，并且初始可用次数+1。
  * （牌组中包含行秋，才能加入牌组）
  */
-const TheScentRemained = card(212021, "character")
+const TheScentRemained = card(212021)
   .costHydro(3)
   .talentOf(Xingqiu)
   .equipment()

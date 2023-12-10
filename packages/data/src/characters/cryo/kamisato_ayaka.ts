@@ -101,7 +101,7 @@ const KamisatoAyaka = character(1105)
  * 切换到装备有此牌的神里绫华时：少花费1个元素骰。（每回合1次）
  * （牌组中包含神里绫华，才能加入牌组）
  */
-const KantenSenmyouBlessing = card(211051, "character")
+const KantenSenmyouBlessing = card(211051)
   .costCryo(2)
   .talentOf(KamisatoAyaka)
   .equipment()

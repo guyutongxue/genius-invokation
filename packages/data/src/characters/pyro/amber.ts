@@ -71,7 +71,7 @@ const Amber = character(1304)
  * 安柏普通攻击后：如果此牌和兔兔伯爵仍在场，则引爆兔兔伯爵，造成4点火元素伤害。
  * （牌组中包含安柏，才能加入牌组）
  */
-const BunnyTriggered = card(213041, "character")
+const BunnyTriggered = card(213041)
   .costPyro(3)
   .talentOf(Amber)
   .equipment()

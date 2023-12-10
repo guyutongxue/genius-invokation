@@ -81,7 +81,7 @@ const Noelle = character(1602)
  * 诺艾尔普通攻击后：如果此牌和护体岩铠仍在场，则治疗我方所有角色1点。（每回合1次）
  * （牌组中包含诺艾尔，才能加入牌组）
  */
-const IGotYourBack = card(216021, "character")
+const IGotYourBack = card(216021)
   .costGeo(3)
   .talentOf(Noelle)
   .equipment()

@@ -4,6 +4,7 @@ import {
   CardTargetKind,
   CardType,
   PlayCardFilter,
+  PlayCardTargetGetter,
   SupportTag,
   WeaponCardTag,
 } from "../base/card";
@@ -14,6 +15,7 @@ import {
   SkillBuilderWithCost,
   extendSkillContext,
   enableShortcut,
+  BuilderWithShortcut,
 } from "./skill";
 import {
   CardHandle,
@@ -21,39 +23,43 @@ import {
   ExContextType,
   ExEntityType,
 } from "./type";
+import { CharacterState, EntityState, GameState } from "../base/state";
+import { getEntityById } from "../util";
 
-type ContextOf<
-  Readonly extends boolean,
-  TargetKindTs extends CardTargetKind,
-> = TargetKindTs extends readonly [
-  infer First extends ExEntityType,
-  ...infer Rest extends CardTargetKind,
-]
-  ? readonly [ExContextType<Readonly, First>, ...ContextOf<Readonly, Rest>]
-  : readonly [];
+type StateOf<TargetKindTs extends CardTargetKind> =
+  TargetKindTs extends readonly [
+    infer First extends ExEntityType,
+    ...infer Rest extends CardTargetKind,
+  ]
+    ? readonly [
+        First extends "character" ? CharacterState : EntityState,
+        ...StateOf<Rest>,
+      ]
+    : readonly [];
 
-interface CardTargetExt<
-  Readonly extends boolean,
-  TargetKindTs extends CardTargetKind,
-> {
-  targets: ContextOf<Readonly, TargetKindTs>;
+interface CardTargetExt<TargetKindTs extends CardTargetKind> {
+  targets: StateOf<TargetKindTs>;
 }
 
 type PredFn<KindTs extends CardTargetKind> = (
-  ctx: ExtendedSkillContext<true, CardTargetExt<true, KindTs>, "character">,
+  ctx: ExtendedSkillContext<true, CardTargetExt<KindTs>, "character">,
 ) => boolean;
 
+type TargetQuery = `${string}character${string}` | `${string}summon${string}`;
+type TargetKindOfQuery<Q extends TargetQuery> =
+  Q extends `${string}character${string}` ? "character" : "summon";
+
 class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
-  CardTargetExt<false, KindTs>
+  CardTargetExt<KindTs>
 > {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
   private _filters: PredFn<KindTs>[] = [];
   private _talentCh: number | null = null;
-  constructor(
-    private readonly cardId: number,
-    private readonly targetKinds: CardTargetKind,
-  ) {
+
+  private _targetQueries: string[] = [];
+
+  constructor(private readonly cardId: number) {
     super(cardId);
   }
 
@@ -80,6 +86,17 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this; // TODO
   }
 
+  addTarget<Q extends TargetQuery>(
+    targetQuery: Q,
+  ): BuilderWithShortcut<
+    CardTargetExt<readonly [...KindTs, TargetKindOfQuery<Q>]>,
+    "character",
+    CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]>
+  > {
+    this._targetQueries = [...this._targetQueries, targetQuery];
+    return this as any;
+  }
+
   legend(): this {
     return this.tags("legend");
   }
@@ -88,7 +105,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     this._talentCh = ch;
     const action = opt?.action ?? true;
     // TODO: deck requirements
-    // TODO: action: set tag; set active ch filter
+    if (action) {
+      // TODO: set active ch filter
+      this.tags("action");
+    }
+    // TODO: target filter
     return this;
   }
 
@@ -97,16 +118,56 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
+  // 用于 filter 和 target
+  private getFakeSkillContext(
+    state: GameState,
+    caller: CharacterState,
+  ): SkillContext<true, {}, "character"> {
+    return new SkillContext(state, {
+      caller,
+      definition: null!,
+      fromCard: null,
+      requestBy: null,
+    });
+  }
+
+  private generateTargetList(
+    state: GameState,
+    caller: CharacterState,
+    known: number[],
+    targetQuery: string[],
+  ): number[][] {
+    if (targetQuery.length === 0) {
+      return [[]];
+    }
+    const [first, ...rest] = targetQuery;
+    const ctx = this.getFakeSkillContext(state, caller);
+    const targets = known.map((id) => getEntityById(state, id, true));
+    const wrapped = new Proxy(ctx, {
+      get(target, prop, receiver) {
+        if (prop === "targets") {
+          return targets;
+        } else {
+          return Reflect.get(target, prop, receiver);
+        }
+      },
+    });
+    const ids = wrapped.$$(first).map((c) => c.state.id);
+    return ids.flatMap((id) =>
+      this.generateTargetList(state, caller, [...known, id], rest).map((l) => [
+        id,
+        ...l,
+      ]),
+    );
+  }
+
   done(): CardHandle {
     // 将卡牌目标 ID 列表转换为扩展点 `CardTargetExt`
     const cardTargetToExt = (
       skillCtx: SkillContext<boolean, any, "character">,
       ids: number[],
-    ): CardTargetExt<boolean, KindTs> => {
-      const targets = [];
-      for (let i = 0; i < this.targetKinds.length; i++) {
-        targets.push(skillCtx.$(`any with id ${ids[i]}`));
-      }
+    ): CardTargetExt<KindTs> => {
+      const targets = ids.map((id) => getEntityById(skillCtx.state, id, true));
       return {
         targets: targets as any,
       };
@@ -114,7 +175,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     const action: SkillDescription<CardTarget> = (state, callerId, { ids }) => {
       const targetExtGenerator = (
         skillCtx: SkillContext<false, any, any>,
-      ): CardTargetExt<false, KindTs> => {
+      ): CardTargetExt<KindTs> => {
         return cardTargetToExt(skillCtx, ids);
       };
       const innerAction: SkillDescription<void> =
@@ -122,16 +183,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return innerAction(state, callerId);
     };
     const filterFn: PlayCardFilter = (state, caller, { ids }) => {
-      const ctx = new SkillContext<true, any, any>(state, {
-        caller,
-        definition: null!,
-        fromCard: null,
-        requestBy: null,
-      });
+      const ctx = this.getFakeSkillContext(state, caller);
       const ext = cardTargetToExt(ctx, ids);
       const wrappedCtx = extendSkillContext<
         true,
-        CardTargetExt<true, KindTs>,
+        CardTargetExt<KindTs>,
         "character"
       >(ctx, ext);
       for (const filter of this._filters) {
@@ -140,6 +196,15 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
         }
       }
       return true;
+    };
+    const targetGetter: PlayCardTargetGetter = (state, caller) => {
+      const targetIdsList = this.generateTargetList(
+        state,
+        caller,
+        [],
+        this._targetQueries,
+      );
+      return targetIdsList.map((ids) => ({ ids }));
     };
     const skillDef = {
       type: "skill" as const,
@@ -155,7 +220,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       type: this._type,
       tags: [], // TODO
       deckRequirement: {}, // TODO
-      target: this.targetKinds,
+      getTarget: targetGetter,
       filter: filterFn,
       skillDefinition: skillDef,
     });
@@ -163,9 +228,6 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 }
 
-export function card<const KindTs extends CardTargetKind>(
-  id: number,
-  ...targetKinds: KindTs
-) {
-  return enableShortcut(new CardBuilder<KindTs>(id, targetKinds));
+export function card(id: number) {
+  return enableShortcut(new CardBuilder<[]>(id));
 }

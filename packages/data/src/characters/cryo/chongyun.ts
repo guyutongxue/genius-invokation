@@ -81,7 +81,7 @@ const Chongyun = character(1104)
  * 使我方单手剑、双手剑或长柄武器角色的普通攻击伤害+1。
  * （牌组中包含重云，才能加入牌组）
  */
-const SteadyBreathing = card(211041, "character")
+const SteadyBreathing = card(211041)
   .costCryo(3)
   .talentOf(Chongyun)
   .equipment()

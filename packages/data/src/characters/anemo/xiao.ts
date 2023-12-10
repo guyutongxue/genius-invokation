@@ -83,7 +83,7 @@ const Xiao = character(1504)
  * 装备有此牌的魈附属夜叉傩面期间，使用风轮两立时少花费1个风元素。（每附属1次夜叉傩面，可触发2次）
  * （牌组中包含魈，才能加入牌组）
  */
-const ConquerorOfEvilGuardianYaksha = card(215041, "character")
+const ConquerorOfEvilGuardianYaksha = card(215041)
   .costAnemo(3)
   .costEnergy(2)
   .talentOf(Xiao)

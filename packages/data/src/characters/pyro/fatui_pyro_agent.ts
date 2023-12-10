@@ -93,7 +93,7 @@ const FatuiPyroAgent = character(2301)
  * 初始可用次数+1，并且使所附属角色造成的物理伤害变为火元素伤害。
  * （牌组中包含愚人众·火之债务处理人，才能加入牌组）
  */
-const PaidInFull = card(223011, "character")
+const PaidInFull = card(223011)
   .costPyro(3)
   .talentOf(FatuiPyroAgent)
   .equipment()

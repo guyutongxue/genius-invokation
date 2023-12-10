@@ -62,6 +62,7 @@ export type Position = "active" | "next" | "prev" | "standby";
 export interface Rule {
   type: "rule";
   how: WithRule;
+  subQueries: Query[];
 }
 
 export interface StateGetter {
@@ -73,4 +74,4 @@ export interface StateGetter {
 }
 
 export type OrderBy = (state: any) => number;
-export type WithRule = (state: any) => boolean;
+export type WithRule = (state: any, ...subQueryResults: any[]) => boolean;

@@ -93,7 +93,7 @@ const Shenhe = character(1107)
  * 装备有此牌的申鹤生成的冰翎被我方角色的「普通攻击」触发时：不消耗可用次数。（每回合1次）
  * （牌组中包含申鹤，才能加入牌组）
  */
-const MysticalAbandon = card(211071, "character")
+const MysticalAbandon = card(211071)
   .costCryo(3)
   .talentOf(Shenhe)
   .equipment()

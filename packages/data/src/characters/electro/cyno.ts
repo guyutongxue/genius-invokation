@@ -84,7 +84,7 @@ const Cyno = character(1404)
  * 装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。
  * （牌组中包含赛诺，才能加入牌组）
  */
-const FeatherfallJudgment = card(214041, "character")
+const FeatherfallJudgment = card(214041)
   .costElectro(3)
   .talentOf(Cyno)
   .equipment()

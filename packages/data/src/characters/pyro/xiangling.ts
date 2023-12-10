@@ -80,7 +80,7 @@ const Xiangling = character(1302)
  * 装备有此牌的香菱使用锅巴出击时：自身也会造成1点火元素伤害。
  * （牌组中包含香菱，才能加入牌组）
  */
-const Crossfire = card(213021, "character")
+const Crossfire = card(213021)
   .costPyro(3)
   .talentOf(Xiangling)
   .equipment()

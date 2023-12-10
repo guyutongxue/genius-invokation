@@ -104,7 +104,7 @@ const Beidou = character(1405)
  * 装备有此牌的北斗使用踏潮后：使北斗本回合内「普通攻击」少花费1个无色元素。（最多触发2次）
  * （牌组中包含北斗，才能加入牌组）
  */
-const LightningStorm = card(214051, "character")
+const LightningStorm = card(214051)
   .costElectro(3)
   .talentOf(Beidou)
   .equipment()

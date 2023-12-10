@@ -92,7 +92,7 @@ const FatuiCryoCicinMage = character(2101)
  * 装备有此牌的愚人众·冰萤术士使用技能后：如果冰萤的可用次数被叠加到超过上限，则造成2点冰元素伤害。
  * （牌组中包含愚人众·冰萤术士，才能加入牌组）
  */
-const CicinsColdGlare = card(221011, "character")
+const CicinsColdGlare = card(221011)
   .costCryo(3)
   .talentOf(FatuiCryoCicinMage)
   .equipment()

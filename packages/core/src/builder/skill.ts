@@ -352,7 +352,7 @@ type SkillContextShortcutArgs<
   : never;
 
 // 带有直达方法的 Builder，使用 `enableShortcut` 生成
-type BuilderWithShortcut<
+export type BuilderWithShortcut<
   Ext extends object,
   CallerType extends ExEntityType,
   Original extends SkillBuilder<Ext, CallerType>,

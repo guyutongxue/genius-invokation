@@ -180,17 +180,21 @@ class QueryVisitor extends BaseVisitorWithDefaults {
 
   withClause(ctx: any): AST.Rule {
     let ruleDetail: AST.WithRule;
+    let subQueries: AST.Query[] = [];
     if (ctx.variableRule) {
       ruleDetail = this.visit(ctx.variableRule);
     } else if (ctx.tagRule) {
       ruleDetail = this.visit(ctx.tagRule);
-    } else {
+    } else if (ctx.idRule) {
       ruleDetail = this.visit(ctx.idRule);
+    } else {
+      [ruleDetail, subQueries] = this.visit(ctx.indirectTagRule);
     }
 
     return {
       type: "rule",
       how: ctx.Not ? (st) => !ruleDetail(st) : ruleDetail,
+      subQueries
     };
   }
 
@@ -215,6 +219,11 @@ class QueryVisitor extends BaseVisitorWithDefaults {
   return true;
 }`,
     ) as AST.WithRule;
+  }
+
+  indirectTagRule(ctx: any): [AST.WithRule, AST.Query] {
+    const subQueries: AST.Query[] = [this.visit(ctx.query)];
+    const rule = new Function("$", "subQ0", `const tags = `)
   }
 
   idRule(ctx: any): AST.WithRule {

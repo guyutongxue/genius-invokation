@@ -74,7 +74,7 @@ const Jean = character(1502)
  * 装备有此牌的琴在场时，蒲公英领域会使我方造成的风元素伤害+1。
  * （牌组中包含琴，才能加入牌组）
  */
-const LandsOfDandelion = card(215021, "character")
+const LandsOfDandelion = card(215021)
   .costAnemo(4)
   .costEnergy(2)
   .talentOf(Jean)

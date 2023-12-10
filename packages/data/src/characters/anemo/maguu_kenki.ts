@@ -102,7 +102,7 @@ const MaguuKenki = character(2501)
  * 装备有此牌的魔偶剑鬼使用孤风刀势后，我方切换到后一个角色；使用霜驰影突后，我方切换到前一个角色。
  * （牌组中包含魔偶剑鬼，才能加入牌组）
  */
-const TranscendentAutomaton = card(225011, "character")
+const TranscendentAutomaton = card(225011)
   .costAnemo(3)
   .talentOf(MaguuKenki)
   .equipment()

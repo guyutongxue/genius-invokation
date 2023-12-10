@@ -70,7 +70,7 @@ const Razor = character(1402)
  * 装备有此牌的雷泽使用利爪与苍雷后：使我方一个雷元素角色获得1点充能。（每回合1次，出战角色优先）
  * （牌组中包含雷泽，才能加入牌组）
  */
-const Awakening = card(214021, "character")
+const Awakening = card(214021)
   .costElectro(3)
   .talentOf(Razor)
   .equipment()

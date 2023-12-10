@@ -80,7 +80,7 @@ const Lisa = character(1409)
  * 切换到装备有此牌的丽莎后：使敌方出战角色附属引雷。（每回合1次）
  * （牌组中包含丽莎，才能加入牌组）
  */
-const PulsatingWitch = card(214091, "character")
+const PulsatingWitch = card(214091)
   .costElectro(1)
   .talentOf(Lisa)
   .equipment()

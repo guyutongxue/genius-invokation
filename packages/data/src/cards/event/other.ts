@@ -89,11 +89,11 @@ const ElementalResonanceHighVoltage = card(331402)
  * 切换到目标角色，并生成1点万能元素。
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
-const ElementalResonanceImpetuousWinds = card(331502, "character")
+const ElementalResonanceImpetuousWinds = card(331502)
   .costAnemo(1)
   .tags("resonance")
-  // TODO My target
-  .switchActive(c => c.targets[0])
+  .addTarget("my character")
+  .switchActive("@target0")
   .generateDice(DiceType.Omni, 1)
   .done();
 
@@ -305,6 +305,8 @@ const Lyresong = card(332024)
  * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。
  */
 const MasterOfWeaponry = card(332010)
+  .addTarget("my character has status with tag (weapon)")
+  .addTarget("my character and not @target0") // TODO damn.
   // TODO
   .done();
 

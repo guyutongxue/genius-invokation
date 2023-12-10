@@ -31,13 +31,14 @@ export interface CardTarget {
 
 export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardTarget>;
 export type PlayCardFilter = (state: GameState, caller: CharacterState, ctx: CardTarget) => boolean;
+export type PlayCardTargetGetter = (state: GameState, caller: CharacterState) => CardTarget[];
 
 export interface CardDefinition {
   readonly id: number;
   readonly type: CardType;
   readonly tags: readonly CardTag[];
   readonly deckRequirement: DeckRequirement;
-  readonly target: CardTargetKind;
+  readonly getTarget: PlayCardTargetGetter;
   readonly filter: PlayCardFilter;
   readonly skillDefinition: PlayCardSkillDefinition;
 }

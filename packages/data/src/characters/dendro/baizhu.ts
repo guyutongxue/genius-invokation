@@ -93,7 +93,7 @@ const Baizhu = character(1705)
  * 装备有此牌的白术在场，无郤气护盾触发治疗效果时：生成1个出战角色类型的元素骰。
  * （牌组中包含白术，才能加入牌组）
  */
-const AllThingsAreOfTheEarth = card(217051, "character")
+const AllThingsAreOfTheEarth = card(217051)
   .costDendro(4)
   .costEnergy(2)
   .talentOf(Baizhu)

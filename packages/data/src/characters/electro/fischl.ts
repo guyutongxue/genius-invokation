@@ -82,7 +82,7 @@ const Fischl = character(1401)
  * 装备有此牌的菲谢尔生成的奥兹，会在菲谢尔普通攻击后造成2点雷元素伤害。（需消耗可用次数）
  * （牌组中包含菲谢尔，才能加入牌组）
  */
-const StellarPredator = card(214011, "character")
+const StellarPredator = card(214011)
   .costElectro(3)
   .talentOf(Fischl)
   .equipment()

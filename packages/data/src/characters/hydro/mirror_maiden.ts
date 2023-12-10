@@ -84,7 +84,7 @@ const MirrorMaiden = character(2202)
  * 初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。
  * （牌组中包含愚人众·藏镜仕女，才能加入牌组）
  */
-const MirrorCage = card(222021, "character")
+const MirrorCage = card(222021)
   .costHydro(3)
   .talentOf(MirrorMaiden)
   .equipment()

@@ -70,7 +70,7 @@ const Albedo = character(1604)
  * 装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时造成的伤害+1。
  * （牌组中包含阿贝多，才能加入牌组）
  */
-const DescentOfDivinity = card(216041, "character")
+const DescentOfDivinity = card(216041)
   .costGeo(3)
   .talentOf(Albedo)
   .equipment()

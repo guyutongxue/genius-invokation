@@ -10,6 +10,8 @@ import Status from "./Status.vue";
 const props = defineProps<{
   data: PlayerData;
   opp?: boolean;
+  outlined: number[];
+  selected: number[];
 }>();
 </script>
 
@@ -30,7 +32,12 @@ const props = defineProps<{
         </div>
         <div class="flex flex-row gap-6 items-end">
           <div v-for="ch of data.characters" class="flex flex-col">
-            <CharacterArea :key="ch.id" :data="ch"></CharacterArea>
+            <CharacterArea
+              :key="ch.id"
+              :data="ch"
+              :outlined="outlined.includes(ch.id)"
+              :selected="selected.includes(ch.id)"
+            ></CharacterArea>
             <div v-if="ch.id === data.activeCharacterId" class="h-6">
               <Status v-for="st of data.combatStatuses" :data="st"></Status>
             </div>
@@ -42,11 +49,19 @@ const props = defineProps<{
             v-for="summon of data.summons"
             :key="summon.id"
             :data="summon"
+            :outlined="outlined.includes(summon.id)"
+            :selected="selected.includes(summon.id)"
           ></Summon>
         </div>
       </div>
       <div class="min-h-30 flex flex-row gap-2 justify-center">
-        <Card v-for="card of data.hands" :key="card.id" :data="card"></Card>
+        <Card
+          v-for="card of data.hands"
+          :key="card.id"
+          :data="card"
+          :outlined="outlined.includes(card.id)"
+          :selected="selected.includes(card.id)"
+        ></Card>
       </div>
     </div>
     <div v-if="opp" class="w-8 bg-yellow-800 text-white">

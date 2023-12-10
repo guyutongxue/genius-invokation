@@ -92,7 +92,7 @@ const Dori = character(1410)
  * 装备有此牌的多莉所召唤的灯中幽精，对生命值不多于6的角色造成的治疗+1，使没有充能的角色获得充能时获得量+1。
  * （牌组中包含多莉，才能加入牌组）
  */
-const DiscretionarySupplement = card(214101, "character")
+const DiscretionarySupplement = card(214101)
   .costElectro(3)
   .costEnergy(2)
   .talentOf(Dori)

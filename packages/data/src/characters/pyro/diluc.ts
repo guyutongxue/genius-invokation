@@ -69,7 +69,7 @@ const Diluc = character(1301)
  * 装备有此牌的迪卢克每回合第2次使用逆焰之刃时：少花费1个火元素。
  * （牌组中包含迪卢克，才能加入牌组）
  */
-const FlowingFlame = card(213011, "character")
+const FlowingFlame = card(213011)
   .costPyro(3)
   .talentOf(Diluc)
   .equipment()

@@ -19,6 +19,8 @@ import {
   verifyRpcResponse,
 } from "@gi-tcg/typings";
 import {
+  allEntities,
+  elementOfCharacter,
   getActiveCharacterIndex,
   getEntityById,
   shiftLeft,
@@ -29,12 +31,16 @@ import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionInfo,
   DeferredAction,
+  ElementalTuningInfo,
+  PlayCardInfo,
   SkillDefinitionBase,
   SkillInfo,
+  SwitchActiveInfo,
   UseSkillInfo,
 } from "./base/skill";
 import { SkillContext } from "./builder/context";
 import { flip } from "@gi-tcg/utils";
+import { CardDefinition, CardTargetKind } from "./base/card";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -260,10 +266,8 @@ class Game {
         const controlled: DiceType[] = [];
         // TODO onRoll event
         let randomDice = this.randomDice(this.config.initialDice, who);
-        let rollCount = 2;
-        for (let i = 1; i < rollCount; i++) {
-          randomDice = await this.reroll(who, randomDice);
-        }
+        let rollTimes = 2;
+        await this.reroll(who, rollTimes, randomDice);
         return randomDice;
       }),
     );
@@ -334,6 +338,8 @@ class Game {
         value: false,
       });
     } else {
+      const actions = this.availableAction();
+      console.log(actions);
       const activeCh = player.characters[getActiveCharacterIndex(player)];
       const skill =
         activeCh.definition.initiativeSkills[
@@ -397,10 +403,55 @@ class Game {
     );
 
     // Cards
+    for (const card of player.hands) {
+      const allTargets = (0, card.definition.getTarget)(this._state, activeCh);
+      for (const { ids } of allTargets) {
+        if ((0, card.definition.filter)(this._state, activeCh, { ids })) {
+          result.push({
+            type: "playCard",
+            who,
+            card,
+            target: { ids },
+            cost: [...card.definition.skillDefinition.costs],
+            fast: !card.definition.tags.includes("action"),
+          });
+        }
+      }
+    }
 
     // Switch Active
+    result.push(
+      ...player.characters
+        .filter((ch) => ch.variables.alive && ch.id !== activeCh.id)
+        .map<SwitchActiveInfo>((ch) => ({
+          type: "switchActive",
+          from: activeCh,
+          to: ch,
+          who,
+        }))
+        .map((s) => ({
+          ...s,
+          fast: false,
+          cost: [DiceType.Void],
+        })),
+    );
 
     // Elemental Tuning
+    const resultDiceType = elementOfCharacter(activeCh.definition);
+    result.push(
+      ...player.hands
+        .map<ElementalTuningInfo>((c) => ({
+          type: "elementalTuning",
+          card: c,
+          who,
+          result: resultDiceType,
+        }))
+        .map((s) => ({
+          ...s,
+          fast: true,
+          cost: [DiceType.Void],
+        })),
+    );
 
     // Declare End
     result.push({
@@ -448,21 +499,29 @@ class Game {
   }
   private async reroll(
     who: 0 | 1,
+    times: number,
     dice: readonly DiceType[],
   ): Promise<readonly DiceType[]> {
-    const { rerollIndexes } = await this.rpc(who, "rerollDice", {
-      dice: [...dice],
-    });
-    if (rerollIndexes.length === 0) {
-      return dice;
-    }
-    const controlled: DiceType[] = [];
-    for (let k = 0; k < dice.length; k++) {
-      if (!rerollIndexes.includes(k)) {
-        controlled.push(dice[k]);
+    let currentDice = [...dice];
+    for (let i = 0; i < times; i++) {
+      const { rerollIndexes } = await this.rpc(who, "rerollDice", {
+        dice: currentDice,
+      });
+      if (rerollIndexes.length === 0) {
+        return dice;
       }
+      const controlled: DiceType[] = [];
+      for (let k = 0; k < dice.length; k++) {
+        if (!rerollIndexes.includes(k)) {
+          controlled.push(dice[k]);
+        }
+      }
+      currentDice = [
+        ...controlled,
+        ...this.randomDice(rerollIndexes.length, who),
+      ];
     }
-    return [...controlled, ...this.randomDice(rerollIndexes.length, who)];
+    return currentDice;
   }
 
   private async *doHandleEvents(
@@ -471,17 +530,11 @@ class Game {
     for (const [name, arg] of actions) {
       // TODO request part
       if (name === "requestReroll") {
-        for (let i = 0; i < arg.times; i++) {
-          const newDice = await this.reroll(
-            arg.who,
-            this._state.players[arg.who].dice,
-          );
-          this.mutate({
-            type: "resetDice",
-            who: arg.who,
-            value: newDice,
-          });
-        }
+        const newDice = await this.reroll(
+          arg.who,
+          arg.times,
+          this._state.players[arg.who].dice,
+        );
       } else if (name === "requestSwitchCards") {
         await this.switchCard(arg.who);
       } else if (name === "requestUseSkill") {

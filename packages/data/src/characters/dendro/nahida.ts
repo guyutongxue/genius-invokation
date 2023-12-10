@@ -106,7 +106,7 @@ const Nahida = character(1703)
  * 水元素：装备有此牌的纳西妲所生成的摩耶之殿初始持续回合+1。
  * （牌组中包含纳西妲，才能加入牌组）
  */
-const TheSeedOfStoredKnowledge = card(217031, "character")
+const TheSeedOfStoredKnowledge = card(217031)
   .costDendro(3)
   .costEnergy(2)
   .talentOf(Nahida)

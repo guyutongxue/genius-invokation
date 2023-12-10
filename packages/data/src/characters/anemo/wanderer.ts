@@ -80,7 +80,7 @@ const Wanderer = character(1506)
  * 装备有此牌的#REALNAME[ID(1)在优风倾姿状态下进行重击后：下次从该角色执行「切换角色」行动时少花费1个元素骰，并且造成1点风元素伤害。
  * （牌组中包含#REALNAME[ID(1)，才能加入牌组）
  */
-const GalesOfReverie = card(215061, "character")
+const GalesOfReverie = card(215061)
   .costAnemo(4)
   .talentOf(Wanderer)
   .equipment()

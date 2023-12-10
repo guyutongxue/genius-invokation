@@ -81,7 +81,7 @@ const Keqing = character(1403)
  * 初始持续回合+1，并且会使所附属角色造成的雷元素伤害+1。
  * （牌组中包含刻晴，才能加入牌组）
  */
-const ThunderingPenance = card(214031, "character")
+const ThunderingPenance = card(214031)
   .costElectro(3)
   .talentOf(Keqing)
   .equipment()

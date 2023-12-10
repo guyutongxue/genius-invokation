@@ -122,7 +122,7 @@ const Dehya = character(1309)
  * 结束阶段：如果装备有此牌的迪希雅生命值不多于6，则治疗该角色2点。
  * （牌组中包含迪希雅，才能加入牌组）
  */
-const StalwartAndTrue = card(213091, "character")
+const StalwartAndTrue = card(213091)
   .costPyro(4)
   .talentOf(Dehya)
   .equipment()

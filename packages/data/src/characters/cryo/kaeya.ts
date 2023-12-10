@@ -69,7 +69,7 @@ const Kaeya = character(1103)
  * 装备有此牌的凯亚使用霜袭后：治疗自身2点。（每回合1次）
  * （牌组中包含凯亚，才能加入牌组）
  */
-const ColdbloodedStrike = card(211031, "character")
+const ColdbloodedStrike = card(211031)
   .costCryo(4)
   .talentOf(Kaeya)
   .equipment()

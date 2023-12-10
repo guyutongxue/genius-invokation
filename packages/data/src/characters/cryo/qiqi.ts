@@ -81,7 +81,7 @@ const Qiqi = character(1108)
  * 装备有此牌的七七使用仙法·救苦度厄时：复苏我方所有倒下的角色，并治疗其2点。（整场牌局限制2次）
  * （牌组中包含七七，才能加入牌组）
  */
-const RiteOfResurrection = card(211081, "character")
+const RiteOfResurrection = card(211081)
   .costCryo(5)
   .costEnergy(3)
   .talentOf(Qiqi)

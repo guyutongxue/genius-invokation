@@ -80,7 +80,7 @@ const Tighnari = character(1702)
  * 装备有此牌的提纳里在附属通塞识状态期间，进行重击时少花费1个无色元素。
  * （牌组中包含提纳里，才能加入牌组）
  */
-const KeenSight = card(217021, "character")
+const KeenSight = card(217021)
   .costDendro(4)
   .talentOf(Tighnari)
   .equipment()

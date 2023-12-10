@@ -152,7 +152,7 @@ const ElectroHypostasis = character(2401)
  * 战斗行动：我方出战角色为无相之雷时，治疗该角色3点，并附属雷晶核心。
  * （牌组中包含无相之雷，才能加入牌组）
  */
-const AbsorbingPrism = card(224011, "character")
+const AbsorbingPrism = card(224011)
   .costElectro(2)
   .tags("action")
   .talentOf(ElectroHypostasis)

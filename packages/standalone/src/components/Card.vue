@@ -3,7 +3,9 @@ import { CardData } from '@gi-tcg/typings';
 import Image from './Image.vue';
 
 const props = defineProps<{
-  data: CardData
+  data: CardData;
+  outlined: boolean;
+  selected: boolean;
 }>();
 
 </script>

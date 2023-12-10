@@ -91,7 +91,7 @@ const Klee = character(1306)
  * 装备有此牌的可莉生成的爆裂火花的可用次数+1。
  * （牌组中包含可莉，才能加入牌组）
  */
-const PoundingSurprise = card(213061, "character")
+const PoundingSurprise = card(213061)
   .costPyro(3)
   .talentOf(Klee)
   .equipment()

@@ -7,6 +7,8 @@ import Status from "./Status.vue";
 
 const props = defineProps<{
   data: CharacterData;
+  outlined: boolean;
+  selected: boolean;
 }>();
 </script>
 

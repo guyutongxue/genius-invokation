@@ -92,7 +92,7 @@ const StonehideLawachurl = character(2601)
  * 装备有此牌的丘丘岩盔王击倒敌方角色后：丘丘岩盔王重新附属岩盔和坚岩之力。
  * （牌组中包含丘丘岩盔王，才能加入牌组）
  */
-const StonehideReforged = card(226011, "character")
+const StonehideReforged = card(226011)
   .costGeo(4)
   .costEnergy(2)
   .talentOf(StonehideLawachurl)

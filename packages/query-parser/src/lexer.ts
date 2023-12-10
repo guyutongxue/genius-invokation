@@ -77,11 +77,28 @@ export const Standby = createToken({
 export const Includes = createToken({
   name: "Includes",
   pattern: /includes/i,
+  longer_alt: Identifier,
 });
 export const Defeated = createToken({
   name: "Defeated",
   pattern: /defeated/i,
+  longer_alt: Identifier,
 });
+export const Weapon = createToken({
+  name: "Weapon",
+  pattern: /weapon/i,
+  longer_alt: Identifier,
+})
+export const Element = createToken({
+  name: "Element",
+  pattern: /element/i,
+  longer_alt: Identifier,
+})
+export const Nation = createToken({
+  name: "Nation",
+  pattern: /nation/i,
+  longer_alt: Identifier,
+})
 export const With = createToken({
   name: "With",
   pattern: /with/i,
@@ -148,6 +165,11 @@ export const As = createToken({
   pattern: /as/i,
   longer_alt: Identifier,
 });
+export const Of = createToken({
+  name: "Of",
+  pattern: /of/i,
+  longer_alt: Identifier
+});
 
 export const IntegerLiteral = createToken({
   name: "IntegerLiteral",
@@ -206,6 +228,9 @@ export const allTokens = [
   Standby,
   Includes,
   Defeated,
+  Weapon,
+  Element,
+  Nation,
   With,
   Tag,
   Id,
@@ -219,6 +244,7 @@ export const allTokens = [
   And,
   Or,
   As,
+  Of,
   // Other
   IntegerLiteral,
   StringLiteral,

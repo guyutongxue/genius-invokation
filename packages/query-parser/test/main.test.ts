@@ -39,3 +39,7 @@ test("limit clause", () => {
   const result = toAst("any limit 1", getter);
   expect(result.limit).toBe(1);
 })
+
+test("indirect tag rule", () => {
+  const result = toAst("my characters with weapon tag of (opp active character)", getter);
+})

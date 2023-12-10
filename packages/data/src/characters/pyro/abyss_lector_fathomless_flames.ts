@@ -123,7 +123,7 @@ const AbyssLectorFathomlessFlames = character(2302)
  * 装备有此牌的深渊咏者·渊火触发火之新生时：弃置此牌，为角色附属渊火加护。
  * （牌组中包含深渊咏者·渊火，才能加入牌组）
  */
-const EmbersRekindled = card(223021, "character")
+const EmbersRekindled = card(223021)
   .costPyro(2)
   .talentOf(AbyssLectorFathomlessFlames)
   .equipment()

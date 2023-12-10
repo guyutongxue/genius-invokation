@@ -91,7 +91,7 @@ const Nilou = character(1208)
  * 装备有此牌的妮露在场时：我方丰穰之核造成的伤害+1。
  * （牌组中包含妮露，才能加入牌组）
  */
-const TheStarrySkiesTheirFlowersRain = card(212081, "character")
+const TheStarrySkiesTheirFlowersRain = card(212081)
   .costHydro(3)
   .talentOf(Nilou)
   .equipment()

@@ -129,7 +129,7 @@ const Tartaglia = character(1204)
  * 结束阶段：装备有此牌的达达利亚在场时，如果敌方出战角色附属有断流，则对其造成1点穿透伤害。
  * （牌组中包含达达利亚，才能加入牌组）
  */
-const AbyssalMayhemHydrospout = card(212041, "character")
+const AbyssalMayhemHydrospout = card(212041)
   .costHydro(3)
   .talentOf(Tartaglia)
   .equipment()

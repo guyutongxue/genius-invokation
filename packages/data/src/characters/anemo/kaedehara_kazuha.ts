@@ -182,7 +182,7 @@ const KaedeharaKazuha = character(1505)
  * 装备有此牌的枫原万叶引发扩散反应后：使我方角色和召唤物接下来2次所造成的被扩散元素类型的伤害+1。（每种元素类型分别计算次数）
  * （牌组中包含枫原万叶，才能加入牌组）
  */
-const PoeticsOfFuubutsu = card(215051, "character")
+const PoeticsOfFuubutsu = card(215051)
   .costAnemo(3)
   .talentOf(KaedeharaKazuha)
   .equipment()

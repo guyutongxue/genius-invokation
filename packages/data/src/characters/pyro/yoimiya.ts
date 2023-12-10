@@ -92,7 +92,7 @@ const Yoimiya = character(1305)
  * 装备有此牌的宵宫所生成的庭火焰硝初始可用次数+1，并且触发后额外造成1点火元素伤害。
  * （牌组中包含宵宫，才能加入牌组）
  */
-const NaganoharaMeteorSwarm = card(213051, "character")
+const NaganoharaMeteorSwarm = card(213051)
   .costPyro(2)
   .talentOf(Yoimiya)
   .equipment()

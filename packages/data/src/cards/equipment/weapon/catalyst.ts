@@ -8,7 +8,7 @@ import { card } from "@gi-tcg/core/builder";
  * 我方角色引发元素反应时：造成的伤害+1。（每回合最多触发2次）
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
-const AThousandFloatingDreams = card(311104, "character")
+const AThousandFloatingDreams = card(311104)
   .costSame(3)
   .weapon("catalyst")
   // TODO
@@ -22,7 +22,7 @@ const AThousandFloatingDreams = card(311104, "character")
  * 入场时：抓2张牌。
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
-const FruitOfFulfillment = card(311105, "character")
+const FruitOfFulfillment = card(311105)
   .costVoid(3)
   .weapon("catalyst")
   // TODO
@@ -35,7 +35,7 @@ const FruitOfFulfillment = card(311105, "character")
  * 角色造成的伤害+1。
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
-const MagicGuide = card(311101, "character")
+const MagicGuide = card(311101)
   .costSame(2)
   .weapon("catalyst")
   // TODO
@@ -49,7 +49,7 @@ const MagicGuide = card(311101, "character")
  * 角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
-const SacrificialFragments = card(311102, "character")
+const SacrificialFragments = card(311102)
   .costSame(3)
   .weapon("catalyst")
   // TODO
@@ -63,7 +63,7 @@ const SacrificialFragments = card(311102, "character")
  * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
-const SkywardAtlas = card(311103, "character")
+const SkywardAtlas = card(311103)
   .costSame(3)
   .weapon("catalyst")
   // TODO

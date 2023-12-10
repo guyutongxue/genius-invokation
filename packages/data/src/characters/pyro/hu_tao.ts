@@ -81,7 +81,7 @@ const HuTao = character(1307)
  * 装备有此牌的胡桃在生命值不多于6时：造成的火元素伤害+1。
  * （牌组中包含胡桃，才能加入牌组）
  */
-const SanguineRouge = card(213071, "character")
+const SanguineRouge = card(213071)
   .costPyro(2)
   .talentOf(HuTao)
   .equipment()

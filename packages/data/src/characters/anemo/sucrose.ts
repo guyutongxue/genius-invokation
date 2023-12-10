@@ -83,7 +83,7 @@ const Sucrose = character(1501)
  * 装备有此牌的砂糖生成的大型风灵已转换成另一种元素后：我方造成的此类元素伤害+1。
  * （牌组中包含砂糖，才能加入牌组）
  */
-const ChaoticEntropy = card(215011, "character")
+const ChaoticEntropy = card(215011)
   .costAnemo(3)
   .costEnergy(2)
   .talentOf(Sucrose)

@@ -20,6 +20,20 @@ export class QueryParser extends CstParser {
       });
       $.CONSUME(Token.RParen);
     });
+    $.RULE("indirectTagRule", () => {
+      $.OPTION(() => {
+        $.OR([
+          { ALT: () => $.CONSUME(Token.Weapon) },
+          { ALT: () => $.CONSUME(Token.Element) },
+          { ALT: () => $.CONSUME(Token.Nation) },
+        ])
+      });
+      $.CONSUME(Token.Tag);
+      $.CONSUME(Token.Of);
+      $.CONSUME(Token.LParen);
+      $.SUBRULE($.query);
+      $.CONSUME(Token.RParen);
+    })
     $.RULE("identifier", () => {
       $.OR([
         { ALT: () => $.CONSUME(Token.Identifier) },
@@ -57,6 +71,7 @@ export class QueryParser extends CstParser {
       $.CONSUME(Token.With),
         $.OR([
           { ALT: () => $.SUBRULE($.variableRule) },
+          { ALT: () => $.SUBRULE($.indirectTagRule) },
           { ALT: () => $.SUBRULE($.tagRule) },
           { ALT: () => $.SUBRULE($.idRule) },
         ]);

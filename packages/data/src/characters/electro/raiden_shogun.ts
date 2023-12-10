@@ -92,7 +92,7 @@ const RaidenShogun = character(1407)
  * 装备有此牌的雷电将军使用奥义·梦想真说时：每消耗1点「愿力」，都使造成的伤害额外+1。
  * （牌组中包含雷电将军，才能加入牌组）
  */
-const WishesUnnumbered = card(214071, "character")
+const WishesUnnumbered = card(214071)
   .costElectro(4)
   .costEnergy(2)
   .talentOf(RaidenShogun)

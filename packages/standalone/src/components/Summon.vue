@@ -3,7 +3,9 @@ import { EntityData } from '@gi-tcg/typings';
 import Image from './Image.vue';
 
 const props = defineProps<{
-  data: EntityData
+  data: EntityData;
+  outlined: boolean;
+  selected: boolean;
 }>();
 
 </script>

@@ -101,7 +101,7 @@ const Zhongli = character(1603)
  * 我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。
  * （牌组中包含钟离，才能加入牌组）
  */
-const DominanceOfEarth = card(216031, "character")
+const DominanceOfEarth = card(216031)
   .costGeo(5)
   .talentOf(Zhongli)
   .equipment()

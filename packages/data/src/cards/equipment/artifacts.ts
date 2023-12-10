@@ -7,7 +7,7 @@ import { card } from "@gi-tcg/core/builder";
  * 角色使用「普通攻击」后：治疗自身1点。（每回合至多3次）
  * （角色最多装备1件「圣遗物」）
  */
-const AdventurersBandana = card(312001, "character")
+const AdventurersBandana = card(312001)
   .costSame(1)
   .artifact()
   // TODO
@@ -21,7 +21,7 @@ const AdventurersBandana = card(312001, "character")
  * 投掷阶段：2个元素骰初始总是投出岩元素。
  * （角色最多装备1件「圣遗物」）
  */
-const ArchaicPetra = card(312602, "character")
+const ArchaicPetra = card(312602)
   .costSame(2)
   .artifact()
   // TODO
@@ -35,7 +35,7 @@ const ArchaicPetra = card(312602, "character")
  * 投掷阶段：2个元素骰初始总是投出冰元素。
  * （角色最多装备1件「圣遗物」）
  */
-const BlizzardStrayer = card(312102, "character")
+const BlizzardStrayer = card(312102)
   .costSame(2)
   .artifact()
   // TODO
@@ -48,7 +48,7 @@ const BlizzardStrayer = card(312102, "character")
  * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const BrokenRimesEcho = card(312101, "character")
+const BrokenRimesEcho = card(312101)
   .costVoid(2)
   .artifact()
   // TODO
@@ -61,7 +61,7 @@ const BrokenRimesEcho = card(312101, "character")
  * 角色使用「元素战技」或装备「天赋」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const CapriciousVisage = card(312013, "character")
+const CapriciousVisage = card(312013)
   .costVoid(2)
   .artifact()
   // TODO
@@ -75,7 +75,7 @@ const CapriciousVisage = card(312013, "character")
  * 投掷阶段：2个元素骰初始总是投出火元素。
  * （角色最多装备1件「圣遗物」）
  */
-const CrimsonWitchOfFlames = card(312302, "character")
+const CrimsonWitchOfFlames = card(312302)
   .costSame(2)
   .artifact()
   // TODO
@@ -89,7 +89,7 @@ const CrimsonWitchOfFlames = card(312302, "character")
  * 角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-const CrownOfWatatsumi = card(312015, "character")
+const CrownOfWatatsumi = card(312015)
   .costSame(1)
   .artifact()
   // TODO
@@ -103,7 +103,7 @@ const CrownOfWatatsumi = card(312015, "character")
  * 投掷阶段：2个元素骰初始总是投出草元素。
  * （角色最多装备1件「圣遗物」）
  */
-const DeepwoodMemories = card(312702, "character")
+const DeepwoodMemories = card(312702)
   .costSame(2)
   .artifact()
   // TODO
@@ -117,7 +117,7 @@ const DeepwoodMemories = card(312702, "character")
  * 角色使用「元素爆发」造成的伤害+2。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const EmblemOfSeveredFate = card(312008, "character")
+const EmblemOfSeveredFate = card(312008)
   .costSame(2)
   .artifact()
   // TODO
@@ -130,7 +130,7 @@ const EmblemOfSeveredFate = card(312008, "character")
  * 角色使用「元素爆发」后：所有我方后台角色获得1点充能。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const ExilesCirclet = card(312006, "character")
+const ExilesCirclet = card(312006)
   .costVoid(2)
   .artifact()
   // TODO
@@ -143,7 +143,7 @@ const ExilesCirclet = card(312006, "character")
  * 敌方角色被击倒后：如果所附属角色为「出战角色」，则生成2个万能元素。（整场牌局限制3次）
  * （角色最多装备1件「圣遗物」）
  */
-const GamblersEarrings = card(312004, "character")
+const GamblersEarrings = card(312004)
   .costSame(1)
   .artifact()
   // TODO
@@ -156,7 +156,7 @@ const GamblersEarrings = card(312004, "character")
  * 行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）
  * （角色最多装备1件「圣遗物」）
  */
-const GeneralsAncientHelm = card(312009, "character")
+const GeneralsAncientHelm = card(312009)
   .costSame(2)
   .artifact()
   // TODO
@@ -170,7 +170,7 @@ const GeneralsAncientHelm = card(312009, "character")
  * 投掷阶段：2个元素骰初始总是投出水元素。
  * （角色最多装备1件「圣遗物」）
  */
-const HeartOfDepth = card(312202, "character")
+const HeartOfDepth = card(312202)
   .costSame(2)
   .artifact()
   // TODO
@@ -183,7 +183,7 @@ const HeartOfDepth = card(312202, "character")
  * 角色引发元素反应后：生成1个此角色元素类型的元素骰。（每回合至多3次）
  * （角色最多装备1件「圣遗物」）
  */
-const InstructorsCap = card(312005, "character")
+const InstructorsCap = card(312005)
   .costVoid(2)
   .artifact()
   // TODO
@@ -196,7 +196,7 @@ const InstructorsCap = card(312005, "character")
  * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const LaurelCoronet = card(312701, "character")
+const LaurelCoronet = card(312701)
   .costVoid(2)
   .artifact()
   // TODO
@@ -209,7 +209,7 @@ const LaurelCoronet = card(312701, "character")
  * 角色使用「元素战技」后：治疗自身2点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const LuckyDogsSilverCirclet = card(312002, "character")
+const LuckyDogsSilverCirclet = card(312002)
   .costVoid(2)
   .artifact()
   // TODO
@@ -222,7 +222,7 @@ const LuckyDogsSilverCirclet = card(312002, "character")
  * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const MaskOfSolitudeBasalt = card(312601, "character")
+const MaskOfSolitudeBasalt = card(312601)
   .costVoid(2)
   .artifact()
   // TODO
@@ -237,7 +237,7 @@ const MaskOfSolitudeBasalt = card(312601, "character")
  * 角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-const OceanhuedClam = card(312016, "character")
+const OceanhuedClam = card(312016)
   .costVoid(3)
   .artifact()
   // TODO
@@ -250,7 +250,7 @@ const OceanhuedClam = card(312016, "character")
  * 其他我方角色使用「元素爆发」后：所附属角色获得1点充能。
  * （角色最多装备1件「圣遗物」）
  */
-const OrnateKabuto = card(312007, "character")
+const OrnateKabuto = card(312007)
   .costSame(1)
   .artifact()
   // TODO
@@ -264,7 +264,7 @@ const OrnateKabuto = card(312007, "character")
  * 所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const ShadowOfTheSandKing = card(312017, "character")
+const ShadowOfTheSandKing = card(312017)
   .costSame(1)
   .artifact()
   // TODO
@@ -278,7 +278,7 @@ const ShadowOfTheSandKing = card(312017, "character")
  * 如果角色具有至少2点充能，就使角色「普通攻击」和「元素战技」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-const ShimenawasReminiscence = card(312014, "character")
+const ShimenawasReminiscence = card(312014)
   .costVoid(3)
   .artifact()
   // TODO
@@ -292,7 +292,7 @@ const ShimenawasReminiscence = card(312014, "character")
  * 角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const TenacityOfTheMillelith = card(312010, "character")
+const TenacityOfTheMillelith = card(312010)
   .costSame(3)
   .artifact()
   // TODO
@@ -306,7 +306,7 @@ const TenacityOfTheMillelith = card(312010, "character")
  * 投掷阶段：2个元素骰初始总是投出雷元素。
  * （角色最多装备1件「圣遗物」）
  */
-const ThunderingFury = card(312402, "character")
+const ThunderingFury = card(312402)
   .costSame(2)
   .artifact()
   // TODO
@@ -319,7 +319,7 @@ const ThunderingFury = card(312402, "character")
  * 角色使用「普通攻击」或装备「天赋」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const ThunderingPoise = card(312011, "character")
+const ThunderingPoise = card(312011)
   .costVoid(2)
   .artifact()
   // TODO
@@ -332,7 +332,7 @@ const ThunderingPoise = card(312011, "character")
  * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const ThunderSummonersCrown = card(312401, "character")
+const ThunderSummonersCrown = card(312401)
   .costVoid(2)
   .artifact()
   // TODO
@@ -345,7 +345,7 @@ const ThunderSummonersCrown = card(312401, "character")
  * 角色使用「元素爆发」后：治疗所有我方角色1点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const TravelingDoctorsHandkerchief = card(312003, "character")
+const TravelingDoctorsHandkerchief = card(312003)
   .costSame(1)
   .artifact()
   // TODO
@@ -359,7 +359,7 @@ const TravelingDoctorsHandkerchief = card(312003, "character")
  * 角色被切换为「出战角色」后：本回合中，角色「普通攻击」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
-const VermillionHereafter = card(312012, "character")
+const VermillionHereafter = card(312012)
   .costVoid(3)
   .artifact()
   // TODO
@@ -373,7 +373,7 @@ const VermillionHereafter = card(312012, "character")
  * 投掷阶段：2个元素骰初始总是投出风元素。
  * （角色最多装备1件「圣遗物」）
  */
-const ViridescentVenerer = card(312502, "character")
+const ViridescentVenerer = card(312502)
   .costSame(2)
   .artifact()
   // TODO
@@ -386,7 +386,7 @@ const ViridescentVenerer = card(312502, "character")
  * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const ViridescentVenerersDiadem = card(312501, "character")
+const ViridescentVenerersDiadem = card(312501)
   .costVoid(2)
   .artifact()
   // TODO
@@ -399,7 +399,7 @@ const ViridescentVenerersDiadem = card(312501, "character")
  * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const WinestainedTricorne = card(312201, "character")
+const WinestainedTricorne = card(312201)
   .costVoid(2)
   .artifact()
   // TODO
@@ -412,7 +412,7 @@ const WinestainedTricorne = card(312201, "character")
  * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-const WitchsScorchingHat = card(312301, "character")
+const WitchsScorchingHat = card(312301)
   .costVoid(2)
   .artifact()
   // TODO
