@@ -542,6 +542,9 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     if (type === "passive") {
       return new EntityBuilder("passiveSkill", this.skillId);
     }
+    if (type === "burst") {
+      this._gainEnergy = false;
+    }
     this._skillType = type;
     return this;
   }

@@ -9,6 +9,7 @@ import {
 import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
 import { GameIO, exposeMutation, exposeState } from "./io";
 import {
+  Aura,
   DiceType,
   Event,
   RpcMethod,
@@ -279,10 +280,36 @@ class Game {
     this.mutate({
       type: "stepRound",
     });
+    // Change to action phase:
+    // - do `changePhase`
+    // - clean `hasDefeated`
+    // - do `cleanSkillLog`
+    // - emit event `actionPhase`
     this.mutate({
       type: "changePhase",
       newPhase: "action",
     });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 0,
+      flagName: "hasDefeated",
+      value: false,
+    });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 1,
+      flagName: "hasDefeated",
+      value: false,
+    });
+    this.mutate({
+      type: "clearSkillLog",
+    });
+    await this.handleEvents([
+      "onActionPhase",
+      {
+        state: this._state,
+      },
+    ]);
     // @ts-expect-error
     window.$$ = (arg: any) => {
       return new SkillContext(this._state, {
@@ -308,7 +335,12 @@ class Game {
       });
     } else {
       const activeCh = player.characters[getActiveCharacterIndex(player)];
-      const skill = activeCh.definition.initiativeSkills[2];
+      const skill =
+        activeCh.definition.initiativeSkills[
+          activeCh.variables.energy === activeCh.definition.constants.maxEnergy
+            ? 2
+            : 1
+        ];
       const skillInfo: SkillInfo = {
         caller: activeCh,
         definition: skill,
@@ -526,10 +558,15 @@ class Game {
   // 检查倒下角色，若有返回 `true`
   private async checkDefeated(): Promise<boolean> {
     const currentTurn = this._state.currentTurn;
-    const hasDefeated: [boolean, boolean] = [false, false];
+    // 指示双方是否有角色倒下，若有则 await（等待用户操作）
+    const hasDefeated: [Promise<void> | null, Promise<void> | null] = [
+      null,
+      null,
+    ];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this._state.players[who];
-      for (const ch of player.characters) {
+      const activeIdx = getActiveCharacterIndex(player);
+      for (const ch of shiftLeft(player.characters, activeIdx)) {
         if (ch.variables.alive && ch.variables.health <= 0) {
           // TODO beforeDefeated
           let mut: Mutation = {
@@ -539,6 +576,7 @@ class Game {
             value: 0,
           };
           this.mutate(mut);
+          // 清空角色装备与状态、元素附着、能量
           for (const et of ch.entities) {
             this.mutate({
               type: "disposeEntity",
@@ -548,7 +586,7 @@ class Game {
           mut = {
             ...mut,
             varName: "aura",
-            value: 0,
+            value: Aura.None,
           };
           this.mutate(mut);
           mut = {
@@ -557,13 +595,29 @@ class Game {
             value: 0,
           };
           this.mutate(mut);
+          // 如果出战角色倒下，那么令用户选择新的出战角色
           if (ch.id === player.activeCharacterId) {
-            // TODO switch active
+            hasDefeated[who] = this.rpc(who, "chooseActive", {
+              candidates: this._state.players[who].characters
+                .filter((c) => c.variables.alive)
+                .map((c) => c.id),
+            }).then(({ active }) => {
+              this.mutate({
+                type: "switchActive",
+                who,
+                value: getEntityById(
+                  this._state,
+                  active,
+                  true,
+                ) as CharacterState,
+              });
+            });
+          } else if (hasDefeated[who] === null) {
+            hasDefeated[who] = Promise.resolve();
           }
-          hasDefeated[who] = true;
         }
       }
-      if (hasDefeated[who]) {
+      if (hasDefeated[who] !== null) {
         this.mutate({
           type: "setPlayerFlag",
           who,
@@ -572,7 +626,8 @@ class Game {
         });
       }
     }
-    return hasDefeated[0] || hasDefeated[1];
+    Promise.all(hasDefeated);
+    return hasDefeated[0] !== null || hasDefeated[1] !== null;
   }
 
   private async handleEvents(...actions: DeferredAction[]) {
