@@ -6,6 +6,7 @@ import Image from "./Image.vue";
 const props = defineProps<{
   data: EntityData;
 }>();
+
 </script>
 
 <template>

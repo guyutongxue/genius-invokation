@@ -10,6 +10,11 @@ const props = defineProps<{
   outlined: boolean;
   selected: boolean;
 }>();
+
+const emit = defineEmits<{
+  click: [id: number]
+}>();
+
 </script>
 
 <template>
@@ -54,6 +59,7 @@ const props = defineProps<{
         :id="data.definitionId"
         class="h-full"
         :class="{ 'brightness-50': data.defeated }"
+        @click="emit('click', data.id)"
       ></Image>
       <div class="absolute left-0 bottom-0">
         <Status v-for="st of data.entities" :data="st"></Status>

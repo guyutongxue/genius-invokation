@@ -13,6 +13,10 @@ const props = defineProps<{
   outlined: number[];
   selected: number[];
 }>();
+
+const emit = defineEmits<{
+  click: [id: number];
+}>();
 </script>
 
 <template>
@@ -28,6 +32,9 @@ const props = defineProps<{
             v-for="support of data.supports"
             :key="support.id"
             :data="support"
+            :outlined="outlined.includes(support.id)"
+            :selected="selected.includes(support.id)"
+            @click="emit('click', $event)"
           ></Support>
         </div>
         <div class="flex flex-row gap-6 items-end">
@@ -37,6 +44,7 @@ const props = defineProps<{
               :data="ch"
               :outlined="outlined.includes(ch.id)"
               :selected="selected.includes(ch.id)"
+              @click="emit('click', $event)"
             ></CharacterArea>
             <div v-if="ch.id === data.activeCharacterId" class="h-6">
               <Status v-for="st of data.combatStatuses" :data="st"></Status>
@@ -51,16 +59,21 @@ const props = defineProps<{
             :data="summon"
             :outlined="outlined.includes(summon.id)"
             :selected="selected.includes(summon.id)"
+            @click="emit('click', $event)"
           ></Summon>
         </div>
       </div>
-      <div class="min-h-30 flex flex-row gap-2 justify-center">
+      <div
+        class="min-h-30 mx-2 flex flex-row gap-2"
+        :class="opp ? 'justify-end' : 'justify-start'"
+      >
         <Card
           v-for="card of data.hands"
           :key="card.id"
           :data="card"
           :outlined="outlined.includes(card.id)"
           :selected="selected.includes(card.id)"
+          @click="emit('click', $event)"
         ></Card>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { requestLoad } from "../images";
 
 const prop = defineProps<{
@@ -7,11 +7,11 @@ const prop = defineProps<{
   width?: number;
 }>();
 
-const dataUrl = requestLoad(prop.id);
+const dataUrl = computed(() => requestLoad(prop.id));
 
 </script>
 
 <template>
-  <img v-if="dataUrl" :src="dataUrl" :width="width">
+  <img v-if="dataUrl" :src="dataUrl.value" :width="width">
   <div v-else :style="{ width }">?</div>
 </template>

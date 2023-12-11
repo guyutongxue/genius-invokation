@@ -17,7 +17,7 @@ export class Player {
 
   constructor(
     public readonly config: PlayerConfig,
-    public readonly who: 0 | 1,
+    public readonly who: 0 | 1
   ) {
     this.io = {
       giveUp: false,
@@ -30,7 +30,7 @@ export class Player {
 
   async rpc<M extends RpcMethod>(
     m: M,
-    req: RpcRequest[M],
+    req: RpcRequest[M]
   ): Promise<RpcResponse[M]> {
     const res = await this.doRpc(m, req);
     console.log("rpc", this.who, m, req, res);
@@ -39,7 +39,7 @@ export class Player {
 
   private async doRpc<M extends RpcMethod>(
     m: M,
-    req: RpcRequest[M],
+    req: RpcRequest[M]
   ): Promise<RpcResponse[RpcMethod]> {
     switch (m) {
       case "chooseActive":

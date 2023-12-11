@@ -8,6 +8,10 @@ const props = defineProps<{
   selected: boolean;
 }>();
 
+const emit = defineEmits<{
+  click: [id: number]
+}>();
+
 </script>
 
 <template>
