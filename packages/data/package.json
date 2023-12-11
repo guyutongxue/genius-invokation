@@ -6,6 +6,7 @@
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",
     "generate_images_for_standalone": "bun ./scripts/images/index.ts",
+    "build": "echo",
     "check": "tsc --noEmit"
   },
   "dependencies": {
