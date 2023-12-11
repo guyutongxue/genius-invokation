@@ -7,13 +7,17 @@
     "./builder": "./src/builder/index.ts"
   },
   "scripts": {
+    "generate_parser": "bunx --bun ohm generateBundles -et src/query/query.ohm",
     "check": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
-    "@gi-tcg/query-parser": "workspace:*",
     "immer": "^10.0.3",
-    "@stdlib/random-base-minstd": "^0.1.0"
+    "@stdlib/random-base-minstd": "^0.1.0",
+    "ohm-js": "^17.1.0"
+  },
+  "devDependencies": {
+    "@ohm-js/cli": "^2.0.0"
   }
 }

@@ -115,7 +115,7 @@ QueryLang {
   relativeOperator = ">=" | "<=" | "!=" | "=" | ">" | "<"
 
   TagSpecifier = "(" NonemptyListOf<identifierName, ","> ")" -- direct
-    | TagQualifier kwOf "(" OrQuery ")" -- indirect
+    | TagQualifier kwOf "(" Query ")" -- indirect
     
   TagQualifier = kwWeapon | kwElement | kwNation
 
