@@ -91,7 +91,7 @@ QueryLang {
     | "(" Query ")" -- paren
   WhoSpecifier = kwAll? kwMy -- my
     | kwAll? kwOpp -- opp
-    | kwAll
+    | kwAll -- all
   TypeSpecifier = CharacterSpecifier | EntitySpecifier
   CharacterSpecifier = kwCharacter (kwIncludes kwDefeated)? -- chIncDeath
     | PositionSpecifier kwCharacter? -- position
@@ -115,7 +115,7 @@ QueryLang {
   relativeOperator = ">=" | "<=" | "!=" | "=" | ">" | "<"
 
   TagSpecifier = "(" NonemptyListOf<identifierName, ","> ")" -- direct
-    | TagQualifier kwOf "(" Query ")" -- indirect
+    | TagQualifier? kwOf "(" Query ")" -- indirect
     
   TagQualifier = kwWeapon | kwElement | kwNation
 

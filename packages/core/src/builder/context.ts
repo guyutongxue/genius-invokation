@@ -16,7 +16,7 @@ import {
   getEntityArea,
   getEntityById,
 } from "../util";
-import { executeQuery } from "./query";
+import { executeQuery } from "../query";
 import {
   AppliableDamageType,
   CombatStatusHandle,
@@ -28,7 +28,7 @@ import {
   SummonHandle,
 } from "./type";
 import { CardTag } from "../base/card";
-import { GuessedTypeOfQuery } from "@gi-tcg/query-parser";
+import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "./reaction";
 
 type WrapArray<T> = T extends readonly any[] ? T : T[];
@@ -138,7 +138,13 @@ export class SkillContext<
   // Get context of given entity state
   of(entityState: EntityState): EntityContext<Readonly>;
   of(entityState: CharacterState): CharacterContext<Readonly>;
-  of(entityState: EntityState | CharacterState): any {
+  of(
+    entityId: EntityState | CharacterState | number,
+  ): EntityContext<Readonly> | CharacterContext<Readonly>;
+  of(entityState: EntityState | CharacterState | number): any {
+    if (typeof entityState === "number") {
+      entityState = getEntityById(this._state, entityState, true);
+    }
     if (entityState.definition.type === "character") {
       return new CharacterContext<Readonly>(this, entityState.id);
     } else {
@@ -585,7 +591,7 @@ export type CharacterPosition = "active" | "next" | "prev" | "standby";
 export class CharacterContext<Readonly extends boolean> {
   private readonly _area: EntityArea;
   constructor(
-    private readonly skillContext: SkillContext<Readonly, any, any>,
+    private readonly skillContext: SkillContext<Readonly, {}, any>,
     private readonly _id: number,
   ) {
     this._area = getEntityArea(skillContext.state, _id);
