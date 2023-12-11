@@ -40,7 +40,7 @@ import {
 } from "./base/skill";
 import { SkillContext } from "./builder/context";
 import { flip } from "@gi-tcg/utils";
-import { CardDefinition, CardTargetKind } from "./base/card";
+import { CardDefinition, CardTarget, CardTargetKind } from "./base/card";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -404,7 +404,13 @@ class Game {
 
     // Cards
     for (const card of player.hands) {
-      const allTargets = (0, card.definition.getTarget)(this._state, activeCh);
+      let allTargets: CardTarget[];
+      // 当支援区满时，卡牌目标为“要离场的支援牌”
+      if (card.definition.type === "support" && player.supports.length === this._state.config.maxSupports) {
+        allTargets = player.supports.map((s) => ({ ids: [s.id] }));
+      } else {
+        allTargets = (0, card.definition.getTarget)(this._state, activeCh);
+      }
       for (const { ids } of allTargets) {
         if ((0, card.definition.filter)(this._state, activeCh, { ids })) {
           result.push({
