@@ -6,9 +6,5 @@
   ],
   "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",
   "scripts": {
-    "build:all": "bunx --bun manypkg exec bun run build"
-  },
-  "devDependencies": {
-    "@manypkg/cli": "^0.21.1"
   }
 }
