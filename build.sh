@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-for folder in packages/*; do
-  if [[ -f "$folder/package.json" ]]; then
-    cd "$folder"
-    bun run build
-    cd -
-  fi
+PACKAGES=("typings" "core" "data" "standalone")
+
+for folder in "${PACKAGES[@]}"; do
+  pushd "packages/$folder"
+  bun run build
+  popd
 done
