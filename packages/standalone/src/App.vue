@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import mitt from "mitt";
 
 import {
   startGame,
@@ -13,6 +12,7 @@ import {
 import data from "@gi-tcg/data";
 import Chessboard from "./components/Chessboard.vue";
 import { Player } from "./player";
+import { mittWithOnce } from "./util";
 
 const state0 = ref<StateData>();
 const state1 = ref<StateData>();
@@ -82,9 +82,8 @@ onMounted(async () => {
       pause: async () => {
         enableStep.value = true;
         await new Promise<void>((resolve) => {
-          emitter.on("step", resolve);
+          emitter.once("step", resolve);
         });
-        emitter.off("step");
         enableStep.value = false;
       },
       players: [player0.io, player1.io],
@@ -94,7 +93,7 @@ onMounted(async () => {
   console.log("Winner is", winner);
 });
 
-const emitter = mitt<{
+const emitter = mittWithOnce<{
   step: void;
 }>();
 const enableStep = ref(false);
@@ -102,8 +101,7 @@ const enableStep = ref(false);
 
 <template>
   <div class="w-[100vw] h-[100vh] overflow-auto flex flex-col gap-2">
-    <div class="flex items-center gap-2">
-      <h4>Debug</h4>
+    <div>
       <button :disabled="!enableStep" @click="emitter.emit('step')">
         Step
       </button>

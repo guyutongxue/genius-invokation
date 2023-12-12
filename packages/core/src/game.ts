@@ -7,7 +7,7 @@ import {
   PlayerState,
 } from "./base/state";
 import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
-import { GameIO, exposeMutation, exposeState } from "./io";
+import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   Aura,
   DiceType,
@@ -340,6 +340,9 @@ class Game {
     } else {
       const actions = this.availableAction();
       console.log(actions);
+      const { chosenIndex, cost } = await this.rpc(this._state.currentTurn, "action", {
+        candidates: actions.map(exposeAction)
+      });
       const activeCh = player.characters[getActiveCharacterIndex(player)];
       const skill =
         activeCh.definition.initiativeSkills[

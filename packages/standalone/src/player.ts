@@ -1,4 +1,7 @@
 import {
+  ActionRequest,
+  ActionResponse,
+  DiceType,
   PlayerConfig,
   PlayerIO,
   RpcMethod,
@@ -7,13 +10,38 @@ import {
   StateData,
 } from "@gi-tcg/core";
 import { ref } from "vue";
+import { mittWithOnce } from "./util";
+
+export type View = "normal" | "reroll" | "switchCards";
+
+type SelectDiceOpt =
+  | {
+      enabled: false;
+    }
+  | {
+      enabled: true;
+      required: DiceType[];
+      disableOmni: boolean;
+      disableOk: boolean;
+      disableCancel: boolean;
+    };
+
+type SelectResult = number[] | false;
 
 export class Player {
   public readonly io: PlayerIO;
 
   public readonly state = ref<StateData>();
-  public readonly outlined = ref<number[]>([]);
+  public readonly clickable = ref<number[]>([]);
   public readonly selected = ref<number[]>([]);
+  public readonly view = ref<View>("normal");
+  public readonly selectDiceOpt = ref<SelectDiceOpt>({ enabled: false });
+  public readonly canDeclareEnd = ref(false);
+
+  private emitter = mittWithOnce<{
+    clicked: number;
+    selected: SelectResult;
+  }>();
 
   constructor(
     public readonly config: PlayerConfig,
@@ -26,6 +54,13 @@ export class Player {
       },
       rpc: (m, r) => this.rpc(m, r),
     };
+  }
+
+  entityClicked(id: number) {
+    this.emitter.emit("clicked", id);
+  }
+  diceSelected(selected: SelectResult) {
+    this.emitter.emit("selected", selected);
   }
 
   async rpc<M extends RpcMethod>(
@@ -44,15 +79,73 @@ export class Player {
     switch (m) {
       case "chooseActive":
         const { candidates } = req as RpcRequest["chooseActive"];
+        const active = await this.chooseActive(candidates);
         return {
-          active: candidates[0],
+          active,
         } as RpcResponse["chooseActive"];
       case "rerollDice":
         return {
           rerollIndexes: [],
         } as RpcResponse["rerollDice"];
+      case "action":
+        const req2 = req as RpcRequest["action"];
+        const res = await this.action(req2);
+        return res as RpcResponse["action"];
       default:
         throw new Error("Not implemented");
     }
+  }
+
+  private async waitForClick(): Promise<number> {
+    const val = await new Promise<number>((resolve) => {
+      this.emitter.once("clicked", resolve);
+    });
+    return val;
+  }
+
+  private async waitForSelected(): Promise<SelectResult> {
+    const val = await new Promise<SelectResult>((resolve) => {
+      this.emitter.once("selected", resolve);
+    });
+    return val;
+  }
+
+  private async chooseActive(candidates: number[]) {
+    this.clickable.value = candidates;
+    const onClick = (id: number) => {
+      this.selected.value = [id];
+      this.selectDiceOpt.value = {
+        enabled: true,
+        disableCancel: true,
+        disableOk: false,
+        disableOmni: false,
+        required: [],
+      };
+    };
+    this.selectDiceOpt.value = {
+      enabled: true,
+      disableCancel: true,
+      disableOk: true,
+      disableOmni: false,
+      required: [],
+    };
+    this.emitter.on("clicked", onClick);
+    await this.waitForSelected();
+    this.selectDiceOpt.value = {
+      enabled: false,
+    };
+    this.emitter.off("clicked", onClick);
+    const result = this.selected.value[0];
+    this.selected.value = [];
+    this.clickable.value = [];
+    return result;
+  }
+
+  private async action({ candidates }: ActionRequest): Promise<ActionResponse> {
+    // this.clickable.value = candidates;
+    this.canDeclareEnd.value = true;
+    const val = await this.waitForClick();
+    this.clickable.value = [];
+    return new Promise<never>(() => {});
   }
 }

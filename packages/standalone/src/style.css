@@ -13,3 +13,23 @@
     Android Emoji, EmojiSymbols, EmojiOne Mozilla, Twemoji Mozilla,
     Segoe UI Symbol, Noto Color Emoji Compat, emoji;
 }
+
+.clickable {
+  cursor: pointer;
+  outline: 6px solid lightgreen;
+}
+
+.selected::after {
+  content: "\2705";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  font-size: 3rem;
+  font-family: var(--font-emoji);
+}

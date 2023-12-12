@@ -7,14 +7,13 @@ import Status from "./Status.vue";
 
 const props = defineProps<{
   data: CharacterData;
-  outlined: boolean;
+  clickable: boolean;
   selected: boolean;
 }>();
 
 const emit = defineEmits<{
-  click: [id: number]
+  click: [id: number];
 }>();
-
 </script>
 
 <template>
@@ -27,7 +26,7 @@ const emit = defineEmits<{
         class="w-5"
       ></Image>
     </div>
-    <div class="h-40 relative" :title="`id=${data.id}`">
+    <div class="h-40 relative" :title="`id=${data.id}`" :class="{ selected }">
       <div
         class="absolute z-10 left-[-15px] top-[-20px] flex items-center justify-center"
       >
@@ -57,9 +56,9 @@ const emit = defineEmits<{
       ></EnergyBar>
       <Image
         :id="data.definitionId"
-        class="h-full"
-        :class="{ 'brightness-50': data.defeated }"
-        @click="emit('click', data.id)"
+        class="h-full rounded-lg"
+        :class="{ 'brightness-50': data.defeated, clickable }"
+        @click="clickable && emit('click', data.id)"
       ></Image>
       <div class="absolute left-0 bottom-0">
         <Status v-for="st of data.entities" :data="st"></Status>

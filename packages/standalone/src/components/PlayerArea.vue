@@ -10,7 +10,7 @@ import Status from "./Status.vue";
 const props = defineProps<{
   data: PlayerData;
   opp?: boolean;
-  outlined: number[];
+  clickable: number[];
   selected: number[];
 }>();
 
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="w-full flex flex-row">
-    <div class="bg-yellow-800 text-white">piles = {{ data.piles.length }}</div>
+    <div class="bg-yellow-800 text-white flex items-center w-10">piles = {{ data.piles.length }}</div>
     <div
       class="flex-grow flex gap-2"
       :class="opp ? 'flex-col-reverse' : 'flex-col'"
@@ -32,7 +32,7 @@ const emit = defineEmits<{
             v-for="support of data.supports"
             :key="support.id"
             :data="support"
-            :outlined="outlined.includes(support.id)"
+            :clickable="clickable.includes(support.id)"
             :selected="selected.includes(support.id)"
             @click="emit('click', $event)"
           ></Support>
@@ -42,7 +42,7 @@ const emit = defineEmits<{
             <CharacterArea
               :key="ch.id"
               :data="ch"
-              :outlined="outlined.includes(ch.id)"
+              :clickable="clickable.includes(ch.id)"
               :selected="selected.includes(ch.id)"
               @click="emit('click', $event)"
             ></CharacterArea>
@@ -57,7 +57,7 @@ const emit = defineEmits<{
             v-for="summon of data.summons"
             :key="summon.id"
             :data="summon"
-            :outlined="outlined.includes(summon.id)"
+            :clickable="clickable.includes(summon.id)"
             :selected="selected.includes(summon.id)"
             @click="emit('click', $event)"
           ></Summon>
@@ -71,17 +71,11 @@ const emit = defineEmits<{
           v-for="card of data.hands"
           :key="card.id"
           :data="card"
-          :outlined="outlined.includes(card.id)"
+          :clickable="clickable.includes(card.id)"
           :selected="selected.includes(card.id)"
           @click="emit('click', $event)"
         ></Card>
       </div>
-    </div>
-    <div v-if="opp" class="w-8 bg-yellow-800 text-white">
-      oppDice = {{ data.dice.length }}
-    </div>
-    <div v-else class="w-8 flex flex-col bg-yellow-800">
-      <Dice v-for="d of data.dice" :value="d"></Dice>
     </div>
   </div>
 </template>
