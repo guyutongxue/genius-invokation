@@ -46,7 +46,7 @@ const emit = defineEmits<{
     </ul>
     <div class="flex flex-col gap-1">
       <button
-        class="bg-yellow rounded-xl text-xl p-3"
+        class="btn btn-yellow text-black"
         :disabled="disableOk || !isOk"
         @click="$emit('selected', chosenDice)"
       >
@@ -54,7 +54,7 @@ const emit = defineEmits<{
       </button>
       <button
         v-if="!disableCancel"
-        class="bg-yellow rounded-xl text-xl p-3"
+        class="btn btn-red"
         @click="$emit('cancelled')"
       >
         取消

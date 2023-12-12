@@ -11,6 +11,11 @@ import { mittWithOnce } from "./util";
 
 export type View = "normal" | "reroll" | "switchCards";
 
+/** 点击“结束回合”的行为 ID */
+export const DECLARE_END_ID = 0;
+/**  将卡牌作为元素调和素材时的点击行为 ID*/
+export const ELEMENTAL_TUNING_OFFSET = -11072100;
+
 type SelectDiceOpt =
   | {
       enabled: false;
@@ -33,7 +38,6 @@ export class Player {
   public readonly selected = ref<number[]>([]);
   public readonly view = ref<View>("normal");
   public readonly selectDiceOpt = ref<SelectDiceOpt>({ enabled: false });
-  public readonly canDeclareEnd = ref(false);
 
   private emitter = mittWithOnce<{
     clicked: number;
@@ -143,18 +147,29 @@ export class Player {
 
   private async action(candidates: Action[]): Promise<ActionResponse> {
     // this.clickable.value = candidates;
-    this.canDeclareEnd.value = true;
     this.clickable.value = [];
     
 
     for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
       switch (action.type) {
-        case "useSkill":
-        case "playCard":
-        case "switchActive":
-        case "elementalTuning":
+        case "useSkill": {
+          this.clickable.value.push(action.skill);
+          break;
+        }
+        case "playCard": {
+          this.clickable.value.push(action.card);
+          break;
+        }
+        case "switchActive": {
+          this.clickable.value.push(action.active);
+          break;
+        }
+        case "elementalTuning": {
+          this.clickable.value.push(action.discardedCard + ELEMENTAL_TUNING_OFFSET);
+          break;
+        }
         case "declareEnd": {
-          this.canDeclareEnd.value = true;
+          this.clickable.value.push(DECLARE_END_ID);
         }
       }
     }

@@ -12,6 +12,6 @@ const dataUrl = computed(() => requestLoad(prop.id));
 </script>
 
 <template>
-  <img v-if="dataUrl" :src="dataUrl.value" :width="width">
+  <img v-if="dataUrl" :src="dataUrl.value" :width="width" draggable="false">
   <div v-else :style="{ width }">?</div>
 </template>

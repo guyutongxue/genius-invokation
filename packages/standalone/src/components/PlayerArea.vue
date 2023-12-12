@@ -6,6 +6,7 @@ import Support from "./Support.vue";
 import Card from "./Card.vue";
 import Dice from "./Dice.vue";
 import Status from "./Status.vue";
+import { ELEMENTAL_TUNING_OFFSET } from "../player";
 
 const props = defineProps<{
   data: PlayerData;
@@ -21,12 +22,14 @@ const emit = defineEmits<{
 
 <template>
   <div class="w-full flex flex-row">
-    <div class="bg-yellow-800 text-white flex items-center w-10">piles = {{ data.piles.length }}</div>
+    <div class="bg-yellow-800 text-white flex items-center w-10 flex-shrink-0">
+      piles = {{ data.piles.length }}
+    </div>
     <div
-      class="flex-grow flex gap-2"
+      class="flex-grow flex gap-6"
       :class="opp ? 'flex-col-reverse' : 'flex-col'"
     >
-      <div class="min-h-58 flex flex-row justify-center gap-6">
+      <div class="h-52 flex flex-row justify-center gap-6">
         <div class="min-w-40">
           <Support
             v-for="support of data.supports"
@@ -64,7 +67,7 @@ const emit = defineEmits<{
         </div>
       </div>
       <div
-        class="min-h-30 mx-2 flex flex-row gap-2"
+        class="h-30 flex flex-row mx-4"
         :class="opp ? 'justify-end' : 'justify-start'"
       >
         <Card
@@ -72,6 +75,7 @@ const emit = defineEmits<{
           :key="card.id"
           :data="card"
           :clickable="clickable.includes(card.id)"
+          :draggable="clickable.includes(card.id + ELEMENTAL_TUNING_OFFSET)"
           :selected="selected.includes(card.id)"
           @click="emit('click', $event)"
         ></Card>

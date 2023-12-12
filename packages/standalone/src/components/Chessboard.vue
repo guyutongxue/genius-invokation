@@ -3,7 +3,7 @@ import { DiceType, StateData } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 
 import PlayerArea from "./PlayerArea.vue";
-import { Player } from "../player";
+import { DECLARE_END_ID, ELEMENTAL_TUNING_OFFSET, Player } from "../player";
 import SkillButton from "./SkillButton.vue";
 import { computed, ref, watch } from "vue";
 import { initiativeSkillData } from "../static_data";
@@ -25,7 +25,6 @@ const {
   selected,
   view,
   selectDiceOpt,
-  canDeclareEnd,
 } = props.player;
 
 const skillList = computed(() => {
@@ -51,10 +50,29 @@ const myDice = computed(() => {
   if (!data.value) return [];
   return data.value.players[who].dice;
 });
+
+function myDiceDragenterHandler(e: DragEvent) {
+  e.preventDefault();
+  (e.target! as HTMLElement).classList.add("dropping");
+}
+function myDiceDragoverHandler(e: DragEvent) {
+  e.preventDefault();
+  e.dataTransfer!.dropEffect = "move";
+}
+function myDiceDragleaveHandler(e: DragEvent) {
+  e.preventDefault();
+  (e.target! as HTMLElement).classList.remove("dropping");
+}
+function myDiceDropHandler(e: DragEvent) {
+  e.preventDefault();
+  (e.target! as HTMLElement).classList.remove("dropping");
+  const id = parseInt(e.dataTransfer!.getData("text/plain"));
+  entityClicked(id + ELEMENTAL_TUNING_OFFSET);
+}
 </script>
 
 <template>
-  <div v-if="data" class="w-full b-solid b-black b-2 relative">
+  <div v-if="data" class="w-full b-solid b-black b-2 relative select-none">
     <div
       class="h-full w-full flex relative pr-8"
       :class="who === 0 ? 'flex-col-reverse' : 'flex-col'"
@@ -91,9 +109,9 @@ const myDice = computed(() => {
             :size="32"
           ></Dice>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center gap-2">
           <div
-            class="w-20 h-20 rounded-10 flex flex-col items-center justify-center"
+            class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
             :class="{
               'bg-yellow-300': data.currentTurn === who,
               'bg-blue-200': data.currentTurn !== who,
@@ -106,7 +124,11 @@ const myDice = computed(() => {
               {{ data.phase }}
             </div>
           </div>
-          <button v-if="canDeclareEnd" @click="entityClicked(0)">
+          <button
+            class="btn btn-green-500"
+            v-if="clickable.includes(DECLARE_END_ID)"
+            @click="entityClicked(0)"
+          >
             结束回合
           </button>
         </div>
@@ -114,6 +136,10 @@ const myDice = computed(() => {
     </div>
     <div
       class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800"
+      @dragenter="myDiceDragenterHandler"
+      @dragover="myDiceDragoverHandler"
+      @dragleave="myDiceDragleaveHandler"
+      @drop="myDiceDropHandler"
     >
       <SelectDice
         v-if="selectDiceOpt.enabled"
@@ -132,3 +158,15 @@ const myDice = computed(() => {
     </div>
   </div>
 </template>
+
+<style>
+.dropping {
+  min-width: 4rem;
+}
+
+.dropping::after {
+  content: "（元素调和）";
+  color: white;
+  white-space: pre-wrap;
+}
+</style>
