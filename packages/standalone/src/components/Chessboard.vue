@@ -51,9 +51,10 @@ const myDice = computed(() => {
   return data.value.players[who].dice;
 });
 
+const showCardDropDiv = ref(false);
+
 function myDiceDragenterHandler(e: DragEvent) {
   e.preventDefault();
-  (e.target! as HTMLElement).classList.add("dropping");
 }
 function myDiceDragoverHandler(e: DragEvent) {
   e.preventDefault();
@@ -61,13 +62,13 @@ function myDiceDragoverHandler(e: DragEvent) {
 }
 function myDiceDragleaveHandler(e: DragEvent) {
   e.preventDefault();
-  (e.target! as HTMLElement).classList.remove("dropping");
 }
 function myDiceDropHandler(e: DragEvent) {
   e.preventDefault();
   (e.target! as HTMLElement).classList.remove("dropping");
   const id = parseInt(e.dataTransfer!.getData("text/plain"));
   entityClicked(id + ELEMENTAL_TUNING_OFFSET);
+  showCardDropDiv.value = true;
 }
 </script>
 
@@ -78,18 +79,14 @@ function myDiceDropHandler(e: DragEvent) {
       :class="who === 0 ? 'flex-col-reverse' : 'flex-col'"
     >
       <PlayerArea
-        :data="data.players[0]"
-        :opp="who !== 0"
+        v-for="i of ([0, 1] as const)"
+        :data="data.players[i]"
+        :opp="who !== i"
         :clickable="clickable"
         :selected="selected"
         @click="entityClicked($event)"
-      ></PlayerArea>
-      <PlayerArea
-        :data="data.players[1]"
-        :opp="who !== 1"
-        :clickable="clickable"
-        :selected="selected"
-        @click="entityClicked($event)"
+        @cardDragstart="showCardDropDiv = true"
+        @cardDragend="showCardDropDiv = false"
       ></PlayerArea>
       <div class="absolute right-10 bottom-0 flex flex-row gap-1">
         <SkillButton
@@ -135,6 +132,17 @@ function myDiceDropHandler(e: DragEvent) {
       </div>
     </div>
     <div
+      class="absolute right-0 top-0 w-40 h-full z-10 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
+      :class="{ 'no-width': !showCardDropDiv }"
+      @dragenter="myDiceDragenterHandler"
+      @dragover="myDiceDragoverHandler"
+      @dragleave="myDiceDragleaveHandler"
+      @drop="myDiceDropHandler"
+    >
+      <span>拖动到此处</span>
+      <span>以元素调和</span>
+    </div>
+    <div
       class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800"
       @dragenter="myDiceDragenterHandler"
       @dragover="myDiceDragoverHandler"
@@ -160,13 +168,8 @@ function myDiceDropHandler(e: DragEvent) {
 </template>
 
 <style>
-.dropping {
-  min-width: 4rem;
-}
-
-.dropping::after {
-  content: "（元素调和）";
-  color: white;
-  white-space: pre-wrap;
+.no-width {
+  visibility: hidden;
+  width: 0;
 }
 </style>

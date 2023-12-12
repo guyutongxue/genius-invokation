@@ -11,10 +11,16 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [id: number];
+  dragstart: [id: number];
+  dragend: [id: number];
 }>();
 
 function dragstartHandler(e: DragEvent) {
   e.dataTransfer!.setData("text/plain", props.data.id.toString());
+  emit("dragstart", props.data.id);
+}
+function dragendHandler(e: DragEvent) {
+  emit("dragend", props.data.id);
 }
 </script>
 
@@ -26,6 +32,7 @@ function dragstartHandler(e: DragEvent) {
       :class="{ selected }"
       @click="clickable && emit('click', data.id)"
       @dragstart="dragstartHandler"
+      @dragend="dragendHandler"
       :draggable="draggable"
     >
       <Image

@@ -173,8 +173,9 @@ export class Player {
         }
       }
     }
-    const val = await this.waitForClick();
-
-    return new Promise<never>(() => {});
+    while (true) {
+      const val = await this.waitForClick();
+      console.log(val);
+    }
   }
 }

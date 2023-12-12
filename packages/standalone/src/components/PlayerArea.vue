@@ -17,6 +17,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [id: number];
+  cardDragstart: [id: number];
+  cardDragend: [id: number];
 }>();
 </script>
 
@@ -78,6 +80,8 @@ const emit = defineEmits<{
           :draggable="clickable.includes(card.id + ELEMENTAL_TUNING_OFFSET)"
           :selected="selected.includes(card.id)"
           @click="emit('click', $event)"
+          @dragstart="emit('cardDragstart', $event)"
+          @dragend="emit('cardDragend', $event)"
         ></Card>
       </div>
     </div>
