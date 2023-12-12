@@ -20,6 +20,13 @@ body {
   overflow: hidden;
 }
 
+#app {
+  height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .clickable {
   cursor: pointer;
   outline: 6px solid lightgreen;
