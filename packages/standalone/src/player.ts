@@ -1,14 +1,11 @@
+import { DiceType, PlayerConfig, PlayerIO, StateData } from "@gi-tcg/core";
 import {
-  ActionRequest,
-  ActionResponse,
-  DiceType,
-  PlayerConfig,
-  PlayerIO,
   RpcMethod,
   RpcRequest,
   RpcResponse,
-  StateData,
-} from "@gi-tcg/core";
+  Action,
+  ActionResponse,
+} from "@gi-tcg/typings";
 import { ref } from "vue";
 import { mittWithOnce } from "./util";
 
@@ -77,20 +74,23 @@ export class Player {
     req: RpcRequest[M]
   ): Promise<RpcResponse[RpcMethod]> {
     switch (m) {
-      case "chooseActive":
+      case "chooseActive": {
         const { candidates } = req as RpcRequest["chooseActive"];
         const active = await this.chooseActive(candidates);
         return {
           active,
         } as RpcResponse["chooseActive"];
-      case "rerollDice":
+      }
+      case "rerollDice": {
         return {
           rerollIndexes: [],
         } as RpcResponse["rerollDice"];
-      case "action":
-        const req2 = req as RpcRequest["action"];
-        const res = await this.action(req2);
+      }
+      case "action": {
+        const { candidates } = req as RpcRequest["action"];
+        const res = await this.action(candidates);
         return res as RpcResponse["action"];
+      }
       default:
         throw new Error("Not implemented");
     }
@@ -141,11 +141,25 @@ export class Player {
     return result;
   }
 
-  private async action({ candidates }: ActionRequest): Promise<ActionResponse> {
+  private async action(candidates: Action[]): Promise<ActionResponse> {
     // this.clickable.value = candidates;
     this.canDeclareEnd.value = true;
-    const val = await this.waitForClick();
     this.clickable.value = [];
+    
+
+    for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
+      switch (action.type) {
+        case "useSkill":
+        case "playCard":
+        case "switchActive":
+        case "elementalTuning":
+        case "declareEnd": {
+          this.canDeclareEnd.value = true;
+        }
+      }
+    }
+    const val = await this.waitForClick();
+
     return new Promise<never>(() => {});
   }
 }

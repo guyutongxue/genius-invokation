@@ -95,8 +95,8 @@ const myDice = computed(() => {
           <div
             class="w-20 h-20 rounded-10 flex flex-col items-center justify-center"
             :class="{
-              'bg-yellow': data.currentTurn === who,
-              'bg-lightblue': data.currentTurn !== who,
+              'bg-yellow-300': data.currentTurn === who,
+              'bg-blue-200': data.currentTurn !== who,
             }"
           >
             <div class="text-lg">
@@ -106,7 +106,9 @@ const myDice = computed(() => {
               {{ data.phase }}
             </div>
           </div>
-          <button v-if="canDeclareEnd">结束回合</button>
+          <button v-if="canDeclareEnd" @click="entityClicked(0)">
+            结束回合
+          </button>
         </div>
       </div>
     </div>
