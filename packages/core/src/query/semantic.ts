@@ -15,12 +15,9 @@ import { EntityArea, EntityType } from "../base/entity";
 type AnyState = EntityState | CharacterState;
 type AnySkillContext = ExtendedSkillContext<true, Record<string, any>, any>;
 
-type Iota = [-1, 0, 1, 2, 3, 4, 5, 6, 7];
-type Dec<N extends number> = Iota[N];
-type AtomicExternalQuery = (c: AnySkillContext) => CharacterState | EntityState;
-type ExternalQueryDictionary<N extends number = 3> = N extends 0
-  ? AtomicExternalQuery
-  : Record<string, ExternalQueryDictionary<Dec<N>> | AtomicExternalQuery>;
+type ExternalQueryFn = (c: AnySkillContext) => CharacterState | EntityState;
+type ExternalQueryEntry = ExternalQueryFn | ExternalQueryDictionary;
+type ExternalQueryDictionary = { [prop: string]: ExternalQueryEntry };
 
 export interface QueryArgs {
   readonly candidates: readonly AnyState[];
