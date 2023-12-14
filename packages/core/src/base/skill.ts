@@ -237,25 +237,38 @@ export type EventNames = keyof EventMap;
 export type EventArg<E extends EventNames> = E extends keyof SyncEventMap
   ? SyncEventMap[E]
   : E extends keyof AsyncEventMap
-  ? AsyncEventMap[E] & { state: GameState } // 引发事件时的游戏状态
-  : never;
+    ? AsyncEventMap[E] & { state: GameState } // 引发事件时的游戏状态
+    : never;
 
 export type EventExt<E extends EventNames> = E extends keyof SyncEventMap
   ? EventArg<E>
   : E extends keyof AsyncEventMap
-  ? {
-      eventArg: EventArg<E>;
-    }
-  : never;
+    ? {
+        eventArg: EventArg<E>;
+      }
+    : never;
 
 type InSkillEventPayload = {
   [E in keyof AsyncEventMap]: readonly [eventName: E, eventArg: EventArg<E>];
 }[keyof AsyncEventMap];
 
 export type AsyncRequest =
-  | readonly [name: "requestSwitchCards", arg: { readonly who: 0 | 1, readonly via: SkillInfo } ]
-  | readonly [name: "requestReroll", arg: { readonly who: 0 | 1, readonly via: SkillInfo, readonly times: number }]
-  | readonly [name: "requestUseSkill", arg: { readonly via: SkillInfo, readonly requestingSkillId: number }];
+  | readonly [
+      name: "requestSwitchCards",
+      arg: { readonly who: 0 | 1; readonly via: SkillInfo },
+    ]
+  | readonly [
+      name: "requestReroll",
+      arg: {
+        readonly who: 0 | 1;
+        readonly via: SkillInfo;
+        readonly times: number;
+      },
+    ]
+  | readonly [
+      name: "requestUseSkill",
+      arg: { readonly via: SkillInfo; readonly requestingSkillId: number },
+    ];
 
 export type DeferredAction = InSkillEventPayload | AsyncRequest;
 

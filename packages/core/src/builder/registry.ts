@@ -27,7 +27,7 @@ type DefinitionMap = {
   entity: EntityDefinition;
   skill: SkillDefinition;
   card: CardDefinition;
-}
+};
 
 type RegisterCategory = keyof DefinitionMap;
 
@@ -40,10 +40,13 @@ function getCurrentStore(): DataStore {
   if (!Object.hasOwn(globalThis, GI_TCG_BUILDER_SYMBOL)) {
     throw new Error("Not in registration");
   }
-  return (globalThis as any)[GI_TCG_BUILDER_SYMBOL]
+  return (globalThis as any)[GI_TCG_BUILDER_SYMBOL];
 }
 
-function register<C extends RegisterCategory>(type: C, value: DefinitionMap[C]) {
+function register<C extends RegisterCategory>(
+  type: C,
+  value: DefinitionMap[C],
+) {
   const store = getCurrentStore()[type];
   if (store.has(value.id)) {
     throw new Error(`Duplicate ${type} id ${value.id}`);
@@ -63,7 +66,10 @@ export function registerCard(value: CardDefinition) {
   register("card", value);
 }
 
-function getDefinition<C extends RegisterCategory>(type: C, id: number): DefinitionMap[C] {
+function getDefinition<C extends RegisterCategory>(
+  type: C,
+  id: number,
+): DefinitionMap[C] {
   const store = getCurrentStore();
   const result = store[type].get(id);
   if (typeof result === "undefined") {
@@ -84,8 +90,9 @@ export function getCardDefinition(id: number) {
   return getDefinition("card", id);
 }
 
-
-export function getSkillDefinitionIncludePassive(id: number) : SkillDefinition | EntityDefinition {
+export function getSkillDefinitionIncludePassive(
+  id: number,
+): SkillDefinition | EntityDefinition {
   try {
     return getSkillDefinition(id);
   } catch {}

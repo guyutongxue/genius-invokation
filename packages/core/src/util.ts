@@ -56,7 +56,9 @@ export function getEntityById(
  * @param state 游戏状态
  * @returns 实体状态列表
  */
-export function allEntities(state: GameState): (CharacterState | EntityState)[] {
+export function allEntities(
+  state: GameState,
+): (CharacterState | EntityState)[] {
   const result: (CharacterState | EntityState)[] = [];
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
@@ -181,7 +183,10 @@ export function elementOfCharacter(ch: CharacterDefinition): DiceType {
   return elementTags[element];
 }
 
-export function sortDice(player: PlayerState, dice: readonly DiceType[]): DiceType[] {
+export function sortDice(
+  player: PlayerState,
+  dice: readonly DiceType[],
+): DiceType[] {
   const characterElements = shiftLeft(
     player.characters,
     getActiveCharacterIndex(player),
@@ -191,7 +196,7 @@ export function sortDice(player: PlayerState, dice: readonly DiceType[]): DiceTy
     const idx = characterElements.indexOf(d);
     if (idx !== -1) return -100 + idx;
     return d as number;
-  }
+  };
   return [...dice].sort((a, b) => value(a) - value(b));
 }
 

@@ -44,7 +44,7 @@ export interface CharacterVariables {
   readonly aura: Aura;
   readonly alive: 0 | 1;
   readonly [key: string]: number;
-};
+}
 
 export interface CharacterConstants extends CharacterVariables {
   readonly maxHealth: number;

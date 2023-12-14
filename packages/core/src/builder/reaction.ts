@@ -12,7 +12,10 @@ import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
 
 export type NontrivialDamageType = Exclude<D, D.Physical | D.Piercing | D.Heal>;
 
-export type ReactionMap = Record<A, Record<NontrivialDamageType, [A, R | null]>>;
+export type ReactionMap = Record<
+  A,
+  Record<NontrivialDamageType, [A, R | null]>
+>;
 
 export const REACTION_MAP: ReactionMap = {
   [A.None]: {
@@ -117,9 +120,7 @@ type ReactionAction = (
 const pierceToOther: ReactionAction = (c) => {
   if (c.damageInfo) {
     c.increaseDamage(1);
-    c.damage(1, D.Piercing, (c) =>
-      c.$$(`my character not @self`),
-    );
+    c.damage(1, D.Piercing, (c) => c.$$(`my character not @self`));
   }
 };
 
@@ -131,9 +132,7 @@ const crystallize: ReactionAction = (c) => {
 const swirl = (srcElement: D): ReactionAction => {
   return (c) => {
     if (c.damageInfo) {
-      c.damage(1, srcElement, (c) =>
-        c.$$(`my character not @self`),
-      );
+      c.damage(1, srcElement, (c) => c.$$(`my character not @self`));
     }
   };
 };

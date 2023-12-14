@@ -19,31 +19,33 @@ export type EquipmentHandle = EntityHandle &
 
 export type ExEntityType = "character" | EntityType;
 
-export type ExContextType<Readonly extends boolean, TypeT extends ExEntityType> =
-  TypeT extends "character"
-    ? StrictlyTypedCharacterContext<Readonly>
-    : TypeT extends EntityType
+export type ExContextType<
+  Readonly extends boolean,
+  TypeT extends ExEntityType,
+> = TypeT extends "character"
+  ? StrictlyTypedCharacterContext<Readonly>
+  : TypeT extends EntityType
     ? EntityContext<Readonly, TypeT>
     : never;
 export type HandleT<T extends ExEntityType> = T extends "character"
   ? CharacterHandle
   : T extends "combatStatus"
-  ? CombatStatusHandle
-  : T extends "status"
-  ? StatusHandle
-  : T extends "summon"
-  ? SummonHandle
-  : T extends "support"
-  ? SupportHandle
-  : T extends "passiveSkill"
-  ? SkillHandle
-  : never;
+    ? CombatStatusHandle
+    : T extends "status"
+      ? StatusHandle
+      : T extends "summon"
+        ? SummonHandle
+        : T extends "support"
+          ? SupportHandle
+          : T extends "passiveSkill"
+            ? SkillHandle
+            : never;
 
 export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"
   ? CharacterTag
   : TypeT extends EntityType
-  ? EntityTag
-  : never;
+    ? EntityTag
+    : never;
 
 export type AppliableDamageType =
   | DamageType.Cryo

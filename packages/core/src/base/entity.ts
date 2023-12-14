@@ -8,7 +8,13 @@ export type EntityTag =
   | "preparing" // 准备技能中
   | EquipmentTag;
 
-export type EntityType = "passiveSkill" | "status" | "combatStatus" | "equipment" | "support" | "summon";
+export type EntityType =
+  | "passiveSkill"
+  | "status"
+  | "combatStatus"
+  | "equipment"
+  | "support"
+  | "summon";
 
 export interface EntityDefinition {
   readonly type: EntityType;

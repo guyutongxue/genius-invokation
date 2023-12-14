@@ -340,9 +340,13 @@ class Game {
     } else {
       const actions = this.availableAction();
       console.log(actions);
-      const { chosenIndex, cost } = await this.rpc(this._state.currentTurn, "action", {
-        candidates: actions.map(exposeAction)
-      });
+      const { chosenIndex, cost } = await this.rpc(
+        this._state.currentTurn,
+        "action",
+        {
+          candidates: actions.map(exposeAction),
+        },
+      );
       const activeCh = player.characters[getActiveCharacterIndex(player)];
       const skill =
         activeCh.definition.initiativeSkills[
@@ -409,7 +413,10 @@ class Game {
     for (const card of player.hands) {
       let allTargets: CardTarget[];
       // 当支援区满时，卡牌目标为“要离场的支援牌”
-      if (card.definition.type === "support" && player.supports.length === this._state.config.maxSupports) {
+      if (
+        card.definition.type === "support" &&
+        player.supports.length === this._state.config.maxSupports
+      ) {
         allTargets = player.supports.map((s) => ({ ids: [s.id] }));
       } else {
         allTargets = (0, card.definition.getTarget)(this._state, activeCh);
