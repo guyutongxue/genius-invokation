@@ -1,6 +1,11 @@
 <script lang="ts" setup>
+import { computed } from "vue";
 import { CardData } from "@gi-tcg/typings";
+import {} from "@gi-tcg/utils";
+
 import Image from "./Image.vue";
+import { costData } from "../static_data";
+import Dice from "./Dice.vue";
 
 const props = defineProps<{
   data: CardData;
@@ -15,6 +20,8 @@ const emit = defineEmits<{
   dragend: [id: number];
 }>();
 
+const cardCost = computed(() => costData[props.data.definitionId]);
+
 function dragstartHandler(e: DragEvent) {
   e.dataTransfer!.setData("text/plain", props.data.id.toString());
   emit("dragstart", props.data.id);
@@ -27,7 +34,7 @@ function dragendHandler(e: DragEvent) {
 <template>
   <div class="wrapper">
     <div
-      class="card"
+      class="card relative"
       v-if="data.definitionId > 0"
       :class="{ selected }"
       @click="clickable && emit('click', data.id)"
@@ -41,6 +48,14 @@ function dragendHandler(e: DragEvent) {
         :class="{ clickable }"
         :title="`id = ${data.id}`"
       ></Image>
+      <div class="absolute left-0 top-0 translate-x-[-50%] flex flex-col">
+        <Dice
+          v-for="[dt, val] of cardCost"
+          :value="dt"
+          :text="`${val}`"
+          :size="30"
+        ></Dice>
+      </div>
     </div>
     <div
       v-else

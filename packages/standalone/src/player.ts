@@ -242,11 +242,20 @@ export class Player {
   }
 
   private async action(candidates: Action[]): Promise<ActionResponse> {
-    // this.clickable.value = candidates;
-    this.clickable.value = [];
+    const player = this.state.value!.players[this.who];
+    const currentEnergy =
+      player.characters.find((ch) => ch.id === player.activeCharacterId)
+        ?.energy ?? 0;
     const playCardInfos: PCAWithIndex[] = [];
     const initialClickable = new Map<number, AfterClickState>();
     for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
+      if (
+        "cost" in action &&
+        action.cost.filter((d) => d === DiceType.Energy).length > currentEnergy
+      ) {
+        // If energy does not meet the requirement, disable it.
+        continue;
+      }
       switch (action.type) {
         case "useSkill": {
           initialClickable.set(action.skill, {

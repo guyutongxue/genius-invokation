@@ -20,10 +20,17 @@ export interface SwitchActiveAction {
   cost: DiceType[];
 }
 
+export enum PlayCardHint {
+  GeneralTarget,
+  GeneralTarget2,
+  DisposeSupport,
+}
+
 export interface PlayCardAction {
   type: "playCard";
   card: number;
   cost: DiceType[];
+  hints: PlayCardHint[];
   targets: number[];
 }
 

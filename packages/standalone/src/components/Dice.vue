@@ -99,6 +99,7 @@ const props = withDefaults(
     <span
       v-if="text"
       class="absolute text-outline"
+      :class="{ 'text-white': value === DiceType.Void }"
       :style="{ fontSize: `${0.4 * size}px` }"
     >
       {{ text }}
