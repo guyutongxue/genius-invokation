@@ -1,10 +1,12 @@
-import { DiceType, PlayerConfig, PlayerIO, StateData } from "@gi-tcg/core";
+import { PlayerConfig, PlayerIO, StateData } from "@gi-tcg/core";
 import {
+  DiceType,
   RpcMethod,
   RpcRequest,
   RpcResponse,
   Action,
   ActionResponse,
+  PlayCardAction,
 } from "@gi-tcg/typings";
 import { ref } from "vue";
 import { mittWithOnce } from "./util";
@@ -30,6 +32,100 @@ type SelectDiceOpt =
 
 type SelectResult = number[] | false;
 
+type AfterClickState =
+  | {
+      type: "continue";
+      clickable: Map<number, AfterClickState>;
+      selected: number[];
+    }
+  | {
+      type: "selectDice";
+      selected: number[];
+      actionIndex: number;
+      required: DiceType[];
+      disableOmni: boolean;
+    };
+
+function groupBy<T, K>(list: T[], getKey: (item: T) => K): Map<K, T[]> {
+  return list.reduce((result, item) => {
+    const key = getKey(item);
+    const collection = result.get(key);
+    if (!collection) {
+      result.set(key, [item]);
+    } else {
+      collection.push(item);
+    }
+    return result;
+  }, new Map<K, T[]>());
+}
+interface PCAWithIndex extends PlayCardAction {
+  index: number;
+}
+
+function buildCardClickState(
+  cardAction: PCAWithIndex[],
+): Map<number, AfterClickState> {
+  type TargetTree = PCAWithIndex | Map<number, TargetTree>;
+
+  function traverseTargetTree(
+    selected: number[],
+    node: TargetTree,
+  ): AfterClickState {
+    if (node instanceof Map) {
+      const clickable = new Map<number, AfterClickState>();
+      for (const [key, value] of node) {
+        clickable.set(key, traverseTargetTree([...selected, key], value));
+      }
+      return {
+        type: "continue",
+        clickable,
+        selected,
+      };
+    } else {
+      return {
+        type: "selectDice",
+        selected,
+        actionIndex: node.index,
+        required: node.cost,
+        disableOmni: false,
+      };
+    }
+  }
+
+  const grouped = groupBy(cardAction, (v) => v.card);
+  const clickable = new Map<number, AfterClickState>();
+  for (const [key, value] of grouped) {
+    if (value[0].targets.length === 0) {
+      clickable.set(key, {
+        type: "selectDice",
+        selected: [key],
+        actionIndex: value[0].index,
+        required: value[0].cost,
+        disableOmni: false,
+      });
+      continue;
+    }
+    const targetTree = new Map<number, TargetTree>();
+    for (const action of value) {
+      const targets = [...action.targets];
+      let current = targetTree;
+      while (targets.length > 1) {
+        const target = targets.shift()!;
+        let next = current.get(target);
+        if (!next) {
+          next = new Map<number, TargetTree>();
+          current.set(target, next);
+        }
+        current = next as Map<number, TargetTree>;
+      }
+      current.set(targets[0], action);
+    }
+    console.log(targetTree);
+    clickable.set(key, traverseTargetTree([key], targetTree));
+  }
+  return clickable;
+}
+
 export class Player {
   public readonly io: PlayerIO;
 
@@ -46,7 +142,7 @@ export class Player {
 
   constructor(
     public readonly config: PlayerConfig,
-    public readonly who: 0 | 1
+    public readonly who: 0 | 1,
   ) {
     this.io = {
       giveUp: false,
@@ -66,7 +162,7 @@ export class Player {
 
   async rpc<M extends RpcMethod>(
     m: M,
-    req: RpcRequest[M]
+    req: RpcRequest[M],
   ): Promise<RpcResponse[M]> {
     const res = await this.doRpc(m, req);
     console.log("rpc", this.who, m, req, res);
@@ -75,7 +171,7 @@ export class Player {
 
   private async doRpc<M extends RpcMethod>(
     m: M,
-    req: RpcRequest[M]
+    req: RpcRequest[M],
   ): Promise<RpcResponse[RpcMethod]> {
     switch (m) {
       case "chooseActive": {
@@ -148,34 +244,118 @@ export class Player {
   private async action(candidates: Action[]): Promise<ActionResponse> {
     // this.clickable.value = candidates;
     this.clickable.value = [];
-    
-
+    const playCardInfos: PCAWithIndex[] = [];
+    const initialClickable = new Map<number, AfterClickState>();
     for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
       switch (action.type) {
         case "useSkill": {
-          this.clickable.value.push(action.skill);
+          initialClickable.set(action.skill, {
+            type: "selectDice",
+            actionIndex: i,
+            disableOmni: false,
+            required: action.cost,
+            selected: [],
+          });
           break;
         }
         case "playCard": {
-          this.clickable.value.push(action.card);
+          playCardInfos.push({ ...action, index: i });
           break;
         }
         case "switchActive": {
-          this.clickable.value.push(action.active);
+          initialClickable.set(action.active, {
+            type: "selectDice",
+            actionIndex: i,
+            disableOmni: false,
+            required: action.cost,
+            selected: [],
+          });
           break;
         }
         case "elementalTuning": {
-          this.clickable.value.push(action.discardedCard + ELEMENTAL_TUNING_OFFSET);
+          initialClickable.set(action.discardedCard + ELEMENTAL_TUNING_OFFSET, {
+            type: "selectDice",
+            actionIndex: i,
+            disableOmni: true,
+            required: [DiceType.Void],
+            selected: [action.discardedCard],
+          });
           break;
         }
         case "declareEnd": {
-          this.clickable.value.push(DECLARE_END_ID);
+          initialClickable.set(0, {
+            type: "selectDice",
+            actionIndex: i,
+            disableOmni: false,
+            required: [],
+            selected: [],
+          });
         }
       }
     }
-    while (true) {
-      const val = await this.waitForClick();
-      console.log(val);
+    for (const [k, v] of buildCardClickState(playCardInfos)) {
+      initialClickable.set(k, v);
     }
+    let result: ActionResponse;
+    let state: AfterClickState = {
+      type: "continue",
+      clickable: initialClickable,
+      selected: [],
+    };
+    while (true) {
+      while (state.type === "continue") {
+        this.clickable.value = [...state.clickable.keys()];
+        this.selected.value = state.selected;
+        const val = await this.waitForClick();
+        if (!this.clickable.value.includes(val)) {
+          throw new Error(`Click event emitted with an invalid value`);
+        }
+        state = state.clickable.get(val)!;
+      }
+      this.clickable.value = [];
+      this.selected.value = state.selected;
+
+      if (candidates[state.actionIndex].type === "declareEnd") {
+        this.clickable.value = [];
+        this.selected.value = [];
+        result = {
+          chosenIndex: state.actionIndex,
+          cost: [],
+        };
+        break;
+      }
+
+      this.selectDiceOpt.value = {
+        enabled: true,
+        disableCancel: false,
+        disableOk: false,
+        disableOmni: state.disableOmni,
+        required: state.required,
+      };
+      const [type, awaited] = await Promise.race([
+        this.waitForSelected().then((r) => ["dice", r] as const),
+        this.waitForClick().then((r) => ["click", r] as const),
+      ]);
+      if (type === "dice") {
+        this.selectDiceOpt.value = {
+          enabled: false,
+        };
+        if (awaited !== false) {
+          result = {
+            chosenIndex: state.actionIndex,
+            cost: awaited,
+          };
+          break;
+        }
+        state = {
+          type: "continue",
+          clickable: initialClickable,
+          selected: [],
+        };
+      }
+    }
+    this.selected.value = [];
+    this.clickable.value = [];
+    return result;
   }
 }

@@ -27,7 +27,7 @@ export function executeQuery<
       event: {
         skillCaller: (c) => c.eventArg.skillInfo.caller,
       },
-      target: (((ctx as any)?.targets as any[]) ?? []).map(
+      targets: (((ctx as any)?.targets as any[]) ?? []).map(
         (e) => () => e,
       ) as any,
     },

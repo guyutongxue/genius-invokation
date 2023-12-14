@@ -1,7 +1,7 @@
 import { DamageType } from "@gi-tcg/typings";
 import { CharacterTag } from "../base/character";
 import { EntityTag, EntityType } from "../base/entity";
-import { EntityContext, StrictlyTypedCharacterContext } from "./context";
+import { StrictlyTypedCharacterContext, StrictlyTypedEntityContext } from "./context";
 
 export type CharacterHandle = number & { readonly _char: unique symbol };
 export type SkillHandle = number & { readonly _skill: unique symbol };
@@ -25,7 +25,7 @@ export type ExContextType<
 > = TypeT extends "character"
   ? StrictlyTypedCharacterContext<Readonly>
   : TypeT extends EntityType
-    ? EntityContext<Readonly, TypeT>
+    ? StrictlyTypedEntityContext<Readonly, TypeT>
     : never;
 export type HandleT<T extends ExEntityType> = T extends "character"
   ? CharacterHandle
@@ -33,13 +33,15 @@ export type HandleT<T extends ExEntityType> = T extends "character"
     ? CombatStatusHandle
     : T extends "status"
       ? StatusHandle
-      : T extends "summon"
-        ? SummonHandle
-        : T extends "support"
-          ? SupportHandle
-          : T extends "passiveSkill"
-            ? SkillHandle
-            : never;
+      : T extends "equipment"
+        ? EquipmentHandle
+        : T extends "summon"
+          ? SummonHandle
+          : T extends "support"
+            ? SupportHandle
+            : T extends "passiveSkill"
+              ? SkillHandle
+              : never;
 
 export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"
   ? CharacterTag

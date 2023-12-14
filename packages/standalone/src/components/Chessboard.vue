@@ -33,7 +33,7 @@ const skillList = computed(() => {
   }
   const player = data.value.players[who];
   const activeCh = player.characters.find(
-    (ch) => ch.id === player.activeCharacterId
+    (ch) => ch.id === player.activeCharacterId,
   );
   if (activeCh) {
     return initiativeSkillData[activeCh.definitionId];
@@ -79,7 +79,7 @@ function myDiceDropHandler(e: DragEvent) {
       :class="who === 0 ? 'flex-col-reverse' : 'flex-col'"
     >
       <PlayerArea
-        v-for="i of ([0, 1] as const)"
+        v-for="i of [0, 1] as const"
         :data="data.players[i]"
         :opp="who !== i"
         :clickable="clickable"
@@ -144,10 +144,6 @@ function myDiceDropHandler(e: DragEvent) {
     </div>
     <div
       class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800"
-      @dragenter="myDiceDragenterHandler"
-      @dragover="myDiceDragoverHandler"
-      @dragleave="myDiceDragleaveHandler"
-      @drop="myDiceDropHandler"
     >
       <SelectDice
         v-if="selectDiceOpt.enabled"

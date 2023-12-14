@@ -296,6 +296,9 @@ const typeSpecifierDict: QueryLangActionDict<TypeSpecifierResult> = {
   EntitySpecifier_equipment(_) {
     return { type: "equipment" };
   },
+  EntitySpecifier_status(_) {
+    return { type: "status" };
+  },
   EntitySpecifier_any(_) {
     return { type: "any" };
   },

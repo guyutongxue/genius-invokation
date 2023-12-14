@@ -19,7 +19,12 @@ const AbyssalSummons = card(332015)
  * 将一个装备在我方角色的「圣遗物」装备牌，转移给另一个我方角色，并重置其效果的「每回合」次数限制。
  */
 const BlessingOfTheDivineRelicsInstallation = card(332011)
-  // TODO
+  .addTarget("my character has equipment with tag (artifact)")
+  .addTarget("my character and not @targets.0")
+  .do((c) => {
+    const artifact = c.of(c.targets[0]).removeArtifact();
+    c.of(c.targets[1]).equip(artifact.definition.id as any);
+  })
   .done();
 
 /**
@@ -93,7 +98,7 @@ const ElementalResonanceImpetuousWinds = card(331502)
   .costAnemo(1)
   .tags("resonance")
   .addTarget("my character")
-  .switchActive("@target0")
+  .switchActive("@targets0")
   .generateDice(DiceType.Omni, 1)
   .done();
 
@@ -305,8 +310,12 @@ const Lyresong = card(332024)
  * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。
  */
 const MasterOfWeaponry = card(332010)
-  .addTarget("my character has status with tag (weapon)")
-  .addTarget("my character and not @target0") // TODO damn.
+  .addTarget("my character")// has equipment with tag (weapon)")
+  .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
+  .do((c) => {
+    const weapon = c.of(c.targets[0]).removeWeapon();
+    c.of(c.targets[1]).equip(weapon.definition.id as any);
+  })
   // TODO
   .done();
 

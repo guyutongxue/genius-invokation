@@ -20,6 +20,7 @@ import { executeQuery } from "../query";
 import {
   AppliableDamageType,
   CombatStatusHandle,
+  EquipmentHandle,
   ExContextType,
   ExEntityType,
   HandleT,
@@ -193,6 +194,9 @@ export class SkillContext<
     }
     const switchToTarget = targets[0] as CharacterContext<false>;
     const from = this.$("active character");
+    if (from.id === switchToTarget.id) {
+      return;
+    }
     this.mutate({
       type: "switchActive",
       who: switchToTarget.who,
@@ -437,15 +441,22 @@ export class SkillContext<
     this.createEntity("combatStatus", id);
   }
 
-  disposeEntity(id: number) {
-    const state = getEntityById(this._state, id);
+  dispose(entityState?: EntityState) {
+    if (typeof entityState === "undefined") {
+      if (this.callerState.definition.type === "character") {
+        throw new Error(
+          `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
+        );
+      }
+      entityState = this.callerState as EntityState;
+    }
     const stateBeforeDispose = this.state;
     this.mutate({
       type: "disposeEntity",
-      oldState: state,
+      oldState: entityState,
     });
     this.emitEvent("onDisposing", {
-      entity: state,
+      entity: entityState,
       state: stateBeforeDispose,
     });
   }
@@ -557,9 +568,13 @@ type SkillContextMutativeProps =
   | "createEntity"
   | "summon"
   | "combatStatus"
+  | "characterStatus"
   | "disposeEntity"
+  | "setVariable"
+  | "addVariable"
   | "absorbDice"
   | "generateDice"
+  | "drawCards"
   | "switchCards"
   | "reroll"
   | "useSkill";
@@ -665,6 +680,20 @@ export class CharacterContext<Readonly extends boolean> {
       this.state.variables.energy === this.state.definition.constants.maxEnergy
     );
   }
+  hasArtifact() {
+    return !!this.state.entities.find(
+      (v) =>
+        v.definition.type === "equipment" &&
+        v.definition.tags.includes("artifact"),
+    );
+  }
+  hasWeapon() {
+    return !!this.state.entities.find(
+      (v) =>
+        v.definition.type === "equipment" &&
+        v.definition.tags.includes("weapon"),
+    );
+  }
 
   $$<const Q extends string>(arg: Q) {
     return this.skillContext.$(`(${arg}) at (character with id ${this._id})`);
@@ -687,9 +716,53 @@ export class CharacterContext<Readonly extends boolean> {
   addStatus(status: StatusHandle) {
     this.skillContext.createEntity("status", status, this._area);
   }
+  equip(equipment: EquipmentHandle) {
+    // Remove exist artifact/weapon first
+    for (const tag of ["artifact", "weapon"] as const) {
+      if (
+        this.skillContext.state.data.entity.get(equipment)!.tags.includes(tag)
+      ) {
+        const exist = this.state.entities.find((v) =>
+          v.definition.tags.includes(tag),
+        );
+        if (exist) {
+          this.skillContext.dispose(exist);
+        }
+      }
+    }
+    this.skillContext.createEntity("equipment", equipment, this._area);
+  }
+  removeArtifact(): EntityState {
+    const entity = this.state.entities.find((v) =>
+      v.definition.tags.includes("artifact"),
+    );
+    if (!entity) {
+      throw new Error(`No artifact to remove`);
+    }
+    this.skillContext.dispose(entity);
+    return entity;
+  }
+  removeWeapon(): EntityState {
+    const entity = this.state.entities.find((v) =>
+      v.definition.tags.includes("weapon"),
+    );
+    if (!entity) {
+      throw new Error(`No weapon to remove`);
+    }
+    this.skillContext.dispose(entity);
+    return entity;
+  }
 }
 
-type CharacterContextMutativeProps = "gainEnergy" | "heal" | "damage" | "apply";
+type CharacterContextMutativeProps =
+  | "gainEnergy"
+  | "heal"
+  | "damage"
+  | "apply"
+  | "addStatus"
+  | "equip"
+  | "removeArtifact"
+  | "removeWeapon";
 
 export type StrictlyTypedCharacterContext<Readonly extends boolean> =
   Readonly extends true
@@ -734,8 +807,16 @@ export class EntityContext<
   addVariable(prop: string, value: number) {
     this.skillContext.addVariable(prop, value, this.state);
   }
-
   dispose() {
-    this.skillContext.disposeEntity(this.id);
+    this.skillContext.dispose(this.state);
   }
 }
+
+type EntityContextMutativeProps = "addVariable" | "setVariable" | "dispose";
+
+export type StrictlyTypedEntityContext<
+  Readonly extends boolean,
+  TypeT extends EntityType = EntityType,
+> = Readonly extends true
+  ? Omit<EntityContext<Readonly, TypeT>, EntityContextMutativeProps>
+  : EntityContext<Readonly, TypeT>;

@@ -20,6 +20,16 @@ body {
   overflow: hidden;
 }
 
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 0;
+}
+
 #app {
   height: 100vh;
   width: 100vw;
