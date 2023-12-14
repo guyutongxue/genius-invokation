@@ -44,7 +44,7 @@ function dragendHandler(e: DragEvent) {
     >
       <Image
         :id="data.definitionId"
-        class="h-full rounded"
+        class="h-full rounded-lg shadow-xl"
         :class="{ clickable }"
         :title="`id = ${data.id}`"
       ></Image>
@@ -59,7 +59,7 @@ function dragendHandler(e: DragEvent) {
     </div>
     <div
       v-else
-      class="h-full aspect-[7/12] rotated flex items-center justify-center bg-gray-600 border-gray-700 border-solid border-4 color-white rounded"
+      class="h-full aspect-[7/12] rotated flex items-center justify-center bg-gray-600 b-gray-700 b-solid b-4 color-white rounded"
     >
       ?
     </div>

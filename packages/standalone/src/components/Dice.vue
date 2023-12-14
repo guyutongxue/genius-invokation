@@ -21,11 +21,13 @@ const props = withDefaults(
     text?: string;
     selected?: boolean;
     size?: number;
+    color?: "decreased" | "increased" | "normal";
   }>(),
   {
     selected: false,
     size: 25,
-  }
+    color: "normal",
+  },
 );
 </script>
 <template>
@@ -99,8 +101,17 @@ const props = withDefaults(
     <span
       v-if="text"
       class="absolute text-outline"
-      :class="{ 'text-white': value === DiceType.Void }"
-      :style="{ fontSize: `${0.4 * size}px` }"
+      :style="{
+        fontSize: `${0.4 * size}px`,
+        color:
+          color === 'increased'
+            ? 'red'
+            : color === 'decreased'
+              ? 'green'
+              : value === DiceType.Void
+                ? 'white'
+                : 'black',
+      }"
     >
       {{ text }}
     </span>

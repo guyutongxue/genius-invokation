@@ -277,7 +277,7 @@ export class Player {
             actionIndex: i,
             disableOmni: false,
             required: action.cost,
-            selected: [],
+            selected: [action.active],
           });
           break;
         }

@@ -20,7 +20,7 @@ export const visibleVarData: Record<number, string | null> = Object.fromEntries(
   [...data.entity.values()].map((c) => [c.id, c.visibleVarName] as const),
 );
 
-function sparseCostToMap(cost: readonly DiceType[]): Map<DiceType, number> {
+export function sparseCostToMap(cost: readonly DiceType[]): Map<DiceType, number> {
   const result: Map<DiceType, number> = new Map();
   for (const d of cost) {
     if (result.has(d)) {
