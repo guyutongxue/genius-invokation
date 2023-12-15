@@ -1,4 +1,4 @@
-import { DiceType, card } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card } from "@gi-tcg/core/builder";
 
 /**
  * @id 332015
@@ -35,7 +35,14 @@ const BlessingOfTheDivineRelicsInstallation = card(332011)
  */
 const CalxsArts = card(332009)
   .costSame(1)
-  // TODO
+  .do((c) => {
+    const chs = c.$$("my standby characters limit 2");
+    let count = 0;
+    for (const ch of chs) {
+      count += ch.loseEnergy();
+    }
+    c.$("my active character")!.gainEnergy(count);
+  })
   .done();
 
 /**
@@ -45,7 +52,10 @@ const CalxsArts = card(332009)
  * 我方下次执行「切换角色」行动时：少花费1个元素骰。
  */
 const ChangingShifts = card(332002)
-  // TODO
+  .toCombatStatus()
+  .on("beforeUseDice")
+  .usage(1)
+  .deductCost(DiceType.Void)
   .done();
 
 /**
@@ -58,6 +68,14 @@ const ChangingShifts = card(332002)
 const ElementalResonanceEnduringRock = card(331602)
   .costGeo(1)
   .tags("resonance")
+  .toCombatStatus()
+  .on("dealDamage")
+  .usage(1)
+  .if((c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
+  .do((c) => {
+    c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
+    return true;
+  })
   // TODO
   .done();
 
@@ -84,6 +102,7 @@ const ElementalResonanceFerventFlames = card(331302)
 const ElementalResonanceHighVoltage = card(331402)
   .costElectro(1)
   .tags("resonance")
+  .gainEnergy(1, "my character with energy < maxEnergy limit 1")
   // TODO
   .done();
 
@@ -151,6 +170,7 @@ const ElementalResonanceSprawlingGreenery = card(331702)
  */
 const ElementalResonanceWovenFlames = card(331301)
   .tags("resonance")
+  .generateDice(DiceType.Pyro, 1)
   // TODO
   .done();
 
@@ -310,7 +330,7 @@ const Lyresong = card(332024)
  * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。
  */
 const MasterOfWeaponry = card(332010)
-  .addTarget("my character")// has equipment with tag (weapon)")
+  .addTarget("my character has equipment with tag (weapon)")
   .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
   .do((c) => {
     const weapon = c.of(c.targets[0]).removeWeapon();

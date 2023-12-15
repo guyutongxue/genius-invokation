@@ -44,7 +44,7 @@ function dragendHandler(e: DragEvent) {
     >
       <Image
         :id="data.definitionId"
-        class="h-full rounded-lg shadow-xl"
+        class="h-full rounded-lg shadow-lg"
         :class="{ clickable }"
         :title="`id = ${data.id}`"
       ></Image>

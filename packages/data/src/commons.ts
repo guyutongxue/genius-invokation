@@ -55,7 +55,7 @@ const DendroCore = combatStatus(116)
   .if(
     (c) =>
       [DamageType.Pyro, DamageType.Electro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.$("opp active character").id,
+      c.damageInfo.target.id === c.$("opp active character")!.id,
   )
   .increaseDamage(1)
   .done();
@@ -73,7 +73,7 @@ const CatalyzingField = combatStatus(117)
   .if(
     (c) =>
       [DamageType.Electro, DamageType.Dendro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.$("opp active character").id,
+      c.damageInfo.target.id === c.$("opp active character")!.id,
   )
   .increaseDamage(1)
   .done();

@@ -96,14 +96,14 @@ export class SkillContext<
   $<Ret>(arg: QueryFn<Readonly, Ext, CallerType, Ret>): Ret;
   $<const Q extends string>(
     arg: Q,
-  ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>;
+  ): ExContextType<Readonly, GuessedTypeOfQuery<Q>> | undefined;
   $<T>(arg: T): T;
   $(arg: any): any {
     const result = this.$$(arg);
     if (result.length > 0) {
       return result[0];
     } else {
-      throw new Error(`No entity selected`);
+      return void 0;
     }
   }
 
@@ -193,7 +193,7 @@ export class SkillContext<
       throw new Error("Expected exactly one target");
     }
     const switchToTarget = targets[0] as CharacterContext<false>;
-    const from = this.$("active character");
+    const from = this.$("active character")!;
     if (from.id === switchToTarget.id) {
       return;
     }
@@ -528,7 +528,7 @@ export class SkillContext<
     if (skill === "normal") {
       const normalSkills = this.$(
         "active character",
-      ).state.definition.initiativeSkills.filter(
+      )!.state.definition.initiativeSkills.filter(
         (sk) => sk.skillType === "normal",
       );
       if (normalSkills.length !== 1) {
@@ -751,6 +751,12 @@ export class CharacterContext<Readonly extends boolean> {
     }
     this.skillContext.dispose(entity);
     return entity;
+  }
+  loseEnergy(count = 1): number {
+    const originalValue = this.state.variables.energy;
+    const finalValue = Math.max(0, originalValue - count);
+    this.skillContext.setVariable("energy", finalValue, this.state);
+    return originalValue - finalValue;
   }
 }
 

@@ -132,3 +132,11 @@ export function status(id: number) {
 export function combatStatus(id: number) {
   return new EntityBuilder("combatStatus", id);
 }
+
+export function equipment(id: number) {
+  return new EntityBuilder("equipment", id);
+}
+
+export function support(id: number) {
+  return new EntityBuilder("support", id);
+}

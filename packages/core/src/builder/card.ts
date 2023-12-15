@@ -20,11 +20,16 @@ import {
 import {
   CardHandle,
   CharacterHandle,
-  ExContextType,
+  CombatStatusHandle,
+  EquipmentHandle,
   ExEntityType,
+  StatusHandle,
+  SupportHandle,
 } from "./type";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { getEntityById } from "../util";
+import { combatStatus, status } from ".";
+import { equipment, support } from "./entity";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -73,17 +78,36 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
   equipment() {
     this.type("equipment");
-    return this; // TODO
+    this.do((c) => {
+      c.$("my active character")!.equip(this.cardId as EquipmentHandle);
+    }).done();
+    return equipment(this.cardId);
   }
   weapon(type: WeaponCardTag) {
-    return this.tags("weapon", type).equipment();
+    return this.tags("weapon", type).equipment().tags("weapon", type);
   }
   artifact() {
-    return this.tags("artifact").equipment();
+    return this.tags("artifact").equipment().tags("artifact");
   }
   support(type: SupportTag) {
     this.type("support").tags(type);
-    return this; // TODO
+    this.do((c) => {
+      c.createEntity("support", this.cardId as SupportHandle);
+    }).done();
+    return support(this.cardId).tags(type);
+  }
+
+  toCombatStatus(id?: number) {
+    this.do((c) => {
+      c.combatStatus(id as CombatStatusHandle);
+    }).done();
+    return combatStatus(id ?? this.cardId);
+  }
+  toStatus(target: string, id?: number) {
+    this.do((c) => {
+      c.characterStatus(id as StatusHandle, target);
+    }).done();
+    return status(id ?? this.cardId);
   }
 
   addTarget<Q extends TargetQuery>(
@@ -101,7 +125,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this.tags("legend");
   }
 
-  talentOf(ch: CharacterHandle, opt?: { action?: boolean }): this {
+  talentOf(ch: CharacterHandle, opt?: { action?: boolean }) {
     this._talentCh = ch;
     const action = opt?.action ?? true;
     // TODO: deck requirements
@@ -110,7 +134,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       this.tags("action");
     }
     // TODO: target filter
-    return this;
+    return this.tags("talent");
   }
 
   filter(pred: PredFn<KindTs>): this {

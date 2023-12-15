@@ -1,4 +1,4 @@
-import { EquipmentTag } from "./card";
+import { EquipmentTag, SupportTag } from "./card";
 import { TriggeredSkillDefinition } from "./skill";
 
 export type EntityTag =
@@ -6,7 +6,8 @@ export type EntityTag =
   | "immuneControl" // 免疫冻结石化眩晕
   | "shield" // 护盾
   | "preparing" // 准备技能中
-  | EquipmentTag;
+  | EquipmentTag
+  | SupportTag;
 
 export type EntityType =
   | "passiveSkill"
