@@ -40,6 +40,7 @@ type AfterClickState =
     }
   | {
       type: "selectDice";
+      clickable?: Map<number, AfterClickState>;
       selected: number[];
       actionIndex: number;
       required: DiceType[];
@@ -62,68 +63,79 @@ interface PCAWithIndex extends PlayCardAction {
   index: number;
 }
 
-function buildCardClickState(
-  cardAction: PCAWithIndex[],
-): Map<number, AfterClickState> {
-  type TargetTree = PCAWithIndex | Map<number, TargetTree>;
-
-  function traverseTargetTree(
-    selected: number[],
-    node: TargetTree,
-  ): AfterClickState {
-    if (node instanceof Map) {
+/**
+ * 构建单个卡牌的状态转移图
+ * @param selected 标记为“已选择”的实体列表
+ * @param actions 待处理的事件列表
+ * @returns 
+ */
+function oneCardState(
+  selected: number[],
+  actions: PCAWithIndex[],
+): AfterClickState {
+  switch (actions[0].targets.length) {
+    case 0: {
+      return {
+        type: "selectDice",
+        actionIndex: actions[0].index,
+        disableOmni: false,
+        required: actions[0].cost,
+        selected,
+      };
+    }
+    case 1: {
       const clickable = new Map<number, AfterClickState>();
-      for (const [key, value] of node) {
-        clickable.set(key, traverseTargetTree([...selected, key], value));
+      const root: AfterClickState = {
+        type: "continue",
+        clickable,
+        selected,
+      };
+      for (const a of actions) {
+        clickable.set(a.targets[0], {
+          type: "selectDice",
+          clickable,
+          actionIndex: a.index,
+          disableOmni: false,
+          required: a.cost,
+          selected: [...selected, a.targets[0]],
+        });
+      }
+      return root;
+    }
+    default: {
+      const groupByFirst = groupBy(actions, (a) => a.targets[0]);
+      const clickable = new Map<number, AfterClickState>();
+      for (const [k, v] of groupByFirst) {
+        const newV = v.map((v) => ({
+          ...v,
+          targets: v.targets.toSpliced(0, 1),
+        }));
+        clickable.set(k, oneCardState([...selected, k], newV));
       }
       return {
         type: "continue",
         clickable,
         selected,
       };
-    } else {
-      return {
-        type: "selectDice",
-        selected,
-        actionIndex: node.index,
-        required: node.cost,
-        disableOmni: false,
-      };
     }
   }
+}
 
+/**
+ * 构建所有使用卡牌的“可点击”状态转移图
+ * @param cardAction 所有使用卡牌的事件
+ * @returns 状态转移图的初始状态结点
+ */
+function buildAllCardClickState(
+  cardAction: PCAWithIndex[],
+): Map<number, AfterClickState> {
   const grouped = groupBy(cardAction, (v) => v.card);
-  const clickable = new Map<number, AfterClickState>();
-  for (const [key, value] of grouped) {
-    if (value[0].targets.length === 0) {
-      clickable.set(key, {
-        type: "selectDice",
-        selected: [key],
-        actionIndex: value[0].index,
-        required: value[0].cost,
-        disableOmni: false,
-      });
-      continue;
-    }
-    const targetTree = new Map<number, TargetTree>();
-    for (const action of value) {
-      const targets = [...action.targets];
-      let current = targetTree;
-      while (targets.length > 1) {
-        const target = targets.shift()!;
-        let next = current.get(target);
-        if (!next) {
-          next = new Map<number, TargetTree>();
-          current.set(target, next);
-        }
-        current = next as Map<number, TargetTree>;
-      }
-      current.set(targets[0], action);
-    }
-    console.log(targetTree);
-    clickable.set(key, traverseTargetTree([key], targetTree));
+  const result = new Map<number, AfterClickState>();
+  for (const [k, v] of grouped) {
+    result.set(k, oneCardState([k], v));
   }
-  return clickable;
+  console.log(result);
+  return result;
 }
 
 export class Player {
@@ -302,7 +314,7 @@ export class Player {
         }
       }
     }
-    for (const [k, v] of buildCardClickState(playCardInfos)) {
+    for (const [k, v] of buildAllCardClickState(playCardInfos)) {
       initialClickable.set(k, v);
     }
     let result: ActionResponse;
@@ -321,7 +333,7 @@ export class Player {
         }
         state = state.clickable.get(val)!;
       }
-      this.clickable.value = [];
+      this.clickable.value = [...(state.clickable?.keys() ?? [])];
       this.selected.value = state.selected;
 
       if (candidates[state.actionIndex].type === "declareEnd") {
@@ -361,6 +373,8 @@ export class Player {
           clickable: initialClickable,
           selected: [],
         };
+      } else {
+        state = state.clickable!.get(awaited)!;
       }
     }
     this.selected.value = [];
