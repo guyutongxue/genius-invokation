@@ -329,13 +329,18 @@ class Game {
   private async actionPhase() {
     const player = this._state.players[this._state.currentTurn];
     if (player.declaredEnd) {
-      // skip
+      this.mutate({
+        type: "switchTurn"
+      });
     } else if (player.skipNextTurn) {
       this.mutate({
         type: "setPlayerFlag",
         who: this._state.currentTurn,
         flagName: "skipNextTurn",
         value: false,
+      });
+      this.mutate({
+        type: "switchTurn"
       });
     } else {
       const actions = this.availableAction();
@@ -347,24 +352,62 @@ class Game {
           candidates: actions.map(exposeAction),
         },
       );
+      if (chosenIndex < 0 || chosenIndex >= actions.length) {
+        throw new Error(`User chosen index out of range`);
+      }
+      const actionInfo = actions[chosenIndex];
+
       const activeCh = player.characters[getActiveCharacterIndex(player)];
-      const skill =
-        activeCh.definition.initiativeSkills[
-          activeCh.variables.energy === activeCh.definition.constants.maxEnergy
-            ? 2
-            : 1
-        ];
-      const skillInfo: SkillInfo = {
-        caller: activeCh,
-        definition: skill,
-        fromCard: null,
-        requestBy: null,
-      };
-      await this.useSkill(skillInfo, void 0);
+      // deductCost here
+
+      switch (actionInfo.type) {
+        case "useSkill":
+          await this.useSkill(actionInfo.skill, void 0);
+          break;
+        case "playCard":
+          await this.useSkill(
+            {
+              caller: activeCh,
+              definition: actionInfo.card.definition.skillDefinition,
+              fromCard: actionInfo.card,
+              requestBy: null,
+            },
+            actionInfo.target,
+          );
+          break;
+        case "switchActive":
+          this.mutate({
+            type: "switchActive",
+            who: this._state.currentTurn,
+            value: actionInfo.to,
+          });
+          break;
+        case "elementalTuning":
+          this.mutate({
+            type: "resetDice",
+            who: this._state.currentTurn,
+            value: sortDice(player, [
+              ...player.dice,
+              elementOfCharacter(activeCh.definition),
+            ]),
+          });
+          // TODO
+          break;
+        case "declareEnd":
+          this.mutate({
+            type: "setPlayerFlag",
+            who: this._state.currentTurn,
+            flagName: "declaredEnd",
+            value: true,
+          });
+          break;
+      }
+      if (!actionInfo.fast) {
+        this.mutate({
+          type: "switchTurn",
+        });
+      }
     }
-    this.mutate({
-      type: "switchTurn",
-    });
     if (
       this._state.players[0].declaredEnd &&
       this._state.players[1].declaredEnd
