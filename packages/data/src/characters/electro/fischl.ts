@@ -70,6 +70,8 @@ const MidnightPhantasmagoria = skill(14013)
  */
 const Fischl = character(1401)
   .tags("electro", "bow", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(BoltsOfDownfall, Nightrider, MidnightPhantasmagoria)
   .done();
 

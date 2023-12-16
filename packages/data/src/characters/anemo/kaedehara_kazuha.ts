@@ -170,6 +170,8 @@ const ChihayaburuPassive = skill(15054)
  */
 const KaedeharaKazuha = character(1505)
   .tags("anemo", "sword", "inazuma")
+  .health(10)
+  .energy(2)
   .skills(GaryuuBladework, Chihayaburu, KazuhaSlash, Chihayaburu)
   .done();
 

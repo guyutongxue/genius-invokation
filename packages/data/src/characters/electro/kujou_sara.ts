@@ -79,6 +79,8 @@ const SubjugationKoukouSendou = skill(14063)
  */
 const KujouSara = character(1406)
   .tags("electro", "bow", "inazuma")
+  .health(10)
+  .energy(2)
   .skills(TenguBowmanship, TenguStormcall, SubjugationKoukouSendou)
   .done();
 

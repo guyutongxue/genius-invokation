@@ -35,11 +35,11 @@ class CharacterBuilder {
     return this;
   }
 
-  maxHealth(value: number) {
+  health(value: number) {
     this._maxHealth = value;
     return this;
   }
-  maxEnergy(value: number) {
+  energy(value: number) {
     this._maxEnergy = value;
     return this;
   }

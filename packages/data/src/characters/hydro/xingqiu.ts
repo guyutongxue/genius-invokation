@@ -79,6 +79,8 @@ const Raincutter = skill(12023)
  */
 const Xingqiu = character(1202)
   .tags("hydro", "sword", "liyue")
+  .health(10)
+  .energy(2)
   .skills(GuhuaStyle, FatalRainscreen, Raincutter)
   .done();
 

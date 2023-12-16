@@ -77,6 +77,8 @@ const SignatureMix = skill(11023)
  */
 const Diona = character(1102)
   .tags("cryo", "bow", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(KatzleinStyle, IcyPaws, SignatureMix)
   .done();
 

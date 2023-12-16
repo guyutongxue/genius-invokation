@@ -90,6 +90,8 @@ const PseudoTenguSweeper = skill(25014)
  */
 const MaguuKenki = character(2501)
   .tags("anemo", "monster")
+  .health(10)
+  .energy(3)
   .skills(Ichimonji, BlusteringBlade, FrostyAssault, PseudoTenguSweeper)
   .done();
 

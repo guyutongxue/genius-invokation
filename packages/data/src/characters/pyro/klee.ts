@@ -79,6 +79,8 @@ const SparksNSplash = skill(13063)
  */
 const Klee = character(1306)
   .tags("pyro", "catalyst", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(Kaboom, JumpyDumpty, SparksNSplash)
   .done();
 

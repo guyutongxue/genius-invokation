@@ -71,6 +71,8 @@ const ForbiddenCreationIsomer75TypeIi = skill(15013)
  */
 const Sucrose = character(1501)
   .tags("anemo", "catalyst", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(WindSpiritCreation, AstableAnemohypostasisCreation6308, ForbiddenCreationIsomer75TypeIi)
   .done();
 

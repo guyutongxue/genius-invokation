@@ -80,6 +80,8 @@ const StealthMaster = skill(23014)
  */
 const FatuiPyroAgent = character(2301)
   .tags("pyro", "fatui")
+  .health(10)
+  .energy(2)
   .skills(Thrust, Prowl, BladeAblaze, StealthMaster)
   .done();
 

@@ -77,6 +77,8 @@ const FantasticVoyage = skill(13033)
  */
 const Bennett = character(1303)
   .tags("pyro", "sword", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(StrikeOfFortune, PassionOverload, FantasticVoyage)
   .done();
 

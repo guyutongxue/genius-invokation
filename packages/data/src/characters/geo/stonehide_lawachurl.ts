@@ -80,6 +80,8 @@ const InfusedStonehide = skill(26014)
  */
 const StonehideLawachurl = character(2601)
   .tags("geo", "monster", "hilichurl")
+  .health(8)
+  .energy(2)
   .skills(PlamaLawa, MovoLawa, UpaShato, InfusedStonehide)
   .done();
 

@@ -69,6 +69,8 @@ const SweepingTime = skill(16023)
  */
 const Noelle = character(1602)
   .tags("geo", "claymore", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(FavoniusBladeworkMaid, Breastplate, SweepingTime)
   .done();
 

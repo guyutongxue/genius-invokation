@@ -79,6 +79,8 @@ const DanceOfAbzendegiDistantDreamsListeningSpring = skill(12083)
  */
 const Nilou = character(1208)
   .tags("hydro", "sword", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(DanceOfSamser, DanceOfHaftkarsvar, DanceOfAbzendegiDistantDreamsListeningSpring)
   .done();
 

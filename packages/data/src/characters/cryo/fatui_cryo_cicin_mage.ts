@@ -80,6 +80,8 @@ const BlizzardBranchBlossom = skill(21013)
  */
 const FatuiCryoCicinMage = character(2101)
   .tags("cryo", "fatui")
+  .health(10)
+  .energy(3)
   .skills(CicinIcicle, MistySummons, BlizzardBranchBlossom)
   .done();
 

@@ -142,6 +142,8 @@ const RockpaperscissorsComboPaper = skill(24016)
  */
 const ElectroHypostasis = character(2401)
   .tags("electro", "monster")
+  .health(8)
+  .energy(2)
   .skills(ElectroCrystalProjection, RockpaperscissorsCombo, LightningLockdown, ElectroCrystalCoreSkill, RockpaperscissorsComboScissors, RockpaperscissorsComboPaper)
   .done();
 

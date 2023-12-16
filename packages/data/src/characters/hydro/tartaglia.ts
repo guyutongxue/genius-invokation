@@ -117,6 +117,8 @@ const TideWithholder = skill(12046)
  */
 const Tartaglia = character(1204)
   .tags("hydro", "bow", "fatui")
+  .health(10)
+  .energy(3)
   .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder01, RangedStanceSkill, TideWithholder)
   .done();
 

@@ -91,6 +91,8 @@ const IllusoryHeart = skill(17034)
  */
 const Nahida = character(1703)
   .tags("dendro", "catalyst", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(Akara, AllSchemesToKnow, AllSchemesToKnowTathata, IllusoryHeart)
   .done();
 

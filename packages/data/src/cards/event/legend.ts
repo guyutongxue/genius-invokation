@@ -57,7 +57,6 @@ const InEveryHouseAStove = card(330005)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 const JoyousCelebration = card(330003)
-  .costSame(1)
   .legend()
   // TODO
   .done();

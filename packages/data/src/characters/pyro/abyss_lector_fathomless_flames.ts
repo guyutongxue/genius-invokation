@@ -112,6 +112,8 @@ const FieryRebirth = skill(23024)
  */
 const AbyssLectorFathomlessFlames = character(2302)
   .tags("pyro", "monster")
+  .health(6)
+  .energy(2)
   .skills(FlameOfSalvation, SearingPrecept, OminousStar, FieryRebirth)
   .done();
 

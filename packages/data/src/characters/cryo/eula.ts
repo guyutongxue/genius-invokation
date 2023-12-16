@@ -68,6 +68,8 @@ const GlacialIllumination = skill(11063)
  */
 const Eula = character(1106)
   .tags("cryo", "claymore", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(FavoniusBladeworkEdel, IcetideVortex, GlacialIllumination)
   .done();
 

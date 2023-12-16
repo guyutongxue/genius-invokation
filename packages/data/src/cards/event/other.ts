@@ -515,6 +515,5 @@ const WhereIsTheUnseenRazor = card(332022)
  * （牌组包含至少2个「蒙德」角色，才能加入牌组）
  */
 const WindAndFreedom = card(331801)
-  .costSame(1)
   // TODO
   .done();

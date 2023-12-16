@@ -74,7 +74,6 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
       description: card.zhDescription,
       code: getCardCode(
         card,
-        `, "character"`,
         `\n  .talentOf(${pascalCase(name)})`,
       ),
     },
@@ -134,6 +133,8 @@ export async function generateCharacters() {
       description: ch.zhDescription,
       code: `const ${pascalCase(ch.name)} = character(${ch.id})
   .tags(${tagCode})
+  .health(${ch.hp})
+  .energy(${ch.maxenergy})
   .skills(${skills.map((sk) => pascalCase(sk.name)).join(", ")})
   .done();`,
     });

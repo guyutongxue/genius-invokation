@@ -79,6 +79,8 @@ const IllusoryTorrent = skill(12034)
  */
 const Mona = character(1203)
   .tags("hydro", "catalyst", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(RippleOfFate, MirrorReflectionOfDoom, StellarisPhantasm, IllusoryTorrent)
   .done();
 

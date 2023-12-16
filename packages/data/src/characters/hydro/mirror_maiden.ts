@@ -71,6 +71,8 @@ const RippledReflection = skill(22023)
  */
 const MirrorMaiden = character(2202)
   .tags("hydro", "fatui")
+  .health(10)
+  .energy(2)
   .skills(WaterBall, InfluxBlast, RippledReflection)
   .done();
 

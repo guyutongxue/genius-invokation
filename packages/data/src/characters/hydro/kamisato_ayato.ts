@@ -69,6 +69,8 @@ const KamisatoArtSuiyuu = skill(12063)
  */
 const KamisatoAyato = character(1206)
   .tags("hydro", "sword", "inazuma")
+  .health(10)
+  .energy(2)
   .skills(KamisatoArtMarobashi, KamisatoArtKyouka, KamisatoArtSuiyuu)
   .done();
 

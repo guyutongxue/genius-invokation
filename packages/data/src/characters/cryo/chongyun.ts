@@ -68,6 +68,8 @@ const CloudpartingStar = skill(11043)
  */
 const Chongyun = character(1104)
   .tags("cryo", "claymore", "liyue")
+  .health(10)
+  .energy(3)
   .skills(Demonbane, ChonghuasLayeredFrost, CloudpartingStar)
   .done();
 

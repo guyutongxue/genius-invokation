@@ -82,6 +82,8 @@ const RoyalDescentBeholdIttoTheEvil = skill(16053)
  */
 const AratakiItto = character(1605)
   .tags("geo", "claymore", "inazuma")
+  .health(10)
+  .energy(3)
   .skills(FightClubLegend, MasatsuZetsugiAkaushiBurst, RoyalDescentBeholdIttoTheEvil)
   .done();
 

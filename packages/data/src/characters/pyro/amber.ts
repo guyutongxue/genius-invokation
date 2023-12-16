@@ -59,6 +59,8 @@ const FieryRain = skill(13043)
  */
 const Amber = character(1304)
   .tags("pyro", "bow", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(Sharpshooter, ExplosivePuppet, FieryRain)
   .done();
 

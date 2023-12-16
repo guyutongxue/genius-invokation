@@ -94,6 +94,8 @@ const WindsGrandOde = skill(15033)
  */
 const Venti = character(1503)
   .tags("anemo", "bow", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(DivineMarksmanship, SkywardSonnet, WindsGrandOde)
   .done();
 

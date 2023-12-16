@@ -110,6 +110,8 @@ const FierySanctumRedmanesBlood = skill(13096)
  */
 const Dehya = character(1309)
   .tags("pyro", "claymore", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(SandstormAssault, MoltenInferno, LeonineBite, IncinerationDrive, FierySanctumRedmanesBlood)
   .done();
 

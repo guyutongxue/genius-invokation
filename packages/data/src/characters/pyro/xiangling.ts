@@ -68,6 +68,8 @@ const Pyronado = skill(13023)
  */
 const Xiangling = character(1302)
   .tags("pyro", "pole", "liyue")
+  .health(10)
+  .energy(2)
   .skills(DoughFu, GuobaAttack, Pyronado)
   .done();
 

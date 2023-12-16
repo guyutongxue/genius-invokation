@@ -70,6 +70,8 @@ const LightningRose = skill(14093)
  */
 const Lisa = character(1409)
   .tags("electro", "catalyst", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(LightningTouch, VioletArc, LightningRose)
   .done();
 

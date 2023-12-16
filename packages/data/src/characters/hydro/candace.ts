@@ -96,6 +96,8 @@ const HeronStrike = skill(12074)
  */
 const Candace = character(1207)
   .tags("hydro", "pole", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(GleamingSpearGuardianStance, SacredRiteHeronsSanctum, SacredRiteWagtailsTide, HeronStrike)
   .done();
 

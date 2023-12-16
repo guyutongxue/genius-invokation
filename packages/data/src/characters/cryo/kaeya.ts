@@ -57,6 +57,8 @@ const GlacialWaltz = skill(11033)
  */
 const Kaeya = character(1103)
   .tags("cryo", "sword", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(CeremonialBladework, Frostgnaw, GlacialWaltz)
   .done();
 

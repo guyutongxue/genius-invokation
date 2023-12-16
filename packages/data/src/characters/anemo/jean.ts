@@ -62,6 +62,8 @@ const DandelionBreeze = skill(15023)
  */
 const Jean = character(1502)
   .tags("anemo", "sword", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(FavoniusBladework, GaleBlade, DandelionBreeze)
   .done();
 

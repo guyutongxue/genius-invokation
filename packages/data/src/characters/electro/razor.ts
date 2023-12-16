@@ -58,6 +58,8 @@ const LightningFang = skill(14023)
  */
 const Razor = character(1402)
   .tags("electro", "claymore", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(SteelFang, ClawAndThunder, LightningFang)
   .done();
 

@@ -79,6 +79,8 @@ const GreatSecretArtTenkoKenshin = skill(14083)
  */
 const YaeMiko = character(1408)
   .tags("electro", "catalyst", "inazuma")
+  .health(10)
+  .energy(2)
   .skills(SpiritfoxSineater, YakanEvocationSesshouSakura, GreatSecretArtTenkoKenshin)
   .done();
 

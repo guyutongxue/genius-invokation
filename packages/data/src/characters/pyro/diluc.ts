@@ -57,6 +57,8 @@ const Dawn = skill(13013)
  */
 const Diluc = character(1301)
   .tags("pyro", "claymore", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(TemperedSword, SearingOnslaught, Dawn)
   .done();
 

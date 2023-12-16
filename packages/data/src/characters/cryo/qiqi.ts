@@ -69,6 +69,8 @@ const AdeptusArtPreserverOfFortune = skill(11083)
  */
 const Qiqi = character(1108)
   .tags("cryo", "sword", "liyue")
+  .health(10)
+  .energy(3)
   .skills(AncientSwordArt, AdeptusArtHeraldOfFrost, AdeptusArtPreserverOfFortune)
   .done();
 

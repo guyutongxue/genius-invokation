@@ -89,6 +89,8 @@ const PlanetBefall = skill(16034)
  */
 const Zhongli = character(1603)
   .tags("geo", "pole", "liyue")
+  .health(10)
+  .energy(3)
   .skills(RainOfStone, DominusLapidis, DominusLapidisStrikingStone, PlanetBefall)
   .done();
 

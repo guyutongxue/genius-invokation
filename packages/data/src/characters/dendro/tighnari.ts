@@ -68,6 +68,8 @@ const FashionersTanglevineShaft = skill(17023)
  */
 const Tighnari = character(1702)
   .tags("dendro", "bow", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(KhandaBarrierbuster, VijnanaphalaMine, FashionersTanglevineShaft)
   .done();
 

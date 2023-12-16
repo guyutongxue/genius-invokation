@@ -57,6 +57,8 @@ const Starshatter = skill(16013)
  */
 const Ningguang = character(1601)
   .tags("geo", "catalyst", "liyue")
+  .health(10)
+  .energy(3)
   .skills(SparklingScatter, JadeScreen, Starshatter)
   .done();
 

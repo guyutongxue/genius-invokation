@@ -69,6 +69,8 @@ const NereidsAscension = skill(12053)
  */
 const SangonomiyaKokomi = character(1205)
   .tags("hydro", "catalyst", "inazuma")
+  .health(10)
+  .energy(2)
   .skills(TheShapeOfWater, KuragesOath, NereidsAscension)
   .done();
 

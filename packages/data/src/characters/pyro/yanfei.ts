@@ -69,6 +69,8 @@ const DoneDeal = skill(13083)
  */
 const Yanfei = character(1308)
   .tags("pyro", "catalyst", "liyue")
+  .health(10)
+  .energy(2)
   .skills(SealOfApproval, SignedEdict, DoneDeal)
   .done();
 

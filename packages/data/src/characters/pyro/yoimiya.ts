@@ -80,6 +80,8 @@ const RyuukinSaxifrage = skill(13053)
  */
 const Yoimiya = character(1305)
   .tags("pyro", "bow", "inazuma")
+  .health(10)
+  .energy(3)
   .skills(FireworkFlareup, NiwabiFiredance, RyuukinSaxifrage)
   .done();
 

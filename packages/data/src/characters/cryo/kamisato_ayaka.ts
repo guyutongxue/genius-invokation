@@ -90,6 +90,8 @@ const KamisatoArtSenho = skill(11054)
  */
 const KamisatoAyaka = character(1105)
   .tags("cryo", "sword", "inazuma")
+  .health(10)
+  .energy(3)
   .skills(KamisatoArtKabuki, KamisatoArtHyouka, KamisatoArtSoumetsu, KamisatoArtSenho)
   .done();
 

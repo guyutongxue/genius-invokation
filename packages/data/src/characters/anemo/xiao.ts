@@ -71,6 +71,8 @@ const BaneOfAllEvil = skill(15043)
  */
 const Xiao = character(1504)
   .tags("anemo", "pole", "liyue")
+  .health(10)
+  .energy(2)
   .skills(WhirlwindThrust, LemniscaticWindCycling, BaneOfAllEvil)
   .done();
 

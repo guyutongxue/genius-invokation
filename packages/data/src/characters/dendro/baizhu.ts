@@ -81,6 +81,8 @@ const HolisticRevivification = skill(17053)
  */
 const Baizhu = character(1705)
   .tags("dendro", "catalyst", "liyue")
+  .health(10)
+  .energy(2)
   .skills(TheClassicsOfAcupuncture, UniversalDiagnosis, HolisticRevivification)
   .done();
 

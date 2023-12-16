@@ -80,6 +80,8 @@ const ChakraDesiderata = skill(14074)
  */
 const RaidenShogun = character(1407)
   .tags("electro", "pole", "inazuma")
+  .health(10)
+  .energy(2)
   .skills(Origin, TranscendenceBalefulOmen, SecretArtMusouShinsetsu, ChakraDesiderata)
   .done();
 

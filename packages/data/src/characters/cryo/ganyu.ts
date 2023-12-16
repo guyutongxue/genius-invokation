@@ -80,6 +80,8 @@ const CelestialShower = skill(11014)
  */
 const Ganyu = character(1101)
   .tags("cryo", "bow", "liyue")
+  .health(10)
+  .energy(3)
   .skills(LiutianArchery, TrailOfTheQilin, FrostflakeArrow, CelestialShower)
   .done();
 

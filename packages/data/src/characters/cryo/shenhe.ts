@@ -81,6 +81,8 @@ const DivineMaidensDeliverance = skill(11073)
  */
 const Shenhe = character(1107)
   .tags("cryo", "pole", "liyue")
+  .health(10)
+  .energy(2)
   .skills(DawnstarPiercer, SpringSpiritSummoning, DivineMaidensDeliverance)
   .done();
 

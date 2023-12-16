@@ -31,11 +31,10 @@ function getCardTypeAndTags(card: any) {
   return { type, tags };
 }
 
-export function getCardCode(card: any, target: String, extra = ""): string {
+export function getCardCode(card: any, extra = ""): string {
   const { type, tags } = getCardTypeAndTags(card);
   let typeCode = "";
   if (type === "equipment") {
-    target = `, "character"`;
     const tag = tags.shift();
     if (tag === "artifact") {
       typeCode = `\n  .artifact()`;
@@ -58,7 +57,7 @@ export function getCardCode(card: any, target: String, extra = ""): string {
   const tagCode =
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playcost);
-  return `const ${pascalCase(card.name)} = card(${card.id}${target})${cost}${tagCode}${extra}${typeCode}
+  return `const ${pascalCase(card.name)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
   // TODO
   .done();`;
 }
@@ -111,7 +110,7 @@ export async function generateCards() {
       id: card.id,
       name: card.zhName,
       description: card.zhDescription,
-      code: getCardCode(card, ""),
+      code: getCardCode(card),
     });
   }
   return Promise.all([

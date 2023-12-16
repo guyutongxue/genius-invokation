@@ -92,6 +92,8 @@ const TideAndTorrent = skill(22014)
  */
 const RhodeiaOfLoch = character(2201)
   .tags("hydro", "monster")
+  .health(10)
+  .energy(3)
   .skills(Surge, OceanidMimicSummoning, TheMyriadWilds, TideAndTorrent)
   .done();
 

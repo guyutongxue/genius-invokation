@@ -72,6 +72,8 @@ const LawfulEnforcer = skill(14044)
  */
 const Cyno = character(1404)
   .tags("electro", "pole", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(InvokersSpear, SecretRiteChasmicSoulfarer, SacredRiteWolfsSwiftness, LawfulEnforcer)
   .done();
 

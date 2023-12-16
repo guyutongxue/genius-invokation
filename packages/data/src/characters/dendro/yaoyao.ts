@@ -79,6 +79,8 @@ const MoonjadeDescent = skill(17043)
  */
 const Yaoyao = character(1704)
   .tags("dendro", "pole", "liyue")
+  .health(10)
+  .energy(2)
   .skills(TossNTurnSpear, RaphanusSkyCluster, MoonjadeDescent)
   .done();
 

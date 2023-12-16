@@ -69,6 +69,8 @@ const SpiritSoother = skill(13073)
  */
 const HuTao = character(1307)
   .tags("pyro", "pole", "liyue")
+  .health(10)
+  .energy(3)
   .skills(SecretSpearOfWangsheng, GuideToAfterlife, SpiritSoother)
   .done();
 

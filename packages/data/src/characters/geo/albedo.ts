@@ -58,6 +58,8 @@ const RiteOfProgenitureTectonicTide = skill(16043)
  */
 const Albedo = character(1604)
   .tags("geo", "sword", "mondstadt")
+  .health(10)
+  .energy(2)
   .skills(FavoniusBladeworkWeiss, AbiogenesisSolarIsotoma, RiteOfProgenitureTectonicTide)
   .done();
 

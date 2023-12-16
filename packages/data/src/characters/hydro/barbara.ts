@@ -60,6 +60,8 @@ const ShiningMiracle = skill(12013)
  */
 const Barbara = character(1201)
   .tags("hydro", "catalyst", "mondstadt")
+  .health(10)
+  .energy(3)
   .skills(WhisperOfWater, LetTheShowBegin, ShiningMiracle)
   .done();
 

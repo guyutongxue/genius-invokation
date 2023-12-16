@@ -68,6 +68,8 @@ const KyougenFiveCeremonialPlays = skill(15063)
  */
 const Wanderer = character(1506)
   .tags("anemo", "catalyst")
+  .health(10)
+  .energy(3)
   .skills(YuubanMeigen, HanegaSongOfTheWind, KyougenFiveCeremonialPlays)
   .done();
 

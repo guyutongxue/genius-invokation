@@ -68,6 +68,8 @@ const StarwardSword = skill(14033)
  */
 const Keqing = character(1403)
   .tags("electro", "sword", "liyue")
+  .health(10)
+  .energy(3)
   .skills(YunlaiSwordsmanship, StellarRestoration, StarwardSword)
   .done();
 

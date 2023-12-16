@@ -80,6 +80,8 @@ const AlcazarzaraysExactitude = skill(14103)
  */
 const Dori = character(1410)
   .tags("electro", "claymore", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(MarvelousSworddanceModified, SpiritwardingLampTroubleshooterCannon, AlcazarzaraysExactitude)
   .done();
 

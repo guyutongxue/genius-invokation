@@ -68,6 +68,8 @@ const TrumpcardKitty = skill(17013)
  */
 const Collei = character(1701)
   .tags("dendro", "bow", "sumeru")
+  .health(10)
+  .energy(2)
   .skills(SupplicantsBowmanship, FloralBrush, TrumpcardKitty)
   .done();
 
