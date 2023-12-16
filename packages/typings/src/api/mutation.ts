@@ -79,6 +79,12 @@ interface ModifyEntityVarM {
   readonly value: number;
 }
 
+interface ReplaceCharacterDefinitionM {
+  readonly type: "replaceCharacterDefinition";
+  readonly id: number;
+  readonly newDefinitionId: number;
+}
+
 interface ResetDiceM {
   readonly type: "resetDice";
   readonly who: 0 | 1;
@@ -107,5 +113,6 @@ export type ExposedMutation =
   | CreateEntityM
   | DisposeEntityM
   | ModifyEntityVarM
+  | ReplaceCharacterDefinitionM
   | ResetDiceM
   | SetPlayerFlagM;

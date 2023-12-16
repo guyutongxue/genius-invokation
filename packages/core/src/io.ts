@@ -116,6 +116,13 @@ export function exposeMutation(
         value: m.value,
       };
     }
+    case "replaceCharacterDefinition": {
+      return {
+        type: "replaceCharacterDefinition",
+        id: m.state.id,
+        newDefinitionId: m.newDefinition.id,
+      };
+    }
     case "resetDice": {
       return {
         type: "resetDice",
@@ -134,6 +141,10 @@ export function exposeMutation(
       } else {
         return null;
       }
+    }
+    default: {
+      const _check: never = m;
+      return null;
     }
   }
 }

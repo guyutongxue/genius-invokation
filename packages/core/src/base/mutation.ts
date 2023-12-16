@@ -19,6 +19,7 @@ import {
 } from "../util";
 import { EntityArea } from "./entity";
 import { SkillDefinition, SkillInfo } from "./skill";
+import { CharacterDefinition } from "./character";
 
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
@@ -111,6 +112,12 @@ export interface ModifyEntityVarM {
   readonly value: number;
 }
 
+export interface ReplaceCharacterDefinitionM {
+  readonly type: "replaceCharacterDefinition",
+  state: CharacterState,
+  readonly newDefinition: CharacterDefinition,
+}
+
 export interface ResetDiceM {
   readonly type: "resetDice";
   readonly who: 0 | 1;
@@ -145,6 +152,7 @@ export type Mutation =
   | CreateEntityM
   | DisposeEntityM
   | ModifyEntityVarM
+  | ReplaceCharacterDefinitionM
   | ResetDiceM
   | SetPlayerFlagM;
 
@@ -278,6 +286,14 @@ function doMutation(state: GameState, m: Mutation): GameState {
         entity.variables[m.varName] = m.value;
       });
       m.state = getEntityById(newState, m.state.id, true);
+      return newState;
+    }
+    case "replaceCharacterDefinition": {
+      const newState = produce(state, (draft) => {
+        const character = getEntityById(draft, m.state.id, true) as Draft<CharacterState>;
+        character.definition = m.newDefinition as Draft<CharacterDefinition>;
+      });
+      m.state = getEntityById(newState, m.state.id, true) as CharacterState;
       return newState;
     }
     case "resetDice": {

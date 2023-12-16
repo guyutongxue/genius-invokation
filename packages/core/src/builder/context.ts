@@ -19,6 +19,7 @@ import {
 import { executeQuery } from "../query";
 import {
   AppliableDamageType,
+  CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
   ExContextType,
@@ -483,6 +484,22 @@ export class SkillContext<
     target ??= this.callerState;
     const finalValue = value + target.variables[prop];
     this.setVariable(prop, finalValue, target);
+  }
+
+  replaceDefinition(target: TargetQueryArg<false, Ext, CallerType>, newCh: CharacterHandle) {
+    const characters = this.queryCoerceToCharacters(target);
+    if (characters.length !== 1) {
+      throw new Error(`Replace definition must apply on exact one character`);
+    }
+    const def = this.state.data.character.get(newCh);
+    if (typeof def === "undefined") {
+      throw new Error(`Unknown character ${newCh}`);
+    }
+    this.mutate({
+      type: "replaceCharacterDefinition",
+      state: characters[0].state,
+      newDefinition: def
+    });
   }
 
   absorbDice(strategy: "seq" | "diff", count: number) {
