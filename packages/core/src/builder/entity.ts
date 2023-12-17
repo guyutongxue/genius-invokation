@@ -57,7 +57,6 @@ export class EntityBuilder<
   ) {
     return enableShortcut(
       new TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>(
-        this.type,
         this.generateSkillId(),
         event,
         this,

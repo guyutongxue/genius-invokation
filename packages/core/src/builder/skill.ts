@@ -229,7 +229,6 @@ export abstract class SkillBuilder<
 > {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(
-    protected readonly callerType: CallerType,
     protected readonly id: number,
   ) {}
   protected _globalFilter: SkillFilter<Ext, CallerType> = () => true;
@@ -399,13 +398,12 @@ export class TriggeredSkillBuilder<
   V extends string,
 > extends SkillBuilder<Ext, CallerType> {
   constructor(
-    callerType: CallerType,
     id: number,
     private readonly triggerOn: EN,
     private readonly parent: EntityBuilder<CallerType, V>,
     globalFilter?: SkillFilter<Ext, CallerType>
   ) {
-    super(callerType, id);
+    super(id);
     if (typeof globalFilter !== "undefined") {
       this._globalFilter = globalFilter;
     }
@@ -488,7 +486,7 @@ export class SkillBuilderWithCost<Ext extends object> extends SkillBuilder<
   "character"
 > {
   constructor(skillId: number) {
-    super("character", skillId);
+    super(skillId);
   }
   protected _cost: DiceType[] = [];
   private cost(type: DiceType, count: number): this {

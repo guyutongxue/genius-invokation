@@ -74,8 +74,9 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
   },
   OrQuery_or(orQuery, _, andQuery) {
     const lhsResult = orQuery.doQuery(this.args.ctx);
+    const lhsIds = lhsResult.map((st) => st.id);
     const rhsCandidates = this.args.ctx.candidates.filter(
-      (st) => !lhsResult.map((st) => st.id).includes(st.id),
+      (st) => !lhsIds.includes(st.id),
     );
     const rhsCtx = { ...this.args.ctx, candidates: rhsCandidates };
     const rhsResult = andQuery.doQuery(rhsCtx);
@@ -119,8 +120,8 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
   UnaryQuery_not(_, unaryQuery) {
     const resetCandidates = allEntities(this.args.ctx.state);
     const innerCtx = { ...this.args.ctx, candidates: resetCandidates };
-    const result = unaryQuery.doQuery(innerCtx);
-    return this.args.ctx.candidates.filter((id) => !result.includes(id));
+    const result = unaryQuery.doQuery(innerCtx).map((st) => st.id);
+    return this.args.ctx.candidates.filter((st) => !result.includes(st.id));
   },
   UnaryQuery_recentFrom(_, unaryQuery) {
     const state = this.args.ctx.state;
@@ -435,6 +436,7 @@ export function doSemanticQueryAction(
 ${match.message}`);
   }
   console.log("matched: ", match);
-  const result = semantics(match).doQuery(queryArg);
+  const result: AnyState[] = semantics(match).doQuery(queryArg);
+  console.log("result: ", result);
   return result;
 }

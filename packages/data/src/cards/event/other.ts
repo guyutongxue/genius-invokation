@@ -436,7 +436,7 @@ const StoneAndContracts = card(331802)
 const Strategize = card(332004)
   .costSame(1)
   // TODO
-  .drawCards(1)
+  .drawCards(2)
   .done();
 
 /**

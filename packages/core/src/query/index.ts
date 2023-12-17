@@ -27,6 +27,9 @@ export function executeQuery<
       event: {
         skillCaller: (c) => c.eventArg.skillInfo.caller,
       },
+      damage: {
+        target: (c) => c.damageInfo.target,
+      },
       targets: (((ctx as any)?.targets as any[]) ?? []).map(
         (e) => () => e,
       ) as any,

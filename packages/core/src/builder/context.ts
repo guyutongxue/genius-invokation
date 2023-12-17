@@ -32,7 +32,7 @@ import {
 } from "./type";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
-import { NontrivialDamageType, REACTION_MAP } from "./reaction";
+import { NontrivialDamageType, REACTION_DESCRIPTION, REACTION_MAP } from "./reaction";
 
 type WrapArray<T> = T extends readonly any[] ? T : T[];
 
@@ -295,15 +295,16 @@ export class SkillContext<
           this.skillInfo,
         );
         damageInfo = damageModifier.damageInfo;
-        console.log(damageModifier.damageInfo.log);
 
         if (
           damageInfo.type !== DamageType.Physical &&
           damageInfo.type !== DamageType.Piercing &&
           damageInfo.type !== DamageType.Heal
         ) {
-          this.doApply(t, damageInfo.type, damageInfo);
+          damageInfo = this.doApply(t, damageInfo.type, damageInfo);
         }
+
+        console.log((damageInfo as any).log);
       }
 
       const finalHealth = Math.max(
@@ -334,7 +335,7 @@ export class SkillContext<
     target: CharacterContext<Readonly>,
     type: NontrivialDamageType,
     damage?: DamageInfo,
-  ) {
+  ): DamageInfo {
     const aura = target.state.variables.aura;
     const [newAura, reaction] = REACTION_MAP[aura][type];
     this.mutate({
@@ -343,6 +344,15 @@ export class SkillContext<
       varName: "aura",
       value: newAura,
     });
+    const damageModifier = new DamageModifierImpl(damage);
+    damageModifier.setCaller(this.callerState);
+    if (reaction !== null) {
+      const reactionDescription = REACTION_DESCRIPTION[reaction];
+      const [newState, events] = reactionDescription(this._state, this.skillInfo, damageModifier);
+      this.eventPayloads.push(...events);
+      this._state = newState;
+    }
+    return damageModifier.damageInfo;
   }
 
   createEntity<TypeT extends EntityType>(

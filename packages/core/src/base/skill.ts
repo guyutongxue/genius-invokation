@@ -59,7 +59,7 @@ export interface DamageModifier1 {
 
 export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
   private caller: CharacterState | EntityState | null = null;
-  constructor(private readonly _damageInfo: DamageInfo) {}
+  constructor(private readonly _damageInfo?: DamageInfo) {}
   private newDamageType: DamageType | null = null;
   private increased = 0;
   private multiplier = 1;
@@ -71,8 +71,8 @@ export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
   }
 
   changeDamageType(type: DamageType) {
-    if (this.caller === null) {
-      throw new Error("caller not set");
+    if (this.caller === null || typeof this._damageInfo === "undefined") {
+      throw new Error("caller not set or no damageInfo provided");
     }
     this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) change damage type from ${this._damageInfo.type} to ${type}.\n`;
     if (this.newDamageType !== null) {
@@ -81,37 +81,39 @@ export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
     this.newDamageType = type;
   }
   increaseDamage(value: number) {
-    if (this.caller === null) {
-      throw new Error("caller not set");
+    if (this.caller === null || typeof this._damageInfo === "undefined") {
+      throw new Error("caller not set or no damageInfo provided");
     }
     this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) increase damage by ${value}.\n`;
     this.increased += value;
   }
   multiplyDamage(multiplier: number) {
-    if (this.caller === null) {
-      throw new Error("caller not set");
+    if (this.caller === null || typeof this._damageInfo === "undefined") {
+      throw new Error("caller not set or no damageInfo provided");
     }
     this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) multiply damage by ${multiplier}.\n`;
     this.multiplier *= multiplier;
   }
   decreaseDamage(value: number) {
-    if (this.caller === null) {
-      throw new Error("caller not set");
+    if (this.caller === null || typeof this._damageInfo === "undefined") {
+      throw new Error("caller not set or no damageInfo provided");
     }
     this.log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) decrease damage by ${value}.\n`;
     this.decreased += value;
   }
 
   get damageInfo(): DamageInfo & { log: string } {
-    return {
-      ...this._damageInfo,
-      type: this.newDamageType ?? this._damageInfo.type,
-      value: Math.ceil(
-        (this._damageInfo.value + this.increased) * this.multiplier -
-          this.decreased,
-      ),
-      log: this.log,
-    };
+    return this._damageInfo
+      ? {
+          ...this._damageInfo,
+          type: this.newDamageType ?? this._damageInfo.type,
+          value: Math.ceil(
+            (this._damageInfo.value + this.increased) * this.multiplier -
+              this.decreased,
+          ),
+          log: this.log,
+        }
+      : (void 0 as any);
   }
 }
 

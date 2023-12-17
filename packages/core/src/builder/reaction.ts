@@ -96,9 +96,9 @@ type DamageModifierR = Omit<DamageModifier1, "damageInfo"> & {
 type ReactionDescription = SkillDescription<DamageModifierR>;
 export const REACTION_DESCRIPTION: Record<R, ReactionDescription> = {} as any;
 
-class ReactionBuilder extends SkillBuilder<DamageModifierR, "character"> {
+class ReactionBuilder extends SkillBuilder<DamageModifierR, any> {
   constructor(private reaction: R) {
-    super("character", reaction);
+    super(reaction);
   }
 
   done() {
@@ -114,13 +114,13 @@ function reaction(reaction: R) {
 }
 
 type ReactionAction = (
-  c: ExtendedSkillContext<false, DamageModifierR, "character">,
+  c: ExtendedSkillContext<false, DamageModifierR, any>,
 ) => void;
 
 const pierceToOther: ReactionAction = (c) => {
   if (c.damageInfo) {
     c.increaseDamage(1);
-    c.damage(1, D.Piercing, (c) => c.$$(`my character not @self`));
+    c.damage(1, D.Piercing, "opp character and not @damage.target");
   }
 };
 
@@ -132,7 +132,7 @@ const crystallize: ReactionAction = (c) => {
 const swirl = (srcElement: D): ReactionAction => {
   return (c) => {
     if (c.damageInfo) {
-      c.damage(1, srcElement, (c) => c.$$(`my character not @self`));
+      c.damage(1, srcElement, "opp character and not @damage.target");
     }
   };
 };
@@ -148,8 +148,8 @@ reaction(R.Vaporize)
   .done();
 
 reaction(R.Overloaded)
-  .if((c) => c.$$(`@self and active`).length > 0)
-  .switchActive("next")
+  .if((c) => c.$$(`@damage.target and active`).length > 0)
+  .switchActive("opp next")
   .done();
 
 reaction(R.Superconduct)

@@ -340,7 +340,8 @@ class Game {
     };
   }
   private async actionPhase() {
-    const player = this._state.players[this._state.currentTurn];
+    const who = this._state.currentTurn;
+    const player = this._state.players[who];
     if (player.declaredEnd) {
       this.mutate({
         type: "switchTurn",
@@ -348,7 +349,7 @@ class Game {
     } else if (player.skipNextTurn) {
       this.mutate({
         type: "setPlayerFlag",
-        who: this._state.currentTurn,
+        who,
         flagName: "skipNextTurn",
         value: false,
       });
@@ -359,7 +360,7 @@ class Game {
       const actions = this.availableAction();
       console.log(actions);
       const { chosenIndex, cost } = await this.rpc(
-        this._state.currentTurn,
+        who,
         "action",
         {
           candidates: actions.map(exposeAction),
@@ -390,7 +391,7 @@ class Game {
       }
       this.mutate({
         type: "resetDice",
-        who: this._state.currentTurn,
+        who,
         value: operatingDice,
       });
 
@@ -399,6 +400,12 @@ class Game {
           await this.useSkill(actionInfo.skill, void 0);
           break;
         case "playCard":
+          this.mutate({
+            type: "disposeCard",
+            who,
+            oldState: actionInfo.card,
+            used: true
+          });
           await this.useSkill(
             {
               caller: activeCh,
@@ -412,14 +419,14 @@ class Game {
         case "switchActive":
           this.mutate({
             type: "switchActive",
-            who: this._state.currentTurn,
+            who,
             value: actionInfo.to,
           });
           await this.handleEvents([
             "onSwitchActive",
             {
               type: "switchActive",
-              who: this._state.currentTurn,
+              who,
               from: activeCh,
               to: actionInfo.to,
               state: this._state,
@@ -428,19 +435,24 @@ class Game {
           break;
         case "elementalTuning":
           this.mutate({
+            type: "disposeCard",
+            who,
+            oldState: actionInfo.card,
+            used: false
+          });
+          this.mutate({
             type: "resetDice",
-            who: this._state.currentTurn,
+            who,
             value: sortDice(player, [
               ...player.dice,
               elementOfCharacter(activeCh.definition),
             ]),
           });
-          // TODO
           break;
         case "declareEnd":
           this.mutate({
             type: "setPlayerFlag",
-            who: this._state.currentTurn,
+            who,
             flagName: "declaredEnd",
             value: true,
           });
