@@ -487,7 +487,10 @@ export class SkillContext<
     this.setVariable(prop, finalValue, target);
   }
 
-  replaceDefinition(target: TargetQueryArg<false, Ext, CallerType>, newCh: CharacterHandle) {
+  replaceDefinition(
+    target: TargetQueryArg<false, Ext, CallerType>,
+    newCh: CharacterHandle,
+  ) {
     const characters = this.queryCoerceToCharacters(target);
     if (characters.length !== 1) {
       throw new Error(`Replace definition must apply on exact one character`);
@@ -499,7 +502,7 @@ export class SkillContext<
     this.mutate({
       type: "replaceCharacterDefinition",
       state: characters[0].state,
-      newDefinition: def
+      newDefinition: def,
     });
   }
 
@@ -507,15 +510,32 @@ export class SkillContext<
     // TODO return DiceType[]
   }
   generateDice(type: DiceType | "randomElement", count: number) {
+    let insertedDice: DiceType[] = [];
     if (type === "randomElement") {
-      type = this.random(DiceType.Anemo, DiceType.Cryo, DiceType.Dendro, DiceType.Electro, DiceType.Geo, DiceType.Hydro, DiceType.Pyro);
+      for (let i = 0; i < count; i++) {
+        insertedDice.push(
+          this.random(
+            DiceType.Anemo,
+            DiceType.Cryo,
+            DiceType.Dendro,
+            DiceType.Electro,
+            DiceType.Geo,
+            DiceType.Hydro,
+            DiceType.Pyro,
+          ),
+        );
+      }
+    } else {
+      insertedDice = new Array<DiceType>(count).fill(type);
     }
-    const insertedDice = new Array<DiceType>(count).fill(type);
-    const newDice = sortDice(this.player, [...this.player.dice, ...insertedDice]);
+    const newDice = sortDice(this.player, [
+      ...this.player.dice,
+      ...insertedDice,
+    ]);
     this.mutate({
       type: "resetDice",
       who: this.callerArea.who,
-      value: newDice
+      value: newDice,
     });
     // TODO
   }
@@ -578,7 +598,7 @@ export class SkillContext<
       value: -1,
     };
     this.mutate(mutation);
-    return items[Math.floor(mutation.value * items.length)];
+    return items[mutation.value % items.length];
   }
 }
 

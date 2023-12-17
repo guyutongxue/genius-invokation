@@ -18,11 +18,11 @@ const emit = defineEmits<{
   <div class="relative h-15 w-15" :class="{ selected }">
     <Image
       :id="data.definitionId"
-      class="h-full w-full object-cover"
+      class="h-full w-full object-cover rounded"
       :class="{ clickable }"
       @click="clickable && emit('click', data.id)"
     ></Image>
-    <div class="absolute right-0 top-0">
+    <div class="absolute right-0 top-0 bg-white b-1 b-solid b-black w-6 h-6 rounded-3 translate-x-[50%] translate-y-[-50%] flex justify-center items-center">
       {{ data.variables[visibleVarData[data.definitionId]!] }}
     </div>
   </div>
