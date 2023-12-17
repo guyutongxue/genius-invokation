@@ -19,7 +19,7 @@ import {
   SummonHandle,
 } from "./type";
 import { EntityArea, EntityType } from "../base/entity";
-import { EntityBuilder, VariableOptions } from "./entity";
+import { EntityBuilder, ExtOfEntity, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
 
 type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
@@ -29,20 +29,12 @@ type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
 type SkillOperation<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<false, Ext, CallerType>,
   e: EventArgOfExt<Ext>,
-) => any;
+) => void;
 
-type SkillOperationWithRetVal<
-  Ext extends object,
-  CallerType extends ExEntityType,
-> = (
-  c: ExtendedSkillContext<false, Ext, CallerType>,
-  e: EventArgOfExt<Ext>,
-) => boolean;
-
-type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
+export type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
   c: ExtendedSkillContext<true, Ext, CallerType>,
   e: EventArgOfExt<Ext>,
-) => boolean;
+) => unknown;
 
 enum ListenTo {
   Myself,
@@ -240,6 +232,7 @@ export abstract class SkillBuilder<
     protected readonly callerType: CallerType,
     protected readonly id: number,
   ) {}
+  protected _globalFilter: SkillFilter<Ext, CallerType> = () => true;
   protected applyFilter = false;
   protected _filter: SkillFilter<Ext, CallerType> = () => true;
 
@@ -252,7 +245,7 @@ export abstract class SkillBuilder<
   do(op: SkillOperation<Ext, CallerType>): this {
     if (this.applyFilter) {
       this.operations.push((c, e) => {
-        if (!this._filter(c as any, e)) return;
+        if (!(0, this._filter)(c as any, e)) return;
         return op(c, e);
       });
     } else {
@@ -283,8 +276,10 @@ export abstract class SkillBuilder<
       const ctx = new SkillContext<false, Ext, CallerType>(st, skillInfo);
       const ext = extGenerator(ctx);
       const wrapped = extendSkillContext<false, Ext, CallerType>(ctx, ext);
-      for (const op of this.operations) {
-        op(wrapped, (ext as any)?.eventArg);
+      if ((0, this._globalFilter)(wrapped as any, (ext as any)?.eventArg)) {
+        for (const op of this.operations) {
+          op(wrapped, (ext as any)?.eventArg);
+        }
       }
       return [ctx.state, ctx.events] as const;
     };
@@ -394,6 +389,7 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
 interface UsageOptions extends VariableOptions {
   name?: string;
   perRound?: boolean;
+  auto?: boolean;
 }
 
 export class TriggeredSkillBuilder<
@@ -407,43 +403,49 @@ export class TriggeredSkillBuilder<
     id: number,
     private readonly triggerOn: EN,
     private readonly parent: EntityBuilder<CallerType, V>,
+    globalFilter?: SkillFilter<Ext, CallerType>
   ) {
     super(callerType, id);
+    if (typeof globalFilter !== "undefined") {
+      this._globalFilter = globalFilter;
+    }
   }
-  private _usageName: string | null = null;
-  private _usagePerRoundName: string | null = null;
-
-  override do(opWithRetVal: SkillOperationWithRetVal<Ext, CallerType>): this {
-    super.do((c, e) => {
-      const ret: any = opWithRetVal(c, e);
-      if (ret !== SHORTCUT_RETURN_VALUE && this._usageName) {
-        if (ret) {
-          c.addVariable(this._usageName, -1);
-        }
-        const self = c.caller();
-        if (self.state.variables[this._usageName] <= 0) {
-          self.dispose();
-        }
-      }
-    });
-    return this;
-  }
+  private _usageOpt: Required<UsageOptions> | null = null;
 
   usage(count: number, opt?: UsageOptions): this {
+    if (this._usageOpt !== null) {
+      throw new Error(`Usage called twice`);
+    }
     const perRound = opt?.perRound ?? false;
+    const name =
+      opt?.name ?? (perRound ? `usagePR_${this.id}` : `usage_${this.id}`);
+    this.parent.variable(name, count, opt);
     if (perRound) {
-      this._usagePerRoundName = opt?.name ?? `usagePR_${this.id}`;
-      this.parent.variable(this._usagePerRoundName, count, opt);
       // @ts-expect-error private prop
       this.parent._usagePerRoundVarNames.push(this._usagePerRoundName);
-    } else {
-      this._usageName = opt?.name ?? `usage_${this.id}`;
-      this.parent.variable(this._usageName, count, opt);
     }
+    this._usageOpt = {
+      visible: opt?.visible ?? true,
+      auto: opt?.auto ?? true,
+      name,
+      perRound,
+      recreateMax: opt?.recreateMax ?? count,
+    };
     return this;
   }
 
   private buildSkill() {
+    if (this._usageOpt) {
+      const { name, auto } = this._usageOpt;
+      this.do((c) => {
+        if (auto) {
+          c.addVariable(name, -1);
+        }
+        if (c.caller().state.variables[name] <= 0) {
+          c.dispose();
+        }
+      });
+    }
     const eventName = detailedEventDictionary[this.triggerOn][0];
     const action: SkillDescription<any> = (state, callerId, arg) => {
       const innerAction = this.getAction((ctx) => {
@@ -470,9 +472,9 @@ export class TriggeredSkillBuilder<
     this.parent._skillList.push(def);
   }
 
-  on<E extends DetailedEventNames>(event: E) {
+  on<E extends DetailedEventNames>(event: E, filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>) {
     this.buildSkill();
-    return this.parent.on(event);
+    return this.parent.on(event, filter);
   }
 
   done(): HandleT<CallerType> {

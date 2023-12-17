@@ -709,14 +709,14 @@ export class CharacterContext<Readonly extends boolean> {
     );
   }
   hasArtifact() {
-    return !!this.state.entities.find(
+    return this.state.entities.find(
       (v) =>
         v.definition.type === "equipment" &&
         v.definition.tags.includes("artifact"),
     );
   }
   hasWeapon() {
-    return !!this.state.entities.find(
+    return this.state.entities.find(
       (v) =>
         v.definition.type === "equipment" &&
         v.definition.tags.includes("weapon"),

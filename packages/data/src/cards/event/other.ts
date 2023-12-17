@@ -69,9 +69,8 @@ const ElementalResonanceEnduringRock = card(331602)
   .costGeo(1)
   .tags("resonance")
   .toCombatStatus()
-  .on("dealDamage")
+  .on("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
   .usage(1)
-  .if((c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
   .do((c) => {
     c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
     return true;

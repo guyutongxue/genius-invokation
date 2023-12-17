@@ -138,12 +138,12 @@ const swirl = (srcElement: D): ReactionAction => {
 };
 
 reaction(R.Melt)
-  .if((c) => !!c.damageInfo)
+  .if((c) => c.damageInfo)
   .increaseDamage(2)
   .done();
 
 reaction(R.Vaporize)
-  .if((c) => !!c.damageInfo)
+  .if((c) => c.damageInfo)
   .increaseDamage(2)
   .done();
 
@@ -161,7 +161,7 @@ reaction(R.ElectroCharged)
   .done();
 
 reaction(R.Frozen)
-  .if((c) => !!c.damageInfo)
+  .if((c) => c.damageInfo)
   .increaseDamage(1)
   .characterStatus(Frozen)
   .done();
@@ -183,18 +183,18 @@ reaction(R.CrystallizePyro).do(crystallize).done();
 reaction(R.CrystallizeElectro).do(crystallize).done();
 
 reaction(R.Burning)
-  .if((c) => !!c.damageInfo)
+  .if((c) => c.damageInfo)
   .increaseDamage(1)
   .summon(BurningFlame)
   .done();
 
 reaction(R.Bloom)
-  .if((c) => !!c.damageInfo)
+  .if((c) => c.damageInfo)
   .increaseDamage(1)
   // Nilou
-  .if((c) => !!c.$$(`combat status with id 0`).length)
+  .if((c) => c.$$(`combat status with definition id 112081`).length)
   .combatStatus(DendroCore);
 
 reaction(R.Quicken)
-  .if((c) => !!c.damageInfo)
+  .if((c) => c.damageInfo)
   .combatStatus(CatalyzingField);

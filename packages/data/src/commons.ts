@@ -10,8 +10,7 @@ import { status, combatStatus, summon, DamageType } from "@gi-tcg/core/builder";
 const Frozen = status(106)
   .duration(1)
   .tags("disableSkill")
-  .on("beforeDamaged")
-  .if((c) => c.damageInfo.type === DamageType.Pyro || c.damageInfo.type === DamageType.Physical)
+  .on("beforeDamaged", (c) => [DamageType.Pyro, DamageType.Physical].includes(c.damageInfo.type))
   .do((c) => {
     c.increaseDamage(1);
     c.caller().dispose();
@@ -50,13 +49,10 @@ const BurningFlame = summon(115)
  * 可用次数：1
  */
 const DendroCore = combatStatus(116)
-  .on("beforeDealDamage")
+  .on("beforeDealDamage", (c) =>
+    [DamageType.Pyro, DamageType.Electro].includes(c.damageInfo.type) &&
+    c.damageInfo.target.id === c.$("opp active character")!.id)
   .usage(1)
-  .if(
-    (c) =>
-      [DamageType.Pyro, DamageType.Electro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.$("opp active character")!.id,
-  )
   .increaseDamage(1)
   .done();
 
@@ -68,12 +64,9 @@ const DendroCore = combatStatus(116)
  * 可用次数：2
  */
 const CatalyzingField = combatStatus(117)
-  .on("beforeDealDamage")
+  .on("beforeDealDamage", (c) =>
+    [DamageType.Electro, DamageType.Dendro].includes(c.damageInfo.type) &&
+    c.damageInfo.target.id === c.$("opp active character")!.id)
   .usage(2)
-  .if(
-    (c) =>
-      [DamageType.Electro, DamageType.Dendro].includes(c.damageInfo.type) &&
-      c.damageInfo.target.id === c.$("opp active character")!.id,
-  )
   .increaseDamage(1)
   .done();

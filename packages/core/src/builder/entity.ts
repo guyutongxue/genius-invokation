@@ -9,6 +9,7 @@ import { registerEntity } from "./registry";
 import {
   DetailedEventExt,
   DetailedEventNames,
+  SkillFilter,
   TriggeredSkillBuilder,
   enableShortcut,
 } from "./skill";
@@ -50,13 +51,17 @@ export class EntityBuilder<
     private id: number,
   ) {}
 
-  on<E extends DetailedEventNames>(event: E) {
+  on<E extends DetailedEventNames>(
+    event: E,
+    filter?: SkillFilter<ExtOfEntity<Vars, E>, CallerType>,
+  ) {
     return enableShortcut(
       new TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>(
         this.type,
         this.generateSkillId(),
         event,
         this,
+        filter,
       ),
     );
   }
