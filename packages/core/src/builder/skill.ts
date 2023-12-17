@@ -366,6 +366,8 @@ type ExtractTArgs<T> = T extends SkillBuilder<infer Ext, infer CallerType>
   ? [Ext, CallerType]
   : [never, never];
 
+const SHORTCUT_RETURN_VALUE: unique symbol = Symbol();
+
 /**
  * 为 Builder 添加直达 SkillContext 的函数，即可
  * `.do((c) => c.PROP(ARGS))`
@@ -381,7 +383,7 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
       } else {
         return function (this: T, ...args: any[]) {
           // returning true for counting usage
-          return this.do((c) => (c[prop](...args), true));
+          return this.do((c) => (c[prop](...args), SHORTCUT_RETURN_VALUE));
         };
       }
     },
@@ -413,8 +415,8 @@ export class TriggeredSkillBuilder<
 
   override do(opWithRetVal: SkillOperationWithRetVal<Ext, CallerType>): this {
     super.do((c, e) => {
-      const ret = opWithRetVal(c, e);
-      if (this._usageName) {
+      const ret: any = opWithRetVal(c, e);
+      if (ret !== SHORTCUT_RETURN_VALUE && this._usageName) {
         if (ret) {
           c.addVariable(this._usageName, -1);
         }
@@ -430,12 +432,12 @@ export class TriggeredSkillBuilder<
   usage(count: number, opt?: UsageOptions): this {
     const perRound = opt?.perRound ?? false;
     if (perRound) {
-      this._usagePerRoundName = opt?.name ?? `usage_${this.id}`;
+      this._usagePerRoundName = opt?.name ?? `usagePR_${this.id}`;
       this.parent.variable(this._usagePerRoundName, count, opt);
       // @ts-expect-error private prop
       this.parent._usagePerRoundVarNames.push(this._usagePerRoundName);
     } else {
-      this._usageName = opt?.name ?? `usagePR_${this.id}`;
+      this._usageName = opt?.name ?? `usage_${this.id}`;
       this.parent.variable(this._usageName, count, opt);
     }
     return this;

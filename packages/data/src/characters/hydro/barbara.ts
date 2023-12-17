@@ -9,6 +9,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  */
 const MelodyLoop = summon(112011)
   .on("endPhase")
+  .usage(2)
   .heal(1, "all my characters")
   .apply(DamageType.Hydro, "active")
   .done();

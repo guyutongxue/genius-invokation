@@ -1,4 +1,5 @@
 import minstd from "@stdlib/random-base-minstd";
+import { checkDice, flip } from "@gi-tcg/utils";
 
 import {
   CharacterState,
@@ -39,7 +40,6 @@ import {
   UseSkillInfo,
 } from "./base/skill";
 import { SkillContext } from "./builder/context";
-import { flip } from "@gi-tcg/utils";
 import { CardDefinition, CardTarget, CardTargetKind } from "./base/card";
 
 export interface PlayerConfig {
@@ -287,6 +287,7 @@ class Game {
     // Change to action phase:
     // - do `changePhase`
     // - clean `hasDefeated`
+    // - clean `declaredEnd`
     // - do `cleanSkillLog`
     // - emit event `actionPhase`
     this.mutate({
@@ -303,6 +304,18 @@ class Game {
       type: "setPlayerFlag",
       who: 1,
       flagName: "hasDefeated",
+      value: false,
+    });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 0,
+      flagName: "declaredEnd",
+      value: false,
+    });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 1,
+      flagName: "declaredEnd",
       value: false,
     });
     this.mutate({
@@ -330,7 +343,7 @@ class Game {
     const player = this._state.players[this._state.currentTurn];
     if (player.declaredEnd) {
       this.mutate({
-        type: "switchTurn"
+        type: "switchTurn",
       });
     } else if (player.skipNextTurn) {
       this.mutate({
@@ -340,7 +353,7 @@ class Game {
         value: false,
       });
       this.mutate({
-        type: "switchTurn"
+        type: "switchTurn",
       });
     } else {
       const actions = this.availableAction();
@@ -356,9 +369,30 @@ class Game {
         throw new Error(`User chosen index out of range`);
       }
       const actionInfo = actions[chosenIndex];
+      this._state = actionInfo.newState;
 
       const activeCh = player.characters[getActiveCharacterIndex(player)];
-      // deductCost here
+      // 检查骰子
+      if (!checkDice(actionInfo.cost, cost)) {
+        throw new Error(`Selected dice doesn't meet requirement`);
+      }
+      if (actionInfo.type === "elementalTuning" && cost[0] === DiceType.Omni) {
+        throw new Error(`Elemental tunning cannot use omni dice`);
+      }
+      // 消耗骰子
+      const operatingDice = [...player.dice];
+      for (const consumed of cost) {
+        const idx = operatingDice.indexOf(consumed);
+        if (idx === -1) {
+          throw new Error(`Selected dice (${consumed}) not found in player`);
+        }
+        operatingDice.splice(idx, 1);
+      }
+      this.mutate({
+        type: "resetDice",
+        who: this._state.currentTurn,
+        value: operatingDice,
+      });
 
       switch (actionInfo.type) {
         case "useSkill":
@@ -381,6 +415,16 @@ class Game {
             who: this._state.currentTurn,
             value: actionInfo.to,
           });
+          await this.handleEvents([
+            "onSwitchActive",
+            {
+              type: "switchActive",
+              who: this._state.currentTurn,
+              from: activeCh,
+              to: actionInfo.to,
+              state: this._state,
+            },
+          ]);
           break;
         case "elementalTuning":
           this.mutate({
@@ -407,6 +451,13 @@ class Game {
           type: "switchTurn",
         });
       }
+      await this.handleEvents([
+        "onAction",
+        {
+          ...actionInfo,
+          state: this._state,
+        },
+      ]);
     }
     if (
       this._state.players[0].declaredEnd &&
@@ -419,6 +470,9 @@ class Game {
     }
   }
   private async endPhase() {
+    await this.handleEvents(["onEndPhase", {
+      state: this._state
+    }]);
     this.mutate({
       type: "changePhase",
       newPhase: "roll",

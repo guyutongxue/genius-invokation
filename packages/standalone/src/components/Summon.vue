@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { EntityData } from "@gi-tcg/typings";
+import { visibleVarData } from "../static_data";
 import Image from "./Image.vue";
 
 const props = defineProps<{
@@ -22,7 +23,7 @@ const emit = defineEmits<{
       @click="clickable && emit('click', data.id)"
     ></Image>
     <div class="absolute right-0 top-0">
-      {{ Object.values(data.variables).join() }}
+      {{ data.variables[visibleVarData[data.definitionId]!] }}
     </div>
   </div>
 </template>

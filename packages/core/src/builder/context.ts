@@ -15,6 +15,7 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
+  sortDice,
 } from "../util";
 import { executeQuery } from "../query";
 import {
@@ -506,6 +507,16 @@ export class SkillContext<
     // TODO return DiceType[]
   }
   generateDice(type: DiceType | "randomElement", count: number) {
+    if (type === "randomElement") {
+      type = this.random(DiceType.Anemo, DiceType.Cryo, DiceType.Dendro, DiceType.Electro, DiceType.Geo, DiceType.Hydro, DiceType.Pyro);
+    }
+    const insertedDice = new Array<DiceType>(count).fill(type);
+    const newDice = sortDice(this.player, [...this.player.dice, ...insertedDice]);
+    this.mutate({
+      type: "resetDice",
+      who: this.callerArea.who,
+      value: newDice
+    });
     // TODO
   }
 
