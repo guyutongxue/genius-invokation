@@ -341,7 +341,7 @@ class Game {
   }
   private async actionPhase() {
     const who = this._state.currentTurn;
-    const player = this._state.players[who];
+    let player = this._state.players[who];
     if (player.declaredEnd) {
       this.mutate({
         type: "switchTurn",
@@ -359,13 +359,9 @@ class Game {
     } else {
       const actions = this.availableAction();
       console.log(actions);
-      const { chosenIndex, cost } = await this.rpc(
-        who,
-        "action",
-        {
-          candidates: actions.map(exposeAction),
-        },
-      );
+      const { chosenIndex, cost } = await this.rpc(who, "action", {
+        candidates: actions.map(exposeAction),
+      });
       if (chosenIndex < 0 || chosenIndex >= actions.length) {
         throw new Error(`User chosen index out of range`);
       }
@@ -383,18 +379,35 @@ class Game {
       // 消耗骰子
       const operatingDice = [...player.dice];
       for (const consumed of cost) {
-        const idx = operatingDice.indexOf(consumed);
-        if (idx === -1) {
-          throw new Error(`Selected dice (${consumed}) not found in player`);
+        if (consumed === DiceType.Energy) {
+        } else {
+          const idx = operatingDice.indexOf(consumed);
+          if (idx === -1) {
+            throw new Error(`Selected dice (${consumed}) not found in player`);
+          }
+          operatingDice.splice(idx, 1);
         }
-        operatingDice.splice(idx, 1);
       }
       this.mutate({
         type: "resetDice",
         who,
         value: operatingDice,
       });
+      // 消耗能量
+      const requiredEnergy = actionInfo.cost.filter((x) => x === DiceType.Energy).length;
+      if (requiredEnergy > 0) {
+        if (activeCh.variables.energy < requiredEnergy) {
+          throw new Error(`Active character does not have enough energy`);
+        }
+        this.mutate({
+          type: "modifyEntityVar",
+          state: activeCh,
+          varName: "energy",
+          value: activeCh.variables.energy - requiredEnergy,
+        });
+      }
 
+      player = this._state.players[who];
       switch (actionInfo.type) {
         case "useSkill":
           await this.useSkill(actionInfo.skill, void 0);
@@ -404,8 +417,16 @@ class Game {
             type: "disposeCard",
             who,
             oldState: actionInfo.card,
-            used: true
+            used: true,
           });
+          if (actionInfo.card.definition.tags.includes("legend")) {
+            this.mutate({
+              type: "setPlayerFlag",
+              who,
+              flagName: "legendUsed",
+              value: true,
+            });
+          }
           await this.useSkill(
             {
               caller: activeCh,
@@ -438,7 +459,7 @@ class Game {
             type: "disposeCard",
             who,
             oldState: actionInfo.card,
-            used: false
+            used: false,
           });
           this.mutate({
             type: "resetDice",
@@ -482,9 +503,12 @@ class Game {
     }
   }
   private async endPhase() {
-    await this.handleEvents(["onEndPhase", {
-      state: this._state
-    }]);
+    await this.handleEvents([
+      "onEndPhase",
+      {
+        state: this._state,
+      },
+    ]);
     this.mutate({
       type: "changePhase",
       newPhase: "roll",

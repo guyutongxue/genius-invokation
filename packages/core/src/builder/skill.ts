@@ -228,9 +228,7 @@ export abstract class SkillBuilder<
   CallerType extends ExEntityType,
 > {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
-  constructor(
-    protected readonly id: number,
-  ) {}
+  constructor(protected readonly id: number) {}
   protected _globalFilter: SkillFilter<Ext, CallerType> = () => true;
   protected applyFilter = false;
   protected _filter: SkillFilter<Ext, CallerType> = () => true;
@@ -401,7 +399,7 @@ export class TriggeredSkillBuilder<
     id: number,
     private readonly triggerOn: EN,
     private readonly parent: EntityBuilder<CallerType, V>,
-    globalFilter?: SkillFilter<Ext, CallerType>
+    globalFilter?: SkillFilter<Ext, CallerType>,
   ) {
     super(id);
     if (typeof globalFilter !== "undefined") {
@@ -409,6 +407,21 @@ export class TriggeredSkillBuilder<
     }
   }
   private _usageOpt: Required<UsageOptions> | null = null;
+
+  override do(op: SkillOperation<Ext, CallerType>): this {
+    // 设置了每回合使用次数的技能，在没有剩余使用次数时不进行操作
+    if (this._usageOpt?.perRound) {
+      const { name } = this._usageOpt;
+      return super.do((c, e) => {
+        if (c.caller().state.variables[name] <= 0) {
+          return;
+        }
+        op(c, e);
+      });
+    } else {
+      return super.do(op);
+    }
+  }
 
   usage(count: number, opt?: UsageOptions): this {
     if (this._usageOpt !== null) {
@@ -434,12 +447,13 @@ export class TriggeredSkillBuilder<
 
   private buildSkill() {
     if (this._usageOpt) {
-      const { name, auto } = this._usageOpt;
+      const { name, auto, perRound } = this._usageOpt;
       this.do((c) => {
         if (auto) {
           c.addVariable(name, -1);
         }
-        if (c.caller().state.variables[name] <= 0) {
+        // 带使用次数（非每回合重置的），次数耗尽时弃置
+        if (!perRound && c.caller().state.variables[name] <= 0) {
           c.dispose();
         }
       });
@@ -470,7 +484,10 @@ export class TriggeredSkillBuilder<
     this.parent._skillList.push(def);
   }
 
-  on<E extends DetailedEventNames>(event: E, filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>) {
+  on<E extends DetailedEventNames>(
+    event: E,
+    filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>,
+  ) {
     this.buildSkill();
     return this.parent.on(event, filter);
   }

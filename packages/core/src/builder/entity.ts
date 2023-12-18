@@ -102,9 +102,12 @@ export class EntityBuilder<
     this.on("actionPhase")
       .do((c, e) => {
         const self = c.caller();
+        // 恢复每回合使用次数
         for (const prop of this._usagePerRoundVarNames) {
-          self.setVariable(prop, 0);
+          const newValue = self.state.definition.constants[prop];
+          self.setVariable(prop, newValue);
         }
+        // 扣除持续回合数
         self.addVariable("duration", -1);
         if (self.state.variables.duration <= 0) {
           self.dispose();
