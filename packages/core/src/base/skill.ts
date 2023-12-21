@@ -43,8 +43,6 @@ export interface UseDiceModifier {
   requestFastSwitch(): void;
 }
 
-export type SyncDamageInfo = Omit<DamageInfo, "via">;
-
 export interface DamageModifier0 {
   readonly damageInfo: DamageInfo;
   changeDamageType(type: DamageType): void;

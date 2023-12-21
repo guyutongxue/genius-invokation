@@ -32,7 +32,11 @@ import {
 } from "./type";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
-import { NontrivialDamageType, REACTION_DESCRIPTION, REACTION_MAP } from "./reaction";
+import {
+  NontrivialDamageType,
+  REACTION_DESCRIPTION,
+  REACTION_MAP,
+} from "./reaction";
 
 type WrapArray<T> = T extends readonly any[] ? T : T[];
 
@@ -141,9 +145,9 @@ export class SkillContext<
   // Get context of given entity state
   of(entityState: EntityState): EntityContext<Readonly>;
   of(entityState: CharacterState): CharacterContext<Readonly>;
-  of(
+  of<T extends ExEntityType = ExEntityType>(
     entityId: EntityState | CharacterState | number,
-  ): EntityContext<Readonly> | CharacterContext<Readonly>;
+  ): ExContextType<Readonly, T>;
   of(entityState: EntityState | CharacterState | number): any {
     if (typeof entityState === "number") {
       entityState = getEntityById(this._state, entityState, true);
@@ -348,7 +352,11 @@ export class SkillContext<
     damageModifier.setCaller(this.callerState);
     if (reaction !== null) {
       const reactionDescription = REACTION_DESCRIPTION[reaction];
-      const [newState, events] = reactionDescription(this._state, this.skillInfo, damageModifier);
+      const [newState, events] = reactionDescription(
+        this._state,
+        this.skillInfo,
+        damageModifier,
+      );
       this.eventPayloads.push(...events);
       this._state = newState;
     }

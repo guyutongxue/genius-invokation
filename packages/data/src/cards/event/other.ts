@@ -1,4 +1,57 @@
-import { DamageType, DiceType, card } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+
+/**
+ * @id 303211
+ * @name 冰箭丘丘人
+ * @description
+ * 结束阶段：造成1点冰元素伤害。
+ * 可用次数：2
+ */
+const CryoHilichurlShooter = summon(303211)
+  .on("endPhase")
+  .usage(2)
+  .damage(1, DamageType.Cryo)
+  .done();
+
+/**
+ * @id 303212
+ * @name 水丘丘萨满
+ * @description
+ * 结束阶段：造成1点水元素伤害。
+ * 可用次数：2
+ */
+const HydroSamachurl = summon(303212)
+  .on("endPhase")
+  .usage(2)
+  .damage(1, DamageType.Hydro)
+  .done();
+
+
+/**
+ * @id 303213
+ * @name 冲锋丘丘人
+ * @description
+ * 结束阶段：造成1点火元素伤害。
+ * 可用次数：2
+ */
+const HilichurlBerserker = summon(303213)
+  .on("endPhase")
+  .usage(2)
+  .damage(1, DamageType.Pyro)
+  .done();
+
+/**
+ * @id 303213
+ * @name 雷箭丘丘人
+ * @description
+ * 结束阶段：造成1点雷元素伤害。
+ * 可用次数：2
+ */
+const ElectroHilichurlShooter = summon(303213)
+  .on("endPhase")
+  .usage(2)
+  .damage(1, DamageType.Electro)
+  .done();
 
 /**
  * @id 332015
@@ -9,7 +62,17 @@ import { DamageType, DiceType, card } from "@gi-tcg/core/builder";
  */
 const AbyssalSummons = card(332015)
   .costSame(2)
-  // TODO
+  .requireCharacterTag("monster")
+  .do((c) => {
+    c.summon(
+      c.random(
+        CryoHilichurlShooter, 
+        HydroSamachurl, 
+        HilichurlBerserker, 
+        ElectroHilichurlShooter
+      )
+    );
+  })
   .done();
 
 /**
@@ -68,6 +131,7 @@ const ChangingShifts = card(332002)
 const ElementalResonanceEnduringRock = card(331602)
   .costGeo(1)
   .tags("resonance")
+  .requireCharacterTag("geo")
   .toCombatStatus()
   .on("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
   .usage(1)
@@ -75,7 +139,6 @@ const ElementalResonanceEnduringRock = card(331602)
     c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
     return true;
   })
-  // TODO
   .done();
 
 /**
@@ -88,6 +151,11 @@ const ElementalResonanceEnduringRock = card(331602)
 const ElementalResonanceFerventFlames = card(331302)
   .costPyro(1)
   .tags("resonance")
+  .requireCharacterTag("pyro")
+  .toStatus("my active")
+  .on("beforeSkillDamage", (c) => isReactionRelatedTo(c.damageInfo, DamageType.Pyro))
+  .usage(1)
+  .increaseDamage(3)
   // TODO
   .done();
 
@@ -101,8 +169,8 @@ const ElementalResonanceFerventFlames = card(331302)
 const ElementalResonanceHighVoltage = card(331402)
   .costElectro(1)
   .tags("resonance")
+  .requireCharacterTag("electro")
   .gainEnergy(1, "my character with energy < maxEnergy limit 1")
-  // TODO
   .done();
 
 /**
@@ -130,7 +198,12 @@ const ElementalResonanceImpetuousWinds = card(331502)
 const ElementalResonanceShatteringIce = card(331102)
   .costCryo(1)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("cryo")
+  .toStatus("my active")
+  .duration(1)
+  .on("beforeSkillDamage")
+  .usage(1)
+  .increaseDamage(2)
   .done();
 
 /**
@@ -143,7 +216,9 @@ const ElementalResonanceShatteringIce = card(331102)
 const ElementalResonanceSoothingWater = card(331202)
   .costHydro(1)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("hydro")
+  .heal(2, "my active")
+  .heal(1, "my standby")
   .done();
 
 /**
@@ -157,7 +232,16 @@ const ElementalResonanceSoothingWater = card(331202)
 const ElementalResonanceSprawlingGreenery = card(331702)
   .costDendro(1)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("dendro")
+  .do((c) => {
+    c.$("my summon with definition id 115")?.addVariable("usage", 1);
+    c.$("my combat statuses with definition id 116")?.addVariable("usage", 1);
+    c.$("my combat statuses with definition id 117")?.addVariable("usage", 1);
+  })
+  .toCombatStatus()
+  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .usage(1)
+  .increaseDamage(2)
   .done();
 
 /**
@@ -169,8 +253,8 @@ const ElementalResonanceSprawlingGreenery = card(331702)
  */
 const ElementalResonanceWovenFlames = card(331301)
   .tags("resonance")
+  .requireCharacterTag("pyro")
   .generateDice(DiceType.Pyro, 1)
-  // TODO
   .done();
 
 /**
@@ -182,7 +266,8 @@ const ElementalResonanceWovenFlames = card(331301)
  */
 const ElementalResonanceWovenIce = card(331101)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("cryo")
+  .generateDice(DiceType.Cryo, 1)
   .done();
 
 /**
@@ -194,7 +279,8 @@ const ElementalResonanceWovenIce = card(331101)
  */
 const ElementalResonanceWovenStone = card(331601)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("geo")
+  .generateDice(DiceType.Geo, 1)
   .done();
 
 /**
@@ -206,7 +292,8 @@ const ElementalResonanceWovenStone = card(331601)
  */
 const ElementalResonanceWovenThunder = card(331401)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("electro")
+  .generateDice(DiceType.Electro, 1)
   .done();
 
 /**
@@ -218,7 +305,8 @@ const ElementalResonanceWovenThunder = card(331401)
  */
 const ElementalResonanceWovenWaters = card(331201)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("hydro")
+  .generateDice(DiceType.Hydro, 1)
   .done();
 
 /**
@@ -230,7 +318,8 @@ const ElementalResonanceWovenWaters = card(331201)
  */
 const ElementalResonanceWovenWeeds = card(331701)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("dendro")
+  .generateDice(DiceType.Dendro, 1)
   .done();
 
 /**
@@ -242,7 +331,8 @@ const ElementalResonanceWovenWeeds = card(331701)
  */
 const ElementalResonanceWovenWinds = card(331501)
   .tags("resonance")
-  // TODO
+  .requireCharacterTag("anemo")
+  .generateDice(DiceType.Anemo, 1)
   .done();
 
 /**

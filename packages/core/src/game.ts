@@ -677,7 +677,6 @@ class Game {
     actions: DeferredAction[],
   ): AsyncGenerator<DeferredAction[], void> {
     for (const [name, arg] of actions) {
-      // TODO request part
       if (name === "requestReroll") {
         const newDice = await this.reroll(
           arg.who,
@@ -702,7 +701,6 @@ class Game {
         };
         yield this.useSkill(skillInfo, void 0);
       } else {
-        // TODO defeat logic
         const currentTurn = this._state.currentTurn;
         for (const who of [currentTurn, flip(currentTurn)]) {
           const player = this._state.players[who];

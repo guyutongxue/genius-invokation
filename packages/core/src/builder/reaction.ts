@@ -83,6 +83,26 @@ export const REACTION_MAP: ReactionMap = {
   },
 };
 
+const REACTION_RELATIVES: Record<R, readonly [D, D]> = {
+  [R.Melt]: [D.Pyro, D.Cryo],
+  [R.Vaporize]: [D.Pyro, D.Hydro],
+  [R.Overloaded]: [D.Pyro, D.Electro],
+  [R.Superconduct]: [D.Cryo, D.Electro],
+  [R.ElectroCharged]: [D.Hydro, D.Electro],
+  [R.Frozen]: [D.Cryo, D.Hydro],
+  [R.SwirlCryo]: [D.Cryo, D.Anemo],
+  [R.SwirlHydro]: [D.Hydro, D.Anemo],
+  [R.SwirlPyro]: [D.Pyro, D.Anemo],
+  [R.SwirlElectro]: [D.Electro, D.Anemo],
+  [R.CrystallizeCryo]: [D.Cryo, D.Geo],
+  [R.CrystallizeHydro]: [D.Hydro, D.Geo],
+  [R.CrystallizePyro]: [D.Pyro, D.Geo],
+  [R.CrystallizeElectro]: [D.Electro, D.Geo],
+  [R.Burning]: [D.Pyro, D.Dendro],
+  [R.Bloom]: [D.Dendro, D.Hydro],
+  [R.Quicken]: [D.Dendro, D.Electro],
+};
+
 const Frozen = 106 as StatusHandle;
 const Crystallize = 111 as CombatStatusHandle;
 const BurningFlame = 115 as SummonHandle;
@@ -198,3 +218,48 @@ reaction(R.Bloom)
 reaction(R.Quicken)
   .if((c) => c.damageInfo)
   .combatStatus(CatalyzingField);
+
+// reaction utility functions
+
+export function getReaction(damageInfo: DamageInfo): R | null {
+  if (
+    damageInfo.type === D.Heal ||
+    damageInfo.type === D.Physical ||
+    damageInfo.type === D.Piercing
+  ) {
+    return null;
+  }
+  const [, reactionType] =
+    REACTION_MAP[damageInfo.target.variables.aura][damageInfo.type];
+  return reactionType;
+}
+
+export function isReaction(damageInfo: DamageInfo, reaction: R): boolean {
+  return getReaction(damageInfo) === reaction;
+}
+
+export function isReactionRelatedTo(
+  damageInfo: DamageInfo,
+  target: D,
+): boolean {
+  const reaction = getReaction(damageInfo);
+  if (reaction === null) return false;
+  return REACTION_RELATIVES[reaction].includes(target);
+}
+
+export function isReactionSwirl(
+  damageInfo: DamageInfo,
+): D.Cryo | D.Electro | D.Hydro | D.Pyro | null {
+  switch (getReaction(damageInfo)) {
+    case R.SwirlCryo:
+      return D.Cryo;
+    case R.SwirlElectro:
+      return D.Electro;
+    case R.SwirlHydro:
+      return D.Hydro;
+    case R.SwirlPyro:
+      return D.Pyro;
+    default:
+      return null;
+  }
+}

@@ -402,11 +402,22 @@ export class TriggeredSkillBuilder<
     globalFilter?: SkillFilter<Ext, CallerType>,
   ) {
     super(id);
+    const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
     if (typeof globalFilter !== "undefined") {
-      this._globalFilter = globalFilter;
+      this._globalFilter = (c, e) => {
+        const { area, state } = c.caller();
+        return (
+          filterDescriptor(c as any, {
+            callerArea: area,
+            callerId: state.id,
+            listenTo: this._listenTo,
+          }) && globalFilter(c, e)
+        );
+      };
     }
   }
   private _usageOpt: Required<UsageOptions> | null = null;
+  private _listenTo: ListenTo = ListenTo.SameArea;
 
   override do(op: SkillOperation<Ext, CallerType>): this {
     // 设置了每回合使用次数的技能，在没有剩余使用次数时不进行操作
@@ -445,6 +456,21 @@ export class TriggeredSkillBuilder<
     return this;
   }
 
+  listenToMySelf(): this {
+    this._listenTo = ListenTo.Myself;
+    return this;
+  }
+
+  listenToPlayer(): this {
+    this._listenTo = ListenTo.SamePlayer;
+    return this;
+  }
+
+  listenToAll(): this {
+    this._listenTo = ListenTo.All;
+    return this;
+  }
+
   private buildSkill() {
     if (this._usageOpt) {
       const { name, auto, perRound } = this._usageOpt;
@@ -458,7 +484,7 @@ export class TriggeredSkillBuilder<
         }
       });
     }
-    const eventName = detailedEventDictionary[this.triggerOn][0];
+    const [eventName] = detailedEventDictionary[this.triggerOn];
     const action: SkillDescription<any> = (state, callerId, arg) => {
       const innerAction = this.getAction((ctx) => {
         let result: any;

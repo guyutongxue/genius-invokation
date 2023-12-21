@@ -3,6 +3,7 @@ import {
   CardTarget,
   CardTargetKind,
   CardType,
+  DeckRequirement,
   PlayCardFilter,
   PlayCardTargetGetter,
   SupportTag,
@@ -30,6 +31,7 @@ import { CharacterState, EntityState, GameState } from "../base/state";
 import { getEntityById } from "../util";
 import { combatStatus, status } from ".";
 import { equipment, support } from "./entity";
+import { CharacterTag } from "../base/character";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -61,6 +63,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   private _tags: CardTag[] = [];
   private _filters: PredFn<KindTs>[] = [];
   private _talentCh: number | null = null;
+  private _deckRequirement: DeckRequirement = {};
 
   private _targetQueries: string[] = [];
 
@@ -128,13 +131,18 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   talentOf(ch: CharacterHandle, opt?: { action?: boolean }) {
     this._talentCh = ch;
     const action = opt?.action ?? true;
-    // TODO: deck requirements
+    this._deckRequirement.character = ch;
     if (action) {
       // TODO: set active ch filter
       this.tags("action");
     }
     // TODO: target filter
     return this.tags("talent");
+  }
+
+  requireCharacterTag(tag: CharacterTag): this {
+    this._deckRequirement.dualCharacterTag = tag;
+    return this;
   }
 
   filter(pred: PredFn<KindTs>): this {
@@ -242,8 +250,8 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     registerCard({
       id: this.cardId,
       type: this._type,
-      tags: [], // TODO
-      deckRequirement: {}, // TODO
+      tags: this._tags,
+      deckRequirement: this._deckRequirement,
       getTarget: targetGetter,
       filter: filterFn,
       skillDefinition: skillDef,

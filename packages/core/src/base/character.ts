@@ -23,11 +23,17 @@ export type NationTag =
   | "liyue"
   | "inazuma"
   | "sumeru"
+  | "fontaine"
   | "monster"
   | "fatui"
-  | "hilichurl";
+  | "eremites";
+// | "hilichurl";
 
-export type CharacterTag = ElementTag | WeaponTag | NationTag;
+export type ArkheTag =
+  | "pneuma" // 芒
+  | "ousia"; // 荒
+
+export type CharacterTag = ElementTag | WeaponTag | NationTag | ArkheTag;
 
 export interface CharacterDefinition {
   readonly type: "character";

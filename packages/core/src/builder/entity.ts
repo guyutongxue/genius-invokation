@@ -5,6 +5,7 @@ import {
   EventNames,
   TriggeredSkillDefinition,
 } from "../base/skill";
+import { EntityContext } from "./context";
 import { registerEntity } from "./registry";
 import {
   DetailedEventExt,
@@ -50,6 +51,17 @@ export class EntityBuilder<
     private type: CallerType,
     private id: number,
   ) {}
+
+  conflictWith(id: number) {
+    this.on("enter")
+      .do((c) => {
+        const ctx = c.$(`my any with definition id ${id}`);
+        if (ctx && ctx instanceof EntityContext) {
+          ctx.dispose();
+        }
+      });
+    return this;
+  }
 
   on<E extends DetailedEventNames>(
     event: E,
