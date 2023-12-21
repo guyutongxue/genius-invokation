@@ -1,4 +1,4 @@
-import { DamageType, DiceType, card, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -41,13 +41,13 @@ const HilichurlBerserker = summon(303213)
   .done();
 
 /**
- * @id 303213
+ * @id 303214
  * @name 雷箭丘丘人
  * @description
  * 结束阶段：造成1点雷元素伤害。
  * 可用次数：2
  */
-const ElectroHilichurlShooter = summon(303213)
+const ElectroHilichurlShooter = summon(303214)
   .on("endPhase")
   .usage(2)
   .damage(1, DamageType.Electro)
@@ -334,6 +334,44 @@ const ElementalResonanceWovenWinds = card(331501)
   .requireCharacterTag("anemo")
   .generateDice(DiceType.Anemo, 1)
   .done();
+
+/**
+ * @id 303216
+ * @name 愚人众伏兵·冰萤术士
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点冰元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+const FatuiAmbusherCryoCicinMage = combatStatus(303216)
+  .on("skill")
+  .listenToPlayer()
+  // TODO
+  .done();
+
+/**
+ * @id 303217
+ * @name 愚人众伏兵·藏镜仕女
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点水元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+
+/**
+ * @id 303218
+ * @name 愚人众伏兵·火铳游击兵
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点火元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+
+/**
+ * @id 303219
+ * @name 愚人众伏兵·雷锤前锋军
+ * @description
+ * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点雷元素伤害。（每回合1次）
+ * 可用次数：2
+ */
+
 
 /**
  * @id 332016
