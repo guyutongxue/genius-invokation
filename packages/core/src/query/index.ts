@@ -25,7 +25,7 @@ export function executeQuery<
     externals: {
       self: (c) => c.skillInfo.caller,
       event: {
-        skillCaller: (c) => c.eventArg.skillInfo.caller,
+        skillCaller: (c) => c.eventArg.caller,
       },
       damage: {
         target: (c) => c.damageInfo.target,

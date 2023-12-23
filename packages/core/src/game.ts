@@ -394,7 +394,9 @@ class Game {
         value: operatingDice,
       });
       // 消耗能量
-      const requiredEnergy = actionInfo.cost.filter((x) => x === DiceType.Energy).length;
+      const requiredEnergy = actionInfo.cost.filter(
+        (x) => x === DiceType.Energy,
+      ).length;
       if (requiredEnergy > 0) {
         if (activeCh.variables.energy < requiredEnergy) {
           throw new Error(`Active character does not have enough energy`);
@@ -615,7 +617,7 @@ class Game {
 
   private async useSkill(
     skillInfo: SkillInfo,
-    args: any,
+    arg: any,
   ): Promise<DeferredAction[]> {
     // If caller not exists (consumed by previous skills), do nothing
     try {
@@ -623,12 +625,19 @@ class Game {
     } catch {
       return [];
     }
+    // If skill has a filter and not passed, do nothing
+    if (
+      "filter" in skillInfo.definition &&
+      !(0, skillInfo.definition.filter)(this._state, skillInfo.caller, arg)
+    ) {
+      return [];
+    }
     this.mutate({ type: "pushSkillLog", skillInfo });
     const oldState = this._state;
     const [newState, eventList] = (0, skillInfo.definition.action)(
       this._state,
       skillInfo,
-      args,
+      arg,
     );
     this._state = newState;
     if (oldState.players !== newState.players) {
@@ -640,6 +649,7 @@ class Game {
         await this.io.pause(this._state);
       }
     }
+    await this.handleEvents(["onSkill", { ...skillInfo, state: oldState }]);
     return eventList;
   }
 
@@ -701,9 +711,10 @@ class Game {
         };
         yield this.useSkill(skillInfo, void 0);
       } else {
-        const currentTurn = this._state.currentTurn;
+        const { state: onTimeState } = arg;
+        const currentTurn = onTimeState.currentTurn;
         for (const who of [currentTurn, flip(currentTurn)]) {
-          const player = this._state.players[who];
+          const player = onTimeState.players[who];
           const activeIdx = getActiveCharacterIndex(player);
           for (const ch of shiftLeft(player.characters, activeIdx)) {
             for (const sk of ch.definition.skills) {

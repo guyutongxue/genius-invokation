@@ -344,7 +344,7 @@ const ElementalResonanceWovenWinds = card(331501)
  */
 const FatuiAmbusherCryoCicinMage = combatStatus(303216)
   .on("skill")
-  .listenToPlayer()
+  .damage(1, DamageType.Cryo, "my active")
   // TODO
   .done();
 

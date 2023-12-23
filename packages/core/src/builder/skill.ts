@@ -8,9 +8,14 @@ import {
   EventExt,
   SkillInfo,
   TriggeredSkillDefinition,
+  TriggeredSkillFilter,
 } from "../base/skill";
-import { EntityState, GameState } from "../base/state";
-import { SkillContext, ExtendedSkillContext } from "./context";
+import { CharacterState, EntityState, GameState } from "../base/state";
+import {
+  SkillContext,
+  ExtendedSkillContext,
+  StrictlyTypedSkillContext,
+} from "./context";
 import {
   AppliableDamageType,
   ExEntityType,
@@ -229,7 +234,6 @@ export abstract class SkillBuilder<
 > {
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(protected readonly id: number) {}
-  protected _globalFilter: SkillFilter<Ext, CallerType> = () => true;
   protected applyFilter = false;
   protected _filter: SkillFilter<Ext, CallerType> = () => true;
 
@@ -267,19 +271,35 @@ export abstract class SkillBuilder<
    * @returns 内部技能描述函数
    */
   protected getAction(
-    extGenerator: (skillCtx: SkillContext<false, Ext, CallerType>) => Ext,
+    extGenerator: (skillCtx: SkillContext<false, {}, CallerType>) => Ext,
   ): SkillDescription<void> {
     return (st, skillInfo) => {
       const ctx = new SkillContext<false, Ext, CallerType>(st, skillInfo);
       const ext = extGenerator(ctx);
       const wrapped = extendSkillContext<false, Ext, CallerType>(ctx, ext);
-      if ((0, this._globalFilter)(wrapped as any, (ext as any)?.eventArg)) {
-        for (const op of this.operations) {
-          op(wrapped, (ext as any)?.eventArg);
-        }
+      for (const op of this.operations) {
+        op(wrapped, (ext as any)?.eventArg);
       }
       return [ctx.state, ctx.events] as const;
     };
+  }
+
+  // 获取用于 filter 和 target 的 SkillContext
+  // filter 的时候没有完整的 SkillInfo，所以称之为 Fake
+  // 若尝试获取 SkillInfo.definition 则是运行时错误
+  protected getFakeSkillContext(
+    state: GameState,
+    caller: CharacterState | EntityState,
+    extGenerator: (skillCtx: SkillContext<true, {}, CallerType>) => Ext,
+  ): ExtendedSkillContext<true, Ext, CallerType> {
+    const ctx = new SkillContext(state, {
+      caller,
+      definition: null!,
+      fromCard: null,
+      requestBy: null,
+    });
+    const ext = extGenerator(ctx);
+    return extendSkillContext(ctx, ext);
   }
 }
 
@@ -395,26 +415,25 @@ export class TriggeredSkillBuilder<
   EN extends DetailedEventNames,
   V extends string,
 > extends SkillBuilder<Ext, CallerType> {
+  private _triggerFilter: SkillFilter<Ext, CallerType>;
   constructor(
     id: number,
     private readonly triggerOn: EN,
     private readonly parent: EntityBuilder<CallerType, V>,
-    globalFilter?: SkillFilter<Ext, CallerType>,
+    triggerFilter: SkillFilter<Ext, CallerType> = () => true,
   ) {
     super(id);
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
-    if (typeof globalFilter !== "undefined") {
-      this._globalFilter = (c, e) => {
-        const { area, state } = c.caller();
-        return (
-          filterDescriptor(c as any, {
-            callerArea: area,
-            callerId: state.id,
-            listenTo: this._listenTo,
-          }) && globalFilter(c, e)
-        );
-      };
-    }
+    this._triggerFilter = (c, e) => {
+      const { area, state } = c.caller();
+      return (
+        filterDescriptor(c as any, {
+          callerArea: area,
+          callerId: state.id,
+          listenTo: this._listenTo,
+        }) && triggerFilter(c, e)
+      );
+    };
   }
   private _usageOpt: Required<UsageOptions> | null = null;
   private _listenTo: ListenTo = ListenTo.SameArea;
@@ -485,24 +504,32 @@ export class TriggeredSkillBuilder<
       });
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
-    const action: SkillDescription<any> = (state, callerId, arg) => {
-      const innerAction = this.getAction((ctx) => {
-        let result: any;
-        if ("state" in arg) {
-          result = {
-            eventArg: arg,
-          };
-        } else {
-          result = arg;
-        }
-        return result;
-      });
-      return innerAction(state, callerId);
+    const argToExt = (arg: any) => {
+      let result: any;
+      if ("state" in arg) {
+        result = {
+          eventArg: arg,
+        };
+      } else {
+        result = arg;
+      }
+      return result;
+    };
+    const filter: TriggeredSkillFilter<any> = (state, caller, arg) => {
+      const ctx = this.getFakeSkillContext(state, caller, (ctx) =>
+        argToExt(arg),
+      );
+      return !!this._triggerFilter(ctx, arg);
+    };
+    const action: SkillDescription<any> = (state, skillInfo, arg) => {
+      const innerAction = this.getAction((ctx) => argToExt(arg));
+      return innerAction(state, skillInfo);
     };
     const def: TriggeredSkillDefinition = {
       type: "skill",
       id: this.id,
       triggerOn: eventName,
+      filter,
       action,
     };
     registerSkill(def);

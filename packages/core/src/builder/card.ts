@@ -150,19 +150,6 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
-  // 用于 filter 和 target
-  private getFakeSkillContext(
-    state: GameState,
-    caller: CharacterState,
-  ): SkillContext<true, {}, "character"> {
-    return new SkillContext(state, {
-      caller,
-      definition: null!,
-      fromCard: null,
-      requestBy: null,
-    });
-  }
-
   private generateTargetList(
     state: GameState,
     caller: CharacterState,
@@ -173,18 +160,10 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return [[]];
     }
     const [first, ...rest] = targetQuery;
-    const ctx = this.getFakeSkillContext(state, caller);
-    const targets = known.map((id) => getEntityById(state, id, true));
-    const wrapped = new Proxy(ctx, {
-      get(target, prop, receiver) {
-        if (prop === "targets") {
-          return targets;
-        } else {
-          return Reflect.get(target, prop, receiver);
-        }
-      },
-    });
-    const ids = wrapped.$$(first).map((c) => c.state.id);
+    const ctx = this.getFakeSkillContext(state, caller, (ctx) =>
+      CardBuilder.cardTargetToExt(ctx, known),
+    );
+    const ids = ctx.$$(first).map((c) => c.state.id);
     return ids.flatMap((id) =>
       this.generateTargetList(state, caller, [...known, id], rest).map((l) => [
         id,
@@ -193,37 +172,30 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     );
   }
 
-  done(): CardHandle {
-    // 将卡牌目标 ID 列表转换为扩展点 `CardTargetExt`
-    const cardTargetToExt = (
-      skillCtx: SkillContext<boolean, any, "character">,
-      ids: number[],
-    ): CardTargetExt<KindTs> => {
-      const targets = ids.map((id) => getEntityById(skillCtx.state, id, true));
-      return {
-        targets: targets as any,
-      };
+  // 将卡牌目标 ID 列表转换为扩展点 `CardTargetExt`
+  private static readonly cardTargetToExt = (
+    skillCtx: SkillContext<boolean, any, "character">,
+    ids: number[],
+  ): CardTargetExt<any> => {
+    const targets = ids.map((id) => getEntityById(skillCtx.state, id, true));
+    return {
+      targets: targets as any,
     };
-    const action: SkillDescription<CardTarget> = (state, callerId, { ids }) => {
-      const targetExtGenerator = (
-        skillCtx: SkillContext<false, any, any>,
-      ): CardTargetExt<KindTs> => {
-        return cardTargetToExt(skillCtx, ids);
-      };
-      const innerAction: SkillDescription<void> =
-        this.getAction(targetExtGenerator);
-      return innerAction(state, callerId);
+  };
+
+  done(): CardHandle {
+    const action: SkillDescription<CardTarget> = (state, skillInfo, { ids }) => {
+      const innerAction: SkillDescription<void> = this.getAction((ctx) =>
+        CardBuilder.cardTargetToExt(ctx, ids),
+      );
+      return innerAction(state, skillInfo);
     };
     const filterFn: PlayCardFilter = (state, caller, { ids }) => {
-      const ctx = this.getFakeSkillContext(state, caller);
-      const ext = cardTargetToExt(ctx, ids);
-      const wrappedCtx = extendSkillContext<
-        true,
-        CardTargetExt<KindTs>,
-        "character"
-      >(ctx, ext);
+      const ctx = this.getFakeSkillContext(state, caller, (ctx) =>
+        CardBuilder.cardTargetToExt(ctx, ids),
+      );
       for (const filter of this._filters) {
-        if (!filter(wrappedCtx)) {
+        if (!filter(ctx)) {
           return false;
         }
       }

@@ -272,9 +272,16 @@ export type AsyncRequest =
 
 export type DeferredAction = InSkillEventPayload | AsyncRequest;
 
+export type TriggeredSkillFilter<E extends EventNames> = (
+  state: GameState,
+  caller: CharacterState | EntityState,
+  arg: EventArg<E>,
+) => boolean;
+
 export type TriggeredSkillDefinition<E extends EventNames = EventNames> =
   SkillDefinitionBase<EventArg<E>> & {
-    triggerOn: E;
+    readonly triggerOn: E;
+    readonly filter: TriggeredSkillFilter<E>;
   };
 
 export type SkillDefinition =

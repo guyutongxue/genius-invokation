@@ -33,7 +33,7 @@ export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardTarget>;
 export type PlayCardFilter = (
   state: GameState,
   caller: CharacterState,
-  ctx: CardTarget,
+  arg: CardTarget,
 ) => boolean;
 export type PlayCardTargetGetter = (
   state: GameState,
