@@ -101,16 +101,18 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   toCombatStatus(id?: number) {
+    id ??= this.cardId;
     this.do((c) => {
       c.combatStatus(id as CombatStatusHandle);
     }).done();
-    return combatStatus(id ?? this.cardId);
+    return combatStatus(id);
   }
   toStatus(target: string, id?: number) {
+    id ??= this.cardId;
     this.do((c) => {
-      c.characterStatus(id as StatusHandle, target);
+      c.characterStatus(id, target);
     }).done();
-    return status(id ?? this.cardId);
+    return status(id);
   }
 
   addTarget<Q extends TargetQuery>(
