@@ -60,6 +60,7 @@ export interface PlayerState {
   readonly declaredEnd: boolean;
   readonly hasDefeated: boolean;
   readonly canPlunging: boolean;
+  readonly canCharged: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
 }

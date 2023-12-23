@@ -173,7 +173,27 @@ const Tenshukaku = card(321007)
  */
 const Vanarana = card(321011)
   .support("place")
-  // TODO
+  .variable("count", 0)
+  .variable("d1", 0)
+  .variable("d2", 0)
+  .on("endPhase")
+  .do((c) => {
+    const absorbed = c.absorbDice("seq", 2);
+    c.setVariable("count", absorbed.length);
+    c.setVariable("d1", absorbed[0] ?? 0);
+    c.setVariable("d2", absorbed[1] ?? 0);
+  })
+  .on("actionPhase")
+  .do((c) => {
+    const { state } = c.caller();
+    if (state.variables.count === 2) {
+      c.generateDice(state.variables.d1, 1);
+      c.generateDice(state.variables.d2, 1);
+    } else if (state.variables.count === 1) {
+      c.generateDice(state.variables.d1, 1);
+    }
+  })
+  .setVariable("count", 0)
   .done();
 
 /**
@@ -186,5 +206,7 @@ const Vanarana = card(321011)
 const WangshuInn = card(321005)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("endPhase")
+  .usage(2)
+  .heal(2, "my standby characters order by (maxHealth - health) limit 1")
   .done();

@@ -9,9 +9,10 @@ import {
   SkillInfo,
   useSyncSkill,
 } from "../base/skill";
-import { CharacterState, EntityState, GameState } from "../base/state";
+import { CardState, CharacterState, EntityState, GameState } from "../base/state";
 import {
   allEntitiesAtArea,
+  drawCard,
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
@@ -20,6 +21,7 @@ import {
 import { executeQuery } from "../query";
 import {
   AppliableDamageType,
+  CardHandle,
   CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
@@ -29,6 +31,7 @@ import {
   SkillHandle,
   StatusHandle,
   SummonHandle,
+  SupportHandle,
 } from "./type";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
@@ -37,6 +40,7 @@ import {
   REACTION_DESCRIPTION,
   REACTION_MAP,
 } from "./reaction";
+import { flip } from "@gi-tcg/utils";
 
 type WrapArray<T> = T extends readonly any[] ? T : T[];
 
@@ -61,6 +65,11 @@ type TargetQueryArg<
   | CharacterContext<Readonly>[]
   | CharacterContext<Readonly>
   | string;
+
+interface DrawCardsOpt {
+  who?: "my" | "opp";
+  withTag?: CardTag | null;
+}
 
 /**
  * 用于描述技能的上下文对象。
@@ -92,6 +101,9 @@ export class SkillContext<
   get player() {
     return this._state.players[this.callerArea.who];
   }
+  get oppPlayer() {
+    return this._state.players[flip(this.callerArea.who)];
+  }
   private get callerState(): CharacterState | EntityState {
     return getEntityById(this._state, this.skillInfo.caller.id, true);
   }
@@ -103,7 +115,9 @@ export class SkillContext<
   $<const Q extends string>(
     arg: Q,
   ): ExContextType<Readonly, GuessedTypeOfQuery<Q>> | undefined;
-  $<T>(arg: T): T;
+  $<T extends EntityState | CharacterState>(
+    arg: T,
+  ): ExContextType<Readonly, T["definition"]["type"]> | undefined;
   $(arg: any): any {
     const result = this.$$(arg);
     if (result.length > 0) {
@@ -124,7 +138,9 @@ export class SkillContext<
   $$<const Q extends string>(
     arg: Q,
   ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[];
-  $$<T>(arg: T): WrapArray<T>;
+  $$<T extends EntityState | CharacterState>(
+    arg: T,
+  ): WrapArray<ExContextType<Readonly, T["definition"]["type"]>>;
   $$(arg: any): any {
     if (typeof arg === "function") {
       const fnResult = arg(this);
@@ -136,9 +152,9 @@ export class SkillContext<
     } else if (typeof arg === "string") {
       return executeQuery(this, arg);
     } else if (Array.isArray(arg)) {
-      return arg;
+      return arg.map((v) => this.of(v));
     } else {
-      return [arg];
+      return [this.of(arg)];
     }
   }
 
@@ -166,7 +182,7 @@ export class SkillContext<
   private queryCoerceToCharacters(
     arg: TargetQueryArg<false, Ext, CallerType>,
   ): CharacterContext<Readonly>[] {
-    const result = this.$$(arg);
+    const result = this.$$(arg as any);
     for (const r of result) {
       if (r instanceof CharacterContext) {
         continue;
@@ -441,8 +457,15 @@ export class SkillContext<
       });
     }
   }
-  summon(id: SummonHandle) {
-    this.createEntity("summon", id);
+  summon(id: SummonHandle, where: "my" | "opp" = "my") {
+    if (where === "my") {
+      this.createEntity("summon", id);
+    } else {
+      this.createEntity("summon", id, {
+        type: "summons",
+        who: flip(this.callerArea.who),
+      });
+    }
   }
   characterStatus(
     id: StatusHandle,
@@ -457,28 +480,46 @@ export class SkillContext<
       this.createEntity("status", id, this.callerArea);
     }
   }
-  combatStatus(id: CombatStatusHandle) {
-    this.createEntity("combatStatus", id);
+  combatStatus(id: CombatStatusHandle, where: "my" | "opp" = "my") {
+    if (where === "my") {
+      this.createEntity("combatStatus", id);
+    } else {
+      this.createEntity("combatStatus", id, {
+        type: "combatStatuses",
+        who: flip(this.callerArea.who),
+      });
+    }
+  }
+  createSupport(id: SupportHandle, where: "my" | "opp") {
+    if (where === "my") {
+      this.createEntity("support", id);
+    } else {
+      this.createEntity("support", id, {
+        type: "supports",
+        who: flip(this.callerArea.who),
+      });
+    }
   }
 
-  dispose(entityState?: EntityState) {
-    if (typeof entityState === "undefined") {
-      if (this.callerState.definition.type === "character") {
+  dispose(target: string | EntityState = "@self") {
+    const targets = this.$$(target as any);
+    for (const t of targets) {
+      const entityState = t.state;
+      if (entityState.definition.type === "character") {
         throw new Error(
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
-      entityState = this.callerState as EntityState;
+      const stateBeforeDispose = this.state;
+      this.mutate({
+        type: "disposeEntity",
+        oldState: entityState,
+      });
+      this.emitEvent("onDisposing", {
+        entity: entityState as EntityState,
+        state: stateBeforeDispose,
+      });
     }
-    const stateBeforeDispose = this.state;
-    this.mutate({
-      type: "disposeEntity",
-      oldState: entityState,
-    });
-    this.emitEvent("onDisposing", {
-      entity: entityState,
-      state: stateBeforeDispose,
-    });
   }
 
   setVariable(
@@ -524,8 +565,9 @@ export class SkillContext<
     });
   }
 
-  absorbDice(strategy: "seq" | "diff", count: number) {
-    // TODO return DiceType[]
+  absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
+    // TODO
+    return [];
   }
   generateDice(type: DiceType | "randomElement", count: number) {
     let insertedDice: DiceType[] = [];
@@ -558,22 +600,37 @@ export class SkillContext<
     // TODO
   }
 
-  drawCards(count: number, withTag?: CardTag) {
-    const piles = this.player.piles;
-    const candidates = withTag
-      ? piles.filter((c) => c.definition.tags.includes(withTag))
-      : [...piles];
-    for (let i = 0; i < count; i++) {
-      const value = candidates.pop();
-      if (typeof value === "undefined") {
-        break;
-      }
+  createHandCard(cardId: CardHandle) {
+    const cardDef = this._state.data.card.get(cardId);
+    if (typeof cardDef === "undefined") {
+      throw new Error(`Unknown card ${cardId}`);
+    }
+    const cardState: CardState = {
+      id: 0,
+      definition: cardDef,
+    };
+    const who = this.callerArea.who;
+    this.mutate({
+      type: "createCard",
+      who,
+      target: "hands",
+      value: cardState,
+    });
+    if (this.player.hands.length > this._state.config.maxHands) {
       this.mutate({
-        type: "transferCard",
-        path: "pilesToHands",
-        who: this.callerArea.who,
-        value,
-      });
+        type: "disposeCard",
+        who,
+        oldState: cardState,
+        used: false,
+      })
+    }
+  }
+
+  drawCards(count: number, opt?: DrawCardsOpt) {
+    const { withTag = null, who: myOrOpt = "my" } = (opt ??= {});
+    const who = myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    for (let i = 0; i < count; i++) {
+      this._state = drawCard(this._state, who, withTag);
     }
   }
   switchCards() {
@@ -640,6 +697,7 @@ type SkillContextMutativeProps =
   | "addVariable"
   | "absorbDice"
   | "generateDice"
+  | "createHandCard"
   | "drawCards"
   | "switchCards"
   | "reroll"

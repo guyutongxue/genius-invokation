@@ -21,6 +21,7 @@ import {
 } from "@gi-tcg/typings";
 import {
   allEntities,
+  drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
   getEntityById,
@@ -61,6 +62,7 @@ const INITIAL_PLAYER_STATE: PlayerState = {
   supports: [],
   declaredEnd: false,
   canPlunging: false,
+  canCharged: false,
   hasDefeated: false,
   legendUsed: false,
   skipNextTurn: false,
@@ -212,19 +214,9 @@ class Game {
 
   private async initHands() {
     for (let who of [0, 1] as const) {
-      const player = this._state.players[who];
       // TODO legend
       for (let i = 0; i < this.config.initialHands; i++) {
-        const card = this._state.players[who].piles[0];
-        if (typeof card === "undefined") {
-          throw new Error(`Wrong config; deck count is less than initialHands`);
-        }
-        this.mutate({
-          type: "transferCard",
-          who,
-          path: "pilesToHands",
-          value: card,
-        });
+        this._state = drawCard(this._state, who, null);
       }
     }
     this.mutate({
@@ -367,6 +359,12 @@ class Game {
       }
       const actionInfo = actions[chosenIndex];
       this._state = actionInfo.newState;
+      this.mutate({
+        type: "setPlayerFlag",
+        who,
+        flagName: "canCharged",
+        value: player.dice.length % 2 === 0,
+      });
 
       const activeCh = player.characters[getActiveCharacterIndex(player)];
       // 检查骰子
@@ -490,9 +488,15 @@ class Game {
         "onAction",
         {
           ...actionInfo,
-          state: this._state,
+          state: actionInfo.newState,
         },
       ]);
+      this.mutate({
+        type: "setPlayerFlag",
+        who,
+        flagName: "canPlunging",
+        value: actionInfo.type === "switchActive",
+      });
     }
     if (
       this._state.players[0].declaredEnd &&
@@ -511,6 +515,11 @@ class Game {
         state: this._state,
       },
     ]);
+    for (const who of [0, 1] as const) {
+      for (let i = 0; i < 2; i++) {
+        this._state = drawCard(this._state, who, null);
+      }
+    }
     this.mutate({
       type: "changePhase",
       newPhase: "roll",
@@ -539,8 +548,7 @@ class Game {
         .map((s) => ({
           ...s,
           fast: false,
-          cost:
-            "costs" in s.skill.definition ? [...s.skill.definition.costs] : [],
+          cost: [...s.skill.definition.requiredCost],
         })),
     );
 
@@ -563,7 +571,7 @@ class Game {
             who,
             card,
             target: { ids },
-            cost: [...card.definition.skillDefinition.costs],
+            cost: [...card.definition.skillDefinition.requiredCost],
             fast: !card.definition.tags.includes("action"),
           });
         }

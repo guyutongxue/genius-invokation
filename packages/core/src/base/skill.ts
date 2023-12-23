@@ -24,7 +24,7 @@ export type SkillType = CommonSkillType | "card";
 export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
   readonly skillType: SkillType;
-  readonly costs: readonly DiceType[];
+  readonly requiredCost: readonly DiceType[];
   readonly triggerOn: null;
 }
 
@@ -40,7 +40,7 @@ export interface UseDiceModifier {
   readonly currentCost: DiceType[];
   addCost(...dice: DiceType[]): void;
   deductCost(...dice: DiceType[]): void;
-  requestFastSwitch(): void;
+  setFastAction(): void;
 }
 
 export interface DamageModifier0 {
@@ -280,8 +280,10 @@ export type TriggeredSkillFilter<E extends EventNames> = (
 
 export type TriggeredSkillDefinition<E extends EventNames = EventNames> =
   SkillDefinitionBase<EventArg<E>> & {
+    readonly skillType: null;
     readonly triggerOn: E;
     readonly filter: TriggeredSkillFilter<E>;
+    readonly requiredCost: readonly [];
   };
 
 export type SkillDefinition =

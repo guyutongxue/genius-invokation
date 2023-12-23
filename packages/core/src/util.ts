@@ -12,6 +12,8 @@ import {
 import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
 import { flip } from "@gi-tcg/utils";
+import { CardTag } from "./base/card";
+import { applyMutation } from "./base/mutation";
 
 export function getEntityById(
   state: GameState,
@@ -164,6 +166,41 @@ export function nextRandom(
       id: oldState.id,
     },
   ];
+}
+
+export function drawCard(
+  state: GameState,
+  who: 0 | 1,
+  withTag: CardTag | null,
+): GameState {
+  let candidate;
+  if (withTag !== null) {
+    candidate =
+      state.players[who].piles.find((c) =>
+        c.definition.tags.includes(withTag),
+      ) ?? state.players[who].piles[0];
+  } else {
+    candidate = state.players[who].piles[0];
+  }
+  if (typeof candidate === "undefined") {
+    return state;
+  }
+
+  state = applyMutation(state, {
+    type: "transferCard",
+    path: "pilesToHands",
+    who,
+    value: candidate,
+  });
+  if (state.players[who].hands.length > state.config.maxHands) {
+    state = applyMutation(state, {
+      type: "disposeCard",
+      who,
+      oldState: candidate,
+      used: false,
+    });
+  }
+  return state;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

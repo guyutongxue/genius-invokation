@@ -76,6 +76,12 @@ export class EntityBuilder<
       ),
     );
   }
+  once<E extends DetailedEventNames>(
+    event: E,
+    filter?: SkillFilter<ExtOfEntity<Vars, E>, CallerType>,
+  ) {
+    return this.on(event, filter).usage(1, { visible: false });
+  }
 
   variable<const Name extends string>(
     name: Name,

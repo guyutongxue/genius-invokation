@@ -116,8 +116,7 @@ const CalxsArts = card(332009)
  */
 const ChangingShifts = card(332002)
   .toCombatStatus()
-  .on("beforeUseDice")
-  .usage(1)
+  .once("beforeUseDice", (c) => c.currentAction.type === "switchActive")
   .deductCost(DiceType.Void)
   .done();
 
@@ -133,8 +132,7 @@ const ElementalResonanceEnduringRock = card(331602)
   .tags("resonance")
   .requireCharacterTag("geo")
   .toCombatStatus()
-  .on("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
-  .usage(1)
+  .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
   .do((c) => {
     c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
     return true;
@@ -153,8 +151,7 @@ const ElementalResonanceFerventFlames = card(331302)
   .tags("resonance")
   .requireCharacterTag("pyro")
   .toStatus("my active")
-  .on("beforeSkillDamage", (c) => isReactionRelatedTo(c.damageInfo, DamageType.Pyro))
-  .usage(1)
+  .once("beforeSkillDamage", (c) => isReactionRelatedTo(c.damageInfo, DamageType.Pyro))
   .increaseDamage(3)
   // TODO
   .done();
@@ -201,8 +198,7 @@ const ElementalResonanceShatteringIce = card(331102)
   .requireCharacterTag("cryo")
   .toStatus("my active")
   .duration(1)
-  .on("beforeSkillDamage")
-  .usage(1)
+  .once("beforeSkillDamage")
   .increaseDamage(2)
   .done();
 
@@ -239,8 +235,7 @@ const ElementalResonanceSprawlingGreenery = card(331702)
     c.$("my combat statuses with definition id 117")?.addVariable("usage", 1);
   })
   .toCombatStatus()
-  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
-  .usage(1)
+  .once("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
   .increaseDamage(2)
   .done();
 
@@ -345,7 +340,6 @@ const ElementalResonanceWovenWinds = card(331501)
 const FatuiAmbusherCryoCicinMage = combatStatus(303216)
   .on("skill")
   .damage(1, DamageType.Cryo, "my active")
-  // TODO
   .done();
 
 /**
@@ -355,6 +349,10 @@ const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点水元素伤害。（每回合1次）
  * 可用次数：2
  */
+const FatuiAmbusherMirrorMaiden = combatStatus(303217)
+  .on("skill")
+  .damage(1, DamageType.Hydro, "my active")
+  .done();
 
 /**
  * @id 303218
@@ -363,6 +361,10 @@ const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点火元素伤害。（每回合1次）
  * 可用次数：2
  */
+const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
+  .on("skill")
+  .damage(1, DamageType.Pyro, "my active")
+  .done();
 
 /**
  * @id 303219
@@ -371,6 +373,10 @@ const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  * 所在阵营的角色使用技能后：对所在阵营的出战角色造成1点雷元素伤害。（每回合1次）
  * 可用次数：2
  */
+const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
+  .on("skill")
+  .damage(1, DamageType.Electro, "my active")
+  .done();
 
 
 /**
@@ -382,7 +388,18 @@ const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  */
 const FatuiConspiracy = card(332016)
   .costSame(2)
-  // TODO
+  .requireCharacterTag("fatui")
+  .do((c) => {
+    c.combatStatus(
+      c.random(
+        FatuiAmbusherCryoCicinMage,
+        FatuiAmbusherMirrorMaiden,
+        FatuiAmbusherPyroslingerBracer,
+        FatuiAmbusherElectrohammerVanguard
+      ),
+      "opp"
+    );
+  })
   .done();
 
 /**
@@ -393,7 +410,14 @@ const FatuiConspiracy = card(332016)
  */
 const FriendshipEternal = card(332020)
   .costSame(2)
-  // TODO
+  .do((c) => {
+    if (c.player.hands.length < 4) {
+      c.drawCards(4 - c.player.hands.length, { who: "my" });
+    }
+    if (c.oppPlayer.hands.length < 4) {
+      c.drawCards(4 - c.oppPlayer.hands.length, { who: "opp" });
+    }
+  })
   .done();
 
 /**
@@ -404,7 +428,7 @@ const FriendshipEternal = card(332020)
  */
 const GuardiansOath = card(332014)
   .costSame(4)
-  // TODO
+  .dispose("all summons")
   .done();
 
 /**
@@ -416,7 +440,11 @@ const GuardiansOath = card(332014)
  */
 const HeavyStrike = card(332018)
   .costSame(1)
-  // TODO
+  .toStatus("my active")
+  .once("beforeSkillDamage", (c) => c.skillInfo.definition.skillType === "normal")
+  .increaseDamage(1)
+  .if((c) => c.player.canCharged)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -426,7 +454,9 @@ const HeavyStrike = card(332018)
  * 本回合有我方角色被击倒，才能打出：生成1个万能元素，我方当前出战角色获得1点充能。（每回合中，最多只能打出1张「本大爷还没有输！」。）
  */
 const IHaventLostYet = card(332005)
-  // TODO
+  .filter((c) => c.player.hasDefeated)
+  .generateDice(DiceType.Omni, 1)
+  .gainEnergy(1, "my active")
   .done();
 
 /**
@@ -436,6 +466,9 @@ const IHaventLostYet = card(332005)
  * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。
  */
 const LeaveItToMe = card(332006)
+  .toCombatStatus()
+  .once("beforeUseDice", (c) => c.currentAction.type === "switchActive" && !c.currentAction.fast)
+  .setFastAction()
   // TODO
   .done();
 
@@ -447,7 +480,16 @@ const LeaveItToMe = card(332006)
  * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
  */
 const Lyresong = card(332024)
-  // TODO
+  .addTarget("my character has equipment with tag (artifact)")
+  .do((c) => {
+    const { definition: { id } } = c.of(c.targets[0]).removeArtifact();
+    c.createHandCard(id as any);
+  })
+  .toCombatStatus()
+  .duration(1)
+  .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
+    c.currentAction.card.definition.tags.includes("artifact"))
+  .deductCost(DiceType.Void, DiceType.Void)
   .done();
 
 /**
@@ -463,7 +505,6 @@ const MasterOfWeaponry = card(332010)
     const weapon = c.of(c.targets[0]).removeWeapon();
     c.of(c.targets[1]).equip(weapon.definition.id as any);
   })
-  // TODO
   .done();
 
 /**
@@ -475,7 +516,9 @@ const MasterOfWeaponry = card(332010)
  */
 const NatureAndWisdom = card(331804)
   .costSame(1)
-  // TODO
+  .requireCharacterTag("sumeru")
+  .drawCards(1)
+  .switchCards()
   .done();
 
 /**
@@ -485,7 +528,17 @@ const NatureAndWisdom = card(331804)
  * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中一位牌手先宣布结束时，未宣布结束的牌手抓2张牌。
  */
 const Pankration = card(332023)
-  // TODO
+  .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
+  .toCombatStatus()
+  .once("declareEnd")
+  .listenToAll()
+  .do((c) => {
+    if (c.player.declaredEnd) {
+      c.drawCards(2, { who: "opp" });
+    } else {
+      c.drawCards(2, { who: "my" });
+    }
+  })
   .done();
 
 /**
@@ -497,7 +550,9 @@ const Pankration = card(332023)
 const PlungingStrike = card(332017)
   .costSame(3)
   .tags("action")
-  // TODO
+  .addTarget("my characters")
+  .switchActive("@targets.0")
+  .useSkill("normal")
   .done();
 
 /**
@@ -508,7 +563,10 @@ const PlungingStrike = card(332017)
  */
 const QuickKnit = card(332012)
   .costSame(1)
-  // TODO
+  .addTarget("my summons")
+  .do((c) => {
+    c.of(c.targets[0]).addVariable("usage", 1);
+  })
   .done();
 
 /**
@@ -518,7 +576,11 @@ const QuickKnit = card(332012)
  * 我方下次打出「武器」或「圣遗物」手牌时：少花费1个元素骰。
  */
 const RhythmOfTheGreatDream = card(332021)
-  // TODO
+  .toCombatStatus()
+  .once("beforeUseDice", (c) => c.currentAction.type === "playCard" &&
+    (c.currentAction.card.definition.tags.includes("weapon") ||
+    c.currentAction.card.definition.tags.includes("artifact")))
+  .deductCost(DiceType.Void)
   .done();
 
 /**
@@ -529,7 +591,10 @@ const RhythmOfTheGreatDream = card(332021)
  */
 const SendOff = card(332013)
   .costSame(2)
-  // TODO
+  .addTarget("opp summon")
+  .do((c) => {
+    c.of(c.targets[0]).addVariable("usage", -2);
+  })
   .done();
 
 /**
@@ -540,7 +605,7 @@ const SendOff = card(332013)
  */
 const Starsigns = card(332008)
   .costVoid(2)
-  // TODO
+  .do((c) => c.$("my active character")!.gainEnergy(1))
   .done();
 
 /**
@@ -552,7 +617,10 @@ const Starsigns = card(332008)
  */
 const StoneAndContracts = card(331802)
   .costVoid(3)
-  // TODO
+  .requireCharacterTag("liyue")
+  .toCombatStatus()
+  .once("actionPhase")
+  .generateDice(DiceType.Omni, 3)
   .done();
 
 /**
@@ -563,7 +631,6 @@ const StoneAndContracts = card(331802)
  */
 const Strategize = card(332004)
   .costSame(1)
-  // TODO
   .drawCards(2)
   .done();
 
@@ -575,7 +642,6 @@ const Strategize = card(332004)
  */
 const TheBestestTravelCompanion = card(332001)
   .costVoid(2)
-  // TODO
   .generateDice(DiceType.Omni, 2)
   .done();
 
@@ -587,7 +653,6 @@ const TheBestestTravelCompanion = card(332001)
  */
 const TheLegendOfVennessa = card(332019)
   .costSame(3)
-  // TODO
   .generateDice("randomElement", 4)
   .done();
 
@@ -599,7 +664,11 @@ const TheLegendOfVennessa = card(332019)
  * （牌组包含至少2个「稻妻」角色，才能加入牌组）
  */
 const ThunderAndEternity = card(331803)
-  // TODO
+  .do((c) => {
+    const count = c.player.dice.length;
+    c.absorbDice("seq", count);
+    c.generateDice(DiceType.Omni, count);
+  })
   .done();
 
 /**
@@ -609,7 +678,7 @@ const ThunderAndEternity = card(331803)
  * 选择任意元素骰重投，可重投2次。
  */
 const TossUp = card(332003)
-  // TODO
+  .reroll(2)
   .done();
 
 /**
@@ -620,7 +689,9 @@ const TossUp = card(332003)
  */
 const WhenTheCraneReturned = card(332007)
   .costSame(1)
-  // TODO
+  .toCombatStatus()
+  .once("skill")
+  .switchActive("next")
   .done();
 
 /**
@@ -631,7 +702,16 @@ const WhenTheCraneReturned = card(332007)
  * 本回合中，我方下次打出「武器」手牌时：少花费2个元素骰。
  */
 const WhereIsTheUnseenRazor = card(332022)
-  // TODO
+  .addTarget("my character has equipment with tag (weapon)")
+  .do((c) => {
+    const { definition: { id } } = c.of(c.targets[0]).removeArtifact();
+    c.createHandCard(id as any);
+  })
+  .toCombatStatus()
+  .duration(1)
+  .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
+    c.currentAction.card.definition.tags.includes("weapon"))
+  .deductCost(DiceType.Void, DiceType.Void)
   .done();
 
 /**
@@ -642,5 +722,8 @@ const WhereIsTheUnseenRazor = card(332022)
  * （牌组包含至少2个「蒙德」角色，才能加入牌组）
  */
 const WindAndFreedom = card(331801)
-  // TODO
+  .toCombatStatus()
+  .duration(1)
+  .on("skill")
+  .switchActive("next")
   .done();

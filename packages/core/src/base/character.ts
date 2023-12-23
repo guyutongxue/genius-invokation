@@ -24,10 +24,10 @@ export type NationTag =
   | "inazuma"
   | "sumeru"
   | "fontaine"
-  | "monster"
   | "fatui"
-  | "eremites";
-// | "hilichurl";
+  | "eremites"
+  | "monster"
+  | "hilichurl";
 
 export type ArkheTag =
   | "pneuma" // 芒

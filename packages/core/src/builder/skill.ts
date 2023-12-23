@@ -527,8 +527,10 @@ export class TriggeredSkillBuilder<
     };
     const def: TriggeredSkillDefinition = {
       type: "skill",
+      skillType: null,
       id: this.id,
       triggerOn: eventName,
+      requiredCost: [],
       filter,
       action,
     };
@@ -543,6 +545,13 @@ export class TriggeredSkillBuilder<
   ) {
     this.buildSkill();
     return this.parent.on(event, filter);
+  }
+  once<E extends DetailedEventNames>(
+    event: E,
+    filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>,
+  ) {
+    this.buildSkill();
+    return this.parent.once(event, filter);
   }
 
   done(): HandleT<CallerType> {
@@ -631,7 +640,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
       skillType: this._skillType,
       id: this.skillId,
       triggerOn: null,
-      costs: this._cost,
+      requiredCost: this._cost,
       action,
     });
     return this.skillId as SkillHandle;
