@@ -21,6 +21,7 @@ const Stormeye = summon(115034)
 const WindsOfHarmony = combatStatus(115033)
   .duration(1)
   .once("beforeUseDice", (c) => c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType === "normal")
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -33,7 +34,7 @@ const WindsOfHarmony = combatStatus(115033)
 const Stormzone01 = combatStatus(115032)
   .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
   .usage(2)
-  .deductCost(DiceType.Void, 1)
+  .deductCost(DiceType.Omni, 1)
   .combatStatus(WindsOfHarmony)
   .done();
 
@@ -47,7 +48,7 @@ const Stormzone01 = combatStatus(115032)
 const Stormzone = combatStatus(115031)
   .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
   .usage(2)
-  .deductCost(DiceType.Void, 1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**

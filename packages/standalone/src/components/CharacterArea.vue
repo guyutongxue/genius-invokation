@@ -60,7 +60,7 @@ const emit = defineEmits<{
         :class="{ 'brightness-50': data.defeated, clickable }"
         @click="clickable && emit('click', data.id)"
       ></Image>
-      <div class="absolute left-0 bottom-0">
+      <div class="absolute left-0 bottom-0 h-6 flex flex-row">
         <Status v-for="st of data.entities" :data="st"></Status>
       </div>
       <div

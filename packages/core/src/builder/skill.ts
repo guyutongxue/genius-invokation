@@ -142,10 +142,10 @@ function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
  */
 const detailedEventDictionary = {
   roll: defineDescriptor("onRoll", (c, r) => {
-    return checkRelative(c.state, c.eventWho, r);
+    return checkRelative(c.state, { who: c.eventWho }, r);
   }),
   beforeUseDice: defineDescriptor("onBeforeUseDice", (c, r) => {
-    return checkRelative(c.state, c.eventWho, r);
+    return checkRelative(c.state, { who: c.eventWho }, r);
   }),
   beforeDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
     return checkRelative(c.state, c.damageInfo.source.id, r);
@@ -177,17 +177,17 @@ const detailedEventDictionary = {
   actionPhase: defineDescriptor("onActionPhase"),
   endPhase: defineDescriptor("onEndPhase"),
   beforeAction: defineDescriptor("onBeforeAction", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.who, r);
+    return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
   }),
   action: defineDescriptor("onAction", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.who, r);
+    return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
   }),
   playCard: defineDescriptor("onAction", (c, r) => {
-    if (!checkRelative(c.eventArg.state, c.eventArg.who, r)) return false;
+    if (!checkRelative(c.eventArg.state, { who: c.eventArg.who }, r)) return false;
     return c.eventArg.type === "playCard";
   }),
   declareEnd: defineDescriptor("onAction", (c, r) => {
-    if (!checkRelative(c.eventArg.state, c.eventArg.who, r)) return false;
+    if (!checkRelative(c.eventArg.state, { who: c.eventArg.who }, r)) return false;
     return c.eventArg.type === "declareEnd";
   }),
   skill: defineDescriptor("onSkill", (c, r) => {

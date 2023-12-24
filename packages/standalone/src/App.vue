@@ -8,6 +8,7 @@ import {
   RpcMethod,
   RpcRequest,
   RpcResponse,
+PlayerConfig,
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
 import Chessboard from "./components/Chessboard.vue";
@@ -64,7 +65,7 @@ const player1Io: PlayerIO = {
   rpc: (m, r) => rpc(m, r, 1),
 };
 
-const playerConfig0 = {
+const playerConfig0: PlayerConfig = {
   characters: [1303, 1201, 1502],
   cards: [
     332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
@@ -73,8 +74,9 @@ const playerConfig0 = {
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011,
   ],
+  noShuffle: true
 };
-const playerConfig1 = {
+const playerConfig1: PlayerConfig = {
   characters: [1502, 1201, 1303],
   cards: [
     332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
@@ -83,6 +85,7 @@ const playerConfig1 = {
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011,
   ],
+  noShuffle: true
 };
 const player0 = new Player(playerConfig0, 0);
 const player1 = new Player(playerConfig1, 1);

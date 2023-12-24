@@ -51,7 +51,7 @@ const emit = defineEmits<{
               :selected="selected.includes(ch.id)"
               @click="emit('click', $event)"
             ></CharacterArea>
-            <div v-if="ch.id === data.activeCharacterId" class="h-6">
+            <div v-if="ch.id === data.activeCharacterId" class="h-6 flex flex-row">
               <Status v-for="st of data.combatStatuses" :data="st"></Status>
             </div>
             <div v-else-if="opp" class="h-12"></div>

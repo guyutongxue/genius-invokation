@@ -71,7 +71,7 @@ export function chooseDice(required: DiceType[], dice: DiceType[]): number[] {
  * @param chosen 已选择的骰子
  * @returns 是否符合要求
  */
-export function checkDice(required: DiceType[], chosen: DiceType[]): boolean {
+export function checkDice(required: readonly DiceType[], chosen: readonly DiceType[]): boolean {
   const requiredMap = new Map<DiceType, number>();
   for (const r of required) {
     if (r === DiceType.Energy) continue;

@@ -38,7 +38,9 @@ import {
   SkillDefinitionBase,
   SkillInfo,
   SwitchActiveInfo,
+  UseDiceModifierImpl,
   UseSkillInfo,
+  useSyncSkill,
 } from "./base/skill";
 import { SkillContext } from "./builder/context";
 import { CardDefinition, CardTarget, CardTargetKind } from "./base/card";
@@ -139,7 +141,8 @@ class Game {
         },
       });
     }
-    for (const card of shuffle(config.cards)) {
+    const cards = config.noShuffle ? config.cards : shuffle(config.cards);
+    for (const card of cards) {
       const def = this.data.card.get(card);
       if (typeof def === "undefined") {
         throw new Error(`Unknown card id ${card}`);
@@ -620,7 +623,19 @@ class Game {
       cost: [],
     });
     // TODO onBeforeUseDice event
-    return result.map((x) => ({ ...x, newState: this._state }));
+    return result.map((actionInfo) => {
+      const diceModifier = new UseDiceModifierImpl(actionInfo);
+      const newState = useSyncSkill(this._state, "onBeforeUseDice", (st) => {
+        diceModifier.setCaller(st);
+        return diceModifier;
+      });
+      const newActionInfo = diceModifier.currentAction;
+      console.log(newActionInfo.log);
+      return {
+        ...newActionInfo,
+        newState,
+      };
+    });
   }
 
   private async useSkill(

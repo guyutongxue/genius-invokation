@@ -117,7 +117,7 @@ const CalxsArts = card(332009)
 const ChangingShifts = card(332002)
   .toCombatStatus()
   .once("beforeUseDice", (c) => canSwitchDeductCost1(c))
-  .deductCost(DiceType.Void, 1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -489,7 +489,7 @@ const Lyresong = card(332024)
   .duration(1)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
     c.currentAction.card.definition.tags.includes("artifact"))
-  .deductCost(DiceType.Void, 2)
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -580,7 +580,7 @@ const RhythmOfTheGreatDream = card(332021)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" &&
     (c.currentAction.card.definition.tags.includes("weapon") ||
     c.currentAction.card.definition.tags.includes("artifact")))
-  .deductCost(DiceType.Void, 1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -711,7 +711,7 @@ const WhereIsTheUnseenRazor = card(332022)
   .duration(1)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
     c.currentAction.card.definition.tags.includes("weapon"))
-  .deductCost(DiceType.Void, 2)
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
