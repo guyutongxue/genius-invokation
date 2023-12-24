@@ -170,7 +170,7 @@ const detailedEventDictionary = {
     );
   }),
   beforeDefeated: defineDescriptor("onBeforeDefeated", (c, r) => {
-    return checkRelative(c.state, c.damageInfo.target.id, r);
+    return checkRelative(c.state, c.target.id, r);
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),

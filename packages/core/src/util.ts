@@ -234,7 +234,7 @@ export function sortDice(
     if (idx !== -1) return -100 + idx;
     return d as number;
   };
-  return [...dice].sort((a, b) => value(a) - value(b));
+  return dice.toSorted((a, b) => value(a) - value(b));
 }
 
 export function shiftLeft<T>(arr: readonly T[], idx: number): T[] {

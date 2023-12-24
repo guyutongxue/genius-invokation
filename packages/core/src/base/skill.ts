@@ -34,6 +34,33 @@ export interface RollModifier {
   addRerollCount(count: number): void;
 }
 
+export class RollModifierImpl implements RollModifier {
+  private _caller: CharacterState | EntityState | null = null;
+  constructor(public readonly eventWho: 0 | 1) {}
+  _fixedDice: DiceType[] = [];
+  _extraRerollCount = 0;
+  _log = "";
+  setCaller(caller: CharacterState | EntityState) {
+    this._caller = caller;
+  }
+
+  fixDice(...dice: DiceType[]): void {
+    if (this._caller === null) {
+      throw new Error("caller not set or no damageInfo provided");
+    }
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) fix dice ${dice}.\n`;
+    this._fixedDice.push(...dice);
+  }
+
+  addRerollCount(count: number): void {
+    if (this._caller === null) {
+      throw new Error("caller not set or no damageInfo provided");
+    }
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) add reroll count ${count}.\n`;
+    this._extraRerollCount += count;
+  }
+}
+
 export interface UseDiceModifier {
   readonly eventWho: 0 | 1;
   readonly currentAction: ActionInfo;
@@ -49,7 +76,7 @@ export class UseDiceModifierImpl implements UseDiceModifier {
   private _cost: DiceType[];
   private _deductedCost: (readonly [DiceType, number])[];
   private _fast: boolean;
-  private log = "";
+  private _log = "";
 
   setCaller(caller: CharacterState | EntityState) {
     this._caller = caller;
@@ -69,7 +96,7 @@ export class UseDiceModifierImpl implements UseDiceModifier {
       ...this._action,
       cost: this.currentCost,
       fast: this.currentFast,
-      log: this.log,
+      log: this._log,
     }
   }
   get currentCost() {
@@ -105,14 +132,14 @@ export class UseDiceModifierImpl implements UseDiceModifier {
     if (this._caller === null) {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) add ${count} diceType(${type}) to cost.\n`;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) add ${count} diceType(${type}) to cost.\n`;
     this._cost.push(...new Array<DiceType>(count).fill(type));
   }
   deductCost(type: DiceType, count: number) {
     if (this._caller === null) {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) deduct ${count} diceType(${type}) from cost.\n`;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) deduct ${count} diceType(${type}) from cost.\n`;
     this._deductedCost.push([type, count]);
   }
   setFastAction(): void {
@@ -122,7 +149,7 @@ export class UseDiceModifierImpl implements UseDiceModifier {
     if (this._fast) {
       console.warn("Potential error: fast action already set");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) set fast action.\n`;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) set fast action.\n`;
     this._fast = true;
   }
 }
@@ -142,11 +169,11 @@ export interface DamageModifier1 {
 export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
   private _caller: CharacterState | EntityState | null = null;
   constructor(private readonly _damageInfo?: DamageInfo) {}
-  private newDamageType: DamageType | null = null;
-  private increased = 0;
-  private multiplier = 1;
-  private decreased = 0;
-  private log = "";
+  private _newDamageType: DamageType | null = null;
+  private _increased = 0;
+  private _multiplier = 1;
+  private _decreased = 0;
+  private _log = "";
 
   setCaller(caller: CharacterState | EntityState) {
     this._caller = caller;
@@ -156,52 +183,71 @@ export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
     if (this._caller === null || typeof this._damageInfo === "undefined") {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) change damage type from ${this._damageInfo.type} to ${type}.\n`;
-    if (this.newDamageType !== null) {
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) change damage type from ${this._damageInfo.type} to ${type}.\n`;
+    if (this._newDamageType !== null) {
       console.warn("Potential error: damage type already changed");
     }
-    this.newDamageType = type;
+    this._newDamageType = type;
   }
   increaseDamage(value: number) {
     if (this._caller === null || typeof this._damageInfo === "undefined") {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) increase damage by ${value}.\n`;
-    this.increased += value;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) increase damage by ${value}.\n`;
+    this._increased += value;
   }
   multiplyDamage(multiplier: number) {
     if (this._caller === null || typeof this._damageInfo === "undefined") {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) multiply damage by ${multiplier}.\n`;
-    this.multiplier *= multiplier;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) multiply damage by ${multiplier}.\n`;
+    this._multiplier *= multiplier;
   }
   decreaseDamage(value: number) {
     if (this._caller === null || typeof this._damageInfo === "undefined") {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this.log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) decrease damage by ${value}.\n`;
-    this.decreased += value;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) decrease damage by ${value}.\n`;
+    this._decreased += value;
   }
 
   get damageInfo(): DamageInfo & { log: string } {
     return this._damageInfo
       ? {
           ...this._damageInfo,
-          type: this.newDamageType ?? this._damageInfo.type,
+          type: this._newDamageType ?? this._damageInfo.type,
           value: Math.ceil(
-            (this._damageInfo.value + this.increased) * this.multiplier -
-              this.decreased,
+            (this._damageInfo.value + this._increased) * this._multiplier -
+              this._decreased,
           ),
-          log: this.log,
+          log: this._log,
         }
       : (void 0 as any);
   }
 }
 
 export interface DefeatedModifier {
-  readonly damageInfo: DamageInfo;
+  readonly target: CharacterState;
   immune(): void;
+}
+
+export class DefeatedModifierImpl implements DefeatedModifier {
+  private _caller: CharacterState | EntityState | null = null;
+  constructor(public readonly target: CharacterState) {}
+  _immune = false;
+  _log = "";
+
+  setCaller(caller: CharacterState | EntityState) {
+    this._caller = caller;
+  }
+
+  immune() {
+    if (this._caller === null) {
+      throw new Error("caller not set");
+    }
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) immune to defeated.\n`;
+    this._immune = true;
+  }
 }
 
 type SyncEventMap = {

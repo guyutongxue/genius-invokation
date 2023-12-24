@@ -32,9 +32,11 @@ import {
 import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionInfo,
+  DefeatedModifierImpl,
   DeferredAction,
   ElementalTuningInfo,
   PlayCardInfo,
+  RollModifierImpl,
   SkillDefinitionBase,
   SkillInfo,
   SwitchActiveInfo,
@@ -110,7 +112,10 @@ class Game {
     this._state = applyMutation(this._state, mutation);
   }
 
-  private randomDice(count: number, who: 0 | 1): readonly DiceType[] {
+  private randomDice(count: number, alwaysOmni?: boolean): readonly DiceType[] {
+    if (alwaysOmni) {
+      return new Array<DiceType>(count).fill(DiceType.Omni);
+    }
     const mut: StepRandomM = {
       type: "stepRandom",
       value: 0,
@@ -120,7 +125,7 @@ class Game {
       this.mutate(mut);
       result.push((mut.value % 8) + 1);
     }
-    return sortDice(this._state.players[who], result);
+    return result;
   }
 
   private initPlayerCards(who: 0 | 1) {
@@ -238,16 +243,8 @@ class Game {
         return getEntityById(this._state, active, true) as CharacterState;
       }),
     );
-    this.mutate({
-      type: "switchActive",
-      who: 0,
-      value: a0,
-    });
-    this.mutate({
-      type: "switchActive",
-      who: 1,
-      value: a1,
-    });
+    await this.switchActive(0, a0);
+    await this.switchActive(1, a1);
     this.mutate({
       type: "changePhase",
       newPhase: "roll",
@@ -255,15 +252,40 @@ class Game {
   }
 
   private async rollPhase() {
+    // onRoll event
+    interface RollParams {
+      fixed: readonly DiceType[];
+      count: number;
+    }
+    const rollParams: RollParams[] = [];
+    for (const who of [0, 1] as const) {
+      const rollModifier = new RollModifierImpl(who);
+      this._state = useSyncSkill(this._state, "onRoll", (st) => {
+        rollModifier.setCaller(st);
+        return rollModifier;
+      });
+      console.log(`Player ${who} roll modifier: ${rollModifier._log}`);
+      rollParams.push({
+        fixed: rollModifier._fixedDice,
+        count: 1 + rollModifier._extraRerollCount,
+      });
+    }
+
     const [r0, r1] = await Promise.all(
       ([0, 1] as const).map(async (who) => {
-        const player = this.state.players[who];
-        const controlled: DiceType[] = [];
-        // TODO onRoll event
-        let randomDice = this.randomDice(this.config.initialDice, who);
-        let rollTimes = 2;
-        await this.reroll(who, rollTimes, randomDice);
-        return randomDice;
+        const { fixed, count } = rollParams[who];
+        const initDice = [
+          ...fixed,
+          ...this.randomDice(
+            Math.max(0, this.config.initialDice - fixed.length),
+            this.playerConfigs[who].alwaysOmni,
+          ),
+        ];
+        return this.reroll(
+          who,
+          count,
+          sortDice(this._state.players[who], initDice),
+        );
       }),
     );
     this.mutate({
@@ -441,21 +463,7 @@ class Game {
           );
           break;
         case "switchActive":
-          this.mutate({
-            type: "switchActive",
-            who,
-            value: actionInfo.to,
-          });
-          await this.handleEvents([
-            "onSwitchActive",
-            {
-              type: "switchActive",
-              who,
-              from: activeCh,
-              to: actionInfo.to,
-              state: this._state,
-            },
-          ]);
+          this.switchActive(who, actionInfo.to);
           break;
         case "elementalTuning":
           this.mutate({
@@ -622,7 +630,7 @@ class Game {
       fast: false,
       cost: [],
     });
-    // TODO onBeforeUseDice event
+    // Apply beforeUseDice, calculate new state for each action
     return result.map((actionInfo) => {
       const diceModifier = new UseDiceModifierImpl(actionInfo);
       const newState = useSyncSkill(this._state, "onBeforeUseDice", (st) => {
@@ -698,12 +706,33 @@ class Game {
           controlled.push(dice[k]);
         }
       }
-      currentDice = [
-        ...controlled,
-        ...this.randomDice(rerollIndexes.length, who),
-      ];
+      currentDice = [...controlled, ...this.randomDice(rerollIndexes.length)];
     }
-    return currentDice;
+    return sortDice(this._state.players[who], currentDice);
+  }
+
+  private async switchActive(who: 0 | 1, to: CharacterState) {
+    const from = this._state.players[who].characters.find(
+      (ch) => ch.id === this._state.players[who].activeCharacterId,
+    );
+    const oldState = this._state;
+    this.mutate({
+      type: "switchActive",
+      who,
+      value: to,
+    });
+    if (typeof from !== "undefined") {
+      await this.handleEvents([
+        "onSwitchActive",
+        {
+          type: "switchActive",
+          who,
+          from,
+          to,
+          state: oldState,
+        },
+      ]);
+    }
   }
 
   private async *doHandleEvents(
@@ -792,17 +821,25 @@ class Game {
   // 检查倒下角色，若有返回 `true`
   private async checkDefeated(): Promise<boolean> {
     const currentTurn = this._state.currentTurn;
-    // 指示双方是否有角色倒下，若有则 await（等待用户操作）
-    const hasDefeated: [Promise<void> | null, Promise<void> | null] = [
+    // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
+    const activeDefeated: (Promise<CharacterState> | null)[] = [
       null,
       null,
     ];
+    const hasDefeated: [boolean, boolean] = [false, false];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this._state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
       for (const ch of shiftLeft(player.characters, activeIdx)) {
         if (ch.variables.alive && ch.variables.health <= 0) {
-          // TODO beforeDefeated
+          const defeatedModifier = new DefeatedModifierImpl(ch);
+          this._state = useSyncSkill(this._state, "onBeforeDefeated", (st) => {
+            defeatedModifier.setCaller(st);
+            return defeatedModifier;
+          });
+          if (defeatedModifier._immune) {
+            continue;
+          }
           let mut: Mutation = {
             type: "modifyEntityVar",
             state: ch,
@@ -829,29 +866,20 @@ class Game {
             value: 0,
           };
           this.mutate(mut);
+          hasDefeated[who] = true;
           // 如果出战角色倒下，那么令用户选择新的出战角色
           if (ch.id === player.activeCharacterId) {
-            hasDefeated[who] = this.rpc(who, "chooseActive", {
+            activeDefeated[who] = this.rpc(who, "chooseActive", {
               candidates: this._state.players[who].characters
                 .filter((c) => c.variables.alive)
                 .map((c) => c.id),
             }).then(({ active }) => {
-              this.mutate({
-                type: "switchActive",
-                who,
-                value: getEntityById(
-                  this._state,
-                  active,
-                  true,
-                ) as CharacterState,
-              });
+              return getEntityById(this._state, active, true) as CharacterState;
             });
-          } else if (hasDefeated[who] === null) {
-            hasDefeated[who] = Promise.resolve();
           }
         }
       }
-      if (hasDefeated[who] !== null) {
+      if (activeDefeated[who] !== null) {
         this.mutate({
           type: "setPlayerFlag",
           who,
@@ -860,7 +888,13 @@ class Game {
         });
       }
     }
-    Promise.all(hasDefeated);
+    const [a0, a1] = await Promise.all(activeDefeated);
+    if (a0 !== null) {
+      await this.switchActive(0, a0);
+    }
+    if (a1 !== null) {
+      await this.switchActive(1, a1);
+    }
     return hasDefeated[0] !== null || hasDefeated[1] !== null;
   }
 

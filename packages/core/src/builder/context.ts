@@ -60,10 +60,10 @@ type TargetQueryArg<
       Readonly,
       Ext,
       CallerType,
-      CharacterContext<Readonly> | CharacterContext<Readonly>[]
+      CharacterState | CharacterState[] 
     >
-  | CharacterContext<Readonly>[]
-  | CharacterContext<Readonly>
+  | CharacterState
+  | CharacterState[]
   | string;
 
 interface DrawCardsOpt {
@@ -826,16 +826,16 @@ export class CharacterContext<Readonly extends boolean> {
   // MUTATIONS
 
   gainEnergy(value = 1) {
-    this.skillContext.gainEnergy(value, this as CharacterContext<boolean>);
+    this.skillContext.gainEnergy(value, this.state);
   }
   heal(value: number) {
-    this.skillContext.heal(value, this as CharacterContext<boolean>);
+    this.skillContext.heal(value, this.state);
   }
   damage(value: number, type: DamageType) {
-    this.skillContext.damage(value, type, this as CharacterContext<boolean>);
+    this.skillContext.damage(value, type, this.state);
   }
   apply(type: AppliableDamageType) {
-    this.skillContext.apply(type, this as CharacterContext<boolean>);
+    this.skillContext.apply(type, this.state);
   }
   addStatus(status: StatusHandle) {
     this.skillContext.createEntity("status", status, this._area);
@@ -844,7 +844,7 @@ export class CharacterContext<Readonly extends boolean> {
     // Remove exist artifact/weapon first
     for (const tag of ["artifact", "weapon"] as const) {
       if (
-        this.skillContext.state.data.entity.get(equipment)!.tags.includes(tag)
+        this.skillContext.state.data.entity.get(equipment)?.tags.includes(tag)
       ) {
         const exist = this.state.entities.find((v) =>
           v.definition.tags.includes(tag),

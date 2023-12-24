@@ -1,23 +1,23 @@
 import type { DiceType } from "../enums";
 
 export interface RerollDiceRequest {
-  dice: DiceType[];
+  dice: readonly DiceType[];
 }
 
 export interface SwitchHandsRequest {}
 
 export interface ChooseActiveRequest {
-  candidates: number[];
+  candidates: readonly number[];
 }
 
 export interface ActionRequest {
-  candidates: Action[];
+  candidates: readonly Action[];
 }
 
 export interface SwitchActiveAction {
   type: "switchActive";
   active: number;
-  cost: DiceType[];
+  cost: readonly DiceType[];
 }
 
 export enum PlayCardHint {
@@ -29,15 +29,15 @@ export enum PlayCardHint {
 export interface PlayCardAction {
   type: "playCard";
   card: number;
-  cost: DiceType[];
-  hints: PlayCardHint[];
-  targets: number[];
+  cost: readonly DiceType[];
+  hints: readonly PlayCardHint[];
+  targets: readonly number[];
 }
 
 export interface UseSkillAction {
   type: "useSkill";
   skill: number;
-  cost: DiceType[];
+  cost: readonly DiceType[];
 }
 
 export interface ElementalTuningAction {
