@@ -1,4 +1,4 @@
-import { DamageType, DiceType, card, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, canSwitchDeductCost1, canSwitchFast, card, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -116,8 +116,8 @@ const CalxsArts = card(332009)
  */
 const ChangingShifts = card(332002)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => c.currentAction.type === "switchActive")
-  .deductCost(DiceType.Void)
+  .once("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -181,7 +181,7 @@ const ElementalResonanceImpetuousWinds = card(331502)
   .costAnemo(1)
   .tags("resonance")
   .addTarget("my character")
-  .switchActive("@targets0")
+  .switchActive("@targets.0")
   .generateDice(DiceType.Omni, 1)
   .done();
 
@@ -467,7 +467,7 @@ const IHaventLostYet = card(332005)
  */
 const LeaveItToMe = card(332006)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => c.currentAction.type === "switchActive" && !c.currentAction.fast)
+  .once("beforeUseDice", (c) => canSwitchFast(c))
   .setFastAction()
   // TODO
   .done();
@@ -489,7 +489,7 @@ const Lyresong = card(332024)
   .duration(1)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
     c.currentAction.card.definition.tags.includes("artifact"))
-  .deductCost(DiceType.Void, DiceType.Void)
+  .deductCost(DiceType.Void, 2)
   .done();
 
 /**
@@ -580,7 +580,7 @@ const RhythmOfTheGreatDream = card(332021)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" &&
     (c.currentAction.card.definition.tags.includes("weapon") ||
     c.currentAction.card.definition.tags.includes("artifact")))
-  .deductCost(DiceType.Void)
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -711,7 +711,7 @@ const WhereIsTheUnseenRazor = card(332022)
   .duration(1)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
     c.currentAction.card.definition.tags.includes("weapon"))
-  .deductCost(DiceType.Void, DiceType.Void)
+  .deductCost(DiceType.Void, 2)
   .done();
 
 /**

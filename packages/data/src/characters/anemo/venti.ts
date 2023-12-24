@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, DiceType, canSwitchDeductCost1 } from "@gi-tcg/core/builder";
 
 /**
  * @id 115034
@@ -13,6 +13,17 @@ const Stormeye = summon(115034)
   .done();
 
 /**
+ * @id 115033
+ * @name 协鸣之风
+ * @description
+ * 本回合中，我方角色下次「普通攻击」少花费1个无色元素。
+ */
+const WindsOfHarmony = combatStatus(115033)
+  .duration(1)
+  .once("beforeUseDice", (c) => c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType === "normal")
+  .done();
+
+/**
  * @id 115032
  * @name 风域
  * @description
@@ -20,9 +31,10 @@ const Stormeye = summon(115034)
  * 可用次数：2
  */
 const Stormzone01 = combatStatus(115032)
-  .on("beforeUseDice")
-  .deductCost(DiceType.Void)
-  // TODO
+  .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  .usage(2)
+  .deductCost(DiceType.Void, 1)
+  .combatStatus(WindsOfHarmony)
   .done();
 
 /**
@@ -33,17 +45,9 @@ const Stormzone01 = combatStatus(115032)
  * 可用次数：2
  */
 const Stormzone = combatStatus(115031)
-  // TODO
-  .done();
-
-/**
- * @id 115033
- * @name 协鸣之风
- * @description
- * 本回合中，我方角色下次「普通攻击」少花费1个无色元素。
- */
-const WindsOfHarmony = combatStatus(115033)
-  // TODO
+  .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  .usage(2)
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**

@@ -110,7 +110,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   toStatus(target: string, id?: number) {
     id ??= this.cardId;
     this.do((c) => {
-      c.characterStatus(id, target);
+      c.characterStatus(id as StatusHandle, target);
     }).done();
     return status(id);
   }

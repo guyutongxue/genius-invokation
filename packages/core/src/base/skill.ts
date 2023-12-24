@@ -38,8 +38,9 @@ export interface UseDiceModifier {
   readonly eventWho: 0 | 1;
   readonly currentAction: ActionInfo;
   readonly currentCost: DiceType[];
-  addCost(...dice: DiceType[]): void;
-  deductCost(...dice: DiceType[]): void;
+  readonly currentFast: boolean;
+  addCost(type: DiceType, count: number): void;
+  deductCost(type: DiceType, count: number): void;
   setFastAction(): void;
 }
 

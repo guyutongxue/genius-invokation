@@ -453,13 +453,26 @@ export class TriggeredSkillBuilder<
     }
   }
 
+  /**
+   * 为实体创建名为 `usage` 的变量，表示剩余使用次数。
+   * 在每次技能执行完毕后，若该变量计数达到 0，则弃置该实体。
+   *
+   * 若 `opt.auto`（默认值），则每次使用时自动减少 1。
+   *
+   * `opt.name` 设定变量名。默认的变量名为 `usage`；如果该变量名已被占用，则会在后面加上 `_${skillId}`。
+   * @param count
+   * @param opt
+   * @returns
+   */
   usage(count: number, opt?: UsageOptions): this {
     if (this._usageOpt !== null) {
       throw new Error(`Usage called twice`);
     }
     const perRound = opt?.perRound ?? false;
     const name =
-      opt?.name ?? (perRound ? `usagePR_${this.id}` : `usage_${this.id}`);
+      opt?.name ??
+      // @ts-expect-error private prop
+      ("usage" in this.parent._constants ? `usage_${this.id}` : "usage");
     this.parent.variable(name, count, opt);
     if (perRound) {
       // @ts-expect-error private prop

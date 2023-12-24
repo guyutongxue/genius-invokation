@@ -11,4 +11,5 @@ export {
   isReactionRelatedTo,
   isReactionSwirl,
 } from "./reaction";
+export * from "./util";
 export { flip } from "@gi-tcg/utils";
