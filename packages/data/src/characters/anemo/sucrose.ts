@@ -88,7 +88,6 @@ const Sucrose = character(1501)
 const ChaoticEntropy = card(215011)
   .costAnemo(3)
   .costEnergy(2)
-  .talentOf(Sucrose)
-  .equipment()
+  .talent(Sucrose)
   // TODO
   .done();

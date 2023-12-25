@@ -85,7 +85,6 @@ const Chongyun = character(1104)
  */
 const SteadyBreathing = card(211041)
   .costCryo(3)
-  .talentOf(Chongyun)
-  .equipment()
+  .talent(Chongyun)
   // TODO
   .done();

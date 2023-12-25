@@ -85,7 +85,6 @@ const KamisatoAyato = character(1206)
  */
 const KyoukaFuushi = card(212061)
   .costHydro(3)
-  .talentOf(KamisatoAyato)
-  .equipment()
+  .talent(KamisatoAyato)
   // TODO
   .done();

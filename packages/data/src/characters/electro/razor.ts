@@ -74,7 +74,6 @@ const Razor = character(1402)
  */
 const Awakening = card(214021)
   .costElectro(3)
-  .talentOf(Razor)
-  .equipment()
+  .talent(Razor)
   // TODO
   .done();

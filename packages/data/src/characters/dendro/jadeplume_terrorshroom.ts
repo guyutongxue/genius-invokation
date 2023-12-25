@@ -84,7 +84,6 @@ const JadeplumeTerrorshroom = character(2701)
  */
 const ProliferatingSpores = card(227011)
   .costDendro(3)
-  .talentOf(JadeplumeTerrorshroom)
-  .equipment()
+  .talent(JadeplumeTerrorshroom)
   // TODO
   .done();

@@ -97,7 +97,6 @@ const StonehideLawachurl = character(2601)
 const StonehideReforged = card(226011)
   .costGeo(4)
   .costEnergy(2)
-  .talentOf(StonehideLawachurl)
-  .equipment()
+  .talent(StonehideLawachurl)
   // TODO
   .done();

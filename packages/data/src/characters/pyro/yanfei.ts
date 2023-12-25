@@ -86,7 +86,6 @@ const Yanfei = character(1308)
 const RightOfFinalInterpretation = card(213081)
   .costPyro(1)
   .costVoid(2)
-  .talentOf(Yanfei)
-  .equipment()
+  .talent(Yanfei)
   // TODO
   .done();

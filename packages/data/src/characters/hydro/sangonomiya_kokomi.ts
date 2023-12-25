@@ -87,7 +87,6 @@ const SangonomiyaKokomi = character(1205)
 const TamakushiCasket = card(212051)
   .costHydro(3)
   .costEnergy(2)
-  .talentOf(SangonomiyaKokomi)
-  .equipment()
+  .talent(SangonomiyaKokomi)
   // TODO
   .done();

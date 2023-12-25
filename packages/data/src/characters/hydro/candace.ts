@@ -113,7 +113,6 @@ const Candace = character(1207)
 const TheOverflow = card(212071)
   .costHydro(3)
   .costEnergy(2)
-  .talentOf(Candace)
-  .equipment()
+  .talent(Candace)
   // TODO
   .done();

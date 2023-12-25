@@ -85,7 +85,6 @@ const Noelle = character(1602)
  */
 const IGotYourBack = card(216021)
   .costGeo(3)
-  .talentOf(Noelle)
-  .equipment()
+  .talent(Noelle)
   // TODO
   .done();

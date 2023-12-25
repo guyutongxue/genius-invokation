@@ -84,7 +84,6 @@ const Tighnari = character(1702)
  */
 const KeenSight = card(217021)
   .costDendro(4)
-  .talentOf(Tighnari)
-  .equipment()
+  .talent(Tighnari)
   // TODO
   .done();

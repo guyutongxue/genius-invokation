@@ -85,7 +85,6 @@ const Keqing = character(1403)
  */
 const ThunderingPenance = card(214031)
   .costElectro(3)
-  .talentOf(Keqing)
-  .equipment()
+  .talent(Keqing)
   // TODO
   .done();

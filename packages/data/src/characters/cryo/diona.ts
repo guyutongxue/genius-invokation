@@ -93,7 +93,6 @@ const Diona = character(1102)
  */
 const ShakenNotPurred = card(211021)
   .costCryo(3)
-  .talentOf(Diona)
-  .equipment()
+  .talent(Diona)
   // TODO
   .done();

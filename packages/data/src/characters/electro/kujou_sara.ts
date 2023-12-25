@@ -95,7 +95,6 @@ const KujouSara = character(1406)
  */
 const SinOfPride = card(214061)
   .costElectro(3)
-  .talentOf(KujouSara)
-  .equipment()
+  .talent(KujouSara)
   // TODO
   .done();

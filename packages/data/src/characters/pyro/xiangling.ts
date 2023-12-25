@@ -84,7 +84,6 @@ const Xiangling = character(1302)
  */
 const Crossfire = card(213021)
   .costPyro(3)
-  .talentOf(Xiangling)
-  .equipment()
+  .talent(Xiangling)
   // TODO
   .done();

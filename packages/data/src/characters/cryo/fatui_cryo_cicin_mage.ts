@@ -96,7 +96,6 @@ const FatuiCryoCicinMage = character(2101)
  */
 const CicinsColdGlare = card(221011)
   .costCryo(3)
-  .talentOf(FatuiCryoCicinMage)
-  .equipment()
+  .talent(FatuiCryoCicinMage)
   // TODO
   .done();

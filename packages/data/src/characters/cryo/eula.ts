@@ -85,7 +85,6 @@ const Eula = character(1106)
 const WellspringOfWarlust = card(211061)
   .costCryo(3)
   .costEnergy(2)
-  .talentOf(Eula)
-  .equipment()
+  .talent(Eula)
   // TODO
   .done();

@@ -111,7 +111,6 @@ const Nahida = character(1703)
 const TheSeedOfStoredKnowledge = card(217031)
   .costDendro(3)
   .costEnergy(2)
-  .talentOf(Nahida)
-  .equipment()
+  .talent(Nahida)
   // TODO
   .done();

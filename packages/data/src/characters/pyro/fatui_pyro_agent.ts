@@ -97,7 +97,6 @@ const FatuiPyroAgent = character(2301)
  */
 const PaidInFull = card(223011)
   .costPyro(3)
-  .talentOf(FatuiPyroAgent)
-  .equipment()
+  .talent(FatuiPyroAgent)
   // TODO
   .done();

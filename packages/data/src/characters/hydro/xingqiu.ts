@@ -95,7 +95,6 @@ const Xingqiu = character(1202)
  */
 const TheScentRemained = card(212021)
   .costHydro(3)
-  .talentOf(Xingqiu)
-  .equipment()
+  .talent(Xingqiu)
   // TODO
   .done();

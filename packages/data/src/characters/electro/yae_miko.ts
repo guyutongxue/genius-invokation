@@ -96,7 +96,6 @@ const YaeMiko = character(1408)
 const TheShrinesSacredShade = card(214081)
   .costElectro(3)
   .costEnergy(2)
-  .talentOf(YaeMiko)
-  .equipment()
+  .talent(YaeMiko)
   // TODO
   .done();

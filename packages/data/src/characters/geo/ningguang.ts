@@ -73,7 +73,6 @@ const Ningguang = character(1601)
  */
 const StrategicReserve = card(216011)
   .costGeo(4)
-  .talentOf(Ningguang)
-  .equipment()
+  .talent(Ningguang)
   // TODO
   .done();

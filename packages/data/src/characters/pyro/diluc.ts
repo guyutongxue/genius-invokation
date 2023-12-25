@@ -73,7 +73,6 @@ const Diluc = character(1301)
  */
 const FlowingFlame = card(213011)
   .costPyro(3)
-  .talentOf(Diluc)
-  .equipment()
+  .talent(Diluc)
   // TODO
   .done();

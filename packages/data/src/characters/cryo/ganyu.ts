@@ -96,7 +96,6 @@ const Ganyu = character(1101)
  */
 const UndividedHeart = card(211011)
   .costCryo(5)
-  .talentOf(Ganyu)
-  .equipment()
+  .talent(Ganyu)
   // TODO
   .done();

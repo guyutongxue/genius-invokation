@@ -88,7 +88,6 @@ const Cyno = character(1404)
  */
 const FeatherfallJudgment = card(214041)
   .costElectro(3)
-  .talentOf(Cyno)
-  .equipment()
+  .talent(Cyno)
   // TODO
   .done();

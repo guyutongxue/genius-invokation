@@ -95,7 +95,6 @@ const Nilou = character(1208)
  */
 const TheStarrySkiesTheirFlowersRain = card(212081)
   .costHydro(3)
-  .talentOf(Nilou)
-  .equipment()
+  .talent(Nilou)
   // TODO
   .done();

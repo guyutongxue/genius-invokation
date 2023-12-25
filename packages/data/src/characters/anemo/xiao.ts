@@ -88,7 +88,6 @@ const Xiao = character(1504)
 const ConquerorOfEvilGuardianYaksha = card(215041)
   .costAnemo(3)
   .costEnergy(2)
-  .talentOf(Xiao)
-  .equipment()
+  .talent(Xiao)
   // TODO
   .done();

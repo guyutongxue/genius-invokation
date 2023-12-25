@@ -88,7 +88,6 @@ const MirrorMaiden = character(2202)
  */
 const MirrorCage = card(222021)
   .costHydro(3)
-  .talentOf(MirrorMaiden)
-  .equipment()
+  .talent(MirrorMaiden)
   // TODO
   .done();

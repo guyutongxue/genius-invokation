@@ -95,7 +95,6 @@ const Klee = character(1306)
  */
 const PoundingSurprise = card(213061)
   .costPyro(3)
-  .talentOf(Klee)
-  .equipment()
+  .talent(Klee)
   // TODO
   .done();

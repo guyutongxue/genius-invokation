@@ -157,6 +157,6 @@ const ElectroHypostasis = character(2401)
 const AbsorbingPrism = card(224011)
   .costElectro(2)
   .tags("action")
-  .talentOf(ElectroHypostasis)
+  .eventTalent(ElectroHypostasis)
   // TODO
   .done();

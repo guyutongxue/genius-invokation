@@ -85,7 +85,6 @@ const HuTao = character(1307)
  */
 const SanguineRouge = card(213071)
   .costPyro(2)
-  .talentOf(HuTao)
-  .equipment()
+  .talent(HuTao)
   // TODO
   .done();

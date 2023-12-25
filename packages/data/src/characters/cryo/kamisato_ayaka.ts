@@ -105,7 +105,6 @@ const KamisatoAyaka = character(1105)
  */
 const KantenSenmyouBlessing = card(211051)
   .costCryo(2)
-  .talentOf(KamisatoAyaka)
-  .equipment()
+  .talent(KamisatoAyaka)
   // TODO
   .done();

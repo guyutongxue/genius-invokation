@@ -98,7 +98,6 @@ const Baizhu = character(1705)
 const AllThingsAreOfTheEarth = card(217051)
   .costDendro(4)
   .costEnergy(2)
-  .talentOf(Baizhu)
-  .equipment()
+  .talent(Baizhu)
   // TODO
   .done();

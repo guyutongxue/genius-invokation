@@ -97,7 +97,6 @@ const RaidenShogun = character(1407)
 const WishesUnnumbered = card(214071)
   .costElectro(4)
   .costEnergy(2)
-  .talentOf(RaidenShogun)
-  .equipment()
+  .talent(RaidenShogun)
   // TODO
   .done();

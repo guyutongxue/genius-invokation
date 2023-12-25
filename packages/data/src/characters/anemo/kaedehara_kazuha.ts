@@ -186,7 +186,6 @@ const KaedeharaKazuha = character(1505)
  */
 const PoeticsOfFuubutsu = card(215051)
   .costAnemo(3)
-  .talentOf(KaedeharaKazuha)
-  .equipment()
+  .talent(KaedeharaKazuha)
   // TODO
   .done();

@@ -11,7 +11,11 @@ import {
 } from "../base/card";
 import { registerCard, registerSkill } from "./registry";
 import { SkillDescription } from "../base/skill";
-import { ExtendedSkillContext, SkillContext } from "./context";
+import {
+  CharacterContext,
+  ExtendedSkillContext,
+  SkillContext,
+} from "./context";
 import {
   SkillBuilderWithCost,
   extendSkillContext,
@@ -79,18 +83,29 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     this._type = type;
     return this;
   }
-  equipment() {
-    this.type("equipment");
-    this.do((c) => {
-      c.$("my active character")!.equip(this.cardId as EquipmentHandle);
-    }).done();
+
+  private doEquipment() {
+    this.type("equipment")
+      .addTarget("my characters")
+      .do((c) => {
+        (c.$("@targets.0") as CharacterContext<false>).equip(
+          this.cardId as EquipmentHandle,
+        );
+      })
+      .done();
     return equipment(this.cardId);
   }
   weapon(type: WeaponCardTag) {
-    return this.tags("weapon", type).equipment().tags("weapon", type);
+    return this.tags("weapon", type)
+      .addTarget(`my characters with tag (${type})`)
+      .doEquipment()
+      .tags("weapon", type);
   }
   artifact() {
-    return this.tags("artifact").equipment().tags("artifact");
+    return this.tags("artifact")
+      .addTarget("my characters")
+      .doEquipment()
+      .tags("artifact");
   }
   support(type: SupportTag) {
     this.type("support").tags(type);
@@ -130,15 +145,25 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this.tags("legend");
   }
 
-  talentOf(ch: CharacterHandle, opt?: { action?: boolean }) {
+  talent(ch: CharacterHandle, opt?: { action?: boolean }) {
+    const action = opt?.action ?? true;
+    this.eventTalent(ch, opt);
+    if (action) {
+      // 出战角色必须为天赋角色
+      this.filter((c) => c.$("my active")?.state.definition.id === ch);
+    }
+    return this.addTarget(`my characters with definition id ${ch}`)
+      .doEquipment()
+      .tags("talent");
+  }
+
+  eventTalent(ch: CharacterHandle, opt?: { action?: boolean }) {
     this._talentCh = ch;
     const action = opt?.action ?? true;
     this._deckRequirement.character = ch;
     if (action) {
-      // TODO: set active ch filter
       this.tags("action");
     }
-    // TODO: target filter
     return this.tags("talent");
   }
 
@@ -186,7 +211,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   };
 
   done(): CardHandle {
-    const action: SkillDescription<CardTarget> = (state, skillInfo, { ids }) => {
+    const action: SkillDescription<CardTarget> = (
+      state,
+      skillInfo,
+      { ids },
+    ) => {
       const innerAction: SkillDescription<void> = this.getAction((ctx) =>
         CardBuilder.cardTargetToExt(ctx, ids),
       );

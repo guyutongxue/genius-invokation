@@ -75,7 +75,6 @@ const Amber = character(1304)
  */
 const BunnyTriggered = card(213041)
   .costPyro(3)
-  .talentOf(Amber)
-  .equipment()
+  .talent(Amber)
   // TODO
   .done();

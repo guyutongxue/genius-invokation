@@ -84,7 +84,6 @@ const Lisa = character(1409)
  */
 const PulsatingWitch = card(214091)
   .costElectro(1)
-  .talentOf(Lisa)
-  .equipment()
+  .talent(Lisa)
   // TODO
   .done();

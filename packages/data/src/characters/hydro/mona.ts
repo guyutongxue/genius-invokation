@@ -96,7 +96,6 @@ const Mona = character(1203)
 const ProphecyOfSubmersion = card(212031)
   .costHydro(3)
   .costEnergy(3)
-  .talentOf(Mona)
-  .equipment()
+  .talent(Mona)
   // TODO
   .done();

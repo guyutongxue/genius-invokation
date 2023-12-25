@@ -77,7 +77,6 @@ const Barbara = character(1201)
  */
 const GloriousSeason = card(212011)
   .costHydro(3)
-  .talentOf(Barbara)
-  .equipment()
+  .talent(Barbara)
   // TODO
   .done();

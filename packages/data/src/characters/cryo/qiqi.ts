@@ -86,7 +86,6 @@ const Qiqi = character(1108)
 const RiteOfResurrection = card(211081)
   .costCryo(5)
   .costEnergy(3)
-  .talentOf(Qiqi)
-  .equipment()
+  .talent(Qiqi)
   // TODO
   .done();

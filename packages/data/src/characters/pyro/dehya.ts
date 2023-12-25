@@ -126,7 +126,6 @@ const Dehya = character(1309)
  */
 const StalwartAndTrue = card(213091)
   .costPyro(4)
-  .talentOf(Dehya)
-  .equipment()
+  .talent(Dehya)
   // TODO
   .done();

@@ -106,7 +106,6 @@ const MaguuKenki = character(2501)
  */
 const TranscendentAutomaton = card(225011)
   .costAnemo(3)
-  .talentOf(MaguuKenki)
-  .equipment()
+  .talent(MaguuKenki)
   // TODO
   .done();

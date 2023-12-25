@@ -84,7 +84,6 @@ const Collei = character(1701)
  */
 const FloralSidewinder = card(217011)
   .costDendro(4)
-  .talentOf(Collei)
-  .equipment()
+  .talent(Collei)
   // TODO
   .done();

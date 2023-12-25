@@ -84,7 +84,6 @@ const Wanderer = character(1506)
  */
 const GalesOfReverie = card(215061)
   .costAnemo(4)
-  .talentOf(Wanderer)
-  .equipment()
+  .talent(Wanderer)
   // TODO
   .done();

@@ -79,7 +79,6 @@ const Jean = character(1502)
 const LandsOfDandelion = card(215021)
   .costAnemo(4)
   .costEnergy(2)
-  .talentOf(Jean)
-  .equipment()
+  .talent(Jean)
   // TODO
   .done();

@@ -115,7 +115,6 @@ const Venti = character(1503)
  */
 const EmbraceOfWinds = card(215031)
   .costAnemo(3)
-  .talentOf(Venti)
-  .equipment()
+  .talent(Venti)
   // TODO
   .done();

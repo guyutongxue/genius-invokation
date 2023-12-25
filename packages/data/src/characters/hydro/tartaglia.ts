@@ -133,7 +133,6 @@ const Tartaglia = character(1204)
  */
 const AbyssalMayhemHydrospout = card(212041)
   .costHydro(3)
-  .talentOf(Tartaglia)
-  .equipment()
+  .talent(Tartaglia)
   // TODO
   .done();

@@ -99,7 +99,6 @@ const AratakiItto = character(1605)
 const AratakiIchiban = card(216051)
   .costGeo(1)
   .costVoid(2)
-  .talentOf(AratakiItto)
-  .equipment()
+  .talent(AratakiItto)
   // TODO
   .done();

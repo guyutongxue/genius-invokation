@@ -97,7 +97,6 @@ const Dori = character(1410)
 const DiscretionarySupplement = card(214101)
   .costElectro(3)
   .costEnergy(2)
-  .talentOf(Dori)
-  .equipment()
+  .talent(Dori)
   // TODO
   .done();

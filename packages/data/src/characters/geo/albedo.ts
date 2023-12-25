@@ -74,7 +74,6 @@ const Albedo = character(1604)
  */
 const DescentOfDivinity = card(216041)
   .costGeo(3)
-  .talentOf(Albedo)
-  .equipment()
+  .talent(Albedo)
   // TODO
   .done();

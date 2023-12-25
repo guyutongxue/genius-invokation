@@ -96,7 +96,6 @@ const Yoimiya = character(1305)
  */
 const NaganoharaMeteorSwarm = card(213051)
   .costPyro(2)
-  .talentOf(Yoimiya)
-  .equipment()
+  .talent(Yoimiya)
   // TODO
   .done();

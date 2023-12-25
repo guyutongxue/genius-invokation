@@ -108,7 +108,6 @@ const Beidou = character(1405)
  */
 const LightningStorm = card(214051)
   .costElectro(3)
-  .talentOf(Beidou)
-  .equipment()
+  .talent(Beidou)
   // TODO
   .done();

@@ -86,7 +86,6 @@ const Fischl = character(1401)
  */
 const StellarPredator = card(214011)
   .costElectro(3)
-  .talentOf(Fischl)
-  .equipment()
+  .talent(Fischl)
   // TODO
   .done();

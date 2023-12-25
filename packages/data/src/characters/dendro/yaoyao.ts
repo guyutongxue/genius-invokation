@@ -95,7 +95,6 @@ const Yaoyao = character(1704)
  */
 const Beneficent = card(217041)
   .costDendro(3)
-  .talentOf(Yaoyao)
-  .equipment()
+  .talent(Yaoyao)
   // TODO
   .done();

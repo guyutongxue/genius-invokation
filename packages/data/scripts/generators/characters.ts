@@ -2,7 +2,7 @@ import { characters, statuses, summons, cards } from "../prescan";
 import { pascalCase, snakeCase } from "case-anything";
 import { writeSourceCode, SourceInfo } from "./source";
 import { getCostCode } from "./cost";
-import { getCardCode } from "./cards";
+import { getCardCode, getCardTypeAndTags } from "./cards";
 
 interface AuxiliaryFound {
   hasSummon: boolean;
@@ -67,6 +67,8 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
   if (!card) {
     return [];
   }
+  const { type } = getCardTypeAndTags(card);
+  const methodName = type === "equipment" ? "talent" : "eventTalent";
   return [
     {
       id: card.id,
@@ -74,7 +76,7 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
       description: card.zhDescription,
       code: getCardCode(
         card,
-        `\n  .talentOf(${pascalCase(name)})`,
+        `\n  .${methodName}(${pascalCase(name)})`,
       ),
     },
   ];

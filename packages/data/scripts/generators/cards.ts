@@ -4,9 +4,9 @@ import { getCostCode, isLegend } from "./cost";
 import { SourceInfo, writeSourceCode } from "./source";
 import { cards } from "../prescan";
 
-function getCardTypeAndTags(card: any) {
+export function getCardTypeAndTags(card: any) {
   const TAG_MAP: Record<string, string> = {
-    // GCG_TAG_TALENT: "talent", // use talentOf
+    // GCG_TAG_TALENT: "talent", // use talent
     GCG_TAG_SLOWLY: "action",
     GCG_TAG_FOOD: "food",
     GCG_TAG_ARTIFACT: "artifact",
@@ -43,8 +43,6 @@ export function getCardCode(card: any, extra = ""): string {
       ["bow", "sword", "catalyst", "pole", "claymore"].includes(tag)
     ) {
       typeCode = `\n  .weapon("${tag}")`;
-    } else {
-      typeCode = `\n  .equipment()`;
     }
   } else if (type === "support") {
     const tag = tags.shift();

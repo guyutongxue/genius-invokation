@@ -97,7 +97,6 @@ const Shenhe = character(1107)
  */
 const MysticalAbandon = card(211071)
   .costCryo(3)
-  .talentOf(Shenhe)
-  .equipment()
+  .talent(Shenhe)
   // TODO
   .done();

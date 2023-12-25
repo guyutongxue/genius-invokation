@@ -109,7 +109,6 @@ const RhodeiaOfLoch = character(2201)
 const StreamingSurge = card(222011)
   .costHydro(4)
   .costEnergy(3)
-  .talentOf(RhodeiaOfLoch)
-  .equipment()
+  .talent(RhodeiaOfLoch)
   // TODO
   .done();

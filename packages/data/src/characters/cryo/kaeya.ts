@@ -73,7 +73,6 @@ const Kaeya = character(1103)
  */
 const ColdbloodedStrike = card(211031)
   .costCryo(4)
-  .talentOf(Kaeya)
-  .equipment()
+  .talent(Kaeya)
   // TODO
   .done();

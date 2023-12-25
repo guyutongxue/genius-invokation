@@ -105,7 +105,6 @@ const Zhongli = character(1603)
  */
 const DominanceOfEarth = card(216031)
   .costGeo(5)
-  .talentOf(Zhongli)
-  .equipment()
+  .talent(Zhongli)
   // TODO
   .done();

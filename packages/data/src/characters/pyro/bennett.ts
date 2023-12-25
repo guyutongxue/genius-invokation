@@ -94,7 +94,6 @@ const Bennett = character(1303)
 const GrandExpectation = card(213031)
   .costPyro(4)
   .costEnergy(2)
-  .talentOf(Bennett)
-  .equipment()
+  .talent(Bennett)
   // TODO
   .done();
