@@ -404,8 +404,11 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
 }
 
 interface UsageOptions extends VariableOptions {
+  /** 设置变量名。默认的变量名为 `usage`；如果该变量名已被占用，则会在后面加上 `_${skillId}`。*/
   name?: string;
+  /** 是否为“每回合使用次数”。默认值为 `false`。 */
   perRound?: boolean;
+  /** 是否在每次技能执行完毕后自动 -1。默认值为 `true`。 */
   auto?: boolean;
 }
 
@@ -456,12 +459,8 @@ export class TriggeredSkillBuilder<
   /**
    * 为实体创建名为 `usage` 的变量，表示剩余使用次数。
    * 在每次技能执行完毕后，若该变量计数达到 0，则弃置该实体。
-   *
-   * 若 `opt.auto`（默认值），则每次使用时自动减少 1。
-   *
-   * `opt.name` 设定变量名。默认的变量名为 `usage`；如果该变量名已被占用，则会在后面加上 `_${skillId}`。
    * @param count
-   * @param opt
+   * @param opt @see UsageOptions
    * @returns
    */
   usage(count: number, opt?: UsageOptions): this {
@@ -487,6 +486,12 @@ export class TriggeredSkillBuilder<
     };
     return this;
   }
+  /**
+   * Same as
+   * ```
+   *   .usage(count, { ...opt, perRound: true })
+   * ```
+   */
   usagePerRound(count: number, opt?: Omit<UsageOptions, "perRound">) {
     return this.usage(count, { ...opt, perRound: true });
   }

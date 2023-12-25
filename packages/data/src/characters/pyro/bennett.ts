@@ -8,6 +8,7 @@ import { character, skill, combatStatus, card, DamageType, EquipmentHandle } fro
  * 持续回合：2
  */
 const InspirationField01 = combatStatus(113032)
+  .conflictWith(113031)
   .duration(2)
   .on("beforeSkillDamage")
   .increaseDamage(2)
@@ -24,6 +25,7 @@ const InspirationField01 = combatStatus(113032)
  * 持续回合：2
  */
 const InspirationField = combatStatus(113031)
+  .conflictWith(113032)
   .duration(2)
   .on("beforeSkillDamage")
   .if((c) => c.damageInfo.source.variables.health >= 7)

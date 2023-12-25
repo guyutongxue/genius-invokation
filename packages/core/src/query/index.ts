@@ -2,7 +2,7 @@ import { SkillContext } from "../builder/context";
 import { ExContextType, ExEntityType } from "../builder/type";
 import { GuessedTypeOfQuery } from "./types";
 import { QueryArgs, doSemanticQueryAction } from "./semantic";
-import { allEntities } from "../util";
+import { allEntities, getEntityArea, getEntityById } from "../util";
 
 export function executeQuery<
   Readonly extends boolean,
@@ -24,6 +24,14 @@ export function executeQuery<
     candidates: allEntities(ctx.state),
     externals: {
       self: (c) => c.skillInfo.caller,
+      master: (c) => {
+        const e = c.skillInfo.caller;
+        const area = getEntityArea(c.state, e.id);
+        if (area.type !== "characters") {
+          throw new Error(`This caller do not have @master`);
+        }
+        return getEntityById(c.state, area.characterId);
+      },
       event: {
         skillCaller: (c) => c.eventArg.caller,
       },

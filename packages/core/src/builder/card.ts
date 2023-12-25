@@ -115,6 +115,13 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return support(this.cardId).tags(type);
   }
 
+  /**
+   * 添加“打出后生成出战状态”的操作。
+   * 
+   * 此调用后，卡牌描述结束；接下来的 builder 将描述出战状态。
+   * @param id 出战状态定义 id；默认与卡牌定义 id 相同
+   * @returns 出战状态 builder
+   */
   toCombatStatus(id?: number) {
     id ??= this.cardId;
     this.do((c) => {
@@ -122,6 +129,14 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     }).done();
     return combatStatus(id);
   }
+  /**
+   * 添加“打出后为某角色附着状态”的操作。
+   * 
+   * 此调用后，卡牌描述结束；接下来的 builder 将描述状态。
+   * @param target 要附着的角色（查询）
+   * @param id 状态定义 id；默认与卡牌定义 id 相同
+   * @returns 状态 builder
+   */
   toStatus(target: string, id?: number) {
     id ??= this.cardId;
     this.do((c) => {

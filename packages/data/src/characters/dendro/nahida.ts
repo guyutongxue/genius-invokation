@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, getReaction, StatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 117031
@@ -7,8 +7,26 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 任意具有「蕴种印」的所在阵营角色受到元素反应伤害后：对所附属角色造成1点穿透伤害。
  * 可用次数：2
  */
-const SeedOfSkandha = status(117031)
-  // TODO
+const SeedOfSkandha: StatusHandle = status(117031)
+  .on("damaged", (c, e) =>
+    getReaction(e) !== null && 
+    c.of(e.target).hasStatus(SeedOfSkandha)
+  )
+  .listenToPlayer()
+  .usage(2)
+  .do((c, e) => {
+    if (
+      // 由于蕴种印在对方场上，故查找我方信息时使用 opp
+      c.$("opp characters has equipment with definition id 217031") && // 装备有心识蕴藏之种
+      c.$("opp combat status with definition id 117032") && // 摩耶之殿在场时
+      c.$("opp characters include defeated with tag (pyro)") && // 我方队伍中存在火元素
+      c.caller().master().id === e.target.id // 受到元素反应伤害的对象
+    ) {
+      c.damage(DamageType.Dendro, 1, "@master")
+    } else {
+      c.damage(DamageType.Piercing, 1, "@master")
+    }
+  })
   .done();
 
 /**
@@ -19,7 +37,18 @@ const SeedOfSkandha = status(117031)
  * 持续回合：3
  */
 const ShrineOfMaya01 = combatStatus(117033)
-  // TODO
+  .conflictWith(117032)
+  .duration(3)
+  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .increaseDamage(1)
+  .on("enter", (c) => 
+    c.$("my characters has equipment with definition id 217031") && // 装备有心识蕴藏之种
+    c.$("my characters include defeated with tag (electro)") // 我方队伍中存在雷元素
+  )
+  .do((c) => {
+    // 对方场上蕴种印的可用次数+1
+    c.$$("opp status with definition id 117031").forEach((s) => s.addVariable("usage", 1));
+  })
   .done();
 
 /**
@@ -30,7 +59,18 @@ const ShrineOfMaya01 = combatStatus(117033)
  * 持续回合：2
  */
 const ShrineOfMaya = combatStatus(117032)
-  // TODO
+  .conflictWith(117033)
+  .duration(2)
+  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .increaseDamage(1)
+  .on("enter", (c) => 
+    c.$("my characters has equipment with definition id 217031") && // 装备有心识蕴藏之种
+    c.$("my characters include defeated with tag (electro)") // 我方队伍中存在雷元素
+  )
+  .do((c) => {
+    // 对方场上蕴种印的可用次数+1
+    c.$$("opp status with definition id 117031").forEach((s) => s.addVariable("usage", 1));
+  })
   .done();
 
 /**
@@ -43,7 +83,7 @@ const Akara = skill(17031)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Dendro, 1)
   .done();
 
 /**
@@ -55,7 +95,11 @@ const Akara = skill(17031)
 const AllSchemesToKnow = skill(17032)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .if((c) => c.$("opp active")?.hasStatus(SeedOfSkandha))
+  .characterStatus(SeedOfSkandha, "all opp characters")
+  .else()
+  .characterStatus(SeedOfSkandha, "opp active")
   .done();
 
 /**
@@ -67,7 +111,8 @@ const AllSchemesToKnow = skill(17032)
 const AllSchemesToKnowTathata = skill(17033)
   .type("elemental")
   .costDendro(5)
-  // TODO
+  .damage(DamageType.Dendro, 3)
+  .characterStatus(SeedOfSkandha, "all opp characters")
   .done();
 
 /**
@@ -80,7 +125,17 @@ const IllusoryHeart = skill(17034)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Dendro, 4)
+  .do((c) => {
+    if (
+      c.caller().hasEquipment(TheSeedOfStoredKnowledge) && // 装备有心识蕴藏之种
+      c.$("my characters include defeated with tag (hydro)") // 我方队伍中存在水元素
+    ) {
+      c.combatStatus(ShrineOfMaya01);
+    } else {
+      c.combatStatus(ShrineOfMaya);
+    }
+  })
   .done();
 
 /**
@@ -112,5 +167,6 @@ const TheSeedOfStoredKnowledge = card(217031)
   .costDendro(3)
   .costEnergy(2)
   .talent(Nahida)
-  // TODO
+  .on("enter")
+  .useSkill(IllusoryHeart)
   .done();

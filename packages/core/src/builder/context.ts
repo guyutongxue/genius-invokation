@@ -345,6 +345,11 @@ export class SkillContext<
     }
   }
 
+  /**
+   * 为某角色附着元素。 
+   * @param type 附着的元素类型
+   * @param target 角色目标
+   */
   apply(
     type: AppliableDamageType,
     target: TargetQueryArg<false, Ext, CallerType>,
@@ -823,7 +828,10 @@ export class CharacterContext<Readonly extends boolean> {
     );
   }
   hasEquipment(id: EquipmentHandle) {
-    return this.state.entities.find((v) => v.definition.id === id);
+    return this.state.entities.find((v) => v.definition.type === "equipment" && v.definition.id === id);
+  }
+  hasStatus(id: StatusHandle) {
+    return this.state.entities.find((v) => v.definition.type === "status" && v.definition.id === id);
   }
 
   $$<const Q extends string>(arg: Q) {

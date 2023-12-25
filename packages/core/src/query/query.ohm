@@ -48,7 +48,7 @@ QueryLang {
   kwPrev = "prev" ~identifierPart
   kwNext = "next" ~identifierPart
   kwStandby = "standby" ~identifierPart
-  kwIncludes = "includes" ~identifierPart
+  kwIncludes = "include" "s"? ~identifierPart
   kwDefeated = "defeated" ~identifierPart
   kwWeapon = "weapon" ~identifierPart
   kwElement = "element" ~identifierPart
