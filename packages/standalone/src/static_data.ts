@@ -1,5 +1,6 @@
 import data from "@gi-tcg/data";
 import { DiceType } from "@gi-tcg/typings";
+import { diceToMap } from "@gi-tcg/utils";
 
 export const maxEnergyData: Record<number, number> = Object.fromEntries(
   [...data.character.values()].map(
@@ -17,28 +18,14 @@ export const initiativeSkillData: Record<number, number[]> = Object.fromEntries(
   ),
 );
 
-export function sparseCostToMap(
-  cost: readonly DiceType[],
-): Map<DiceType, number> {
-  const result: Map<DiceType, number> = new Map();
-  for (const d of cost) {
-    if (result.has(d)) {
-      result.set(d, result.get(d)! + 1);
-    } else {
-      result.set(d, 1);
-    }
-  }
-  return result;
-}
-
 export const costData: Record<
   number,
   Map<DiceType, number>
 > = Object.fromEntries([
   ...[...data.card.values()].map(
-    (c) => [c.id, sparseCostToMap(c.skillDefinition.requiredCost)] as const,
+    (c) => [c.id, diceToMap(c.skillDefinition.requiredCost)] as const,
   ),
   ...initiativeSkillDefs.map(
-    (sk) => [sk.id, sparseCostToMap(sk.requiredCost)] as const,
+    (sk) => [sk.id, diceToMap(sk.requiredCost)] as const,
   ),
 ]);
