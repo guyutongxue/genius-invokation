@@ -1,4 +1,4 @@
-import type { DiceType } from "../enums";
+import type { DiceType, PlayCardHint } from "../enums";
 
 export interface RerollDiceRequest {
   dice: readonly DiceType[];
@@ -19,13 +19,6 @@ export interface SwitchActiveAction {
   active: number;
   cost: readonly DiceType[];
 }
-
-export enum PlayCardHint {
-  GeneralTarget,
-  GeneralTarget2,
-  DisposeSupport,
-}
-
 export interface PlayCardAction {
   type: "playCard";
   card: number;

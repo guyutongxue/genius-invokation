@@ -1,8 +1,7 @@
 import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./state";
 import { CardTarget } from "./card";
-import { flip } from "@gi-tcg/utils";
-import { allEntities, getActiveCharacterIndex, shiftLeft } from "../util";
+import { allEntities } from "../util";
 
 export interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
@@ -166,9 +165,9 @@ export interface DamageModifier1 {
   decreaseDamage(value: number): void;
 }
 
-export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
+export class DamageModifierImpl<InfoT extends DamageInfo = DamageInfo> implements DamageModifier0, DamageModifier1 {
   private _caller: CharacterState | EntityState | null = null;
-  constructor(private readonly _damageInfo?: DamageInfo) {}
+  constructor(private readonly _damageInfo: InfoT) {}
   private _newDamageType: DamageType | null = null;
   private _increased = 0;
   private _multiplier = 1;
@@ -180,8 +179,8 @@ export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
   }
 
   changeDamageType(type: DamageType) {
-    if (this._caller === null || typeof this._damageInfo === "undefined") {
-      throw new Error("caller not set or no damageInfo provided");
+    if (this._caller === null) {
+      throw new Error("caller not set");
     }
     this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) change damage type from ${this._damageInfo.type} to ${type}.\n`;
     if (this._newDamageType !== null) {
@@ -190,28 +189,28 @@ export class DamageModifierImpl implements DamageModifier0, DamageModifier1 {
     this._newDamageType = type;
   }
   increaseDamage(value: number) {
-    if (this._caller === null || typeof this._damageInfo === "undefined") {
-      throw new Error("caller not set or no damageInfo provided");
+    if (this._caller === null) {
+      throw new Error("caller not set");
     }
     this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) increase damage by ${value}.\n`;
     this._increased += value;
   }
   multiplyDamage(multiplier: number) {
-    if (this._caller === null || typeof this._damageInfo === "undefined") {
-      throw new Error("caller not set or no damageInfo provided");
+    if (this._caller === null) {
+      throw new Error("caller not set");
     }
     this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) multiply damage by ${multiplier}.\n`;
     this._multiplier *= multiplier;
   }
   decreaseDamage(value: number) {
-    if (this._caller === null || typeof this._damageInfo === "undefined") {
-      throw new Error("caller not set or no damageInfo provided");
+    if (this._caller === null) {
+      throw new Error("caller not set");
     }
     this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) decrease damage by ${value}.\n`;
     this._decreased += value;
   }
 
-  get damageInfo(): DamageInfo & { log: string } {
+  get damageInfo(): InfoT & { log: string } {
     return this._damageInfo
       ? {
           ...this._damageInfo,

@@ -15,7 +15,7 @@ import { EntityArea, EntityType } from "../base/entity";
 type AnyState = EntityState | CharacterState;
 type AnySkillContext = ExtendedSkillContext<true, Record<string, any>, any>;
 
-type ExternalQueryFn = (c: AnySkillContext) => CharacterState | EntityState;
+type ExternalQueryFn = (c: AnySkillContext) => number;
 type ExternalQueryEntry = ExternalQueryFn | ExternalQueryDictionary;
 type ExternalQueryDictionary = { [prop: string]: ExternalQueryEntry };
 
@@ -224,7 +224,8 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
         `External query ${this.sourceString} is invalid (subsequent props needed)`,
       );
     }
-    return [dict(this.args.ctx.skillContext)];
+    const id = dict(this.args.ctx.skillContext);
+    return [getEntityById(this.args.ctx.state, id, true)];
   },
   PrimaryQuery_paren(_l, query, _r) {
     return query.doQuery(this.args.ctx);

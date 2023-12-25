@@ -54,3 +54,13 @@ export enum Reaction {
   Bloom,
   Quicken
 }
+
+export enum PlayCardHint {
+  DisposeSupport = 0,
+  GeneralTarget = 1,
+  GeneralTarget2 = 2,
+  ArtifactSource,
+  ArtifactDestination,
+  WeaponSource,
+  WeaponDestination,
+}

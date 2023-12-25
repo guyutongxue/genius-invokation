@@ -154,6 +154,8 @@ function exposeEntity(e: EntityState): EntityData {
     id: e.id,
     definitionId: e.definition.id,
     variable: e.definition.visibleVarName ? e.variables[e.definition.visibleVarName] ?? null : null,
+    hintIcon: e.variables.hintIcon ?? null,
+    hintText: e.definition.hintText,
   };
 }
 

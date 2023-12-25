@@ -23,6 +23,8 @@ export interface EntityData {
   id: number;
   definitionId: number;
   variable: number | null;
+  hintIcon: number | null;
+  hintText: string | null;
 }
 
 export interface CardData {

@@ -13,6 +13,7 @@ export function executeQuery<
   ctx: SkillContext<Readonly, Ext, CallerType>,
   s: Q,
 ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[] {
+  const targetLength = (ctx as any)?.targets?.length ?? 0;
   const arg: QueryArgs = {
     skillContext: ctx as any,
     get state() {
@@ -23,24 +24,26 @@ export function executeQuery<
     },
     candidates: allEntities(ctx.state),
     externals: {
-      self: (c) => c.skillInfo.caller,
+      self: (c) => c.skillInfo.caller.id,
       master: (c) => {
-        const e = c.skillInfo.caller;
-        const area = getEntityArea(c.state, e.id);
+        const callerId = c.skillInfo.caller.id;
+        const area = getEntityArea(c.state, callerId);
         if (area.type !== "characters") {
           throw new Error(`This caller do not have @master`);
         }
-        return getEntityById(c.state, area.characterId);
+        return area.characterId;
       },
       event: {
-        skillCaller: (c) => c.eventArg.caller,
+        skillCaller: (c) => c.eventArg.caller.id,
       },
       damage: {
-        target: (c) => c.damageInfo.target,
+        target: (c) => c.damageInfo.target.id,
       },
-      targets: (((ctx as any)?.targets as any[]) ?? []).map(
-        (e) => () => e,
-      ) as any,
+      targets: Object.fromEntries(
+        new Array(targetLength)
+          .fill(0)
+          .map((_, i) => [`${i}`, (c) => c.targets[i].id]),
+      ),
     },
   };
   const result = doSemanticQueryAction(s, arg);

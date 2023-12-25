@@ -37,6 +37,7 @@ import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
 import {
   NontrivialDamageType,
+  OptionalDamageInfo,
   REACTION_DESCRIPTION,
   REACTION_MAP,
 } from "./reaction";
@@ -373,7 +374,18 @@ export class SkillContext<
       varName: "aura",
       value: newAura,
     });
-    const damageModifier = new DamageModifierImpl(damage);
+    const optDamageInfo: OptionalDamageInfo = damage ? {
+      ...damage,
+      isDamage: true
+    } : {
+      type,
+      value: 0,
+      source: this.skillInfo.caller,
+      via: this.skillInfo,
+      target: target.state,
+      isDamage: false
+    };
+    const damageModifier = new DamageModifierImpl(optDamageInfo);
     damageModifier.setCaller(this.callerState);
     if (reaction !== null) {
       const reactionDescription = REACTION_DESCRIPTION[reaction];

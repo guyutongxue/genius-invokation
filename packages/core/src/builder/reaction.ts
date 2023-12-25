@@ -4,7 +4,7 @@ import {
   DamageType as D,
   DamageType,
 } from "@gi-tcg/typings";
-import { DamageInfo, DamageModifier1, SkillDescription } from "../base/skill";
+import { DamageInfo, DamageModifier1, DamageModifierImpl, SkillDescription } from "../base/skill";
 import { SkillBuilder, enableShortcut } from "./skill";
 import { ExtendedSkillContext } from "./context";
 import { status, combatStatus, summon } from "./entity";
@@ -109,9 +109,11 @@ const BurningFlame = 115 as SummonHandle;
 const DendroCore = 116 as CombatStatusHandle;
 const CatalyzingField = 117 as CombatStatusHandle;
 
-type DamageModifierR = Omit<DamageModifier1, "damageInfo"> & {
-  damageInfo?: DamageInfo;
-};
+type DamageModifierR = DamageModifierImpl<OptionalDamageInfo>;
+
+export interface OptionalDamageInfo extends DamageInfo {
+  isDamage: boolean;
+}
 
 type ReactionDescription = SkillDescription<DamageModifierR>;
 export const REACTION_DESCRIPTION: Record<R, ReactionDescription> = {} as any;
@@ -138,7 +140,7 @@ type ReactionAction = (
 ) => void;
 
 const pierceToOther: ReactionAction = (c) => {
-  if (c.damageInfo) {
+  if (c.damageInfo.isDamage) {
     c.increaseDamage(1);
     c.damage(D.Piercing, 1, "opp character and not @damage.target");
   }
@@ -151,19 +153,19 @@ const crystallize: ReactionAction = (c) => {
 
 const swirl = (srcElement: D): ReactionAction => {
   return (c) => {
-    if (c.damageInfo) {
+    if (c.damageInfo.isDamage) {
       c.damage(srcElement, 1, "opp character and not @damage.target");
     }
   };
 };
 
 reaction(R.Melt)
-  .if((c) => c.damageInfo)
+  .if((c) => c.damageInfo.isDamage)
   .increaseDamage(2)
   .done();
 
 reaction(R.Vaporize)
-  .if((c) => c.damageInfo)
+  .if((c) => c.damageInfo.isDamage)
   .increaseDamage(2)
   .done();
 
@@ -183,7 +185,7 @@ reaction(R.ElectroCharged)
 reaction(R.Frozen)
   .if((c) => c.damageInfo)
   .increaseDamage(1)
-  .characterStatus(Frozen)
+  .characterStatus(Frozen, "@damage.target")
   .done();
 
 reaction(R.SwirlCryo).do(swirl(D.Cryo)).done();
@@ -203,13 +205,13 @@ reaction(R.CrystallizePyro).do(crystallize).done();
 reaction(R.CrystallizeElectro).do(crystallize).done();
 
 reaction(R.Burning)
-  .if((c) => c.damageInfo)
+  .if((c) => c.damageInfo.isDamage)
   .increaseDamage(1)
   .summon(BurningFlame)
   .done();
 
 reaction(R.Bloom)
-  .if((c) => c.damageInfo)
+  .if((c) => c.damageInfo.isDamage)
   .increaseDamage(1)
   // Nilou
   .if((c) => c.$$(`combat status with definition id 112081`).length)
