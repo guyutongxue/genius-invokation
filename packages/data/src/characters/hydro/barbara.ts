@@ -8,9 +8,8 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：2
  */
 const MelodyLoop = summon(112011)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Heal, 1, "all my characters")
   .usage(2)
-  .heal(1, "all my characters")
   .apply(DamageType.Hydro, "active")
   .done();
 
@@ -24,7 +23,7 @@ const WhisperOfWater = skill(12011)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  .damage(1, DamageType.Hydro)
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -36,7 +35,7 @@ const WhisperOfWater = skill(12011)
 const LetTheShowBegin = skill(12012)
   .type("elemental")
   .costHydro(3)
-  .damage(1, DamageType.Hydro)
+  .damage(DamageType.Hydro, 1)
   .summon(MelodyLoop)
   .done();
 

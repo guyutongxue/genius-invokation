@@ -140,7 +140,7 @@ type ReactionAction = (
 const pierceToOther: ReactionAction = (c) => {
   if (c.damageInfo) {
     c.increaseDamage(1);
-    c.damage(1, D.Piercing, "opp character and not @damage.target");
+    c.damage(D.Piercing, 1, "opp character and not @damage.target");
   }
 };
 
@@ -152,7 +152,7 @@ const crystallize: ReactionAction = (c) => {
 const swirl = (srcElement: D): ReactionAction => {
   return (c) => {
     if (c.damageInfo) {
-      c.damage(1, srcElement, "opp character and not @damage.target");
+      c.damage(srcElement, 1, "opp character and not @damage.target");
     }
   };
 };

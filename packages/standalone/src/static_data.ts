@@ -17,10 +17,6 @@ export const initiativeSkillData: Record<number, number[]> = Object.fromEntries(
   ),
 );
 
-export const visibleVarData: Record<number, string | null> = Object.fromEntries(
-  [...data.entity.values()].map((c) => [c.id, c.visibleVarName] as const),
-);
-
 export function sparseCostToMap(
   cost: readonly DiceType[],
 ): Map<DiceType, number> {

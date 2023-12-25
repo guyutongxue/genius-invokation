@@ -8,9 +8,8 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：2
  */
 const DandelionField = summon(115021)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
-  .damage(1, DamageType.Anemo)
   .heal(1, "active")
   .done();
 
@@ -24,7 +23,7 @@ const FavoniusBladework = skill(15021)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  .damage(2, DamageType.Physical)
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -36,7 +35,7 @@ const FavoniusBladework = skill(15021)
 const GaleBlade = skill(15022)
   .type("elemental")
   .costAnemo(3)
-  .damage(3, DamageType.Anemo)
+  .damage(DamageType.Anemo, 3)
   .switchActive("opp next")
   .done();
 

@@ -22,6 +22,7 @@ export interface EntityDefinition {
   readonly id: number;
   readonly visibleVarName: string | null;
   readonly tags: readonly EntityTag[];
+  readonly hintText: string | null;
   readonly constants: EntityVariables;
   readonly skills: readonly TriggeredSkillDefinition[];
 }

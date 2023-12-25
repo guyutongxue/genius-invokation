@@ -174,8 +174,8 @@ const Tenshukaku = card(321007)
 const Vanarana = card(321011)
   .support("place")
   .variable("count", 0)
-  .variable("d1", 0)
-  .variable("d2", 0)
+  .variable("d1", 0, { visible: false })
+  .variable("d2", 0, { visible: false })
   .on("endPhase")
   .do((c) => {
     const absorbed = c.absorbDice("seq", 2);

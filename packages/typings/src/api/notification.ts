@@ -22,7 +22,7 @@ export interface CharacterData {
 export interface EntityData {
   id: number;
   definitionId: number;
-  variables: Record<string, number>;
+  variable: number | null;
 }
 
 export interface CardData {

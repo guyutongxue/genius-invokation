@@ -8,9 +8,8 @@ import { DamageType, DiceType, canSwitchDeductCost1, canSwitchFast, card, combat
  * 可用次数：2
  */
 const CryoHilichurlShooter = summon(303211)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Cryo, 1)
   .usage(2)
-  .damage(1, DamageType.Cryo)
   .done();
 
 /**
@@ -21,9 +20,8 @@ const CryoHilichurlShooter = summon(303211)
  * 可用次数：2
  */
 const HydroSamachurl = summon(303212)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Hydro, 1)
   .usage(2)
-  .damage(1, DamageType.Hydro)
   .done();
 
 
@@ -35,9 +33,8 @@ const HydroSamachurl = summon(303212)
  * 可用次数：2
  */
 const HilichurlBerserker = summon(303213)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Pyro, 1)
   .usage(2)
-  .damage(1, DamageType.Pyro)
   .done();
 
 /**
@@ -48,9 +45,8 @@ const HilichurlBerserker = summon(303213)
  * 可用次数：2
  */
 const ElectroHilichurlShooter = summon(303214)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Electro, 1)
   .usage(2)
-  .damage(1, DamageType.Electro)
   .done();
 
 /**
@@ -339,7 +335,7 @@ const ElementalResonanceWovenWinds = card(331501)
  */
 const FatuiAmbusherCryoCicinMage = combatStatus(303216)
   .on("skill")
-  .damage(1, DamageType.Cryo, "my active")
+  .damage(DamageType.Cryo, 1, "my active")
   .done();
 
 /**
@@ -351,7 +347,7 @@ const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  */
 const FatuiAmbusherMirrorMaiden = combatStatus(303217)
   .on("skill")
-  .damage(1, DamageType.Hydro, "my active")
+  .damage(DamageType.Hydro, 1, "my active")
   .done();
 
 /**
@@ -363,7 +359,7 @@ const FatuiAmbusherMirrorMaiden = combatStatus(303217)
  */
 const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
   .on("skill")
-  .damage(1, DamageType.Pyro, "my active")
+  .damage(DamageType.Pyro, 1, "my active")
   .done();
 
 /**
@@ -375,7 +371,7 @@ const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
  */
 const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
   .on("skill")
-  .damage(1, DamageType.Electro, "my active")
+  .damage(DamageType.Electro, 1, "my active")
   .done();
 
 

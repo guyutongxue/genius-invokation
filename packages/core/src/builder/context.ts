@@ -277,8 +277,8 @@ export class SkillContext<
   }
 
   damage(
-    value: number,
     type: DamageType,
+    value: number,
     target: TargetQueryArg<false, Ext, CallerType> = "opp active",
   ) {
     if (type === DamageType.Heal) {
@@ -831,8 +831,8 @@ export class CharacterContext<Readonly extends boolean> {
   heal(value: number) {
     this.skillContext.heal(value, this.state);
   }
-  damage(value: number, type: DamageType) {
-    this.skillContext.damage(value, type, this.state);
+  damage(type: DamageType, value: number) {
+    this.skillContext.damage(type, value, this.state);
   }
   apply(type: AppliableDamageType) {
     this.skillContext.apply(type, this.state);

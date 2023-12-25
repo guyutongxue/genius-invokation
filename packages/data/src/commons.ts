@@ -36,9 +36,8 @@ const Crystallize = combatStatus(111)
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 const BurningFlame = summon(115)
-  .on("endPhase")
+  .endPhaseDamage(DamageType.Pyro, 1)
   .usage(1, { recreateMax: 2 })
-  .damage(1, DamageType.Pyro)
   .done();
 
 /**

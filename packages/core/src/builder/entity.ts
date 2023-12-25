@@ -1,3 +1,4 @@
+import { DamageType } from "..";
 import { EntityType, EntityTag, EntityVariables } from "../base/entity";
 import {
   EventExt,
@@ -27,6 +28,7 @@ export type ExtOfEntity<
 
 export interface VariableOptions {
   recreateMax?: number;
+  /** 该值是否在前端可见，默认为 `true`。仅最后一次添加的变量会显示。 */
   visible?: boolean;
 }
 
@@ -42,6 +44,7 @@ export class EntityBuilder<
     duration: Infinity,
   };
   private _visibleVarName: string | null = null;
+  private _hintText: string | null = null;
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -115,6 +118,32 @@ export class EntityBuilder<
     return this;
   }
 
+  hintText(text: string): this {
+    this._hintText = text;
+    return this;
+  }
+  hintIcon(damageType: DamageType) {
+    return this.variable("hintIcon", damageType);
+  }
+
+  /**
+   * Same as
+   * ```
+   *   .hintIcon(type)
+   *   .hintText(`${value}`)
+   *   .on("endPhase")
+   *   .damage(type, value[, target])
+   * ```
+   * 
+   * Note: use `DamageType.Heal` as equivalent of `.heal`
+   * @param type 
+   * @param value 
+   * @returns 
+   */
+  endPhaseDamage(type: DamageType, value: number, target?: string) {
+    return this.hintIcon(type).hintText(`${value}`).on("endPhase").damage(type, value, target);
+  }
+
   done(): HandleT<CallerType> {
     // on action phase clean up
     this.on("actionPhase")
@@ -137,7 +166,8 @@ export class EntityBuilder<
     registerEntity({
       id: this.id,
       visibleVarName: this._visibleVarName,
-      constants: this._constants, // TODO
+      constants: this._constants,
+      hintText: this._hintText,
       skills: this._skillList,
       tags: this._tags,
       type: this.type,

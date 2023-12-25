@@ -39,7 +39,7 @@ const StrikeOfFortune = skill(13031)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  .damage(2, DamageType.Physical)
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -51,7 +51,7 @@ const StrikeOfFortune = skill(13031)
 const PassionOverload = skill(13032)
   .type("elemental")
   .costPyro(3)
-  .damage(3, DamageType.Pyro)
+  .damage(DamageType.Pyro, 3)
   .done();
 
 /**
@@ -64,7 +64,7 @@ const FantasticVoyage = skill(13033)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)
-  .damage(2, DamageType.Pyro)
+  .damage(DamageType.Pyro, 2)
   // TODO
   .combatStatus(InspirationField)
   .done();
