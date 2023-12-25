@@ -9,7 +9,12 @@ import {
   SkillInfo,
   useSyncSkill,
 } from "../base/skill";
-import { CardState, CharacterState, EntityState, GameState } from "../base/state";
+import {
+  CardState,
+  CharacterState,
+  EntityState,
+  GameState,
+} from "../base/state";
 import {
   allEntitiesAtArea,
   drawCard,
@@ -57,12 +62,7 @@ type TargetQueryArg<
   Ext extends object,
   CallerType extends ExEntityType,
 > =
-  | QueryFn<
-      Readonly,
-      Ext,
-      CallerType,
-      CharacterState | CharacterState[] 
-    >
+  | QueryFn<Readonly, Ext, CallerType, CharacterState | CharacterState[]>
   | CharacterState
   | CharacterState[]
   | string;
@@ -178,7 +178,7 @@ export class SkillContext<
 
   /**
    * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
-   * @returns 
+   * @returns
    */
   caller(): ExContextType<Readonly, CallerType> {
     return this.of(this.callerState as any) as any;
@@ -347,7 +347,7 @@ export class SkillContext<
   }
 
   /**
-   * 为某角色附着元素。 
+   * 为某角色附着元素。
    * @param type 附着的元素类型
    * @param target 角色目标
    */
@@ -374,17 +374,19 @@ export class SkillContext<
       varName: "aura",
       value: newAura,
     });
-    const optDamageInfo: OptionalDamageInfo = damage ? {
-      ...damage,
-      isDamage: true
-    } : {
-      type,
-      value: 0,
-      source: this.skillInfo.caller,
-      via: this.skillInfo,
-      target: target.state,
-      isDamage: false
-    };
+    const optDamageInfo: OptionalDamageInfo = damage
+      ? {
+          ...damage,
+          isDamage: true,
+        }
+      : {
+          type,
+          value: 0,
+          source: this.skillInfo.caller,
+          via: this.skillInfo,
+          target: target.state,
+          isDamage: false,
+        };
     const damageModifier = new DamageModifierImpl(optDamageInfo);
     damageModifier.setCaller(this.callerState);
     if (reaction !== null) {
@@ -436,12 +438,21 @@ export class SkillContext<
           );
       }
     }
-    const existEntity = allEntitiesAtArea(this._state, area).find(
-      (e) => e.definition.id === id2,
+    const entitiesAtArea = allEntitiesAtArea(this._state, area);
+    // handle immuneControl vs disableSkill;
+    // do not generate Frozen etc. on those characters
+    const immuneControl = entitiesAtArea.find(
+      (e) =>
+        e.definition.type === "status" &&
+        e.definition.tags.includes("immuneControl"),
     );
-    if (existEntity) {
+    if (immuneControl && def.type === "status" && def.tags.includes("disableSkill")) {
+      return;
+    }
+    const existSame = entitiesAtArea.find((e) => e.definition.id === id2);
+    if (existSame) {
       // refresh exist entity's variable
-      for (const prop in existEntity.variables) {
+      for (const prop in existSame.variables) {
         if (prop in def.constants) {
           const valueLimit =
             `${prop}$max` in def.constants
@@ -449,10 +460,10 @@ export class SkillContext<
               : def.constants[prop];
           this.mutate({
             type: "modifyEntityVar",
-            state: existEntity,
+            state: existSame,
             varName: prop,
             value: Math.min(
-              def.constants[prop] + existEntity.variables[prop],
+              def.constants[prop] + existSame.variables[prop],
               valueLimit,
             ),
           });
@@ -643,13 +654,14 @@ export class SkillContext<
         who,
         oldState: cardState,
         used: false,
-      })
+      });
     }
   }
 
   drawCards(count: number, opt?: DrawCardsOpt) {
     const { withTag = null, who: myOrOpt = "my" } = (opt ??= {});
-    const who = myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    const who =
+      myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
     for (let i = 0; i < count; i++) {
       this._state = drawCard(this._state, who, withTag);
     }
@@ -840,10 +852,14 @@ export class CharacterContext<Readonly extends boolean> {
     );
   }
   hasEquipment(id: EquipmentHandle) {
-    return this.state.entities.find((v) => v.definition.type === "equipment" && v.definition.id === id);
+    return this.state.entities.find(
+      (v) => v.definition.type === "equipment" && v.definition.id === id,
+    );
   }
   hasStatus(id: StatusHandle) {
-    return this.state.entities.find((v) => v.definition.type === "status" && v.definition.id === id);
+    return this.state.entities.find(
+      (v) => v.definition.type === "status" && v.definition.id === id,
+    );
   }
 
   $$<const Q extends string>(arg: Q) {
