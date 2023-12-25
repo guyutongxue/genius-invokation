@@ -1,4 +1,4 @@
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, EquipmentHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 113032
@@ -8,7 +8,12 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 持续回合：2
  */
 const InspirationField01 = combatStatus(113032)
-  // TODO
+  .duration(2)
+  .on("beforeSkillDamage")
+  .increaseDamage(2)
+  .on("skill")
+  .if((c, e) => e.caller.variables.health <= 6)
+  .heal(2, "@event.skillCaller")
   .done();
 
 /**
@@ -26,7 +31,6 @@ const InspirationField = combatStatus(113031)
   .on("skill")
   .if((c, e) => e.caller.variables.health <= 6)
   .heal(2, "@event.skillCaller")
-  // TODO
   .done();
 
 /**
@@ -65,7 +69,9 @@ const FantasticVoyage = skill(13033)
   .costPyro(4)
   .costEnergy(2)
   .damage(DamageType.Pyro, 2)
-  // TODO
+  .if((c) => c.caller().hasEquipment(GrandExpectation))
+  .combatStatus(InspirationField01)
+  .else()
   .combatStatus(InspirationField)
   .done();
 
@@ -91,9 +97,10 @@ const Bennett = character(1303)
  * 装备有此牌的班尼特生成的鼓舞领域，其伤害提升效果改为总是生效，不再具有生命值限制。
  * （牌组中包含班尼特，才能加入牌组）
  */
-const GrandExpectation = card(213031)
+const GrandExpectation: EquipmentHandle = card(213031)
   .costPyro(4)
   .costEnergy(2)
   .talent(Bennett)
-  // TODO
+  .on("enter")
+  .useSkill(FantasticVoyage)
   .done();

@@ -11,6 +11,11 @@ const DandelionField = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
   .heal(1, "active")
+  .on("beforeDealDamage", (c) => 
+    c.$("my characters has equipment with definition id 215021") && // 装备有天赋的琴在场时
+    c.damageInfo.type === DamageType.Anemo
+  )
+  .increaseDamage(1)
   .done();
 
 /**
@@ -79,5 +84,6 @@ const LandsOfDandelion = card(215021)
   .costAnemo(4)
   .costEnergy(2)
   .talent(Jean)
-  // TODO
+  .on("enter")
+  .useSkill(DandelionBreeze)
   .done();

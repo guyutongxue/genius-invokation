@@ -487,6 +487,9 @@ export class TriggeredSkillBuilder<
     };
     return this;
   }
+  usagePerRound(count: number, opt?: Omit<UsageOptions, "perRound">) {
+    return this.usage(count, { ...opt, perRound: true });
+  }
 
   listenToMySelf(): this {
     this._listenTo = ListenTo.Myself;

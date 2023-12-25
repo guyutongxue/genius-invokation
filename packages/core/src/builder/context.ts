@@ -175,6 +175,10 @@ export class SkillContext<
     }
   }
 
+  /**
+   * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
+   * @returns 
+   */
   caller(): ExContextType<Readonly, CallerType> {
     return this.of(this.callerState as any) as any;
   }
@@ -817,6 +821,9 @@ export class CharacterContext<Readonly extends boolean> {
         v.definition.type === "equipment" &&
         v.definition.tags.includes("weapon"),
     );
+  }
+  hasEquipment(id: EquipmentHandle) {
+    return this.state.entities.find((v) => v.definition.id === id);
   }
 
   $$<const Q extends string>(arg: Q) {
