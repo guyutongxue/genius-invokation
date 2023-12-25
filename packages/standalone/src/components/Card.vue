@@ -9,9 +9,9 @@ import Dice from "./Dice.vue";
 
 const props = defineProps<{
   data: CardData;
-  clickable: boolean;
-  draggable: boolean;
-  selected: boolean;
+  clickable?: boolean;
+  draggable?: boolean;
+  selected?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -32,7 +32,7 @@ function dragendHandler(e: DragEvent) {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="card-wrapper">
     <div
       class="card relative"
       v-if="data.definitionId > 0"
@@ -66,34 +66,36 @@ function dragendHandler(e: DragEvent) {
   </div>
 </template>
 
-<style scoped>
-.wrapper {
-  height: 100%;
-  perspective: 800px;
-  aspect-ratio: 1/2;
-  transition-property: all;
-  transition-duration: 0.2s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+<style>
+.hands-area {
+  .card-wrapper {
+    height: 100%;
+    perspective: 800px;
+    aspect-ratio: 1/2;
+    transition-property: all;
+    transition-duration: 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.wrapper:has(.card):hover,
-.wrapper:has(.selected) {
-  aspect-ratio: 1/1;
-}
-.wrapper:hover > .card,
-.wrapper > .selected {
-  transform: none;
-  transition: all;
-}
+  .card-wrapper:has(.card):hover,
+  .card-wrapper:has(.selected) {
+    aspect-ratio: 1/1;
+  }
+  .card-wrapper:hover > .card,
+  .card-wrapper > .selected {
+    transform: none;
+    transition: all 0.3s;
+  }
 
-.card {
-  height: 100%;
-  transform: rotate3d(0, 1, 0, 30deg);
-  transition: all;
-}
-.rotated {
-  transform: rotate3d(0, 1, 0, 30deg);
+  .card {
+    height: 100%;
+    transform: rotate3d(0, 1, 0, 30deg);
+    transition: all 0.3s;
+  }
+  .rotated {
+    transform: rotate3d(0, 1, 0, 30deg);
+  }
 }
 </style>

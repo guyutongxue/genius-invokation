@@ -9,6 +9,8 @@ import { computed, ref, watch } from "vue";
 import { initiativeSkillData } from "../static_data";
 import Dice from "./Dice.vue";
 import SelectDice from "./SelectDice.vue";
+import RollDice from "./RollDice.vue";
+import SwitchHands from "./SwitchHands.vue";
 
 const props = defineProps<{
   player: Player;
@@ -160,6 +162,19 @@ function myDiceDropHandler(e: DragEvent) {
         <Dice v-for="d of myDice" :value="d"></Dice>
       </div>
     </div>
+    <RollDice
+      v-if="view === 'reroll'"
+      class="absolute h-full w-full top-0 left-0 bg-black bg-opacity-70 z-20"
+      :dice="data.players[who].dice"
+      @selected="player.rerolled($event)"
+    >
+    </RollDice>
+    <SwitchHands
+      v-if="view === 'switchHands'"
+      class="absolute h-full w-full top-0 left-0 bg-black bg-opacity-70 z-20"
+      :hands="data.players[who].hands"
+      @selected="player.handSwitched($event)"
+    ></SwitchHands>
   </div>
 </template>
 

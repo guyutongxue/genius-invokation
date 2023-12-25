@@ -74,7 +74,8 @@ const playerConfig0: PlayerConfig = {
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011,
   ],
-  noShuffle: true
+  noShuffle: import.meta.env.DEV,
+  alwaysOmni: import.meta.env.DEV,
 };
 const playerConfig1: PlayerConfig = {
   characters: [1502, 1201, 1303],
@@ -85,7 +86,8 @@ const playerConfig1: PlayerConfig = {
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011,
   ],
-  noShuffle: true
+  noShuffle: import.meta.env.DEV,
+  alwaysOmni: import.meta.env.DEV,
 };
 const player0 = new Player(playerConfig0, 0);
 const player1 = new Player(playerConfig1, 1);

@@ -1,8 +1,6 @@
 import type { DiceType, PlayCardHint } from "../enums";
 
-export interface RerollDiceRequest {
-  dice: readonly DiceType[];
-}
+export interface RerollDiceRequest {}
 
 export interface SwitchHandsRequest {}
 

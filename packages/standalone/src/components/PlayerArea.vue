@@ -69,7 +69,7 @@ const emit = defineEmits<{
         </div>
       </div>
       <div
-        class="h-30 flex flex-row mx-4"
+        class="h-30 flex flex-row mx-4 hands-area"
         :class="opp ? 'justify-end' : 'justify-start'"
       >
         <Card

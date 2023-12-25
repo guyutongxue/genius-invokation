@@ -11,7 +11,7 @@ import {
 import { ref } from "vue";
 import { mittWithOnce } from "./util";
 
-export type View = "normal" | "reroll" | "switchCards";
+export type View = "normal" | "reroll" | "switchHands";
 
 /** 点击“结束回合”的行为 ID */
 export const DECLARE_END_ID = 0;
@@ -150,6 +150,8 @@ export class Player {
   private emitter = mittWithOnce<{
     clicked: number;
     selected: SelectResult;
+    rerolled: number[];
+    handSwitched: number[];
   }>();
 
   constructor(
@@ -170,6 +172,12 @@ export class Player {
   }
   diceSelected(selected: SelectResult) {
     this.emitter.emit("selected", selected);
+  }
+  rerolled(rerollIndex: number[]) {
+    this.emitter.emit("rerolled", rerollIndex);
+  }
+  handSwitched(ids: number[]) {
+    this.emitter.emit("handSwitched", ids);
   }
 
   async rpc<M extends RpcMethod>(
@@ -194,9 +202,18 @@ export class Player {
         } as RpcResponse["chooseActive"];
       }
       case "rerollDice": {
-        // TODO
+        if (!this.state.value) {
+          throw new Error(
+            "Internal: state not prepared but roll event arrived",
+          );
+        }
+        this.view.value = 'reroll';
+        const rerollIndexes = await new Promise<number[]>((resolve) =>
+          this.emitter.once("rerolled", resolve),
+        );
+        this.view.value = 'normal';
         return {
-          rerollIndexes: [],
+          rerollIndexes,
         } as RpcResponse["rerollDice"];
       }
       case "action": {
@@ -205,8 +222,12 @@ export class Player {
         return res as RpcResponse["action"];
       }
       case "switchHands": {
-        // TODO
-        return { removedHands: [] } as RpcResponse["switchHands"];
+        this.view.value = 'switchHands';
+        const removedHands = await new Promise<number[]>((resolve) =>
+          this.emitter.once("handSwitched", resolve),
+        );
+        this.view.value = 'normal';
+        return { removedHands } as RpcResponse["switchHands"];
       }
       default:
         const _: never = m;

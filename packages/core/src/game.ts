@@ -272,33 +272,25 @@ class Game {
       });
     }
 
-    const [r0, r1] = await Promise.all(
+    await Promise.all(
       ([0, 1] as const).map(async (who) => {
         const { fixed, count } = rollParams[who];
-        const initDice = [
+        const initDice = sortDice(this._state.players[who], [
           ...fixed,
           ...this.randomDice(
             Math.max(0, this.config.initialDice - fixed.length),
             this.playerConfigs[who].alwaysOmni,
           ),
-        ];
-        return this.reroll(
+        ]);
+        this.mutate({
+          type: "resetDice",
           who,
-          count,
-          sortDice(this._state.players[who], initDice),
-        );
+          value: initDice,
+        });
+        this.notify([]);
+        await this.reroll(who, count);
       }),
     );
-    this.mutate({
-      type: "resetDice",
-      who: 0,
-      value: r0,
-    });
-    this.mutate({
-      type: "resetDice",
-      who: 1,
-      value: r1,
-    });
     this.mutate({
       type: "stepRound",
     });
@@ -696,6 +688,7 @@ class Game {
   }
 
   private async switchCard(who: 0 | 1) {
+    this.notify([]);
     const { removedHands } = await this.rpc(who, "switchHands", {});
     const cardStates = removedHands.map((id) => {
       const card = this._state.players[who].hands.find((c) => c.id === id);
@@ -716,19 +709,14 @@ class Game {
     for (let i = 0; i < count; i++) {
       this._state = drawCard(this._state, who, null);
     }
+    this.notify([]);
   }
-  private async reroll(
-    who: 0 | 1,
-    times: number,
-    dice: readonly DiceType[],
-  ): Promise<readonly DiceType[]> {
-    let currentDice = [...dice];
+  private async reroll(who: 0 | 1, times: number) {
     for (let i = 0; i < times; i++) {
-      const { rerollIndexes } = await this.rpc(who, "rerollDice", {
-        dice: currentDice,
-      });
+      const dice = this._state.players[who].dice;
+      const { rerollIndexes } = await this.rpc(who, "rerollDice", {});
       if (rerollIndexes.length === 0) {
-        return dice;
+        return;
       }
       const controlled: DiceType[] = [];
       for (let k = 0; k < dice.length; k++) {
@@ -736,9 +724,16 @@ class Game {
           controlled.push(dice[k]);
         }
       }
-      currentDice = [...controlled, ...this.randomDice(rerollIndexes.length)];
+      this.mutate({
+        type: "resetDice",
+        who,
+        value: sortDice(this._state.players[who], [
+          ...controlled,
+          ...this.randomDice(rerollIndexes.length),
+        ]),
+      });
+      this.notify([]);
     }
-    return sortDice(this._state.players[who], currentDice);
   }
 
   private async switchActive(who: 0 | 1, to: CharacterState) {
@@ -770,11 +765,7 @@ class Game {
   ): AsyncGenerator<DeferredAction[], void> {
     for (const [name, arg] of actions) {
       if (name === "requestReroll") {
-        const newDice = await this.reroll(
-          arg.who,
-          arg.times,
-          this._state.players[arg.who].dice,
-        );
+        await this.reroll(arg.who, arg.times);
       } else if (name === "requestSwitchCards") {
         await this.switchCard(arg.who);
       } else if (name === "requestUseSkill") {
