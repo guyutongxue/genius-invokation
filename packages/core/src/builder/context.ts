@@ -446,7 +446,11 @@ export class SkillContext<
         e.definition.type === "status" &&
         e.definition.tags.includes("immuneControl"),
     );
-    if (immuneControl && def.type === "status" && def.tags.includes("disableSkill")) {
+    if (
+      immuneControl &&
+      def.type === "status" &&
+      def.tags.includes("disableSkill")
+    ) {
       return;
     }
     const existSame = entitiesAtArea.find((e) => e.definition.id === id2);

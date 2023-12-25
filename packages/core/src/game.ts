@@ -227,6 +227,7 @@ class Game {
         this._state = drawCard(this._state, who, null);
       }
     }
+    await Promise.all([this.switchCard(0), this.switchCard(1)]);
     this.mutate({
       type: "changePhase",
       newPhase: "initActives",
@@ -544,24 +545,34 @@ class Game {
     const result: ActionInfo[] = [];
 
     // Skills
-    result.push(
-      ...activeCh.definition.initiativeSkills
-        .map<UseSkillInfo>((s) => ({
-          type: "useSkill",
-          who,
-          skill: {
-            caller: activeCh,
-            definition: s,
-            fromCard: null,
-            requestBy: null,
-          },
-        }))
-        .map((s) => ({
-          ...s,
-          fast: false,
-          cost: [...s.skill.definition.requiredCost],
-        })),
-    );
+    if (
+      activeCh.entities.find(
+        (e) =>
+          e.definition.type === "status" &&
+          e.definition.tags.includes("disableSkill"),
+      )
+    ) {
+      // Use skill is disabled, skip
+    } else {
+      result.push(
+        ...activeCh.definition.initiativeSkills
+          .map<UseSkillInfo>((s) => ({
+            type: "useSkill",
+            who,
+            skill: {
+              caller: activeCh,
+              definition: s,
+              fromCard: null,
+              requestBy: null,
+            },
+          }))
+          .map((s) => ({
+            ...s,
+            fast: false,
+            cost: [...s.skill.definition.requiredCost],
+          })),
+      );
+    }
 
     // Cards
     for (const card of player.hands) {
@@ -685,7 +696,26 @@ class Game {
   }
 
   private async switchCard(who: 0 | 1) {
-    // TODO
+    const { removedHands } = await this.rpc(who, "switchHands", {});
+    const cardStates = removedHands.map((id) => {
+      const card = this._state.players[who].hands.find((c) => c.id === id);
+      if (typeof card === "undefined") {
+        throw new Error(`Unknown card id ${id}`);
+      }
+      return card;
+    });
+    for (const st of cardStates) {
+      this.mutate({
+        type: "transferCard",
+        path: "handsToPiles",
+        who,
+        value: st,
+      });
+    }
+    const count = cardStates.length;
+    for (let i = 0; i < count; i++) {
+      this._state = drawCard(this._state, who, null);
+    }
   }
   private async reroll(
     who: 0 | 1,
@@ -822,10 +852,7 @@ class Game {
   private async checkDefeated(): Promise<boolean> {
     const currentTurn = this._state.currentTurn;
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
-    const activeDefeated: (Promise<CharacterState> | null)[] = [
-      null,
-      null,
-    ];
+    const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
     const hasDefeated: [boolean, boolean] = [false, false];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this._state.players[who];

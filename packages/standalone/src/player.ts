@@ -36,14 +36,14 @@ type AfterClickState =
   | {
       type: "continue";
       clickable: Map<number, AfterClickState>;
-      selected: number[];
+      selected: readonly number[];
     }
   | {
       type: "selectDice";
       clickable?: Map<number, AfterClickState>;
-      selected: number[];
+      selected: readonly number[];
       actionIndex: number;
-      required: DiceType[];
+      required: readonly DiceType[];
       disableOmni: boolean;
     };
 
@@ -67,7 +67,7 @@ interface PCAWithIndex extends PlayCardAction {
  * 构建单个卡牌的状态转移图
  * @param selected 标记为“已选择”的实体列表
  * @param actions 待处理的事件列表
- * @returns 
+ * @returns
  */
 function oneCardState(
   selected: number[],
@@ -194,6 +194,7 @@ export class Player {
         } as RpcResponse["chooseActive"];
       }
       case "rerollDice": {
+        // TODO
         return {
           rerollIndexes: [],
         } as RpcResponse["rerollDice"];
@@ -203,8 +204,13 @@ export class Player {
         const res = await this.action(candidates);
         return res as RpcResponse["action"];
       }
+      case "switchHands": {
+        // TODO
+        return { removedHands: [] } as RpcResponse["switchHands"];
+      }
       default:
-        throw new Error("Not implemented");
+        const _: never = m;
+        throw new Error(`unknown rpc method ${m}`);
     }
   }
 
@@ -222,8 +228,8 @@ export class Player {
     return val;
   }
 
-  private async chooseActive(candidates: number[]) {
-    this.clickable.value = candidates;
+  private async chooseActive(candidates: readonly number[]) {
+    this.clickable.value = [...candidates];
     const onClick = (id: number) => {
       this.selected.value = [id];
       this.selectDiceOpt.value = {
@@ -253,7 +259,7 @@ export class Player {
     return result;
   }
 
-  private async action(candidates: Action[]): Promise<ActionResponse> {
+  private async action(candidates: readonly Action[]): Promise<ActionResponse> {
     const player = this.state.value!.players[this.who];
     const currentEnergy =
       player.characters.find((ch) => ch.id === player.activeCharacterId)
@@ -326,7 +332,7 @@ export class Player {
     while (true) {
       while (state.type === "continue") {
         this.clickable.value = [...state.clickable.keys()];
-        this.selected.value = state.selected;
+        this.selected.value = [...state.selected];
         const val = await this.waitForClick();
         if (!this.clickable.value.includes(val)) {
           throw new Error(`Click event emitted with an invalid value`);
@@ -334,7 +340,7 @@ export class Player {
         state = state.clickable.get(val)!;
       }
       this.clickable.value = [...(state.clickable?.keys() ?? [])];
-      this.selected.value = state.selected;
+      this.selected.value = [...state.selected];
 
       if (candidates[state.actionIndex].type === "declareEnd") {
         this.clickable.value = [];
@@ -351,7 +357,7 @@ export class Player {
         disableCancel: false,
         disableOk: false,
         disableOmni: state.disableOmni,
-        required: state.required,
+        required: [...state.required],
       };
       const [type, awaited] = await Promise.race([
         this.waitForSelected().then((r) => ["dice", r] as const),
