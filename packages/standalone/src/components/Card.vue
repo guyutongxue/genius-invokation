@@ -72,8 +72,7 @@ function dragendHandler(e: DragEvent) {
     height: 100%;
     perspective: 800px;
     aspect-ratio: 1/2;
-    transition-property: all;
-    transition-duration: 0.2s;
+    transition: all 0.3s;
     display: flex;
     justify-content: center;
     align-items: center;
