@@ -98,6 +98,275 @@ const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
   .done();
 
 /**
+ * @id 331102
+ * @name 元素共鸣：粉碎之冰
+ * @description
+ * 本回合中，我方当前出战角色下一次造成的伤害+2。
+ * （牌组包含至少2个冰元素角色，才能加入牌组）
+ */
+const ElementalResonanceShatteringIce = card(331102)
+  .costCryo(1)
+  .tags("resonance")
+  .requireCharacterTag("cryo")
+  .toStatus("my active")
+  .duration(1)
+  .once("beforeSkillDamage")
+  .increaseDamage(2)
+  .done();
+
+/**
+ * @id 331202
+ * @name 元素共鸣：愈疗之水
+ * @description
+ * 治疗我方出战角色2点。然后，治疗所有我方后台角色1点。
+ * （牌组包含至少2个水元素角色，才能加入牌组）
+ */
+const ElementalResonanceSoothingWater = card(331202)
+  .costHydro(1)
+  .tags("resonance")
+  .requireCharacterTag("hydro")
+  .heal(2, "my active")
+  .heal(1, "my standby")
+  .done();
+
+/**
+ * @id 331302
+ * @name 元素共鸣：热诚之火
+ * @description
+ * 本回合中，我方当前出战角色下一次引发火元素相关反应时，造成的伤害+3。
+ * （牌组包含至少2个火元素角色，才能加入牌组）
+ */
+const ElementalResonanceFerventFlames = card(331302)
+  .costPyro(1)
+  .tags("resonance")
+  .requireCharacterTag("pyro")
+  .toStatus("my active")
+  .once("beforeSkillDamage", (c) => isReactionRelatedTo(c.damageInfo, DamageType.Pyro))
+  .increaseDamage(3)
+  // TODO
+  .done();
+
+/**
+ * @id 331402
+ * @name 元素共鸣：强能之雷
+ * @description
+ * 我方一名充能未满的角色获得1点充能。（出战角色优先）
+ * （牌组包含至少2个雷元素角色，才能加入牌组）
+ */
+const ElementalResonanceHighVoltage = card(331402)
+  .costElectro(1)
+  .tags("resonance")
+  .requireCharacterTag("electro")
+  .gainEnergy(1, "my character with energy < maxEnergy limit 1")
+  .done();
+
+/**
+ * @id 331502
+ * @name 元素共鸣：迅捷之风
+ * @description
+ * 切换到目标角色，并生成1点万能元素。
+ * （牌组包含至少2个风元素角色，才能加入牌组）
+ */
+const ElementalResonanceImpetuousWinds = card(331502)
+  .costAnemo(1)
+  .tags("resonance")
+  .addTarget("my character")
+  .switchActive("@targets.0")
+  .generateDice(DiceType.Omni, 1)
+  .done();
+
+/**
+ * @id 331602
+ * @name 元素共鸣：坚定之岩
+ * @description
+ * 本回合中，我方角色下一次造成岩元素伤害后：如果我方存在提供「护盾」的出战状态，则为一个此类出战状态补充3点「护盾」。
+ * （牌组包含至少2个岩元素角色，才能加入牌组）
+ */
+const ElementalResonanceEnduringRock = card(331602)
+  .costGeo(1)
+  .tags("resonance")
+  .requireCharacterTag("geo")
+  .toCombatStatus()
+  .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
+  .do((c) => {
+    c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
+    return true;
+  })
+  .done();
+
+/**
+ * @id 331702
+ * @name 元素共鸣：蔓生之草
+ * @description
+ * 本回合中，我方下一次引发元素反应时，造成的伤害+2。
+ * 使我方场上的燃烧烈焰、草原核和激化领域「可用次数」+1。
+ * （牌组包含至少2个草元素角色，才能加入牌组）
+ */
+const ElementalResonanceSprawlingGreenery = card(331702)
+  .costDendro(1)
+  .tags("resonance")
+  .requireCharacterTag("dendro")
+  .do((c) => {
+    c.$("my summon with definition id 115")?.addVariable("usage", 1);
+    c.$("my combat statuses with definition id 116")?.addVariable("usage", 1);
+    c.$("my combat statuses with definition id 117")?.addVariable("usage", 1);
+  })
+  .toCombatStatus()
+  .once("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .increaseDamage(2)
+  .done();
+
+/**
+ * @id 331101
+ * @name 元素共鸣：交织之冰
+ * @description
+ * 生成1个冰元素骰。
+ * （牌组包含至少2个冰元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenIce = card(331101)
+  .tags("resonance")
+  .requireCharacterTag("cryo")
+  .generateDice(DiceType.Cryo, 1)
+  .done();
+
+/**
+ * @id 331201
+ * @name 元素共鸣：交织之水
+ * @description
+ * 生成1个水元素骰。
+ * （牌组包含至少2个水元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenWaters = card(331201)
+  .tags("resonance")
+  .requireCharacterTag("hydro")
+  .generateDice(DiceType.Hydro, 1)
+  .done();
+
+/**
+ * @id 331301
+ * @name 元素共鸣：交织之火
+ * @description
+ * 生成1个火元素骰。
+ * （牌组包含至少2个火元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenFlames = card(331301)
+  .tags("resonance")
+  .requireCharacterTag("pyro")
+  .generateDice(DiceType.Pyro, 1)
+  .done();
+
+/**
+ * @id 331401
+ * @name 元素共鸣：交织之雷
+ * @description
+ * 生成1个雷元素骰。
+ * （牌组包含至少2个雷元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenThunder = card(331401)
+  .tags("resonance")
+  .requireCharacterTag("electro")
+  .generateDice(DiceType.Electro, 1)
+  .done();
+
+/**
+ * @id 331501
+ * @name 元素共鸣：交织之风
+ * @description
+ * 生成1个风元素骰。
+ * （牌组包含至少2个风元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenWinds = card(331501)
+  .tags("resonance")
+  .requireCharacterTag("anemo")
+  .generateDice(DiceType.Anemo, 1)
+  .done();
+
+/**
+ * @id 331601
+ * @name 元素共鸣：交织之岩
+ * @description
+ * 生成1个岩元素骰。
+ * （牌组包含至少2个岩元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenStone = card(331601)
+  .tags("resonance")
+  .requireCharacterTag("geo")
+  .generateDice(DiceType.Geo, 1)
+  .done();
+
+/**
+ * @id 331701
+ * @name 元素共鸣：交织之草
+ * @description
+ * 生成1个草元素骰。
+ * （牌组包含至少2个草元素角色，才能加入牌组）
+ */
+const ElementalResonanceWovenWeeds = card(331701)
+  .tags("resonance")
+  .requireCharacterTag("dendro")
+  .generateDice(DiceType.Dendro, 1)
+  .done();
+
+/**
+ * @id 331801
+ * @name 风与自由
+ * @description
+ * 本回合中，我方角色使用技能后：将下一个我方后台角色切换到场上。
+ * （牌组包含至少2个「蒙德」角色，才能加入牌组）
+ */
+const WindAndFreedom = card(331801)
+  .toCombatStatus()
+  .duration(1)
+  .on("skill")
+  .switchActive("next")
+  .done();
+
+/**
+ * @id 331802
+ * @name 岩与契约
+ * @description
+ * 下回合行动阶段开始时：生成3点万能元素，抓1张牌。
+ * （牌组包含至少2个「璃月」角色，才能加入牌组）
+ */
+const StoneAndContracts = card(331802)
+  .costVoid(3)
+  .requireCharacterTag("liyue")
+  .toCombatStatus()
+  .once("actionPhase")
+  .generateDice(DiceType.Omni, 3)
+  .drawCards(1)
+  .done();
+
+/**
+ * @id 331803
+ * @name 雷与永恒
+ * @description
+ * 将我方所有元素骰转换为万能元素。
+ * （牌组包含至少2个「稻妻」角色，才能加入牌组）
+ */
+const ThunderAndEternity = card(331803)
+  .do((c) => {
+    const count = c.player.dice.length;
+    c.absorbDice("seq", count);
+    c.generateDice(DiceType.Omni, count);
+  })
+  .done();
+
+/**
+ * @id 331804
+ * @name 草与智慧
+ * @description
+ * 抓1张牌。然后，选择任意手牌替换。
+ * （牌组包含至少2个「须弥」角色，才能加入牌组）
+ */
+const NatureAndWisdom = card(331804)
+  .costSame(1)
+  .requireCharacterTag("sumeru")
+  .drawCards(1)
+  .switchCards()
+  .done();
+
+/**
  * @id 332001
  * @name 最好的伙伴！
  * @description
@@ -452,275 +721,6 @@ const Lyresong = card(332024)
   .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
     c.currentAction.card.definition.tags.includes("artifact"))
   .deductCost(DiceType.Omni, 2)
-  .done();
-
-/**
- * @id 331102
- * @name 元素共鸣：粉碎之冰
- * @description
- * 本回合中，我方当前出战角色下一次造成的伤害+2。
- * （牌组包含至少2个冰元素角色，才能加入牌组）
- */
-const ElementalResonanceShatteringIce = card(331102)
-  .costCryo(1)
-  .tags("resonance")
-  .requireCharacterTag("cryo")
-  .toStatus("my active")
-  .duration(1)
-  .once("beforeSkillDamage")
-  .increaseDamage(2)
-  .done();
-
-/**
- * @id 331202
- * @name 元素共鸣：愈疗之水
- * @description
- * 治疗我方出战角色2点。然后，治疗所有我方后台角色1点。
- * （牌组包含至少2个水元素角色，才能加入牌组）
- */
-const ElementalResonanceSoothingWater = card(331202)
-  .costHydro(1)
-  .tags("resonance")
-  .requireCharacterTag("hydro")
-  .heal(2, "my active")
-  .heal(1, "my standby")
-  .done();
-
-/**
- * @id 331302
- * @name 元素共鸣：热诚之火
- * @description
- * 本回合中，我方当前出战角色下一次引发火元素相关反应时，造成的伤害+3。
- * （牌组包含至少2个火元素角色，才能加入牌组）
- */
-const ElementalResonanceFerventFlames = card(331302)
-  .costPyro(1)
-  .tags("resonance")
-  .requireCharacterTag("pyro")
-  .toStatus("my active")
-  .once("beforeSkillDamage", (c) => isReactionRelatedTo(c.damageInfo, DamageType.Pyro))
-  .increaseDamage(3)
-  // TODO
-  .done();
-
-/**
- * @id 331402
- * @name 元素共鸣：强能之雷
- * @description
- * 我方一名充能未满的角色获得1点充能。（出战角色优先）
- * （牌组包含至少2个雷元素角色，才能加入牌组）
- */
-const ElementalResonanceHighVoltage = card(331402)
-  .costElectro(1)
-  .tags("resonance")
-  .requireCharacterTag("electro")
-  .gainEnergy(1, "my character with energy < maxEnergy limit 1")
-  .done();
-
-/**
- * @id 331502
- * @name 元素共鸣：迅捷之风
- * @description
- * 切换到目标角色，并生成1点万能元素。
- * （牌组包含至少2个风元素角色，才能加入牌组）
- */
-const ElementalResonanceImpetuousWinds = card(331502)
-  .costAnemo(1)
-  .tags("resonance")
-  .addTarget("my character")
-  .switchActive("@targets.0")
-  .generateDice(DiceType.Omni, 1)
-  .done();
-
-/**
- * @id 331602
- * @name 元素共鸣：坚定之岩
- * @description
- * 本回合中，我方角色下一次造成岩元素伤害后：如果我方存在提供「护盾」的出战状态，则为一个此类出战状态补充3点「护盾」。
- * （牌组包含至少2个岩元素角色，才能加入牌组）
- */
-const ElementalResonanceEnduringRock = card(331602)
-  .costGeo(1)
-  .tags("resonance")
-  .requireCharacterTag("geo")
-  .toCombatStatus()
-  .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
-  .do((c) => {
-    c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
-    return true;
-  })
-  .done();
-
-/**
- * @id 331702
- * @name 元素共鸣：蔓生之草
- * @description
- * 本回合中，我方下一次引发元素反应时，造成的伤害+2。
- * 使我方场上的燃烧烈焰、草原核和激化领域「可用次数」+1。
- * （牌组包含至少2个草元素角色，才能加入牌组）
- */
-const ElementalResonanceSprawlingGreenery = card(331702)
-  .costDendro(1)
-  .tags("resonance")
-  .requireCharacterTag("dendro")
-  .do((c) => {
-    c.$("my summon with definition id 115")?.addVariable("usage", 1);
-    c.$("my combat statuses with definition id 116")?.addVariable("usage", 1);
-    c.$("my combat statuses with definition id 117")?.addVariable("usage", 1);
-  })
-  .toCombatStatus()
-  .once("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
-  .increaseDamage(2)
-  .done();
-
-/**
- * @id 331101
- * @name 元素共鸣：交织之冰
- * @description
- * 生成1个冰元素骰。
- * （牌组包含至少2个冰元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenIce = card(331101)
-  .tags("resonance")
-  .requireCharacterTag("cryo")
-  .generateDice(DiceType.Cryo, 1)
-  .done();
-
-/**
- * @id 331201
- * @name 元素共鸣：交织之水
- * @description
- * 生成1个水元素骰。
- * （牌组包含至少2个水元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenWaters = card(331201)
-  .tags("resonance")
-  .requireCharacterTag("hydro")
-  .generateDice(DiceType.Hydro, 1)
-  .done();
-
-/**
- * @id 331301
- * @name 元素共鸣：交织之火
- * @description
- * 生成1个火元素骰。
- * （牌组包含至少2个火元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenFlames = card(331301)
-  .tags("resonance")
-  .requireCharacterTag("pyro")
-  .generateDice(DiceType.Pyro, 1)
-  .done();
-
-/**
- * @id 331401
- * @name 元素共鸣：交织之雷
- * @description
- * 生成1个雷元素骰。
- * （牌组包含至少2个雷元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenThunder = card(331401)
-  .tags("resonance")
-  .requireCharacterTag("electro")
-  .generateDice(DiceType.Electro, 1)
-  .done();
-
-/**
- * @id 331501
- * @name 元素共鸣：交织之风
- * @description
- * 生成1个风元素骰。
- * （牌组包含至少2个风元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenWinds = card(331501)
-  .tags("resonance")
-  .requireCharacterTag("anemo")
-  .generateDice(DiceType.Anemo, 1)
-  .done();
-
-/**
- * @id 331601
- * @name 元素共鸣：交织之岩
- * @description
- * 生成1个岩元素骰。
- * （牌组包含至少2个岩元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenStone = card(331601)
-  .tags("resonance")
-  .requireCharacterTag("geo")
-  .generateDice(DiceType.Geo, 1)
-  .done();
-
-/**
- * @id 331701
- * @name 元素共鸣：交织之草
- * @description
- * 生成1个草元素骰。
- * （牌组包含至少2个草元素角色，才能加入牌组）
- */
-const ElementalResonanceWovenWeeds = card(331701)
-  .tags("resonance")
-  .requireCharacterTag("dendro")
-  .generateDice(DiceType.Dendro, 1)
-  .done();
-
-/**
- * @id 331801
- * @name 风与自由
- * @description
- * 本回合中，我方角色使用技能后：将下一个我方后台角色切换到场上。
- * （牌组包含至少2个「蒙德」角色，才能加入牌组）
- */
-const WindAndFreedom = card(331801)
-  .toCombatStatus()
-  .duration(1)
-  .on("skill")
-  .switchActive("next")
-  .done();
-
-/**
- * @id 331802
- * @name 岩与契约
- * @description
- * 下回合行动阶段开始时：生成3点万能元素，抓1张牌。
- * （牌组包含至少2个「璃月」角色，才能加入牌组）
- */
-const StoneAndContracts = card(331802)
-  .costVoid(3)
-  .requireCharacterTag("liyue")
-  .toCombatStatus()
-  .once("actionPhase")
-  .generateDice(DiceType.Omni, 3)
-  .drawCards(1)
-  .done();
-
-/**
- * @id 331803
- * @name 雷与永恒
- * @description
- * 将我方所有元素骰转换为万能元素。
- * （牌组包含至少2个「稻妻」角色，才能加入牌组）
- */
-const ThunderAndEternity = card(331803)
-  .do((c) => {
-    const count = c.player.dice.length;
-    c.absorbDice("seq", count);
-    c.generateDice(DiceType.Omni, count);
-  })
-  .done();
-
-/**
- * @id 331804
- * @name 草与智慧
- * @description
- * 抓1张牌。然后，选择任意手牌替换。
- * （牌组包含至少2个「须弥」角色，才能加入牌组）
- */
-const NatureAndWisdom = card(331804)
-  .costSame(1)
-  .requireCharacterTag("sumeru")
-  .drawCards(1)
-  .switchCards()
   .done();
 
 /**

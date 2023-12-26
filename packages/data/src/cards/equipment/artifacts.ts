@@ -1,6 +1,195 @@
 import { card } from "@gi-tcg/core/builder";
 
 /**
+ * @id 312101
+ * @name 破冰踏雪的回音
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const BrokenRimesEcho = card(312101)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312201
+ * @name 酒渍船帽
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const WinestainedTricorne = card(312201)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312301
+ * @name 焦灼的魔女帽
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const WitchsScorchingHat = card(312301)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312401
+ * @name 唤雷的头冠
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const ThunderSummonersCrown = card(312401)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312501
+ * @name 翠绿的猎人之冠
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const ViridescentVenerersDiadem = card(312501)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312601
+ * @name 不动玄石之相
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const MaskOfSolitudeBasalt = card(312601)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312701
+ * @name 月桂的宝冠
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const LaurelCoronet = card(312701)
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312102
+ * @name 冰风迷途的勇士
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出冰元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const BlizzardStrayer = card(312102)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312202
+ * @name 沉沦之心
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出水元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const HeartOfDepth = card(312202)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312302
+ * @name 炽烈的炎之魔女
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出火元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const CrimsonWitchOfFlames = card(312302)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312402
+ * @name 如雷的盛怒
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出雷元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const ThunderingFury = card(312402)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312502
+ * @name 翠绿之影
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出风元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const ViridescentVenerer = card(312502)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312602
+ * @name 悠古的磐岩
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出岩元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const ArchaicPetra = card(312602)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312702
+ * @name 深林的记忆
+ * @description
+ * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
+ * 投掷阶段：2个元素骰初始总是投出草元素。
+ * （角色最多装备1件「圣遗物」）
+ */
+const DeepwoodMemories = card(312702)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
  * @id 312001
  * @name 冒险家头带
  * @description
@@ -225,195 +414,6 @@ const OceanhuedClam = card(312016)
  */
 const ShadowOfTheSandKing = card(312017)
   .costSame(1)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312101
- * @name 破冰踏雪的回音
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const BrokenRimesEcho = card(312101)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312201
- * @name 酒渍船帽
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const WinestainedTricorne = card(312201)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312301
- * @name 焦灼的魔女帽
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const WitchsScorchingHat = card(312301)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312401
- * @name 唤雷的头冠
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const ThunderSummonersCrown = card(312401)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312501
- * @name 翠绿的猎人之冠
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const ViridescentVenerersDiadem = card(312501)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312601
- * @name 不动玄石之相
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const MaskOfSolitudeBasalt = card(312601)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312701
- * @name 月桂的宝冠
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
- * （角色最多装备1件「圣遗物」）
- */
-const LaurelCoronet = card(312701)
-  .costVoid(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312102
- * @name 冰风迷途的勇士
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出冰元素。
- * （角色最多装备1件「圣遗物」）
- */
-const BlizzardStrayer = card(312102)
-  .costSame(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312202
- * @name 沉沦之心
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出水元素。
- * （角色最多装备1件「圣遗物」）
- */
-const HeartOfDepth = card(312202)
-  .costSame(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312302
- * @name 炽烈的炎之魔女
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出火元素。
- * （角色最多装备1件「圣遗物」）
- */
-const CrimsonWitchOfFlames = card(312302)
-  .costSame(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312402
- * @name 如雷的盛怒
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出雷元素。
- * （角色最多装备1件「圣遗物」）
- */
-const ThunderingFury = card(312402)
-  .costSame(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312502
- * @name 翠绿之影
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出风元素。
- * （角色最多装备1件「圣遗物」）
- */
-const ViridescentVenerer = card(312502)
-  .costSame(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312602
- * @name 悠古的磐岩
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出岩元素。
- * （角色最多装备1件「圣遗物」）
- */
-const ArchaicPetra = card(312602)
-  .costSame(2)
-  .artifact()
-  // TODO
-  .done();
-
-/**
- * @id 312702
- * @name 深林的记忆
- * @description
- * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
- * 投掷阶段：2个元素骰初始总是投出草元素。
- * （角色最多装备1件「圣遗物」）
- */
-const DeepwoodMemories = card(312702)
-  .costSame(2)
   .artifact()
   // TODO
   .done();
