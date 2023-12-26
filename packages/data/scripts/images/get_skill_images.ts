@@ -23,16 +23,17 @@ for (const ch of characters) {
     continue;
   }
   for (const [k, v] of Object.entries<any>(data.talent)) {
-    if (v.icon === null && !skillImageMap.has(Number(k))) {
-      console.warn(`Missing skill image: ${k}`);
+    if (v.icon === null) {
+      if (!skillImageMap.has(Number(k))) {
+        console.warn(`Missing skill image: ${k}`);
+      }
+      continue;
     }
     skillImageMap.set(Number(k), v.icon);
   }
 }
 
 console.log(skillImageMap);
-
-
 
 await writeFile(
   path.join(fileURLToPath(import.meta.url), "../skill.json"),
