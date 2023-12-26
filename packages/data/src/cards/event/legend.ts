@@ -61,3 +61,16 @@ const InEveryHouseAStove = card(330005)
   .legend()
   // TODO
   .done();
+
+/**
+ * @id 330006
+ * @name 裁定之时
+ * @description
+ * 本回合中，对方牌手打出的3张事件牌无效。
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ */
+const PassingOfJudgment = card(330006)
+  .costSame(1)
+  .legend()
+  // TODO
+  .done();

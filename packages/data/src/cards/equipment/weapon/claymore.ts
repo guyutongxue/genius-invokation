@@ -68,3 +68,18 @@ const TheBell = card(311305)
   .weapon("claymore")
   // TODO
   .done();
+
+/**
+ * @id 311306
+ * @name 苇海信标
+ * @description
+ * 角色造成的伤害+1。
+ * 角色使用「元素战技」后：本回合内，角色下次造成的伤害额外+1。（每回合1次）
+ * 角色受到伤害后：本回合内，角色下次造成的伤害额外+1。（每回合1次）
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+const BeaconOfTheReedSea = card(311306)
+  .costSame(3)
+  .weapon("claymore")
+  // TODO
+  .done();

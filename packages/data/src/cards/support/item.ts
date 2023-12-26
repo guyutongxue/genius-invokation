@@ -48,3 +48,28 @@ const TreasureseekingSeelie = card(323004)
   .support("item")
   // TODO
   .done();
+
+/**
+ * @id 323005
+ * @name 化种匣
+ * @description
+ * 我方打出原本元素骰费用为1的装备或支援牌时：少花费1个元素骰。（每回合1次）
+ * 可用次数：2
+ */
+const SeedDispensary = card(323005)
+  .support("item")
+  // TODO
+  .done();
+
+/**
+ * @id 323006
+ * @name 留念镜
+ * @description
+ * 我方打出「武器」/「圣遗物」/「场地」/「伙伴」手牌时：如果本场对局中我方曾经打出过所打出牌的同名卡牌，则少花费2个元素骰。（每回合1次）
+ * 可用次数：2
+ */
+const MementoLens = card(323006)
+  .costSame(1)
+  .support("item")
+  // TODO
+  .done();

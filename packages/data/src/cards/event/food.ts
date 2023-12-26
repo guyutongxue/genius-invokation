@@ -152,3 +152,16 @@ const ButterCrab = card(333012)
   .tags("food")
   // TODO
   .done();
+
+/**
+ * @id 333013
+ * @name 炸鱼薯条
+ * @description
+ * 本回合中，所有我方角色下次使用技能时少花费1个元素骰。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+const FishAndChips = card(333013)
+  .costVoid(2)
+  .tags("food")
+  // TODO
+  .done();

@@ -142,7 +142,7 @@ export async function generateCharacters() {
     });
     items.push(...getTalentCard(ch.id, ch.name));
 
-    result.push(writeSourceCode(filename, initCode, items));
+    result.push(writeSourceCode(filename, initCode, items, true));
   }
   return Promise.all(result);
 }

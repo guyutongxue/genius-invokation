@@ -51,7 +51,7 @@ const Surge = skill(22011)
  * @id 22012
  * @name 纯水幻造
  * @description
- * 随机召唤1种纯水幻形。（优先生成不同的类型）
+ * 随机召唤1种纯水幻形。（优先生成不同的类型，召唤区最多同时存在2种纯水幻形。）
  */
 const OceanidMimicSummoning = skill(22012)
   .type("elemental")
@@ -63,7 +63,7 @@ const OceanidMimicSummoning = skill(22012)
  * @id 22013
  * @name 林野百态
  * @description
- * 随机召唤2种纯水幻形。（优先生成不同的类型）
+ * 随机召唤2种纯水幻形。（优先生成不同的类型，召唤区最多同时存在2种纯水幻形。）
  */
 const TheMyriadWilds = skill(22013)
   .type("elemental")

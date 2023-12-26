@@ -210,3 +210,29 @@ const StormterrorsLair = card(321015)
   .support("place")
   // TODO
   .done();
+
+/**
+ * @id 321016
+ * @name 湖中垂柳
+ * @description
+ * 结束阶段：如果我方手牌数量不多于2，则抓2张牌。
+ * 可用次数：2
+ */
+const WeepingWillowOfTheLake = card(321016)
+  .costSame(1)
+  .support("place")
+  // TODO
+  .done();
+
+/**
+ * @id 321017
+ * @name 欧庇克莱歌剧院
+ * @description
+ * 我方选择行动前：如果我方角色所装备卡牌的原本元素骰费用总和不比对方更低，则生成1个出战角色类型的元素骰。（每回合1次）
+ * 可用次数：3
+ */
+const OperaEpiclese = card(321017)
+  .costSame(1)
+  .support("place")
+  // TODO
+  .done();

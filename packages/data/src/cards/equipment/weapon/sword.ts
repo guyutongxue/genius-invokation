@@ -68,3 +68,17 @@ const FavoniusSword = card(311505)
   .weapon("sword")
   // TODO
   .done();
+
+/**
+ * @id 311506
+ * @name 裁叶萃光
+ * @description
+ * 角色造成的伤害+1。
+ * 角色使用「普通攻击」后：生成1个随机基础元素骰。（每回合最多触发2次）
+ * （「单手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+const LightOfFoliarIncision = card(311506)
+  .costSame(3)
+  .weapon("sword")
+  // TODO
+  .done();

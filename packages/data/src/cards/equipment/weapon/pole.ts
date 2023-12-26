@@ -83,3 +83,17 @@ const Moonpiercer = card(311406)
   .weapon("pole")
   // TODO
   .done();
+
+/**
+ * @id 311407
+ * @name 和璞鸢
+ * @description
+ * 角色造成的伤害+1。
+ * 角色使用技能后：直到回合结束前，此牌所提供的伤害加成值额外+1。（最多累积到+2）
+ * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
+ */
+const PrimordialJadeWingedspear = card(311407)
+  .costSame(3)
+  .weapon("pole")
+  // TODO
+  .done();

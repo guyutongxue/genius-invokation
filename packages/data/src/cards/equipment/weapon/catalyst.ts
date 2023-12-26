@@ -68,3 +68,31 @@ const FruitOfFulfillment = card(311105)
   .weapon("catalyst")
   // TODO
   .done();
+
+/**
+ * @id 311106
+ * @name 四风原典
+ * @description
+ * 此牌每有1点「伤害加成」，角色造成的伤害+1。
+ * 结束阶段：此牌累积1点「伤害加成」。（最多累积到2点）
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+const LostPrayerToTheSacredWinds = card(311106)
+  .costSame(3)
+  .weapon("catalyst")
+  // TODO
+  .done();
+
+/**
+ * @id 311107
+ * @name 图莱杜拉的回忆
+ * @description
+ * 角色造成的伤害+1。
+ * 角色进行重击时：少花费1个无色元素。（每回合最多触发2次）
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+const TulaytullahsRemembrance = card(311107)
+  .costSame(3)
+  .weapon("catalyst")
+  // TODO
+  .done();

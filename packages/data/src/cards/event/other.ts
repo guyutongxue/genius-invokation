@@ -682,7 +682,7 @@ const WindAndFreedom = card(331801)
  * @id 331802
  * @name 岩与契约
  * @description
- * 下回合行动阶段开始时：生成3点万能元素。
+ * 下回合行动阶段开始时：生成3点万能元素，抓1张牌。
  * （牌组包含至少2个「璃月」角色，才能加入牌组）
  */
 const StoneAndContracts = card(331802)
@@ -691,6 +691,7 @@ const StoneAndContracts = card(331802)
   .toCombatStatus()
   .once("actionPhase")
   .generateDice(DiceType.Omni, 3)
+  .drawCards(1)
   .done();
 
 /**
@@ -720,4 +721,36 @@ const NatureAndWisdom = card(331804)
   .requireCharacterTag("sumeru")
   .drawCards(1)
   .switchCards()
+  .done();
+
+/**
+ * @id 332025
+ * @name 野猪公主
+ * @description
+ * 本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）
+ * （角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）
+ */
+const TheBoarPrincess = card(332025)
+  // TODO
+  .done();
+
+/**
+ * @id 332026
+ * @name 坍陷与契机
+ * @description
+ * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。
+ */
+const FallsAndFortune = card(332026)
+  .costSame(1)
+  // TODO
+  .done();
+
+/**
+ * @id 332027
+ * @name 浮烁的四叶印
+ * @description
+ * 目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。
+ */
+const FlickeringFourleafSigil = card(332027)
+  // TODO
   .done();

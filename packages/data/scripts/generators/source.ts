@@ -179,11 +179,14 @@ export async function writeSourceCode(
   filepath: string,
   init: string,
   infos: SourceInfo[],
+  noSort = false,
 ): Promise<void> {
   filepath = path.resolve(BASE_PATH, filepath);
   await mkdir(path.dirname(filepath), { recursive: true });
 
-  infos.sort((a, b) => a.id - b.id);
+  if (!noSort) {
+    infos.sort((a, b) => a.id - b.id);
+  }
 
   let newInfos = [];
   let resultText = init;

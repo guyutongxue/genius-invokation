@@ -204,7 +204,7 @@ const CrownOfWatatsumi = card(312015)
  * @id 312016
  * @name 海染砗磲
  * @description
- * 入场时：治疗所附属角色3点。
+ * 入场时：治疗所附属角色2点。
  * 我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个）
  * 角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
@@ -414,6 +414,72 @@ const ArchaicPetra = card(312602)
  */
 const DeepwoodMemories = card(312702)
   .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312018
+ * @name 饰金之梦
+ * @description
+ * 入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则额外生成1个万能元素。
+ * 所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const GildedDreams = card(312018)
+  .costVoid(3)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312019
+ * @name 浮溯之珏
+ * @description
+ * 角色使用「普通攻击」后：抓1张牌。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const FlowingRings = card(312019)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312020
+ * @name 来歆余响
+ * @description
+ * 角色使用「普通攻击」后：抓1张牌。（每回合1次）
+ * 角色使用技能后：如果我方元素骰数量不多于手牌数量，则生成1个所附属角色类型的元素骰。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const EchoesOfAnOffering = card(312020)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312021
+ * @name 灵光明烁之心
+ * @description
+ * 角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+const HeartOfKhvarenasBrilliance = card(312021)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312022
+ * @name 花海甘露之光
+ * @description
+ * 角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌。（每回合1次）
+ * 结束阶段：治疗所附属角色1点。
+ * （角色最多装备1件「圣遗物」）
+ */
+const VourukashasGlow = card(312022)
+  .costSame(1)
   .artifact()
   // TODO
   .done();
