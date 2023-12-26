@@ -1,6 +1,18 @@
 import { card } from "@gi-tcg/core/builder";
 
 /**
+ * @id 323001
+ * @name 参量质变仪
+ * @description
+ * 双方角色使用技能后：如果造成了元素伤害，此牌累积1个「质变进度」。如果此牌已累积3个「质变进度」，则弃置此牌并生成3个不同的基础元素骰。
+ */
+const ParametricTransformer = card(323001)
+  .costVoid(2)
+  .support("item")
+  // TODO
+  .done();
+
+/**
  * @id 323002
  * @name 便携营养袋
  * @description
@@ -9,18 +21,6 @@ import { card } from "@gi-tcg/core/builder";
  */
 const Nre = card(323002)
   .costSame(1)
-  .support("item")
-  // TODO
-  .done();
-
-/**
- * @id 323001
- * @name 参量质变仪
- * @description
- * 双方角色使用技能后：如果造成了元素伤害，此牌累积1个「质变进度」。如果此牌已累积3个「质变进度」，则弃置此牌并生成3个不同的基础元素骰。
- */
-const ParametricTransformer = card(323001)
-  .costVoid(2)
   .support("item")
   // TODO
   .done();

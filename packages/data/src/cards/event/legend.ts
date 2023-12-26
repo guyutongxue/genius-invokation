@@ -25,6 +25,19 @@ const CovenantOfRock = card(330002)
   .done();
 
 /**
+ * @id 330003
+ * @name 愉舞欢游
+ * @description
+ * 我方出战角色的元素类型为冰/水/火/雷/草时，才能打出：对我方所有具有元素附着的角色，附着我方出战角色类型的元素。
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ */
+const JoyousCelebration = card(330003)
+  .legend()
+  // TODO
+  .done();
+
+
+/**
  * @id 330004
  * @name 自由的新风
  * @description
@@ -45,18 +58,6 @@ const FreshWindOfFreedom = card(330004)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 const InEveryHouseAStove = card(330005)
-  .legend()
-  // TODO
-  .done();
-
-/**
- * @id 330003
- * @name 愉舞欢游
- * @description
- * 我方出战角色的元素类型为冰/水/火/雷/草时，才能打出：对我方所有具有元素附着的角色，附着我方出战角色类型的元素。
- * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
- */
-const JoyousCelebration = card(330003)
   .legend()
   // TODO
   .done();

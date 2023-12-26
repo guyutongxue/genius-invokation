@@ -1,6 +1,19 @@
 import { card } from "@gi-tcg/core/builder";
 
 /**
+ * @id 311301
+ * @name 白铁大剑
+ * @description
+ * 角色造成的伤害+1。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+const WhiteIronGreatsword = card(311301)
+  .costSame(2)
+  .weapon("claymore")
+  // TODO
+  .done();
+
+/**
  * @id 311302
  * @name 祭礼大剑
  * @description
@@ -9,6 +22,20 @@ import { card } from "@gi-tcg/core/builder";
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 const SacrificialGreatsword = card(311302)
+  .costSame(3)
+  .weapon("claymore")
+  // TODO
+  .done();
+
+/**
+ * @id 311303
+ * @name 狼的末路
+ * @description
+ * 角色造成的伤害+1。
+ * 攻击剩余生命值不多于6的目标时，伤害额外+2。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+const WolfsGravestone = card(311303)
   .costSame(3)
   .weapon("claymore")
   // TODO
@@ -37,33 +64,6 @@ const SkywardPride = card(311304)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 const TheBell = card(311305)
-  .costSame(3)
-  .weapon("claymore")
-  // TODO
-  .done();
-
-/**
- * @id 311301
- * @name 白铁大剑
- * @description
- * 角色造成的伤害+1。
- * （「双手剑」角色才能装备。角色最多装备1件「武器」）
- */
-const WhiteIronGreatsword = card(311301)
-  .costSame(2)
-  .weapon("claymore")
-  // TODO
-  .done();
-
-/**
- * @id 311303
- * @name 狼的末路
- * @description
- * 角色造成的伤害+1。
- * 攻击剩余生命值不多于6的目标时，伤害额外+2。
- * （「双手剑」角色才能装备。角色最多装备1件「武器」）
- */
-const WolfsGravestone = card(311303)
   .costSame(3)
   .weapon("claymore")
   // TODO

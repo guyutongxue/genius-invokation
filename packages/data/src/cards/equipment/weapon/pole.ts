@@ -1,15 +1,14 @@
 import { card } from "@gi-tcg/core/builder";
 
 /**
- * @id 311405
- * @name 薙草之稻光
+ * @id 311401
+ * @name 白缨枪
  * @description
  * 角色造成的伤害+1。
- * 每回合自动触发1次：如果所附属角色没有充能，就使其获得1点充能。
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
-const EngulfingLightning = card(311405)
-  .costSame(3)
+const WhiteTassel = card(311401)
+  .costSame(2)
   .weapon("pole")
   // TODO
   .done();
@@ -23,20 +22,6 @@ const EngulfingLightning = card(311405)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 const LithicSpear = card(311402)
-  .costSame(3)
-  .weapon("pole")
-  // TODO
-  .done();
-
-/**
- * @id 311406
- * @name 贯月矢
- * @description
- * 角色造成的伤害+1。
- * 入场时：所附属角色在本回合中，下次使用「元素战技」或装备「天赋」时少花费2个元素骰。
- * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
- */
-const Moonpiercer = card(311406)
   .costSame(3)
   .weapon("pole")
   // TODO
@@ -72,14 +57,29 @@ const VortexVanquisher = card(311404)
   .done();
 
 /**
- * @id 311401
- * @name 白缨枪
+ * @id 311405
+ * @name 薙草之稻光
  * @description
  * 角色造成的伤害+1。
+ * 每回合自动触发1次：如果所附属角色没有充能，就使其获得1点充能。
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
-const WhiteTassel = card(311401)
-  .costSame(2)
+const EngulfingLightning = card(311405)
+  .costSame(3)
+  .weapon("pole")
+  // TODO
+  .done();
+
+/**
+ * @id 311406
+ * @name 贯月矢
+ * @description
+ * 角色造成的伤害+1。
+ * 入场时：所附属角色在本回合中，下次使用「元素战技」或装备「天赋」时少花费2个元素骰。
+ * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
+ */
+const Moonpiercer = card(311406)
+  .costSame(3)
   .weapon("pole")
   // TODO
   .done();

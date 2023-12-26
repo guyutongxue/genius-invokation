@@ -183,6 +183,8 @@ export async function writeSourceCode(
   filepath = path.resolve(BASE_PATH, filepath);
   await mkdir(path.dirname(filepath), { recursive: true });
 
+  infos.sort((a, b) => a.id - b.id);
+
   let newInfos = [];
   let resultText = init;
   if (existsSync(filepath)) {

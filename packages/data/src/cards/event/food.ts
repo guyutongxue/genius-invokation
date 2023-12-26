@@ -1,6 +1,18 @@
 import { card } from "@gi-tcg/core/builder";
 
 /**
+ * @id 333001
+ * @name 绝云锅巴
+ * @description
+ * 本回合中，目标角色下一次「普通攻击」造成的伤害+1。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+const JueyunGuoba = card(333001)
+  .tags("food")
+  // TODO
+  .done();
+
+/**
  * @id 333002
  * @name 仙跳墙
  * @description
@@ -9,31 +21,6 @@ import { card } from "@gi-tcg/core/builder";
  */
 const AdeptusTemptation = card(333002)
   .costVoid(2)
-  .tags("food")
-  // TODO
-  .done();
-
-/**
- * @id 333012
- * @name 黄油蟹蟹
- * @description
- * 本回合中，所有我方角色下次受到的伤害-2。
- * （每回合每个角色最多食用1次「料理」）
- */
-const ButterCrab = card(333012)
-  .costVoid(2)
-  .tags("food")
-  // TODO
-  .done();
-
-/**
- * @id 333001
- * @name 绝云锅巴
- * @description
- * 本回合中，目标角色下一次「普通攻击」造成的伤害+1。
- * （每回合每个角色最多食用1次「料理」）
- */
-const JueyunGuoba = card(333001)
   .tags("food")
   // TODO
   .done();
@@ -52,14 +39,25 @@ const LotusFlowerCrisp = card(333003)
   .done();
 
 /**
- * @id 333008
- * @name 兽肉薄荷卷
+ * @id 333004
+ * @name 北地烟熏鸡
  * @description
- * 目标角色在本回合结束前，之后三次「普通攻击」都少花费1个无色元素。
+ * 本回合中，目标角色下一次「普通攻击」少花费1个无色元素。
  * （每回合每个角色最多食用1次「料理」）
  */
-const MintyMeatRolls = card(333008)
-  .costSame(1)
+const NorthernSmokedChicken = card(333004)
+  .tags("food")
+  // TODO
+  .done();
+
+/**
+ * @id 333005
+ * @name 甜甜花酿鸡
+ * @description
+ * 治疗目标角色1点。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+const SweetMadame = card(333005)
   .tags("food")
   // TODO
   .done();
@@ -91,13 +89,27 @@ const MushroomPizza = card(333007)
   .done();
 
 /**
- * @id 333004
- * @name 北地烟熏鸡
+ * @id 333008
+ * @name 兽肉薄荷卷
  * @description
- * 本回合中，目标角色下一次「普通攻击」少花费1个无色元素。
+ * 目标角色在本回合结束前，之后三次「普通攻击」都少花费1个无色元素。
  * （每回合每个角色最多食用1次「料理」）
  */
-const NorthernSmokedChicken = card(333004)
+const MintyMeatRolls = card(333008)
+  .costSame(1)
+  .tags("food")
+  // TODO
+  .done();
+
+/**
+ * @id 333009
+ * @name 提瓦特煎蛋
+ * @description
+ * 复苏目标角色，并治疗此角色1点。
+ * （每回合中，最多通过「料理」复苏1个角色，并且每个角色最多食用1次「料理」）
+ */
+const TeyvatFriedEgg = card(333009)
+  .costSame(2)
   .tags("food")
   // TODO
   .done();
@@ -116,18 +128,6 @@ const SashimiPlatter = card(333010)
   .done();
 
 /**
- * @id 333005
- * @name 甜甜花酿鸡
- * @description
- * 治疗目标角色1点。
- * （每回合每个角色最多食用1次「料理」）
- */
-const SweetMadame = card(333005)
-  .tags("food")
-  // TODO
-  .done();
-
-/**
  * @id 333011
  * @name 唐杜尔烤鸡
  * @description
@@ -141,14 +141,14 @@ const TandooriRoastChicken = card(333011)
   .done();
 
 /**
- * @id 333009
- * @name 提瓦特煎蛋
+ * @id 333012
+ * @name 黄油蟹蟹
  * @description
- * 复苏目标角色，并治疗此角色1点。
- * （每回合中，最多通过「料理」复苏1个角色，并且每个角色最多食用1次「料理」）
+ * 本回合中，所有我方角色下次受到的伤害-2。
+ * （每回合每个角色最多食用1次「料理」）
  */
-const TeyvatFriedEgg = card(333009)
-  .costSame(2)
+const ButterCrab = card(333012)
+  .costVoid(2)
   .tags("food")
   // TODO
   .done();
