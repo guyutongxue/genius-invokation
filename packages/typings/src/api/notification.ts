@@ -1,4 +1,5 @@
-import { DiceType, DamageType, Aura } from "../enums";
+import type { ExposedMutation } from "./mutation";
+import type { DiceType, DamageType, Aura, Reaction } from "../enums";
 
 export type PhaseType =
   | "initHands"
@@ -10,120 +11,82 @@ export type PhaseType =
 
 export interface CharacterData {
   id: number;
-  entityId: number;
+  definitionId: number;
   defeated: boolean;
+  entities: EntityData[];
   health: number;
   energy: number;
-  weapon: number | null;
-  artifact: number | null;
-  equipments: number[];
-  statuses: EntityData[];
-  applied: Aura;
+  aura: Aura;
 }
 
 export interface EntityData {
   id: number;
-  entityId: number;
-  value?: number;
+  definitionId: number;
+  variable: number | null;
+  hintIcon: number | null;
+  hintText: string | null;
 }
 
 export interface CardData {
   id: number;
-  entityId: number;
+  definitionId: number;
 }
 
-export interface PlayerDataBase {
-  pileNumber: number;
-  active: number | null;
+export interface PlayerData {
+  activeCharacterId: number | null;
   characters: CharacterData[];
+  piles: CardData[];
+  hands: CardData[];
+  dice: DiceType[];
   combatStatuses: EntityData[];
   supports: EntityData[];
   summons: EntityData[];
+  declaredEnd: boolean;
   legendUsed: boolean;
-}
-
-export interface MyPlayerData extends PlayerDataBase {
-  type: "my";
-  hands: CardData[];
-  dice: DiceType[];
-}
-
-export interface OppPlayerData extends PlayerDataBase {
-  type: "opp";
-  hands: number;
-  dice: number;
 }
 
 export interface StateData {
   phase: PhaseType;
-  turn: number;
-  players: [MyPlayerData, OppPlayerData];
+  roundNumber: number;
+  currentTurn: number;
+  winner: 0 | 1 | null;
+  players: [PlayerData, PlayerData];
 }
 
-export interface GamePhaseEvent {
-  type: "newGamePhase";
-  roundNumber: number;
-  isFirst: boolean;
-}
-export interface GameEndEvent {
-  type: "gameEnd";
-  win?: boolean; // undefined for tie
-}
 export interface DamageData {
   type: DamageType;
   value: number;
   target: number;
   log: {
-    source: number | string; // id or "elementalReaction" or ...
+    source: number;
     what: string;
   }[];
 }
-export interface StateUpdatedEvent {
-  type: "stateUpdated";
-  source?: number;
-  damages: DamageData[];
+export interface DamageEvent {
+  type: "damage";
+  damage: DamageData;
 }
-export interface PlayCardEvent {
-  type: "playCard";
-  card: number;
-  opp: boolean;
+export interface ElementalReactionEvent {
+  type: "elementalReaction";
+  on: number;
+  reactionType: Reaction;
 }
 export interface UseSkillEvent {
   type: "useSkill";
   skill: number;
-  opp: boolean;
-}
-export interface OppChangeHandsEvent {
-  type: "oppChangeHands";
-  removed: number;
-  added: number;
-  discarded: number;
-}
-export interface SwitchActiveEvent {
-  type: "switchActive";
-  opp: boolean;
-  target: number;
-  source?: number | string; // id or "elementalReaction" or ...
-}
-export interface DeclareEndEvent {
-  type: "declareEnd";
-  opp: boolean;
+  who: 0 | 1;
 }
 export interface OtherEvent {
   type: "oppChoosingActive" | "oppAction"
 }
 export type Event =
-  | GamePhaseEvent
-  | GameEndEvent
-  | StateUpdatedEvent
-  | PlayCardEvent
+  | DamageEvent
+  | ElementalReactionEvent
   | UseSkillEvent
-  | OppChangeHandsEvent
-  | SwitchActiveEvent
-  | DeclareEndEvent
   | OtherEvent;
 
 export type NotificationMessage = {
-  event: Event;
-  state: StateData;
+  events: Event[];
+  mutations: ExposedMutation[];
+  newState: StateData;
 };

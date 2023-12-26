@@ -1,34 +1,33 @@
 {
+  "version": "0.2.0",
   "configurations": [
     {
-      "type": "msedge",
-      "name": "Launch Microsoft Edge",
+      "type": "bun",
+      "internalConsoleOptions": "neverOpen",
       "request": "launch",
-      "runtimeArgs": [
-        "--remote-debugging-port=9222"
-      ],
-      "url": "http://localhost:5173/genius-invokation/",
-      "presentation": {
-        "hidden": true
-      }
+      "name": "Debug File",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "watchMode": false
     },
-    {
-      "type": "vscode-edge-devtools.debug",
-      "name": "Open Edge DevTools",
-      "request": "attach",
-      "url": "http://localhost:5173/genius-invokation/", // Provide your project's url to finish configuring
-      "presentation": {
-        "hidden": true
-      }
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Launch Edge and attach DevTools",
-      "configurations": [
-        "Launch Microsoft Edge",
-        "Open Edge DevTools"
-      ]
-    }
+    // {
+    //   "type": "bun",
+    //   "internalConsoleOptions": "neverOpen",
+    //   "request": "launch",
+    //   "name": "Run File",
+    //   "program": "${file}",
+    //   "cwd": "${workspaceFolder}",
+    //   "noDebug": true,
+    //   "watchMode": false
+    // },
+    // {
+    //   "type": "bun",
+    //   "internalConsoleOptions": "neverOpen",
+    //   "request": "attach",
+    //   "name": "Attach Bun",
+    //   "url": "ws://localhost:6499/",
+    //   "stopOnEntry": false
+    // }
   ]
 }

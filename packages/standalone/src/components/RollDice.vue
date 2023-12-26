@@ -33,7 +33,7 @@ function selected() {
         />
         <label :for="`rdInput${rand}-${i}`">
           <Dice
-            :type="(d as DiceType)"
+            :value="(d as DiceType)"
             :selected="removed.includes(i)"
             :size="70"
             class="cursor-pointer"
@@ -41,6 +41,6 @@ function selected() {
         </label>
       </li>
     </ul>
-    <button class="mt-6 btn btn-primary" @click="selected">Sounds good</button>
+    <button class="mt-6 btn btn-green" @click="selected">确定</button>
   </div>
 </template>

@@ -17,21 +17,24 @@ const COLOR: Record<DiceType, string> = {
 
 const props = withDefaults(
   defineProps<{
-    type: DiceType;
+    value: DiceType;
     text?: string;
     selected?: boolean;
     size?: number;
+    color?: "decreased" | "increased" | "normal";
   }>(),
   {
     selected: false,
     size: 25,
-  }
+    color: "normal",
+  },
 );
 </script>
 <template>
   <div class="relative select-none flex items-center justify-center">
+    <!-- 能量图标 -->
     <svg
-      v-if="type === DiceType.Energy"
+      v-if="value === DiceType.Energy"
       width="14"
       height="14"
       xmlns="http://www.w3.org/2000/svg"
@@ -59,6 +62,7 @@ const props = withDefaults(
         fill="#ffffdf"
       ></path>
     </svg>
+    <!-- 骰子图标 -->
     <svg
       v-else
       width="14"
@@ -66,8 +70,7 @@ const props = withDefaults(
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 15 15"
       class="fill-current w-10 h-10"
-      :class="`text-${COLOR[type]}`"
-      :style="{ height: size, width: size }"
+      :style="{ height: size, width: size, color: `var(--c-${COLOR[value]})` }"
     >
       <path
         d="M7.5 2.065L2.97 4.784v5.432l4.53 2.719 4.53-2.719V4.784z"
@@ -98,15 +101,24 @@ const props = withDefaults(
     <span
       v-if="text"
       class="absolute text-outline"
-      :style="{ fontSize: `${0.4 * size}px` }"
+      :style="{
+        fontSize: `${0.4 * size}px`,
+        color:
+          color === 'increased'
+            ? 'red'
+            : color === 'decreased'
+              ? 'green'
+              : value === DiceType.Void
+                ? 'white'
+                : 'black',
+      }"
     >
       {{ text }}
     </span>
     <Image
-      v-else-if="type >= 1 && type <= 7"
+      v-else-if="value >= 1 && value <= 7"
       class="absolute"
-      type="icon"
-      :id="type"
+      :id="value"
       :width="0.6 * size"
     />
   </div>

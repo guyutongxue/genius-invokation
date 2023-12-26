@@ -6,9 +6,6 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "Bundler",
-    
-    "outDir": "dist",
-    "sourceMap": true,
 
     "resolveJsonModule": true,
     "esModuleInterop": true,

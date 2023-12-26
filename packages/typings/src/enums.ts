@@ -32,11 +32,11 @@ export enum Aura {
   Pyro = 3,
   Electro = 4,
   Dendro = 7,
-  CryoDendro = 8
+  CryoDendro = Aura.Cryo | (Aura.Dendro << 4)
 }
 
 export enum Reaction {
-  Melt = 1,
+  Melt = 101,
   Vaporize,
   Overloaded,
   Superconduct,
@@ -53,4 +53,14 @@ export enum Reaction {
   Burning,
   Bloom,
   Quicken
+}
+
+export enum PlayCardHint {
+  DisposeSupport = 0,
+  GeneralTarget = 1,
+  GeneralTarget2 = 2,
+  ArtifactSource,
+  ArtifactDestination,
+  WeaponSource,
+  WeaponDestination,
 }

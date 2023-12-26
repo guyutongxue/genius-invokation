@@ -1,6 +1,5 @@
-dist
-data.min.json
+/images
 
 temp
 
-data-template
+.vscode

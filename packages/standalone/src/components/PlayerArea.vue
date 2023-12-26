@@ -1,293 +1,89 @@
 <script lang="ts" setup>
-import {
-  Action,
-  CardData,
-  CharacterData,
-  DiceType,
-  PlayCardAction,
-  EntityData,
-  SwitchActiveAction,
-  UseSkillAction,
-} from "@gi-tcg/typings";
+import { PlayerData } from "@gi-tcg/typings";
+import CharacterArea from "./CharacterArea.vue";
+import Summon from "./Summon.vue";
+import Support from "./Support.vue";
+import Card from "./Card.vue";
 import Dice from "./Dice.vue";
-import Character from "./Character.vue";
-import HandCard from "./HandCard.vue";
-import { computed } from "vue";
-import { MyPlayerData, OppPlayerData } from "@gi-tcg/typings";
-import Aura from "./Aura.vue";
 import Status from "./Status.vue";
-import Image from "./Image.vue";
-
-export type Clickable = (
-  | {
-      type: "entity";
-      entityId: number;
-      withMark?: boolean;
-    }
-  | {
-      type: "skill";
-      id: number;
-    }
-  | {
-      type: "declareEnd";
-    }
-  | {
-      type: "elementalTuning";
-      entityId: number;
-    }
-) & {
-  cost?: DiceType[];
-};
+import { ELEMENTAL_TUNING_OFFSET } from "../player";
 
 const props = defineProps<{
-  name?: string;
-  data: MyPlayerData | OppPlayerData;
-  availableActions: Clickable[];
+  data: PlayerData;
+  opp?: boolean;
+  clickable: number[];
+  selected: number[];
 }>();
 
 const emit = defineEmits<{
-  (e: "click", actionIndex: number): void;
+  click: [id: number];
+  cardDragstart: [id: number];
+  cardDragend: [id: number];
 }>();
-
-type WithAction = {
-  cost: [DiceType, number][];
-  actionIndex: number;
-};
-
-const characters = computed<Array<CharacterData & WithAction>>(() => {
-  return props.data.characters.map((c) => {
-    const idx = props.availableActions.findIndex(
-      (a) => a.type === "entity" && a.entityId === c.entityId
-    );
-    let cost: DiceType[] = [];
-    if (idx !== -1) {
-      cost = props.availableActions[idx].cost ?? [];
-    }
-    return {
-      ...c,
-      cost: toCostMap(cost),
-      actionIndex: idx,
-    };
-  });
-});
-
-const summons = computed<Array<EntityData & WithAction>>(() => {
-  return props.data.summons.map((c) => {
-    const idx = props.availableActions.findIndex(
-      (a) => a.type === "entity" && a.entityId === c.entityId
-    );
-    let cost: DiceType[] = [];
-    if (idx !== -1) {
-      cost = props.availableActions[idx].cost ?? [];
-    }
-    return {
-      ...c,
-      cost: toCostMap(cost),
-      actionIndex: idx,
-    };
-  });
-});
-
-const hands = computed<
-  Array<CardData & WithAction & { tuneActionIndex: number }>
->(() => {
-  if (props.data.type === "opp") return [];
-  return props.data.hands.map((c) => {
-    const idx = props.availableActions.findIndex(
-      (a) => a.type === "entity" && a.entityId === c.entityId
-    );
-    let cost: DiceType[] = [];
-    if (idx !== -1) {
-      cost = props.availableActions[idx].cost ?? [];
-    }
-    return {
-      ...c,
-      cost: toCostMap(cost),
-      actionIndex: idx,
-      tuneActionIndex: props.availableActions.findIndex(
-        (a) => a.type === "elementalTuning" && a.entityId === c.entityId
-      ),
-    };
-  });
-});
-
-const skills = computed<Array<{ id: number } & WithAction>>(() => {
-  // TODO load all skill info from static data.
-  return props.availableActions.flatMap((a, i) => {
-    const cost = a.cost ?? [];
-    if (a.type !== "skill") return [];
-    return [
-      {
-        id: a.id,
-        cost: toCostMap(cost),
-        actionIndex: i,
-      },
-    ];
-  });
-});
-
-const declareEndIdx = computed<number>(() => {
-  return props.availableActions.findIndex((a) => a.type === "declareEnd");
-});
-
-function showMark(actionIdx: number): boolean {
-  if (actionIdx === -1) return false;
-  const action = props.availableActions[actionIdx];
-  if (action.type !== "entity") return false;
-  return action.withMark ?? false;
-}
-
-function emitClick(idx: number) {
-  if (idx !== -1) {
-    emit("click", idx);
-  }
-}
-
-function toCostMap(cost: number[]): [DiceType, number][] {
-  const costMap = new Map<DiceType, number>();
-  for (const c of cost ?? []) {
-    costMap.set(c, (costMap.get(c) ?? 0) + 1);
-  }
-  if (costMap.size === 0) return [[DiceType.Same, 0]];
-  return [...costMap.entries()];
-}
 </script>
 
 <template>
-  <div class="flex gap-1 relative flex-col">
-    <div class="flex flex-row">
-      <div
-        class="bg-yellow-800 text-white p-1 flex justify-between"
-        :class="data.type === 'my' ? 'flex-col-reverse' : 'flex-col'"
-      >
-        <div>
-          {{ data.pileNumber }}
-        </div>
-        <div v-if="data.type === 'opp'">
-          <Dice :type="DiceType.Void" :text="String(data.dice)"></Dice>
-        </div>
-      </div>
-      <div class="p-8 bg-blue-50 grid grid-cols-2 grid-rows-2 gap-4">
-        <div
-          v-for="support of data.supports"
-        >
-          <div class="w-10 h-14 relative">
-            <div class="absolute right-0 bg-white">{{ support.value }}</div>
-            <Image type="card" :id="support.id" />
-          </div>
-        </div>
-      </div>
-      <div class="bg-white flex-grow flex justify-center gap-4 p-6">
-        <div
-          v-for="ch of characters"
-          :class="
-            data.active === ch.entityId
-              ? data.type === 'opp'
-                ? 'translate-y-6'
-                : '-translate-y-6'
-              : ''
-          "
-        >
-          <div class="flex flex-col">
-            <Aura :applied="ch.applied"></Aura>
-            <div
-              class="relative"
-              :class="{ clickable: ch.actionIndex !== -1 }"
-              @click="emitClick(ch.actionIndex)"
-            >
-              <Character :character="ch"></Character>
-              <span v-if="showMark(ch.actionIndex)" class="check-mark"> </span>
-            </div>
-            <div
-              v-if="data.active === ch.entityId"
-              class="flex flex-row gap-1 p-1"
-            >
-              <Status v-for="st of data.combatStatuses" :status="st"></Status>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="p-8 bg-red-50 grid grid-cols-2 grid-rows-2 gap-4">
-        <div
-          v-for="summon of summons"
-        >
-          <div
-            class="w-10 h-14 relative"
-            :class="{ clickable: summon.actionIndex !== -1 }"
-            @click="emitClick(summon.actionIndex)"
-          >
-            <div class="absolute right-0 bg-white">{{ summon.value }}</div>
-            <Image type="card" :id="summon.id" />
-            <span v-if="showMark(summon.actionIndex)" class="check-mark">
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-if="data.type === 'my'" class="flex justify-between items-end">
-      <div class="flex flex-wrap gap-3">
-        <div v-for="hand of hands">
-          <div
-            class="w-12 flex flex-col"
-            @click="emitClick(hand.actionIndex)"
-            :class="{ clickable: hand.actionIndex !== -1 }"
-          >
-            <HandCard :objectId="hand.id" :cost="hand.cost"></HandCard>
-          </div>
-          <button
-            v-if="hand.tuneActionIndex !== -1"
-            class="text-green-400 font-bold"
-            @click="emitClick(hand.tuneActionIndex)"
-          >
-            Tune
-          </button>
-        </div>
-      </div>
-      <div>
-        <ul v-if="availableActions" class="m-4 flex gap-2">
-          <li
-            v-for="skill of skills"
-            :class="{ clickable: skill.actionIndex !== -1 }"
-            @click="emitClick(skill.actionIndex)"
-          >
-            {{ skill.id }}
-            <div class="flex flex-row">
-              <Dice
-                v-for="[t, a] of skill.cost"
-                :type="t"
-                :text="String(a)"
-              ></Dice>
-            </div>
-          </li>
-        </ul>
-      </div>
+  <div class="w-full flex flex-row">
+    <div class="bg-yellow-800 text-white flex items-center w-10 flex-shrink-0">
+      piles = {{ data.piles.length }}
     </div>
     <div
-      v-if="data.type === 'my' && declareEndIdx !== -1"
-      class="absolute left-3 top-3 bg-yellow-300 clickable"
+      class="flex-grow flex gap-6"
+      :class="opp ? 'flex-col-reverse' : 'flex-col'"
     >
-      <button @click="emitClick(declareEndIdx)">End round</button>
+      <div class="h-52 flex flex-row justify-center gap-6">
+        <div class="min-w-40">
+          <Support
+            v-for="support of data.supports"
+            :key="support.id"
+            :data="support"
+            :clickable="clickable.includes(support.id)"
+            :selected="selected.includes(support.id)"
+            @click="emit('click', $event)"
+          ></Support>
+        </div>
+        <div class="flex flex-row gap-6 items-end">
+          <div v-for="ch of data.characters" class="flex flex-col">
+            <CharacterArea
+              :key="ch.id"
+              :data="ch"
+              :clickable="clickable.includes(ch.id)"
+              :selected="selected.includes(ch.id)"
+              @click="emit('click', $event)"
+            ></CharacterArea>
+            <div v-if="ch.id === data.activeCharacterId" class="h-6 flex flex-row">
+              <Status v-for="st of data.combatStatuses" :data="st"></Status>
+            </div>
+            <div v-else-if="opp" class="h-12"></div>
+          </div>
+        </div>
+        <div class="min-w-40">
+          <Summon
+            v-for="summon of data.summons"
+            :key="summon.id"
+            :data="summon"
+            :clickable="clickable.includes(summon.id)"
+            :selected="selected.includes(summon.id)"
+            @click="emit('click', $event)"
+          ></Summon>
+        </div>
+      </div>
+      <div
+        class="h-30 flex flex-row mx-4 hands-area"
+        :class="opp ? 'justify-end' : 'justify-start'"
+      >
+        <Card
+          v-for="card of data.hands"
+          :key="card.id"
+          :data="card"
+          :clickable="clickable.includes(card.id)"
+          :draggable="clickable.includes(card.id + ELEMENTAL_TUNING_OFFSET)"
+          :selected="selected.includes(card.id)"
+          @click="emit('click', $event)"
+          @dragstart="emit('cardDragstart', $event)"
+          @dragend="emit('cardDragend', $event)"
+        ></Card>
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.clickable {
-  cursor: pointer;
-  outline: 4px solid lightgreen;
-}
-.check-mark {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 3.5rem;
-  font-weight: bold;
-  color: green;
-  transform: translateY(-50%);
-}
-.check-mark::before {
-  content: "\2705";
-}
-</style>

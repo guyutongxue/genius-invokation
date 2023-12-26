@@ -1,29 +1,22 @@
 {
   "name": "@gi-tcg/data",
-  "version": "0.0.0",
+  "version": "4.1.0",
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
+  "exports": "./src/index.ts",
   "scripts": {
-    "build:entry": "node ./scripts/generate_imports.js",
-    "build:ts": "tsup src/index.ts --format esm --dts --sourcemap",
-    "build": "pnpm build:entry && pnpm build:ts"
+    "regenerate_data": "bun ./scripts/generators/index.ts",
+    "generate_images_for_standalone": "bun ./scripts/images/index.ts",
+    "build": "echo",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@gi-tcg/typings": "workspace:*"
+    "@gi-tcg/core": "workspace:*"
   },
   "devDependencies": {
-    "@genshin-db/tcg": "^4.3.12",
+    "sharp": "^0.33.0",
+    "typescript": "^5.3.2",
+    "@microsoft/tsdoc": "^0.14.2",
     "case-anything": "^2.1.13",
-    "glob": "^10.2.7",
-    "puppeteer-core": "^20.8.2",
-    "tsup": "^7.1.0",
-    "tsx": "^3.12.7",
-    "typescript": "^5.1.6",
-    "wikijs": "^6.4.1"
+    "@genshin-db/tcg": "^5.0.1"
   }
 }

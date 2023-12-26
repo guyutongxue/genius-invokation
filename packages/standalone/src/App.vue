@@ -1,121 +1,129 @@
 <script setup lang="ts">
-import { logs } from "./logs";
-import Chessboard from "./components/Chessboard.vue";
-import { Game, PlayerConfig } from "@gi-tcg/core";
 import { onMounted, ref } from "vue";
-import { preloadAllImages, progress, total } from "./assets/preload";
-import Casket, { Deck } from "./components/Casket.vue";
-import DeckPreview from "./components/DeckPreview.vue";
 
-const game = new Game();
-const started = ref(false);
+import {
+  startGame,
+  PlayerIO,
+  StateData,
+  RpcMethod,
+  RpcRequest,
+  RpcResponse,
+PlayerConfig,
+} from "@gi-tcg/core";
+import data from "@gi-tcg/data";
+import Chessboard from "./components/Chessboard.vue";
+import { Player } from "./player";
+import { mittWithOnce } from "./util";
 
-function initializePlayer(p: 0 | 1, config: PlayerConfig) {
-  const controller = game.registerPlayer(p, config);
-  controller.ready();
-}
+const state0 = ref<StateData>();
+const state1 = ref<StateData>();
 
-function readDeckFromCache() {
-  const deck0 =
-    localStorage.getItem("deck0") ??
-    `{"characters":[1203,1703,1306],"piles":[311103,311103,312004,312004,321007,321007,321011,321011,322001,322007,322008,322008,322014,330002,330002,331801,331801,332001,332001,332003,332004,332004,332005,332005,332006,332006,333003,333003,333006,333006]}`;
-  const deck1 =
-    localStorage.getItem("deck1") ??
-    `{"characters":[1303,1306,1403],"piles":[333002,333012,333001,333003,330001,333006,333007,333004,333010,333005,333011,333009,213031,213061,214031,311502,311103,312009,312002,312301,322010,322005,323001,321002,322001,322008,321007,321011,332011,332005]}
-`;
-  player0.value = JSON.parse(deck0);
-  player1.value = JSON.parse(deck1);
-}
-
-const player0 = ref<Deck>();
-const player1 = ref<Deck>();
-
-const loaded = ref(false);
-const modifyingPlayer = ref<0 | 1 | null>(null);
-
-function modifyDeck(data: Deck) {
-  if (modifyingPlayer.value === 0) {
-    player0.value = data;
-    localStorage.setItem("deck0", JSON.stringify(data));
-  } else {
-    player1.value = data;
-    localStorage.setItem("deck1", JSON.stringify(data));
+async function doRpc<M extends RpcMethod>(
+  m: M,
+  req: RpcRequest[M],
+  who: 0 | 1,
+): Promise<RpcResponse[RpcMethod]> {
+  switch (m) {
+    case "chooseActive":
+      const { candidates } = req as RpcRequest["chooseActive"];
+      return {
+        active: candidates[0],
+      } as RpcResponse["chooseActive"];
+    case "rerollDice":
+      return {
+        rerollIndexes: [],
+      } as RpcResponse["rerollDice"];
+    default:
+      throw new Error("Not implemented");
   }
-  cancelModifyDeck();
 }
-function cancelModifyDeck() {
-  (document.querySelector("#casketModal") as HTMLDialogElement).close();
-  modifyingPlayer.value = null;
+
+async function rpc<M extends RpcMethod>(
+  m: M,
+  req: RpcRequest[M],
+  who: 0 | 1,
+): Promise<RpcResponse[M]> {
+  const res = await doRpc(m, req, who);
+  console.log("RPC", m, req, who, res);
+  return res as any;
 }
-function setDeck(who: 0 | 1) {
-  modifyingPlayer.value = who;
-  (document.querySelector("#casketModal") as HTMLDialogElement).showModal();
-}
+
+const player0Io: PlayerIO = {
+  giveUp: false,
+  notify: ({ newState, events, mutations }) => {
+    console.log(mutations);
+    state0.value = newState;
+  },
+  rpc: (m, r) => rpc(m, r, 0),
+};
+
+const player1Io: PlayerIO = {
+  giveUp: false,
+  notify: ({ newState }) => {
+    state1.value = newState;
+  },
+  rpc: (m, r) => rpc(m, r, 1),
+};
+
+const playerConfig0: PlayerConfig = {
+  characters: [1303, 1201, 1502],
+  cards: [
+    332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
+    331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
+    332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
+    332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
+    332019, 331803, 332003, 332007, 332022, 331801, 332011,
+  ],
+  noShuffle: import.meta.env.DEV,
+  alwaysOmni: import.meta.env.DEV,
+};
+const playerConfig1: PlayerConfig = {
+  characters: [1502, 1201, 1303],
+  cards: [
+    332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
+    331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
+    332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
+    332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
+    332019, 331803, 332003, 332007, 332022, 331801, 332011,
+  ],
+  noShuffle: import.meta.env.DEV,
+  alwaysOmni: import.meta.env.DEV,
+};
+const player0 = new Player(playerConfig0, 0);
+const player1 = new Player(playerConfig1, 1);
 
 onMounted(async () => {
-  readDeckFromCache();
-  loaded.value = true; // 需要一些更好的办法……
-  preloadAllImages();
+  const winner = await startGame({
+    data,
+    io: {
+      pause: async () => {
+        enableStep.value = true;
+        await new Promise<void>((resolve) => {
+          emitter.once("step", resolve);
+        });
+        enableStep.value = false;
+      },
+      players: [player0.io, player1.io],
+    },
+    playerConfigs: [playerConfig0, playerConfig1],
+  });
+  console.log("Winner is", winner);
 });
+
+const emitter = mittWithOnce<{
+  step: void;
+}>();
+const enableStep = ref(false);
 </script>
 
 <template>
-  <div
-    v-if="!loaded"
-    class="h-screen w-screen flex justify-center items-center flex-col gap-2"
-  >
-    <h1 class="text-2xl">加载中...</h1>
-    <progress class="progress w-56" :value="progress" :max="total"></progress>
-  </div>
-  <div v-else-if="player0 && player1 && started">
-    <Chessboard
-      debug
-      v-bind="player0"
-      @initialized="initializePlayer(0, $event)"
-    ></Chessboard>
-    <div class="my-6 bg-primary h-1"></div>
-    <Chessboard
-      v-bind="player1"
-      @initialized="initializePlayer(1, $event)"
-    ></Chessboard>
-  </div>
-  <div
-    v-else
-    class="flex flex-col h-screen w-screen justify-center items-center gap-4"
-  >
-    <div class="flex gap-6 items-end">
-      <div class="flex flex-col m-2 items-center">
-        <DeckPreview v-if="player0" :deck="player0" />
-        <button class="btn mt-2" @click="setDeck(0)">
-          设置先手玩家牌组...
-        </button>
-      </div>
-      <div class="flex flex-col m-2 items-center">
-        <DeckPreview v-if="player1" :deck="player1" />
-        <button class="btn mt-2" @click="setDeck(1)">
-          设置后手玩家牌组...
-        </button>
-      </div>
+  <div class="min-w-180 w-full flex flex-col gap-2">
+    <div>
+      <button :disabled="!enableStep" @click="emitter.emit('step')">
+        Step
+      </button>
     </div>
-    <button
-      class="btn btn-primary"
-      :disabled="!player0 || !player1"
-      @click="started = true"
-    >
-      启动
-    </button>
+    <Chessboard :player="player0"></Chessboard>
+    <Chessboard :player="player1"></Chessboard>
   </div>
-  <ul>
-    <li v-for="log of logs">
-      {{ log }}
-    </li>
-  </ul>
-  <dialog id="casketModal" class="h-screen w-screen m-5">
-    <Casket
-      v-if="modifyingPlayer !== null"
-      :initialDeck="modifyingPlayer === 0 ? player0 : player1"
-      @submit="modifyDeck"
-      @cancel="cancelModifyDeck"
-    ></Casket>
-  </dialog>
 </template>

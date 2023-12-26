@@ -1,31 +1,25 @@
 {
   "name": "@gi-tcg/core",
+  "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./builder": "./src/builder/index.ts"
   },
   "scripts": {
-    "build": "tsc"
-  },
-  "devDependencies": {
-    "@gi-tcg/data": "workspace:*",
-    "@gi-tcg/typings": "workspace:*",
-    "@gi-tcg/utils": "workspace:*",
-    "@types/lodash-es": "^4.17.7",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "nodemon": "^2.0.22",
-    "prettier": "^3.0.0",
-    "tsx": "^3.12.7",
-    "typescript": "^5.1.6"
+    "generate_parser": "bunx --bun ohm generateBundles -et src/query/query.ohm",
+    "build": "bun run generate_parser",
+    "check": "bunx tsc --noEmit"
   },
   "dependencies": {
-    "immer": "^10.0.2",
-    "lodash-es": "^4.17.21"
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
+    "immer": "^10.0.3",
+    "@stdlib/random-base-minstd": "^0.1.0",
+    "ohm-js": "^17.1.0"
+  },
+  "devDependencies": {
+    "@ohm-js/cli": "^2.0.0",
+    "prettier": "3.1.1"
   }
 }

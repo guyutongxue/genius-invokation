@@ -1,0 +1,10 @@
+{
+  "name": "genius-invokation",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",
+  "scripts": {
+  }
+}

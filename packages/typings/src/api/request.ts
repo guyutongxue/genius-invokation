@@ -1,51 +1,34 @@
-// type JsonRpcRequest<M extends string, P> = {
-//   jsonrpc: "2.0";
-//   method: M;
-//   params: P;
-//   id: number;
-// };
-
-import { DiceType } from "../enums";
+import type { DiceType, PlayCardHint } from "../enums";
 
 export interface RerollDiceRequest {}
 
 export interface SwitchHandsRequest {}
 
 export interface ChooseActiveRequest {
-  candidates: number[];
+  candidates: readonly number[];
 }
 
 export interface ActionRequest {
-  candidates: Action[];
+  candidates: readonly Action[];
 }
 
 export interface SwitchActiveAction {
   type: "switchActive";
   active: number;
-  cost: DiceType[];
+  cost: readonly DiceType[];
 }
-
-export interface PlayCardSingleTarget {
-  id: number;
-  entityId: number;
-}
-
-export interface PlayCardTargets {
-  hint?: string[];
-  candidates: PlayCardSingleTarget[][];
-};
-
 export interface PlayCardAction {
   type: "playCard";
   card: number;
-  cost: DiceType[];
-  target?: PlayCardTargets;
+  cost: readonly DiceType[];
+  hints: readonly PlayCardHint[];
+  targets: readonly number[];
 }
 
 export interface UseSkillAction {
   type: "useSkill";
   skill: number;
-  cost: DiceType[];
+  cost: readonly DiceType[];
 }
 
 export interface ElementalTuningAction {

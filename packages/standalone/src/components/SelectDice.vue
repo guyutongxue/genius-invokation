@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DiceType, PlayCardTargets } from "@gi-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 import { checkDice, chooseDice } from "@gi-tcg/utils";
 import { computed, ref } from "vue";
 import Dice from "./Dice.vue";
@@ -9,13 +9,14 @@ const props = defineProps<{
   required: DiceType[];
   disableOk?: boolean;
   disableOmni?: boolean;
+  disableCancel?: boolean;
 }>();
 const rand = Math.random();
 
 const isOk = computed<boolean>(
   () =>
     (!props.disableOmni || !chosenDice.value.includes(DiceType.Omni)) &&
-    checkDice(props.required, chosenDice.value)
+    checkDice(props.required, chosenDice.value),
 );
 
 const chosenIdx = ref<number[]>(chooseDice(props.required, props.dice));
@@ -39,23 +40,25 @@ const emit = defineEmits<{
           v-model="chosenIdx"
         />
         <label :for="`rdInput${rand}-${i}`">
-          <Dice
-            :type="(d as DiceType)"
-            :selected="chosenIdx.includes(i)"
-            :size="40"
-          ></Dice>
+          <Dice :value="d" :selected="chosenIdx.includes(i)" :size="40"></Dice>
         </label>
       </li>
     </ul>
     <div class="flex flex-col gap-1">
       <button
-        class="btn btn-primary"
+        class="btn btn-yellow text-black"
         :disabled="disableOk || !isOk"
         @click="$emit('selected', chosenDice)"
       >
         确认
       </button>
-      <button class="btn" @click="$emit('cancelled')">取消</button>
+      <button
+        v-if="!disableCancel"
+        class="btn btn-red"
+        @click="$emit('cancelled')"
+      >
+        取消
+      </button>
     </div>
   </div>
 </template>

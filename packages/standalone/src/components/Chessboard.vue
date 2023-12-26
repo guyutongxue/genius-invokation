@@ -1,338 +1,186 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
-import PlayerArea, { Clickable } from "./PlayerArea.vue";
-import SwitchHands from "./SwitchHands.vue";
-import { PlayerConfig } from "@gi-tcg/core";
-import {
-  DiceType,
-  Request,
-  StateData,
-  Response,
-  NotificationMessage,
-  RpcMethod,
-  RpcResponse,
-  RpcRequest,
-  MyPlayerData,
-  Action,
-  Handler,
-  PlayCardTargets,
-  PlayCardSingleTarget,
-} from "@gi-tcg/typings";
-import EventEmitter from "eventemitter3";
-import RollDice from "./RollDice.vue";
-import SelectDice from "./SelectDice.vue";
+import { DiceType, StateData } from "@gi-tcg/typings";
+import { flip } from "@gi-tcg/utils";
+
+import PlayerArea from "./PlayerArea.vue";
+import { DECLARE_END_ID, ELEMENTAL_TUNING_OFFSET, Player } from "../player";
+import SkillButton from "./SkillButton.vue";
+import { computed, ref, watch } from "vue";
+import { initiativeSkillData } from "../static_data";
 import Dice from "./Dice.vue";
-import { logs } from "../logs";
+import SelectDice from "./SelectDice.vue";
+import RollDice from "./RollDice.vue";
+import SwitchHands from "./SwitchHands.vue";
 
 const props = defineProps<{
-  debug?: boolean;
-  characters: number[];
-  piles: number[];
+  player: Player;
 }>();
 
-const stateData = ref<StateData>();
-const availableActions = ref<Clickable[]>([]);
+function entityClicked(id: number) {
+  props.player.entityClicked(id);
+}
 
-const showCardSwitch = ref<boolean>(false);
-const showRollDice = ref<boolean>(false);
+const {
+  who,
+  state: data,
+  clickable,
+  selected,
+  view,
+  selectDiceOpt,
+} = props.player;
 
-const ee = new EventEmitter<{
-  cardSwitched: [removed: number[]];
-  diceSwitched: [removed: number[]];
-  diceSelected: [dice: number[] | undefined];
-  acted: [selectedActionIndex: number];
-}>();
-
-function onNotify({ event, state }: NotificationMessage) {
-  console.log(event);
-  switch (event.type) {
-    case "stateUpdated": {
-      break;
-    }
-    default: {
-      if (props.debug) {
-        logs.push(JSON.stringify(event));
-      }
-    }
+const skillList = computed(() => {
+  if (!data.value) {
+    return [];
   }
-  stateData.value = state;
-}
-
-const requireSelectedDice = ref<number[]>();
-const disableDiceOk = ref<boolean>(false);
-const disableOmniDice = ref<boolean>(false);
-async function useDice(needed: DiceType[]): Promise<DiceType[] | undefined> {
-  requireSelectedDice.value = needed;
-  const selected = await new Promise<number[] | undefined>((resolve) => {
-    ee.once("diceSelected", (selected) => {
-      if (typeof selected === "undefined") return resolve(undefined);
-      resolve(selected);
-    });
-  });
-  requireSelectedDice.value = undefined;
-  return selected;
-}
-
-async function requestAction(clickable: Clickable[]): Promise<number> {
-  availableActions.value = clickable;
-  const result = await new Promise<number>((resolve) => {
-    ee.once("acted", resolve);
-  });
-  availableActions.value = [];
-  return result;
-}
-
-async function handler(method: RpcMethod, req: Request): Promise<Response> {
-  console.log({ method, req });
-  switch (method) {
-    case "switchHands": {
-      showCardSwitch.value = true;
-      const removedHands = await new Promise<number[]>((resolve) => {
-        ee.once("cardSwitched", (d) => resolve(d));
-      });
-      showCardSwitch.value = false;
-      return { removedHands } as RpcResponse["switchHands"];
-    }
-    case "chooseActive": {
-      const { candidates } = req as RpcRequest["chooseActive"];
-      const idx = await requestAction(
-        candidates.map(
-          (c): Clickable => ({
-            type: "entity",
-            entityId: c,
-          })
-        )
-      );
-      const target = candidates[idx];
-      return { active: target } as RpcResponse["chooseActive"];
-    }
-    case "rerollDice": {
-      showRollDice.value = true;
-      const rerollIndexes = await new Promise<number[]>((resolve) => {
-        ee.once("diceSwitched", (d) => resolve(d));
-      });
-      showRollDice.value = false;
-      return { rerollIndexes } as RpcResponse["rerollDice"];
-    }
-    case "action": {
-      const { candidates } = req as RpcRequest["action"];
-      while (true) {
-        const clickable = candidates.map((a): Clickable => {
-          switch (a.type) {
-            case "declareEnd":
-              return { type: "declareEnd" };
-            case "elementalTuning":
-              return { type: "elementalTuning", entityId: a.discardedCard };
-            case "playCard":
-              return { type: "entity", entityId: a.card, cost: a.cost };
-            case "switchActive":
-              return { type: "entity", entityId: a.active, cost: a.cost };
-            case "useSkill":
-              return { type: "skill", id: a.skill, cost: a.cost };
-          }
-        });
-        const actionIdx = await requestAction(clickable);
-        const selectedAction = candidates[actionIdx];
-        console.log(selectedAction);
-        let r: RpcResponse["action"]; // type check only
-        switch (selectedAction.type) {
-          case "declareEnd": {
-            return (r = { type: "declareEnd" });
-          }
-          case "elementalTuning": {
-            disableOmniDice.value = true;
-            const cost = await useDice([DiceType.Void]);
-            disableOmniDice.value = false;
-            if (typeof cost === "undefined") continue;
-            return (r = {
-              type: "elementalTuning",
-              discardedCard: selectedAction.discardedCard,
-              dice: cost as [DiceType],
-            });
-          }
-          case "switchActive": {
-            availableActions.value = [
-              {
-                type: "entity",
-                entityId: selectedAction.active,
-                withMark: true,
-              },
-            ];
-            const spent = await useDice(selectedAction.cost);
-            availableActions.value = [];
-            if (typeof spent === "undefined") continue;
-            return (r = {
-              type: "switchActive",
-              active: selectedAction.active,
-              dice: spent,
-            });
-          }
-          case "playCard": {
-            const cardTarget = selectedAction.target?.candidates ?? [[]];
-            // TODO
-            let selectedTarget = 0;
-            let candidates: [number[], number][] = [];
-            const lengthCheck = new Set<number>();
-            for (let i = 0; i < cardTarget.length; i++) {
-              const entities = cardTarget[i].map((e) => e.entityId);
-              candidates.push([entities, i]);
-              lengthCheck.add(entities.length);
-            }
-            // Assume that every candidate has same length
-            if (lengthCheck.size !== 1) {
-              throw new Error("Cannot deal with mismatch length targets");
-            }
-            let spent: number[] | undefined;
-            while (true) {
-              const restLength = candidates[0][0].length;
-              // If no target needed, break
-              if (restLength === 0) {
-                // 当不需要目标时，直接显示骰子窗口
-                selectedTarget = candidates[0][1];
-                spent = await useDice(selectedAction.cost);
-                break;
-              } else if (restLength === 1) {
-                // 当卡牌目标只有一步操作时，在显示卡牌选择框的同时，显示骰子窗口
-                let selectedEntityIdx: number | undefined = undefined;
-                if (candidates.length === 1) {
-                  selectedEntityIdx = 0;
-                }
-                disableDiceOk.value = typeof selectedEntityIdx === "undefined";
-                availableActions.value = candidates.map(([c], i) => ({
-                  type: "entity",
-                  entityId: c[0],
-                  withMark: i === selectedEntityIdx,
-                }));
-                const handler = ee.on("acted", (idx) => {
-                  selectedEntityIdx = idx;
-                  disableDiceOk.value =
-                    typeof selectedEntityIdx === "undefined";
-                  availableActions.value.forEach((a, i) => {
-                    if (a.type === "entity") {
-                      a.withMark = i === selectedEntityIdx;
-                    }
-                  });
-                });
-                spent = await useDice(selectedAction.cost);
-                if (typeof selectedEntityIdx === "undefined") {
-                  // Cancelled while selecting target
-                  break;
-                }
-                selectedTarget = candidates[selectedEntityIdx][1];
-                disableDiceOk.value = false;
-                availableActions.value = [];
-                break;
-              } else {
-                // 当多于一步操作目标时，这一步先选择第一个目标，不显示“勾”，不显示骰子窗口
-                const firstCandidate = [
-                  ...new Set(candidates.map((a) => a[0][0])),
-                ];
-                const selected = await requestAction(
-                  firstCandidate.map((e) => ({
-                    type: "entity",
-                    entityId: e,
-                  }))
-                );
-                candidates = candidates.filter(
-                  ([c, i]) => c[0] === firstCandidate[selected]
-                );
-                candidates.forEach(([c, i]) => c.shift());
-              }
-            }
-            if (typeof spent === "undefined") continue;
-            return (r = {
-              type: "playCard",
-              card: selectedAction.card,
-              dice: spent,
-              targetIndex: selectedTarget,
-            });
-          }
-          case "useSkill": {
-            const spent = await useDice(selectedAction.cost);
-            if (typeof spent === "undefined") continue;
-            return (r = {
-              type: "useSkill",
-              skill: selectedAction.skill,
-              dice: spent,
-            });
-          }
-        }
-      }
-    }
+  const player = data.value.players[who];
+  const activeCh = player.characters.find(
+    (ch) => ch.id === player.activeCharacterId,
+  );
+  if (activeCh) {
+    return initiativeSkillData[activeCh.definitionId];
+  } else {
+    return [];
   }
-}
-
-const player: PlayerConfig = {
-  deck: {
-    characters: props.characters,
-    actions: props.piles,
-  },
-  handler: handler as Handler,
-  onNotify,
-  // noShuffle: true,
-};
-
-function diceSelected(dice: DiceType[]) {
-  ee.emit("diceSelected", dice);
-}
-
-const emit = defineEmits<{
-  (e: "initialized", config: PlayerConfig): void;
-}>();
-
-onMounted(() => {
-  emit("initialized", player);
 });
+
+const oppDiceCount = computed(() => {
+  if (!data.value) return 0;
+  return data.value.players[flip(who)].dice.length;
+});
+const myDice = computed(() => {
+  if (!data.value) return [];
+  return data.value.players[who].dice;
+});
+
+const showCardDropDiv = ref(false);
+
+function myDiceDragenterHandler(e: DragEvent) {
+  e.preventDefault();
+}
+function myDiceDragoverHandler(e: DragEvent) {
+  e.preventDefault();
+  e.dataTransfer!.dropEffect = "move";
+}
+function myDiceDragleaveHandler(e: DragEvent) {
+  e.preventDefault();
+}
+function myDiceDropHandler(e: DragEvent) {
+  e.preventDefault();
+  (e.target! as HTMLElement).classList.remove("dropping");
+  const id = parseInt(e.dataTransfer!.getData("text/plain"));
+  entityClicked(id + ELEMENTAL_TUNING_OFFSET);
+  showCardDropDiv.value = true;
+}
 </script>
 
 <template>
-  <div v-if="stateData" class="relative">
-    <div class="flex flex-row items-stretch">
-      <div class="flex-grow flex flex-col gap-2">
-        <PlayerArea
-          :data="stateData.players[1]"
-          :availableActions="availableActions"
-          @click="ee.emit('acted', $event)"
-        >
-        </PlayerArea>
-        <PlayerArea
-          :data="stateData.players[0]"
-          :availableActions="availableActions"
-          @click="ee.emit('acted', $event)"
-        >
-        </PlayerArea>
+  <div v-if="data" class="w-full b-solid b-black b-2 relative select-none">
+    <div
+      class="h-full w-full flex relative pr-8"
+      :class="who === 0 ? 'flex-col-reverse' : 'flex-col'"
+    >
+      <PlayerArea
+        v-for="i of [0, 1] as const"
+        :data="data.players[i]"
+        :opp="who !== i"
+        :clickable="clickable"
+        :selected="selected"
+        @click="entityClicked($event)"
+        @cardDragstart="showCardDropDiv = true"
+        @cardDragend="showCardDropDiv = false"
+      ></PlayerArea>
+      <div class="absolute right-10 bottom-0 flex flex-row gap-1">
+        <SkillButton
+          v-for="id of skillList"
+          :id="id"
+          :enabled="clickable.includes(id)"
+          @click="entityClicked(id)"
+        ></SkillButton>
       </div>
-      <SelectDice
-        class="bg-yellow-800"
-        v-if="requireSelectedDice"
-        :dice="stateData.players[0].dice"
-        :required="requireSelectedDice"
-        :disableOk="disableDiceOk"
-        :disableOmni="disableOmniDice"
-        @selected="diceSelected"
-        @cancelled="ee.emit('diceSelected', undefined)"
-      >
-      </SelectDice>
-      <div v-else class="bg-yellow-800 text-white flex flex-col p-2 gap-[1px]">
-        <div v-for="d of stateData.players[0].dice">
-          <Dice :type="d"></Dice>
+      <div class="absolute left-0 top-[50%] translate-y-[-50%]">
+        <div
+          class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]"
+        >
+          <Dice
+            :value="DiceType.Omni"
+            :text="`${oppDiceCount}`"
+            :size="32"
+          ></Dice>
+        </div>
+        <div class="flex items-center gap-2">
+          <div
+            class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
+            :class="{
+              'bg-yellow-300': data.currentTurn === who,
+              'bg-blue-200': data.currentTurn !== who,
+            }"
+          >
+            <div class="text-lg">
+              {{ data.roundNumber }}
+            </div>
+            <div class="text-sm text-gray">
+              {{ data.phase }}
+            </div>
+          </div>
+          <button
+            class="btn btn-green-500"
+            v-if="clickable.includes(DECLARE_END_ID)"
+            @click="entityClicked(0)"
+          >
+            结束回合
+          </button>
         </div>
       </div>
     </div>
-    <SwitchHands
-      class="absolute top-0 left-0 bottom-0 right-0 bg-black bg-opacity-70"
-      v-if="showCardSwitch"
-      :hands="stateData.players[0].hands"
-      @selected="ee.emit('cardSwitched', $event)"
+    <div
+      class="absolute right-0 top-0 w-40 h-full z-10 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
+      :class="{ 'no-width': !showCardDropDiv }"
+      @dragenter="myDiceDragenterHandler"
+      @dragover="myDiceDragoverHandler"
+      @dragleave="myDiceDragleaveHandler"
+      @drop="myDiceDropHandler"
     >
-    </SwitchHands>
+      <span>拖动到此处</span>
+      <span>以元素调和</span>
+    </div>
+    <div
+      class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800"
+    >
+      <SelectDice
+        v-if="selectDiceOpt.enabled"
+        class="h-full"
+        :dice="myDice"
+        :required="selectDiceOpt.required"
+        :disableOk="selectDiceOpt.disableOk"
+        :disableCancel="selectDiceOpt.disableCancel"
+        :disableOmni="selectDiceOpt.disableOmni"
+        @selected="player.diceSelected($event)"
+        @cancelled="player.diceSelected(false)"
+      ></SelectDice>
+      <div v-else>
+        <Dice v-for="d of myDice" :value="d"></Dice>
+      </div>
+    </div>
     <RollDice
-      class="absolute top-0 left-0 bottom-0 right-0 bg-black bg-opacity-70"
-      v-if="showRollDice"
-      :dice="stateData.players[0].dice"
-      @selected="ee.emit('diceSwitched', $event)"
+      v-if="view === 'reroll'"
+      class="absolute h-full w-full top-0 left-0 bg-black bg-opacity-70 z-20"
+      :dice="data.players[who].dice"
+      @selected="player.rerolled($event)"
     >
     </RollDice>
+    <SwitchHands
+      v-if="view === 'switchHands'"
+      class="absolute h-full w-full top-0 left-0 bg-black bg-opacity-70 z-20"
+      :hands="data.players[who].hands"
+      @selected="player.handSwitched($event)"
+    ></SwitchHands>
   </div>
 </template>
-../log ../logs
+
+<style>
+.no-width {
+  visibility: hidden;
+  width: 0;
+}
+</style>

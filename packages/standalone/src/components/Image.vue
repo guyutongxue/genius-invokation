@@ -1,39 +1,17 @@
 <script lang="ts" setup>
-import { computed } from "vue";
-import images from "../assets/images.json";
-import icons from "../assets/icons.json";
+import { computed, onMounted, ref } from "vue";
+import { requestLoad } from "../images";
 
-const props = defineProps<{
-  type: "card" | "icon";
-  id: number | null;
+const prop = defineProps<{
+  id: number;
   width?: number;
-  height?: number;
 }>();
 
-const imageLink = computed<string>(() =>
-  props.id === null
-    ? "https://placehold.co/420x720?text=None"
-    : (images as any)[props.id],
-);
-const iconLink = computed<string>(() =>
-  props.id === null
-    ? "https://placehold.co/100x100"
-    : "https://guyutongxue.site/gcg-buff-icon-data/Sprite/" +
-      (icons as any)[props.id],
-);
+const dataUrl = computed(() => requestLoad(prop.id));
+
 </script>
 
 <template>
-  <div>
-    <img
-      v-if="type === 'card'"
-      :src="imageLink"
-      :style="{ width: width && `${width}px`, height: height && `${height}px` }"
-    />
-    <img
-      v-else-if="id !== null"
-      :src="iconLink"
-      :style="{ width: width && `${width}px`, height: height && `${height}px` }"
-    />
-  </div>
+  <img v-if="dataUrl" :src="dataUrl.value" :width="width" draggable="false">
+  <div v-else :style="{ width }">?</div>
 </template>

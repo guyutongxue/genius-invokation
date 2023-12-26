@@ -2,12 +2,7 @@
   "name": "@gi-tcg/utils",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
+  "exports": "./src/index.ts",
   "scripts": {
     "build": "tsc"
   },
