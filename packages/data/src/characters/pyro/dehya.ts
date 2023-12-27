@@ -109,7 +109,7 @@ const FierySanctumRedmanesBlood = skill(13096)
  * 鹫鸟的眼睛，狮子的灵魂，沙漠自由的女儿。
  */
 const Dehya = character(1309)
-  .tags("pyro", "claymore", "sumeru", "eremites")
+  .tags("pyro", "claymore", "sumeru", "eremite")
   .health(10)
   .energy(2)
   .skills(SandstormAssault, MoltenInferno, LeonineBite, IncinerationDrive, FierySanctumRedmanesBlood)

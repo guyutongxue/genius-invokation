@@ -5,6 +5,10 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * @name 纯水幻形·蛙
  * @description
  * 我方出战角色受到伤害时：抵消1点伤害。
+ * 可用次数：1，耗尽时不弃置此牌。
+ * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点水元素伤害。
+ * @outdated
+ * 我方出战角色受到伤害时：抵消1点伤害。
  * 可用次数：2，耗尽时不弃置此牌。
  * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点水元素伤害。
  */

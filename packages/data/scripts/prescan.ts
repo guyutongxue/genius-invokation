@@ -21,7 +21,7 @@ function read(name: keyof typeof CATEGORY_KEYS): any[] {
       ...value,
       image: imageObj,
       zhName: zh.name,
-      zhDescription: zh.description ?? zh.storytext
+      zhDescription: zh.description ?? zh.storytext ?? ""
     };
     if ("skills" in value) {
       const enSkills = [ ...value.skills ];

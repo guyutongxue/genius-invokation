@@ -25,7 +25,7 @@ export type NationTag =
   | "sumeru"
   | "fontaine"
   | "fatui"
-  | "eremites"
+  | "eremite"
   | "monster"
   | "hilichurl";
 

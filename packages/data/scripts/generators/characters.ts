@@ -83,7 +83,6 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
 }
 
 export async function generateCharacters() {
-  const result: Promise<void>[] = [];
   for (const ch of characters) {
     const filename =
       "characters/" +
@@ -142,7 +141,6 @@ export async function generateCharacters() {
     });
     items.push(...getTalentCard(ch.id, ch.name));
 
-    result.push(writeSourceCode(filename, initCode, items, true));
+    await writeSourceCode(filename, initCode, items, true);
   }
-  return Promise.all(result);
 }
