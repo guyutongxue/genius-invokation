@@ -9,6 +9,7 @@ const skillImageMap = new Map<number, string>([
   [24012, "MonsterSkill_S_EffigyElectric_01"],
   [24013, "MonsterSkill_E_EffigyElectric_01_HD"],
   [24014, "MonsterSkill_S_EffigyElectric_04"],
+  // TODO: 6301x, 6601x, 6602x, 6603x, 6604x
 ] as const);
 
 for (const ch of characters) {
