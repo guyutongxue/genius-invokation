@@ -246,5 +246,12 @@
   "27011": "Skill_A_00",
   "27012": "MonsterSkill_S_FungusRaptor_01",
   "27013": "MonsterSkill_E_FungusRaptor_01_HD",
-  "27014": "MonsterSkill_S_FungusRaptor_02"
+  "27014": "MonsterSkill_S_FungusRaptor_02",
+  "63011": "Skill_A_Catalyst_MD",
+  "63012": "MonsterSkill_S_LaSignoraHarbinger_01",
+  "63013": "MonsterSkill_E_LaSignoraHarbinger_01_HD",
+  "66013": "MonsterSkill_S_Dahaka_05",
+  "66023": "MonsterSkill_S_Dahaka_03",
+  "66033": "MonsterSkill_S_Dahaka_04",
+  "66043": "MonsterSkill_S_Dahaka_06"
 }
