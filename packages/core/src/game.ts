@@ -55,22 +55,6 @@ export interface PlayerConfig {
 }
 
 const INITIAL_ID = -500000;
-const INITIAL_PLAYER_STATE: PlayerState = {
-  activeCharacterId: 0,
-  characters: [],
-  piles: [],
-  hands: [],
-  dice: [],
-  combatStatuses: [],
-  summons: [],
-  supports: [],
-  declaredEnd: false,
-  canPlunging: false,
-  canCharged: false,
-  hasDefeated: false,
-  legendUsed: false,
-  skipNextTurn: false,
-};
 
 type ActionInfoWithNewState = ActionInfo & { newState: GameState };
 
@@ -102,7 +86,10 @@ class Game {
       skillLog: [],
       mutationLog: [],
       winner: null,
-      players: [INITIAL_PLAYER_STATE, INITIAL_PLAYER_STATE],
+      players: [
+        this.initPlayerState(0), 
+        this.initPlayerState(1)
+      ],
     };
     this.initPlayerCards(0);
     this.initPlayerCards(1);
@@ -128,6 +115,37 @@ class Game {
     return result;
   }
 
+  /** 获取玩家初始状态，主要是初始化“起始牌堆” */
+  private initPlayerState(who: 0 | 1): PlayerState {
+    const config = this.playerConfigs[who];
+    const initialPiles = (
+      config.noShuffle ? config.cards : shuffle(config.cards)
+    ).map((id) => {
+      const def = this.data.card.get(id);
+      if (typeof def === "undefined") {
+        throw new Error(`Unknown card id ${id}`);
+      }
+      return def;
+    });
+    return {
+      activeCharacterId: 0,
+      characters: [],
+      initialPiles,
+      piles: [],
+      hands: [],
+      dice: [],
+      combatStatuses: [],
+      summons: [],
+      supports: [],
+      declaredEnd: false,
+      canPlunging: false,
+      canCharged: false,
+      hasDefeated: false,
+      legendUsed: false,
+      skipNextTurn: false,
+    };
+  }
+  /** 初始化玩家的角色牌和牌堆 */
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
@@ -146,18 +164,13 @@ class Game {
         },
       });
     }
-    const cards = config.noShuffle ? config.cards : shuffle(config.cards);
-    for (const card of cards) {
-      const def = this.data.card.get(card);
-      if (typeof def === "undefined") {
-        throw new Error(`Unknown card id ${card}`);
-      }
+    for (const card of this._state.players[who].initialPiles) {
       this.mutate({
         type: "createCard",
         who,
         value: {
           id: 0,
-          definition: def,
+          definition: card,
         },
         target: "piles",
       });

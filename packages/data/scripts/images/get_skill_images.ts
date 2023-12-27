@@ -16,7 +16,7 @@ const skillImageMap = new Map<number, string>([
   [66023, "MonsterSkill_S_Dahaka_03"],
   [66033, "MonsterSkill_S_Dahaka_04"],
   [66043, "MonsterSkill_S_Dahaka_06"],
-] as const);
+]);
 
 for (const ch of characters) {
   const url = `https://api.ambr.top/v2/en/gcg/${ch.id}`;

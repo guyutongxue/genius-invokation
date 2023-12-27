@@ -49,6 +49,7 @@ export interface GameState {
 }
 
 export interface PlayerState {
+  readonly initialPiles: readonly CardDefinition[];
   readonly piles: readonly CardState[];
   readonly activeCharacterId: number;
   readonly hands: readonly CardState[];
