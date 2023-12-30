@@ -117,7 +117,7 @@ const enableStep = ref(false);
 </script>
 
 <template>
-  <div class="min-w-180 w-full flex flex-col gap-2">
+  <div class="min-w-180 flex flex-col gap-2">
     <div>
       <button :disabled="!enableStep" @click="emitter.emit('step')">
         Step

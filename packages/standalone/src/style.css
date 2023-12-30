@@ -18,6 +18,21 @@
 
 body {
   overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+  body {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
 }
 
 ul,
@@ -31,8 +46,8 @@ li {
 }
 
 #app {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
 }
