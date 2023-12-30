@@ -162,6 +162,12 @@ export class Player {
       giveUp: false,
       notify: ({ newState, events, mutations }) => {
         this.state.value = newState;
+        if (who === 0 && events.length > 0) {
+          console.log("EVENTS: ");
+          console.table(events);
+          // console.log("MUTATIONS: ");
+          // console.table(mutations);
+        }
       },
       rpc: (m, r) => this.rpc(m, r),
     };
@@ -207,11 +213,11 @@ export class Player {
             "Internal: state not prepared but roll event arrived",
           );
         }
-        this.view.value = 'reroll';
+        this.view.value = "reroll";
         const rerollIndexes = await new Promise<number[]>((resolve) =>
           this.emitter.once("rerolled", resolve),
         );
-        this.view.value = 'normal';
+        this.view.value = "normal";
         return {
           rerollIndexes,
         } as RpcResponse["rerollDice"];
@@ -222,11 +228,11 @@ export class Player {
         return res as RpcResponse["action"];
       }
       case "switchHands": {
-        this.view.value = 'switchHands';
+        this.view.value = "switchHands";
         const removedHands = await new Promise<number[]>((resolve) =>
           this.emitter.once("handSwitched", resolve),
         );
-        this.view.value = 'normal';
+        this.view.value = "normal";
         return { removedHands } as RpcResponse["switchHands"];
       }
       default:

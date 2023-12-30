@@ -108,9 +108,20 @@ export class EntityBuilder<
   }
 
   shield(count: number, max?: number) {
-    // TODO
     this.tags("shield");
-    return this.variable("shield", count, { recreateMax: max });
+    return this
+      .variable("shield", count, { recreateMax: max })
+      .on("beforeDamaged")
+      .do((c) => {
+        const shield = c.caller().state.variables.shield;
+        const currentValue = c.damageInfo.value;
+        const decreased = Math.min(shield, currentValue);
+        c.decreaseDamage(decreased);
+        c.addVariable("shield", -decreased);
+        if (shield <= currentValue) {
+          c.dispose();
+        }
+      });
   }
 
   tags(...tags: EntityTag[]): this {

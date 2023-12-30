@@ -11,7 +11,9 @@ import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   Aura,
+  DamageEvent,
   DiceType,
+  ElementalReactionEvent,
   Event,
   RpcMethod,
   RpcRequest,
@@ -32,10 +34,12 @@ import {
 import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionInfo,
+  DamageInfo,
   DefeatedModifierImpl,
   DeferredAction,
   ElementalTuningInfo,
   PlayCardInfo,
+  ReactionInfo,
   RollModifierImpl,
   SkillDefinitionBase,
   SkillInfo,
@@ -86,10 +90,7 @@ class Game {
       skillLog: [],
       mutationLog: [],
       winner: null,
-      players: [
-        this.initPlayerState(0), 
-        this.initPlayerState(1)
-      ],
+      players: [this.initPlayerState(0), this.initPlayerState(1)],
     };
     this.initPlayerCards(0);
     this.initPlayerCards(1);
@@ -118,15 +119,25 @@ class Game {
   /** 获取玩家初始状态，主要是初始化“起始牌堆” */
   private initPlayerState(who: 0 | 1): PlayerState {
     const config = this.playerConfigs[who];
-    const initialPiles = (
-      config.noShuffle ? config.cards : shuffle(config.cards)
-    ).map((id) => {
+    let initialPiles: readonly CardDefinition[] = config.cards.map((id) => {
       const def = this.data.card.get(id);
       if (typeof def === "undefined") {
         throw new Error(`Unknown card id ${id}`);
       }
       return def;
     });
+    if (!config.noShuffle) {
+      initialPiles = shuffle(initialPiles);
+    }
+    // 将秘传牌放在最前面
+    function compFn(def: CardDefinition) {
+      if (def.tags.includes("legend")) {
+        return 0;
+      } else {
+        return 1;
+      }
+    }
+    initialPiles = initialPiles.toSorted((a, b) => compFn(a) - compFn(b));
     return {
       activeCharacterId: 0,
       characters: [],
@@ -179,17 +190,20 @@ class Game {
 
   private notify(events: Event[]) {
     for (const i of [0, 1] as const) {
-      const player = this.io.players[i];
-      player.notify({
-        events,
-        mutations: this.state.mutationLog.flatMap((m) => {
-          const ex = exposeMutation(i, m.mutation);
-          return ex ? [ex] : [];
-        }),
-        newState: exposeState(i, this.state),
-      });
+      this.notifyOne(i, events);
     }
     this.mutate({ type: "clearMutationLog" });
+  }
+  private notifyOne(who: 0 | 1, events: Event[]) {
+    const player = this.io.players[who];
+    player.notify({
+      events,
+      mutations: this.state.mutationLog.flatMap((m) => {
+        const ex = exposeMutation(who, m.mutation);
+        return ex ? [ex] : [];
+      }),
+      newState: exposeState(who, this.state),
+    });
   }
 
   async start() {
@@ -235,7 +249,6 @@ class Game {
 
   private async initHands() {
     for (let who of [0, 1] as const) {
-      // TODO legend
       for (let i = 0; i < this.config.initialHands; i++) {
         this._state = drawCard(this._state, who, null);
       }
@@ -251,6 +264,11 @@ class Game {
     const [a0, a1] = await Promise.all(
       ([0, 1] as const).map(async (i) => {
         const player = this.state.players[i];
+        this.notifyOne(flip(i), [
+          {
+            type: "oppChoosingActive",
+          },
+        ]);
         const { active } = await this.rpc(i, "chooseActive", {
           candidates: player.characters.map((c) => c.id),
         });
@@ -382,6 +400,11 @@ class Game {
     } else {
       const actions = this.availableAction();
       console.log(actions);
+      this.notifyOne(flip(who), [
+        {
+          type: "oppAction",
+        },
+      ]);
       const { chosenIndex, cost } = await this.rpc(who, "action", {
         candidates: actions.map(exposeAction),
       });
@@ -691,7 +714,38 @@ class Game {
     );
     this._state = newState;
     if (oldState.players !== newState.players) {
-      this.notify([]); // TODO ?
+      this.notify([
+        {
+          type: "triggered",
+          id: skillInfo.caller.id,
+        },
+        // Damages
+        ...eventList
+          .filter(([n]) => n === "onDamage")
+          .map<DamageEvent>(([_, arg]) => {
+            const a = arg as DamageInfo;
+            return {
+              type: "damage",
+              damage: {
+                type: a.type,
+                value: a.value,
+                target: a.target.id,
+                log: "log" in arg ? (arg.log as string) : "",
+              },
+            };
+          }),
+        // Element reactions
+        ...eventList
+          .filter(([n]) => n === "onElementalReaction")
+          .map<ElementalReactionEvent>(([_, arg]) => {
+            const a = arg as ReactionInfo;
+            return {
+              type: "elementalReaction",
+              on: a.target.id,
+              reactionType: a.type,
+            };
+          }),
+      ]);
       await this.io.pause(this._state);
       const hasDefeated = await this.checkDefeated();
       if (hasDefeated) {
@@ -903,6 +957,11 @@ class Game {
           hasDefeated[who] = true;
           // 如果出战角色倒下，那么令用户选择新的出战角色
           if (ch.id === player.activeCharacterId) {
+            this.notifyOne(flip(who), [
+              {
+                type: "oppChoosingActive",
+              },
+            ]);
             activeDefeated[who] = this.rpc(who, "chooseActive", {
               candidates: this._state.players[who].characters
                 .filter((c) => c.variables.alive)

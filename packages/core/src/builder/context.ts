@@ -390,6 +390,13 @@ export class SkillContext<
     const damageModifier = new DamageModifierImpl(optDamageInfo);
     damageModifier.setCaller(this.callerState);
     if (reaction !== null) {
+      this.emitEvent("onElementalReaction", {
+        type: reaction,
+        via: this.skillInfo,
+        target: target.state,
+        damage,
+        state: this._state,
+      });
       const reactionDescription = REACTION_DESCRIPTION[reaction];
       const [newState, events] = reactionDescription(
         this._state,
@@ -602,8 +609,46 @@ export class SkillContext<
   }
 
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
-    // TODO
-    return [];
+    switch (strategy) {
+      case "seq": {
+        const newDice = this.player.dice.slice(0, count);
+        this.mutate({
+          type: "resetDice",
+          who: this.callerArea.who,
+          value: this.player.dice.slice(count),
+        });
+        return newDice;
+      }
+      case "diff": {
+        const collected: DiceType[] = [];
+        const dice = [...this.player.dice];
+        for (let i = 0; i < count; i++) {
+          let found = false;
+          for (let j = 0; j < dice.length; j++) {
+            // 万能骰子或者不重复的骰子
+            if (dice[j] === DiceType.Omni || !collected.includes(dice[j])) {
+              collected.push(dice[j]);
+              dice.splice(j, 1);
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            break;
+          }
+        }
+        this.mutate({
+          type: "resetDice",
+          who: this.callerArea.who,
+          value: dice,
+        });
+        return collected;
+      }
+      default: {
+        const _: never = strategy;
+        throw new Error(`Invalid strategy ${strategy}`);
+      }
+    }
   }
   generateDice(type: DiceType | "randomElement", count: number) {
     let insertedDice: DiceType[] = [];
@@ -633,7 +678,6 @@ export class SkillContext<
       who: this.callerArea.who,
       value: newDice,
     });
-    // TODO
   }
 
   createHandCard(cardId: CardHandle) {

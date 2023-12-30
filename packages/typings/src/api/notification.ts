@@ -57,10 +57,7 @@ export interface DamageData {
   type: DamageType;
   value: number;
   target: number;
-  log: {
-    source: number;
-    what: string;
-  }[];
+  log: string;
 }
 export interface DamageEvent {
   type: "damage";
@@ -71,10 +68,14 @@ export interface ElementalReactionEvent {
   on: number;
   reactionType: Reaction;
 }
-export interface UseSkillEvent {
-  type: "useSkill";
+export interface UseCommonSkillEvent {
+  type: "useCommonSkill";
   skill: number;
   who: 0 | 1;
+}
+export interface TriggeredEvent {
+  type: "triggered";
+  id: number;
 }
 export interface OtherEvent {
   type: "oppChoosingActive" | "oppAction"
@@ -82,7 +83,8 @@ export interface OtherEvent {
 export type Event =
   | DamageEvent
   | ElementalReactionEvent
-  | UseSkillEvent
+  | UseCommonSkillEvent
+  | TriggeredEvent
   | OtherEvent;
 
 export type NotificationMessage = {
