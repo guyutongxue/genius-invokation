@@ -10,7 +10,7 @@ import {
   WeaponCardTag,
 } from "../base/card";
 import { registerCard, registerSkill } from "./registry";
-import { SkillDescription } from "../base/skill";
+import { SkillDescription, SkillInfo } from "../base/skill";
 import {
   CharacterContext,
   ExtendedSkillContext,
@@ -117,7 +117,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
   /**
    * 添加“打出后生成出战状态”的操作。
-   * 
+   *
    * 此调用后，卡牌描述结束；接下来的 builder 将描述出战状态。
    * @param id 出战状态定义 id；默认与卡牌定义 id 相同
    * @returns 出战状态 builder
@@ -131,7 +131,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
   /**
    * 添加“打出后为某角色附着状态”的操作。
-   * 
+   *
    * 此调用后，卡牌描述结束；接下来的 builder 将描述状态。
    * @param target 要附着的角色（查询）
    * @param id 状态定义 id；默认与卡牌定义 id 相同
@@ -192,9 +192,19 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
+  protected override getExtension(
+    skillCtx: SkillContext<false, {}, "character">,
+    arg: number[],
+  ) {
+    const targets = arg.map((id) => getEntityById(skillCtx.state, id, true));
+    return {
+      targets: targets as any,
+    };
+  }
+
   private generateTargetList(
     state: GameState,
-    caller: CharacterState,
+    skillInfo: SkillInfo,
     known: number[],
     targetQuery: string[],
   ): number[][] {
@@ -202,28 +212,14 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return [[]];
     }
     const [first, ...rest] = targetQuery;
-    const ctx = this.getFakeSkillContext(state, caller, (ctx) =>
-      CardBuilder.cardTargetToExt(ctx, known),
-    );
+    const ctx = this.getContext(state, skillInfo, known);
     const ids = ctx.$$(first).map((c) => c.state.id);
     return ids.flatMap((id) =>
-      this.generateTargetList(state, caller, [...known, id], rest).map((l) => [
-        id,
-        ...l,
-      ]),
+      this.generateTargetList(state, skillInfo, [...known, id], rest).map(
+        (l) => [id, ...l],
+      ),
     );
   }
-
-  // 将卡牌目标 ID 列表转换为扩展点 `CardTargetExt`
-  private static readonly cardTargetToExt = (
-    skillCtx: SkillContext<boolean, any, "character">,
-    ids: number[],
-  ): CardTargetExt<any> => {
-    const targets = ids.map((id) => getEntityById(skillCtx.state, id, true));
-    return {
-      targets: targets as any,
-    };
-  };
 
   done(): CardHandle {
     const action: SkillDescription<CardTarget> = (
@@ -231,26 +227,21 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       skillInfo,
       { ids },
     ) => {
-      const innerAction: SkillDescription<void> = this.getAction((ctx) =>
-        CardBuilder.cardTargetToExt(ctx, ids),
-      );
-      return innerAction(state, skillInfo);
+      return this.getAction(ids)(state, skillInfo);
     };
-    const filterFn: PlayCardFilter = (state, caller, { ids }) => {
-      const ctx = this.getFakeSkillContext(state, caller, (ctx) =>
-        CardBuilder.cardTargetToExt(ctx, ids),
-      );
+    const filterFn: PlayCardFilter = (state, skillInfo, { ids }) => {
+      const ctx = this.getContext(state, skillInfo, ids);
       for (const filter of this._filters) {
-        if (!filter(ctx)) {
+        if (!filter(ctx as any)) {
           return false;
         }
       }
       return true;
     };
-    const targetGetter: PlayCardTargetGetter = (state, caller) => {
+    const targetGetter: PlayCardTargetGetter = (state, skillInfo) => {
       const targetIdsList = this.generateTargetList(
         state,
-        caller,
+        skillInfo,
         [],
         this._targetQueries,
       );

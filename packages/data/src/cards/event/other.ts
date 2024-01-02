@@ -1,4 +1,4 @@
-import { DamageType, DiceType, canSwitchDeductCost1, canSwitchFast, card, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, canSwitchDeductCost1, canSwitchFast, card, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -614,7 +614,7 @@ const PlungingStrike = card(332017)
 const HeavyStrike = card(332018)
   .costSame(1)
   .toStatus("my active")
-  .once("beforeSkillDamage", (c) => c.skillInfo.definition.skillType === "normal")
+  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
   .increaseDamage(1)
   .if((c) => c.player.canCharged)
   .increaseDamage(1)

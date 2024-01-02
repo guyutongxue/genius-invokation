@@ -605,6 +605,12 @@ class Game {
     // Cards
     for (const card of player.hands) {
       let allTargets: CardTarget[];
+      const skillInfo: SkillInfo = {
+        caller: activeCh,
+        definition: card.definition.skillDefinition,
+        fromCard: card,
+        requestBy: null,
+      };
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
         card.definition.type === "support" &&
@@ -612,10 +618,10 @@ class Game {
       ) {
         allTargets = player.supports.map((s) => ({ ids: [s.id] }));
       } else {
-        allTargets = (0, card.definition.getTarget)(this._state, activeCh);
+        allTargets = (0, card.definition.getTarget)(this._state, skillInfo);
       }
       for (const { ids } of allTargets) {
-        if ((0, card.definition.filter)(this._state, activeCh, { ids })) {
+        if ((0, card.definition.filter)(this._state, skillInfo, { ids })) {
           result.push({
             type: "playCard",
             who,
@@ -701,7 +707,7 @@ class Game {
     const stateToApplyFilter: GameState = arg?.state ?? this._state;
     if (
       "filter" in skillDef &&
-      !(0, skillDef.filter)(stateToApplyFilter, skillInfo.caller, arg)
+      !(0, skillDef.filter)(stateToApplyFilter, skillInfo, arg)
     ) {
       return [];
     }

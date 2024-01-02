@@ -14,7 +14,7 @@ type SkillResult = readonly [GameState, DeferredAction[]];
 export type SkillDescription<Arg> = (
   state: GameState,
   skillInfo: SkillInfo,
-  ctx: Arg,
+  arg: Arg,
 ) => SkillResult;
 
 export type CommonSkillType = "normal" | "elemental" | "burst";
@@ -403,7 +403,7 @@ export type DeferredAction = InSkillEventPayload | AsyncRequest;
 
 export type TriggeredSkillFilter<E extends EventNames> = (
   state: GameState,
-  caller: CharacterState | EntityState,
+  skillInfo: SkillInfo,
   arg: EventArg<E>,
 ) => boolean;
 
@@ -441,7 +441,7 @@ export function useSyncSkill<E extends keyof SyncEventMap>(
     }));
   for (const info of infos) {
     const arg = argFn(info.caller);
-    if ("filter" in info.definition && !(0, info.definition.filter)(state, info.caller, arg)) {
+    if ("filter" in info.definition && !(0, info.definition.filter)(state, info, arg)) {
       continue;
     }
     const desc = info.definition.action as SkillDescription<EventArg<E>>;
