@@ -6,7 +6,7 @@ import {
 } from "@gi-tcg/typings";
 import { DamageInfo, DamageModifier1, DamageModifierImpl, SkillDescription } from "../base/skill";
 import { SkillBuilder, enableShortcut } from "./skill";
-import { ExtendedSkillContext } from "./context";
+import { ExtendedSkillContext, SkillContext } from "./context";
 import { status, combatStatus, summon } from "./entity";
 import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
 
@@ -122,11 +122,14 @@ class ReactionBuilder extends SkillBuilder<DamageModifierR, any> {
   constructor(private reaction: R) {
     super(reaction);
   }
+  
+  protected override getExtension(skillCtx: SkillContext<false, {}, any>, arg?: any): DamageModifierR {
+    return arg;
+  }
 
   done() {
     REACTION_DESCRIPTION[this.reaction] = (st, id, d) => {
-      const action = this.getAction(() => d);
-      return action(st, id);
+      return this.getAction(d)(st, id);
     };
   }
 }
