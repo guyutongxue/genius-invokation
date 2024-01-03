@@ -112,7 +112,7 @@ function defineDescriptor<E extends EventNames>(
  * 2. 该技能不是准备技能触发的。
  * 3. Note: 通过使用卡牌（天赋等）触发的技能也适用。
  */
-function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
+function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
   if (
     skillInfo.definition.triggerOn === null &&
     skillInfo.definition.skillType !== "card"
@@ -130,6 +130,13 @@ function commonInitiativeSkillCheck(skillInfo: SkillInfo) {
     return true;
   }
   return false;
+}
+
+function isDebuff(state: CharacterState | EntityState): boolean {
+  return (
+    state.definition.type !== "character" &&
+    state.definition.tags.includes("debuff")
+  );
 }
 
 /**
@@ -153,7 +160,8 @@ const detailedEventDictionary = {
   beforeDealDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
     return (
       c.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, c.damageInfo.source.id, r)
+      checkRelative(c.state, c.damageInfo.source.id, r) &&
+      !isDebuff(c.damageInfo.source)
     );
   }),
   beforeSkillDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
@@ -230,10 +238,18 @@ export type DetailedEventExt<E extends DetailedEventNames> = EventExt<
 
 export type SkillInfoGetter = () => SkillInfo;
 
+declare const EXT_TYPE_HELPER: unique symbol;
+type ExtTypeHelperSymbolType = typeof EXT_TYPE_HELPER;
+declare const CALLER_TYPE_HELPER: unique symbol;
+type CallerTypeHelperSymbolType = typeof CALLER_TYPE_HELPER;
+
 export abstract class SkillBuilder<
   Ext extends object,
   CallerType extends ExEntityType,
 > {
+  [EXT_TYPE_HELPER]!: Ext;
+  [CALLER_TYPE_HELPER]!: CallerType;
+
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(protected readonly id: number) {}
   protected applyFilter = false;
@@ -374,9 +390,12 @@ export type BuilderWithShortcut<
   ) => BuilderWithShortcut<Ext, CallerType, Original>;
 };
 
-type ExtractTArgs<T> = T extends SkillBuilder<infer Ext, infer CallerType>
-  ? [Ext, CallerType]
-  : [never, never];
+type ExtractTArgs<T> = T extends {
+  [EXT_TYPE_HELPER]: infer Ext;
+  [CALLER_TYPE_HELPER]: infer CallerType;
+}
+  ? readonly [Ext, CallerType]
+  : readonly [never, never];
 
 const SHORTCUT_RETURN_VALUE: unique symbol = Symbol();
 
@@ -386,8 +405,9 @@ const SHORTCUT_RETURN_VALUE: unique symbol = Symbol();
  * 直接简写为
  * `.PROP(ARGS)`
  */
-export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
-  type TArgs = ExtractTArgs<T>;
+export function enableShortcut<T extends SkillBuilder<any, any>>(
+  original: T,
+): BuilderWithShortcut<ExtractTArgs<T>[0], ExtractTArgs<T>[1], T> {
   const proxy = new Proxy(original, {
     get(target, prop, receiver) {
       if (prop in target) {
@@ -400,7 +420,7 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(original: T) {
       }
     },
   });
-  return proxy as BuilderWithShortcut<TArgs[0], TArgs[1], T>;
+  return proxy as any;
 }
 
 interface UsageOptions extends VariableOptions {

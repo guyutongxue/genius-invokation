@@ -57,7 +57,9 @@ const ElectroHilichurlShooter = summon(303214)
  * 可用次数：2
  */
 const FatuiAmbusherCryoCicinMage = combatStatus(303216)
+  .tags("debuff")
   .on("skill")
+  .usage(2)
   .damage(DamageType.Cryo, 1, "my active")
   .done();
 
@@ -69,7 +71,9 @@ const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  * 可用次数：2
  */
 const FatuiAmbusherMirrorMaiden = combatStatus(303217)
+  .tags("debuff")
   .on("skill")
+  .usage(2)
   .damage(DamageType.Hydro, 1, "my active")
   .done();
 
@@ -81,7 +85,9 @@ const FatuiAmbusherMirrorMaiden = combatStatus(303217)
  * 可用次数：2
  */
 const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
+  .tags("debuff")
   .on("skill")
+  .usage(2)
   .damage(DamageType.Pyro, 1, "my active")
   .done();
 
@@ -93,7 +99,9 @@ const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
  * 可用次数：2
  */
 const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
+  .tags("debuff")
   .on("skill")
+  .usage(2)
   .damage(DamageType.Electro, 1, "my active")
   .done();
 

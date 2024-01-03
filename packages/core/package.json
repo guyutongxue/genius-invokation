@@ -9,7 +9,7 @@
   "scripts": {
     "generate_parser": "bunx --bun ohm generateBundles -et src/query/query.ohm",
     "build": "bun run generate_parser",
-    "check": "bunx tsc --noEmit"
+    "check": "bunx --bun tsc --noEmit"
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",

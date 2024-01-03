@@ -8,6 +8,7 @@ import { character, skill, status, combatStatus, card, DamageType, getReaction, 
  * 可用次数：2
  */
 const SeedOfSkandha: StatusHandle = status(117031)
+  .tags("debuff")
   .on("damaged", (c, e) =>
     getReaction(e) !== null && 
     c.of(e.target).hasStatus(SeedOfSkandha)

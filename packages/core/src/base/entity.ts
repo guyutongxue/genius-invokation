@@ -6,6 +6,7 @@ export type EntityTag =
   | "immuneControl" // 免疫冻结石化眩晕
   | "shield" // 护盾
   | "preparing" // 准备技能中
+  | "debuff" // 自伤（不计入增伤）
   | EquipmentTag
   | SupportTag;
 

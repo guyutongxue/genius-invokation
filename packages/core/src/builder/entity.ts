@@ -1,4 +1,4 @@
-import { DamageType } from "..";
+import { DamageType } from "@gi-tcg/typings";
 import { EntityType, EntityTag, EntityVariables } from "../base/entity";
 import {
   EventExt,
@@ -9,6 +9,7 @@ import {
 import { EntityContext } from "./context";
 import { registerEntity } from "./registry";
 import {
+  BuilderWithShortcut,
   DetailedEventExt,
   DetailedEventNames,
   SkillFilter,
@@ -17,6 +18,7 @@ import {
 } from "./skill";
 import { HandleT } from "./type";
 import { Draft } from "immer";
+import { isReactionSwirl } from "./reaction";
 
 export type ExtOfEntity<
   Vars extends string,
@@ -56,20 +58,23 @@ export class EntityBuilder<
   ) {}
 
   conflictWith(id: number) {
-    this.on("enter")
-      .do((c) => {
-        const ctx = c.$(`my any with definition id ${id}`);
-        if (ctx && ctx instanceof EntityContext) {
-          ctx.dispose();
-        }
-      });
+    this.on("enter").do((c) => {
+      const ctx = c.$(`my any with definition id ${id}`);
+      if (ctx && ctx instanceof EntityContext) {
+        ctx.dispose();
+      }
+    });
     return this;
   }
 
   on<E extends DetailedEventNames>(
     event: E,
     filter?: SkillFilter<ExtOfEntity<Vars, E>, CallerType>,
-  ) {
+  ): BuilderWithShortcut<
+    ExtOfEntity<Vars, E>,
+    CallerType,
+    TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>
+  > {
     return enableShortcut(
       new TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>(
         this.generateSkillId(),
@@ -109,8 +114,7 @@ export class EntityBuilder<
 
   shield(count: number, max?: number) {
     this.tags("shield");
-    return this
-      .variable("shield", count, { recreateMax: max })
+    return this.variable("shield", count, { recreateMax: max })
       .on("beforeDamaged")
       .do((c) => {
         const shield = c.caller().state.variables.shield;
@@ -145,14 +149,44 @@ export class EntityBuilder<
    *   .on("endPhase")
    *   .damage(type, value[, target])
    * ```
-   * 
+   *
    * Note: use `DamageType.Heal` as equivalent of `.heal`
-   * @param type 
-   * @param value 
-   * @returns 
+   * @param type
+   * @param value
+   * @returns
    */
-  endPhaseDamage(type: DamageType, value: number, target?: string) {
-    return this.hintIcon(type).hintText(`${value}`).on("endPhase").damage(type, value, target);
+  endPhaseDamage(
+    type: DamageType | "swirledAnemo",
+    value: number,
+    target?: string,
+  ): BuilderWithShortcut<
+    ExtOfEntity<Vars | "hintIcon", "endPhase">,
+    CallerType,
+    TriggeredSkillBuilder<
+      ExtOfEntity<Vars | "hintIcon", "endPhase">,
+      CallerType,
+      "endPhase",
+      Vars | "hintIcon"
+    >
+  > {
+    if (type === "swirledAnemo") {
+      return this.hintIcon(DamageType.Anemo)
+        .hintText(`${value}`)
+        .once("dealDamage", (c) => isReactionSwirl(c.eventArg) !== null)
+        .do((c) => {
+          const swirledType = isReactionSwirl(c.eventArg)!;
+          c.setVariable("hintIcon", swirledType);
+        })
+        .on("endPhase")
+        .do((c) => {
+          c.damage(c.caller().state.variables.hintIcon, value, target);
+        });
+    } else {
+      return this.hintIcon(type)
+        .hintText(`${value}`)
+        .on("endPhase")
+        .damage(type, value, target);
+    }
   }
 
   done(): HandleT<CallerType> {
