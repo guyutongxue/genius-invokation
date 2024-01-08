@@ -9,13 +9,15 @@ export interface ImageProps extends JSX.HTMLAttributes<HTMLDivElement> {
 
 const allAssets = new Map<number, Signal<string | null>>();
 
-function tryFetch(url: string, target: Signal<string | null>) {
+function tryFetch(url: string, target: Signal<string | null>, retry = 5) {
   fetch(url)
     .then((r) => r.blob())
     .then((blob) => {
       target.value = URL.createObjectURL(blob);
     })
-    .catch(() => setTimeout(() => tryFetch(url, target), 1000));
+    .catch(() =>
+      setTimeout(() => retry > 0 && tryFetch(url, target, retry - 1), 500),
+    );
 }
 
 function useImageAsset(imageId: number) {

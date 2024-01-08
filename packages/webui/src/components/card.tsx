@@ -5,15 +5,17 @@ import "./card.css";
 
 import { Image } from "./image";
 import { DiceCost } from "./dice_cost";
+import { usePlayerContext } from "./chessboard";
 
 export interface CardProps {
   data: CardData;
 }
 
 export function Card({ data }: CardProps) {
+  const { allClickable, allSelected } = usePlayerContext();
   const draggable = false; // TODO
-  const selected = false; // TODO
-  const clickable = false; // TODO
+  const selected = allSelected.includes(data.id);
+  const clickable = allClickable.includes(data.id);
   return (
     <div class="card-wrapper">
       {data.definitionId > 0 ? (
