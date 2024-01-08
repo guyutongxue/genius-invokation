@@ -1,15 +1,16 @@
 import type { CardData } from "@gi-tcg/typings";
-import clsx from "clsx";
 
 import "./Card.css";
 
 import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
 import { usePlayerContext } from "./Chessboard";
+import { Show } from "solid-js";
 
 export interface CardProps {
   data: CardData;
 }
+
 export function Card(props: CardProps) {
   const { allClickable, allSelected } = usePlayerContext();
   const draggable = false; // TODO
@@ -17,9 +18,15 @@ export function Card(props: CardProps) {
   const clickable = () => allClickable().includes(props.data.id);
   return (
     <div class="card-wrapper">
-      {props.data.definitionId > 0 ? (
+      <Show
+        when={props.data.definitionId > 0}
+        fallback={
+          <div class="h-full aspect-[7/12] rotated flex items-center justify-center bg-gray-600 b-gray-700 b-solid b-4 color-white rounded" />
+        }
+      >
         <div
-          class={clsx("card relative", { selected: selected() })}
+          class="card relative"
+          classList={{ selected: selected() }}
           // @click="clickable && emit('click', data.id)"
           // </div>@dragstart="dragstartHandler"
           // @dragend="dragendHandler"
@@ -27,9 +34,8 @@ export function Card(props: CardProps) {
         >
           <Image
             imageId={props.data.definitionId}
-            class={clsx("h-full rounded-lg shadow-lg", {
-              clickable: clickable(),
-            })}
+            class="h-full rounded-lg shadow-lg"
+            classList={{ clickable: clickable() }}
             title={`id = ${props.data.id}`}
           />
           <DiceCost
@@ -37,9 +43,7 @@ export function Card(props: CardProps) {
             cost={props.data.definitionCost}
           />
         </div>
-      ) : (
-        <div class="h-full aspect-[7/12] rotated flex items-center justify-center bg-gray-600 b-gray-700 b-solid b-4 color-white rounded" />
-      )}
+      </Show>
     </div>
   );
 }

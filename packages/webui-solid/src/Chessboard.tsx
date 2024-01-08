@@ -1,4 +1,11 @@
-import { JSX, createContext, createEffect, createSignal, useContext, Accessor } from "solid-js";
+import {
+  JSX,
+  createContext,
+  createEffect,
+  createSignal,
+  useContext,
+  Accessor,
+} from "solid-js";
 import type {
   ActionRequest,
   ActionResponse,
@@ -55,8 +62,10 @@ export function usePlayerContext(): PlayerContextValue {
   return useContext(PlayerContext)!;
 }
 
-
-export function createPlayer(who: 0 | 1, alternativeAction?: AgentActions): [PlayerIO, JSX.Element] {
+export function createPlayer(
+  who: 0 | 1,
+  alternativeAction?: AgentActions,
+): [PlayerIO, JSX.Element] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
   const action = alternativeAction ?? {

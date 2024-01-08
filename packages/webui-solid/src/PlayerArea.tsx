@@ -1,5 +1,5 @@
 import type { PlayerData } from "@gi-tcg/typings";
-import { For } from "solid-js";
+import { For, Match, Switch } from "solid-js";
 
 import { Summon, Support, Status } from "./Entity";
 import { CharacterArea } from "./CharacterArea";
@@ -32,15 +32,18 @@ export function PlayerArea(props: PlayerAreaProps) {
               {(ch) => (
                 <div class="flex flex-col">
                   <CharacterArea data={ch} />
-                  {ch.id === props.data.activeCharacterId ? (
-                    <div class="h-6 flex flex-row">
-                      <For each={props.data.combatStatuses}>
-                        {(st) => <Status data={st} />}
-                      </For>
-                    </div>
-                  ) : (
-                    props.opp && <div class="h-12" />
-                  )}
+                  <Switch>
+                    <Match when={ch.id === props.data.activeCharacterId}>
+                      <div class="h-6 flex flex-row">
+                        <For each={props.data.combatStatuses}>
+                          {(st) => <Status data={st} />}
+                        </For>
+                      </div>
+                    </Match>
+                    <Match when={props.opp}>
+                      <div class="h-12" />
+                    </Match>
+                  </Switch>
                 </div>
               )}
             </For>

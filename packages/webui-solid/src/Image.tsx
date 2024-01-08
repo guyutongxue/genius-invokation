@@ -1,4 +1,4 @@
-import { JSX, createResource, splitProps } from "solid-js";
+import { JSX, Show, createResource, splitProps } from "solid-js";
 
 import { getAssetPath } from "./config";
 
@@ -37,13 +37,16 @@ export function Image(props: ImageProps) {
       {...restProps}
       style={{ width: local.width ? `${local.width}px` : void 0 }}
     >
-      {url.state === "ready" ? (
+      <Show
+        when={url.state === "ready"}
+        fallback={
+          <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+            {local.imageId}
+          </div>
+        }
+      >
         <img src={url()} alt={`id = ${local.imageId}`} draggable={false} />
-      ) : (
-        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-          {local.imageId}
-        </div>
-      )}
+      </Show>
     </div>
   );
 }

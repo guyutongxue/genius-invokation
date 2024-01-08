@@ -1,5 +1,5 @@
 import type { DiceType } from "@gi-tcg/typings";
-import { Index, JSX, splitProps } from "solid-js";
+import { For, JSX, splitProps } from "solid-js";
 
 import { Dice } from "./Dice";
 
@@ -21,9 +21,9 @@ export function DiceCost(props: DiceCostProps) {
   const diceMap = () => [...diceToMap(local.cost).entries()];
   return (
     <div {...restProps}>
-      <Index each={diceMap()}>
-        {(kv) => <Dice type={kv()[0]} text={`${kv()[1]}`} size={30} />}
-      </Index>
+      <For each={diceMap()}>
+        {([type, count]) => <Dice type={type} text={`${count}`} size={30} />}
+      </For>
     </div>
   );
 }

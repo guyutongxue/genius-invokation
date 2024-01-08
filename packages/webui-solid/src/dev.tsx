@@ -33,8 +33,8 @@ const playerConfig1: PlayerConfig = {
 };
 
 function App() {
-  const [io0, cb0] = createPlayer(0);
-  const [io1, cb1] = createPlayer(1);
+  const [io0, ui0] = createPlayer(0);
+  const [io1, ui1] = createPlayer(1);
 
   const [pausing, pause, resume] = createWaitNotify();
 
@@ -55,8 +55,8 @@ function App() {
           Step
         </button>
       </div>
-      {cb0}
-      {cb1}
+      {ui0}
+      {ui1}
     </div>
   );
 }
