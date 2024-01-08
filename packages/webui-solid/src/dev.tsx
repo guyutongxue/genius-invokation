@@ -1,11 +1,11 @@
-import { render } from "preact";
-import { useEffect, useRef } from "preact/hooks";
-
-import "./index.css";
+/* @refresh reload */
+import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";
 import { GameIO, PlayerConfig, startGame } from "@gi-tcg/core";
-import { useCondVar, usePlayer, Chessboard } from "@gi-tcg/webui";
+
+import { createPlayer } from "./index";
+import { createWaitNotify } from "./utils";
 
 const playerConfig0: PlayerConfig = {
   characters: [1303, 1201, 1502],
@@ -33,34 +33,32 @@ const playerConfig1: PlayerConfig = {
 };
 
 function App() {
-  const [io0, props0] = usePlayer(0);
-  const [io1, props1] = usePlayer(1);
+  const [io0, cb0] = createPlayer(0);
+  const [io1, cb1] = createPlayer(1);
 
-  const [pausing, pause, resume] = useCondVar();
+  const [pausing, pause, resume] = createWaitNotify();
 
-  const io = useRef<GameIO>({
+  const io: GameIO = {
     pause,
     players: [io0, io1],
+  };
+  startGame({
+    data,
+    io,
+    playerConfigs: [playerConfig0, playerConfig1],
   });
-  useEffect(() => {
-    startGame({
-      data,
-      io: io.current,
-      playerConfigs: [playerConfig0, playerConfig1],
-    });
-  }, []);
 
   return (
     <div class="min-w-180 flex flex-col gap-2">
       <div>
-        <button disabled={!pausing} onClick={resume}>
+        <button disabled={!pausing()} onClick={resume}>
           Step
         </button>
       </div>
-      <Chessboard {...props0} />
-      <Chessboard {...props1} />
+      {cb0}
+      {cb1}
     </div>
   );
 }
 
-render(<App />, document.getElementById("app")!);
+render(() => <App />, document.getElementById("root")!);
