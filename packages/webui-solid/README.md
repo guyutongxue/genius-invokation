@@ -6,8 +6,8 @@
 import { createPlayer, createWaitNotify } from "@gi-tcg/webui-solid";
 
 function App() {
-  const [io0, ui0] = createPlayer(0);
-  const [io1, ui1] = createPlayer(1);
+  const [io0, Chessboard0] = createPlayer(0);
+  const [io1, Chessboard1] = createPlayer(1);
 
   const [pausing, pause, resume] = createWaitNotify();
 
@@ -26,8 +26,8 @@ function App() {
       <button disabled={!pausing()} onClick={resume}>
         Step
       </button>
-      {ui0}
-      {ui1}
+      <Chessboard0 />
+      <Chessboard1 />
     </>
   );
 }

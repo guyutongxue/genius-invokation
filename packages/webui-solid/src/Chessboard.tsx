@@ -5,6 +5,7 @@ import {
   createSignal,
   useContext,
   Accessor,
+  splitProps,
 } from "solid-js";
 import type {
   ActionRequest,
@@ -65,7 +66,10 @@ export function usePlayerContext(): PlayerContextValue {
 export function createPlayer(
   who: 0 | 1,
   alternativeAction?: AgentActions,
-): [PlayerIO, JSX.Element] {
+): [
+  io: PlayerIO,
+  Chessboard: (props: JSX.HTMLAttributes<HTMLDivElement>) => JSX.Element,
+] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
   const action = alternativeAction ?? {
@@ -122,20 +126,23 @@ export function createPlayer(
     // TODO
   };
 
-  const chessboard = (
-    <div class="gi-tcg-chessboard flex flex-col">
-      <PlayerContext.Provider
-        value={{
-          allClickable,
-          allSelected,
-          onClick,
-        }}
-      >
-        <PlayerArea data={stateData().players[1 - who]} opp={true} />
-        <PlayerArea data={stateData().players[who]} opp={false} />
-      </PlayerContext.Provider>
-    </div>
-  );
+  function Chessboard(props: JSX.HTMLAttributes<HTMLDivElement>) {
+    const [local, rest] = splitProps(props, ["class"]);
+    return (
+      <div class={`gi-tcg-chessboard flex flex-col ${local.class}`} {...rest}>
+        <PlayerContext.Provider
+          value={{
+            allClickable,
+            allSelected,
+            onClick,
+          }}
+        >
+          <PlayerArea data={stateData().players[1 - who]} opp={true} />
+          <PlayerArea data={stateData().players[who]} opp={false} />
+        </PlayerContext.Provider>
+      </div>
+    );
+  }
 
-  return [io, chessboard];
+  return [io, Chessboard];
 }

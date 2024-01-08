@@ -425,8 +425,13 @@ class Game {
       if (!checkDice(actionInfo.cost, cost)) {
         throw new Error(`Selected dice doesn't meet requirement`);
       }
-      if (actionInfo.type === "elementalTuning" && cost[0] === DiceType.Omni) {
-        throw new Error(`Elemental tunning cannot use omni dice`);
+      if (
+        actionInfo.type === "elementalTuning" &&
+        (cost[0] === DiceType.Omni || cost[0] === actionInfo.result)
+      ) {
+        throw new Error(
+          `Elemental tunning cannot use omni dice or active character's element`,
+        );
       }
       // 消耗骰子
       const operatingDice = [...player.dice];

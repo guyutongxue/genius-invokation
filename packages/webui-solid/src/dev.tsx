@@ -1,4 +1,5 @@
 /* @refresh reload */
+import "solid-devtools";
 import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";
@@ -33,8 +34,8 @@ const playerConfig1: PlayerConfig = {
 };
 
 function App() {
-  const [io0, ui0] = createPlayer(0);
-  const [io1, ui1] = createPlayer(1);
+  const [io0, Chessboard0] = createPlayer(0);
+  const [io1, Chessboard1] = createPlayer(1);
 
   const [pausing, pause, resume] = createWaitNotify();
 
@@ -55,8 +56,8 @@ function App() {
           Step
         </button>
       </div>
-      {ui0}
-      {ui1}
+      <Chessboard0 />
+      <Chessboard1 />
     </div>
   );
 }

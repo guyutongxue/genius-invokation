@@ -34,6 +34,7 @@ export interface UseSkillAction {
 export interface ElementalTuningAction {
   type: "elementalTuning";
   discardedCard: number;
+  target: DiceType;
 }
 
 export interface DeclareEndAction {

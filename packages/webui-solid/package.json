@@ -17,14 +17,15 @@
     "solid-js": "^1.8.7"
   },
   "devDependencies": {
-    "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
+    "@gi-tcg/typings": "workspace:*",
     "@typescript-eslint/eslint-plugin": "^6.18.0",
     "@typescript-eslint/parser": "^6.18.0",
     "eslint": "^8.56.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-solid": "^0.13.1",
+    "solid-devtools": "^0.29.2",
     "typescript": "^5.2.2",
     "unocss": "^0.58.3",
     "vite": "^5.0.10",

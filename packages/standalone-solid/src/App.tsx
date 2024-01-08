@@ -32,8 +32,8 @@ const playerConfig1: PlayerConfig = {
 };
 
 export function App() {
-  const [io0, cb0] = createPlayer(0);
-  const [io1, cb1] = createPlayer(1);
+  const [io0, Chessboard0] = createPlayer(0);
+  const [io1, Chessboard1] = createPlayer(1);
 
   const [pausing, pause, resume] = createWaitNotify();
 
@@ -54,8 +54,8 @@ export function App() {
           Step
         </button>
       </div>
-      {cb0}
-      {cb1}
+      <Chessboard0 />
+      <Chessboard1 />
     </div>
   );
 }

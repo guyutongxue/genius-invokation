@@ -246,6 +246,7 @@ export function exposeAction(action: ActionInfo): Action {
       return {
         type: "elementalTuning",
         discardedCard: action.card.id,
+        target: action.result,
       };
     case "declareEnd": {
       return {
