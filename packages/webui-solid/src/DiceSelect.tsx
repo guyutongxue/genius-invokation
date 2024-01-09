@@ -16,7 +16,7 @@ import { createStore, produce } from "solid-js/store";
 export interface DiceSelectProps {
   required?: readonly DiceType[];
   value: readonly DiceType[];
-  disabled?: readonly DiceType[];
+  disabledDice?: readonly DiceType[];
   confirmOnly?: boolean;
   disableConfirm?: boolean;
   onConfirm?: (dice: DiceType[]) => void;
@@ -29,7 +29,7 @@ export function DiceSelect(props: DiceSelectProps) {
       confirmOnly: false,
       disableConfirm: false,
       required: [] as readonly DiceType[],
-      disabled: [] as readonly DiceType[],
+      disabledDice: [] as readonly DiceType[],
     },
     props,
   );
@@ -50,7 +50,14 @@ export function DiceSelect(props: DiceSelectProps) {
       >
         <Index each={merged.value}>
           {(d, i) => (
-            <li onClick={() => !merged.confirmOnly && flipChosen(i)}>
+            <li
+              classList={{ "opacity-60": merged.disabledDice.includes(d()) }}
+              onClick={() =>
+                !merged.confirmOnly &&
+                !merged.disabledDice.includes(d()) &&
+                flipChosen(i)
+              }
+            >
               <Dice type={d()} selected={chosen[i]} size={40} />
             </li>
           )}

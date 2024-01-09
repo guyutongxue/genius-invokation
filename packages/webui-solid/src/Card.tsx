@@ -12,7 +12,7 @@ export interface CardProps {
 }
 
 export function Card(props: CardProps) {
-  const { allClickable, allSelected } = usePlayerContext();
+  const { allClickable, allSelected, onClick } = usePlayerContext();
   const draggable = false; // TODO
   const selected = () => allSelected().includes(props.data.id);
   const clickable = () => allClickable().includes(props.data.id);
@@ -27,7 +27,7 @@ export function Card(props: CardProps) {
         <div
           class="card relative"
           classList={{ selected: selected() }}
-          // @click="clickable && emit('click', data.id)"
+          onClick={() => clickable() && onClick(props.data.id)}
           // </div>@dragstart="dragstartHandler"
           // @dragend="dragendHandler"
           draggable={draggable}

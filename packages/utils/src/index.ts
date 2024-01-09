@@ -10,7 +10,10 @@ export function flip(who: 0 | 1): 0 | 1 {
  * @param dice 当前持有的骰子
  * @returns 布尔数组，被选择的骰子的下标对应元素设置为 `true`；如果无法选择则返回全 `false`。
  */
-export function chooseDice(required: readonly DiceType[], dice: readonly DiceType[]): boolean[] {
+export function chooseDice(
+  required: readonly DiceType[],
+  dice: readonly DiceType[],
+): boolean[] {
   const requiredMap = diceToMap(required);
   const OMNI_COUNT = dice.filter((d) => d === DiceType.Omni).length;
   const FAIL_RESULT = Array<boolean>(dice.length).fill(false);
@@ -24,21 +27,23 @@ export function chooseDice(required: readonly DiceType[], dice: readonly DiceTyp
       const thisCount = dice.filter((d) => d === dice[i]).length;
       if (thisCount + OMNI_COUNT < requiredCount) continue;
       for (
-        let j = dice.length - 1;
-        result.length < requiredCount && j >= 0;
+        let j = dice.length - 1, count = 0;
+        count < requiredCount && j >= 0;
         j--
       ) {
         if (dice[j] === DiceType.Omni || dice[j] === dice[i]) {
           result[j] = true;
+          count++;
         }
       }
       return result;
     }
     // ……或者只用万能骰子凑
     if (OMNI_COUNT >= requiredCount) {
-      for (let i = dice.length - 1; result.length < requiredCount; i--) {
+      for (let i = dice.length - 1, count = 0; count < requiredCount; i--) {
         if (dice[i] === DiceType.Omni) {
           result[i] = true;
+          count++;
         }
       }
       return result;
@@ -91,7 +96,10 @@ export function diceToMap(dice: readonly DiceType[]): Map<DiceType, number> {
  * @param chosen 已选择的骰子
  * @returns 是否符合要求
  */
-export function checkDice(required: readonly DiceType[], chosen: readonly DiceType[]): boolean {
+export function checkDice(
+  required: readonly DiceType[],
+  chosen: readonly DiceType[],
+): boolean {
   const requiredMap = diceToMap(required);
   // 如果需要同色骰子
   if (requiredMap.has(DiceType.Omni)) {

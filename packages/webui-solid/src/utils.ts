@@ -19,3 +19,16 @@ export function createWaitNotify<T = unknown>(): [
   };
   return [waiting, wait, notify];
 }
+
+export function groupBy<T, K>(list: T[], getKey: (item: T) => K): Map<K, T[]> {
+  return list.reduce((result, item) => {
+    const key = getKey(item);
+    const collection = result.get(key);
+    if (!collection) {
+      result.set(key, [item]);
+    } else {
+      collection.push(item);
+    }
+    return result;
+  }, new Map<K, T[]>());
+}

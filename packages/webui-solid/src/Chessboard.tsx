@@ -19,12 +19,15 @@ import type {
   RerollDiceResponse,
   StateData,
   SwitchHandsResponse,
+  PlayCardAction,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
 import { PlayerArea } from "./PlayerArea";
 import { DiceSelect, DiceSelectProps } from "./DiceSelect";
 import { createWaitNotify } from ".";
+import { createStore } from "solid-js/store";
+import { groupBy } from "./utils";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -47,6 +50,93 @@ const EMPTY_STATE_DATA: StateData = {
   winner: null,
   players: [EMPTY_PLAYER_DATA, EMPTY_PLAYER_DATA],
 };
+
+/** 点击“结束回合”的行为 ID */
+export const DECLARE_END_ID = 0;
+/**  将卡牌作为元素调和素材时的点击行为 ID*/
+export const ELEMENTAL_TUNING_OFFSET = -11072100;
+
+interface PCAWithIndex extends PlayCardAction {
+  index: number;
+}
+type PartialDiceSelectProp = Omit<DiceSelectProps, "value">;
+type DiceAndSelectionState = PartialDiceSelectProp & {
+  /** 是否可以进行骰子选择并确认（若置空需设置 DiceSelectProp.disableConfirm） */
+  actionIndex?: number;
+  clickable?: Map<number, DiceAndSelectionState>;
+  selected: number[];
+};
+
+/**
+ * 构建单个卡牌的状态转移图
+ * @param selected 标记为“已选择”的实体列表
+ * @param actions 待处理的事件列表
+ * @returns
+ */
+function oneCardState(
+  selected: number[],
+  actions: PCAWithIndex[],
+): DiceAndSelectionState {
+  switch (actions[0].targets.length) {
+    case 0: {
+      return {
+        actionIndex: actions[0].index,
+        required: actions[0].cost,
+        selected,
+      };
+    }
+    case 1: {
+      const clickable = new Map<number, DiceAndSelectionState>();
+      const root: DiceAndSelectionState = {
+        disableConfirm: true,
+        clickable,
+        selected,
+      };
+      for (const a of actions) {
+        clickable.set(a.targets[0], {
+          clickable,
+          actionIndex: a.index,
+          required: a.cost,
+          selected: [...selected, a.targets[0]],
+        });
+      }
+      return root;
+    }
+    default: {
+      const groupByFirst = groupBy(actions, (a) => a.targets[0]);
+      const clickable = new Map<number, DiceAndSelectionState>();
+      for (const [k, v] of groupByFirst) {
+        const newV = v.map((v) => ({
+          ...v,
+          targets: v.targets.toSpliced(0, 1),
+        }));
+        clickable.set(k, oneCardState([...selected, k], newV));
+      }
+      return {
+        disableConfirm: true,
+        clickable,
+        selected,
+      };
+    }
+  }
+}
+
+/**
+ * 构建所有使用卡牌的“可点击”状态转移图
+ * @param cardAction 所有使用卡牌的事件
+ * @returns 状态转移图的初始状态结点
+ */
+function buildAllCardClickState(
+  cardAction: PCAWithIndex[],
+): Map<number, DiceAndSelectionState> {
+  const grouped = groupBy(cardAction, (v) => v.card);
+  const result = new Map<number, DiceAndSelectionState>();
+  for (const [k, v] of grouped) {
+    result.set(k, oneCardState([k], v));
+  }
+  console.log(result);
+  return result;
+}
 
 export interface PlayerContextValue {
   allClickable: Accessor<number[]>;
@@ -83,7 +173,7 @@ export function createPlayer(
     DiceType[] | undefined
   >();
   const [diceSelectProp, setDiceSelectProp] =
-    createSignal<Omit<DiceSelectProps, "value">>();
+    createSignal<PartialDiceSelectProp>();
 
   const [allClickable, setClickable] = createSignal<number[]>([]);
   const [allSelected, setSelected] = createSignal<number[]>([]);
@@ -128,8 +218,121 @@ export function createPlayer(
       setSelected([]);
       return { active };
     },
-    onAction: async () => {
-      throw new Error("Not implemented");
+    onAction: async ({ candidates }) => {
+      const player = myPlayer();
+      const currentEnergy =
+        player.characters.find((ch) => ch.id === player.activeCharacterId)
+          ?.energy ?? 0;
+      const playCardInfos: PCAWithIndex[] = [];
+      const initialClickable = new Map<number, DiceAndSelectionState>();
+      for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
+        if (
+          "cost" in action &&
+          action.cost.filter((d) => d === 9 /* energy */).length > currentEnergy
+        ) {
+          // If energy does not meet the requirement, disable it.
+          continue;
+        }
+        switch (action.type) {
+          case "useSkill": {
+            initialClickable.set(action.skill, {
+              actionIndex: i,
+              required: action.cost,
+              selected: [],
+            });
+            break;
+          }
+          case "playCard": {
+            playCardInfos.push({ ...action, index: i });
+            break;
+          }
+          case "switchActive": {
+            initialClickable.set(action.active, {
+              actionIndex: i,
+              required: action.cost,
+              selected: [action.active],
+            });
+            break;
+          }
+          case "elementalTuning": {
+            initialClickable.set(
+              action.discardedCard + ELEMENTAL_TUNING_OFFSET,
+              {
+                actionIndex: i,
+                disabledDice: [8 /* omni */, action.target],
+                required: [0 /* void */],
+                selected: [action.discardedCard],
+              },
+            );
+            break;
+          }
+          case "declareEnd": {
+            initialClickable.set(0, {
+              actionIndex: i,
+              required: [],
+              selected: [],
+            });
+          }
+        }
+      }
+      for (const [k, v] of buildAllCardClickState(playCardInfos)) {
+        initialClickable.set(k, v);
+      }
+
+      let result: ActionResponse;
+      let state: DiceAndSelectionState = {
+        clickable: initialClickable,
+        selected: [],
+      };
+      for (;;) {
+        while (!("actionIndex" in state)) {
+          setClickable([...state.clickable?.keys() ?? []]);
+          setSelected([...state.selected]);
+          const val = await waitElementClick();
+          if (!state.clickable?.has(val)) {
+            throw new Error(`Click event emitted with an invalid value`);
+          }
+          state = state.clickable.get(val)!;
+        }
+        setClickable([...(state.clickable?.keys() ?? [])]);
+        setSelected([...state.selected]);
+        const chosenIndex = state.actionIndex!;
+
+        if (candidates[chosenIndex].type === "declareEnd") {
+          setClickable([]);
+          setSelected([]);
+          result = {
+            chosenIndex,
+            cost: [],
+          };
+          break;
+        }
+
+        setDiceSelectProp(state);
+        const r = await Promise.race([
+          waitDiceSelect(),
+          waitElementClick(),
+        ]);
+        if (Array.isArray(r) || typeof r === "undefined") {
+          setDiceSelectProp();
+          if (Array.isArray(r)) {
+            result = {
+              chosenIndex,
+              cost: r,
+            };
+            break;
+          }
+          state = {
+            clickable: initialClickable,
+            selected: [],
+          };
+        } else {
+          state = state.clickable!.get(r)!;
+        }
+      }
+      setClickable([]);
+      setSelected([]);
+      return result;
     },
   };
   const io: PlayerIO = {
@@ -162,7 +365,7 @@ export function createPlayer(
     }
   });
 
-  const myDice = () => stateData().players[who];
+  const myPlayer = () => stateData().players[who];
 
   function Chessboard(props: JSX.HTMLAttributes<HTMLDivElement>) {
     const [local, rest] = splitProps(props, ["class"]);
@@ -187,7 +390,7 @@ export function createPlayer(
               <div class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800">
                 <DiceSelect
                   {...props()}
-                  value={myDice().dice}
+                  value={myPlayer().dice}
                   onConfirm={notifyDiceSelected}
                   onCancel={() => notifyDiceSelected(void 0)}
                 />
