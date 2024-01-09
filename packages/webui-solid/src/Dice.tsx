@@ -1,7 +1,7 @@
 import type { DiceType } from "@gi-tcg/typings";
 
 import { Image } from "./Image";
-import { Match, Show, Switch, mergeProps } from "solid-js";
+import { Match, Show, Switch, createEffect, mergeProps } from "solid-js";
 
 export interface DiceProps {
   type: DiceType;
@@ -103,15 +103,16 @@ function DiceIcon(props: { size: number; type: DiceType; selected: boolean }) {
 }
 
 export function Dice(props: DiceProps) {
-  const merged = mergeProps(props, {
+  const merged = mergeProps({
     selected: false,
     size: 25,
     color: "normal" as DiceColor,
-  });
+  }, props);
+
   return (
     <div class="relative select-none flex items-center justify-center">
       <Show
-        when={props.type !== 9}
+        when={merged.type !== 9}
         fallback={<EnergyIcon size={merged.size} />}
       >
         <DiceIcon {...merged} />

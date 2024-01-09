@@ -6,8 +6,10 @@ import {
   useContext,
   Accessor,
   splitProps,
+  Show,
 } from "solid-js";
 import type {
+  DiceType,
   ActionRequest,
   ActionResponse,
   ChooseActiveRequest,
@@ -21,6 +23,8 @@ import type {
 import type { PlayerIO } from "@gi-tcg/core";
 
 import { PlayerArea } from "./PlayerArea";
+import { DiceSelect, DiceSelectProps } from "./DiceSelect";
+import { createWaitNotify } from ".";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -72,6 +76,19 @@ export function createPlayer(
 ] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
+  const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
+  const [handSwitching, waitHandSwitch, notifyHandSwitched] =
+    createWaitNotify<number[]>();
+  const [, waitDiceSelect, notifyDiceSelected] = createWaitNotify<
+    DiceType[] | undefined
+  >();
+  const [diceSelectProp, setDiceSelectProp] =
+    createSignal<Omit<DiceSelectProps, "value">>();
+
+  const [allClickable, setClickable] = createSignal<number[]>([]);
+  const [allSelected, setSelected] = createSignal<number[]>([]);
+  const [, waitElementClick, notifyElementClicked] = createWaitNotify<number>();
+
   const action = alternativeAction ?? {
     onNotify: () => {},
     onSwitchHands: async () => {
@@ -81,7 +98,35 @@ export function createPlayer(
       return { rerollIndexes: [] };
     },
     onChooseActive: async ({ candidates }) => {
-      return { active: candidates[0] };
+      let active = candidates[0];
+      setClickable([...candidates]);
+      setDiceSelectProp({
+        confirmOnly: true,
+        disableConfirm: true,
+      });
+      const nextProp = {
+        confirmOnly: true,
+      };
+      for (;;) {
+        const result = await Promise.race([
+          waitElementClick(),
+          waitDiceSelect(),
+        ]);
+        if (Array.isArray(result)) {
+          // 点击了确认
+          break;
+        }
+        if (typeof result === "number") {
+          // 点击了角色
+          active = result;
+          setSelected([active]);
+        }
+        setDiceSelectProp(nextProp);
+      }
+      setDiceSelectProp();
+      setClickable([]);
+      setSelected([]);
+      return { active };
     },
     onAction: async () => {
       throw new Error("Not implemented");
@@ -117,28 +162,38 @@ export function createPlayer(
     }
   });
 
-  const [allClickable, setClickable] = createSignal<number[]>([]);
-  const [allSelected, setSelected] = createSignal<number[]>([]);
-  const onClick = (id: number) => {
-    // if (clickable.includes(id)) {
-    //   setSelected([id]);
-    // }
-    // TODO
-  };
+  const myDice = () => stateData().players[who];
 
   function Chessboard(props: JSX.HTMLAttributes<HTMLDivElement>) {
     const [local, rest] = splitProps(props, ["class"]);
     return (
-      <div class={`gi-tcg-chessboard flex flex-col ${local.class}`} {...rest}>
+      <div
+        class={`gi-tcg-chessboard relative flex flex-col ${local.class}`}
+        {...rest}
+      >
         <PlayerContext.Provider
           value={{
             allClickable,
             allSelected,
-            onClick,
+            onClick: notifyElementClicked,
           }}
         >
-          <PlayerArea data={stateData().players[1 - who]} opp={true} />
-          <PlayerArea data={stateData().players[who]} opp={false} />
+          <div class="w-full b-solid b-black b-2 relative select-none">
+            <PlayerArea data={stateData().players[1 - who]} opp={true} />
+            <PlayerArea data={stateData().players[who]} opp={false} />
+          </div>
+          <Show when={diceSelectProp()}>
+            {(props) => (
+              <div class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800">
+                <DiceSelect
+                  {...props()}
+                  value={myDice().dice}
+                  onConfirm={notifyDiceSelected}
+                  onCancel={() => notifyDiceSelected(void 0)}
+                />
+              </div>
+            )}
+          </Show>
         </PlayerContext.Provider>
       </div>
     );

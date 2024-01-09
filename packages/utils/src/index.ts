@@ -8,11 +8,13 @@ export function flip(who: 0 | 1): 0 | 1 {
  * "智能"选骰算法（不检查能量）
  * @param required 卡牌或技能需要的骰子类型
  * @param dice 当前持有的骰子
- * @returns 可以选择的骰子序号（基于 `dice`）；如果无法选择则返回空数组
+ * @returns 布尔数组，被选择的骰子的下标对应元素设置为 `true`；如果无法选择则返回全 `false`。
  */
-export function chooseDice(required: readonly DiceType[], dice: readonly DiceType[]): number[] {
+export function chooseDice(required: readonly DiceType[], dice: readonly DiceType[]): boolean[] {
   const requiredMap = diceToMap(required);
   const OMNI_COUNT = dice.filter((d) => d === DiceType.Omni).length;
+  const FAIL_RESULT = Array<boolean>(dice.length).fill(false);
+  const result = [...FAIL_RESULT];
   // 需要同色骰子
   if (requiredMap.has(DiceType.Omni)) {
     const requiredCount = requiredMap.get(DiceType.Omni)!;
@@ -21,54 +23,55 @@ export function chooseDice(required: readonly DiceType[], dice: readonly DiceTyp
       if (dice[i] === DiceType.Omni) continue;
       const thisCount = dice.filter((d) => d === dice[i]).length;
       if (thisCount + OMNI_COUNT < requiredCount) continue;
-      const result: number[] = [];
       for (
         let j = dice.length - 1;
         result.length < requiredCount && j >= 0;
         j--
       ) {
-        if (dice[j] === DiceType.Omni || dice[j] === dice[i]) result.push(j);
+        if (dice[j] === DiceType.Omni || dice[j] === dice[i]) {
+          result[j] = true;
+        }
       }
       return result;
     }
     // ……或者只用万能骰子凑
     if (OMNI_COUNT >= requiredCount) {
-      const result: number[] = [];
       for (let i = dice.length - 1; result.length < requiredCount; i--) {
-        if (dice[i] === DiceType.Omni) result.push(i);
+        if (dice[i] === DiceType.Omni) {
+          result[i] = true;
+        }
       }
       return result;
     }
-    return [];
+    return FAIL_RESULT;
   }
-  const result: number[] = [];
   // 无色或者杂色
   next: for (const r of required) {
     if (r === DiceType.Energy) continue;
     if (r === DiceType.Void) {
       // 无色：任何骰子都可以
       for (let j = dice.length - 1; j >= 0; j--) {
-        if (!result.includes(j)) {
-          result.push(j);
+        if (!result[j]) {
+          result[j] = true;
           continue next;
         }
       }
     } else {
       // 对应颜色或者万能骰子
       for (let j = 0; j < dice.length; j++) {
-        if (!result.includes(j) && dice[j] === r) {
-          result.push(j);
+        if (!result[j] && dice[j] === r) {
+          result[j] = true;
           continue next;
         }
       }
       for (let j = 0; j < dice.length; j++) {
-        if (!result.includes(j) && dice[j] === DiceType.Omni) {
-          result.push(j);
+        if (!result[j] && dice[j] === DiceType.Omni) {
+          result[j] = true;
           continue next;
         }
       }
     }
-    return [];
+    return FAIL_RESULT;
   }
   return result;
 }

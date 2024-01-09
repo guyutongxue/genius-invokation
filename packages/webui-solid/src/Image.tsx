@@ -45,7 +45,7 @@ export function Image(props: ImageProps) {
           </div>
         }
       >
-        <img src={url()} alt={`id = ${local.imageId}`} draggable={false} />
+        <img class="w-full h-full object-cover" src={url()} alt={`id = ${local.imageId}`} draggable={false} />
       </Show>
     </div>
   );

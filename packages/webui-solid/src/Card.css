@@ -22,6 +22,7 @@
 
     .card {
       height: 100%;
+      aspect-ratio: 7/12;
       transform: rotate3d(0, 1, 0, 30deg);
       transition: all 0.3s;
     }
