@@ -247,8 +247,8 @@ export abstract class SkillBuilder<
   Ext extends object,
   CallerType extends ExEntityType,
 > {
-  [EXT_TYPE_HELPER]!: Ext;
-  [CALLER_TYPE_HELPER]!: CallerType;
+  declare [EXT_TYPE_HELPER]: Ext;
+  declare [CALLER_TYPE_HELPER]: CallerType;
 
   protected operations: SkillOperation<Ext, CallerType>[] = [];
   constructor(protected readonly id: number) {}
