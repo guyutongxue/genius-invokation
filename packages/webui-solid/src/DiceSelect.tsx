@@ -43,7 +43,7 @@ export function DiceSelect(props: DiceSelectProps) {
   };
   const isValid = () => checkDice(merged.required, chosenDice());
   return (
-    <div class="p-3 flex flex-col justify-between items-center">
+    <div class="h-full w-full p-3 flex flex-col justify-between items-center">
       <ul
         class="grid grid-cols-2"
         classList={{ "opacity-60": merged.confirmOnly }}

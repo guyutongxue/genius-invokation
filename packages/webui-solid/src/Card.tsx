@@ -1,4 +1,4 @@
-import type { CardData } from "@gi-tcg/typings";
+import type { CardData, DiceType } from "@gi-tcg/typings";
 
 import "./Card.css";
 
@@ -9,13 +9,15 @@ import { Show } from "solid-js";
 
 export interface CardProps {
   data: CardData;
+  realCost?: DiceType[];
 }
 
 export function Card(props: CardProps) {
-  const { allClickable, allSelected, onClick } = usePlayerContext();
+  const { allClickable, allSelected, allCosts, onClick } = usePlayerContext();
   const draggable = false; // TODO
-  const selected = () => allSelected().includes(props.data.id);
-  const clickable = () => allClickable().includes(props.data.id);
+  const selected = () => allSelected.includes(props.data.id);
+  const clickable = () => allClickable.includes(props.data.id);
+  const realCost = () => allCosts[props.data.id];
   return (
     <div class="card-wrapper">
       <Show
@@ -41,6 +43,7 @@ export function Card(props: CardProps) {
           <DiceCost
             class="absolute left-0 top-0 translate-x-[-50%] flex flex-col"
             cost={props.data.definitionCost}
+            realCost={realCost()}
           />
         </div>
       </Show>

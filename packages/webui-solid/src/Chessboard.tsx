@@ -7,6 +7,8 @@ import {
   Accessor,
   splitProps,
   Show,
+  Index,
+  For,
 } from "solid-js";
 import type {
   DiceType,
@@ -28,6 +30,10 @@ import { DiceSelect, DiceSelectProps } from "./DiceSelect";
 import { createWaitNotify } from ".";
 import { createStore } from "solid-js/store";
 import { groupBy } from "./utils";
+import { RerollView } from "./RerollView";
+import { Dice } from "./Dice";
+import { SwitchHandsView } from "./SwitchHandsView";
+import { SkillButton } from "./SkillButton";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -139,8 +145,9 @@ function buildAllCardClickState(
 }
 
 export interface PlayerContextValue {
-  allClickable: Accessor<number[]>;
-  allSelected: Accessor<number[]>;
+  allClickable: readonly number[];
+  allSelected: readonly number[];
+  allCosts: Readonly<Record<number, readonly DiceType[]>>;
   onClick: (id: number) => void;
 }
 
@@ -153,7 +160,7 @@ export interface AgentActions {
 }
 
 const PlayerContext = createContext<PlayerContextValue>();
-export function usePlayerContext(): PlayerContextValue {
+export function usePlayerContext(): Readonly<PlayerContextValue> {
   return useContext(PlayerContext)!;
 }
 
@@ -175,17 +182,19 @@ export function createPlayer(
   const [diceSelectProp, setDiceSelectProp] =
     createSignal<PartialDiceSelectProp>();
 
-  const [allClickable, setClickable] = createSignal<number[]>([]);
-  const [allSelected, setSelected] = createSignal<number[]>([]);
+  const [allClickable, setClickable] = createStore<number[]>([]);
+  const [allSelected, setSelected] = createStore<number[]>([]);
   const [, waitElementClick, notifyElementClicked] = createWaitNotify<number>();
+
+  const [allCosts, setAllCosts] = createStore<Record<number, readonly DiceType[]>>({});
 
   const action = alternativeAction ?? {
     onNotify: () => {},
     onSwitchHands: async () => {
-      return { removedHands: [] };
+      return { removedHands: await waitHandSwitch() };
     },
     onRerollDice: async () => {
-      return { rerollIndexes: [] };
+      return { rerollIndexes: await waitReroll() };
     },
     onChooseActive: async ({ candidates }) => {
       let active = candidates[0];
@@ -225,6 +234,7 @@ export function createPlayer(
           ?.energy ?? 0;
       const playCardInfos: PCAWithIndex[] = [];
       const initialClickable = new Map<number, DiceAndSelectionState>();
+      const newAllCosts: Record<number, readonly DiceType[]> = {};
       for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
         if (
           "cost" in action &&
@@ -240,10 +250,12 @@ export function createPlayer(
               required: action.cost,
               selected: [],
             });
+            newAllCosts[action.skill] = action.cost;
             break;
           }
           case "playCard": {
             playCardInfos.push({ ...action, index: i });
+            newAllCosts[action.card] = action.cost;
             break;
           }
           case "switchActive": {
@@ -252,6 +264,7 @@ export function createPlayer(
               required: action.cost,
               selected: [action.active],
             });
+            newAllCosts[action.active] = action.cost;
             break;
           }
           case "elementalTuning": {
@@ -278,6 +291,7 @@ export function createPlayer(
       for (const [k, v] of buildAllCardClickState(playCardInfos)) {
         initialClickable.set(k, v);
       }
+      setAllCosts(newAllCosts);
 
       let result: ActionResponse;
       let state: DiceAndSelectionState = {
@@ -286,7 +300,7 @@ export function createPlayer(
       };
       for (;;) {
         while (!("actionIndex" in state)) {
-          setClickable([...state.clickable?.keys() ?? []]);
+          setClickable([...(state.clickable?.keys() ?? [])]);
           setSelected([...state.selected]);
           const val = await waitElementClick();
           if (!state.clickable?.has(val)) {
@@ -309,10 +323,7 @@ export function createPlayer(
         }
 
         setDiceSelectProp(state);
-        const r = await Promise.race([
-          waitDiceSelect(),
-          waitElementClick(),
-        ]);
+        const r = await Promise.race([waitDiceSelect(), waitElementClick()]);
         if (Array.isArray(r) || typeof r === "undefined") {
           setDiceSelectProp();
           if (Array.isArray(r)) {
@@ -332,6 +343,7 @@ export function createPlayer(
       }
       setClickable([]);
       setSelected([]);
+      setAllCosts({});
       return result;
     },
   };
@@ -368,16 +380,17 @@ export function createPlayer(
   const myPlayer = () => stateData().players[who];
 
   function Chessboard(props: JSX.HTMLAttributes<HTMLDivElement>) {
-    const [local, rest] = splitProps(props, ["class"]);
+    const [local, restProps] = splitProps(props, ["class"]);
     return (
       <div
         class={`gi-tcg-chessboard relative flex flex-col ${local.class}`}
-        {...rest}
+        {...restProps}
       >
         <PlayerContext.Provider
           value={{
             allClickable,
             allSelected,
+            allCosts,
             onClick: notifyElementClicked,
           }}
         >
@@ -385,17 +398,40 @@ export function createPlayer(
             <PlayerArea data={stateData().players[1 - who]} opp={true} />
             <PlayerArea data={stateData().players[who]} opp={false} />
           </div>
-          <Show when={diceSelectProp()}>
-            {(props) => (
-              <div class="absolute right-0 top-0 h-full min-w-8 flex flex-col bg-yellow-800">
+          <div class="absolute right-0 top-0 z-10 h-full min-w-8 flex flex-col bg-yellow-800">
+            <Show
+              when={diceSelectProp()}
+              fallback={
+                <For each={myPlayer().dice}>{(d) => <Dice type={d} />}</For>
+              }
+            >
+              {(props) => (
                 <DiceSelect
                   {...props()}
                   value={myPlayer().dice}
                   onConfirm={notifyDiceSelected}
                   onCancel={() => notifyDiceSelected(void 0)}
                 />
-              </div>
-            )}
+              )}
+            </Show>
+          </div>
+          <div class="absolute right-10 bottom-0 z-5 flex flex-row gap-2">
+            <For each={myPlayer().skills}>
+              {(skill) => <SkillButton data={skill} />}
+            </For>
+          </div>
+          <Show when={rerolling()}>
+            <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
+              <RerollView dice={myPlayer().dice} onConfirm={notifyRerolled} />
+            </div>
+          </Show>
+          <Show when={handSwitching()}>
+            <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
+              <SwitchHandsView
+                hands={myPlayer().hands}
+                onConfirm={notifyHandSwitched}
+              />
+            </div>
           </Show>
         </PlayerContext.Provider>
       </div>

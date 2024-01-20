@@ -5,8 +5,8 @@ import { For, JSX, splitProps } from "solid-js";
 import { Dice } from "./Dice";
 
 interface DiceCostProps extends JSX.HTMLAttributes<HTMLDivElement> {
-  cost: DiceType[];
-  realCost?: DiceType[];
+  cost: readonly DiceType[];
+  realCost?: readonly DiceType[];
 }
 
 export function DiceCost(props: DiceCostProps) {

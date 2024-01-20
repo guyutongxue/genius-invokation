@@ -140,6 +140,7 @@ export function Dice(props: DiceProps) {
           <Image
             class="absolute"
             imageId={merged.type}
+            height={0.6 * merged.size}
             width={0.6 * merged.size}
           />
         </Match>

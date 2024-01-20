@@ -4,6 +4,7 @@ import { getAssetPath } from "./config";
 
 export interface ImageProps extends JSX.HTMLAttributes<HTMLDivElement> {
   imageId: number;
+  height?: number;
   width?: number;
 }
 
@@ -30,12 +31,15 @@ async function tryFetch(imageId: number, retry = 5): Promise<string> {
 }
 
 export function Image(props: ImageProps) {
-  const [local, restProps] = splitProps(props, ["imageId", "width"]);
+  const [local, restProps] = splitProps(props, ["imageId", "width", "height"]);
   const [url] = createResource(() => tryFetch(local.imageId));
   return (
     <div
       {...restProps}
-      style={{ width: local.width ? `${local.width}px` : void 0 }}
+      style={{
+        height: local.height ? `${local.height}px` : void 0,
+        width: local.width ? `${local.width}px` : void 0,
+      }}
     >
       <Show
         when={url.state === "ready"}
