@@ -1,11 +1,9 @@
-import { JSX, Show, createResource, splitProps } from "solid-js";
+import { ComponentProps, Show, createResource, splitProps } from "solid-js";
 
 import { getAssetPath } from "./config";
 
-export interface ImageProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface ImageProps extends ComponentProps<"img"> {
   imageId: number;
-  height?: number;
-  width?: number;
 }
 
 const allAssets = new Map<number, string>();
@@ -31,26 +29,29 @@ async function tryFetch(imageId: number, retry = 5): Promise<string> {
 }
 
 export function Image(props: ImageProps) {
-  const [local, restProps] = splitProps(props, ["imageId", "width", "height"]);
+  const [local, rest] = splitProps(props, ["imageId", "width", "height"]);
   const [url] = createResource(() => tryFetch(local.imageId));
+  const classNames = "flex items-center justify-center object-cover";
+  const innerProps = (): ComponentProps<"img"> => ({
+    ...rest,
+    class: `${rest.class ?? ""} ${classNames}`,
+    src: url(),
+    alt: `id = ${local.imageId}`,
+    draggable: "false",
+    style: {
+      background: url.state === "ready" ? void 0 : "#e5e7eb",
+      height: local.height ? `${local.height}px` : void 0,
+      width: local.width ? `${local.width}px` : void 0,
+    },
+  });
   return (
-    <div
-      {...restProps}
-      style={{
-        height: local.height ? `${local.height}px` : void 0,
-        width: local.width ? `${local.width}px` : void 0,
-      }}
+    <Show
+      when={url.state === "ready"}
+      fallback={
+        <div {...(innerProps() as ComponentProps<"div">)}>{local.imageId}</div>
+      }
     >
-      <Show
-        when={url.state === "ready"}
-        fallback={
-          <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-            {local.imageId}
-          </div>
-        }
-      >
-        <img class="w-full h-full object-cover" src={url()} alt={`id = ${local.imageId}`} draggable={false} />
-      </Show>
-    </div>
+      <img {...innerProps()} />
+    </Show>
   );
 }

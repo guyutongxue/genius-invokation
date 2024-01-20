@@ -74,7 +74,13 @@ export function CharacterArea(props: CharacterAreaProps) {
           <Image imageId={aura2()} class="h-5 w-5" />
         </Show>
       </div>
-      <div class="h-40 relative" title={`id=${props.data.id}`}>
+      <div
+        class="h-40 relative"
+        title={`id=${props.data.id}`}
+        classList={{
+          selected: selected(),
+        }}
+      >
         <div class="absolute z-10 left-[-15px] top-[-20px] flex items-center justify-center">
           <WaterDrop />
           <div class="absolute">{props.data.health}</div>
@@ -86,7 +92,6 @@ export function CharacterArea(props: CharacterAreaProps) {
           classList={{
             "brightness-50": props.data.defeated,
             clickable: clickable(),
-            selected: selected(),
           }}
           onClick={() => clickable() && onClick(props.data.id)}
         />

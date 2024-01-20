@@ -1,10 +1,10 @@
 import type { DiceType } from "@gi-tcg/typings";
 import { diceToMap } from "@gi-tcg/utils";
-import { For, JSX, splitProps } from "solid-js";
+import { ComponentProps, For, splitProps } from "solid-js";
 
 import { Dice } from "./Dice";
 
-interface DiceCostProps extends JSX.HTMLAttributes<HTMLDivElement> {
+interface DiceCostProps extends ComponentProps<"div"> {
   cost: readonly DiceType[];
   realCost?: readonly DiceType[];
 }

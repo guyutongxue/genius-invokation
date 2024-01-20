@@ -1,11 +1,8 @@
 import { DiceType } from "@gi-tcg/typings";
 import {
-  For,
   Index,
-  JSX,
   Show,
   createEffect,
-  createSignal,
   mergeProps,
 } from "solid-js";
 import { checkDice, chooseDice } from "@gi-tcg/utils";

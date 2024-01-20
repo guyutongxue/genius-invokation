@@ -9,6 +9,7 @@ import {
   Show,
   Index,
   For,
+  ComponentProps,
 } from "solid-js";
 import type {
   DiceType,
@@ -169,7 +170,7 @@ export function createPlayer(
   alternativeAction?: AgentActions,
 ): [
   io: PlayerIO,
-  Chessboard: (props: JSX.HTMLAttributes<HTMLDivElement>) => JSX.Element,
+  Chessboard: (props: ComponentProps<"div">) => JSX.Element,
 ] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
@@ -379,7 +380,7 @@ export function createPlayer(
 
   const myPlayer = () => stateData().players[who];
 
-  function Chessboard(props: JSX.HTMLAttributes<HTMLDivElement>) {
+  function Chessboard(props: ComponentProps<"div">) {
     const [local, restProps] = splitProps(props, ["class"]);
     return (
       <div

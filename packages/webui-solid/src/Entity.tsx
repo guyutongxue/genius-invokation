@@ -12,13 +12,17 @@ export function Summon(props: EntityProps) {
   const selected = () => allSelected.includes(props.data.id);
   const clickable = () => allClickable.includes(props.data.id);
   return (
-    <div class="relative h-15 w-15">
+    <div
+      class="relative h-15 w-15"
+      classList={{
+        selected: selected(),
+      }}
+    >
       <Image
         imageId={props.data.definitionId}
         class="h-full rounded-lg"
         classList={{
           clickable: clickable(),
-          selected: selected(),
         }}
         onClick={() => clickable() && onClick(props.data.id)}
       />
