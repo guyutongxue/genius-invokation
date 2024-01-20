@@ -4,10 +4,8 @@ import {
   createEffect,
   createSignal,
   useContext,
-  Accessor,
   splitProps,
   Show,
-  Index,
   For,
   ComponentProps,
 } from "solid-js";

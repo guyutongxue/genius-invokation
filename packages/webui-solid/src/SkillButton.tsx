@@ -1,6 +1,5 @@
-import { DiceType, SkillData } from "@gi-tcg/typings";
+import { SkillData } from "@gi-tcg/typings";
 import { Image } from "./Image";
-import { Index } from "solid-js";
 import { DiceCost } from "./DiceCost";
 import { usePlayerContext } from "./Chessboard";
 

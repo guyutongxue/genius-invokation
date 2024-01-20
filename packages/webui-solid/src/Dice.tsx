@@ -1,7 +1,7 @@
 import type { DiceType } from "@gi-tcg/typings";
 
 import { Image } from "./Image";
-import { Match, Show, Switch, createEffect, mergeProps } from "solid-js";
+import { Match, Show, Switch, mergeProps } from "solid-js";
 
 export interface DiceProps {
   type: DiceType;
