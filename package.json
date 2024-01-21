@@ -11,5 +11,9 @@
   ],
   "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",
   "scripts": {
+    "build": "bun build.js"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.0.2"
   }
 }

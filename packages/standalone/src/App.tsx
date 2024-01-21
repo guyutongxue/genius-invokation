@@ -1,7 +1,7 @@
 import data from "@gi-tcg/data";
 import { GameIO, PlayerConfig, startGame } from "@gi-tcg/core";
 
-import { createPlayer, createWaitNotify } from "@gi-tcg/webui-solid";
+import { createPlayer, createWaitNotify } from "@gi-tcg/webui-core";
 
 const playerConfig0: PlayerConfig = {
   characters: [1303, 1201, 1502],

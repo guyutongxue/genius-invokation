@@ -13,7 +13,8 @@ const apiTypingFiles = await glob(path.join(basePath, "*.ts"), {
 });
 
 const program = TJS.getProgramFromFiles(apiTypingFiles, {
-  strictNullChecks: true,
+  strict: true,
+  skipLibCheck: true,
 });
 
 const generator = TJS.buildGenerator(program, {
