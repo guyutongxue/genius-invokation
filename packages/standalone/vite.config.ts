@@ -1,13 +1,6 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import unoCss from "unocss/vite";
+import { defineConfig } from 'vite'
+import solid from 'vite-plugin-solid'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    watch: {
-      ignored: /.webp$/
-    }
-  },
-  plugins: [vue(), unoCss()],
-});
+  plugins: [solid()],
+})

@@ -1,8 +1,12 @@
-import { DiceType } from "@gi-tcg/typings";
+import type { DiceType } from "@gi-tcg/typings";
 
 export function flip(who: 0 | 1): 0 | 1 {
   return (1 - who) as 0 | 1;
 }
+
+const VOID = 0;
+const OMNI = 8;
+const ENERGY = 9;
 
 /**
  * "智能"选骰算法（不检查能量）
@@ -15,15 +19,15 @@ export function chooseDice(
   dice: readonly DiceType[],
 ): boolean[] {
   const requiredMap = diceToMap(required);
-  const OMNI_COUNT = dice.filter((d) => d === DiceType.Omni).length;
+  const OMNI_COUNT = dice.filter((d) => d === OMNI).length;
   const FAIL_RESULT = Array<boolean>(dice.length).fill(false);
   const result = [...FAIL_RESULT];
   // 需要同色骰子
-  if (requiredMap.has(DiceType.Omni)) {
-    const requiredCount = requiredMap.get(DiceType.Omni)!;
+  if (requiredMap.has(OMNI)) {
+    const requiredCount = requiredMap.get(OMNI)!;
     // 杂色骰子+万能骰子，凑够同色
     for (let i = dice.length - 1; i >= 0; i--) {
-      if (dice[i] === DiceType.Omni) continue;
+      if (dice[i] === OMNI) continue;
       const thisCount = dice.filter((d) => d === dice[i]).length;
       if (thisCount + OMNI_COUNT < requiredCount) continue;
       for (
@@ -31,7 +35,7 @@ export function chooseDice(
         count < requiredCount && j >= 0;
         j--
       ) {
-        if (dice[j] === DiceType.Omni || dice[j] === dice[i]) {
+        if (dice[j] === OMNI || dice[j] === dice[i]) {
           result[j] = true;
           count++;
         }
@@ -41,7 +45,7 @@ export function chooseDice(
     // ……或者只用万能骰子凑
     if (OMNI_COUNT >= requiredCount) {
       for (let i = dice.length - 1, count = 0; count < requiredCount; i--) {
-        if (dice[i] === DiceType.Omni) {
+        if (dice[i] === OMNI) {
           result[i] = true;
           count++;
         }
@@ -52,8 +56,8 @@ export function chooseDice(
   }
   // 无色或者杂色
   next: for (const r of required) {
-    if (r === DiceType.Energy) continue;
-    if (r === DiceType.Void) {
+    if (r === ENERGY) continue;
+    if (r === VOID) {
       // 无色：任何骰子都可以
       for (let j = dice.length - 1; j >= 0; j--) {
         if (!result[j]) {
@@ -70,7 +74,7 @@ export function chooseDice(
         }
       }
       for (let j = 0; j < dice.length; j++) {
-        if (!result[j] && dice[j] === DiceType.Omni) {
+        if (!result[j] && dice[j] === OMNI) {
           result[j] = true;
           continue next;
         }
@@ -102,31 +106,31 @@ export function checkDice(
 ): boolean {
   const requiredMap = diceToMap(required);
   // 如果需要同色骰子
-  if (requiredMap.has(DiceType.Omni)) {
-    const requiredCount = requiredMap.get(DiceType.Omni)!;
+  if (requiredMap.has(OMNI)) {
+    const requiredCount = requiredMap.get(OMNI)!;
     // 检查个数
     if (requiredCount !== chosen.length) return false;
     const chosenMap = new Set<DiceType>(chosen);
     // 完全同色，或者只有杂色+万能两种骰子
     return (
       chosenMap.size === 1 ||
-      (chosenMap.size === 2 && chosenMap.has(DiceType.Omni))
+      (chosenMap.size === 2 && chosenMap.has(OMNI))
     );
   }
   // 否则逐个检查杂色/无色
   const chosen2 = [...chosen];
   let voidCount = 0;
   for (const r of required) {
-    if (r === DiceType.Energy) continue;
+    if (r === ENERGY) continue;
     // 记录无色的个数，最后检查剩余个数是否一致
-    if (r === DiceType.Void) {
+    if (r === VOID) {
       voidCount++;
       continue;
     }
     // 杂色：找到一个删一个
     const index = chosen2.indexOf(r);
     if (index === -1) {
-      const omniIndex = chosen2.indexOf(DiceType.Omni);
+      const omniIndex = chosen2.indexOf(OMNI);
       if (omniIndex === -1) return false;
       chosen2.splice(omniIndex, 1);
       continue;
