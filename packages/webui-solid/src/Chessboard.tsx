@@ -148,6 +148,7 @@ export interface PlayerContextValue {
   allSelected: readonly number[];
   allCosts: Readonly<Record<number, readonly DiceType[]>>;
   onClick: (id: number) => void;
+  setPrepareTuning: (value: boolean) => void;
 }
 
 export interface AgentActions {
@@ -166,10 +167,7 @@ export function usePlayerContext(): Readonly<PlayerContextValue> {
 export function createPlayer(
   who: 0 | 1,
   alternativeAction?: AgentActions,
-): [
-  io: PlayerIO,
-  Chessboard: (props: ComponentProps<"div">) => JSX.Element,
-] {
+): [io: PlayerIO, Chessboard: (props: ComponentProps<"div">) => JSX.Element] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
   const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
@@ -185,7 +183,10 @@ export function createPlayer(
   const [allSelected, setSelected] = createStore<number[]>([]);
   const [, waitElementClick, notifyElementClicked] = createWaitNotify<number>();
 
-  const [allCosts, setAllCosts] = createStore<Record<number, readonly DiceType[]>>({});
+  const [allCosts, setAllCosts] = createStore<
+    Record<number, readonly DiceType[]>
+  >({});
+  const [prepareTuning, setPrepareTuning] = createSignal(false);
 
   const action = alternativeAction ?? {
     onNotify: () => {},
@@ -378,6 +379,24 @@ export function createPlayer(
 
   const myPlayer = () => stateData().players[who];
 
+  const tuningDragEnter = (e: DragEvent) => {
+    e.preventDefault();
+  };
+  const tuningDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = "move";
+  };
+  const tuningDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+  };
+  const tuningDrop = (e: DragEvent) => {
+    e.preventDefault();
+    const data = e.dataTransfer!.getData("text/plain");
+    const cardId = parseInt(data);
+    notifyElementClicked(cardId + ELEMENTAL_TUNING_OFFSET);
+    setPrepareTuning(false);
+  };
+
   function Chessboard(props: ComponentProps<"div">) {
     const [local, restProps] = splitProps(props, ["class"]);
     return (
@@ -391,11 +410,42 @@ export function createPlayer(
             allSelected,
             allCosts,
             onClick: notifyElementClicked,
+            setPrepareTuning,
           }}
         >
           <div class="w-full b-solid b-black b-2 relative select-none">
             <PlayerArea data={stateData().players[1 - who]} opp={true} />
             <PlayerArea data={stateData().players[who]} opp={false} />
+          </div>
+          <div class="absolute left-0 top-[50%] translate-y-[-50%]">
+            <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
+              <Dice
+                type={8 /* omni */}
+                text={`${stateData().players[1 - who].dice.length}`}
+                size={32}
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <div
+                class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
+                classList={{
+                  "bg-yellow-300": stateData().currentTurn === who,
+                  "bg-blue-200": stateData().currentTurn !== who,
+                }}
+              >
+                <div class="text-lg">{stateData().roundNumber}</div>
+                <div class="text-sm text-gray">{stateData().phase}</div>
+              </div>
+              <Show when={allClickable.includes(DECLARE_END_ID)}>
+                <button
+                  class="btn btn-green-500"
+                  v-if="clickable.includes(DECLARE_END_ID)"
+                  onClick={() => notifyElementClicked(DECLARE_END_ID)}
+                >
+                  结束回合
+                </button>
+              </Show>
+            </div>
           </div>
           <div class="absolute right-0 top-0 z-10 h-full min-w-8 flex flex-col bg-yellow-800">
             <Show
@@ -418,6 +468,21 @@ export function createPlayer(
             <For each={myPlayer().skills}>
               {(skill) => <SkillButton data={skill} />}
             </For>
+          </div>
+          <div
+            class="absolute right-0 top-0 h-full z-10 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
+            classList={{
+              invisible: !prepareTuning(),
+              "w-0": !prepareTuning(),
+              "w-40": prepareTuning(),
+            }}
+            onDragEnter={tuningDragEnter}
+            onDragOver={tuningDragOver}
+            onDragLeave={tuningDragLeave}
+            onDrop={tuningDrop}
+          >
+            <span>拖动到此处</span>
+            <span>以元素调和</span>
           </div>
           <Show when={rerolling()}>
             <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">

@@ -1,10 +1,5 @@
 import { DiceType } from "@gi-tcg/typings";
-import {
-  Index,
-  Show,
-  createEffect,
-  mergeProps,
-} from "solid-js";
+import { Index, Show, createEffect, mergeProps } from "solid-js";
 import { checkDice, chooseDice } from "@gi-tcg/utils";
 
 import { Dice } from "./Dice";
@@ -32,7 +27,11 @@ export function DiceSelect(props: DiceSelectProps) {
   );
   const [chosen, setChosen] = createStore<boolean[]>([]);
   createEffect(() => {
-    setChosen(chooseDice(merged.required, merged.value));
+    const autoChosen = chooseDice(
+      merged.required,
+      merged.value.filter((d) => !merged.disabledDice.includes(d)),
+    );
+    setChosen(autoChosen);
   });
   const chosenDice = () => props.value.filter((_, i) => chosen[i]);
   const flipChosen = (index: number) => {

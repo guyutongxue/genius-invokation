@@ -4,7 +4,7 @@ import "./Card.css";
 
 import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
-import { usePlayerContext } from "./Chessboard";
+import { ELEMENTAL_TUNING_OFFSET, usePlayerContext } from "./Chessboard";
 import { Show } from "solid-js";
 
 export interface CardProps {
@@ -13,11 +13,22 @@ export interface CardProps {
 }
 
 export function Card(props: CardProps) {
-  const { allClickable, allSelected, allCosts, onClick } = usePlayerContext();
-  const draggable = false; // TODO
+  const { allClickable, allSelected, allCosts, onClick, setPrepareTuning } =
+    usePlayerContext();
+  const draggable = () =>
+    allClickable.includes(props.data.id + ELEMENTAL_TUNING_OFFSET);
   const selected = () => allSelected.includes(props.data.id);
   const clickable = () => allClickable.includes(props.data.id);
   const realCost = () => allCosts[props.data.id];
+
+  const dragStart = (e: DragEvent) => {
+    e.dataTransfer!.setData("text/plain", props.data.id.toString());
+    setPrepareTuning(true);
+  };
+  const dragEnd = () => {
+    setPrepareTuning(false);
+  }
+
   return (
     <div class="card-wrapper">
       <Show
@@ -32,7 +43,9 @@ export function Card(props: CardProps) {
           onClick={() => clickable() && onClick(props.data.id)}
           // </div>@dragstart="dragstartHandler"
           // @dragend="dragendHandler"
-          draggable={draggable}
+          draggable={draggable()}
+          onDragStart={dragStart}
+          onDragEnd={dragEnd}
         >
           <Image
             imageId={props.data.definitionId}
