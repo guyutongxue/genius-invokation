@@ -12,6 +12,7 @@ import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   Aura,
   DamageEvent,
+  DamageType,
   DiceType,
   ElementalReactionEvent,
   Event,
@@ -38,6 +39,7 @@ import {
   DefeatedModifierImpl,
   DeferredAction,
   ElementalTuningInfo,
+  HealInfo,
   PlayCardInfo,
   ReactionInfo,
   RollModifierImpl,
@@ -732,14 +734,14 @@ class Game {
         },
         // Damages
         ...eventList
-          .filter(([n]) => n === "onDamage")
+          .filter(([n]) => n === "onDamage" || n === "onHeal")
           .map<DamageEvent>(([_, arg]) => {
-            const a = arg as DamageInfo;
+            const a = arg as DamageInfo | HealInfo;
             return {
               type: "damage",
               damage: {
-                type: a.type,
-                value: a.value,
+                type: "type" in a ? a.type : DamageType.Heal,
+                value: "value" in a ? a.value : a.finalValue,
                 target: a.target.id,
                 log: "log" in arg ? (arg.log as string) : "",
               },

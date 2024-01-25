@@ -8,9 +8,10 @@ export interface EntityProps {
 }
 
 export function Summon(props: EntityProps) {
-  const { allSelected, allClickable, onClick } = usePlayerContext();
+  const { allSelected, allClickable, focusing, onClick } = usePlayerContext();
   const selected = () => allSelected.includes(props.data.id);
   const clickable = () => allClickable.includes(props.data.id);
+  const focused = () => focusing() === props.data.id;
   return (
     <div
       class="relative h-15 w-15"
@@ -20,9 +21,10 @@ export function Summon(props: EntityProps) {
     >
       <Image
         imageId={props.data.definitionId}
-        class="h-full rounded-lg"
+        class="h-full w-full rounded-lg"
         classList={{
           clickable: clickable(),
+          focused: focused(),
         }}
         onClick={() => clickable() && onClick(props.data.id)}
       />
@@ -38,9 +40,17 @@ export function Summon(props: EntityProps) {
 export { Summon as Support };
 
 export function Status(props: EntityProps) {
+  const { focusing } = usePlayerContext();
+  const focused = () => focusing() === props.data.id;
   return (
     <div class="relative w-5">
-      <Image imageId={props.data.definitionId} class="h-5" />
+      <Image
+        imageId={props.data.definitionId}
+        class="h-5"
+        classList={{
+          focused: focused(),
+        }}
+      />
       <Show when={props.data.variable !== null}>
         <div class="absolute bottom-0 right-0 text-xs">
           {props.data.variable}

@@ -4,6 +4,7 @@ import { Status } from "./Entity";
 // import { usePlayerContext } from "./chessboard";
 import { For, Index, Show } from "solid-js";
 import { usePlayerContext } from "./Chessboard";
+import { DICE_COLOR } from "./Dice";
 
 export interface CharacterAreaProps {
   data: CharacterData;
@@ -59,9 +60,12 @@ function WaterDrop() {
 }
 
 export function CharacterArea(props: CharacterAreaProps) {
-  const { allSelected, allClickable, onClick } = usePlayerContext();
+  const { allSelected, allClickable, allDamages, focusing, onClick } =
+    usePlayerContext();
   const selected = () => allSelected.includes(props.data.id);
   const clickable = () => allClickable.includes(props.data.id);
+  const damaged = () => allDamages.find((d) => d.target === props.data.id);
+  const focused = () => focusing() === props.data.id;
   const aura1 = () => props.data.aura & 0xf;
   const aura2 = () => (props.data.aura >> 4) & 0xf;
   return (
@@ -92,6 +96,7 @@ export function CharacterArea(props: CharacterAreaProps) {
           classList={{
             "brightness-50": props.data.defeated,
             clickable: clickable(),
+            focused: focused(),
           }}
           onClick={() => clickable() && onClick(props.data.id)}
         />
@@ -102,6 +107,21 @@ export function CharacterArea(props: CharacterAreaProps) {
           <div class="absolute z-10 top-[50%] left-0 w-full text-center text-5xl font-bold translate-y-[-50%] font-[var(--font-emoji)]">
             &#9760;
           </div>
+        </Show>
+        <Show when={damaged()}>
+          {(damaged) => (
+            <div
+              class="absolute z-5 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[9999px] w-20 h-20 bg-white b-2 b-dashed text-5xl flex items-center justify-center"
+              style={{
+                "border-color": `var(--c-${DICE_COLOR[damaged().type]})`,
+                color: `var(--c-${DICE_COLOR[damaged().type]})`,
+              }}
+              title={damaged().log}
+            >
+              {damaged().type === 9 /* heal */ ? "+" : "-"}
+              {damaged().value}
+            </div>
+          )}
         </Show>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   Show,
   For,
   ComponentProps,
+  Accessor,
 } from "solid-js";
 import type {
   DiceType,
@@ -21,6 +22,7 @@ import type {
   StateData,
   SwitchHandsResponse,
   PlayCardAction,
+  DamageData,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -147,6 +149,8 @@ export interface PlayerContextValue {
   allClickable: readonly number[];
   allSelected: readonly number[];
   allCosts: Readonly<Record<number, readonly DiceType[]>>;
+  allDamages: readonly DamageData[];
+  focusing: Accessor<number | null>;
   onClick: (id: number) => void;
   setPrepareTuning: (value: boolean) => void;
 }
@@ -181,6 +185,8 @@ export function createPlayer(
 
   const [allClickable, setClickable] = createStore<number[]>([]);
   const [allSelected, setSelected] = createStore<number[]>([]);
+  const [allDamages, setAllDamages] = createStore<DamageData[]>([]);
+  const [focusing, setFocusing] = createSignal<number | null>(null);
   const [, waitElementClick, notifyElementClicked] = createWaitNotify<number>();
 
   const [allCosts, setAllCosts] = createStore<
@@ -189,7 +195,20 @@ export function createPlayer(
   const [prepareTuning, setPrepareTuning] = createSignal(false);
 
   const action = alternativeAction ?? {
-    onNotify: () => {},
+    onNotify: ({ events }) => {
+      let currentFocusing: number | null = null;
+      const currentDamages: DamageData[] = [];
+      for (const event of events) {
+        if (event.type === "damage") {
+          currentDamages.push(event.damage);
+        }
+        if (event.type === "triggered") {
+          currentFocusing = event.id;
+        }
+      }
+      setAllDamages(currentDamages);
+      setFocusing(currentFocusing);
+    },
     onSwitchHands: async () => {
       return { removedHands: await waitHandSwitch() };
     },
@@ -409,6 +428,8 @@ export function createPlayer(
             allClickable,
             allSelected,
             allCosts,
+            allDamages,
+            focusing,
             onClick: notifyElementClicked,
             setPrepareTuning,
           }}
