@@ -16,7 +16,7 @@ import {
   TriggeredSkillBuilder,
   enableShortcut,
 } from "./skill";
-import { HandleT } from "./type";
+import { HandleT, SkillHandle } from "./type";
 import { Draft } from "immer";
 import { isReactionSwirl } from "./reaction";
 
@@ -126,6 +126,15 @@ export class EntityBuilder<
           c.dispose();
         }
       });
+  }
+
+  prepare(skill: SkillHandle, hintCount?: number) {
+    this.tags("preparing")
+      .variable("preparingSkill", skill, { visible: false });
+    if (hintCount) {
+      this.variable("preparingSkillHintCount", hintCount);
+    }
+    return this;
   }
 
   tags(...tags: EntityTag[]): this {

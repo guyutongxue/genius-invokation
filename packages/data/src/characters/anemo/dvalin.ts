@@ -11,13 +11,38 @@ const DraconicMajesty = status(125024)
   .done();
 
 /**
+ * @id 25026
+ * @name 终幕涤流
+ * @description
+ * （需准备1个行动轮）
+ * 对上一个敌方后台角色造成2点风元素伤害。（敌方没有后台角色时，改为对出战角色造成伤害）
+ */
+const UltimateCleansing = skill(25026)
+  .type("elemental")
+  .damage(DamageType.Anemo, 2, "opp prev")
+  .done();
+
+/**
  * @id 125023
  * @name 风龙吐息
  * @description
  * 本角色将在下次行动时，直接使用技能：终幕涤流。
  */
 const DvalinsSigh01 = status(125023)
-  // TODO
+  .prepare(UltimateCleansing)
+  .done();
+
+/**
+ * @id 25025
+ * @name 长延涤流
+ * @description
+ * （需准备1个行动轮）
+ * 对下一个敌方后台角色造成1点风元素伤害，然后准备技能：终幕涤流。（敌方没有后台角色时，改为对出战角色造成伤害）
+ */
+const PerpetualCleansing = skill(25025)
+  .type("elemental")
+  .damage(DamageType.Anemo, 1, "opp next")
+  .characterStatus(DvalinsSigh01)
   .done();
 
 /**
@@ -27,7 +52,7 @@ const DvalinsSigh01 = status(125023)
  * 本角色将在下次行动时，直接使用技能：长延涤流。
  */
 const DvalinsSigh = status(125022)
-  // TODO
+  .prepare(PerpetualCleansing)
   .done();
 
 /**
@@ -38,7 +63,11 @@ const DvalinsSigh = status(125022)
  * 可用次数：1
  */
 const TotalCollapse = status(125021)
-  // TODO
+  .on("beforeDamaged", (c) =>
+    c.damageInfo.type === DamageType.Physical ||
+    c.damageInfo.type === DamageType.Anemo)
+  .usage(1)
+  .increaseDamage(2)
   .done();
 
 /**
@@ -61,7 +90,7 @@ const LaceratingSlash = skill(25021)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -73,7 +102,8 @@ const LaceratingSlash = skill(25021)
 const TempestuousBarrage = skill(25022)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .characterStatus(TotalCollapse, "opp active")
   .done();
 
 /**
@@ -85,7 +115,8 @@ const TempestuousBarrage = skill(25022)
 const DvalinsCleansing = skill(25023)
   .type("elemental")
   .costAnemo(5)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .characterStatus(DvalinsSigh)
   .done();
 
 /**
@@ -98,31 +129,8 @@ const CaelestinumFinaleTermini = skill(25024)
   .type("burst")
   .costAnemo(4)
   .costEnergy(2)
-  // TODO
-  .done();
-
-/**
- * @id 25025
- * @name 长延涤流
- * @description
- * （需准备1个行动轮）
- * 对下一个敌方后台角色造成1点风元素伤害，然后准备技能：终幕涤流。（敌方没有后台角色时，改为对出战角色造成伤害）
- */
-const PerpetualCleansing = skill(25025)
-  .type("elemental")
-  // TODO
-  .done();
-
-/**
- * @id 25026
- * @name 终幕涤流
- * @description
- * （需准备1个行动轮）
- * 对上一个敌方后台角色造成2点风元素伤害。（敌方没有后台角色时，改为对出战角色造成伤害）
- */
-const UltimateCleansing = skill(25026)
-  .type("elemental")
-  // TODO
+  .damage(DamageType.Anemo, 5)
+  .characterStatus(TotalCollapse, "opp standby")
   .done();
 
 /**
@@ -151,5 +159,7 @@ const Dvalin = character(2502)
 const RendingVortex = card(225021)
   .costAnemo(3)
   .talent(Dvalin)
+  .on("enter")
+  .useSkill(TempestuousBarrage)
   // TODO
   .done();
