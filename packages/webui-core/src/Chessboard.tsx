@@ -203,7 +203,7 @@ export function createPlayer(
         confirmOnly: true,
         disableConfirm: true,
       });
-      const nextProp = {
+      const nextProp: PartialDiceSelectProp = {
         confirmOnly: true,
       };
       for (;;) {
@@ -454,14 +454,12 @@ export function createPlayer(
                 <For each={myPlayer().dice}>{(d) => <Dice type={d} />}</For>
               }
             >
-              {(props) => (
-                <DiceSelect
-                  {...props()}
-                  value={myPlayer().dice}
-                  onConfirm={notifyDiceSelected}
-                  onCancel={() => notifyDiceSelected(void 0)}
-                />
-              )}
+              <DiceSelect
+                {...diceSelectProp()}
+                value={myPlayer().dice}
+                onConfirm={notifyDiceSelected}
+                onCancel={() => notifyDiceSelected(void 0)}
+              />
             </Show>
           </div>
           <div class="absolute right-10 bottom-0 z-5 flex flex-row gap-2">

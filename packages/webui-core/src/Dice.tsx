@@ -11,9 +11,9 @@ export interface DiceProps {
   color?: DiceColor;
 }
 
-type DiceColor = "normal" | "increased" | "decreased";
+export type DiceColor = "normal" | "increased" | "decreased";
 
-const COLOR: Record<DiceType, string> = {
+export const DICE_COLOR: Record<DiceType, string> = {
   0 /* DiceType.Void */: "void",
   1 /* DiceType.Cryo */: "cryo",
   2 /* DiceType.Hydro */: "hydro",
@@ -70,7 +70,7 @@ function DiceIcon(props: { size: number; type: DiceType; selected: boolean }) {
       style={{
         height: `${props.size}px`,
         width: `${props.size}px`,
-        color: `var(--c-${COLOR[props.type]})`,
+        color: `var(--c-${DICE_COLOR[props.type]})`,
       }}
     >
       <path

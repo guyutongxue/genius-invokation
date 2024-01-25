@@ -18,7 +18,7 @@ export function chooseDice(
   required: readonly DiceType[],
   dice: readonly DiceType[],
 ): boolean[] {
-  const requiredMap = diceToMap(required);
+  const requiredMap = diceToMap(required, true);
   const OMNI_COUNT = dice.filter((d) => d === OMNI).length;
   const FAIL_RESULT = Array<boolean>(dice.length).fill(false);
   const result = [...FAIL_RESULT];
@@ -85,10 +85,19 @@ export function chooseDice(
   return result;
 }
 
-export function diceToMap(dice: readonly DiceType[]): Map<DiceType, number> {
+/**
+ * 将骰子需求列表改写为 `Map<DiceType, number>` 形式
+ * @param dice 骰子需求列表
+ * @param allowEmpty 允许返回空 Map；默认不需要骰子时返回 `{(Omni, 0)}`
+ * @returns 
+ */
+export function diceToMap(dice: readonly DiceType[], allowEmpty = false): Map<DiceType, number> {
   const result = new Map<DiceType, number>();
   for (const d of dice) {
     result.set(d, (result.get(d) ?? 0) + 1);
+  }
+  if (!allowEmpty && dice.length === 0) {
+    result.set(OMNI, 0);
   }
   return result;
 }
@@ -104,7 +113,7 @@ export function checkDice(
   required: readonly DiceType[],
   chosen: readonly DiceType[],
 ): boolean {
-  const requiredMap = diceToMap(required);
+  const requiredMap = diceToMap(required, true);
   // 如果需要同色骰子
   if (requiredMap.has(OMNI)) {
     const requiredCount = requiredMap.get(OMNI)!;

@@ -3,3 +3,4 @@ import "virtual:uno.css";
 
 export { createPlayer } from "./Chessboard.tsx";
 export { createWaitNotify } from "./utils.ts";
+export * from "./config.ts";
