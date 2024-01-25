@@ -161,5 +161,8 @@ const RendingVortex = card(225021)
   .talent(Dvalin)
   .on("enter")
   .useSkill(TempestuousBarrage)
-  // TODO
+  .on("dispose", (c) => c.$(`status with definition id ${TotalCollapse} at opp active`)?.id === c.eventArg.entity.id)
+  .listenToAll()
+  .usagePerRound(1)
+  .characterStatus(TotalCollapse, "opp next")
   .done();

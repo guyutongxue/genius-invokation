@@ -228,6 +228,9 @@ const detailedEventDictionary = {
   dispose: defineDescriptor("onDisposing", (c, r) => {
     return checkRelative(c.eventArg.state, c.eventArg.entity.id, r);
   }),
+  selfDispose: defineDescriptor("onDisposing", (c, r) => {
+    return c.eventArg.entity.id === r.callerId;
+  }),
 } satisfies Record<string, Descriptor<any>>;
 
 type DetailedEventDictionary = typeof detailedEventDictionary;
