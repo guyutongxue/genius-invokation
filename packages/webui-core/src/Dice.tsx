@@ -23,7 +23,7 @@ export const DICE_COLOR: Record<DiceType, string> = {
   6 /* DiceType.Geo */: "geo",
   7 /* DiceType.Dendro */: "dendro",
   8 /* DiceType.Omni */: "omni",
-  9 /* DiceType.Energy */: "energy",
+  9 /* DiceType.Energy */: "heal",
 };
 
 function EnergyIcon(props: { size: number }) {

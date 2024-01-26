@@ -111,7 +111,7 @@ export function CharacterArea(props: CharacterAreaProps) {
         <Show when={damaged()}>
           {(damaged) => (
             <div
-              class="absolute z-5 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[9999px] w-20 h-20 bg-white b-2 b-dashed text-5xl flex items-center justify-center"
+              class="absolute z-5 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] rounded-999 w-20 h-20 bg-white b-2 b-dashed text-5xl flex items-center justify-center"
               style={{
                 "border-color": `var(--c-${DICE_COLOR[damaged().type]})`,
                 color: `var(--c-${DICE_COLOR[damaged().type]})`,

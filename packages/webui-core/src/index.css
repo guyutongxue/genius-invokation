@@ -9,7 +9,7 @@
   --c-anemo: #80ffe6;
   --c-omni: #dcd4c2;
   /* --c-energy: #eab308; */
-  --c-energy: lightgreen; /* DamageType.Heal exactly */
+  --c-heal: lightgreen;
   --font-emoji: Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji,
     Android Emoji, EmojiSymbols, EmojiOne Mozilla, Twemoji Mozilla,
     Segoe UI Symbol, Noto Color Emoji Compat, emoji;

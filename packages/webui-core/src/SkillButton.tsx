@@ -15,11 +15,11 @@ export function SkillButton(props: SkillButtonProps) {
     <div class="flex flex-col items-center">
       <button
         type="button"
-        class="w-10 h-10 rounded-999 bg-yellow-800 p-1 border-none disabled:opacity-50 hover:bg-yellow-700 active:bg-yellow-900 transition-all disabled:bg-yellow-700 flex items-center justify-center"
+        class="w-10 h-10 rounded-999 bg-yellow-800 p-1 b-none disabled:opacity-50 hover:bg-yellow-700 active:bg-yellow-900 transition-all disabled:bg-yellow-700 flex items-center justify-center"
         disabled={!clickable()}
         onClick={() => clickable() && onClick(props.data.definitionId)}
       >
-        <Image imageId={props.data.definitionId} class="object-contain" />
+        <Image imageId={props.data.definitionId} />
       </button>
       <DiceCost
         class="flex flex-row"
