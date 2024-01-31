@@ -14,6 +14,7 @@ import { CharacterDefinition, ElementTag } from "./base/character";
 import { flip } from "@gi-tcg/utils";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
+import { SkillDefinition, SkillInfo } from "./base/skill";
 
 export function getEntityById(
   state: GameState,
@@ -149,6 +150,35 @@ export function getActiveCharacterIndex(player: PlayerState): number {
     throw new Error("Invalid active character index");
   }
   return activeIdx;
+}
+
+export interface CheckPreparingResult {
+  status: EntityState;
+  skillId: number;
+}
+
+export function hasReplacedAction(player: PlayerState): SkillInfo | null {
+  // J目前只找角色状态上的准备中（替换玩家行动）
+  const activeCh = player.characters[getActiveCharacterIndex(player)];
+  const candidates = activeCh.entities
+    .map(
+      (st) =>
+        [
+          st,
+          st.definition.skills.find((sk) => sk.triggerOn === "onReplaceAction"),
+        ] as const,
+    )
+    .filter(([st, sk]) => sk);
+  if (candidates.length === 0) {
+    return null;
+  }
+  const [caller, definition] = candidates[0];
+  return {
+    caller,
+    definition: definition as SkillDefinition,
+    requestBy: null,
+    fromCard: null,
+  };
 }
 
 export function nextRandom(

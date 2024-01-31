@@ -129,12 +129,12 @@ export class EntityBuilder<
   }
 
   prepare(skill: SkillHandle, hintCount?: number) {
-    this.tags("preparing")
-      .variable("preparingSkill", skill, { visible: false });
     if (hintCount) {
       this.variable("preparingSkillHintCount", hintCount);
     }
-    return this;
+    return this.on("replaceAction")
+      .useSkill(skill)
+      .dispose();
   }
 
   tags(...tags: EntityTag[]): this {

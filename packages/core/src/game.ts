@@ -28,6 +28,7 @@ import {
   elementOfCharacter,
   getActiveCharacterIndex,
   getEntityById,
+  hasReplacedAction,
   shiftLeft,
   shuffle,
   sortDice,
@@ -384,12 +385,14 @@ class Game {
   }
   private async actionPhase() {
     const who = this._state.currentTurn;
-    let player = this._state.players[who];
-    if (player.declaredEnd) {
+    // 使用 getter 防止状态变化后原有 player 过时的问题
+    const player = () => this._state.players[who];
+    let replacedSkill;
+    if (player().declaredEnd) {
       this.mutate({
         type: "switchTurn",
       });
-    } else if (player.skipNextTurn) {
+    } else if (player().skipNextTurn) {
       this.mutate({
         type: "setPlayerFlag",
         who,
@@ -399,7 +402,13 @@ class Game {
       this.mutate({
         type: "switchTurn",
       });
+    } else if ((replacedSkill = hasReplacedAction(player()))) {
+      await this.useSkill(replacedSkill, { who, state: this._state });
+      this.mutate({
+        type: "switchTurn",
+      });
     } else {
+      await this.handleEvents(["onBeforeAction", { who, state: this._state }]);
       const actions = this.availableAction();
       console.log(actions);
       this.notifyOne(flip(who), [
@@ -419,10 +428,9 @@ class Game {
         type: "setPlayerFlag",
         who,
         flagName: "canCharged",
-        value: player.dice.length % 2 === 0,
+        value: player().dice.length % 2 === 0,
       });
 
-      const activeCh = player.characters[getActiveCharacterIndex(player)];
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {
         throw new Error(`Selected dice doesn't meet requirement`);
@@ -436,7 +444,7 @@ class Game {
         );
       }
       // 消耗骰子
-      const operatingDice = [...player.dice];
+      const operatingDice = [...player().dice];
       for (const consumed of cost) {
         if (consumed === DiceType.Energy) {
         } else {
@@ -456,6 +464,7 @@ class Game {
       const requiredEnergy = actionInfo.cost.filter(
         (x) => x === DiceType.Energy,
       ).length;
+      const activeCh = player().characters[getActiveCharacterIndex(player())];
       if (requiredEnergy > 0) {
         if (activeCh.variables.energy < requiredEnergy) {
           throw new Error(`Active character does not have enough energy`);
@@ -468,7 +477,6 @@ class Game {
         });
       }
 
-      player = this._state.players[who];
       switch (actionInfo.type) {
         case "useSkill":
           await this.useSkill(actionInfo.skill, void 0);
@@ -511,8 +519,8 @@ class Game {
           this.mutate({
             type: "resetDice",
             who,
-            value: sortDice(player, [
-              ...player.dice,
+            value: sortDice(player(), [
+              ...player().dice,
               elementOfCharacter(activeCh.definition),
             ]),
           });
@@ -698,7 +706,11 @@ class Game {
     });
   }
 
-  private async useSkill(
+  /**
+   * 仅在 `useSkill` 或 `doHandleEvents` 中调用。
+   * @returns 此次技能执行所引发的待处理的事件。不要抛弃返回值！
+   */
+  private async useSkillImpl(
     skillInfo: SkillInfo,
     arg: any,
   ): Promise<DeferredAction[]> {
@@ -768,6 +780,14 @@ class Game {
     }
     await this.handleEvents(["onSkill", { ...skillInfo, state: oldState }]);
     return eventList;
+  }
+
+  private async useSkill(
+    skillInfo: SkillInfo,
+    arg: void | CardTarget | { state: GameState; [props: string]: unknown },
+  ): Promise<void> {
+    const events = await this.useSkillImpl(skillInfo, arg as any);
+    await this.handleEvents(...events);
   }
 
   private async switchCard(who: 0 | 1) {
@@ -865,7 +885,7 @@ class Game {
           fromCard: null,
           requestBy: arg.via,
         };
-        yield this.useSkill(skillInfo, void 0);
+        yield this.useSkillImpl(skillInfo, void 0);
       } else {
         const { state: onTimeState } = arg;
         const currentTurn = onTimeState.currentTurn;
@@ -881,7 +901,7 @@ class Game {
                   fromCard: null,
                   requestBy: null,
                 };
-                yield this.useSkill(skillInfo, arg);
+                yield this.useSkillImpl(skillInfo, arg);
               }
             }
             for (const et of ch.entities) {
@@ -893,7 +913,7 @@ class Game {
                     fromCard: null,
                     requestBy: null,
                   };
-                  yield this.useSkill(skillInfo, arg);
+                  yield this.useSkillImpl(skillInfo, arg);
                 }
               }
             }
@@ -912,7 +932,7 @@ class Game {
                     fromCard: null,
                     requestBy: null,
                   };
-                  yield this.useSkill(skillInfo, arg);
+                  yield this.useSkillImpl(skillInfo, arg);
                 }
               }
             }

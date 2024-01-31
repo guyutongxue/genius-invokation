@@ -46,7 +46,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       id: obj.id,
       name: obj.zhName,
       description: obj.zhDescription,
-      code: `const ${pascalCase(obj.name)} = ${kind}(${obj.id})
+      code: `export const ${pascalCase(obj.name)} = ${kind}(${obj.id})
   // TODO
   .done();`,
     };
@@ -114,7 +114,7 @@ export async function generateCharacters() {
           id: sk.id,
           name: sk.zhName,
           description: sk.zhDescription,
-          code: `const ${pascalCase(sk.name)} = skill(${sk.id})
+          code: `export const ${pascalCase(sk.name)} = skill(${sk.id})
   .type("${TYPE_MAP[sk.typetag]}")${getCostCode(sk.playcost)}
   // TODO
   .done();`,
@@ -132,7 +132,7 @@ export async function generateCharacters() {
       id: ch.id,
       name: ch.zhName,
       description: ch.zhDescription,
-      code: `const ${pascalCase(ch.name)} = character(${ch.id})
+      code: `export const ${pascalCase(ch.name)} = character(${ch.id})
   .tags(${tagCode})
   .health(${ch.hp})
   .energy(${ch.maxenergy})

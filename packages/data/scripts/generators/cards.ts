@@ -55,7 +55,7 @@ export function getCardCode(card: any, extra = ""): string {
   const tagCode =
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playcost);
-  return `const ${pascalCase(card.name)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
+  return `export const ${pascalCase(card.name)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
   // TODO
   .done();`;
 }

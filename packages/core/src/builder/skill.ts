@@ -113,18 +113,13 @@ function defineDescriptor<E extends EventNames>(
  * 3. Note: 通过使用卡牌（天赋等）触发的技能也适用。
  */
 function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
+  // 主动技能且并非卡牌描述
   if (
     skillInfo.definition.triggerOn === null &&
     skillInfo.definition.skillType !== "card"
   ) {
-    // 主动技能且并非卡牌描述
-    const requestBy = skillInfo.requestBy;
-    if (
-      requestBy &&
-      requestBy.caller.definition.type !== "character" &&
-      requestBy.caller.definition.tags.includes("preparing")
-    ) {
-      // 准备技能不触发
+    // 准备技能不触发
+    if (skillInfo.requestBy?.definition.triggerOn === "onReplaceAction") {
       return false;
     }
     return true;
@@ -185,6 +180,9 @@ const detailedEventDictionary = {
   actionPhase: defineDescriptor("onActionPhase"),
   endPhase: defineDescriptor("onEndPhase"),
   beforeAction: defineDescriptor("onBeforeAction", (c, r) => {
+    return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
+  }),
+  replaceAction: defineDescriptor("onReplaceAction", (c, r) => {
     return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
   }),
   action: defineDescriptor("onAction", (c, r) => {

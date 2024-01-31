@@ -346,6 +346,7 @@ type AsyncEventMap = {
   onEndPhase: NULL;
 
   onBeforeAction: { who: 0 | 1 };
+  onReplaceAction: { who: 0 | 1 };
   onAction: ActionInfo;
 
   onSkill: SkillInfo;
