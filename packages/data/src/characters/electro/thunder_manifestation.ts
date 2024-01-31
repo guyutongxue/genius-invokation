@@ -112,6 +112,7 @@ const ThunderManifestation = character(2402)
  * （牌组中包含雷音权现，才能加入牌组）
  */
 const GrievingEcho = card(224021)
+  .costElectro(3)
   .talent(ThunderManifestation)
   // TODO
   .done();

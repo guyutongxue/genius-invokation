@@ -4,22 +4,18 @@ import { CharacterDefinition } from "../base/character";
 import { EntityDefinition } from "../base/entity";
 import { SkillDefinition } from "../base/skill";
 
-const GI_TCG_BUILDER_SYMBOL: unique symbol = Symbol("@gi/tcg/core/builder");
+let currentStore: DataStore | null = null;
 
 export function beginRegistration() {
-  if (Object.hasOwn(globalThis, GI_TCG_BUILDER_SYMBOL)) {
+  if (currentStore !== null) {
     throw new Error("Already in registration");
   }
-  const store: DataStore = {
+  currentStore = {
     character: new Map(),
     entity: new Map(),
     skill: new Map(),
     card: new Map(),
   };
-  Object.defineProperty(globalThis, GI_TCG_BUILDER_SYMBOL, {
-    value: store,
-    configurable: true,
-  });
 }
 
 type DefinitionMap = {
@@ -37,10 +33,10 @@ type DataStore = {
 export type ReadonlyDataStore = Immutable<DataStore>;
 
 function getCurrentStore(): DataStore {
-  if (!Object.hasOwn(globalThis, GI_TCG_BUILDER_SYMBOL)) {
+  if (currentStore === null) {
     throw new Error("Not in registration");
   }
-  return (globalThis as any)[GI_TCG_BUILDER_SYMBOL];
+  return currentStore;
 }
 
 function register<C extends RegisterCategory>(
@@ -104,7 +100,5 @@ export function getSkillDefinitionIncludePassive(
 }
 
 export function endRegistration(): ReadonlyDataStore {
-  const store = getCurrentStore();
-  delete (globalThis as any)[GI_TCG_BUILDER_SYMBOL];
-  return store;
+  return getCurrentStore();
 }

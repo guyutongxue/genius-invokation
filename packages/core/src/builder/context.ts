@@ -808,21 +808,14 @@ export type ExtendedSkillContext<
 
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
-export class CharacterContext<Readonly extends boolean> {
-  private readonly _area: EntityArea;
-  constructor(
-    private readonly skillContext: SkillContext<Readonly, {}, any>,
-    private readonly _id: number,
-  ) {
-    this._area = getEntityArea(skillContext.state, _id);
-  }
-
-  get state(): CharacterState {
-    const entity = getEntityById(this.skillContext.state, this._id, true);
-    if (entity.definition.type !== "character") {
-      throw new Error("Expected character");
-    }
-    return entity as CharacterState;
+/**
+ * 提供一些针对角色的便利方法，不需要 SkillContext 参与。
+ * 仅当保证 GameState 不发生变化时使用。
+ */
+export class CharacterContextBase {
+  protected _area: EntityArea;
+  constructor(private gameState: GameState, protected readonly _id: number) {
+    this._area = getEntityArea(gameState, _id);
   }
   get area() {
     return this._area;
@@ -833,23 +826,16 @@ export class CharacterContext<Readonly extends boolean> {
   get id() {
     return this._id;
   }
-
-  get health() {
-    return this.state.variables.health;
-  }
-
-  positionIndex() {
-    const state = this.skillContext.state;
-    const player = state.players[this.who];
+  positionIndex(currentState: GameState = this.gameState) {
+    const player = currentState.players[this.who];
     const thisIdx = player.characters.findIndex((ch) => ch.id === this._id);
     if (thisIdx === -1) {
       throw new Error("Invalid character index");
     }
     return thisIdx;
   }
-  satisfyPosition(pos: CharacterPosition) {
-    const state = this.skillContext.state;
-    const player = state.players[this.who];
+  satisfyPosition(pos: CharacterPosition, currentState: GameState = this.gameState) {
+    const player = currentState.players[this.who];
     const activeIdx = getActiveCharacterIndex(player);
     const length = player.characters.length;
     let dx;
@@ -876,10 +862,36 @@ export class CharacterContext<Readonly extends boolean> {
     } while (!player.characters[currentIdx].variables.alive);
     return player.characters[currentIdx].id === this._id;
   }
+}
+
+export class CharacterContext<Readonly extends boolean> extends CharacterContextBase {
+  constructor(
+    private readonly skillContext: SkillContext<Readonly, {}, any>,
+    id: number,
+  ) {
+    super(skillContext.state, id);
+  }
+
+  get state(): CharacterState {
+    const entity = getEntityById(this.skillContext.state, this._id, true);
+    if (entity.definition.type !== "character") {
+      throw new Error("Expected character");
+    }
+    return entity as CharacterState;
+  }
+
+  get health() {
+    return this.state.variables.health;
+  }
+  positionIndex() {
+    return super.positionIndex(this.skillContext.state);
+  }
+  satisfyPosition(pos: CharacterPosition) {
+    return super.satisfyPosition(pos, this.skillContext.state);
+  }
   isActive() {
     return this.satisfyPosition("active");
   }
-
   fullEnergy() {
     return (
       this.state.variables.energy === this.state.definition.constants.maxEnergy

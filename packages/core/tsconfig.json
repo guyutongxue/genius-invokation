@@ -1,5 +1,4 @@
 {
-  "include": ["src/**/*.ts"],
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2023"],
@@ -11,5 +10,9 @@
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
+
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

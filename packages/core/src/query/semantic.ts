@@ -2,7 +2,11 @@ import { flip } from "@gi-tcg/utils";
 
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
 import { CharacterState, EntityState, GameState } from "../base/state";
-import { CharacterContext, ExtendedSkillContext } from "../builder/context";
+import {
+  CharacterContext,
+  CharacterContextBase,
+  ExtendedSkillContext,
+} from "../builder/context";
 import {
   allEntities,
   getActiveCharacterIndex,
@@ -22,8 +26,7 @@ type ExternalQueryDictionary = { [prop: string]: ExternalQueryEntry };
 export interface QueryArgs {
   readonly candidates: readonly AnyState[];
   readonly state: GameState;
-  readonly callerArea: EntityArea;
-  readonly skillContext: AnySkillContext;
+  readonly callerWho: 0 | 1;
   readonly externals: ExternalQueryDictionary;
 }
 
@@ -133,8 +136,9 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       if (baseState.definition.type !== "character") {
         continue;
       }
-      const baseChCtx = this.args.ctx.skillContext.of(
-        baseState as CharacterState,
+      const baseChCtx = new CharacterContextBase(
+        this.args.ctx.state,
+        baseState.id,
       );
       const baseIdx = baseChCtx.positionIndex();
       const baseLen = state.players[baseChCtx.who].characters.length;
@@ -164,9 +168,7 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
   PrimaryQuery_canonical(who, type, with_) {
     const whoRes = who.numChildren > 0 ? who.children[0].whoSpecifier : "my";
     const expectWho =
-      whoRes === "my"
-        ? this.args.ctx.callerArea.who
-        : flip(this.args.ctx.callerArea.who);
+      whoRes === "my" ? this.args.ctx.callerWho : flip(this.args.ctx.callerWho);
     const typeRes = type.typeSpecifier;
     const result: AnyState[] = [];
     for (const state of this.args.ctx.candidates) {
@@ -186,7 +188,10 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
           continue;
         }
         if (typeRes.position !== "all") {
-          const chCtx = this.args.ctx.skillContext.of(chState);
+          const chCtx = new CharacterContextBase(
+            this.args.ctx.state,
+            chState.id,
+          );
           if (!chCtx.satisfyPosition(typeRes.position)) {
             continue;
           }
@@ -224,7 +229,7 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
         `External query ${this.sourceString} is invalid (subsequent props needed)`,
       );
     }
-    const id = dict(this.args.ctx.skillContext);
+    const id = dict();
     return [getEntityById(this.args.ctx.state, id, true)];
   },
   PrimaryQuery_paren(_l, query, _r) {

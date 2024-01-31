@@ -3,6 +3,7 @@ import { checkDice, flip } from "@gi-tcg/utils";
 
 import {
   CharacterState,
+  EntityState,
   GameConfig,
   GameState,
   PlayerState,
@@ -53,6 +54,7 @@ import {
 } from "./base/skill";
 import { SkillContext } from "./builder/context";
 import { CardDefinition, CardTarget, CardTargetKind } from "./base/card";
+import { executeQueryOnState } from "./query";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -65,11 +67,8 @@ const INITIAL_ID = -500000;
 
 type ActionInfoWithNewState = ActionInfo & { newState: GameState };
 
-class Game {
-  private _state: GameState;
-  get state() {
-    return this._state;
-  }
+export class Game {
+  state: GameState;
 
   constructor(
     private readonly data: ReadonlyDataStore,
@@ -80,7 +79,7 @@ class Game {
     const initRandomState = minstd.factory({
       seed: config.randomSeed,
     }).state;
-    this._state = {
+    this.state = {
       data,
       config,
       iterators: {
@@ -99,8 +98,12 @@ class Game {
     this.initPlayerCards(1);
   }
 
-  private mutate(mutation: Mutation) {
-    this._state = applyMutation(this._state, mutation);
+  mutate(mutation: Mutation) {
+    this.state = applyMutation(this.state, mutation);
+  }
+
+  query(who: 0 | 1, query: string): (CharacterState | EntityState)[] {
+    return executeQueryOnState(this.state, who, query);
   }
 
   private randomDice(count: number, alwaysOmni?: boolean): readonly DiceType[] {
@@ -178,7 +181,7 @@ class Game {
         },
       });
     }
-    for (const card of this._state.players[who].initialPiles) {
+    for (const card of this.state.players[who].initialPiles) {
       this.mutate({
         type: "createCard",
         who,
@@ -211,9 +214,9 @@ class Game {
 
   async start() {
     this.notify([]);
-    while (this._state.phase !== "gameEnd") {
-      await this.io.pause(this._state);
-      switch (this._state.phase) {
+    while (this.state.phase !== "gameEnd") {
+      await this.io.pause(this.state);
+      switch (this.state.phase) {
         case "initHands":
           await this.initHands();
           break;
@@ -230,10 +233,10 @@ class Game {
           await this.endPhase();
           break;
         default:
-          const _check: never = this._state.phase;
+          const _check: never = this.state.phase;
           break;
       }
-      if (this._state.mutationLog.length > 1) {
+      if (this.state.mutationLog.length > 1) {
         this.notify([]);
       }
     }
@@ -253,7 +256,7 @@ class Game {
   private async initHands() {
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHands; i++) {
-        this._state = drawCard(this._state, who, null);
+        this.state = drawCard(this.state, who, null);
       }
     }
     await Promise.all([this.switchCard(0), this.switchCard(1)]);
@@ -275,7 +278,7 @@ class Game {
         const { active } = await this.rpc(i, "chooseActive", {
           candidates: player.characters.map((c) => c.id),
         });
-        return getEntityById(this._state, active, true) as CharacterState;
+        return getEntityById(this.state, active, true) as CharacterState;
       }),
     );
     await this.switchActive(0, a0);
@@ -284,6 +287,8 @@ class Game {
       type: "changePhase",
       newPhase: "roll",
     });
+    // For debugging
+    Reflect.set(globalThis, "$$", (query: string) => this.query(0, query));
   }
 
   private async rollPhase() {
@@ -295,7 +300,7 @@ class Game {
     const rollParams: RollParams[] = [];
     for (const who of [0, 1] as const) {
       const rollModifier = new RollModifierImpl(who);
-      this._state = useSyncSkill(this._state, "onRoll", (st) => {
+      this.state = useSyncSkill(this.state, "onRoll", (st) => {
         rollModifier.setCaller(st);
         return rollModifier;
       });
@@ -309,7 +314,7 @@ class Game {
     await Promise.all(
       ([0, 1] as const).map(async (who) => {
         const { fixed, count } = rollParams[who];
-        const initDice = sortDice(this._state.players[who], [
+        const initDice = sortDice(this.state.players[who], [
           ...fixed,
           ...this.randomDice(
             Math.max(0, this.config.initialDice - fixed.length),
@@ -368,25 +373,14 @@ class Game {
     await this.handleEvents([
       "onActionPhase",
       {
-        state: this._state,
+        state: this.state,
       },
     ]);
-    // @ts-expect-error
-    window.$$ = (arg: any) => {
-      return new SkillContext(this._state, {
-        caller: this._state.players[0].characters[0],
-        fromCard: null,
-        definition: { id: 0 } as any,
-        requestBy: null,
-      })
-        .$$(arg)
-        .map((x) => x.state);
-    };
   }
   private async actionPhase() {
-    const who = this._state.currentTurn;
+    const who = this.state.currentTurn;
     // 使用 getter 防止状态变化后原有 player 过时的问题
-    const player = () => this._state.players[who];
+    const player = () => this.state.players[who];
     let replacedSkill;
     if (player().declaredEnd) {
       this.mutate({
@@ -403,12 +397,12 @@ class Game {
         type: "switchTurn",
       });
     } else if ((replacedSkill = hasReplacedAction(player()))) {
-      await this.useSkill(replacedSkill, { who, state: this._state });
+      await this.useSkill(replacedSkill, { who, state: this.state });
       this.mutate({
         type: "switchTurn",
       });
     } else {
-      await this.handleEvents(["onBeforeAction", { who, state: this._state }]);
+      await this.handleEvents(["onBeforeAction", { who, state: this.state }]);
       const actions = this.availableAction();
       console.log(actions);
       this.notifyOne(flip(who), [
@@ -423,7 +417,7 @@ class Game {
         throw new Error(`User chosen index out of range`);
       }
       const actionInfo = actions[chosenIndex];
-      this._state = actionInfo.newState;
+      this.state = actionInfo.newState;
       this.mutate({
         type: "setPlayerFlag",
         who,
@@ -554,8 +548,8 @@ class Game {
       });
     }
     if (
-      this._state.players[0].declaredEnd &&
-      this._state.players[1].declaredEnd
+      this.state.players[0].declaredEnd &&
+      this.state.players[1].declaredEnd
     ) {
       this.mutate({
         type: "changePhase",
@@ -567,12 +561,12 @@ class Game {
     await this.handleEvents([
       "onEndPhase",
       {
-        state: this._state,
+        state: this.state,
       },
     ]);
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
-        this._state = drawCard(this._state, who, null);
+        this.state = drawCard(this.state, who, null);
       }
     }
     this.mutate({
@@ -581,9 +575,9 @@ class Game {
     });
   }
 
-  private availableAction(): ActionInfoWithNewState[] {
-    const who = this._state.currentTurn;
-    const player = this._state.players[who];
+  availableAction(): ActionInfoWithNewState[] {
+    const who = this.state.currentTurn;
+    const player = this.state.players[who];
     const activeCh = player.characters[getActiveCharacterIndex(player)];
     const result: ActionInfo[] = [];
 
@@ -629,14 +623,14 @@ class Game {
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
         card.definition.type === "support" &&
-        player.supports.length === this._state.config.maxSupports
+        player.supports.length === this.state.config.maxSupports
       ) {
         allTargets = player.supports.map((s) => ({ ids: [s.id] }));
       } else {
-        allTargets = (0, card.definition.getTarget)(this._state, skillInfo);
+        allTargets = (0, card.definition.getTarget)(this.state, skillInfo);
       }
       for (const { ids } of allTargets) {
-        if ((0, card.definition.filter)(this._state, skillInfo, { ids })) {
+        if ((0, card.definition.filter)(this.state, skillInfo, { ids })) {
           result.push({
             type: "playCard",
             who,
@@ -693,7 +687,7 @@ class Game {
     // Apply beforeUseDice, calculate new state for each action
     return result.map((actionInfo) => {
       const diceModifier = new UseDiceModifierImpl(actionInfo);
-      const newState = useSyncSkill(this._state, "onBeforeUseDice", (st) => {
+      const newState = useSyncSkill(this.state, "onBeforeUseDice", (st) => {
         diceModifier.setCaller(st);
         return diceModifier;
       });
@@ -716,14 +710,14 @@ class Game {
   ): Promise<DeferredAction[]> {
     // If caller not exists (consumed by previous skills), do nothing
     try {
-      getEntityById(this._state, skillInfo.caller.id, true);
+      getEntityById(this.state, skillInfo.caller.id, true);
     } catch {
       return [];
     }
     const skillDef = skillInfo.definition;
     // If skill has a filter and not passed, do nothing
     // 在 arg.state 上做检查，即引发事件的时刻的全局状态，而非现在时刻的状态
-    const stateToApplyFilter: GameState = arg?.state ?? this._state;
+    const stateToApplyFilter: GameState = arg?.state ?? this.state;
     if (
       "filter" in skillDef &&
       !(0, skillDef.filter)(stateToApplyFilter, skillInfo, arg)
@@ -731,13 +725,13 @@ class Game {
       return [];
     }
     this.mutate({ type: "pushSkillLog", skillInfo });
-    const oldState = this._state;
+    const oldState = this.state;
     const [newState, eventList] = (0, skillDef.action)(
-      this._state,
+      this.state,
       skillInfo,
       arg,
     );
-    this._state = newState;
+    this.state = newState;
     if (oldState.players !== newState.players) {
       this.notify([
         {
@@ -771,18 +765,18 @@ class Game {
             };
           }),
       ]);
-      await this.io.pause(this._state);
+      await this.io.pause(this.state);
       const hasDefeated = await this.checkDefeated();
       if (hasDefeated) {
         this.notify([]);
-        await this.io.pause(this._state);
+        await this.io.pause(this.state);
       }
     }
     await this.handleEvents(["onSkill", { ...skillInfo, state: oldState }]);
     return eventList;
   }
 
-  private async useSkill(
+  async useSkill(
     skillInfo: SkillInfo,
     arg: void | CardTarget | { state: GameState; [props: string]: unknown },
   ): Promise<void> {
@@ -794,7 +788,7 @@ class Game {
     this.notify([]);
     const { removedHands } = await this.rpc(who, "switchHands", {});
     const cardStates = removedHands.map((id) => {
-      const card = this._state.players[who].hands.find((c) => c.id === id);
+      const card = this.state.players[who].hands.find((c) => c.id === id);
       if (typeof card === "undefined") {
         throw new Error(`Unknown card id ${id}`);
       }
@@ -810,13 +804,13 @@ class Game {
     }
     const count = cardStates.length;
     for (let i = 0; i < count; i++) {
-      this._state = drawCard(this._state, who, null);
+      this.state = drawCard(this.state, who, null);
     }
     this.notify([]);
   }
   private async reroll(who: 0 | 1, times: number) {
     for (let i = 0; i < times; i++) {
-      const dice = this._state.players[who].dice;
+      const dice = this.state.players[who].dice;
       const { rerollIndexes } = await this.rpc(who, "rerollDice", {});
       if (rerollIndexes.length === 0) {
         return;
@@ -830,7 +824,7 @@ class Game {
       this.mutate({
         type: "resetDice",
         who,
-        value: sortDice(this._state.players[who], [
+        value: sortDice(this.state.players[who], [
           ...controlled,
           ...this.randomDice(rerollIndexes.length),
         ]),
@@ -840,10 +834,10 @@ class Game {
   }
 
   private async switchActive(who: 0 | 1, to: CharacterState) {
-    const from = this._state.players[who].characters.find(
-      (ch) => ch.id === this._state.players[who].activeCharacterId,
+    const from = this.state.players[who].characters.find(
+      (ch) => ch.id === this.state.players[who].activeCharacterId,
     );
-    const oldState = this._state;
+    const oldState = this.state;
     this.mutate({
       type: "switchActive",
       who,
@@ -944,17 +938,17 @@ class Game {
 
   // 检查倒下角色，若有返回 `true`
   private async checkDefeated(): Promise<boolean> {
-    const currentTurn = this._state.currentTurn;
+    const currentTurn = this.state.currentTurn;
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
     const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
     const hasDefeated: [boolean, boolean] = [false, false];
     for (const who of [currentTurn, flip(currentTurn)]) {
-      const player = this._state.players[who];
+      const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
       for (const ch of shiftLeft(player.characters, activeIdx)) {
         if (ch.variables.alive && ch.variables.health <= 0) {
           const defeatedModifier = new DefeatedModifierImpl(ch);
-          this._state = useSyncSkill(this._state, "onBeforeDefeated", (st) => {
+          this.state = useSyncSkill(this.state, "onBeforeDefeated", (st) => {
             defeatedModifier.setCaller(st);
             return defeatedModifier;
           });
@@ -996,11 +990,11 @@ class Game {
               },
             ]);
             activeDefeated[who] = this.rpc(who, "chooseActive", {
-              candidates: this._state.players[who].characters
+              candidates: this.state.players[who].characters
                 .filter((c) => c.variables.alive)
                 .map((c) => c.id),
             }).then(({ active }) => {
-              return getEntityById(this._state, active, true) as CharacterState;
+              return getEntityById(this.state, active, true) as CharacterState;
             });
           }
         }
