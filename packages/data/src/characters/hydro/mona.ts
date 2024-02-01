@@ -8,7 +8,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：1，耗尽时不弃置此牌。
  * 结束阶段：弃置此牌，造成1点水元素伤害。
  */
-const Reflection = summon(112031)
+export const Reflection = summon(112031)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const Reflection = summon(112031)
  * @description
  * 我方造成技能伤害时：移除此状态，使本次伤害加倍。
  */
-const IllusoryBubble = combatStatus(112032)
+export const IllusoryBubble = combatStatus(112032)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const IllusoryBubble = combatStatus(112032)
  * @description
  * 造成1点水元素伤害。
  */
-const RippleOfFate = skill(12031)
+export const RippleOfFate = skill(12031)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const RippleOfFate = skill(12031)
  * @description
  * 造成1点水元素伤害，召唤虚影。
  */
-const MirrorReflectionOfDoom = skill(12032)
+export const MirrorReflectionOfDoom = skill(12032)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -53,7 +53,7 @@ const MirrorReflectionOfDoom = skill(12032)
  * @description
  * 造成4点水元素伤害，生成泡影。
  */
-const StellarisPhantasm = skill(12033)
+export const StellarisPhantasm = skill(12033)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
@@ -66,7 +66,7 @@ const StellarisPhantasm = skill(12033)
  * @description
  * 【被动】此角色为出战角色，我方执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。（每回合1次）
  */
-const IllusoryTorrent = skill(12034)
+export const IllusoryTorrent = skill(12034)
   .type("passive")
   // TODO
   .done();
@@ -77,7 +77,7 @@ const IllusoryTorrent = skill(12034)
  * @description
  * 无论胜负平弃，都是命当如此。
  */
-const Mona = character(1203)
+export const Mona = character(1203)
   .tags("hydro", "catalyst", "mondstadt")
   .health(10)
   .energy(3)
@@ -93,7 +93,7 @@ const Mona = character(1203)
  * 装备有此牌的莫娜出战期间，我方引发的水元素相关反应伤害额外+2。
  * （牌组中包含莫娜，才能加入牌组）
  */
-const ProphecyOfSubmersion = card(212031)
+export const ProphecyOfSubmersion = card(212031)
   .costHydro(3)
   .costEnergy(3)
   .talent(Mona)

@@ -7,7 +7,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：造成1点冰元素伤害，对所有敌方后台角色造成1点穿透伤害。
  * 可用次数：2
  */
-const SacredCryoPearl = summon(111011)
+export const SacredCryoPearl = summon(111011)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const SacredCryoPearl = summon(111011)
  * 我方出战角色受到伤害时：抵消1点伤害。
  * 可用次数：2
  */
-const IceLotus = combatStatus(111012)
+export const IceLotus = combatStatus(111012)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const IceLotus = combatStatus(111012)
  * @description
  * 造成2点物理伤害。
  */
-const LiutianArchery = skill(11011)
+export const LiutianArchery = skill(11011)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const LiutianArchery = skill(11011)
  * @description
  * 造成1点冰元素伤害，生成冰莲。
  */
-const TrailOfTheQilin = skill(11012)
+export const TrailOfTheQilin = skill(11012)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -53,7 +53,7 @@ const TrailOfTheQilin = skill(11012)
  * @description
  * 造成2点冰元素伤害，对所有敌方后台角色造成2点穿透伤害。
  */
-const FrostflakeArrow = skill(11013)
+export const FrostflakeArrow = skill(11013)
   .type("normal")
   .costCryo(5)
   // TODO
@@ -65,7 +65,7 @@ const FrostflakeArrow = skill(11013)
  * @description
  * 造成2点冰元素伤害，对所有敌方后台角色造成1点穿透伤害，召唤冰灵珠。
  */
-const CelestialShower = skill(11014)
+export const CelestialShower = skill(11014)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
@@ -78,7 +78,7 @@ const CelestialShower = skill(11014)
  * @description
  * 「既然是明早前要，那这份通稿，只要熬夜写完就好。」
  */
-const Ganyu = character(1101)
+export const Ganyu = character(1101)
   .tags("cryo", "bow", "liyue")
   .health(10)
   .energy(3)
@@ -94,7 +94,7 @@ const Ganyu = character(1101)
  * 装备有此牌的甘雨使用霜华矢时：如果此技能在本场对局中曾经被使用过，则其对敌方后台角色造成的穿透伤害改为3点。
  * （牌组中包含甘雨，才能加入牌组）
  */
-const UndividedHeart = card(211011)
+export const UndividedHeart = card(211011)
   .costCryo(5)
   .talent(Ganyu)
   // TODO

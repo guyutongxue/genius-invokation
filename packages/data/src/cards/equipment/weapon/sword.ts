@@ -7,7 +7,7 @@ import { card } from "@gi-tcg/core/builder";
  * 角色造成的伤害+1。
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const TravelersHandySword = card(311501)
+export const TravelersHandySword = card(311501)
   .costSame(2)
   .weapon("sword")
   // TODO
@@ -21,7 +21,7 @@ const TravelersHandySword = card(311501)
  * 角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const SacrificialSword = card(311502)
+export const SacrificialSword = card(311502)
   .costSame(3)
   .weapon("sword")
   // TODO
@@ -35,7 +35,7 @@ const SacrificialSword = card(311502)
  * 对方使用技能后：如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const AquilaFavonia = card(311503)
+export const AquilaFavonia = card(311503)
   .costSame(3)
   .weapon("sword")
   // TODO
@@ -49,7 +49,7 @@ const AquilaFavonia = card(311503)
  * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const SkywardBlade = card(311504)
+export const SkywardBlade = card(311504)
   .costSame(3)
   .weapon("sword")
   // TODO
@@ -63,7 +63,7 @@ const SkywardBlade = card(311504)
  * 角色使用「元素战技」后：角色额外获得1点充能。（每回合1次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const FavoniusSword = card(311505)
+export const FavoniusSword = card(311505)
   .costSame(3)
   .weapon("sword")
   // TODO
@@ -77,7 +77,7 @@ const FavoniusSword = card(311505)
  * 角色使用「普通攻击」后：生成1个随机基础元素骰。（每回合最多触发2次）
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const LightOfFoliarIncision = card(311506)
+export const LightOfFoliarIncision = card(311506)
   .costSame(3)
   .weapon("sword")
   // TODO

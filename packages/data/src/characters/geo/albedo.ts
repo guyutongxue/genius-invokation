@@ -8,7 +8,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：3
  * 此召唤物在场时：我方角色进行下落攻击时少花费1个无色元素。（每回合1次）
  */
-const SolarIsotoma = summon(116041)
+export const SolarIsotoma = summon(116041)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const SolarIsotoma = summon(116041)
  * @description
  * 造成2点物理伤害。
  */
-const FavoniusBladeworkWeiss = skill(16041)
+export const FavoniusBladeworkWeiss = skill(16041)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
@@ -31,7 +31,7 @@ const FavoniusBladeworkWeiss = skill(16041)
  * @description
  * 召唤阳华。
  */
-const AbiogenesisSolarIsotoma = skill(16042)
+export const AbiogenesisSolarIsotoma = skill(16042)
   .type("elemental")
   .costGeo(3)
   // TODO
@@ -43,7 +43,7 @@ const AbiogenesisSolarIsotoma = skill(16042)
  * @description
  * 造成4点岩元素伤害，如果阳华在场，就使此伤害+2。
  */
-const RiteOfProgenitureTectonicTide = skill(16043)
+export const RiteOfProgenitureTectonicTide = skill(16043)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
@@ -56,7 +56,7 @@ const RiteOfProgenitureTectonicTide = skill(16043)
  * @description
  * 黑土与白垩，赤成与黄金。
  */
-const Albedo = character(1604)
+export const Albedo = character(1604)
   .tags("geo", "sword", "mondstadt")
   .health(10)
   .energy(2)
@@ -72,7 +72,7 @@ const Albedo = character(1604)
  * 装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时造成的伤害+1。
  * （牌组中包含阿贝多，才能加入牌组）
  */
-const DescentOfDivinity = card(216041)
+export const DescentOfDivinity = card(216041)
   .costGeo(3)
   .talent(Albedo)
   // TODO

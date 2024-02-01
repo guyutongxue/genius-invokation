@@ -10,7 +10,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 角色对已附属有断流的角色使用技能后：对下一个敌方后台角色造成1点穿透伤害。（每回合至多2次）
  * 持续回合：2
  */
-const MeleeStance = status(112042)
+export const MeleeStance = status(112042)
   // TODO
   .done();
 
@@ -20,7 +20,7 @@ const MeleeStance = status(112042)
  * @description
  * 所附属角色进行重击后：目标角色附属断流。
  */
-const RangedStance = status(112041)
+export const RangedStance = status(112041)
   // TODO
   .done();
 
@@ -31,7 +31,7 @@ const RangedStance = status(112041)
  * 所附属角色被击倒后：对所在阵营的出战角色附属「断流」。
  * （处于「近战状态」的达达利亚攻击所附属角色时，会造成额外伤害。）
  */
-const Riptide = status(112043)
+export const Riptide = status(112043)
   // TODO
   .done();
 
@@ -41,7 +41,7 @@ const Riptide = status(112043)
  * @description
  * 造成2点物理伤害。
  */
-const CuttingTorrent = skill(12041)
+export const CuttingTorrent = skill(12041)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -54,7 +54,7 @@ const CuttingTorrent = skill(12041)
  * @description
  * 切换为近战状态，然后造成2点水元素伤害，并使目标角色附属断流。
  */
-const FoulLegacyRagingTide = skill(12042)
+export const FoulLegacyRagingTide = skill(12042)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -68,7 +68,7 @@ const FoulLegacyRagingTide = skill(12042)
  * 远程状态·魔弹一闪：造成5点水元素伤害，返还2点充能，目标角色附属断流。
  * 近战状态·尽灭水光：造成7点水元素伤害。
  */
-const HavocObliteration = skill(12043)
+export const HavocObliteration = skill(12043)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
@@ -82,7 +82,7 @@ const HavocObliteration = skill(12043)
  * 【被动】战斗开始时，初始附属远程状态。
  * 角色所附属的近战状态效果结束时，重新附属远程状态。
  */
-const TideWithholder01 = skill(12044)
+export const TideWithholder01 = skill(12044)
   .type("passive")
   // TODO
   .done();
@@ -93,7 +93,7 @@ const TideWithholder01 = skill(12044)
  * @description
  * 
  */
-const RangedStanceSkill = skill(12045)
+export const RangedStanceSkill = skill(12045)
   .type("passive")
   // TODO
   .done();
@@ -104,7 +104,7 @@ const RangedStanceSkill = skill(12045)
  * @description
  * 
  */
-const TideWithholder = skill(12046)
+export const TideWithholder = skill(12046)
   .type("passive")
   // TODO
   .done();
@@ -115,7 +115,7 @@ const TideWithholder = skill(12046)
  * @description
  * 牌局亦为战场，能者方可争先。
  */
-const Tartaglia = character(1204)
+export const Tartaglia = character(1204)
   .tags("hydro", "bow", "fatui")
   .health(10)
   .energy(3)
@@ -131,7 +131,7 @@ const Tartaglia = character(1204)
  * 结束阶段：装备有此牌的达达利亚在场时，如果敌方出战角色附属有断流，则对其造成1点穿透伤害。
  * （牌组中包含达达利亚，才能加入牌组）
  */
-const AbyssalMayhemHydrospout = card(212041)
+export const AbyssalMayhemHydrospout = card(212041)
   .costHydro(3)
   .talent(Tartaglia)
   // TODO

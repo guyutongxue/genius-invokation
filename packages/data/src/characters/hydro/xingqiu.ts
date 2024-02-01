@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 我方角色普通攻击后：造成1点水元素伤害。
  * 可用次数：3
  */
-const RainbowBladework = combatStatus(112022)
+export const RainbowBladework = combatStatus(112022)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const RainbowBladework = combatStatus(112022)
  * 我方出战角色受到至少为2的伤害时：抵消1点伤害。
  * 可用次数：3
  */
-const RainSword01 = combatStatus(112023)
+export const RainSword01 = combatStatus(112023)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const RainSword01 = combatStatus(112023)
  * 我方出战角色受到至少为3的伤害时：抵消1点伤害。
  * 可用次数：2
  */
-const RainSword = combatStatus(112021)
+export const RainSword = combatStatus(112021)
   // TODO
   .done();
 
@@ -39,7 +39,7 @@ const RainSword = combatStatus(112021)
  * @description
  * 造成2点物理伤害。
  */
-const GuhuaStyle = skill(12021)
+export const GuhuaStyle = skill(12021)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -52,7 +52,7 @@ const GuhuaStyle = skill(12021)
  * @description
  * 造成2点水元素伤害，本角色附着水元素，生成雨帘剑。
  */
-const FatalRainscreen = skill(12022)
+export const FatalRainscreen = skill(12022)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -64,7 +64,7 @@ const FatalRainscreen = skill(12022)
  * @description
  * 造成2点水元素伤害，本角色附着水元素，生成虹剑势。
  */
-const Raincutter = skill(12023)
+export const Raincutter = skill(12023)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
@@ -77,7 +77,7 @@ const Raincutter = skill(12023)
  * @description
  * 「怎么最近小说里的主角，都是些私塾里的学生…」
  */
-const Xingqiu = character(1202)
+export const Xingqiu = character(1202)
   .tags("hydro", "sword", "liyue")
   .health(10)
   .energy(2)
@@ -93,7 +93,7 @@ const Xingqiu = character(1202)
  * 装备有此牌的行秋生成的雨帘剑改为可以抵挡至少为2的伤害，并且初始可用次数+1。
  * （牌组中包含行秋，才能加入牌组）
  */
-const TheScentRemained = card(212021)
+export const TheScentRemained = card(212021)
   .costHydro(3)
   .talent(Xingqiu)
   // TODO

@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 本角色造成或受到元素伤害后：累积1层「活化激能」。（最多累积3层）
  * 结束阶段：如果「活化激能」层数已达到上限，就将其清空。同时，角色失去所有充能。
  */
-const RadicalVitalityStatus = status(127011)
+export const RadicalVitalityStatus = status(127011)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const RadicalVitalityStatus = status(127011)
  * @description
  * 造成2点物理伤害。
  */
-const MajesticDance = skill(27011)
+export const MajesticDance = skill(27011)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
@@ -30,7 +30,7 @@ const MajesticDance = skill(27011)
  * @description
  * 造成3点草元素伤害。
  */
-const VolatileSporeCloud = skill(27012)
+export const VolatileSporeCloud = skill(27012)
   .type("elemental")
   .costDendro(3)
   // TODO
@@ -42,7 +42,7 @@ const VolatileSporeCloud = skill(27012)
  * @description
  * 造成4点草元素伤害，消耗所有活化激能层数，每层使此伤害+1。
  */
-const FeatherSpreading = skill(27013)
+export const FeatherSpreading = skill(27013)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
@@ -55,7 +55,7 @@ const FeatherSpreading = skill(27013)
  * @description
  * 【被动】战斗开始时，初始附属活化激能。
  */
-const RadicalVitality = skill(27014)
+export const RadicalVitality = skill(27014)
   .type("passive")
   // TODO
   .done();
@@ -66,7 +66,7 @@ const RadicalVitality = skill(27014)
  * @description
  * 悄声静听，可以听到幽林之中，蕈类王者巡视领土的脚步…
  */
-const JadeplumeTerrorshroom = character(2701)
+export const JadeplumeTerrorshroom = character(2701)
   .tags("dendro", "monster")
   .health(10)
   .energy(2)
@@ -82,7 +82,7 @@ const JadeplumeTerrorshroom = character(2701)
  * 装备有此牌的翠翎恐蕈，可累积的「活化激能」层数+1。
  * （牌组中包含翠翎恐蕈，才能加入牌组）
  */
-const ProliferatingSpores = card(227011)
+export const ProliferatingSpores = card(227011)
   .costDendro(3)
   .talent(JadeplumeTerrorshroom)
   // TODO

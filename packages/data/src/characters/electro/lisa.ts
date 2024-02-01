@@ -7,7 +7,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成2点雷元素伤害。
  * 可用次数：2
  */
-const LightningRoseSummon = summon(114092)
+export const LightningRoseSummon = summon(114092)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const LightningRoseSummon = summon(114092)
  * 结束阶段：叠加1层「引雷」。
  * 所附属角色受到苍雷伤害时：移除此状态，每层「引雷」使此伤害+1。
  */
-const Conductive = status(114091)
+export const Conductive = status(114091)
   // TODO
   .done();
 
@@ -30,7 +30,7 @@ const Conductive = status(114091)
  * 造成1点雷元素伤害；
  * 如果此技能为重击，则使敌方出战角色附属引雷。
  */
-const LightningTouch = skill(14091)
+export const LightningTouch = skill(14091)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -43,7 +43,7 @@ const LightningTouch = skill(14091)
  * @description
  * 造成2点雷元素伤害；如果敌方出战角色未附属引雷，则使其附属引雷。
  */
-const VioletArc = skill(14092)
+export const VioletArc = skill(14092)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -55,7 +55,7 @@ const VioletArc = skill(14092)
  * @description
  * 造成2点雷元素伤害，召唤蔷薇雷光。
  */
-const LightningRose = skill(14093)
+export const LightningRose = skill(14093)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
@@ -68,7 +68,7 @@ const LightningRose = skill(14093)
  * @description
  * 追寻魔导的奥秘，静待真相的机缘。
  */
-const Lisa = character(1409)
+export const Lisa = character(1409)
   .tags("electro", "catalyst", "mondstadt")
   .health(10)
   .energy(2)
@@ -82,7 +82,7 @@ const Lisa = character(1409)
  * 切换到装备有此牌的丽莎后：使敌方出战角色附属引雷。（每回合1次）
  * （牌组中包含丽莎，才能加入牌组）
  */
-const PulsatingWitch = card(214091)
+export const PulsatingWitch = card(214091)
   .costElectro(1)
   .talent(Lisa)
   // TODO

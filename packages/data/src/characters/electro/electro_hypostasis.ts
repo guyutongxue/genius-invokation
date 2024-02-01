@@ -8,7 +8,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  * 此召唤物在场时：敌方执行「切换角色」行动的元素骰费用+1。（每回合1次）
  */
-const ChainsOfWardingThunder = summon(124013)
+export const ChainsOfWardingThunder = summon(124013)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const ChainsOfWardingThunder = summon(124013)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到6点生命值。
  */
-const ElectroCrystalCore01 = status(124015)
+export const ElectroCrystalCore01 = status(124015)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const ElectroCrystalCore01 = status(124015)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到10点生命值。
  */
-const ElectroCrystalCore02 = status(124016)
+export const ElectroCrystalCore02 = status(124016)
   // TODO
   .done();
 
@@ -38,7 +38,7 @@ const ElectroCrystalCore02 = status(124016)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  */
-const ElectroCrystalCore = status(124014)
+export const ElectroCrystalCore = status(124014)
   // TODO
   .done();
 
@@ -48,7 +48,7 @@ const ElectroCrystalCore = status(124014)
  * @description
  * 本角色将在下次行动时，直接使用技能：猜拳三连击·布。
  */
-const RockpaperscissorsComboPaperStatus = status(124012)
+export const RockpaperscissorsComboPaperStatus = status(124012)
   // TODO
   .done();
 
@@ -58,7 +58,7 @@ const RockpaperscissorsComboPaperStatus = status(124012)
  * @description
  * 本角色将在下次行动时，直接使用技能：猜拳三连击·剪刀。
  */
-const RockpaperscissorsComboScissorsStatus = status(124011)
+export const RockpaperscissorsComboScissorsStatus = status(124011)
   // TODO
   .done();
 
@@ -68,7 +68,7 @@ const RockpaperscissorsComboScissorsStatus = status(124011)
  * @description
  * 造成1点雷元素伤害。
  */
-const ElectroCrystalProjection = skill(24011)
+export const ElectroCrystalProjection = skill(24011)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -81,7 +81,7 @@ const ElectroCrystalProjection = skill(24011)
  * @description
  * 造成2点雷元素伤害，然后分别准备技能：猜拳三连击·剪刀和猜拳三连击·布。
  */
-const RockpaperscissorsCombo = skill(24012)
+export const RockpaperscissorsCombo = skill(24012)
   .type("elemental")
   .costElectro(5)
   // TODO
@@ -93,7 +93,7 @@ const RockpaperscissorsCombo = skill(24012)
  * @description
  * 造成2点雷元素伤害，召唤雷锁镇域。
  */
-const LightningLockdown = skill(24013)
+export const LightningLockdown = skill(24013)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
@@ -106,7 +106,7 @@ const LightningLockdown = skill(24013)
  * @description
  * 【被动】战斗开始时，初始附属雷晶核心。
  */
-const ElectroCrystalCoreSkill = skill(24014)
+export const ElectroCrystalCoreSkill = skill(24014)
   .type("passive")
   // TODO
   .done();
@@ -117,7 +117,7 @@ const ElectroCrystalCoreSkill = skill(24014)
  * @description
  * 造成2点雷元素伤害，然后准备技能：猜拳三连击·布。
  */
-const RockpaperscissorsComboScissors = skill(24015)
+export const RockpaperscissorsComboScissors = skill(24015)
   .type("elemental")
   // TODO
   .done();
@@ -128,7 +128,7 @@ const RockpaperscissorsComboScissors = skill(24015)
  * @description
  * 造成3点雷元素伤害。
  */
-const RockpaperscissorsComboPaper = skill(24016)
+export const RockpaperscissorsComboPaper = skill(24016)
   .type("elemental")
   // TODO
   .done();
@@ -140,7 +140,7 @@ const RockpaperscissorsComboPaper = skill(24016)
  * 代号为「阿莱夫」的高级雷元素生命。
  * 就算猜拳获胜，它一般也不会认输。
  */
-const ElectroHypostasis = character(2401)
+export const ElectroHypostasis = character(2401)
   .tags("electro", "monster")
   .health(8)
   .energy(2)
@@ -154,7 +154,7 @@ const ElectroHypostasis = character(2401)
  * 战斗行动：我方出战角色为无相之雷时，治疗该角色3点，并附属雷晶核心。
  * （牌组中包含无相之雷，才能加入牌组）
  */
-const AbsorbingPrism = card(224011)
+export const AbsorbingPrism = card(224011)
   .costElectro(2)
   .tags("action")
   .eventTalent(ElectroHypostasis)

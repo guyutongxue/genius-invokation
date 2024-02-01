@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 我方出战角色受到至少为2的伤害时：抵消1点伤害。
  * 可用次数：2
  */
-const JadeScreenStatus = combatStatus(116011)
+export const JadeScreenStatus = combatStatus(116011)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const JadeScreenStatus = combatStatus(116011)
  * @description
  * 造成1点岩元素伤害。
  */
-const SparklingScatter = skill(16011)
+export const SparklingScatter = skill(16011)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
@@ -30,7 +30,7 @@ const SparklingScatter = skill(16011)
  * @description
  * 造成2点岩元素伤害，生成璇玑屏。
  */
-const JadeScreen = skill(16012)
+export const JadeScreen = skill(16012)
   .type("elemental")
   .costGeo(3)
   // TODO
@@ -42,7 +42,7 @@ const JadeScreen = skill(16012)
  * @description
  * 造成6点岩元素伤害；如果璇玑屏在场，就使此伤害+2。
  */
-const Starshatter = skill(16013)
+export const Starshatter = skill(16013)
   .type("burst")
   .costGeo(3)
   .costEnergy(3)
@@ -55,7 +55,7 @@ const Starshatter = skill(16013)
  * @description
  * 她保守着一个最大的秘密，那就是自己保守着璃月港的许多秘密。
  */
-const Ningguang = character(1601)
+export const Ningguang = character(1601)
   .tags("geo", "catalyst", "liyue")
   .health(10)
   .energy(3)
@@ -71,7 +71,7 @@ const Ningguang = character(1601)
  * 装备有此牌的凝光在场时，璇玑屏会使我方造成的岩元素伤害+1。
  * （牌组中包含凝光，才能加入牌组）
  */
-const StrategicReserve = card(216011)
+export const StrategicReserve = card(216011)
   .costGeo(4)
   .talent(Ningguang)
   // TODO

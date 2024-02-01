@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType, EquipmentHandle } fro
  * 我方角色使用技能时：此技能伤害+2；技能结算后，如果该角色生命值不多于6，则治疗该角色2点。
  * 持续回合：2
  */
-const InspirationField01 = combatStatus(113032)
+export const InspirationField01 = combatStatus(113032)
   .conflictWith(113031)
   .duration(2)
   .on("beforeSkillDamage")
@@ -24,7 +24,7 @@ const InspirationField01 = combatStatus(113032)
  * 我方角色使用技能时：如果该角色生命值至少为7，则使此伤害额外+2；技能结算后，如果该角色生命值不多于6，则治疗该角色2点。
  * 持续回合：2
  */
-const InspirationField = combatStatus(113031)
+export const InspirationField = combatStatus(113031)
   .conflictWith(113032)
   .duration(2)
   .on("beforeSkillDamage")
@@ -41,7 +41,7 @@ const InspirationField = combatStatus(113031)
  * @description
  * 造成2点物理伤害。
  */
-const StrikeOfFortune = skill(13031)
+export const StrikeOfFortune = skill(13031)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -54,7 +54,7 @@ const StrikeOfFortune = skill(13031)
  * @description
  * 造成3点火元素伤害。
  */
-const PassionOverload = skill(13032)
+export const PassionOverload = skill(13032)
   .type("elemental")
   .costPyro(3)
   .damage(DamageType.Pyro, 3)
@@ -66,7 +66,7 @@ const PassionOverload = skill(13032)
  * @description
  * 造成2点火元素伤害，生成鼓舞领域。
  */
-const FantasticVoyage = skill(13033)
+export const FantasticVoyage = skill(13033)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)
@@ -83,7 +83,7 @@ const FantasticVoyage = skill(13033)
  * @description
  * 当你知道自己一定会输时，那你肯定也知道如何能赢。
  */
-const Bennett = character(1303)
+export const Bennett = character(1303)
   .tags("pyro", "sword", "mondstadt")
   .health(10)
   .energy(2)
@@ -99,7 +99,7 @@ const Bennett = character(1303)
  * 装备有此牌的班尼特生成的鼓舞领域，其伤害提升效果改为总是生效，不再具有生命值限制。
  * （牌组中包含班尼特，才能加入牌组）
  */
-const GrandExpectation: EquipmentHandle = card(213031)
+export const GrandExpectation: EquipmentHandle = card(213031)
   .costPyro(4)
   .costEnergy(2)
   .talent(Bennett)

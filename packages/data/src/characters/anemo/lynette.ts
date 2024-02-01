@@ -9,7 +9,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 我方出战角色受到伤害时：抵消1点伤害。（每回合1次）
  * 我方角色受到冰/水/火/雷伤害时：转换此牌的元素类型，改为造成所受到的元素类型的伤害。（离场前仅限一次）
  */
-const BogglecatBox = summon(115082)
+export const BogglecatBox = summon(115082)
   // TODO
   .done();
 
@@ -20,7 +20,7 @@ const BogglecatBox = summon(115082)
  * 结束阶段：如果角色生命值至少为6，则受到2点穿透伤害。
  * 持续回合：1
  */
-const OverawingAssault = status(115081)
+export const OverawingAssault = status(115081)
   // TODO
   .done();
 
@@ -30,7 +30,7 @@ const OverawingAssault = status(115081)
  * @description
  * 我方出战角色受到伤害时：抵消1点伤害。（每回合1次）
  */
-const BogglecatBoxsTaunt = combatStatus(115083)
+export const BogglecatBoxsTaunt = combatStatus(115083)
   // TODO
   .done();
 
@@ -40,7 +40,7 @@ const BogglecatBoxsTaunt = combatStatus(115083)
  * @description
  * 造成2点物理伤害。
  */
-const RapidRitesword = skill(15081)
+export const RapidRitesword = skill(15081)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
@@ -53,7 +53,7 @@ const RapidRitesword = skill(15081)
  * @description
  * 造成3点风元素伤害，本回合第一次使用此技能、且自身生命值不多于8时治疗自身2点，但是附属攻袭余威。
  */
-const EnigmaticFeint = skill(15082)
+export const EnigmaticFeint = skill(15082)
   .type("elemental")
   .costAnemo(3)
   // TODO
@@ -65,7 +65,7 @@ const EnigmaticFeint = skill(15082)
  * @description
  * 造成2点风元素伤害，召唤惊奇猫猫盒。
  */
-const MagicTrickAstonishingShift = skill(15083)
+export const MagicTrickAstonishingShift = skill(15083)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
@@ -78,7 +78,7 @@ const MagicTrickAstonishingShift = skill(15083)
  * @description
  * 水中窥月，洞见夜明。
  */
-const Lynette = character(1508)
+export const Lynette = character(1508)
   .tags("anemo", "sword", "fontaine", "fatui", "pneuma")
   .health(10)
   .energy(2)
@@ -94,7 +94,7 @@ const Lynette = character(1508)
  * 装备有此牌的琳妮特每回合第二次使用谜影障身法时：伤害+2，并强制敌方切换到前一个角色。
  * （牌组中包含琳妮特，才能加入牌组）
  */
-const AColdBladeLikeAShadow = card(215081)
+export const AColdBladeLikeAShadow = card(215081)
   .costAnemo(3)
   .talent(Lynette)
   // TODO

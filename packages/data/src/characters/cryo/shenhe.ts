@@ -8,7 +8,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  * 此召唤物在场时：敌方角色受到的冰元素伤害和物理伤害+1。
  */
-const TalismanSpirit = summon(111073)
+export const TalismanSpirit = summon(111073)
   // TODO
   .done();
 
@@ -20,7 +20,7 @@ const TalismanSpirit = summon(111073)
  * 可用次数：2
  * 我方角色通过「普通攻击」触发此效果时，不消耗可用次数。（每回合1次）
  */
-const IcyQuill01 = combatStatus(111072)
+export const IcyQuill01 = combatStatus(111072)
   // TODO
   .done();
 
@@ -31,7 +31,7 @@ const IcyQuill01 = combatStatus(111072)
  * 我方角色造成的冰元素伤害+1。（包括角色引发的冰元素扩散的伤害）
  * 可用次数：2
  */
-const IcyQuill = combatStatus(111071)
+export const IcyQuill = combatStatus(111071)
   // TODO
   .done();
 
@@ -41,7 +41,7 @@ const IcyQuill = combatStatus(111071)
  * @description
  * 造成2点物理伤害。
  */
-const DawnstarPiercer = skill(11071)
+export const DawnstarPiercer = skill(11071)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -54,7 +54,7 @@ const DawnstarPiercer = skill(11071)
  * @description
  * 造成2点冰元素伤害，生成冰翎。
  */
-const SpringSpiritSummoning = skill(11072)
+export const SpringSpiritSummoning = skill(11072)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -66,7 +66,7 @@ const SpringSpiritSummoning = skill(11072)
  * @description
  * 造成1点冰元素伤害，召唤箓灵。
  */
-const DivineMaidensDeliverance = skill(11073)
+export const DivineMaidensDeliverance = skill(11073)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
@@ -79,7 +79,7 @@ const DivineMaidensDeliverance = skill(11073)
  * @description
  * 红尘渺渺，因果烟消。
  */
-const Shenhe = character(1107)
+export const Shenhe = character(1107)
   .tags("cryo", "pole", "liyue")
   .health(10)
   .energy(2)
@@ -95,7 +95,7 @@ const Shenhe = character(1107)
  * 装备有此牌的申鹤生成的冰翎被我方角色的「普通攻击」触发时：不消耗可用次数。（每回合1次）
  * （牌组中包含申鹤，才能加入牌组）
  */
-const MysticalAbandon = card(211071)
+export const MysticalAbandon = card(211071)
   .costCryo(3)
   .talent(Shenhe)
   // TODO

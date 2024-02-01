@@ -7,7 +7,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 本回合内，所附属的角色普通攻击少花费1个无色元素。
  * 可用次数：2
  */
-const SummonerOfLightning = status(114052)
+export const SummonerOfLightning = status(114052)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const SummonerOfLightning = status(114052)
  * 本角色将在下次行动时，直接使用技能：踏潮。
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
-const TidecallerSurfEmbrace = status(114051)
+export const TidecallerSurfEmbrace = status(114051)
   // TODO
   .done();
 
@@ -30,7 +30,7 @@ const TidecallerSurfEmbrace = status(114051)
  * 我方角色受到至少为3的伤害时：抵消其中1点伤害。
  * 持续回合：2
  */
-const ThunderbeastsTarge = combatStatus(114053)
+export const ThunderbeastsTarge = combatStatus(114053)
   // TODO
   .done();
 
@@ -40,7 +40,7 @@ const ThunderbeastsTarge = combatStatus(114053)
  * @description
  * 造成2点物理伤害。
  */
-const Oceanborne = skill(14051)
+export const Oceanborne = skill(14051)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -53,7 +53,7 @@ const Oceanborne = skill(14051)
  * @description
  * 本角色附属捉浪·涛拥之守并准备技能：踏潮。
  */
-const Tidecaller = skill(14052)
+export const Tidecaller = skill(14052)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -65,7 +65,7 @@ const Tidecaller = skill(14052)
  * @description
  * 造成2点雷元素伤害，生成雷兽之盾。
  */
-const Stormbreaker = skill(14053)
+export const Stormbreaker = skill(14053)
   .type("burst")
   .costElectro(3)
   .costEnergy(3)
@@ -79,7 +79,7 @@ const Stormbreaker = skill(14053)
  * （需准备1个行动轮）
  * 造成3点雷元素伤害。
  */
-const Wavestrider = skill(14054)
+export const Wavestrider = skill(14054)
   .type("elemental")
   // TODO
   .done();
@@ -90,7 +90,7 @@ const Wavestrider = skill(14054)
  * @description
  * 「记住这一天，你差点赢了南十字船队老大的钱。」
  */
-const Beidou = character(1405)
+export const Beidou = character(1405)
   .tags("electro", "claymore", "liyue")
   .health(10)
   .energy(3)
@@ -106,7 +106,7 @@ const Beidou = character(1405)
  * 装备有此牌的北斗使用踏潮后：使北斗本回合内「普通攻击」少花费1个无色元素。（最多触发2次）
  * （牌组中包含北斗，才能加入牌组）
  */
-const LightningStorm = card(214051)
+export const LightningStorm = card(214051)
   .costElectro(3)
   .talent(Beidou)
   // TODO

@@ -7,7 +7,7 @@ import { status, combatStatus, summon, DamageType } from "@gi-tcg/core/builder";
  * 角色无法使用技能。（持续到回合结束）
  * 角色受到火元素伤害或物理伤害时，移除此效果，使该伤害+2。
  */
-const Frozen = status(106)
+export const Frozen = status(106)
   .duration(1)
   .tags("disableSkill")
   .on("beforeDamaged", (c) => [DamageType.Pyro, DamageType.Physical].includes(c.damageInfo.type))
@@ -24,7 +24,7 @@ const Frozen = status(106)
  * @description
  * 为我方出战角色提供1点护盾。（可叠加，最多叠加到2点）
  */
-const Crystallize = combatStatus(111)
+export const Crystallize = combatStatus(111)
   .shield(1, 2) //
   .done();
 
@@ -35,7 +35,7 @@ const Crystallize = combatStatus(111)
  * 结束阶段：造成1点火元素伤害。
  * 可用次数：1（可叠加，最多叠加到2次）
  */
-const BurningFlame = summon(115)
+export const BurningFlame = summon(115)
   .endPhaseDamage(DamageType.Pyro, 1)
   .usage(1, { recreateMax: 2 })
   .done();
@@ -47,7 +47,7 @@ const BurningFlame = summon(115)
  * 我方对敌方出战角色造成火元素伤害或雷元素伤害时，伤害值+2。
  * 可用次数：1
  */
-const DendroCore = combatStatus(116)
+export const DendroCore = combatStatus(116)
   .on("beforeDealDamage", (c) =>
     [DamageType.Pyro, DamageType.Electro].includes(c.damageInfo.type) &&
     c.damageInfo.target.id === c.$("opp active character")!.id)
@@ -62,7 +62,7 @@ const DendroCore = combatStatus(116)
  * 我方对敌方出战角色造成雷元素伤害或草元素伤害时，伤害值+1。
  * 可用次数：2
  */
-const CatalyzingField = combatStatus(117)
+export const CatalyzingField = combatStatus(117)
   .on("beforeDealDamage", (c) =>
     [DamageType.Electro, DamageType.Dendro].includes(c.damageInfo.type) &&
     c.damageInfo.target.id === c.$("opp active character")!.id)

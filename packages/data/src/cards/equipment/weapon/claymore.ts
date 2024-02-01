@@ -7,7 +7,7 @@ import { card } from "@gi-tcg/core/builder";
  * 角色造成的伤害+1。
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const WhiteIronGreatsword = card(311301)
+export const WhiteIronGreatsword = card(311301)
   .costSame(2)
   .weapon("claymore")
   // TODO
@@ -21,7 +21,7 @@ const WhiteIronGreatsword = card(311301)
  * 角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const SacrificialGreatsword = card(311302)
+export const SacrificialGreatsword = card(311302)
   .costSame(3)
   .weapon("claymore")
   // TODO
@@ -35,7 +35,7 @@ const SacrificialGreatsword = card(311302)
  * 攻击剩余生命值不多于6的目标时，伤害额外+2。
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const WolfsGravestone = card(311303)
+export const WolfsGravestone = card(311303)
   .costSame(3)
   .weapon("claymore")
   // TODO
@@ -49,7 +49,7 @@ const WolfsGravestone = card(311303)
  * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const SkywardPride = card(311304)
+export const SkywardPride = card(311304)
   .costSame(3)
   .weapon("claymore")
   // TODO
@@ -63,7 +63,7 @@ const SkywardPride = card(311304)
  * 角色使用技能后：为我方出战角色提供1点护盾。（每回合1次，可叠加到2点）
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const TheBell = card(311305)
+export const TheBell = card(311305)
   .costSame(3)
   .weapon("claymore")
   // TODO
@@ -78,7 +78,7 @@ const TheBell = card(311305)
  * 角色受到伤害后：本回合内，角色下次造成的伤害额外+1。（每回合1次）
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
-const BeaconOfTheReedSea = card(311306)
+export const BeaconOfTheReedSea = card(311306)
   .costSame(3)
   .weapon("claymore")
   // TODO

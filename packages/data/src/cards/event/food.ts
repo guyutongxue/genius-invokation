@@ -7,7 +7,7 @@ import { card } from "@gi-tcg/core/builder";
  * 本回合中，目标角色下一次「普通攻击」造成的伤害+1。
  * （每回合每个角色最多食用1次「料理」）
  */
-const JueyunGuoba = card(333001)
+export const JueyunGuoba = card(333001)
   .tags("food")
   // TODO
   .done();
@@ -19,7 +19,7 @@ const JueyunGuoba = card(333001)
  * 本回合中，目标角色下一次「元素爆发」造成的伤害+3。
  * （每回合每个角色最多食用1次「料理」）
  */
-const AdeptusTemptation = card(333002)
+export const AdeptusTemptation = card(333002)
   .costVoid(2)
   .tags("food")
   // TODO
@@ -32,7 +32,7 @@ const AdeptusTemptation = card(333002)
  * 本回合中，目标角色下次受到的伤害-3。
  * （每回合中每个角色最多食用1次「料理」）
  */
-const LotusFlowerCrisp = card(333003)
+export const LotusFlowerCrisp = card(333003)
   .costSame(1)
   .tags("food")
   // TODO
@@ -45,7 +45,7 @@ const LotusFlowerCrisp = card(333003)
  * 本回合中，目标角色下一次「普通攻击」少花费1个无色元素。
  * （每回合每个角色最多食用1次「料理」）
  */
-const NorthernSmokedChicken = card(333004)
+export const NorthernSmokedChicken = card(333004)
   .tags("food")
   // TODO
   .done();
@@ -57,7 +57,7 @@ const NorthernSmokedChicken = card(333004)
  * 治疗目标角色1点。
  * （每回合每个角色最多食用1次「料理」）
  */
-const SweetMadame = card(333005)
+export const SweetMadame = card(333005)
   .tags("food")
   // TODO
   .done();
@@ -69,7 +69,7 @@ const SweetMadame = card(333005)
  * 治疗目标角色2点。
  * （每回合每个角色最多食用1次「料理」）
  */
-const MondstadtHashBrown = card(333006)
+export const MondstadtHashBrown = card(333006)
   .costSame(1)
   .tags("food")
   // TODO
@@ -82,7 +82,7 @@ const MondstadtHashBrown = card(333006)
  * 治疗目标角色1点，两回合内结束阶段再治疗此角色1点。
  * （每回合每个角色最多食用1次「料理」）
  */
-const MushroomPizza = card(333007)
+export const MushroomPizza = card(333007)
   .costSame(1)
   .tags("food")
   // TODO
@@ -95,7 +95,7 @@ const MushroomPizza = card(333007)
  * 目标角色在本回合结束前，之后三次「普通攻击」都少花费1个无色元素。
  * （每回合每个角色最多食用1次「料理」）
  */
-const MintyMeatRolls = card(333008)
+export const MintyMeatRolls = card(333008)
   .costSame(1)
   .tags("food")
   // TODO
@@ -108,7 +108,7 @@ const MintyMeatRolls = card(333008)
  * 复苏目标角色，并治疗此角色1点。
  * （每回合中，最多通过「料理」复苏1个角色，并且每个角色最多食用1次「料理」）
  */
-const TeyvatFriedEgg = card(333009)
+export const TeyvatFriedEgg = card(333009)
   .costSame(2)
   .tags("food")
   // TODO
@@ -121,7 +121,7 @@ const TeyvatFriedEgg = card(333009)
  * 目标角色在本回合结束前，「普通攻击」造成的伤害+1。
  * （每回合每个角色最多食用1次「料理」）
  */
-const SashimiPlatter = card(333010)
+export const SashimiPlatter = card(333010)
   .costSame(1)
   .tags("food")
   // TODO
@@ -134,7 +134,7 @@ const SashimiPlatter = card(333010)
  * 本回合中，所有我方角色下一次「元素战技」造成的伤害+2。
  * （每回合每个角色最多食用1次「料理」）
  */
-const TandooriRoastChicken = card(333011)
+export const TandooriRoastChicken = card(333011)
   .costVoid(2)
   .tags("food")
   // TODO
@@ -147,7 +147,7 @@ const TandooriRoastChicken = card(333011)
  * 本回合中，所有我方角色下次受到的伤害-2。
  * （每回合每个角色最多食用1次「料理」）
  */
-const ButterCrab = card(333012)
+export const ButterCrab = card(333012)
   .costVoid(2)
   .tags("food")
   // TODO
@@ -160,7 +160,7 @@ const ButterCrab = card(333012)
  * 本回合中，所有我方角色下次使用技能时少花费1个元素骰。
  * （每回合每个角色最多食用1次「料理」）
  */
-const FishAndChips = card(333013)
+export const FishAndChips = card(333013)
   .costVoid(2)
   .tags("food")
   // TODO

@@ -9,7 +9,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：3
  * （同一方场上最多存在一个此状态）
  */
-const Refraction01 = status(122022)
+export const Refraction01 = status(122022)
   // TODO
   .done();
 
@@ -21,7 +21,7 @@ const Refraction01 = status(122022)
  * 持续回合：2
  * （同一方场上最多存在一个此状态）
  */
-const Refraction = status(122021)
+export const Refraction = status(122021)
   // TODO
   .done();
 
@@ -31,7 +31,7 @@ const Refraction = status(122021)
  * @description
  * 造成1点水元素伤害。
  */
-const WaterBall = skill(22021)
+export const WaterBall = skill(22021)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -44,7 +44,7 @@ const WaterBall = skill(22021)
  * @description
  * 造成2点水元素伤害，目标角色附属水光破镜。
  */
-const InfluxBlast = skill(22022)
+export const InfluxBlast = skill(22022)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -56,7 +56,7 @@ const InfluxBlast = skill(22022)
  * @description
  * 造成5点水元素伤害。
  */
-const RippledReflection = skill(22023)
+export const RippledReflection = skill(22023)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
@@ -69,7 +69,7 @@ const RippledReflection = skill(22023)
  * @description
  * 一切隐秘，都将深藏于潋光的水镜之中吧…
  */
-const MirrorMaiden = character(2202)
+export const MirrorMaiden = character(2202)
   .tags("hydro", "fatui")
   .health(10)
   .energy(2)
@@ -86,7 +86,7 @@ const MirrorMaiden = character(2202)
  * 初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。
  * （牌组中包含愚人众·藏镜仕女，才能加入牌组）
  */
-const MirrorCage = card(222021)
+export const MirrorCage = card(222021)
   .costHydro(3)
   .talent(MirrorMaiden)
   // TODO

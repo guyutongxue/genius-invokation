@@ -7,7 +7,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：造成1点冰元素伤害，治疗我方出战角色2点。
  * 可用次数：2
  */
-const DrunkenMist = summon(111023)
+export const DrunkenMist = summon(111023)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const DrunkenMist = summon(111023)
  * @description
  * 为我方出战角色提供2点护盾。
  */
-const CatclawShield01 = combatStatus(111022)
+export const CatclawShield01 = combatStatus(111022)
   // TODO
   .done();
 
@@ -27,7 +27,7 @@ const CatclawShield01 = combatStatus(111022)
  * @description
  * 为我方出战角色提供1点护盾。
  */
-const CatclawShield = combatStatus(111021)
+export const CatclawShield = combatStatus(111021)
   // TODO
   .done();
 
@@ -37,7 +37,7 @@ const CatclawShield = combatStatus(111021)
  * @description
  * 造成2点物理伤害。
  */
-const KatzleinStyle = skill(11021)
+export const KatzleinStyle = skill(11021)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -50,7 +50,7 @@ const KatzleinStyle = skill(11021)
  * @description
  * 造成2点冰元素伤害，生成猫爪护盾。
  */
-const IcyPaws = skill(11022)
+export const IcyPaws = skill(11022)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -62,7 +62,7 @@ const IcyPaws = skill(11022)
  * @description
  * 造成1点冰元素伤害，治疗此角色2点，召唤酒雾领域。
  */
-const SignatureMix = skill(11023)
+export const SignatureMix = skill(11023)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
@@ -75,7 +75,7 @@ const SignatureMix = skill(11023)
  * @description
  * 用1%的力气调酒，99%的力气…拒绝失败。
  */
-const Diona = character(1102)
+export const Diona = character(1102)
   .tags("cryo", "bow", "mondstadt")
   .health(10)
   .energy(3)
@@ -91,7 +91,7 @@ const Diona = character(1102)
  * 装备有此牌的迪奥娜生成的猫爪护盾，所提供的护盾值+1。
  * （牌组中包含迪奥娜，才能加入牌组）
  */
-const ShakenNotPurred = card(211021)
+export const ShakenNotPurred = card(211021)
   .costCryo(3)
   .talent(Diona)
   // TODO

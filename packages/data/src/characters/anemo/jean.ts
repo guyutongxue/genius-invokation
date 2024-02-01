@@ -7,7 +7,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段：造成1点风元素伤害，治疗我方出战角色1点。
  * 可用次数：2
  */
-const DandelionField = summon(115021)
+export const DandelionField = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
   .heal(1, "active")
@@ -24,7 +24,7 @@ const DandelionField = summon(115021)
  * @description
  * 造成2点物理伤害。
  */
-const FavoniusBladework = skill(15021)
+export const FavoniusBladework = skill(15021)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
@@ -37,7 +37,7 @@ const FavoniusBladework = skill(15021)
  * @description
  * 造成3点风元素伤害，使对方强制切换到下一个角色。
  */
-const GaleBlade = skill(15022)
+export const GaleBlade = skill(15022)
   .type("elemental")
   .costAnemo(3)
   .damage(DamageType.Anemo, 3)
@@ -50,7 +50,7 @@ const GaleBlade = skill(15022)
  * @description
  * 治疗所有我方角色2点，召唤蒲公英领域。
  */
-const DandelionBreeze = skill(15023)
+export const DandelionBreeze = skill(15023)
   .type("burst")
   .costAnemo(4)
   .costEnergy(2)
@@ -64,7 +64,7 @@ const DandelionBreeze = skill(15023)
  * @description
  * 在夺得最终的胜利之前，她总是认为自己做得还不够好。
  */
-const Jean = character(1502)
+export const Jean = character(1502)
   .tags("anemo", "sword", "mondstadt")
   .health(10)
   .energy(3)
@@ -80,7 +80,7 @@ const Jean = character(1502)
  * 装备有此牌的琴在场时，蒲公英领域会使我方造成的风元素伤害+1。
  * （牌组中包含琴，才能加入牌组）
  */
-const LandsOfDandelion = card(215021)
+export const LandsOfDandelion = card(215021)
   .costAnemo(4)
   .costEnergy(2)
   .talent(Jean)

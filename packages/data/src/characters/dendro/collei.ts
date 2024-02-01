@@ -7,7 +7,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：造成2点草元素伤害。
  * 可用次数：2
  */
-const CuileinAnbar = summon(117011)
+export const CuileinAnbar = summon(117011)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const CuileinAnbar = summon(117011)
  * 我方角色使用技能引发草元素相关反应后：造成1点草元素伤害。（每回合1次）
  * 持续回合：1
  */
-const Sprout = combatStatus(117012)
+export const Sprout = combatStatus(117012)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const Sprout = combatStatus(117012)
  * @description
  * 造成2点物理伤害。
  */
-const SupplicantsBowmanship = skill(17011)
+export const SupplicantsBowmanship = skill(17011)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const SupplicantsBowmanship = skill(17011)
  * @description
  * 造成3点草元素伤害。
  */
-const FloralBrush = skill(17012)
+export const FloralBrush = skill(17012)
   .type("elemental")
   .costDendro(3)
   // TODO
@@ -53,7 +53,7 @@ const FloralBrush = skill(17012)
  * @description
  * 造成2点草元素伤害，召唤柯里安巴。
  */
-const TrumpcardKitty = skill(17013)
+export const TrumpcardKitty = skill(17013)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
@@ -66,7 +66,7 @@ const TrumpcardKitty = skill(17013)
  * @description
  * 「大声喊出卡牌的名字会让它威力加倍…这一定是虚构的吧？」
  */
-const Collei = character(1701)
+export const Collei = character(1701)
   .tags("dendro", "bow", "sumeru")
   .health(10)
   .energy(2)
@@ -82,7 +82,7 @@ const Collei = character(1701)
  * 装备有此牌的柯莱使用了拂花偈叶的回合中，我方角色的技能引发草元素相关反应后：造成1点草元素伤害。（每回合1次）
  * （牌组中包含柯莱，才能加入牌组）
  */
-const FloralSidewinder = card(217011)
+export const FloralSidewinder = card(217011)
   .costDendro(4)
   .talent(Collei)
   // TODO

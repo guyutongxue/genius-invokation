@@ -10,7 +10,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 大于等于4级：造成的伤害+2；
  * 大于等于6级时：「凭依」级数-4。
  */
-const PactswornPathclearer = status(114041)
+export const PactswornPathclearer = status(114041)
   // TODO
   .done();
 
@@ -20,7 +20,7 @@ const PactswornPathclearer = status(114041)
  * @description
  * 造成2点物理伤害。
  */
-const InvokersSpear = skill(14041)
+export const InvokersSpear = skill(14041)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -33,7 +33,7 @@ const InvokersSpear = skill(14041)
  * @description
  * 造成3点雷元素伤害。
  */
-const SecretRiteChasmicSoulfarer = skill(14042)
+export const SecretRiteChasmicSoulfarer = skill(14042)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -46,7 +46,7 @@ const SecretRiteChasmicSoulfarer = skill(14042)
  * 造成4点雷元素伤害，
  * 启途誓使的[凭依]级数+2。
  */
-const SacredRiteWolfsSwiftness = skill(14043)
+export const SacredRiteWolfsSwiftness = skill(14043)
   .type("burst")
   .costElectro(4)
   .costEnergy(2)
@@ -59,7 +59,7 @@ const SacredRiteWolfsSwiftness = skill(14043)
  * @description
  * 【被动】战斗开始时，初始附属启途誓使。
  */
-const LawfulEnforcer = skill(14044)
+export const LawfulEnforcer = skill(14044)
   .type("passive")
   // TODO
   .done();
@@ -70,7 +70,7 @@ const LawfulEnforcer = skill(14044)
  * @description
  * 卡牌中蕴藏的，是大风纪官如沙漠烈日般炙热的喜爱之情。
  */
-const Cyno = character(1404)
+export const Cyno = character(1404)
   .tags("electro", "pole", "sumeru")
   .health(10)
   .energy(2)
@@ -86,7 +86,7 @@ const Cyno = character(1404)
  * 装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。
  * （牌组中包含赛诺，才能加入牌组）
  */
-const FeatherfallJudgment = card(214041)
+export const FeatherfallJudgment = card(214041)
   .costElectro(3)
   .talent(Cyno)
   // TODO

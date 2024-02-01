@@ -7,7 +7,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 结束阶段：造成1点岩元素伤害。
  * 可用次数：2
  */
-const StoneStele = summon(116031)
+export const StoneStele = summon(116031)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const StoneStele = summon(116031)
  * @description
  * 角色无法使用技能。（持续到回合结束）
  */
-const Petrification = status(116033)
+export const Petrification = status(116033)
   // TODO
   .done();
 
@@ -27,7 +27,7 @@ const Petrification = status(116033)
  * @description
  * 为我方出战角色提供2点护盾。
  */
-const JadeShield = combatStatus(116032)
+export const JadeShield = combatStatus(116032)
   // TODO
   .done();
 
@@ -37,7 +37,7 @@ const JadeShield = combatStatus(116032)
  * @description
  * 造成2点物理伤害。
  */
-const RainOfStone = skill(16031)
+export const RainOfStone = skill(16031)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
@@ -50,7 +50,7 @@ const RainOfStone = skill(16031)
  * @description
  * 造成1点岩元素伤害，召唤岩脊。
  */
-const DominusLapidis = skill(16032)
+export const DominusLapidis = skill(16032)
   .type("elemental")
   .costGeo(3)
   // TODO
@@ -62,7 +62,7 @@ const DominusLapidis = skill(16032)
  * @description
  * 造成3点岩元素伤害，召唤岩脊，生成玉璋护盾。
  */
-const DominusLapidisStrikingStone = skill(16033)
+export const DominusLapidisStrikingStone = skill(16033)
   .type("elemental")
   .costGeo(5)
   // TODO
@@ -74,7 +74,7 @@ const DominusLapidisStrikingStone = skill(16033)
  * @description
  * 造成4点岩元素伤害，目标角色附属石化。
  */
-const PlanetBefall = skill(16034)
+export const PlanetBefall = skill(16034)
   .type("burst")
   .costGeo(3)
   .costEnergy(3)
@@ -87,7 +87,7 @@ const PlanetBefall = skill(16034)
  * @description
  * 韬玉之石，可明八荒；灿若天星，纵横无双 。
  */
-const Zhongli = character(1603)
+export const Zhongli = character(1603)
   .tags("geo", "pole", "liyue")
   .health(10)
   .energy(3)
@@ -103,7 +103,7 @@ const Zhongli = character(1603)
  * 我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。
  * （牌组中包含钟离，才能加入牌组）
  */
-const DominanceOfEarth = card(216031)
+export const DominanceOfEarth = card(216031)
   .costGeo(5)
   .talent(Zhongli)
   // TODO

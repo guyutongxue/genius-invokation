@@ -9,7 +9,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 愚人众·冰萤术士「普通攻击」后：此牌可用次数+1。
  * 愚人众·冰萤术士受到元素反应伤害后：此牌可用次数-1。
  */
-const CryoCicins = summon(121011)
+export const CryoCicins = summon(121011)
   // TODO
   .done();
 
@@ -20,7 +20,7 @@ const CryoCicins = summon(121011)
  * 为我方出战角色提供1点护盾。
  * 创建时：如果我方场上存在冰萤，则额外提供其可用次数的护盾。（最多额外提供3点护盾）
  */
-const FlowingCicinShield = combatStatus(121012)
+export const FlowingCicinShield = combatStatus(121012)
   // TODO
   .done();
 
@@ -30,7 +30,7 @@ const FlowingCicinShield = combatStatus(121012)
  * @description
  * 提供1点护盾，保护我方出战角色。（可叠加，最多叠加到2点）
  */
-const RebelliousShield = combatStatus(121013)
+export const RebelliousShield = combatStatus(121013)
   // TODO
   .done();
 
@@ -40,7 +40,7 @@ const RebelliousShield = combatStatus(121013)
  * @description
  * 造成1点冰元素伤害。
  */
-const CicinIcicle = skill(21011)
+export const CicinIcicle = skill(21011)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -53,7 +53,7 @@ const CicinIcicle = skill(21011)
  * @description
  * 造成1点冰元素伤害，召唤冰萤。
  */
-const MistySummons = skill(21012)
+export const MistySummons = skill(21012)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -65,7 +65,7 @@ const MistySummons = skill(21012)
  * @description
  * 造成5点冰元素伤害，本角色附着冰元素，生成流萤护罩。
  */
-const BlizzardBranchBlossom = skill(21013)
+export const BlizzardBranchBlossom = skill(21013)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
@@ -78,7 +78,7 @@ const BlizzardBranchBlossom = skill(21013)
  * @description
  * 至少在雾虚草耗尽之前，冰萤不会离她而去。
  */
-const FatuiCryoCicinMage = character(2101)
+export const FatuiCryoCicinMage = character(2101)
   .tags("cryo", "fatui")
   .health(10)
   .energy(3)
@@ -94,7 +94,7 @@ const FatuiCryoCicinMage = character(2101)
  * 装备有此牌的愚人众·冰萤术士使用技能后：如果冰萤的可用次数被叠加到超过上限，则造成2点冰元素伤害。
  * （牌组中包含愚人众·冰萤术士，才能加入牌组）
  */
-const CicinsColdGlare = card(221011)
+export const CicinsColdGlare = card(221011)
   .costCryo(3)
   .talent(FatuiCryoCicinMage)
   // TODO

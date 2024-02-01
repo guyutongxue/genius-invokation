@@ -8,7 +8,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  * 此召唤物在场时：我方角色「普通攻击」造成的伤害+1。
  */
-const GardenOfPurity = summon(112062)
+export const GardenOfPurity = summon(112062)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const GardenOfPurity = summon(112062)
  * 所附属角色普通攻击造成的伤害+1，造成的物理伤害变为水元素伤害。
  * 可用次数：3
  */
-const TakimeguriKanka = status(112061)
+export const TakimeguriKanka = status(112061)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const TakimeguriKanka = status(112061)
  * @description
  * 造成2点物理伤害。
  */
-const KamisatoArtMarobashi = skill(12061)
+export const KamisatoArtMarobashi = skill(12061)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const KamisatoArtMarobashi = skill(12061)
  * @description
  * 造成2点水元素伤害，本角色附属泷廻鉴花。
  */
-const KamisatoArtKyouka = skill(12062)
+export const KamisatoArtKyouka = skill(12062)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -54,7 +54,7 @@ const KamisatoArtKyouka = skill(12062)
  * @description
  * 造成1点水元素伤害，召唤清净之园囿。
  */
-const KamisatoArtSuiyuu = skill(12063)
+export const KamisatoArtSuiyuu = skill(12063)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
@@ -67,7 +67,7 @@ const KamisatoArtSuiyuu = skill(12063)
  * @description
  * 神守之柏，已焕新材。
  */
-const KamisatoAyato = character(1206)
+export const KamisatoAyato = character(1206)
   .tags("hydro", "sword", "inazuma")
   .health(10)
   .energy(2)
@@ -83,7 +83,7 @@ const KamisatoAyato = character(1206)
  * 装备有此牌的神里绫人触发泷廻鉴花的效果时：对于生命值不多于6的敌人伤害额外+1。
  * （牌组中包含神里绫人，才能加入牌组）
  */
-const KyoukaFuushi = card(212061)
+export const KyoukaFuushi = card(212061)
   .costHydro(3)
   .talent(KamisatoAyato)
   // TODO

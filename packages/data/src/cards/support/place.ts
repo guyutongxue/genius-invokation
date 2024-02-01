@@ -7,7 +7,7 @@ import { card } from "@gi-tcg/core/builder";
  * 结束阶段：抓2张牌。
  * 可用次数：2
  */
-const LiyueHarborWharf = card(321001)
+export const LiyueHarborWharf = card(321001)
   .costSame(2)
   .support("place")
   // TODO
@@ -20,7 +20,7 @@ const LiyueHarborWharf = card(321001)
  * 入场时：选择任意元素骰重投。
  * 投掷阶段：获得额外一次重投机会。
  */
-const KnightsOfFavoniusLibrary = card(321002)
+export const KnightsOfFavoniusLibrary = card(321002)
   .costSame(1)
   .support("place")
   // TODO
@@ -32,7 +32,7 @@ const KnightsOfFavoniusLibrary = card(321002)
  * @description
  * 投掷阶段：2个元素骰初始总是投出我方出战角色类型的元素。
  */
-const JadeChamber = card(321003)
+export const JadeChamber = card(321003)
   .support("place")
   // TODO
   .done();
@@ -43,7 +43,7 @@ const JadeChamber = card(321003)
  * @description
  * 我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）
  */
-const DawnWinery = card(321004)
+export const DawnWinery = card(321004)
   .costSame(2)
   .support("place")
   // TODO
@@ -56,7 +56,7 @@ const DawnWinery = card(321004)
  * 结束阶段：治疗受伤最多的我方后台角色2点。
  * 可用次数：2
  */
-const WangshuInn = card(321005)
+export const WangshuInn = card(321005)
   .costSame(2)
   .support("place")
   .on("endPhase")
@@ -71,7 +71,7 @@ const WangshuInn = card(321005)
  * 结束阶段：治疗我方「出战角色」2点。
  * 可用次数：2
  */
-const FavoniusCathedral = card(321006)
+export const FavoniusCathedral = card(321006)
   .costSame(2)
   .support("place")
   // TODO
@@ -83,7 +83,7 @@ const FavoniusCathedral = card(321006)
  * @description
  * 行动阶段开始时：如果我方的元素骰包含5种不同的元素，则生成1个万能元素。
  */
-const Tenshukaku = card(321007)
+export const Tenshukaku = card(321007)
   .costSame(2)
   .support("place")
   // TODO
@@ -96,7 +96,7 @@ const Tenshukaku = card(321007)
  * 每回合自动触发1次：生成1个随机的基础元素骰。
  * 可用次数：3
  */
-const GrandNarukamiShrine = card(321008)
+export const GrandNarukamiShrine = card(321008)
   .costSame(2)
   .support("place")
   // TODO
@@ -109,7 +109,7 @@ const GrandNarukamiShrine = card(321008)
  * 结束阶段：治疗所有我方角色1点。
  * 可用次数：2
  */
-const SangonomiyaShrine = card(321009)
+export const SangonomiyaShrine = card(321009)
   .costSame(2)
   .support("place")
   // TODO
@@ -121,7 +121,7 @@ const SangonomiyaShrine = card(321009)
  * @description
  * 我方角色使用技能或装备「天赋」时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）
  */
-const SumeruCity = card(321010)
+export const SumeruCity = card(321010)
   .costSame(2)
   .support("place")
   // TODO
@@ -134,7 +134,7 @@ const SumeruCity = card(321010)
  * 结束阶段：收集最多2个未使用的元素骰。
  * 行动阶段开始时：拿回此牌所收集的元素骰。
  */
-const Vanarana = card(321011)
+export const Vanarana = card(321011)
   .support("place")
   .variable("count", 0)
   .variable("d1", 0, { visible: false })
@@ -166,7 +166,7 @@ const Vanarana = card(321011)
  * 行动阶段开始时：如果我方不是「先手牌手」，则生成1个出战角色类型的元素骰。
  * 可用次数：3
  */
-const ChinjuForest = card(321012)
+export const ChinjuForest = card(321012)
   .costSame(1)
   .support("place")
   // TODO
@@ -179,7 +179,7 @@ const ChinjuForest = card(321012)
  * 我方打出原本元素骰费用至少为3的「武器」或「圣遗物」手牌时：少花费1个元素骰。（每回合1次）
  * 可用次数：2
  */
-const GoldenHouse = card(321013)
+export const GoldenHouse = card(321013)
   .support("place")
   // TODO
   .done();
@@ -191,7 +191,7 @@ const GoldenHouse = card(321013)
  * 我方选择行动前，元素骰数量为0时：生成1个万能元素。（每回合1次）
  * 可用次数：3
  */
-const GandharvaVille = card(321014)
+export const GandharvaVille = card(321014)
   .costSame(1)
   .support("place")
   // TODO
@@ -205,7 +205,7 @@ const GandharvaVille = card(321014)
  * 我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）
  * 可用次数：3
  */
-const StormterrorsLair = card(321015)
+export const StormterrorsLair = card(321015)
   .costSame(2)
   .support("place")
   // TODO
@@ -218,7 +218,7 @@ const StormterrorsLair = card(321015)
  * 结束阶段：如果我方手牌数量不多于2，则抓2张牌。
  * 可用次数：2
  */
-const WeepingWillowOfTheLake = card(321016)
+export const WeepingWillowOfTheLake = card(321016)
   .costSame(1)
   .support("place")
   // TODO
@@ -231,7 +231,7 @@ const WeepingWillowOfTheLake = card(321016)
  * 我方选择行动前：如果我方角色所装备卡牌的原本元素骰费用总和不比对方更低，则生成1个出战角色类型的元素骰。（每回合1次）
  * 可用次数：3
  */
-const OperaEpiclese = card(321017)
+export const OperaEpiclese = card(321017)
   .costSame(1)
   .support("place")
   // TODO

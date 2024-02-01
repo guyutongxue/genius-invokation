@@ -8,7 +8,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
-const _121023 = status(121023)
+export const _121023 = status(121023)
   .done();
 
 /**
@@ -19,7 +19,7 @@ const _121023 = status(121023)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
-const _121024 = status(121024)
+export const _121024 = status(121024)
   .done();
 
 /**
@@ -30,7 +30,7 @@ const _121024 = status(121024)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
-const IcesealedCrimsonWitchOfEmbers = status(121021)
+export const IcesealedCrimsonWitchOfEmbers = status(121021)
   // TODO
   .done();
 
@@ -42,7 +42,7 @@ const IcesealedCrimsonWitchOfEmbers = status(121021)
  * 可用次数：1
  * 所附属角色被附属炽热时，移除此效果。
  */
-const SheerCold = status(121022)
+export const SheerCold = status(121022)
   // TODO
   .done();
 
@@ -52,7 +52,7 @@ const SheerCold = status(121022)
  * @description
  * 结束阶段：如果对方场上的「女士」已转换为「焚尽的炽炎魔女」，则对我方出战角色附属炽热。如果未转换，则对我方出战角色附属严寒，并使对方场上的「女士」失去1点充能。
  */
-const IncandescentFrostPermeating = combatStatus(121025)
+export const IncandescentFrostPermeating = combatStatus(121025)
   // TODO
   .done();
 
@@ -62,7 +62,7 @@ const IncandescentFrostPermeating = combatStatus(121025)
  * @description
  * 造成1点冰元素伤害。
  */
-const FrostbladeHailstorm = skill(21021)
+export const FrostbladeHailstorm = skill(21021)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -75,7 +75,7 @@ const FrostbladeHailstorm = skill(21021)
  * @description
  * 造成2点冰元素伤害，目标角色附属严寒。
  */
-const BitingShards = skill(21022)
+export const BitingShards = skill(21022)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -87,7 +87,7 @@ const BitingShards = skill(21022)
  * @description
  * 造成4点冰元素伤害，治疗本角色2点。移除冰封的炽炎魔女，本角色永久转换为「焚尽的炽炎魔女」形态。
  */
-const CarmineChrysalis = skill(21023)
+export const CarmineChrysalis = skill(21023)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
@@ -100,7 +100,7 @@ const CarmineChrysalis = skill(21023)
  * @description
  * 【被动】战斗开始时，初始附属冰封的炽炎魔女。
  */
-const MightOfDelusion = skill(21024)
+export const MightOfDelusion = skill(21024)
   .type("passive")
   // TODO
   .done();
@@ -111,7 +111,7 @@ const MightOfDelusion = skill(21024)
  * @description
  * 
  */
-const InfernosAwakening = skill(21025)
+export const InfernosAwakening = skill(21025)
   // .type("undefined")
   // TODO
   .done();
@@ -124,7 +124,7 @@ const InfernosAwakening = skill(21025)
  * 「但那并不是曙光，亲爱的罗莎琳。那是焚尽一切的火海。」
  * 但这也没什么所谓。因为她心中明白，自己早已被烈火吞没。
  */
-const LaSignora = character(2102)
+export const LaSignora = character(2102)
   .tags("cryo", "fatui")
   .health(10)
   .energy(2)
@@ -139,7 +139,7 @@ const LaSignora = character(2102)
  * 角色受到至少为3点的伤害时：抵消1点伤害，然后根据「女士」的形态对敌方出战角色附属严寒或炽热。（每回合1次）
  * （牌组中包含「女士」，才能加入牌组）
  */
-const PainForPain = card(221021)
+export const PainForPain = card(221021)
   .costSame(3)
   .talent(LaSignora)
   // TODO

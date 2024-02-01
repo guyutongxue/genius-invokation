@@ -7,7 +7,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成1点雷元素伤害，我方出战角色附属鸣煌护持。
  * 可用次数：1
  */
-const TenguJuuraiAmbush = summon(114061)
+export const TenguJuuraiAmbush = summon(114061)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const TenguJuuraiAmbush = summon(114061)
  * 结束阶段：造成2点雷元素伤害，我方出战角色附属鸣煌护持。
  * 可用次数：2
  */
-const TenguJuuraiStormcluster = summon(114062)
+export const TenguJuuraiStormcluster = summon(114062)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const TenguJuuraiStormcluster = summon(114062)
  * 所附属角色元素战技和元素爆发造成的伤害+1。
  * 可用次数：2
  */
-const CrowfeatherCover = status(114063)
+export const CrowfeatherCover = status(114063)
   // TODO
   .done();
 
@@ -39,7 +39,7 @@ const CrowfeatherCover = status(114063)
  * @description
  * 造成2点物理伤害。
  */
-const TenguBowmanship = skill(14061)
+export const TenguBowmanship = skill(14061)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -52,7 +52,7 @@ const TenguBowmanship = skill(14061)
  * @description
  * 造成1点雷元素伤害，召唤天狗咒雷·伏。
  */
-const TenguStormcall = skill(14062)
+export const TenguStormcall = skill(14062)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -64,7 +64,7 @@ const TenguStormcall = skill(14062)
  * @description
  * 造成1点雷元素伤害，召唤天狗咒雷·雷砾。
  */
-const SubjugationKoukouSendou = skill(14063)
+export const SubjugationKoukouSendou = skill(14063)
   .type("burst")
   .costElectro(4)
   .costEnergy(2)
@@ -77,7 +77,7 @@ const SubjugationKoukouSendou = skill(14063)
  * @description
  * 「此为，大义之举。」
  */
-const KujouSara = character(1406)
+export const KujouSara = character(1406)
   .tags("electro", "bow", "inazuma")
   .health(10)
   .energy(2)
@@ -93,7 +93,7 @@ const KujouSara = character(1406)
  * 装备有此牌的九条裟罗在场时，我方附属有鸣煌护持的雷元素角色，元素战技和元素爆发造成的伤害额外+1。
  * （牌组中包含九条裟罗，才能加入牌组）
  */
-const SinOfPride = card(214061)
+export const SinOfPride = card(214061)
   .costElectro(3)
   .talent(KujouSara)
   // TODO

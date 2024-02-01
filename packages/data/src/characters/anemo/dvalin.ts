@@ -6,7 +6,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * @description
  * 特瓦林下次造成的伤害+1
  */
-const DraconicMajesty = status(125024)
+export const DraconicMajesty = status(125024)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const DraconicMajesty = status(125024)
  * （需准备1个行动轮）
  * 对上一个敌方后台角色造成2点风元素伤害。（敌方没有后台角色时，改为对出战角色造成伤害）
  */
-const UltimateCleansing = skill(25026)
+export const UltimateCleansing = skill(25026)
   .type("elemental")
   .damage(DamageType.Anemo, 2, "opp prev")
   .done();
@@ -28,7 +28,7 @@ const UltimateCleansing = skill(25026)
  * @description
  * 本角色将在下次行动时，直接使用技能：终幕涤流。
  */
-const DvalinsSigh01 = status(125023)
+export const DvalinsSigh01 = status(125023)
   .prepare(UltimateCleansing)
   .done();
 
@@ -39,7 +39,7 @@ const DvalinsSigh01 = status(125023)
  * （需准备1个行动轮）
  * 对下一个敌方后台角色造成1点风元素伤害，然后准备技能：终幕涤流。（敌方没有后台角色时，改为对出战角色造成伤害）
  */
-const PerpetualCleansing = skill(25025)
+export const PerpetualCleansing = skill(25025)
   .type("elemental")
   .damage(DamageType.Anemo, 1, "opp next")
   .characterStatus(DvalinsSigh01)
@@ -51,7 +51,7 @@ const PerpetualCleansing = skill(25025)
  * @description
  * 本角色将在下次行动时，直接使用技能：长延涤流。
  */
-const DvalinsSigh = status(125022)
+export const DvalinsSigh = status(125022)
   .prepare(PerpetualCleansing)
   .done();
 
@@ -62,7 +62,7 @@ const DvalinsSigh = status(125022)
  * 所附属角色受到的物理伤害或风元素伤害+2。
  * 可用次数：1
  */
-const TotalCollapse = status(125021)
+export const TotalCollapse = status(125021)
   .on("beforeDamaged", (c) =>
     c.damageInfo.type === DamageType.Physical ||
     c.damageInfo.type === DamageType.Anemo)
@@ -76,7 +76,7 @@ const TotalCollapse = status(125021)
  * @description
  * 结束阶段：对我方出战角色附属坍毁。
  */
-const CollapsingPlatform = combatStatus(125025)
+export const CollapsingPlatform = combatStatus(125025)
   // TODO
   .done();
 
@@ -86,7 +86,7 @@ const CollapsingPlatform = combatStatus(125025)
  * @description
  * 造成2点物理伤害。
  */
-const LaceratingSlash = skill(25021)
+export const LaceratingSlash = skill(25021)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
@@ -99,7 +99,7 @@ const LaceratingSlash = skill(25021)
  * @description
  * 造成2点风元素伤害，目标角色附属坍毁。
  */
-const TempestuousBarrage = skill(25022)
+export const TempestuousBarrage = skill(25022)
   .type("elemental")
   .costAnemo(3)
   .damage(DamageType.Anemo, 2)
@@ -112,7 +112,7 @@ const TempestuousBarrage = skill(25022)
  * @description
  * 造成2点风元素伤害，然后分别准备技能：长延涤流和终幕涤流。
  */
-const DvalinsCleansing = skill(25023)
+export const DvalinsCleansing = skill(25023)
   .type("elemental")
   .costAnemo(5)
   .damage(DamageType.Anemo, 2)
@@ -125,7 +125,7 @@ const DvalinsCleansing = skill(25023)
  * @description
  * 造成5点风元素伤害，所有敌方后台角色附属坍毁。
  */
-const CaelestinumFinaleTermini = skill(25024)
+export const CaelestinumFinaleTermini = skill(25024)
   .type("burst")
   .costAnemo(4)
   .costEnergy(2)
@@ -140,7 +140,7 @@ const CaelestinumFinaleTermini = skill(25024)
  * 「如果你曾是我，看见过你在蓝蓝的天上滑翔的孤高模样，见识过你的美丽身姿就好了。」
  * 「如此，你就会明白，这样的天空与大地，是值得为之奋战的。」
  */
-const Dvalin = character(2502)
+export const Dvalin = character(2502)
   .tags("anemo", "monster")
   .health(10)
   .energy(2)
@@ -156,7 +156,7 @@ const Dvalin = character(2502)
  * 装备有此牌的特瓦林在场时，敌方角色所附属的坍毁状态被移除后：对下一个敌方后台角色附属坍毁。（每回合1次）
  * （牌组中包含特瓦林，才能加入牌组）
  */
-const RendingVortex = card(225021)
+export const RendingVortex = card(225021)
   .costAnemo(3)
   .talent(Dvalin)
   .on("enter")

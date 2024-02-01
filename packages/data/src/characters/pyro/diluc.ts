@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 所附属角色造成的物理伤害，变为火元素伤害。
  * 持续回合：2
  */
-const PyroInfusion = status(113011)
+export const PyroInfusion = status(113011)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const PyroInfusion = status(113011)
  * @description
  * 造成2点物理伤害。
  */
-const TemperedSword = skill(13011)
+export const TemperedSword = skill(13011)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -30,7 +30,7 @@ const TemperedSword = skill(13011)
  * @description
  * 造成3点火元素伤害。每回合第三次使用本技能时，伤害+2。
  */
-const SearingOnslaught = skill(13012)
+export const SearingOnslaught = skill(13012)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -42,7 +42,7 @@ const SearingOnslaught = skill(13012)
  * @description
  * 造成8点火元素伤害，本角色附属火元素附魔。
  */
-const Dawn = skill(13013)
+export const Dawn = skill(13013)
   .type("burst")
   .costPyro(4)
   .costEnergy(3)
@@ -55,7 +55,7 @@ const Dawn = skill(13013)
  * @description
  * 他的心是他最大的敌人。
  */
-const Diluc = character(1301)
+export const Diluc = character(1301)
   .tags("pyro", "claymore", "mondstadt")
   .health(10)
   .energy(3)
@@ -71,7 +71,7 @@ const Diluc = character(1301)
  * 装备有此牌的迪卢克每回合第2次使用逆焰之刃时：少花费1个火元素。
  * （牌组中包含迪卢克，才能加入牌组）
  */
-const FlowingFlame = card(213011)
+export const FlowingFlame = card(213011)
   .costPyro(3)
   .talent(Diluc)
   // TODO

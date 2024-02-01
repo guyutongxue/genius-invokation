@@ -8,7 +8,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：2
  * 菲谢尔普通攻击后：造成2点雷元素伤害。（需消耗可用次数）
  */
-const Oz01 = summon(114012)
+export const Oz01 = summon(114012)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const Oz01 = summon(114012)
  * 结束阶段：造成1点雷元素伤害。
  * 可用次数：2
  */
-const Oz = summon(114011)
+export const Oz = summon(114011)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const Oz = summon(114011)
  * @description
  * 造成2点物理伤害。
  */
-const BoltsOfDownfall = skill(14011)
+export const BoltsOfDownfall = skill(14011)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const BoltsOfDownfall = skill(14011)
  * @description
  * 造成1点雷元素伤害，召唤奥兹。
  */
-const Nightrider = skill(14012)
+export const Nightrider = skill(14012)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -54,7 +54,7 @@ const Nightrider = skill(14012)
  * @description
  * 造成4点雷元素伤害，对所有敌方后台角色造成2点穿透伤害。
  */
-const MidnightPhantasmagoria = skill(14013)
+export const MidnightPhantasmagoria = skill(14013)
   .type("burst")
   .costElectro(3)
   .costEnergy(3)
@@ -68,7 +68,7 @@ const MidnightPhantasmagoria = skill(14013)
  * 「奥兹！我之眷属，展开羽翼，替我在幽夜中寻求全新的命运之线吧！」
  * 「小姐，我可没办法帮你换一张牌啊…」
  */
-const Fischl = character(1401)
+export const Fischl = character(1401)
   .tags("electro", "bow", "mondstadt")
   .health(10)
   .energy(3)
@@ -84,7 +84,7 @@ const Fischl = character(1401)
  * 装备有此牌的菲谢尔生成的奥兹，会在菲谢尔普通攻击后造成2点雷元素伤害。（需消耗可用次数）
  * （牌组中包含菲谢尔，才能加入牌组）
  */
-const StellarPredator = card(214011)
+export const StellarPredator = card(214011)
   .costElectro(3)
   .talent(Fischl)
   // TODO

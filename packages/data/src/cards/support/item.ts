@@ -6,7 +6,7 @@ import { card } from "@gi-tcg/core/builder";
  * @description
  * 双方角色使用技能后：如果造成了元素伤害，此牌累积1个「质变进度」。如果此牌已累积3个「质变进度」，则弃置此牌并生成3个不同的基础元素骰。
  */
-const ParametricTransformer = card(323001)
+export const ParametricTransformer = card(323001)
   .costVoid(2)
   .support("item")
   // TODO
@@ -19,7 +19,7 @@ const ParametricTransformer = card(323001)
  * 入场时：从牌组中随机抽取1张「料理」事件。
  * 我方打出「料理」事件牌时：从牌组中随机抽取1张「料理」事件牌。（每回合1次）
  */
-const Nre = card(323002)
+export const Nre = card(323002)
   .costSame(1)
   .support("item")
   // TODO
@@ -31,7 +31,7 @@ const Nre = card(323002)
  * @description
  * 我方切换角色后：本回合中，我方执行的下次「切换角色」行动视为「快速行动」而非「战斗行动」，并且少花费1个元素骰。（每回合1次）
  */
-const RedFeatherFan = card(323003)
+export const RedFeatherFan = card(323003)
   .costSame(2)
   .support("item")
   // TODO
@@ -43,7 +43,7 @@ const RedFeatherFan = card(323003)
  * @description
  * 我方角色使用技能后：此牌累积1个「寻宝线索」。如果此牌已累积3个「寻宝线索」，则弃置此牌并抓3张牌。
  */
-const TreasureseekingSeelie = card(323004)
+export const TreasureseekingSeelie = card(323004)
   .costSame(1)
   .support("item")
   // TODO
@@ -56,7 +56,7 @@ const TreasureseekingSeelie = card(323004)
  * 我方打出原本元素骰费用为1的装备或支援牌时：少花费1个元素骰。（每回合1次）
  * 可用次数：2
  */
-const SeedDispensary = card(323005)
+export const SeedDispensary = card(323005)
   .support("item")
   // TODO
   .done();
@@ -68,7 +68,7 @@ const SeedDispensary = card(323005)
  * 我方打出「武器」/「圣遗物」/「场地」/「伙伴」手牌时：如果本场对局中我方曾经打出过所打出牌的同名卡牌，则少花费2个元素骰。（每回合1次）
  * 可用次数：2
  */
-const MementoLens = card(323006)
+export const MementoLens = card(323006)
   .costSame(1)
   .support("item")
   // TODO

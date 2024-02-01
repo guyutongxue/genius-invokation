@@ -7,7 +7,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 本角色将在下次行动时，直接使用技能：苍鹭震击。
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
-const HeronShield = status(112071)
+export const HeronShield = status(112071)
   // TODO
   .done();
 
@@ -21,7 +21,7 @@ const HeronShield = status(112071)
  * 我方角色普通攻击后：造成1点水元素伤害。（每回合1次）
  * 持续回合：2
  */
-const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
+export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
   // TODO
   .done();
 
@@ -34,7 +34,7 @@ const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
  * 我方切换角色后：造成1点水元素伤害。（每回合1次）
  * 持续回合：2
  */
-const PrayerOfTheCrimsonCrown = combatStatus(112072)
+export const PrayerOfTheCrimsonCrown = combatStatus(112072)
   // TODO
   .done();
 
@@ -44,7 +44,7 @@ const PrayerOfTheCrimsonCrown = combatStatus(112072)
  * @description
  * 造成2点物理伤害。
  */
-const GleamingSpearGuardianStance = skill(12071)
+export const GleamingSpearGuardianStance = skill(12071)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -57,7 +57,7 @@ const GleamingSpearGuardianStance = skill(12071)
  * @description
  * 本角色附属苍鹭护盾并准备技能：苍鹭震击。
  */
-const SacredRiteHeronsSanctum = skill(12072)
+export const SacredRiteHeronsSanctum = skill(12072)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -69,7 +69,7 @@ const SacredRiteHeronsSanctum = skill(12072)
  * @description
  * 造成2点水元素伤害，生成赤冕祝祷。
  */
-const SacredRiteWagtailsTide = skill(12073)
+export const SacredRiteWagtailsTide = skill(12073)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
@@ -83,7 +83,7 @@ const SacredRiteWagtailsTide = skill(12073)
  * （需准备1个行动轮）
  * 造成3点水元素伤害。
  */
-const HeronStrike = skill(12074)
+export const HeronStrike = skill(12074)
   .type("elemental")
   // TODO
   .done();
@@ -94,7 +94,7 @@ const HeronStrike = skill(12074)
  * @description
  * 赤沙浮金，恪誓戍御。
  */
-const Candace = character(1207)
+export const Candace = character(1207)
   .tags("hydro", "pole", "sumeru")
   .health(10)
   .energy(2)
@@ -110,7 +110,7 @@ const Candace = character(1207)
  * 装备有此牌的坎蒂丝生成的赤冕祝祷额外具有以下效果：我方角色普通攻击后：造成1点水元素伤害。（每回合1次）
  * （牌组中包含坎蒂丝，才能加入牌组）
  */
-const TheOverflow = card(212071)
+export const TheOverflow = card(212071)
   .costHydro(3)
   .costEnergy(2)
   .talent(Candace)

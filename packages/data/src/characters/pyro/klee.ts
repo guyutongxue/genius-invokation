@@ -7,7 +7,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 所附属角色进行重击时：少花费1个火元素，并且伤害+1。
  * 可用次数：2
  */
-const ExplosiveSpark01 = status(113062)
+export const ExplosiveSpark01 = status(113062)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const ExplosiveSpark01 = status(113062)
  * 所附属角色进行重击时：少花费1个火元素，并且伤害+1。
  * 可用次数：1
  */
-const ExplosiveSpark = status(113061)
+export const ExplosiveSpark = status(113061)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const ExplosiveSpark = status(113061)
  * 所在阵营的角色使用技能后：对所在阵营的出战角色造成2点火元素伤害。
  * 可用次数：2
  */
-const SparksNSplashStatus = combatStatus(113063)
+export const SparksNSplashStatus = combatStatus(113063)
   // TODO
   .done();
 
@@ -39,7 +39,7 @@ const SparksNSplashStatus = combatStatus(113063)
  * @description
  * 造成1点火元素伤害。
  */
-const Kaboom = skill(13061)
+export const Kaboom = skill(13061)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -52,7 +52,7 @@ const Kaboom = skill(13061)
  * @description
  * 造成3点火元素伤害，本角色附属爆裂火花。
  */
-const JumpyDumpty = skill(13062)
+export const JumpyDumpty = skill(13062)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -64,7 +64,7 @@ const JumpyDumpty = skill(13062)
  * @description
  * 造成3点火元素伤害，在对方场上生成轰轰火花。
  */
-const SparksNSplash = skill(13063)
+export const SparksNSplash = skill(13063)
   .type("burst")
   .costPyro(3)
   .costEnergy(3)
@@ -77,7 +77,7 @@ const SparksNSplash = skill(13063)
  * @description
  * 每一次抽牌，都可能带来一次「爆炸性惊喜」。
  */
-const Klee = character(1306)
+export const Klee = character(1306)
   .tags("pyro", "catalyst", "mondstadt")
   .health(10)
   .energy(3)
@@ -93,7 +93,7 @@ const Klee = character(1306)
  * 装备有此牌的可莉生成的爆裂火花的可用次数+1。
  * （牌组中包含可莉，才能加入牌组）
  */
-const PoundingSurprise = card(213061)
+export const PoundingSurprise = card(213061)
   .costPyro(3)
   .talent(Klee)
   // TODO

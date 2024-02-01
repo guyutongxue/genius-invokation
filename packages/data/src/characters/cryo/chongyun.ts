@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 我方单手剑、双手剑或长柄武器角色造成的物理伤害变为冰元素伤害，普通攻击造成的伤害+1。
  * 持续回合：2
  */
-const ChonghuaFrostField01 = combatStatus(111042)
+export const ChonghuaFrostField01 = combatStatus(111042)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const ChonghuaFrostField01 = combatStatus(111042)
  * 我方单手剑、双手剑或长柄武器角色造成的物理伤害变为冰元素伤害。
  * 持续回合：2
  */
-const ChonghuaFrostField = combatStatus(111041)
+export const ChonghuaFrostField = combatStatus(111041)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const ChonghuaFrostField = combatStatus(111041)
  * @description
  * 造成2点物理伤害。
  */
-const Demonbane = skill(11041)
+export const Demonbane = skill(11041)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const Demonbane = skill(11041)
  * @description
  * 造成3点冰元素伤害，生成重华叠霜领域。
  */
-const ChonghuasLayeredFrost = skill(11042)
+export const ChonghuasLayeredFrost = skill(11042)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -53,7 +53,7 @@ const ChonghuasLayeredFrost = skill(11042)
  * @description
  * 造成7点冰元素伤害。
  */
-const CloudpartingStar = skill(11043)
+export const CloudpartingStar = skill(11043)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
@@ -66,7 +66,7 @@ const CloudpartingStar = skill(11043)
  * @description
  * 「夏天啊，你还是悄悄过去吧…」
  */
-const Chongyun = character(1104)
+export const Chongyun = character(1104)
   .tags("cryo", "claymore", "liyue")
   .health(10)
   .energy(3)
@@ -83,7 +83,7 @@ const Chongyun = character(1104)
  * 使我方单手剑、双手剑或长柄武器角色的普通攻击伤害+1。
  * （牌组中包含重云，才能加入牌组）
  */
-const SteadyBreathing = card(211041)
+export const SteadyBreathing = card(211041)
   .costCryo(3)
   .talent(Chongyun)
   // TODO

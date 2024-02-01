@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 所附属角色造成的物理伤害变为雷元素伤害，且角色造成的雷元素伤害+1。
  * 持续回合：3
  */
-const ElectroElementalInfusion01 = status(114034)
+export const ElectroElementalInfusion01 = status(114034)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const ElectroElementalInfusion01 = status(114034)
  * 所附属角色造成的物理伤害变为雷元素伤害。
  * 持续回合：2
  */
-const ElectroElementalInfusion = status(114032)
+export const ElectroElementalInfusion = status(114032)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const ElectroElementalInfusion = status(114032)
  * @description
  * 造成2点物理伤害。
  */
-const YunlaiSwordsmanship = skill(14031)
+export const YunlaiSwordsmanship = skill(14031)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const YunlaiSwordsmanship = skill(14031)
  * @description
  * 造成3点雷元素伤害，生成手牌雷楔。
  */
-const StellarRestoration = skill(14032)
+export const StellarRestoration = skill(14032)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -53,7 +53,7 @@ const StellarRestoration = skill(14032)
  * @description
  * 造成4点雷元素伤害，对所有敌方后台角色造成3点穿透伤害。
  */
-const StarwardSword = skill(14033)
+export const StarwardSword = skill(14033)
   .type("burst")
   .costElectro(4)
   .costEnergy(3)
@@ -66,7 +66,7 @@ const StarwardSword = skill(14033)
  * @description
  * 她能构筑出许多从未设想过的牌组，拿下许多难以想象的胜利。
  */
-const Keqing = character(1403)
+export const Keqing = character(1403)
   .tags("electro", "sword", "liyue")
   .health(10)
   .energy(3)
@@ -83,7 +83,7 @@ const Keqing = character(1403)
  * 初始持续回合+1，并且会使所附属角色造成的雷元素伤害+1。
  * （牌组中包含刻晴，才能加入牌组）
  */
-const ThunderingPenance = card(214031)
+export const ThunderingPenance = card(214031)
   .costElectro(3)
   .talent(Keqing)
   // TODO

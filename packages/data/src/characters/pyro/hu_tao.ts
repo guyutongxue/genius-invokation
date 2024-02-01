@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段：对所附属角色造成1点火元素伤害。
  * 可用次数：1
  */
-const BloodBlossom = status(113072)
+export const BloodBlossom = status(113072)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const BloodBlossom = status(113072)
  * 所附属角色进行重击时：目标角色附属血梅香。
  * 持续回合：2
  */
-const ParamitaPapilio = status(113071)
+export const ParamitaPapilio = status(113071)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const ParamitaPapilio = status(113071)
  * @description
  * 造成2点物理伤害。
  */
-const SecretSpearOfWangsheng = skill(13071)
+export const SecretSpearOfWangsheng = skill(13071)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const SecretSpearOfWangsheng = skill(13071)
  * @description
  * 本角色附属彼岸蝶舞。
  */
-const GuideToAfterlife = skill(13072)
+export const GuideToAfterlife = skill(13072)
   .type("elemental")
   .costPyro(2)
   // TODO
@@ -54,7 +54,7 @@ const GuideToAfterlife = skill(13072)
  * @description
  * 造成4点火元素伤害，治疗自身2点。如果本角色生命值不多于6，则造成的伤害和治疗各+1。
  */
-const SpiritSoother = skill(13073)
+export const SpiritSoother = skill(13073)
   .type("burst")
   .costPyro(3)
   .costEnergy(3)
@@ -67,7 +67,7 @@ const SpiritSoother = skill(13073)
  * @description
  * 「送走，全送走。」
  */
-const HuTao = character(1307)
+export const HuTao = character(1307)
   .tags("pyro", "pole", "liyue")
   .health(10)
   .energy(3)
@@ -83,7 +83,7 @@ const HuTao = character(1307)
  * 装备有此牌的胡桃在生命值不多于6时：造成的火元素伤害+1。
  * （牌组中包含胡桃，才能加入牌组）
  */
-const SanguineRouge = card(213071)
+export const SanguineRouge = card(213071)
   .costPyro(2)
   .talent(HuTao)
   // TODO

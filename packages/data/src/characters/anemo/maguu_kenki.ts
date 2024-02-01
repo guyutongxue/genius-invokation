@@ -7,7 +7,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成1点冰元素伤害。
  * 可用次数：2
  */
-const ShadowswordGallopingFrost = summon(125012)
+export const ShadowswordGallopingFrost = summon(125012)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const ShadowswordGallopingFrost = summon(125012)
  * 结束阶段：造成1点风元素伤害。
  * 可用次数：2
  */
-const ShadowswordLoneGale = summon(125011)
+export const ShadowswordLoneGale = summon(125011)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const ShadowswordLoneGale = summon(125011)
  * @description
  * 结束阶段：切换到所附属角色。
  */
-const TerrormasksReturn = status(125013)
+export const TerrormasksReturn = status(125013)
   // TODO
   .done();
 
@@ -38,7 +38,7 @@ const TerrormasksReturn = status(125013)
  * @description
  * 造成2点物理伤害。
  */
-const Ichimonji = skill(25011)
+export const Ichimonji = skill(25011)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
@@ -51,7 +51,7 @@ const Ichimonji = skill(25011)
  * @description
  * 召唤剑影·孤风。
  */
-const BlusteringBlade = skill(25012)
+export const BlusteringBlade = skill(25012)
   .type("elemental")
   .costAnemo(3)
   // TODO
@@ -63,7 +63,7 @@ const BlusteringBlade = skill(25012)
  * @description
  * 召唤剑影·霜驰。
  */
-const FrostyAssault = skill(25013)
+export const FrostyAssault = skill(25013)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -75,7 +75,7 @@ const FrostyAssault = skill(25013)
  * @description
  * 造成4点风元素伤害，触发所有我方剑影召唤物的效果。（不消耗其可用次数）
  */
-const PseudoTenguSweeper = skill(25014)
+export const PseudoTenguSweeper = skill(25014)
   .type("burst")
   .costAnemo(3)
   .costEnergy(3)
@@ -88,7 +88,7 @@ const PseudoTenguSweeper = skill(25014)
  * @description
  * 今日，其仍徘徊在因缘断绝之地。
  */
-const MaguuKenki = character(2501)
+export const MaguuKenki = character(2501)
   .tags("anemo", "monster")
   .health(10)
   .energy(3)
@@ -104,7 +104,7 @@ const MaguuKenki = character(2501)
  * 装备有此牌的魔偶剑鬼使用孤风刀势后，我方切换到后一个角色；使用霜驰影突后，我方切换到前一个角色。
  * （牌组中包含魔偶剑鬼，才能加入牌组）
  */
-const TranscendentAutomaton = card(225011)
+export const TranscendentAutomaton = card(225011)
   .costAnemo(3)
   .talent(MaguuKenki)
   // TODO

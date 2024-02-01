@@ -7,7 +7,7 @@ import { character, skill, status, combatStatus, card, DamageType, getReaction, 
  * 任意具有「蕴种印」的所在阵营角色受到元素反应伤害后：对所附属角色造成1点穿透伤害。
  * 可用次数：2
  */
-const SeedOfSkandha: StatusHandle = status(117031)
+export const SeedOfSkandha: StatusHandle = status(117031)
   .tags("debuff")
   .on("damaged", (c, e) =>
     getReaction(e) !== null && 
@@ -37,7 +37,7 @@ const SeedOfSkandha: StatusHandle = status(117031)
  * 我方引发元素反应时：伤害额外+1。
  * 持续回合：3
  */
-const ShrineOfMaya01 = combatStatus(117033)
+export const ShrineOfMaya01 = combatStatus(117033)
   .conflictWith(117032)
   .duration(3)
   .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
@@ -59,7 +59,7 @@ const ShrineOfMaya01 = combatStatus(117033)
  * 我方引发元素反应时：伤害额外+1。
  * 持续回合：2
  */
-const ShrineOfMaya = combatStatus(117032)
+export const ShrineOfMaya = combatStatus(117032)
   .conflictWith(117033)
   .duration(2)
   .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
@@ -80,7 +80,7 @@ const ShrineOfMaya = combatStatus(117032)
  * @description
  * 造成1点草元素伤害。
  */
-const Akara = skill(17031)
+export const Akara = skill(17031)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
@@ -93,7 +93,7 @@ const Akara = skill(17031)
  * @description
  * 造成2点草元素伤害，目标角色附属蕴种印；如果在附属前目标角色已附属有蕴种印，就改为对所有敌方角色附属蕴种印。
  */
-const AllSchemesToKnow = skill(17032)
+export const AllSchemesToKnow = skill(17032)
   .type("elemental")
   .costDendro(3)
   .damage(DamageType.Dendro, 2)
@@ -109,7 +109,7 @@ const AllSchemesToKnow = skill(17032)
  * @description
  * 造成3点草元素伤害，所有敌方角色附属蕴种印。
  */
-const AllSchemesToKnowTathata = skill(17033)
+export const AllSchemesToKnowTathata = skill(17033)
   .type("elemental")
   .costDendro(5)
   .damage(DamageType.Dendro, 3)
@@ -122,7 +122,7 @@ const AllSchemesToKnowTathata = skill(17033)
  * @description
  * 造成4点草元素伤害，生成摩耶之殿。
  */
-const IllusoryHeart = skill(17034)
+export const IllusoryHeart = skill(17034)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
@@ -145,7 +145,7 @@ const IllusoryHeart = skill(17034)
  * @description
  * 白草净华，幽宫启蛰。
  */
-const Nahida = character(1703)
+export const Nahida = character(1703)
   .tags("dendro", "catalyst", "sumeru")
   .health(10)
   .energy(2)
@@ -164,7 +164,7 @@ const Nahida = character(1703)
  * 水元素：装备有此牌的纳西妲所生成的摩耶之殿初始持续回合+1。
  * （牌组中包含纳西妲，才能加入牌组）
  */
-const TheSeedOfStoredKnowledge = card(217031)
+export const TheSeedOfStoredKnowledge = card(217031)
   .costDendro(3)
   .costEnergy(2)
   .talent(Nahida)

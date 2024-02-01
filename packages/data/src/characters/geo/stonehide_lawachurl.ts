@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 每回合1次：角色造成的伤害+1。
  * 角色所附属的「岩盔」被移除后：也移除此状态。
  */
-const StoneForce = status(126012)
+export const StoneForce = status(126012)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const StoneForce = status(126012)
  * 所附属角色受到伤害时：抵消1点伤害。抵消岩元素伤害时，需额外消耗1次可用次数。
  * 可用次数：3
  */
-const Stonehide = status(126011)
+export const Stonehide = status(126011)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const Stonehide = status(126011)
  * @description
  * 造成2点物理伤害。
  */
-const PlamaLawa = skill(26011)
+export const PlamaLawa = skill(26011)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const PlamaLawa = skill(26011)
  * @description
  * 造成3点物理伤害。
  */
-const MovoLawa = skill(26012)
+export const MovoLawa = skill(26012)
   .type("elemental")
   .costGeo(3)
   // TODO
@@ -54,7 +54,7 @@ const MovoLawa = skill(26012)
  * @description
  * 造成5点物理伤害。
  */
-const UpaShato = skill(26013)
+export const UpaShato = skill(26013)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
@@ -67,7 +67,7 @@ const UpaShato = skill(26013)
  * @description
  * 【被动】战斗开始时，初始附属岩盔和坚岩之力。
  */
-const InfusedStonehide = skill(26014)
+export const InfusedStonehide = skill(26014)
   .type("passive")
   // TODO
   .done();
@@ -78,7 +78,7 @@ const InfusedStonehide = skill(26014)
  * @description
  * 绕道而行吧，因为前方是属于「王」的领域。
  */
-const StonehideLawachurl = character(2601)
+export const StonehideLawachurl = character(2601)
   .tags("geo", "monster", "hilichurl")
   .health(8)
   .energy(2)
@@ -94,7 +94,7 @@ const StonehideLawachurl = character(2601)
  * 装备有此牌的丘丘岩盔王击倒敌方角色后：丘丘岩盔王重新附属岩盔和坚岩之力。
  * （牌组中包含丘丘岩盔王，才能加入牌组）
  */
-const StonehideReforged = card(226011)
+export const StonehideReforged = card(226011)
   .costGeo(4)
   .costEnergy(2)
   .talent(StonehideLawachurl)

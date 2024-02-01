@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：3
  * 所附属角色造成的物理伤害变为火元素伤害。
  */
-const StealthStatus = status(123012)
+export const StealthStatus = status(123012)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const StealthStatus = status(123012)
  * 所附属角色受到的伤害-1，造成的伤害+1。
  * 可用次数：2
  */
-const Stealth = status(123011)
+export const Stealth = status(123011)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const Stealth = status(123011)
  * @description
  * 造成2点物理伤害。
  */
-const Thrust = skill(23011)
+export const Thrust = skill(23011)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const Thrust = skill(23011)
  * @description
  * 造成1点火元素伤害，本角色附属潜行。
  */
-const Prowl = skill(23012)
+export const Prowl = skill(23012)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -54,7 +54,7 @@ const Prowl = skill(23012)
  * @description
  * 造成5点火元素伤害。
  */
-const BladeAblaze = skill(23013)
+export const BladeAblaze = skill(23013)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
@@ -67,7 +67,7 @@ const BladeAblaze = skill(23013)
  * @description
  * 【被动】战斗开始时，初始附属潜行。
  */
-const StealthMaster = skill(23014)
+export const StealthMaster = skill(23014)
   .type("passive")
   // TODO
   .done();
@@ -78,7 +78,7 @@ const StealthMaster = skill(23014)
  * @description
  * 「死债不可免，活债更难逃…」
  */
-const FatuiPyroAgent = character(2301)
+export const FatuiPyroAgent = character(2301)
   .tags("pyro", "fatui")
   .health(9)
   .energy(2)
@@ -95,7 +95,7 @@ const FatuiPyroAgent = character(2301)
  * 初始可用次数+1，并且使所附属角色造成的物理伤害变为火元素伤害。
  * （牌组中包含愚人众·火之债务处理人，才能加入牌组）
  */
-const PaidInFull = card(223011)
+export const PaidInFull = card(223011)
   .costPyro(3)
   .talent(FatuiPyroAgent)
   // TODO

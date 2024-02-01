@@ -7,7 +7,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 所附属角色使用普通攻击或元素战技后：造成2点雷元素伤害。
  * 持续回合：2
  */
-const TheWolfWithin = status(114021)
+export const TheWolfWithin = status(114021)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const TheWolfWithin = status(114021)
  * @description
  * 造成2点物理伤害。
  */
-const SteelFang = skill(14021)
+export const SteelFang = skill(14021)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
@@ -30,7 +30,7 @@ const SteelFang = skill(14021)
  * @description
  * 造成3点雷元素伤害。
  */
-const ClawAndThunder = skill(14022)
+export const ClawAndThunder = skill(14022)
   .type("elemental")
   .costElectro(3)
   // TODO
@@ -42,7 +42,7 @@ const ClawAndThunder = skill(14022)
  * @description
  * 造成3点雷元素伤害，本角色附属雷狼。
  */
-const LightningFang = skill(14023)
+export const LightningFang = skill(14023)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
@@ -56,7 +56,7 @@ const LightningFang = skill(14023)
  * 「牌，难。」
  * 「但，有朋友…」
  */
-const Razor = character(1402)
+export const Razor = character(1402)
   .tags("electro", "claymore", "mondstadt")
   .health(10)
   .energy(2)
@@ -72,7 +72,7 @@ const Razor = character(1402)
  * 装备有此牌的雷泽使用利爪与苍雷后：使我方一个雷元素角色获得1点充能。（每回合1次，出战角色优先）
  * （牌组中包含雷泽，才能加入牌组）
  */
-const Awakening = card(214021)
+export const Awakening = card(214021)
   .costElectro(3)
   .talent(Razor)
   // TODO

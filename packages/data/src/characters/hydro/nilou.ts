@@ -8,7 +8,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 可用次数：1（可叠加，最多叠加到3次）
  * 我方宣布结束时：如果此牌的可用次数至少为2，则造成2点草元素伤害。（需消耗可用次数）
  */
-const BountifulCore = summon(112082)
+export const BountifulCore = summon(112082)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const BountifulCore = summon(112082)
  * 结束阶段：对所附属角色造成3点水元素伤害。
  * 可用次数：1
  */
-const LingeringAeon = status(112083)
+export const LingeringAeon = status(112083)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const LingeringAeon = status(112083)
  * @description
  * 敌方角色受到绽放反应时：我方不再生成草原核，而是改为召唤丰穰之核。
  */
-const GoldenChalicesBounty = combatStatus(112081)
+export const GoldenChalicesBounty = combatStatus(112081)
   // TODO
   .done();
 
@@ -39,7 +39,7 @@ const GoldenChalicesBounty = combatStatus(112081)
  * @description
  * 造成2点物理伤害。
  */
-const DanceOfSamser = skill(12081)
+export const DanceOfSamser = skill(12081)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
@@ -52,7 +52,7 @@ const DanceOfSamser = skill(12081)
  * @description
  * 造成3点水元素伤害，如果队伍中包含水元素角色和草元素角色且不包含其他元素的角色，就生成金杯的丰馈。
  */
-const DanceOfHaftkarsvar = skill(12082)
+export const DanceOfHaftkarsvar = skill(12082)
   .type("elemental")
   .costHydro(3)
   // TODO
@@ -64,7 +64,7 @@ const DanceOfHaftkarsvar = skill(12082)
  * @description
  * 造成2点水元素伤害，目标角色附属永世流沔。
  */
-const DanceOfAbzendegiDistantDreamsListeningSpring = skill(12083)
+export const DanceOfAbzendegiDistantDreamsListeningSpring = skill(12083)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
@@ -77,7 +77,7 @@ const DanceOfAbzendegiDistantDreamsListeningSpring = skill(12083)
  * @description
  * 莲步轻舞，出尘醉梦。
  */
-const Nilou = character(1208)
+export const Nilou = character(1208)
   .tags("hydro", "sword", "sumeru")
   .health(10)
   .energy(2)
@@ -93,7 +93,7 @@ const Nilou = character(1208)
  * 装备有此牌的妮露在场时：我方丰穰之核造成的伤害+1。
  * （牌组中包含妮露，才能加入牌组）
  */
-const TheStarrySkiesTheirFlowersRain = card(212081)
+export const TheStarrySkiesTheirFlowersRain = card(212081)
   .costHydro(3)
   .talent(Nilou)
   // TODO

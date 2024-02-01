@@ -8,7 +8,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 角色普通攻击造成的伤害+2，造成的物理伤害变为岩元素伤害。
  * 持续回合：2
  */
-const SweepingTimeStatus = status(116022)
+export const SweepingTimeStatus = status(116022)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const SweepingTimeStatus = status(116022)
  * 为我方出战角色提供2点护盾。
  * 此护盾耗尽前，我方受到的物理伤害减半。（向上取整）
  */
-const FullPlate = combatStatus(116021)
+export const FullPlate = combatStatus(116021)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const FullPlate = combatStatus(116021)
  * @description
  * 造成2点物理伤害。
  */
-const FavoniusBladeworkMaid = skill(16021)
+export const FavoniusBladeworkMaid = skill(16021)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const FavoniusBladeworkMaid = skill(16021)
  * @description
  * 造成1点岩元素伤害，生成护体岩铠。
  */
-const Breastplate = skill(16022)
+export const Breastplate = skill(16022)
   .type("elemental")
   .costGeo(3)
   // TODO
@@ -54,7 +54,7 @@ const Breastplate = skill(16022)
  * @description
  * 造成4点岩元素伤害，本角色附属大扫除。
  */
-const SweepingTime = skill(16023)
+export const SweepingTime = skill(16023)
   .type("burst")
   .costGeo(4)
   .costEnergy(2)
@@ -67,7 +67,7 @@ const SweepingTime = skill(16023)
  * @description
  * 整理牌桌这种事，真的可以交给她。
  */
-const Noelle = character(1602)
+export const Noelle = character(1602)
   .tags("geo", "claymore", "mondstadt")
   .health(10)
   .energy(2)
@@ -83,7 +83,7 @@ const Noelle = character(1602)
  * 诺艾尔普通攻击后：如果此牌和护体岩铠仍在场，则治疗我方所有角色1点。（每回合1次）
  * （牌组中包含诺艾尔，才能加入牌组）
  */
-const IGotYourBack = card(216021)
+export const IGotYourBack = card(216021)
   .costGeo(3)
   .talent(Noelle)
   // TODO

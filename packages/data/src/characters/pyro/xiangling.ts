@@ -7,7 +7,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：造成2点火元素伤害。
  * 可用次数：2
  */
-const Guoba = summon(113021)
+export const Guoba = summon(113021)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const Guoba = summon(113021)
  * 我方角色使用技能后：造成2点火元素伤害。
  * 可用次数：2
  */
-const PyronadoStatus = combatStatus(113022)
+export const PyronadoStatus = combatStatus(113022)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const PyronadoStatus = combatStatus(113022)
  * @description
  * 造成2点物理伤害。
  */
-const DoughFu = skill(13021)
+export const DoughFu = skill(13021)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const DoughFu = skill(13021)
  * @description
  * 召唤锅巴。
  */
-const GuobaAttack = skill(13022)
+export const GuobaAttack = skill(13022)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -53,7 +53,7 @@ const GuobaAttack = skill(13022)
  * @description
  * 造成3点火元素伤害，生成旋火轮。
  */
-const Pyronado = skill(13023)
+export const Pyronado = skill(13023)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)
@@ -66,7 +66,7 @@ const Pyronado = skill(13023)
  * @description
  * 身为一个厨师，她几乎什么都做得到。
  */
-const Xiangling = character(1302)
+export const Xiangling = character(1302)
   .tags("pyro", "pole", "liyue")
   .health(10)
   .energy(2)
@@ -82,7 +82,7 @@ const Xiangling = character(1302)
  * 装备有此牌的香菱使用锅巴出击时：自身也会造成1点火元素伤害。
  * （牌组中包含香菱，才能加入牌组）
  */
-const Crossfire = card(213021)
+export const Crossfire = card(213021)
   .costPyro(3)
   .talent(Xiangling)
   // TODO

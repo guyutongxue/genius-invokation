@@ -8,7 +8,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Aura,
  * 可用次数：3
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
-const AutumnWhirlwind = summon(115052)
+export const AutumnWhirlwind = summon(115052)
   .endPhaseDamage("swirledAnemo", 1)
   .usage(3)
   .done();
@@ -20,7 +20,7 @@ const AutumnWhirlwind = summon(115052)
  * 所附属角色进行下落攻击时：造成的物理伤害变为风元素伤害，且伤害+1。
  * 角色使用技能后：移除此效果。
  */
-const MidareRanzan = status(115051)
+export const MidareRanzan = status(115051)
   .on("beforeSkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Anemo)
   .increaseDamage(1)
@@ -35,7 +35,7 @@ const MidareRanzan = status(115051)
  * 所附属角色进行下落攻击时：造成的物理伤害变为冰元素伤害，且伤害+1。
  * 所附属角色使用技能后：移除此效果。
  */
-const MidareRanzanCryo = status(115053)
+export const MidareRanzanCryo = status(115053)
   .on("beforeSkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Cryo)
   .increaseDamage(1)
@@ -50,7 +50,7 @@ const MidareRanzanCryo = status(115053)
  * 所附属角色进行下落攻击时：造成的物理伤害变为雷元素伤害，且伤害+1。
  * 所附属角色使用技能后：移除此效果。
  */
-const MidareRanzanElectro = status(115056)
+export const MidareRanzanElectro = status(115056)
   .on("beforeSkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Electro)
   .increaseDamage(1)
@@ -65,7 +65,7 @@ const MidareRanzanElectro = status(115056)
  * 所附属角色进行下落攻击时：造成的物理伤害变为水元素伤害，且伤害+1。
  * 所附属角色使用技能后：移除此效果。
  */
-const MidareRanzanHydro = status(115054)
+export const MidareRanzanHydro = status(115054)
   .on("beforeSkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Hydro)
   .increaseDamage(1)
@@ -80,7 +80,7 @@ const MidareRanzanHydro = status(115054)
  * 所附属角色进行下落攻击时：造成的物理伤害变为火元素伤害，且伤害+1。
  * 所附属角色使用技能后：移除此效果。
  */
-const MidareRanzanPyro = status(115055)
+export const MidareRanzanPyro = status(115055)
   .on("beforeSkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Pyro)
   .increaseDamage(1)
@@ -95,7 +95,7 @@ const MidareRanzanPyro = status(115055)
  * 我方角色和召唤物所造成的冰元素伤害+1。
  * 可用次数：2
  */
-const PoeticsOfFuubutsuCryo = combatStatus(115057)
+export const PoeticsOfFuubutsuCryo = combatStatus(115057)
   .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Cryo)
   .usage(2)
   .increaseDamage(1)
@@ -108,7 +108,7 @@ const PoeticsOfFuubutsuCryo = combatStatus(115057)
  * 我方角色和召唤物所造成的雷元素伤害+1。
  * 可用次数：2
  */
-const PoeticsOfFuubutsuElectro = combatStatus(115050)
+export const PoeticsOfFuubutsuElectro = combatStatus(115050)
   .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Electro)
   .usage(2)
   .increaseDamage(1)
@@ -121,7 +121,7 @@ const PoeticsOfFuubutsuElectro = combatStatus(115050)
  * 我方角色和召唤物所造成的水元素伤害+1。
  * 可用次数：2
  */
-const PoeticsOfFuubutsuHydro = combatStatus(115058)
+export const PoeticsOfFuubutsuHydro = combatStatus(115058)
   .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Hydro)
   .usage(2)
   .increaseDamage(1)
@@ -134,7 +134,7 @@ const PoeticsOfFuubutsuHydro = combatStatus(115058)
  * 我方角色和召唤物所造成的火元素伤害+1。
  * 可用次数：2
  */
-const PoeticsOfFuubutsuPyro = combatStatus(115059)
+export const PoeticsOfFuubutsuPyro = combatStatus(115059)
   .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Pyro)
   .usage(2)
   .increaseDamage(1)
@@ -146,7 +146,7 @@ const PoeticsOfFuubutsuPyro = combatStatus(115059)
  * @description
  * 造成2点物理伤害。
  */
-const GaryuuBladework = skill(15051)
+export const GaryuuBladework = skill(15051)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
@@ -161,7 +161,7 @@ const GaryuuBladework = skill(15051)
  * 如果此技能引发了扩散，则将乱岚拨止转换为被扩散的元素。
  * 此技能结算后：我方切换到后一个角色。
  */
-const Chihayaburu = skill(15052)
+export const Chihayaburu = skill(15052)
   .type("elemental")
   .costAnemo(3)
   .do((c) => {
@@ -195,7 +195,7 @@ const Chihayaburu = skill(15052)
  * @description
  * 造成3点风元素伤害，召唤流风秋野。
  */
-const KazuhaSlash = skill(15053)
+export const KazuhaSlash = skill(15053)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
@@ -209,7 +209,7 @@ const KazuhaSlash = skill(15053)
  * @description
  * 
  */
-const ChihayaburuPassive = skill(15054)
+export const ChihayaburuPassive = skill(15054)
   .type("passive")
   .on("skill", (c) => c.eventArg.definition.id === Chihayaburu)
   .switchActive("my next")
@@ -221,7 +221,7 @@ const ChihayaburuPassive = skill(15054)
  * @description
  * 拾花鸟之一趣，照月风之长路。
  */
-const KaedeharaKazuha = character(1505)
+export const KaedeharaKazuha = character(1505)
   .tags("anemo", "sword", "inazuma")
   .health(10)
   .energy(2)
@@ -237,7 +237,7 @@ const KaedeharaKazuha = character(1505)
  * 装备有此牌的枫原万叶引发扩散反应后：使我方角色和召唤物接下来2次所造成的被扩散元素类型的伤害+1。（每种元素类型分别计算次数）
  * （牌组中包含枫原万叶，才能加入牌组）
  */
-const PoeticsOfFuubutsu = card(215051)
+export const PoeticsOfFuubutsu = card(215051)
   .costAnemo(3)
   .talent(KaedeharaKazuha)
   .on("dealDamage", (c) => isReactionSwirl(c.eventArg))

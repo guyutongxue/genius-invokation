@@ -7,7 +7,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成1点火元素伤害，对所有敌方后台角色造成1点穿透伤害。
  * 可用次数：2
  */
-const DarkfireFurnace = summon(123021)
+export const DarkfireFurnace = summon(123021)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const DarkfireFurnace = summon(123021)
  * 为所附属角色提供3点护盾。
  * 此护盾耗尽前：所附属角色造成的火元素伤害+1。
  */
-const AegisOfAbyssalFlame = status(123024)
+export const AegisOfAbyssalFlame = status(123024)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const AegisOfAbyssalFlame = status(123024)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到3点生命值。
  */
-const FieryRebirthStatus = status(123022)
+export const FieryRebirthStatus = status(123022)
   // TODO
   .done();
 
@@ -39,7 +39,7 @@ const FieryRebirthStatus = status(123022)
  * 所附属角色无法使用技能。
  * 结束阶段：对所附属角色造成6点穿透伤害，然后移除此效果。
  */
-const QuenchedEmbers = status(123025)
+export const QuenchedEmbers = status(123025)
   // TODO
   .done();
 
@@ -51,7 +51,7 @@ const QuenchedEmbers = status(123025)
  * 此状态提供2次火元素附着（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色无法使用技能且在结束阶段受到6点穿透伤害。
  * 此效果存在期间：角色造成的火元素伤害+1。
  */
-const ShieldOfSurgingFlame = status(123023)
+export const ShieldOfSurgingFlame = status(123023)
   // TODO
   .done();
 
@@ -61,7 +61,7 @@ const ShieldOfSurgingFlame = status(123023)
  * @description
  * 造成1点火元素伤害。
  */
-const FlameOfSalvation = skill(23021)
+export const FlameOfSalvation = skill(23021)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -74,7 +74,7 @@ const FlameOfSalvation = skill(23021)
  * @description
  * 造成3点火元素伤害。
  */
-const SearingPrecept = skill(23022)
+export const SearingPrecept = skill(23022)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -86,7 +86,7 @@ const SearingPrecept = skill(23022)
  * @description
  * 造成3点火元素伤害，召唤黯火炉心。
  */
-const OminousStar = skill(23023)
+export const OminousStar = skill(23023)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)
@@ -99,7 +99,7 @@ const OminousStar = skill(23023)
  * @description
  * 【被动】战斗开始时，初始附属火之新生。
  */
-const FieryRebirth = skill(23024)
+export const FieryRebirth = skill(23024)
   .type("passive")
   // TODO
   .done();
@@ -110,7 +110,7 @@ const FieryRebirth = skill(23024)
  * @description
  * 章典示现，劝听箴言。
  */
-const AbyssLectorFathomlessFlames = character(2302)
+export const AbyssLectorFathomlessFlames = character(2302)
   .tags("pyro", "monster")
   .health(6)
   .energy(2)
@@ -125,7 +125,7 @@ const AbyssLectorFathomlessFlames = character(2302)
  * 装备有此牌的深渊咏者·渊火触发火之新生时：弃置此牌，为角色附属渊火加护。
  * （牌组中包含深渊咏者·渊火，才能加入牌组）
  */
-const EmbersRekindled = card(223021)
+export const EmbersRekindled = card(223021)
   .costPyro(2)
   .talent(AbyssLectorFathomlessFlames)
   // TODO

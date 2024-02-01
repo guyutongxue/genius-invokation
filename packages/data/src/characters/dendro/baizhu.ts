@@ -7,7 +7,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：造成1点草元素伤害，治疗我方出战角色1点。
  * 可用次数：1
  */
-const GossamerSprite = summon(117051)
+export const GossamerSprite = summon(117051)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const GossamerSprite = summon(117051)
  * 行动阶段开始时：生成无郤气护盾。
  * 可用次数：2
  */
-const PulsingClarity = combatStatus(117052)
+export const PulsingClarity = combatStatus(117052)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const PulsingClarity = combatStatus(117052)
  * 提供1点护盾，保护我方出战角色。
  * 此效果被移除，或被重复生成时：造成1点草元素伤害，治疗我方出战角色1点。
  */
-const SeamlessShield = combatStatus(117053)
+export const SeamlessShield = combatStatus(117053)
   // TODO
   .shield(1)
   .on("dispose")
@@ -41,7 +41,7 @@ const SeamlessShield = combatStatus(117053)
  * @description
  * 造成1点草元素伤害。
  */
-const TheClassicsOfAcupuncture = skill(17051)
+export const TheClassicsOfAcupuncture = skill(17051)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
@@ -54,7 +54,7 @@ const TheClassicsOfAcupuncture = skill(17051)
  * @description
  * 造成1点草元素伤害，召唤游丝徵灵。
  */
-const UniversalDiagnosis = skill(17052)
+export const UniversalDiagnosis = skill(17052)
   .type("elemental")
   .costDendro(3)
   // TODO
@@ -66,7 +66,7 @@ const UniversalDiagnosis = skill(17052)
  * @description
  * 生成脉摄宣明和无郤气护盾。
  */
-const HolisticRevivification = skill(17053)
+export const HolisticRevivification = skill(17053)
   .type("burst")
   .costDendro(4)
   .costEnergy(2)
@@ -79,7 +79,7 @@ const HolisticRevivification = skill(17053)
  * @description
  * 生老三千疾，何处可问医。
  */
-const Baizhu = character(1705)
+export const Baizhu = character(1705)
   .tags("dendro", "catalyst", "liyue")
   .health(10)
   .energy(2)
@@ -95,7 +95,7 @@ const Baizhu = character(1705)
  * 装备有此牌的白术在场，无郤气护盾触发治疗效果时：生成1个出战角色类型的元素骰。
  * （牌组中包含白术，才能加入牌组）
  */
-const AllThingsAreOfTheEarth = card(217051)
+export const AllThingsAreOfTheEarth = card(217051)
   .costDendro(4)
   .costEnergy(2)
   .talent(Baizhu)

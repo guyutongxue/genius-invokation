@@ -8,7 +8,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：弃置此牌，造成3点物理伤害；每有1点「能量层数」，都使此伤害+1。
  * （影响此牌「可用次数」的效果会作用于「能量层数」。）
  */
-const LightfallSword = summon(111062)
+export const LightfallSword = summon(111062)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const LightfallSword = summon(111062)
  * @description
  * 所附属角色使用冰潮的涡旋时：移除此状态，使本次伤害+3。
  */
-const Grimheart = status(111061)
+export const Grimheart = status(111061)
   // TODO
   .done();
 
@@ -28,7 +28,7 @@ const Grimheart = status(111061)
  * @description
  * 造成2点物理伤害。
  */
-const FavoniusBladeworkEdel = skill(11061)
+export const FavoniusBladeworkEdel = skill(11061)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -41,7 +41,7 @@ const FavoniusBladeworkEdel = skill(11061)
  * @description
  * 造成2点冰元素伤害，如果本角色未附属冷酷之心，则使其附属冷酷之心。
  */
-const IcetideVortex = skill(11062)
+export const IcetideVortex = skill(11062)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -53,7 +53,7 @@ const IcetideVortex = skill(11062)
  * @description
  * 造成2点冰元素伤害，召唤光降之剑。
  */
-const GlacialIllumination = skill(11063)
+export const GlacialIllumination = skill(11063)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
@@ -66,7 +66,7 @@ const GlacialIllumination = skill(11063)
  * @description
  * 这只是一场游戏，无论是取胜或落败，你都不会因此被添上罪状。
  */
-const Eula = character(1106)
+export const Eula = character(1106)
   .tags("cryo", "claymore", "mondstadt")
   .health(10)
   .energy(2)
@@ -82,7 +82,7 @@ const Eula = character(1106)
  * 装备有此牌的优菈使用冰潮的涡旋时：额外为光降之剑累积1点「能量层数」。
  * （牌组中包含优菈，才能加入牌组）
  */
-const WellspringOfWarlust = card(211061)
+export const WellspringOfWarlust = card(211061)
   .costCryo(3)
   .costEnergy(2)
   .talent(Eula)

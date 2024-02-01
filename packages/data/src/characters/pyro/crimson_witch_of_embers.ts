@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：1
  * 所附属角色被附属严寒时，移除此效果。
  */
-const BlazingHeat = status(163011)
+export const BlazingHeat = status(163011)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const BlazingHeat = status(163011)
  * 本角色将在下次行动时，直接使用技能：造成3点火元素伤害，移除护盾。
  * 准备技能期间：提供3点护盾，保护所附属的角色。
  */
-const EncarmineVortex = status(163012)
+export const EncarmineVortex = status(163012)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const EncarmineVortex = status(163012)
  * @description
  * 造成1点火元素伤害。
  */
-const CrimsonLotusMoth = skill(63011)
+export const CrimsonLotusMoth = skill(63011)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const CrimsonLotusMoth = skill(63011)
  * @description
  * 造成2点火元素伤害，并使目标角色附属炽热。
  */
-const DecimatingLash = skill(63012)
+export const DecimatingLash = skill(63012)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -54,7 +54,7 @@ const DecimatingLash = skill(63012)
  * @description
  * 造成6点火元素伤害。
  */
-const WhirlingBlaze = skill(63013)
+export const WhirlingBlaze = skill(63013)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
@@ -67,7 +67,7 @@ const WhirlingBlaze = skill(63013)
  * @description
  * 造成3点火元素伤害。
  */
-const CrimsonFlamespin = skill(63014)
+export const CrimsonFlamespin = skill(63014)
   .type("burst")
   // TODO
   .done();
@@ -78,7 +78,7 @@ const CrimsonFlamespin = skill(63014)
  * @description
  * 
  */
-const CrimsonWitchOfEmbers = character(6301)
+export const CrimsonWitchOfEmbers = character(6301)
   .tags("pyro", "fatui")
   .health(10)
   .energy(2)

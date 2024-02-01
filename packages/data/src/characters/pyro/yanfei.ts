@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段：角色附属丹火印。
  * 持续回合：2
  */
-const Brilliance = status(113082)
+export const Brilliance = status(113082)
   // TODO
   .done();
 
@@ -19,7 +19,7 @@ const Brilliance = status(113082)
  * 角色进行重击时：造成的伤害+2。
  * 可用次数：1（可叠加，最多叠加到2次）
  */
-const ScarletSeal = status(113081)
+export const ScarletSeal = status(113081)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const ScarletSeal = status(113081)
  * @description
  * 造成1点火元素伤害。
  */
-const SealOfApproval = skill(13081)
+export const SealOfApproval = skill(13081)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -42,7 +42,7 @@ const SealOfApproval = skill(13081)
  * @description
  * 造成3点火元素伤害，本角色附属丹火印。
  */
-const SignedEdict = skill(13082)
+export const SignedEdict = skill(13082)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -54,7 +54,7 @@ const SignedEdict = skill(13082)
  * @description
  * 造成3点火元素伤害，本角色附属丹火印和灼灼。
  */
-const DoneDeal = skill(13083)
+export const DoneDeal = skill(13083)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
@@ -67,7 +67,7 @@ const DoneDeal = skill(13083)
  * @description
  * 不期修古，不法常可。
  */
-const Yanfei = character(1308)
+export const Yanfei = character(1308)
   .tags("pyro", "catalyst", "liyue")
   .health(10)
   .energy(2)
@@ -83,7 +83,7 @@ const Yanfei = character(1308)
  * 装备有此牌的烟绯进行重击时：对生命值不多于6的敌人造成的伤害+1；如果触发了丹火印，则在技能结算后抓1张牌。
  * （牌组中包含烟绯，才能加入牌组）
  */
-const RightOfFinalInterpretation = card(213081)
+export const RightOfFinalInterpretation = card(213081)
   .costPyro(1)
   .costVoid(2)
   .talent(Yanfei)

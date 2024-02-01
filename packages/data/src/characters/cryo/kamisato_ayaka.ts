@@ -7,7 +7,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成2点冰元素伤害。
  * 可用次数：2
  */
-const FrostflakeSekiNoTo = summon(111051)
+export const FrostflakeSekiNoTo = summon(111051)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const FrostflakeSekiNoTo = summon(111051)
  * 所附属角色造成的物理伤害变为冰元素伤害，且角色造成的冰元素伤害+1。
  * （持续到回合结束）
  */
-const CryoElementalInfusion01 = status(111053)
+export const CryoElementalInfusion01 = status(111053)
   // TODO
   .done();
 
@@ -29,7 +29,7 @@ const CryoElementalInfusion01 = status(111053)
  * 所附属角色造成的物理伤害变为冰元素伤害。
  * （持续到回合结束）
  */
-const CryoElementalInfusion = status(111052)
+export const CryoElementalInfusion = status(111052)
   // TODO
   .done();
 
@@ -39,7 +39,7 @@ const CryoElementalInfusion = status(111052)
  * @description
  * 造成2点物理伤害。
  */
-const KamisatoArtKabuki = skill(11051)
+export const KamisatoArtKabuki = skill(11051)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -52,7 +52,7 @@ const KamisatoArtKabuki = skill(11051)
  * @description
  * 造成3点冰元素伤害。
  */
-const KamisatoArtHyouka = skill(11052)
+export const KamisatoArtHyouka = skill(11052)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -64,7 +64,7 @@ const KamisatoArtHyouka = skill(11052)
  * @description
  * 造成4点冰元素伤害，召唤霜见雪关扉。
  */
-const KamisatoArtSoumetsu = skill(11053)
+export const KamisatoArtSoumetsu = skill(11053)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
@@ -77,7 +77,7 @@ const KamisatoArtSoumetsu = skill(11053)
  * @description
  * 【被动】此角色被切换为「出战角色」时，附属冰元素附魔。
  */
-const KamisatoArtSenho = skill(11054)
+export const KamisatoArtSenho = skill(11054)
   .type("passive")
   // TODO
   .done();
@@ -88,7 +88,7 @@ const KamisatoArtSenho = skill(11054)
  * @description
  * 如霜凝华，如鹭在庭。
  */
-const KamisatoAyaka = character(1105)
+export const KamisatoAyaka = character(1105)
   .tags("cryo", "sword", "inazuma")
   .health(10)
   .energy(3)
@@ -103,7 +103,7 @@ const KamisatoAyaka = character(1105)
  * 切换到装备有此牌的神里绫华时：少花费1个元素骰。（每回合1次）
  * （牌组中包含神里绫华，才能加入牌组）
  */
-const KantenSenmyouBlessing = card(211051)
+export const KantenSenmyouBlessing = card(211051)
   .costCryo(2)
   .talent(KamisatoAyaka)
   // TODO

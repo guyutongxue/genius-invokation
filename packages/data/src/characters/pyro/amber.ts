@@ -8,7 +8,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：1，耗尽时不弃置此牌。
  * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点火元素伤害。
  */
-const BaronBunny = summon(113041)
+export const BaronBunny = summon(113041)
   // TODO
   .done();
 
@@ -18,7 +18,7 @@ const BaronBunny = summon(113041)
  * @description
  * 造成2点物理伤害。
  */
-const Sharpshooter = skill(13041)
+export const Sharpshooter = skill(13041)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -31,7 +31,7 @@ const Sharpshooter = skill(13041)
  * @description
  * 召唤兔兔伯爵。
  */
-const ExplosivePuppet = skill(13042)
+export const ExplosivePuppet = skill(13042)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -43,7 +43,7 @@ const ExplosivePuppet = skill(13042)
  * @description
  * 造成2点火元素伤害，对所有敌方后台角色造成2点穿透伤害。
  */
-const FieryRain = skill(13043)
+export const FieryRain = skill(13043)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
@@ -57,7 +57,7 @@ const FieryRain = skill(13043)
  * 如果想要成为一名伟大的牌手…
  * 首先，要有坐上牌桌的勇气。
  */
-const Amber = character(1304)
+export const Amber = character(1304)
   .tags("pyro", "bow", "mondstadt")
   .health(10)
   .energy(2)
@@ -73,7 +73,7 @@ const Amber = character(1304)
  * 安柏普通攻击后：如果此牌和兔兔伯爵仍在场，则引爆兔兔伯爵，造成4点火元素伤害。
  * （牌组中包含安柏，才能加入牌组）
  */
-const BunnyTriggered = card(213041)
+export const BunnyTriggered = card(213041)
   .costPyro(3)
   .talent(Amber)
   // TODO

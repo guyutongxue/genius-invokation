@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 我方切换角色后：造成2点冰元素伤害。
  * 可用次数：3
  */
-const Icicle = combatStatus(111031)
+export const Icicle = combatStatus(111031)
   // TODO
   .done();
 
@@ -17,7 +17,7 @@ const Icicle = combatStatus(111031)
  * @description
  * 造成2点物理伤害。
  */
-const CeremonialBladework = skill(11031)
+export const CeremonialBladework = skill(11031)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
@@ -30,7 +30,7 @@ const CeremonialBladework = skill(11031)
  * @description
  * 造成3点冰元素伤害。
  */
-const Frostgnaw = skill(11032)
+export const Frostgnaw = skill(11032)
   .type("elemental")
   .costCryo(3)
   // TODO
@@ -42,7 +42,7 @@ const Frostgnaw = skill(11032)
  * @description
  * 造成1点冰元素伤害，生成寒冰之棱。
  */
-const GlacialWaltz = skill(11033)
+export const GlacialWaltz = skill(11033)
   .type("burst")
   .costCryo(4)
   .costEnergy(2)
@@ -55,7 +55,7 @@ const GlacialWaltz = skill(11033)
  * @description
  * 他很擅长在他人身上发掘出「骑士般的美德」。
  */
-const Kaeya = character(1103)
+export const Kaeya = character(1103)
   .tags("cryo", "sword", "mondstadt")
   .health(10)
   .energy(2)
@@ -71,7 +71,7 @@ const Kaeya = character(1103)
  * 装备有此牌的凯亚使用霜袭后：治疗自身2点。（每回合1次）
  * （牌组中包含凯亚，才能加入牌组）
  */
-const ColdbloodedStrike = card(211031)
+export const ColdbloodedStrike = card(211031)
   .costCryo(4)
   .talent(Kaeya)
   // TODO

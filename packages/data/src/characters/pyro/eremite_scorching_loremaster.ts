@@ -8,7 +8,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  * 入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合至多2次，使角色受到的伤害-1。）
  */
-const SpiritOfOmenPyroScorpion01 = summon(123032)
+export const SpiritOfOmenPyroScorpion01 = summon(123032)
   // TODO
   .done();
 
@@ -20,7 +20,7 @@ const SpiritOfOmenPyroScorpion01 = summon(123032)
  * 可用次数：2
  * 入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合1次，使角色受到的伤害-1。）
  */
-const SpiritOfOmenPyroScorpion = summon(123031)
+export const SpiritOfOmenPyroScorpion = summon(123031)
   // TODO
   .done();
 
@@ -30,7 +30,7 @@ const SpiritOfOmenPyroScorpion = summon(123031)
  * @description
  * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合至多2次）
  */
-const PyroScorpionGuardianStanceStatus01 = status(123034)
+export const PyroScorpionGuardianStanceStatus01 = status(123034)
   // TODO
   .done();
 
@@ -40,7 +40,7 @@ const PyroScorpionGuardianStanceStatus01 = status(123034)
  * @description
  * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合1次）
  */
-const PyroScorpionGuardianStanceStatus = status(123033)
+export const PyroScorpionGuardianStanceStatus = status(123033)
   // TODO
   .done();
 
@@ -50,7 +50,7 @@ const PyroScorpionGuardianStanceStatus = status(123033)
  * @description
  * 造成1点火元素伤害。
  */
-const SearingGlare = skill(23031)
+export const SearingGlare = skill(23031)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
@@ -63,7 +63,7 @@ const SearingGlare = skill(23031)
  * @description
  * 造成3点火元素伤害。
  */
-const BlazingStrike = skill(23032)
+export const BlazingStrike = skill(23032)
   .type("elemental")
   .costPyro(3)
   // TODO
@@ -75,7 +75,7 @@ const BlazingStrike = skill(23032)
  * @description
  * 造成2点火元素伤害，召唤厄灵·炎之魔蝎。
  */
-const SpiritOfOmensAwakeningPyroScorpion = skill(23033)
+export const SpiritOfOmensAwakeningPyroScorpion = skill(23033)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
@@ -88,7 +88,7 @@ const SpiritOfOmensAwakeningPyroScorpion = skill(23033)
  * @description
  * 【被动】此角色受到伤害后：如果此角色生命值不多于7，则获得1点充能。（整场牌局限制1次）
  */
-const SpiritOfOmensPower = skill(23034)
+export const SpiritOfOmensPower = skill(23034)
   .type("passive")
   // TODO
   .done();
@@ -99,7 +99,7 @@ const SpiritOfOmensPower = skill(23034)
  * @description
  * 每回合开始将此角色计数器清零
  */
-const _23035 = skill(23035)
+export const _23035 = skill(23035)
   // .type("undefined")
   // TODO
   .done();
@@ -110,7 +110,7 @@ const _23035 = skill(23035)
  * @description
  * 每回合开始如果场上存在召唤物刷新盾
  */
-const PyroScorpionGuardianStance = skill(23036)
+export const PyroScorpionGuardianStance = skill(23036)
   // .type("undefined")
   // TODO
   .done();
@@ -121,7 +121,7 @@ const PyroScorpionGuardianStance = skill(23036)
  * @description
  * 每回合开始如果场上存在召唤物刷新盾（天赋）
  */
-const PyroScorpionGuardianStance01 = skill(23037)
+export const PyroScorpionGuardianStance01 = skill(23037)
   // .type("undefined")
   // TODO
   .done();
@@ -132,7 +132,7 @@ const PyroScorpionGuardianStance01 = skill(23037)
  * @description
  * 如今仍然能记起许多故事的人，是不会背叛流淌在体内的沙漠血脉的。
  */
-const EremiteScorchingLoremaster = character(2303)
+export const EremiteScorchingLoremaster = character(2303)
   .tags("pyro", "eremite")
   .health(10)
   .energy(2)
@@ -149,7 +149,7 @@ const EremiteScorchingLoremaster = character(2303)
  * 厄灵·炎之魔蝎的减伤效果改为每回合至多2次。
  * （牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）
  */
-const Scorpocalypse = card(223031)
+export const Scorpocalypse = card(223031)
   .costPyro(3)
   .costEnergy(2)
   .talent(EremiteScorchingLoremaster)
