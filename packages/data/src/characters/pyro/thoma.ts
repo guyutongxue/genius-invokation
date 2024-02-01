@@ -1,0 +1,100 @@
+import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+
+/**
+ * @id 113111
+ * @name 烈烧佑命护盾
+ * @description
+ * 为我方出战角色提供1点护盾。（可叠加，最多叠加到3点）
+ */
+export const BlazingBarrier = combatStatus(113111)
+  // TODO
+  .done();
+
+/**
+ * @id 113113
+ * @name 炽火大铠
+ * @description
+ * 我方角色普通攻击后：造成1点火元素伤害，生成烈烧佑命护盾。
+ * 可用次数：3
+ */
+export const ScorchingOoyoroi01 = combatStatus(113113)
+  // TODO
+  .done();
+
+/**
+ * @id 113112
+ * @name 炽火大铠
+ * @description
+ * 我方角色普通攻击后：造成1点火元素伤害，生成烈烧佑命护盾。
+ * 可用次数：2
+ */
+export const ScorchingOoyoroi = combatStatus(113112)
+  // TODO
+  .done();
+
+/**
+ * @id 13111
+ * @name 迅破枪势
+ * @description
+ * 造成2点物理伤害。
+ */
+export const SwiftshatterSpear = skill(13111)
+  .type("normal")
+  .costPyro(1)
+  .costVoid(2)
+  // TODO
+  .done();
+
+/**
+ * @id 13112
+ * @name 烈烧佑命之侍护
+ * @description
+ * 造成2点火元素伤害，生成烈烧佑命护盾。
+ */
+export const BlazingBlessing = skill(13112)
+  .type("elemental")
+  .costPyro(3)
+  // TODO
+  .done();
+
+/**
+ * @id 13113
+ * @name 真红炽火之大铠
+ * @description
+ * 造成2点火元素伤害，生成烈烧佑命护盾和炽火大铠。
+ */
+export const CrimsonOoyoroi = skill(13113)
+  .type("burst")
+  .costPyro(3)
+  .costEnergy(2)
+  // TODO
+  .done();
+
+/**
+ * @id 1311
+ * @name 托马
+ * @description
+ * 渡来介者，赤袖丹心。
+ */
+export const Thoma = character(1311)
+  .tags("pyro", "pole", "inazuma")
+  .health(10)
+  .energy(2)
+  .skills(SwiftshatterSpear, BlazingBlessing, CrimsonOoyoroi)
+  .done();
+
+/**
+ * @id 213111
+ * @name 僚佐的才巧
+ * @description
+ * 战斗行动：我方出战角色为托马时，装备此牌。
+ * 托马装备此牌后，立刻使用一次真红炽火之大铠。
+ * 装备有此牌的托马生成的炽火大铠，初始可用次数+1。
+ * （牌组中包含托马，才能加入牌组）
+ */
+export const ASubordinatesSkills = card(213111)
+  .costPyro(3)
+  .costEnergy(2)
+  .talent(Thoma)
+  // TODO
+  .done();

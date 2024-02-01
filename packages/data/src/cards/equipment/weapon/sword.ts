@@ -82,3 +82,17 @@ export const LightOfFoliarIncision = card(311506)
   .weapon("sword")
   // TODO
   .done();
+
+/**
+ * @id 311507
+ * @name 原木刀
+ * @description
+ * 角色造成的伤害+1。
+ * 入场时：所附属角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。
+ * （「单手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+export const SapwoodBlade = card(311507)
+  .costVoid(3)
+  .weapon("sword")
+  // TODO
+  .done();

@@ -474,12 +474,26 @@ export const HeartOfKhvarenasBrilliance = card(312021)
  * @id 312022
  * @name 花海甘露之光
  * @description
- * 角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌。（每回合1次）
- * 结束阶段：治疗所附属角色1点。
+ * 角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌，并且在本回合结束阶段中治疗所附属角色1点。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const VourukashasGlow = card(312022)
   .costSame(1)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312023
+ * @name 老兵的容颜
+ * @description
+ * 角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。
+ * 第一次触发：生成1个此角色类型的元素骰。
+ * 第二次触发：抓1张牌。
+ * （角色最多装备1件「圣遗物」）
+ */
+export const VeteransVisage = card(312023)
+  .costVoid(2)
   .artifact()
   // TODO
   .done();

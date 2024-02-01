@@ -54,7 +54,7 @@ export const FreshWindOfFreedom = card(330004)
  * @id 330005
  * @name 万家灶火
  * @description
- * 我方抓相当于当前的回合数的牌。（最多抓4张）
+ * 我方抓当前的回合数-1数量的牌。（最多抓4张）
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const InEveryHouseAStove = card(330005)

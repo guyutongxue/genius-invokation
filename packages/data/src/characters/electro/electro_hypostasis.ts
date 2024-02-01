@@ -115,6 +115,7 @@ export const ElectroCrystalCoreSkill = skill(24014)
  * @id 24015
  * @name 猜拳三连击·剪刀
  * @description
+ * （需准备1个行动轮）
  * 造成2点雷元素伤害，然后准备技能：猜拳三连击·布。
  */
 export const RockpaperscissorsComboScissors = skill(24015)
@@ -126,6 +127,7 @@ export const RockpaperscissorsComboScissors = skill(24015)
  * @id 24016
  * @name 猜拳三连击·布
  * @description
+ * （需准备1个行动轮）
  * 造成3点雷元素伤害。
  */
 export const RockpaperscissorsComboPaper = skill(24016)

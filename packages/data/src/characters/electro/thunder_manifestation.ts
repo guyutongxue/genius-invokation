@@ -15,7 +15,7 @@ export const ThunderingShacklesSummon = summon(124023)
  * @id 124022
  * @name 雷鸣探知
  * @description
- * 此状态存在期间，可以触发1次：所附属角色受到雷音权现及其召唤物造成的伤害+1。
+ * 所附属角色受到雷音权现及其召唤物造成的伤害时：移除此状态，使此伤害+1。
  * （同一方场上最多存在一个此状态。雷音权现的部分技能，会以所附属角色为目标。）
  */
 export const LightningRod = status(124022)
@@ -108,6 +108,8 @@ export const ThunderManifestation = character(2402)
  * @id 224021
  * @name 悲号回唱
  * @description
+ * 战斗行动：我方出战角色为雷音权现时，装备此牌。
+ * 雷音权现装备此牌后，立刻使用一次雷墙倾轧。
  * 装备有此牌的雷音权现在场，附属有雷鸣探知的敌方角色受到伤害时：我方抓1张牌。（每回合1次）
  * （牌组中包含雷音权现，才能加入牌组）
  */

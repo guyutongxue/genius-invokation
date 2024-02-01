@@ -762,3 +762,25 @@ export const FallsAndFortune = card(332026)
 export const FlickeringFourleafSigil = card(332027)
   // TODO
   .done();
+
+/**
+ * @id 332028
+ * @name 机关铸成之链
+ * @description
+ * 目标我方角色每次受到伤害或治疗后：累积1点「备战度」（最多累积2点）。
+ * 我方打出原本费用不多于「备战度」的「武器」或「圣遗物」时：移除所有「备战度」，以免费打出该牌。
+ */
+export const MachineAssemblyLine = card(332028)
+  // TODO
+  .done();
+
+/**
+ * @id 332029
+ * @name 净觉花
+ * @description
+ * 选择一张我方支援区的牌，将其弃置。然后，在我方手牌中随机生成2张支援牌。
+ * 本回合中，我方下次打出支援牌时：少花费1个元素骰。
+ */
+export const SunyataFlower = card(332029)
+  // TODO
+  .done();

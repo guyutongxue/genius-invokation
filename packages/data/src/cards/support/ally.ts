@@ -258,3 +258,29 @@ export const Mamere = card(322021)
   .support("ally")
   // TODO
   .done();
+
+/**
+ * @id 322022
+ * @name 婕德
+ * @description
+ * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）
+ * 我方角色使用「元素爆发」后：如果「阅历」至少为5，则弃置此牌，生成「阅历」-2数量的万能元素。
+ */
+export const Jeht = card(322022)
+  .costVoid(2)
+  .support("ally")
+  // TODO
+  .done();
+
+/**
+ * @id 322023
+ * @name 西尔弗和迈勒斯
+ * @description
+ * 此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点）
+ * 结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。
+ */
+export const SilverAndMelus = card(322023)
+  .costSame(1)
+  .support("ally")
+  // TODO
+  .done();

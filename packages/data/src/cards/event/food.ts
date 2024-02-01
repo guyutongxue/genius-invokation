@@ -182,3 +182,16 @@ export const FishAndChips = card(333013)
   .food()
   // TODO
   .done();
+
+/**
+ * @id 333014
+ * @name 松茸酿肉卷
+ * @description
+ * 治疗目标角色2点，3回合内的结束阶段再治疗此角色1点。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+export const MatsutakeMeatRolls = card(333014)
+  .costSame(2)
+  .tags("food")
+  // TODO
+  .done();
