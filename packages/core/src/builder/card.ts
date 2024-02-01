@@ -192,6 +192,13 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
+  // 增加 food 标签，增加目标（我方非饱腹角色）
+  food() {
+    return this.tags("food").addTarget(
+      "my characters and not any has status with definition id = 303300",
+    );
+  }
+
   protected override getExtension(
     skillCtx: SkillContext<false, {}, "character">,
     arg: number[],

@@ -16,6 +16,6 @@
     "typescript": "^5.3.2",
     "@microsoft/tsdoc": "^0.14.2",
     "case-anything": "^2.1.13",
-    "@genshin-db/tcg": "^5.0.6"
+    "@genshin-db/tcg": "^5.0.9"
   }
 }

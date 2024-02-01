@@ -1,4 +1,5 @@
-import { card } from "@gi-tcg/core/builder";
+import { card, checkDamageSkillType, combatStatus } from "@gi-tcg/core/builder";
+import { Satiated } from "../../commons";
 
 /**
  * @id 333001
@@ -8,8 +9,10 @@ import { card } from "@gi-tcg/core/builder";
  * （每回合每个角色最多食用1次「料理」）
  */
 export const JueyunGuoba = card(333001)
-  .tags("food")
-  // TODO
+  .food()
+  .toStatus("@targets.0")
+  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -21,7 +24,7 @@ export const JueyunGuoba = card(333001)
  */
 export const AdeptusTemptation = card(333002)
   .costVoid(2)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -34,7 +37,7 @@ export const AdeptusTemptation = card(333002)
  */
 export const LotusFlowerCrisp = card(333003)
   .costSame(1)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -46,7 +49,7 @@ export const LotusFlowerCrisp = card(333003)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const NorthernSmokedChicken = card(333004)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -58,7 +61,7 @@ export const NorthernSmokedChicken = card(333004)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const SweetMadame = card(333005)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -71,7 +74,7 @@ export const SweetMadame = card(333005)
  */
 export const MondstadtHashBrown = card(333006)
   .costSame(1)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -84,7 +87,7 @@ export const MondstadtHashBrown = card(333006)
  */
 export const MushroomPizza = card(333007)
   .costSame(1)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -97,8 +100,18 @@ export const MushroomPizza = card(333007)
  */
 export const MintyMeatRolls = card(333008)
   .costSame(1)
-  .tags("food")
+  .food()
   // TODO
+  .done();
+
+/**
+ * @id 303307
+ * @name 复苏冷却中
+ * @description
+ * 本回合无法通过「料理」复苏角色。
+ */
+export const ReviveOnCooldown = combatStatus(303307)
+  .duration(1)
   .done();
 
 /**
@@ -111,7 +124,11 @@ export const MintyMeatRolls = card(333008)
 export const TeyvatFriedEgg = card(333009)
   .costSame(2)
   .tags("food")
-  // TODO
+  .filter((c) => !c.$(`my combat status with definition id ${ReviveOnCooldown}`))
+  .addTarget("my defeated characters")
+  .heal(1, "@targets.0")
+  .characterStatus(Satiated, "@targets.0")
+  .combatStatus(ReviveOnCooldown)
   .done();
 
 /**
@@ -123,7 +140,7 @@ export const TeyvatFriedEgg = card(333009)
  */
 export const SashimiPlatter = card(333010)
   .costSame(1)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -136,7 +153,7 @@ export const SashimiPlatter = card(333010)
  */
 export const TandooriRoastChicken = card(333011)
   .costVoid(2)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -149,7 +166,7 @@ export const TandooriRoastChicken = card(333011)
  */
 export const ButterCrab = card(333012)
   .costVoid(2)
-  .tags("food")
+  .food()
   // TODO
   .done();
 
@@ -162,6 +179,6 @@ export const ButterCrab = card(333012)
  */
 export const FishAndChips = card(333013)
   .costVoid(2)
-  .tags("food")
+  .food()
   // TODO
   .done();

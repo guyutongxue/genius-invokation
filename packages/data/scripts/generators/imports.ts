@@ -28,7 +28,6 @@ export async function generateImports() {
 
 import "./begin";
 
-import "./commons";
 ${imports}
 
 export { default } from "./end";

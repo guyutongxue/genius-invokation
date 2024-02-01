@@ -69,3 +69,13 @@ export const CatalyzingField = combatStatus(117)
   .usage(2)
   .increaseDamage(1)
   .done();
+
+/**
+ * @id 303300
+ * @name 饱腹
+ * @description
+ * 本回合无法食用更多「料理」
+ */
+export const Satiated = status(303300)
+  .duration(1)
+  .done();

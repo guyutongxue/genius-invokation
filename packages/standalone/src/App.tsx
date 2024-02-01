@@ -4,12 +4,11 @@ import { GameIO, PlayerConfig, startGame } from "@gi-tcg/core";
 import { createPlayer, createWaitNotify } from "@gi-tcg/webui-core";
 import { Show, createSignal } from "solid-js";
 import { decode } from "./sharingCode";
-// 等 @genshin-db/tcg 更新后可以从那儿获取
-import sharingMap from "./sharingMap.json";
+import shareIdMap from "./shareId.json";
 
 function getPlayerConfig(shareCode: string): PlayerConfig {
   const [ch0, ch1, ch2, ...cards] = decode(shareCode).map(
-    (sid) => (sharingMap as any)[sid],
+    (sid) => (shareIdMap as any)[sid],
   );
   return {
     characters: [ch0, ch1, ch2],

@@ -256,10 +256,23 @@ export class SkillContext<
     }
   }
 
+  /** 治疗角色。若角色已倒下，则复苏该角色。*/
   heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
+      if (targetState.variables.alive === 0) {
+        this.mutate({
+          type: "modifyEntityVar",
+          state: targetState,
+          varName: "alive",
+          value: 1,
+        });
+        this.emitEvent("onRevive", {
+          character: targetState,
+          state: this.state,
+        });
+      }
       const targetInjury =
         targetState.definition.constants.maxHealth -
         targetState.variables.health;
@@ -814,7 +827,10 @@ export type CharacterPosition = "active" | "next" | "prev" | "standby";
  */
 export class CharacterContextBase {
   protected _area: EntityArea;
-  constructor(private gameState: GameState, protected readonly _id: number) {
+  constructor(
+    private gameState: GameState,
+    protected readonly _id: number,
+  ) {
     this._area = getEntityArea(gameState, _id);
   }
   get area() {
@@ -834,7 +850,10 @@ export class CharacterContextBase {
     }
     return thisIdx;
   }
-  satisfyPosition(pos: CharacterPosition, currentState: GameState = this.gameState) {
+  satisfyPosition(
+    pos: CharacterPosition,
+    currentState: GameState = this.gameState,
+  ) {
     const player = currentState.players[this.who];
     const activeIdx = getActiveCharacterIndex(player);
     const length = player.characters.length;
@@ -864,7 +883,9 @@ export class CharacterContextBase {
   }
 }
 
-export class CharacterContext<Readonly extends boolean> extends CharacterContextBase {
+export class CharacterContext<
+  Readonly extends boolean,
+> extends CharacterContextBase {
   constructor(
     private readonly skillContext: SkillContext<Readonly, {}, any>,
     id: number,
