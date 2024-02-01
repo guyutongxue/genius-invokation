@@ -11,18 +11,18 @@ export function beginRegistration() {
     throw new Error("Already in registration");
   }
   currentStore = {
-    character: new Map(),
-    entity: new Map(),
-    skill: new Map(),
-    card: new Map(),
+    characters: new Map(),
+    entities: new Map(),
+    skills: new Map(),
+    cards: new Map(),
   };
 }
 
 type DefinitionMap = {
-  character: CharacterDefinition;
-  entity: EntityDefinition;
-  skill: SkillDefinition;
-  card: CardDefinition;
+  characters: CharacterDefinition;
+  entities: EntityDefinition;
+  skills: SkillDefinition;
+  cards: CardDefinition;
 };
 
 type RegisterCategory = keyof DefinitionMap;
@@ -50,16 +50,16 @@ function register<C extends RegisterCategory>(
   store.set(value.id, value);
 }
 export function registerCharacter(value: CharacterDefinition) {
-  register("character", value);
+  register("characters", value);
 }
 export function registerEntity(value: EntityDefinition) {
-  register("entity", value);
+  register("entities", value);
 }
 export function registerSkill(value: SkillDefinition) {
-  register("skill", value);
+  register("skills", value);
 }
 export function registerCard(value: CardDefinition) {
-  register("card", value);
+  register("cards", value);
 }
 
 function getDefinition<C extends RegisterCategory>(
@@ -74,16 +74,16 @@ function getDefinition<C extends RegisterCategory>(
   return result;
 }
 export function getCharacterDefinition(id: number) {
-  return getDefinition("character", id);
+  return getDefinition("characters", id);
 }
 export function getEntityDefinition(id: number) {
-  return getDefinition("entity", id);
+  return getDefinition("entities", id);
 }
 export function getSkillDefinition(id: number) {
-  return getDefinition("skill", id);
+  return getDefinition("skills", id);
 }
 export function getCardDefinition(id: number) {
-  return getDefinition("card", id);
+  return getDefinition("cards", id);
 }
 
 export function getSkillDefinitionIncludePassive(

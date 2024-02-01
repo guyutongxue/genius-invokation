@@ -1,3 +1,4 @@
+import { Aura } from "@gi-tcg/typings";
 import {
   ArkheTag,
   CharacterDefinition,
@@ -5,14 +6,8 @@ import {
   ElementTag,
   NationTag,
   WeaponTag,
-} from "@/base/character";
-import { Aura } from "@gi-tcg/typings";
-import { isMocking, mockedCharacters } from "./data";
-import {
-  mockBurstSkill,
-  mockElementalSkill,
-  mockNormalSkill,
-} from "./skill";
+} from "../../base/character";
+import { mockBurstSkill, mockElementalSkill, mockNormalSkill } from "./skill";
 
 const MOCK_CHARACTER_ID_START = 7000;
 let mockCharacterId = MOCK_CHARACTER_ID_START;
@@ -29,7 +24,9 @@ export interface MockCharacterOption {
   aura?: Aura;
 }
 
-export function mockCharacter(option: MockCharacterOption = {}) {
+export function mockCharacter(
+  option: MockCharacterOption = {},
+): CharacterDefinition {
   const element = option.element ?? "cryo";
   const energy = option.energy ?? 3;
   const tags: CharacterTag[] = [
@@ -42,7 +39,7 @@ export function mockCharacter(option: MockCharacterOption = {}) {
         : []),
     ...(option.arkhe ? [option.arkhe] : []),
   ];
-  const def: CharacterDefinition = {
+  return {
     type: "character",
     tags,
     id: mockCharacterId++,
@@ -59,11 +56,6 @@ export function mockCharacter(option: MockCharacterOption = {}) {
       mockElementalSkill(element),
       mockBurstSkill(element, energy),
     ],
-    skills: []
+    skills: [],
   };
-  if (!isMocking()) {
-    throw new Error(`You should mock data before calling ???`);
-  }
-  mockedCharacters.push(def);
-  return def;
 }

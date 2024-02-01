@@ -1,7 +1,6 @@
-import { CardDefinition, CardTag, CardType, SupportTag, WeaponCardTag } from "@/base/card";
+import { CardDefinition, CardTag, CardType, SupportTag, WeaponCardTag } from "../../base/card";
 import { DiceType } from "@gi-tcg/typings";
 import { mockInitiativeSkill } from "./skill";
-import { isMocking, mockedCards } from "./data";
 
 const MOCK_CARD_ID_START = 370000;
 let mockCardId = MOCK_CARD_ID_START;
@@ -56,7 +55,7 @@ export function mockCard(option: MockCardOption = {}): CardDefinition {
     tags.push("legend");
   }
   const id = mockCardId++;
-  const def: CardDefinition = {
+  return {
     id,
     type,
     tags,
@@ -65,9 +64,4 @@ export function mockCard(option: MockCardOption = {}): CardDefinition {
     filter: () => true,
     skillDefinition: mockInitiativeSkill("card", option.cost ?? [])
   };
-  if (!isMocking()) {
-    throw new Error(`You should mock data before calling ???`);
-  }
-  mockedCards.push(def);
-  return def;
 }

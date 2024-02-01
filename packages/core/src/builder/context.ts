@@ -415,7 +415,7 @@ export class SkillContext<
     area?: EntityArea,
   ) {
     const id2 = id as number;
-    const def = this._state.data.entity.get(id2);
+    const def = this._state.data.entities.get(id2);
     if (typeof def === "undefined") {
       throw new Error(`Unknown entity id ${id2}`);
     }
@@ -597,7 +597,7 @@ export class SkillContext<
     if (characters.length !== 1) {
       throw new Error(`Replace definition must apply on exact one character`);
     }
-    const def = this.state.data.character.get(newCh);
+    const def = this._state.data.characters.get(newCh);
     if (typeof def === "undefined") {
       throw new Error(`Unknown character ${newCh}`);
     }
@@ -681,7 +681,7 @@ export class SkillContext<
   }
 
   createHandCard(cardId: CardHandle) {
-    const cardDef = this._state.data.card.get(cardId);
+    const cardDef = this._state.data.cards.get(cardId);
     if (typeof cardDef === "undefined") {
       throw new Error(`Unknown card ${cardId}`);
     }
@@ -947,7 +947,7 @@ export class CharacterContext<Readonly extends boolean> extends CharacterContext
     // Remove exist artifact/weapon first
     for (const tag of ["artifact", "weapon"] as const) {
       if (
-        this.skillContext.state.data.entity.get(equipment)?.tags.includes(tag)
+        this.skillContext.state.data.entities.get(equipment)?.tags.includes(tag)
       ) {
         const exist = this.state.entities.find((v) =>
           v.definition.tags.includes(tag),

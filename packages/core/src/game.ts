@@ -126,7 +126,7 @@ export class Game {
   private initPlayerState(who: 0 | 1): PlayerState {
     const config = this.playerConfigs[who];
     let initialPiles: readonly CardDefinition[] = config.cards.map((id) => {
-      const def = this.data.card.get(id);
+      const def = this.data.cards.get(id);
       if (typeof def === "undefined") {
         throw new Error(`Unknown card id ${id}`);
       }
@@ -166,7 +166,7 @@ export class Game {
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
-      const def = this.data.character.get(ch);
+      const def = this.data.characters.get(ch);
       if (typeof def === "undefined") {
         throw new Error(`Unknown character id ${ch}`);
       }
@@ -866,7 +866,7 @@ export class Game {
       } else if (name === "requestSwitchCards") {
         await this.switchCard(arg.who);
       } else if (name === "requestUseSkill") {
-        const def = this.data.skill.get(arg.requestingSkillId);
+        const def = this.data.skills.get(arg.requestingSkillId);
         if (typeof def === "undefined") {
           throw new Error(`Unknown skill id ${arg.requestingSkillId}`);
         }

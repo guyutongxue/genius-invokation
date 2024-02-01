@@ -17,13 +17,22 @@ import {
   nextRandom,
   sortDice,
 } from "../util";
-import { EntityArea } from "./entity";
+import { EntityArea, EntityDefinition } from "./entity";
 import { SkillDefinition, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
+import { CardDefinition } from "./card";
 
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
 };
+
+export interface ExtendDataM {
+  readonly type: "extendData";
+  readonly cards: readonly CardDefinition[];
+  readonly characters: readonly CharacterDefinition[];
+  readonly entities: readonly EntityDefinition[];
+  readonly skills: readonly SkillDefinition[];
+}
 
 export interface ClearMutationLogM {
   readonly type: "clearMutationLog";
@@ -113,9 +122,9 @@ export interface ModifyEntityVarM {
 }
 
 export interface ReplaceCharacterDefinitionM {
-  readonly type: "replaceCharacterDefinition",
-  state: CharacterState,
-  readonly newDefinition: CharacterDefinition,
+  readonly type: "replaceCharacterDefinition";
+  state: CharacterState;
+  readonly newDefinition: CharacterDefinition;
 }
 
 export interface ResetDiceM {
@@ -136,6 +145,7 @@ export interface SetPlayerFlagM {
 }
 
 export type Mutation =
+  | ExtendDataM
   | ClearMutationLogM
   | StepRandomM
   | ChangePhaseM
@@ -158,6 +168,22 @@ export type Mutation =
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
+    case "extendData": {
+      return produce(state, (draft) => {
+        for (const c of m.characters) {
+          draft.data.characters.set(c.id, c as Draft<CharacterDefinition>);
+        }
+        for (const e of m.entities) {
+          draft.data.entities.set(e.id, e as Draft<EntityDefinition>);
+        }
+        for (const s of m.skills) {
+          draft.data.skills.set(s.id, s as Draft<SkillDefinition>);
+        }
+        for (const c of m.cards) {
+          draft.data.cards.set(c.id, c as Draft<CardDefinition>);
+        }
+      });
+    }
     case "clearMutationLog": {
       return produce(state, (draft) => {
         draft.mutationLog = [];
@@ -290,7 +316,11 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "replaceCharacterDefinition": {
       const newState = produce(state, (draft) => {
-        const character = getEntityById(draft, m.state.id, true) as Draft<CharacterState>;
+        const character = getEntityById(
+          draft,
+          m.state.id,
+          true,
+        ) as Draft<CharacterState>;
         character.definition = m.newDefinition as Draft<CharacterDefinition>;
       });
       m.state = getEntityById(newState, m.state.id, true) as CharacterState;

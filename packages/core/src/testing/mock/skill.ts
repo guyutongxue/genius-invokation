@@ -1,14 +1,13 @@
-import { InitiativeSkillDefinition, SkillType } from "@/base/skill";
 import { DiceType } from "@gi-tcg/typings";
-import { isMocking, mockedSkills } from "./data";
-import { ElementTag } from "@/base/character";
-import { PlayCardSkillDefinition } from "@/base/card";
+import { InitiativeSkillDefinition, SkillType } from "../../base/skill";
+import { ElementTag } from "../../base/character";
+import { PlayCardSkillDefinition } from "../../base/card";
 
 const MOCK_SKILL_ID_START = 70000;
 let mockSkillId = MOCK_SKILL_ID_START;
 
 export function mockInitiativeSkill(skillType: SkillType, cost: DiceType[]): InitiativeSkillDefinition & PlayCardSkillDefinition {
-  const def: InitiativeSkillDefinition & PlayCardSkillDefinition = {
+  return {
     type: "skill",
     skillType,
     id: mockSkillId++,
@@ -16,11 +15,6 @@ export function mockInitiativeSkill(skillType: SkillType, cost: DiceType[]): Ini
     requiredCost: cost,
     action: (st) => [st, []],
   };
-  if (!isMocking()) {
-    throw new Error(`You should mock data before calling ???`);
-  }
-  mockedSkills.push(def);
-  return def;
 }
 
 const ELEMENT_MAP: Record<ElementTag, DiceType> = {
