@@ -1,4 +1,4 @@
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, Aura, isReactionSwirl } from "@gi-tcg/core/builder";
 
 /**
  * @id 115052
@@ -21,7 +21,11 @@ const AutumnWhirlwind = summon(115052)
  * 角色使用技能后：移除此效果。
  */
 const MidareRanzan = status(115051)
-  // TODO
+  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .changeDamageType(DamageType.Anemo)
+  .increaseDamage(1)
+  .on("skill")
+  .dispose()
   .done();
 
 /**
@@ -32,7 +36,11 @@ const MidareRanzan = status(115051)
  * 所附属角色使用技能后：移除此效果。
  */
 const MidareRanzanCryo = status(115053)
-  // TODO
+  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .changeDamageType(DamageType.Cryo)
+  .increaseDamage(1)
+  .on("skill")
+  .dispose()
   .done();
 
 /**
@@ -43,7 +51,11 @@ const MidareRanzanCryo = status(115053)
  * 所附属角色使用技能后：移除此效果。
  */
 const MidareRanzanElectro = status(115056)
-  // TODO
+  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .changeDamageType(DamageType.Electro)
+  .increaseDamage(1)
+  .on("skill")
+  .dispose()
   .done();
 
 /**
@@ -54,7 +66,11 @@ const MidareRanzanElectro = status(115056)
  * 所附属角色使用技能后：移除此效果。
  */
 const MidareRanzanHydro = status(115054)
-  // TODO
+  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .changeDamageType(DamageType.Hydro)
+  .increaseDamage(1)
+  .on("skill")
+  .dispose()
   .done();
 
 /**
@@ -65,7 +81,11 @@ const MidareRanzanHydro = status(115054)
  * 所附属角色使用技能后：移除此效果。
  */
 const MidareRanzanPyro = status(115055)
-  // TODO
+  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .changeDamageType(DamageType.Pyro)
+  .increaseDamage(1)
+  .on("skill")
+  .dispose()
   .done();
 
 /**
@@ -76,7 +96,9 @@ const MidareRanzanPyro = status(115055)
  * 可用次数：2
  */
 const PoeticsOfFuubutsuCryo = combatStatus(115057)
-  // TODO
+  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Cryo)
+  .usage(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -87,7 +109,9 @@ const PoeticsOfFuubutsuCryo = combatStatus(115057)
  * 可用次数：2
  */
 const PoeticsOfFuubutsuElectro = combatStatus(115050)
-  // TODO
+  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Electro)
+  .usage(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -98,7 +122,9 @@ const PoeticsOfFuubutsuElectro = combatStatus(115050)
  * 可用次数：2
  */
 const PoeticsOfFuubutsuHydro = combatStatus(115058)
-  // TODO
+  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Hydro)
+  .usage(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -109,7 +135,9 @@ const PoeticsOfFuubutsuHydro = combatStatus(115058)
  * 可用次数：2
  */
 const PoeticsOfFuubutsuPyro = combatStatus(115059)
-  // TODO
+  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Pyro)
+  .usage(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -122,7 +150,7 @@ const GaryuuBladework = skill(15051)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -136,7 +164,29 @@ const GaryuuBladework = skill(15051)
 const Chihayaburu = skill(15052)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .do((c) => {
+    const aura = c.$("opp active")!.aura;
+    let midareRanzan;
+    switch (aura) {
+      case Aura.Cryo:
+      case Aura.CryoDendro:
+        midareRanzan = MidareRanzanCryo;
+        break;
+      case Aura.Electro:
+        midareRanzan = MidareRanzanElectro;
+        break;
+      case Aura.Hydro:
+        midareRanzan = MidareRanzanHydro;
+        break;
+      case Aura.Pyro:
+        midareRanzan = MidareRanzanPyro;
+        break;
+      default:
+        midareRanzan = MidareRanzan;
+        break;
+    }
+    c.characterStatus(midareRanzan);
+  })
   .done();
 
 /**
@@ -149,7 +199,8 @@ const KazuhaSlash = skill(15053)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 3)
+  .summon(AutumnWhirlwind)
   .done();
 
 /**
@@ -160,7 +211,8 @@ const KazuhaSlash = skill(15053)
  */
 const ChihayaburuPassive = skill(15054)
   .type("passive")
-  // TODO
+  .on("skill", (c) => c.eventArg.definition.id === Chihayaburu)
+  .switchActive("my next")
   .done();
 
 /**
@@ -188,5 +240,22 @@ const KaedeharaKazuha = character(1505)
 const PoeticsOfFuubutsu = card(215051)
   .costAnemo(3)
   .talent(KaedeharaKazuha)
-  // TODO
+  .on("dealDamage", (c) => isReactionSwirl(c.eventArg))
+  .do((c) => {
+    const swirled = isReactionSwirl(c.eventArg)!;
+    switch (swirled) {
+      case DamageType.Cryo:
+        c.combatStatus(PoeticsOfFuubutsuCryo);
+        break;
+      case DamageType.Electro:
+        c.combatStatus(PoeticsOfFuubutsuElectro);
+        break;
+      case DamageType.Hydro:
+        c.combatStatus(PoeticsOfFuubutsuHydro);
+        break;
+      case DamageType.Pyro:
+        c.combatStatus(PoeticsOfFuubutsuPyro);
+        break;
+    }
+  })
   .done();

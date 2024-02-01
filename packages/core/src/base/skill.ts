@@ -153,8 +153,7 @@ export class UseDiceModifierImpl implements UseDiceModifier {
   }
 }
 
-export interface DamageModifier0 {
-  readonly damageInfo: DamageInfo;
+export interface DamageModifier0 extends DamageModifier1 {
   changeDamageType(type: DamageType): void;
 }
 

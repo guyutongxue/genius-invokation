@@ -883,6 +883,9 @@ export class CharacterContext<Readonly extends boolean> extends CharacterContext
   get health() {
     return this.state.variables.health;
   }
+  get aura() {
+    return this.state.variables.aura;
+  }
   positionIndex() {
     return super.positionIndex(this.skillContext.state);
   }
