@@ -37,6 +37,7 @@ export function exposeMutation(
   m: Mutation,
 ): ExposedMutation | null {
   switch (m.type) {
+    case "extendData":
     case "stepRandom":
     case "clearMutationLog":
     case "pushSkillLog":

@@ -10,9 +10,5 @@
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-
-    // "paths": {
-    //   "@/*": ["./src/*"]
-    // }
   }
 }
