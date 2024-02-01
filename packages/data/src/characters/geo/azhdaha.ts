@@ -107,7 +107,6 @@ export const Azhdaha = character(2602)
  */
 export const LunarCyclesUnending = card(226022)
   .costSame(2)
-  .tags("action")
   .eventTalent(Azhdaha)
   // TODO
   .done();

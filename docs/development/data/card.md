@@ -1,0 +1,101 @@
+# 定义行动牌
+
+行动牌以 `card(<id>)` 开头。默认的行动牌类型为事件牌，但也可以通过 `.type` 链方法修改（不常见）。
+
+## 通用方法
+
+- `.costXxx` 可指定卡牌所消耗的骰子。
+- `.requireCharacterTag` 指定“牌组至少包含两个 xx 角色”。
+- `.tags` 指定标签，如 `action` 为战斗行动。
+- `.addTarget` 增加一个卡牌使用目标，可行目标由[实体查询语法](../query.md)给出。
+
+## 事件牌
+
+随后紧跟[操作描述](./operations.md)即可。例：
+
+```ts
+/** 下落斩 */
+const PlungingStrike = card(332017)
+  .costSame(3)
+  .tags("action")
+  .addTarget("my characters")
+  .switchActive("@targets.0")
+  .useSkill("normal")
+  .done();
+```
+
+### `.toStatus` 生成角色状态
+
+在 builder chain 中指定 `.toStatus` 后，即表明该牌打出后将产生角色状态。该链方法的参数为角色状态的附属目标的[实体查询](../query.md)字符串，随后的描述均为该[角色状态](./entity.md)的定义。例：
+
+```ts
+/** 元素共鸣：粉碎之冰 */
+const ElementalResonanceShatteringIce = card(331102)
+  .costCryo(1)
+  .tags("resonance")
+  .requireCharacterTag("cryo")
+  .toStatus("my active")
+  .duration(1)
+  .once("beforeSkillDamage")
+  .increaseDamage(2)
+  .done();
+
+```
+
+### `.toCombatStatus` 生成出战状态
+
+和 `.toStatus` 类似，只是改为生成出战状态。参数为 `"my"` （默认值）或 `"opp"` 指定出战角色的阵营。随后的描述，改为对生成的出战状态的定义。例：
+
+```ts
+/** 交给我吧！ */
+const LeaveItToMe = card(332006)
+  .toCombatStatus()
+  .once("beforeUseDice", (c) => canSwitchFast(c))
+  .setFastAction()
+  .done();
+```
+
+### 料理牌
+
+通常情况下，使用 `.food()` 方法就够了。该方法会指定 `.tags("food")`，然后调用 `.addTarget` 为不带饱腹状态的角色，并在所有行动的结尾添加 `.characterStatus` 增加目标角色的饱腹状态。例：
+
+```ts
+/** 蒙德土豆饼 */
+const MondstadtHashBrown = card(333006)
+  .costSame(1)
+  .food()
+  .heal(2, "@targets.0")
+  .done();
+```
+
+对于类似唐杜尔烤鸡的，对所有角色生效且对所有角色添加饱腹状态的，使用 `.food({ satiatedTarget: "all my characters" })`。
+
+```ts
+/** 唐杜尔烤鸡 */
+const TandooriRoastChicken = card(333011)
+  .costVoid(2)
+  .food({ satiatedTarget: "all my characters" })
+  .toStatus("all my characters")
+  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "elemental"))
+  .increaseDamage(2)
+  .done();
+```
+
+### `.eventTalent` 天赋牌（事件）
+
+诸如“无相之雷”等角色的天赋牌“汲能棱晶”是事件牌。通过 `.eventTalent(ch)` 来指定这一行为；`ch` 是角色句柄。该方法会调用 `.tags("talent")`、增加卡组限定，并自动指定 `.tags("action")`。如果该天赋牌不是战斗行动，则显式指明 `.eventTalent(ch, { action: false })`
+
+## 装备牌
+
+### `.artifact()` 圣遗物牌
+
+### `.weapon` 武器牌
+
+### `.talent` 天赋牌（装备）
+
+### 其它装备牌？
+
+目前还没有，但可以直接调用 `.equipment()` 将 builder chain 转换到该装备的定义。
+
+## `.support` 支援牌
+

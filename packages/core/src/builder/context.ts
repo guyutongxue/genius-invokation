@@ -1033,7 +1033,7 @@ export class EntityContext<
   private readonly _area: EntityArea;
   constructor(
     private readonly skillContext: SkillContext<Readonly, any, any>,
-    private readonly id: number,
+    public readonly id: number,
   ) {
     this._area = getEntityArea(skillContext.state, id);
   }

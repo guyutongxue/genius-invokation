@@ -60,14 +60,20 @@ type TargetQuery = `${string}character${string}` | `${string}summon${string}`;
 type TargetKindOfQuery<Q extends TargetQuery> =
   Q extends `${string}character${string}` ? "character" : "summon";
 
+const SATIATED_ID = 303300 as StatusHandle;
+
 class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   CardTargetExt<KindTs>
 > {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
   private _filters: PredFn<KindTs>[] = [];
-  private _talentCh: number | null = null;
   private _deckRequirement: DeckRequirement = {};
+  /**
+   * 在料理卡牌的行动结尾添加“设置饱腹状态”操作的目标；
+   * `null` 表明不添加（不是料理牌或者手动指定）
+   */
+  private _satiatedTarget: string | null = null;
 
   private _targetQueries: string[] = [];
 
@@ -173,7 +179,6 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   eventTalent(ch: CharacterHandle, opt?: { action?: boolean }) {
-    this._talentCh = ch;
     const action = opt?.action ?? true;
     this._deckRequirement.character = ch;
     if (action) {
@@ -193,7 +198,8 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   // 增加 food 标签，增加目标（我方非饱腹角色）
-  food() {
+  food(opt?: { satiatedTarget?: string }) {
+    this._satiatedTarget = opt?.satiatedTarget ?? "@targets.0";
     return this.tags("food").addTarget(
       "my characters and not any has status with definition id = 303300",
     );
@@ -229,6 +235,10 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   done(): CardHandle {
+    if (this._satiatedTarget !== null) {
+      const target = this._satiatedTarget;
+      this.operations.push((c) => c.characterStatus(SATIATED_ID, target))
+    }
     const action: SkillDescription<CardTarget> = (
       state,
       skillInfo,

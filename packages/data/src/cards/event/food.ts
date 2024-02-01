@@ -75,7 +75,7 @@ export const SweetMadame = card(333005)
 export const MondstadtHashBrown = card(333006)
   .costSame(1)
   .food()
-  // TODO
+  .heal(2, "@targets.0")
   .done();
 
 /**
@@ -153,8 +153,10 @@ export const SashimiPlatter = card(333010)
  */
 export const TandooriRoastChicken = card(333011)
   .costVoid(2)
-  .food()
-  // TODO
+  .food({ satiatedTarget: "all my characters" })
+  .toStatus("all my characters")
+  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "elemental"))
+  .increaseDamage(2)
   .done();
 
 /**

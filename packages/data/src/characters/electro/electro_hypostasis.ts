@@ -158,7 +158,6 @@ export const ElectroHypostasis = character(2401)
  */
 export const AbsorbingPrism = card(224011)
   .costElectro(2)
-  .tags("action")
   .eventTalent(ElectroHypostasis)
   // TODO
   .done();
