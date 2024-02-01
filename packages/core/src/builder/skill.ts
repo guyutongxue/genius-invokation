@@ -152,6 +152,13 @@ const detailedEventDictionary = {
   beforeDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
     return checkRelative(c.state, c.damageInfo.source.id, r);
   }),
+  beforeSkillDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
+    return (
+      c.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, c.damageInfo.source.id, r) &&
+      commonInitiativeSkillCheck(c.damageInfo.via)
+    );
+  }),
   beforeDealDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
     return (
       c.damageInfo.type !== DamageType.Piercing &&

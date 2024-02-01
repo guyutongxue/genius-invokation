@@ -9,7 +9,8 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
 const AutumnWhirlwind = summon(115052)
-  // TODO
+  .endPhaseDamage("swirledAnemo", 1)
+  .usage(3)
   .done();
 
 /**
