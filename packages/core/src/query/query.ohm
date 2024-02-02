@@ -6,7 +6,7 @@ QueryLang {
 
   lineTerminator = "\n" | "\r" | "\u2028" | "\u2029"
 
-  identifier (an identifier) = ~reservedWord identifierName
+  identifier = ~reservedWord identifierName
   identifierName = identifierStart identifierPart*
   identifierStart = letter | "$" | "_"
   identifierPart = identifierStart | digit
@@ -20,7 +20,7 @@ QueryLang {
     | kwRecentFrom | kwOrderBy | kwLimit | kwNot | kwAnd
     | kwOr | kwAs | kwOf
 
-  stringLiteral (string literal) = "\"" doubleStringCharacter* "\""
+  stringLiteral = "\"" doubleStringCharacter* "\""
   doubleStringCharacter = ~("\"" | "\\" | lineTerminator) sourceCharacter -- nonEscape
     | "\\" escapeSequence --escape
     
@@ -87,6 +87,7 @@ QueryLang {
   Expression = AdditiveExpression
 
   PrimaryQuery = WhoSpecifier? TypeSpecifier WithSpecifier? -- canonical
+    | WhoSpecifier? WithSpecifier -- canonicalAny
     | "@" NonemptyListOf<ExternalPropertyName, "."> -- external
     | "(" Query ")" -- paren
   WhoSpecifier = kwAll? kwMy -- my
@@ -104,8 +105,7 @@ QueryLang {
     | kwEquipment -- equipment
     | kwAny -- any
 
-  WithSpecifier = kwWith WithBody -- positive
-    | kwNot kwWith WithBody -- negative
+  WithSpecifier = kwWith WithBody
 
   WithBody = kwId "="? Expression    -- id
     | kwDefinition kwId "="? Expression -- defId
@@ -121,6 +121,8 @@ QueryLang {
 
   UnaryQuery = kwNot UnaryQuery -- not
     | kwRecentFrom UnaryQuery -- recentFrom
+    | kwHas UnaryQuery -- has
+    | kwAt UnaryQuery -- at
     | PrimaryQuery
   RelationalQuery = RelationalQuery kwHas UnaryQuery -- has
     | RelationalQuery kwAt UnaryQuery -- at

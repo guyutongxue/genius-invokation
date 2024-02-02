@@ -1,4 +1,5 @@
 import { flip } from "@gi-tcg/utils";
+import type { Node, NonterminalNode } from "ohm-js";
 
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
 import { CharacterState, EntityState, GameState } from "../base/state";
@@ -48,6 +49,76 @@ declare module "ohm-js" {
 
 const semantics = grammar.createSemantics();
 
+function queryCanonical(
+  this: NonterminalNode,
+  whoRes: WhoSpecifierResult,
+  typeRes: TypeSpecifierResult,
+  with_?: Node,
+): AnyState[] {
+  const result: AnyState[] = [];
+  const expectWho =
+    whoRes === "my" ? this.args.ctx.callerWho : flip(this.args.ctx.callerWho);
+  for (const state of this.args.ctx.candidates) {
+    const area = getEntityArea(this.args.ctx.state, state.id);
+    if (whoRes !== "all" && expectWho !== area.who) {
+      continue;
+    }
+    if (typeRes.type !== "any" && typeRes.type !== state.definition.type) {
+      continue;
+    }
+    if (typeRes.type === "character") {
+      const chState = state as CharacterState;
+      if (
+        (typeRes.defeated === "no" && !chState.variables.alive) ||
+        (typeRes.defeated === "only" && chState.variables.alive)
+      ) {
+        continue;
+      }
+      if (typeRes.position !== "all") {
+        const chCtx = new CharacterContextBase(this.args.ctx.state, chState.id);
+        if (!chCtx.satisfyPosition(typeRes.position)) {
+          continue;
+        }
+      }
+    }
+    if (with_ && !with_.withCheck(this.args.ctx, state)) {
+      continue;
+    }
+    result.push(state);
+  }
+  return result;
+}
+
+function queryHas(
+  this: NonterminalNode,
+  subjectResult: AnyState[],
+  objectResult: AnyState[],
+): AnyState[] {
+  const objectAreas = objectResult.flatMap((st) => {
+    const area = getEntityArea(this.args.ctx.state, st.id);
+    if (area.type === "characters") {
+      return [area.characterId];
+    } else {
+      return [];
+    }
+  });
+  return subjectResult.filter((st) => objectAreas.includes(st.id));
+}
+function queryAt(
+  this: NonterminalNode,
+  subjectResult: AnyState[],
+  objectResult: AnyState[],
+): AnyState[] {
+  return subjectResult.filter((st) => {
+    const area = getEntityArea(this.args.ctx.state, st.id);
+    if (area.type === "characters") {
+      return objectResult.map((st) => st.id).includes(area.characterId);
+    } else {
+      return false;
+    }
+  });
+}
+
 const doQueryDict: QueryLangActionDict<AnyState[]> = {
   Query(orQuery, orderBy, limit) {
     const raw = orQuery.doQuery(this.args.ctx);
@@ -73,7 +144,12 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       }
       return 0;
     };
-    return rawWithVal.toSorted(compareFn);
+    rawWithVal.sort(compareFn);
+    const limitCount =
+      limit.numChildren > 0
+        ? limit.children[0].children[1].evalExpr(this.args.state)
+        : Infinity;
+    return rawWithVal.slice(0, limitCount);
   },
   OrQuery_or(orQuery, _, andQuery) {
     const lhsResult = orQuery.doQuery(this.args.ctx);
@@ -96,29 +172,26 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
     const resetCandidates = allEntities(this.args.ctx.state);
     const objectCtx = { ...this.args.ctx, candidates: resetCandidates };
     const objectResult = unaryQuery.doQuery(objectCtx);
-    const objectAreas = objectResult.flatMap((st) => {
-      const area = getEntityArea(this.args.ctx.state, st.id);
-      if (area.type === "characters") {
-        return [area.characterId];
-      } else {
-        return [];
-      }
-    });
-    return subjectResult.filter((st) => objectAreas.includes(st.id));
+    return queryHas.call(this, subjectResult, objectResult);
+  },
+  UnaryQuery_has(_, unaryQuery) {
+    const resetCandidates = allEntities(this.args.ctx.state);
+    const objectCtx = { ...this.args.ctx, candidates: resetCandidates };
+    const objectResult = unaryQuery.doQuery(objectCtx);
+    return queryHas.call(this, resetCandidates, objectResult);
   },
   RelationalQuery_at(relationalQuery, _, unaryQuery) {
     const subjectResult = relationalQuery.doQuery(this.args.ctx);
     const resetCandidates = allEntities(this.args.ctx.state);
     const objectCtx = { ...this.args.ctx, candidates: resetCandidates };
     const objectResult = unaryQuery.doQuery(objectCtx);
-    return subjectResult.filter((st) => {
-      const area = getEntityArea(this.args.ctx.state, st.id);
-      if (area.type === "characters") {
-        return objectResult.map((st) => st.id).includes(area.characterId);
-      } else {
-        return false;
-      }
-    });
+    return queryAt.call(this, subjectResult, objectResult);
+  },
+  UnaryQuery_at(_, unaryQuery) {
+    const resetCandidates = allEntities(this.args.ctx.state);
+    const objectCtx = { ...this.args.ctx, candidates: resetCandidates };
+    const objectResult = unaryQuery.doQuery(objectCtx);
+    return queryAt.call(this, resetCandidates, objectResult);
   },
   UnaryQuery_not(_, unaryQuery) {
     const resetCandidates = allEntities(this.args.ctx.state);
@@ -166,46 +239,18 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
     return result;
   },
   PrimaryQuery_canonical(who, type, with_) {
-    const whoRes = who.numChildren > 0 ? who.children[0].whoSpecifier : "my";
-    const expectWho =
-      whoRes === "my" ? this.args.ctx.callerWho : flip(this.args.ctx.callerWho);
-    const typeRes = type.typeSpecifier;
-    const result: AnyState[] = [];
-    for (const state of this.args.ctx.candidates) {
-      const area = getEntityArea(this.args.ctx.state, state.id);
-      if (whoRes !== "all" && expectWho !== area.who) {
-        continue;
-      }
-      if (typeRes.type !== state.definition.type) {
-        continue;
-      }
-      if (typeRes.type === "character") {
-        const chState = state as CharacterState;
-        if (
-          (typeRes.defeated === "no" && !state.variables.alive) ||
-          (typeRes.defeated === "only" && state.variables.alive)
-        ) {
-          continue;
-        }
-        if (typeRes.position !== "all") {
-          const chCtx = new CharacterContextBase(
-            this.args.ctx.state,
-            chState.id,
-          );
-          if (!chCtx.satisfyPosition(typeRes.position)) {
-            continue;
-          }
-        }
-        if (
-          with_.numChildren > 0 &&
-          !with_.children[0].withCheck(this.args.ctx, state)
-        ) {
-          continue;
-        }
-      }
-      result.push(state);
-    }
-    return result;
+    const whoRes = who.numChildren > 0 ? who.children[0].whoSpecifier : "all";
+    const typeRes =
+      type.numChildren > 0
+        ? type.children[0].typeSpecifier
+        : { type: "any" as const };
+    const withNode = with_.numChildren > 0 ? with_.children[0] : void 0;
+    return queryCanonical.call(this, whoRes, typeRes, withNode);
+  },
+  PrimaryQuery_canonicalAny(who, with_) {
+    const whoRes = who.numChildren > 0 ? who.children[0].whoSpecifier : "all";
+    const typeRes = { type: "any" as const };
+    return queryCanonical.call(this, whoRes, typeRes, with_);
   },
   PrimaryQuery_external(_, propNodes) {
     const props = propNodes.asIteration().children.map((c) => c.propName);
@@ -319,6 +364,9 @@ const tagSpecifierDict: QueryLangActionDict<string[]> = {
     const resetCandidates = allEntities(this.args.ctx.state);
     const queryCtx = { ...this.args.ctx, resetCandidates };
     const result = query.doQuery(queryCtx);
+    if (result.length !== 1) {
+      console.warn(`Indirect tag specifier (${query.sourceString}) is expected to be unique, got ${result.length} instead`);
+    }
     const tags = result.flatMap((st) => st.definition.tags);
 
     const category =
@@ -345,11 +393,8 @@ const tagSpecifierDict: QueryLangActionDict<string[]> = {
 };
 
 const withCheckDict: QueryLangActionDict<boolean> = {
-  WithSpecifier_positive(_, body) {
+  WithSpecifier(_, body) {
     return body.withCheck(this.args.ctx, this.args.state);
-  },
-  WithSpecifier_negative(_kwNot, _, body) {
-    return !body.withCheck(this.args.ctx, this.args.state);
   },
   WithBody_id(_kw, _eq, expr) {
     return this.args.state.id === expr.evalExpr(this.args.state);
@@ -419,6 +464,9 @@ const evalExprDict: QueryLangActionDict<number> = {
     }
   },
   numericLiteral(_) {
+    return Number(this.sourceString);
+  },
+  decimalIntegerLiteral(_) {
     return Number(this.sourceString);
   },
 };

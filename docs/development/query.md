@@ -7,16 +7,20 @@
 ## 核心语法
 
 ```
-[my | opp | all] <characters | summons | equipments | statuses | combat statuses | supports> [with-spec]
+[my | opp | all] [characters | summons | equipments | statuses | combat statuses | supports] [with-spec]
 ```
 
-查询我方、对方或全部阵营的角色、召唤物、装备、角色状态、出战状态或支援牌。
+查询我方、对方或全部阵营的角色、召唤物、装备、角色状态、出战状态或支援牌。例如：
 
-如果不指定前面的阵营部分，则默认查询我方场上实体（不推荐依赖于默认行为，意图不明确）。
+```sh
+my characters       # 我方角色（不含倒下，见下文）
+opp combat statuses # 敌方所有出战状态
+all summons         # 场上全部召唤物，不分敌我
+```
 
-- 指定了 `my` 或者 `opp` 的同时可同时指定 `all`，后者无效果；如 `all my characters` 等价于 `my characters` 等价于 `characters`。
+- 如果不指定前面的阵营部分，则默认为 `all`。指定了 `my` 或者 `opp` 时可同时指定 `all`，后者无效果；如 `all my characters` 等价于 `my characters`。
 - 所有的 `s` `es` 后缀是可省略的。
-- 也可以使用 `any` 指定所有实体（这通常和稍后的联合查询同时使用）。如 `all any` 用于查询场上的所有实体。
+- 使用 `any` 查询所有类型的实体，如 `all any` `my any` 等（这通常和稍后的联合查询同时使用）。若给出了 with-说明符，则可省略 `any` 关键字，如 `opp with tags (hydro)`。
 - 当指定 `characters` 时，默认**不包含倒下角色**。如果想要包含倒下角色，则使用 `characters include defeated`。如果仅查询倒下角色，则使用 `defeated characters`（如提瓦特煎蛋的目标为 `my defeated characters`）。
 - 角色查询可使用以下位置说明符；当指定位置说明符时，`character` 关键字可省略：
   - `active` 出战角色
@@ -34,7 +38,6 @@ with <var> <op> <expr>        # 限定变量，但是使用比较运算符
 with id = <expr>              # 限定实体 id
 with definition id = <expr>   # 限定定义 id
 with tags (<tag>, ...)        # 限定定义标签
-not with ...                  # 反向查询
 ```
 
 例如：
@@ -45,11 +48,11 @@ characters include defeated with tags (pyro) # 查询我方火系角色
 ```
 
 - 等于运算符是 `=` 而非 `==`。`id = xxx` 可以视作变量限定的特例，但是 `id` 不允许用其它比较运算（也没有意义）。
-- `tags` 要求该实体带有**全部的**标签。如果需要查询“其中一个”，请使用联合查询。
-- `not with` 是在之前的查询限定范围内，删去所有满足 `with` 条件的意思。因此 `not with tags` 结果可能有包含其中一个标签的实体，因为该语句的原本含义为“不是‘同时带所有这些标签’的实体”。
-- 一个特殊的标签查询具有语法 `<qual> tag of (<query>)`；其中 `qual` 为 `weapon` `element` 或 `nation`。其查询限定 `<query>` 返回的实体（必须是单个角色）中的武器、元素或国籍标签。比如 `my characters with element tag of (my active)` 返回我方角色中，与出战角色同一元素属性的角色。
-- 使用 `(definition)` 语法来限定查询中的标识符指代定义中的常量而非变量。比如 `health` 指代角色状态的 `health` 即生命值，而 `health (definition)` 指代角色定义中的 `health`，即初始状态值。（在这种语境下，使用 `maxHealth` 是更合适的；当不存在变量名为 `health` 的变量时会选择定义中的 `maxHealth` 常量。）
+- `tags` 要求该实体带有**全部的**标签。如果需要查询“其中一个”，请使用[联合查询](#联合查询)。
+- 一个特殊的标签查询具有语法 `tag <qual> of (<query>)`；其中 `qual` 为 `weapon` `element` 或 `nation`。其查询限定 `<query>` 返回的实体（必须是单个角色）中的武器、元素或国籍标签。比如 `my characters with tag element of (my active)` 返回我方角色中，与出战角色同一元素属性的角色。
+- 使用 `(definition)` 语法来限定查询中的标识符指代定义中的常量而非变量。比如 `health` 指代角色状态的 `health` 即生命值，而 `health (definition)` 指代角色定义中的 `health`，即初始生命值。（在这种语境下，使用 `maxHealth` 是更合适的；当不存在变量名为 `maxHealth` 的变量时会选择定义中的常量。）
 - 如果变量名和关键字冲突，使用字符串字面量语法括起，如 `"health"`。
+- 查询不满足 with-说明符 的实体，可使用[联合查询](#联合查询)，如 `my characters and not with tags (...)`。
 
 ## 关系查询
 
@@ -59,25 +62,31 @@ characters include defeated with tags (pyro) # 查询我方火系角色
 # 我方带有饱腹（定义 id 303300）状态的角色
 characters has status with definition id 303300
 # 敌方角色上的坍毁（特瓦林，定义 id 125021）状态
-opp status with definition id 125021 at opp characters
+status with definition id 125021 at opp characters
 ```
 
-关系查询的优先级小于阵营说明符，因此正如第二个例子所展示，如果需要限定阵营则需要同时指明（尽管这是不必要的，是我应该改一下）。
+`has` 和 `at` 的左侧查询可以省略，默认为 `all any`。如：
+
+```sh
+# 所有带装备的角色
+has equipment
+```
 
 ## 联合查询
 
-`not` 用于取反，只查询不满足后续条件的实体。建议加个括号保证清晰的语义。
+`not` 用于取反，只查询不满足后续条件的实体。`not` 的优先级高于二元关系查询，如同时使用需要加括号。
 
 ```sh
 # 所有不包含饱腹状态的角色
-not (characters has all status with definition id 303300)
+not has status with definition id 303300
+not (characters has status with definition id 303300)
 ```
 
 `and` 联合查询用于限定同时满足两个查询条件的实体。
 
 ```sh
 # 所有我方不包含饱腹状态的角色
-my characters and all not (characters has all status with definition id 303300)
+my characters and not has status with definition id 303300
 ```
 
 `or` 联合查询用于限定满足两个查询条件之一的实体，不常用。
