@@ -10,12 +10,13 @@ export type EntityTag =
   | SupportTag;
 
 export type EntityType =
-  | "passiveSkill"
   | "status"
   | "combatStatus"
   | "equipment"
   | "support"
   | "summon";
+
+export type ExEntityType = "character" | EntityType;
 
 export interface EntityDefinition {
   readonly type: EntityType;

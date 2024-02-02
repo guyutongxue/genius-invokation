@@ -1,6 +1,6 @@
 import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
 
-import { EntityArea, EntityDefinition, EntityType } from "../base/entity";
+import { EntityArea, EntityDefinition, EntityType, ExEntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
@@ -31,7 +31,6 @@ import {
   CombatStatusHandle,
   EquipmentHandle,
   ExContextType,
-  ExEntityType,
   HandleT,
   SkillHandle,
   StatusHandle,
@@ -947,7 +946,7 @@ export class CharacterContext<
   }
 
   $$<const Q extends string>(arg: Q) {
-    return this.skillContext.$(`(${arg}) at (character with id ${this._id})`);
+    return this.skillContext.$(`(${arg}) at (with id ${this._id})`);
   }
 
   // MUTATIONS
@@ -1009,6 +1008,16 @@ export class CharacterContext<
     this.skillContext.setVariable("energy", finalValue, this.state);
     return originalValue - finalValue;
   }
+  
+  setVariable(prop: string, value: number) {
+    this.skillContext.setVariable(prop, value, this.state);
+  }
+  addVariable(prop: string, value: number) {
+    this.skillContext.addVariable(prop, value, this.state);
+  }
+  dispose(): never {
+    throw new Error(`Cannot dispose character (or passive skill)`);
+  }
 }
 
 type CharacterContextMutativeProps =
@@ -1019,7 +1028,10 @@ type CharacterContextMutativeProps =
   | "addStatus"
   | "equip"
   | "removeArtifact"
-  | "removeWeapon";
+  | "removeWeapon"
+  | "setVariable"
+  | "addVariable"
+  | "dispose";
 
 export type StrictlyTypedCharacterContext<Readonly extends boolean> =
   Readonly extends true

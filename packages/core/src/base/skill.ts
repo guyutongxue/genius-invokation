@@ -426,7 +426,7 @@ export function useSyncSkill<E extends keyof SyncEventMap>(
   argFn: (caller: CharacterState | EntityState) => EventArg<E>,
   requestBy?: SkillInfo,
 ): GameState {
-  const entities = allEntities(state);
+  const entities = allEntities(state, true);
   const infos = entities
     .flatMap((e) =>
       e.definition.skills

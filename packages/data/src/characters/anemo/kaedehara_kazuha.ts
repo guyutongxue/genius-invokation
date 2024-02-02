@@ -164,6 +164,7 @@ export const GaryuuBladework = skill(15051)
 export const Chihayaburu = skill(15052)
   .type("elemental")
   .costAnemo(3)
+  .damage(DamageType.Anemo, 3)
   .do((c) => {
     const aura = c.$("opp active")!.aura;
     let midareRanzan;
@@ -225,7 +226,7 @@ export const KaedeharaKazuha = character(1505)
   .tags("anemo", "sword", "inazuma")
   .health(10)
   .energy(2)
-  .skills(GaryuuBladework, Chihayaburu, KazuhaSlash, Chihayaburu)
+  .skills(GaryuuBladework, Chihayaburu, KazuhaSlash, ChihayaburuPassive)
   .done();
 
 /**

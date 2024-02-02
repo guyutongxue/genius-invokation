@@ -1,13 +1,8 @@
 import { DamageType } from "@gi-tcg/typings";
-import { EntityType, EntityTag, EntityVariables } from "../base/entity";
-import {
-  EventExt,
-  EventMap,
-  EventNames,
-  TriggeredSkillDefinition,
-} from "../base/skill";
+import { EntityTag, EntityVariables, ExEntityType } from "../base/entity";
+import { TriggeredSkillDefinition } from "../base/skill";
 import { EntityContext } from "./context";
-import { registerEntity } from "./registry";
+import { registerEntity, registerPassiveSkill } from "./registry";
 import {
   BuilderWithShortcut,
   DetailedEventExt,
@@ -16,7 +11,7 @@ import {
   TriggeredSkillBuilder,
   enableShortcut,
 } from "./skill";
-import { HandleT, SkillHandle } from "./type";
+import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
 import { Draft } from "immer";
 import { isReactionSwirl } from "./reaction";
 
@@ -34,8 +29,12 @@ export interface VariableOptions {
   visible?: boolean;
 }
 
+// 当 CallerType 是 character 时，正在构建的是被动技能，返回 PassiveSkillHandle
+export type EntityBuilderResultT<CallerType extends ExEntityType> =
+  CallerType extends "character" ? PassiveSkillHandle : HandleT<CallerType>;
+
 export class EntityBuilder<
-  CallerType extends EntityType,
+  CallerType extends ExEntityType,
   Vars extends string = never,
 > {
   private _skillNo = 0;
@@ -132,9 +131,7 @@ export class EntityBuilder<
     if (hintCount) {
       this.variable("preparingSkillHintCount", hintCount);
     }
-    return this.on("replaceAction")
-      .useSkill(skill)
-      .dispose();
+    return this.on("replaceAction").useSkill(skill).dispose();
   }
 
   tags(...tags: EntityTag[]): this {
@@ -198,35 +195,47 @@ export class EntityBuilder<
     }
   }
 
-  done(): HandleT<CallerType> {
+  done(): EntityBuilderResultT<CallerType> {
     // on action phase clean up
-    this.on("actionPhase")
-      .do((c, e) => {
-        const self = c.caller();
-        // 恢复每回合使用次数
-        for (const prop of this._usagePerRoundVarNames) {
-          const newValue = self.state.definition.constants[prop];
-          self.setVariable(prop, newValue);
-        }
-        // 扣除持续回合数
-        self.addVariable("duration", -1);
-        if (self.state.variables.duration <= 0) {
-          self.dispose();
-        }
-        return false;
-      })
-      // @ts-expect-error private prop
-      .buildSkill();
-    registerEntity({
-      id: this.id,
-      visibleVarName: this._visibleVarName,
-      constants: this._constants,
-      hintText: this._hintText,
-      skills: this._skillList,
-      tags: this._tags,
-      type: this.type,
-    });
-    return this.id as HandleT<CallerType>;
+    if (
+      this._usagePerRoundVarNames.length > 0 ||
+      isFinite(this._constants.duration)
+    ) {
+      this.on("actionPhase")
+        .do((c, e) => {
+          const self = c.caller();
+          // 恢复每回合使用次数
+          for (const prop of this._usagePerRoundVarNames) {
+            const newValue = self.state.definition.constants[prop];
+            self.setVariable(prop, newValue);
+          }
+          // 扣除持续回合数
+          self.addVariable("duration", -1);
+          if (self.state.variables.duration <= 0) {
+            self.dispose();
+          }
+        })
+        // @ts-expect-error private prop
+        .buildSkill();
+    }
+    if (this.type === "character") {
+      registerPassiveSkill({
+        id: this.id,
+        type: "passiveSkill",
+        skills: this._skillList,
+      });
+    } else {
+      registerEntity({
+        id: this.id,
+        visibleVarName: this._visibleVarName,
+        constants: this._constants,
+        hintText: this._hintText,
+        skills: this._skillList,
+        tags: this._tags,
+        type: this.type,
+      });
+    }
+    return this.id as EntityBuilderResultT<CallerType>;
   }
 }
 

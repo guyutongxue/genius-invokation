@@ -5,6 +5,7 @@
 ## 通用方法
 
 - `.costXxx` 可指定卡牌所消耗的骰子。
+- `.legend()` 秘传牌。
 - `.requireCharacterTag` 指定“牌组至少包含两个 xx 角色”。
 - `.tags` 指定标签，如 `action` 为战斗行动。
 - `.addTarget` 增加一个卡牌使用目标，可行目标由[实体查询语法](../query.md)给出。
@@ -83,19 +84,29 @@ const TandooriRoastChicken = card(333011)
 
 ### `.eventTalent` 天赋牌（事件）
 
-诸如“无相之雷”等角色的天赋牌“汲能棱晶”是事件牌。通过 `.eventTalent(ch)` 来指定这一行为；`ch` 是角色句柄。该方法会调用 `.tags("talent")`、增加卡组限定，并自动指定 `.tags("action")`。如果该天赋牌不是战斗行动，则显式指明 `.eventTalent(ch, { action: false })`
+诸如“无相之雷”等角色的天赋牌“汲能棱晶”是事件牌。通过 `.eventTalent(ch)` 来指定这一行为；`ch` 是角色句柄。该方法会调用 `.tags("talent")`、增加卡组限定，并自动指定 `.tags("action")`。如果该天赋牌不是战斗行动，则显式指明 `.eventTalent(ch, { action: false })`。
 
 ## 装备牌
 
 ### `.artifact()` 圣遗物牌
 
+在 builder chain 中调用 `.artifact()` 方法即可声明该牌为圣遗物装备牌，随后的描述转换为对圣遗物实体的定义。该方法会调用卡牌和圣遗物实体的 `.tags("artifact")` `.type("equipment")` 和 `.addTarget("my characters")`。
+
 ### `.weapon` 武器牌
+
+在 builder chain 中调用 `.weapon(type)` 方法可声明该牌为武器牌，武器类型为 `type`。随后的描述转换为对武器实体的定义。该方法会调用卡牌和圣遗物实体的 `.tags("artifact")` `.type("equipment")` 和 `.addTarget("my characters with tag (type)")`。
 
 ### `.talent` 天赋牌（装备）
 
+大部分天赋牌是装备牌。调用 `.talent(ch)` 方法可声明该牌为 `ch` 的天赋装备牌。该方法会调用卡牌和实体的 `.tags("talent")` 和 `.type("equipment")` ，并添加 `.addTarget` 为对应的 `character`。
+
+默认情况下该方法会调用 `.tags("action")` 表明使用此牌是战斗行动。如果这不满足，则显式指明 `.talent(ch, { action: false })`。
+
 ### 其它装备牌？
 
-目前还没有，但可以直接调用 `.equipment()` 将 builder chain 转换到该装备的定义。
+目前还没有，但可以直接调用 `.equipment(target)` 表明该牌打出后可以选择 `target` 作为目标，并为目标装备实体，随后的 builder chain 转换到该装备的定义。
 
 ## `.support` 支援牌
+
+调用 `.support(type)` 指明该牌是支援牌，打出后将在支援区添加实体，随后的描述转为对实体的定义。其中 `type` 是 `"ally"` `"item"` 或 `"place"`。
 

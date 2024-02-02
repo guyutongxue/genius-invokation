@@ -2,7 +2,11 @@ import { Immutable } from "immer";
 import { CardDefinition } from "../base/card";
 import { CharacterDefinition } from "../base/character";
 import { EntityDefinition } from "../base/entity";
-import { SkillDefinition } from "../base/skill";
+import {
+  InitiativeSkillDefinition,
+  SkillDefinition,
+  TriggeredSkillDefinition,
+} from "../base/skill";
 
 let currentStore: DataStore | null = null;
 
@@ -15,7 +19,14 @@ export function beginRegistration() {
     entities: new Map(),
     skills: new Map(),
     cards: new Map(),
+    passiveSkills: new Map(),
   };
+}
+
+interface PassiveSkillDefinition {
+  id: number;
+  type: "passiveSkill";
+  skills: readonly TriggeredSkillDefinition[];
 }
 
 type DefinitionMap = {
@@ -23,6 +34,7 @@ type DefinitionMap = {
   entities: EntityDefinition;
   skills: SkillDefinition;
   cards: CardDefinition;
+  passiveSkills: PassiveSkillDefinition;
 };
 
 type RegisterCategory = keyof DefinitionMap;
@@ -58,6 +70,9 @@ export function registerEntity(value: EntityDefinition) {
 export function registerSkill(value: SkillDefinition) {
   register("skills", value);
 }
+export function registerPassiveSkill(value: PassiveSkillDefinition) {
+  register("passiveSkills", value);
+}
 export function registerCard(value: CardDefinition) {
   register("cards", value);
 }
@@ -71,7 +86,7 @@ function getDefinition<C extends RegisterCategory>(
   if (typeof result === "undefined") {
     throw new Error(`Unknown ${type} id ${id}`);
   }
-  return result;
+  return result as DefinitionMap[C];
 }
 export function getCharacterDefinition(id: number) {
   return getDefinition("characters", id);
@@ -86,16 +101,17 @@ export function getCardDefinition(id: number) {
   return getDefinition("cards", id);
 }
 
-export function getSkillDefinitionIncludePassive(
+export function getCharacterSkillDefinition(
   id: number,
-): SkillDefinition | EntityDefinition {
+): InitiativeSkillDefinition<any> | PassiveSkillDefinition {
   try {
-    return getSkillDefinition(id);
+    const def = getSkillDefinition(id);
+    if (def.triggerOn !== null || def.skillType === "card") {
+      throw new Error("Skill found but not a character skill");
+    }
+    return def;
   } catch {}
-  const def = getEntityDefinition(id);
-  if (def.type !== "passiveSkill") {
-    throw new Error(`Unknown skill id ${id}`);
-  }
+  const def = getDefinition("passiveSkills", id);
   return def;
 }
 

@@ -27,7 +27,6 @@ import {
   CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
-  ExEntityType,
   StatusHandle,
   SupportHandle,
 } from "./type";
@@ -36,6 +35,7 @@ import { getEntityById } from "../util";
 import { combatStatus, status } from ".";
 import { equipment, support } from "./entity";
 import { CharacterTag } from "../base/character";
+import { ExEntityType } from "../base/entity";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -90,9 +90,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
-  private doEquipment() {
+  equipment<Q extends TargetQuery>(target: Q) {
     this.type("equipment")
-      .addTarget("my characters")
+      .addTarget(target)
       .do((c) => {
         (c.$("@targets.0") as CharacterContext<false>).equip(
           this.cardId as EquipmentHandle,
@@ -103,15 +103,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
   weapon(type: WeaponCardTag) {
     return this.tags("weapon", type)
-      .addTarget(`my characters with tag (${type})`)
-      .doEquipment()
+      .equipment(`my characters with tag (${type})`)
       .tags("weapon", type);
   }
   artifact() {
-    return this.tags("artifact")
-      .addTarget("my characters")
-      .doEquipment()
-      .tags("artifact");
+    return this.tags("artifact").equipment("my characters").tags("artifact");
   }
   support(type: SupportTag) {
     this.type("support").tags(type);
@@ -171,10 +167,12 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     this.eventTalent(ch, opt);
     if (action) {
       // 出战角色必须为天赋角色
-      this.filter((c) => c.$("my active")?.state.definition.id === ch);
+      this.tags("action").filter(
+        (c) => c.$("my active")?.state.definition.id === ch,
+      );
     }
-    return this.addTarget(`my characters with definition id ${ch}`)
-      .doEquipment()
+    return this.tags("talent")
+      .equipment(`my characters with definition id ${ch}`)
       .tags("talent");
   }
 
@@ -201,7 +199,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   food(opt?: { satiatedTarget?: string }) {
     this._satiatedTarget = opt?.satiatedTarget ?? "@targets.0";
     return this.tags("food").addTarget(
-      "my characters and not any has status with definition id = 303300",
+      "my characters and not has status with definition id = 303300",
     );
   }
 
@@ -237,7 +235,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   done(): CardHandle {
     if (this._satiatedTarget !== null) {
       const target = this._satiatedTarget;
-      this.operations.push((c) => c.characterStatus(SATIATED_ID, target))
+      this.operations.push((c) => c.characterStatus(SATIATED_ID, target));
     }
     const action: SkillDescription<CardTarget> = (
       state,

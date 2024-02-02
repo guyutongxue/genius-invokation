@@ -1,14 +1,14 @@
 import { Aura } from "@gi-tcg/typings";
 import { CharacterTag } from "../base/character";
 import {
-  getSkillDefinitionIncludePassive,
+  getCharacterSkillDefinition,
   registerCharacter,
 } from "./registry";
 import {
   InitiativeSkillDefinition,
   TriggeredSkillDefinition,
 } from "../base/skill";
-import { CharacterHandle, SkillHandle } from "./type";
+import { CharacterHandle, PassiveSkillHandle, SkillHandle } from "./type";
 
 class CharacterBuilder {
   private readonly _tags: CharacterTag[] = [];
@@ -23,13 +23,13 @@ class CharacterBuilder {
     return this;
   }
 
-  skills(...skills: SkillHandle[]) {
+  skills(...skills: (SkillHandle | PassiveSkillHandle)[]) {
     for (const sk of skills) {
-      const def = getSkillDefinitionIncludePassive(sk);
-      if (def.type === "skill") {
-        this._initiativeSkills.push(def as InitiativeSkillDefinition);
-      } else {
+      const def = getCharacterSkillDefinition(sk);
+      if (def.type === "passiveSkill") {
         this._skills.push(...def.skills);
+      } else {
+        this._initiativeSkills.push(def);
       }
     }
     return this;

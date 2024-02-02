@@ -61,12 +61,16 @@ export function getEntityById(
  */
 export function allEntities(
   state: GameState,
+  excludeDefeated = false,
 ): (CharacterState | EntityState)[] {
   const result: (CharacterState | EntityState)[] = [];
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
     const activeIdx = getActiveCharacterIndex(player);
     for (const ch of shiftLeft(player.characters, activeIdx)) {
+      if (excludeDefeated && ch.variables.health <= 0) {
+        continue;
+      }
       result.push(ch);
       result.push(...ch.entities);
     }

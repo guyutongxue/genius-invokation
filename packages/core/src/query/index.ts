@@ -1,9 +1,10 @@
 import { SkillContext } from "../builder/context";
-import { ExContextType, ExEntityType } from "../builder/type";
+import { ExContextType } from "../builder/type";
 import { GuessedTypeOfQuery } from "./types";
 import { QueryArgs, doSemanticQueryAction } from "./semantic";
 import { allEntities, getEntityArea, getEntityById } from "../util";
-import { CharacterState, EntityState, GameState } from "..";
+import { CharacterState, EntityState, GameState } from "../base/state";
+import { ExEntityType } from "../base/entity";
 
 type AnyExt = { [prop: string]: any };
 

@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, canSwitchFast } from "@gi-tcg/core/builder";
 
 /**
  * @id 112031
@@ -68,7 +68,8 @@ export const StellarisPhantasm = skill(12033)
  */
 export const IllusoryTorrent = skill(12034)
   .type("passive")
-  // TODO
+  .on("beforeUseDice", (c) => c.caller().isActive() && canSwitchFast(c))
+  .setFastAction()
   .done();
 
 /**

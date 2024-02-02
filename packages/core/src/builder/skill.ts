@@ -18,13 +18,12 @@ import {
 } from "./context";
 import {
   AppliableDamageType,
-  ExEntityType,
   HandleT,
   SkillHandle,
   SummonHandle,
 } from "./type";
-import { EntityArea, EntityType } from "../base/entity";
-import { EntityBuilder, ExtOfEntity, VariableOptions } from "./entity";
+import { EntityArea, ExEntityType } from "../base/entity";
+import { EntityBuilder, EntityBuilderResultT, ExtOfEntity, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
 
 type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
@@ -442,7 +441,7 @@ interface UsageOptions extends VariableOptions {
 
 export class TriggeredSkillBuilder<
   Ext extends object,
-  CallerType extends EntityType,
+  CallerType extends ExEntityType,
   EN extends DetailedEventNames,
   V extends string,
 > extends SkillBuilder<Ext, CallerType> {
@@ -604,7 +603,7 @@ export class TriggeredSkillBuilder<
     return this.parent.once(event, filter);
   }
 
-  done(): HandleT<CallerType> {
+  done(): EntityBuilderResultT<CallerType> {
     this.buildSkill();
     return this.parent.done();
   }
@@ -673,11 +672,11 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     return this;
   }
 
-  type(type: "passive"): EntityBuilder<"passiveSkill">;
+  type(type: "passive"): EntityBuilder<"character">;
   type(type: CommonSkillType): this;
   type(type: CommonSkillType | "passive"): any {
     if (type === "passive") {
-      return new EntityBuilder("passiveSkill", this.skillId);
+      return new EntityBuilder("character", this.skillId);
     }
     if (type === "burst") {
       this._gainEnergy = false;

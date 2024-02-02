@@ -732,45 +732,44 @@ export class Game {
       arg,
     );
     this.state = newState;
-    if (oldState.players !== newState.players) {
-      this.notify([
-        {
-          type: "triggered",
-          id: skillInfo.caller.id,
-        },
-        // Damages
-        ...eventList
-          .filter(([n]) => n === "onDamage" || n === "onHeal")
-          .map<DamageEvent>(([_, arg]) => {
-            const a = arg as DamageInfo | HealInfo;
-            return {
-              type: "damage",
-              damage: {
-                type: "type" in a ? a.type : DamageType.Heal,
-                value: "value" in a ? a.value : a.finalValue,
-                target: a.target.id,
-                log: "log" in arg ? (arg.log as string) : "",
-              },
-            };
-          }),
-        // Element reactions
-        ...eventList
-          .filter(([n]) => n === "onElementalReaction")
-          .map<ElementalReactionEvent>(([_, arg]) => {
-            const a = arg as ReactionInfo;
-            return {
-              type: "elementalReaction",
-              on: a.target.id,
-              reactionType: a.type,
-            };
-          }),
-      ]);
+    console.log(skillInfo);
+    this.notify([
+      {
+        type: "triggered",
+        id: skillInfo.caller.id,
+      },
+      // Damages
+      ...eventList
+        .filter(([n]) => n === "onDamage" || n === "onHeal")
+        .map<DamageEvent>(([_, arg]) => {
+          const a = arg as DamageInfo | HealInfo;
+          return {
+            type: "damage",
+            damage: {
+              type: "type" in a ? a.type : DamageType.Heal,
+              value: "value" in a ? a.value : a.finalValue,
+              target: a.target.id,
+              log: "log" in arg ? (arg.log as string) : "",
+            },
+          };
+        }),
+      // Element reactions
+      ...eventList
+        .filter(([n]) => n === "onElementalReaction")
+        .map<ElementalReactionEvent>(([_, arg]) => {
+          const a = arg as ReactionInfo;
+          return {
+            type: "elementalReaction",
+            on: a.target.id,
+            reactionType: a.type,
+          };
+        }),
+    ]);
+    await this.io.pause(this.state);
+    const hasDefeated = await this.checkDefeated();
+    if (hasDefeated) {
+      this.notify([]);
       await this.io.pause(this.state);
-      const hasDefeated = await this.checkDefeated();
-      if (hasDefeated) {
-        this.notify([]);
-        await this.io.pause(this.state);
-      }
     }
     await this.handleEvents(["onSkill", { ...skillInfo, state: oldState }]);
     return eventList;
@@ -887,6 +886,9 @@ export class Game {
           const player = onTimeState.players[who];
           const activeIdx = getActiveCharacterIndex(player);
           for (const ch of shiftLeft(player.characters, activeIdx)) {
+            if (!ch.variables.alive) {
+              continue;
+            }
             for (const sk of ch.definition.skills) {
               if (sk.triggerOn === name) {
                 const skillInfo: SkillInfo = {
