@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType, canSwitchFast } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
 
 /**
  * @id 112031
@@ -9,7 +9,11 @@ import { character, skill, summon, combatStatus, card, DamageType, canSwitchFast
  * 结束阶段：弃置此牌，造成1点水元素伤害。
  */
 export const Reflection = summon(112031)
-  // TODO
+  .endPhaseDamage(DamageType.Hydro, 1)
+  .dispose()
+  .on("beforeDamaged", (c) => c.of(c.damageInfo.target).isActive())
+  .usage(1, { autoDispose: false })
+  .decreaseDamage(1)
   .done();
 
 /**
@@ -68,7 +72,7 @@ export const StellarisPhantasm = skill(12033)
  */
 export const IllusoryTorrent = skill(12034)
   .type("passive")
-  .on("beforeUseDice", (c) => c.caller().isActive() && canSwitchFast(c))
+  .on("beforeSwitchFast", (c) => c.caller().isActive())
   .setFastAction()
   .done();
 

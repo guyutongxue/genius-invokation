@@ -11,14 +11,14 @@ import { createWaitNotify } from "./utils";
 const playerConfig0: PlayerConfig = {
   characters: [1303, 1201, 1505],
   cards: [
-    332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
+    322001, 322002, 322003, 322004, 332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
     331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
     332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011,
   ],
-  // noShuffle: import.meta.env.DEV,
-  // alwaysOmni: import.meta.env.DEV,
+  noShuffle: import.meta.env.DEV,
+  alwaysOmni: import.meta.env.DEV,
 };
 const playerConfig1: PlayerConfig = {
   characters: [1502, 1201, 1303],
@@ -29,8 +29,8 @@ const playerConfig1: PlayerConfig = {
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011,
   ],
-  noShuffle: import.meta.env.DEV,
-  alwaysOmni: import.meta.env.DEV,
+  // noShuffle: import.meta.env.DEV,
+  // alwaysOmni: import.meta.env.DEV,
 };
 
 function App() {

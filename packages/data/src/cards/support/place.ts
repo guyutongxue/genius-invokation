@@ -74,7 +74,9 @@ export const WangshuInn = card(321005)
 export const FavoniusCathedral = card(321006)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("endPhase")
+  .usage(2)
+  .heal(2, "my active")
   .done();
 
 /**

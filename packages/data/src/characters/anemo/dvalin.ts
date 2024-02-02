@@ -7,8 +7,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 特瓦林下次造成的伤害+1
  */
 export const DraconicMajesty = status(125024)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 25026
@@ -63,9 +62,7 @@ export const DvalinsSigh = status(125022)
  * 可用次数：1
  */
 export const TotalCollapse = status(125021)
-  .on("beforeDamaged", (c) =>
-    c.damageInfo.type === DamageType.Physical ||
-    c.damageInfo.type === DamageType.Anemo)
+  .on("beforeDamaged", (c) => [DamageType.Physical, DamageType.Anemo].includes(c.damageInfo.type))
   .usage(1)
   .increaseDamage(2)
   .done();
@@ -77,8 +74,7 @@ export const TotalCollapse = status(125021)
  * 结束阶段：对我方出战角色附属坍毁。
  */
 export const CollapsingPlatform = combatStatus(125025)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 25021
@@ -161,7 +157,7 @@ export const RendingVortex = card(225021)
   .talent(Dvalin)
   .on("enter")
   .useSkill(TempestuousBarrage)
-  .on("dispose", (c) => c.$(`opp status with definition id ${TotalCollapse}`)?.id === c.eventArg.entity.id)
+  .on("dispose", (c, e) => c.$(`opp status with definition id ${TotalCollapse}`)?.id === e.entity.id)
   .listenToAll()
   .usagePerRound(1)
   .characterStatus(TotalCollapse, "opp next")

@@ -212,7 +212,7 @@ export const KazuhaSlash = skill(15053)
  */
 export const ChihayaburuPassive = skill(15054)
   .type("passive")
-  .on("skill", (c) => c.eventArg.definition.id === Chihayaburu)
+  .on("skill", (c, e) => e.definition.id === Chihayaburu)
   .switchActive("my next")
   .done();
 
@@ -241,9 +241,9 @@ export const KaedeharaKazuha = character(1505)
 export const PoeticsOfFuubutsu = card(215051)
   .costAnemo(3)
   .talent(KaedeharaKazuha)
-  .on("dealDamage", (c) => isReactionSwirl(c.eventArg))
-  .do((c) => {
-    const swirled = isReactionSwirl(c.eventArg)!;
+  .on("dealDamage", (c, e) => isReactionSwirl(e))
+  .do((c, e) => {
+    const swirled = isReactionSwirl(e)!;
     switch (swirled) {
       case DamageType.Cryo:
         c.combatStatus(PoeticsOfFuubutsuCryo);

@@ -30,9 +30,13 @@ export const PulsingClarity = combatStatus(117052)
  * 此效果被移除，或被重复生成时：造成1点草元素伤害，治疗我方出战角色1点。
  */
 export const SeamlessShield = combatStatus(117053)
-  // TODO
   .shield(1)
-  .on("dispose")
+  .on("enter", (c, e) => e.override)
+  .damage(DamageType.Dendro, 1)
+  .heal(1, "my active")
+  .on("selfDispose")
+  .damage(DamageType.Dendro, 1)
+  .heal(1, "my active")
   .done();
 
 /**

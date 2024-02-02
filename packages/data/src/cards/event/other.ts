@@ -1,4 +1,4 @@
-import { DamageType, DiceType, canSwitchDeductCost1, canSwitchFast, card, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, canSwitchDeductCost1, card, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -438,7 +438,7 @@ export const IHaventLostYet = card(332005)
  */
 export const LeaveItToMe = card(332006)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => canSwitchFast(c))
+  .once("beforeSwitchFast")
   .setFastAction()
   .done();
 

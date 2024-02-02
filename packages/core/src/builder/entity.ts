@@ -116,7 +116,7 @@ export class EntityBuilder<
     return this.variable("shield", count, { recreateMax: max })
       .on("beforeDamaged")
       .do((c) => {
-        const shield = c.caller().state.variables.shield;
+        const shield = c.caller().getVariable("shield");
         const currentValue = c.damageInfo.value;
         const decreased = Math.min(shield, currentValue);
         c.decreaseDamage(decreased);
@@ -211,7 +211,7 @@ export class EntityBuilder<
           }
           // 扣除持续回合数
           self.addVariable("duration", -1);
-          if (self.state.variables.duration <= 0) {
+          if (self.getVariable("duration") <= 0) {
             self.dispose();
           }
         })
@@ -237,6 +237,9 @@ export class EntityBuilder<
     }
     return this.id as EntityBuilderResultT<CallerType>;
   }
+
+  /** 此定义未被使用。 */
+  reserve(): void {}
 }
 
 export function summon(id: number) {

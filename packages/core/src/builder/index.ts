@@ -25,5 +25,5 @@ export {
   isReactionRelatedTo,
   isReactionSwirl,
 } from "./reaction";
-export * from "./util";
+export { canSwitchDeductCost1, canDeductCostType, checkDamageSkillType, checkCardTag } from "./util";
 export { flip } from "@gi-tcg/utils";

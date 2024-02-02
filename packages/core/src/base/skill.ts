@@ -96,22 +96,23 @@ export class UseDiceModifierImpl implements UseDiceModifier {
       cost: this.currentCost,
       fast: this.currentFast,
       log: this._log,
-    }
+    };
   }
   get currentCost() {
     const proj = (type: DiceType): number => {
       if (type == DiceType.Omni) return 100;
       else return type;
     };
-    const deducted = this._deductedCost.toSorted(([a], [b]) => proj(a) - proj(b));
+    const deducted = this._deductedCost.toSorted(
+      ([a], [b]) => proj(a) - proj(b),
+    );
     const finalCost = [...this._cost];
     for (const [type, count] of deducted) {
       if (type === DiceType.Omni) {
         for (let i = 0; i < count; i++) {
           finalCost.pop();
         }
-      }
-      else {
+      } else {
         for (let i = 0; i < count; i++) {
           const idx = finalCost.lastIndexOf(type);
           if (idx === -1) {
@@ -164,7 +165,9 @@ export interface DamageModifier1 {
   decreaseDamage(value: number): void;
 }
 
-export class DamageModifierImpl<InfoT extends DamageInfo = DamageInfo> implements DamageModifier0, DamageModifier1 {
+export class DamageModifierImpl<InfoT extends DamageInfo = DamageInfo>
+  implements DamageModifier0, DamageModifier1
+{
   private _caller: CharacterState | EntityState | null = null;
   constructor(private readonly _damageInfo: InfoT) {}
   private _newDamageType: DamageType | null = null;
@@ -354,7 +357,10 @@ type AsyncEventMap = {
   onHeal: HealInfo;
   onElementalReaction: ReactionInfo;
 
-  onEnter: { entity: CharacterState | EntityState };
+  onEnter: {
+    entity: CharacterState | EntityState;
+    override: EntityState | null;
+  };
   onDisposing: { entity: EntityState };
   onDefeated: { character: CharacterState };
   onRevive: { character: CharacterState };
@@ -441,7 +447,10 @@ export function useSyncSkill<E extends keyof SyncEventMap>(
     }));
   for (const info of infos) {
     const arg = argFn(info.caller);
-    if ("filter" in info.definition && !(0, info.definition.filter)(state, info, arg)) {
+    if (
+      "filter" in info.definition &&
+      !(0, info.definition.filter)(state, info, arg)
+    ) {
       continue;
     }
     const desc = info.definition.action as SkillDescription<EventArg<E>>;

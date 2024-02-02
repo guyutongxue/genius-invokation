@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card, checkCardTag } from "@gi-tcg/core/builder";
 
 /**
  * @id 322001
@@ -10,7 +10,9 @@ import { card } from "@gi-tcg/core/builder";
 export const Paimon = card(322001)
   .costSame(3)
   .support("ally")
-  // TODO
+  .on("actionPhase")
+  .usage(2)
+  .generateDice(DiceType.Omni, 2)
   .done();
 
 /**
@@ -22,7 +24,9 @@ export const Paimon = card(322001)
 export const Katheryne = card(322002)
   .costSame(1)
   .support("ally")
-  // TODO
+  .on("beforeSwitchFast")
+  .usagePerRound(1)
+  .setFastAction()
   .done();
 
 /**
@@ -36,7 +40,26 @@ export const Katheryne = card(322002)
 export const Timaeus = card(322003)
   .costSame(2)
   .support("ally")
-  // TODO
+  .variable("material", 2)
+  .on("enter")
+  .do((c) => {
+    if (c.player.initialPiles.filter((c) => c.tags.includes("artifact")).length >= 6) {
+      c.drawCards(1, { withTag: "artifact" });
+    }
+  })
+  .on("endPhase")
+  .addVariable("material", 1)
+  .on("beforeUseDice", (c) => checkCardTag(c, "artifact"))
+  .usagePerRound(1, { visible: false })
+  .do((c) => {
+    const self = c.caller();
+    if (self.getVariable("material") >= c.currentCost.length) {
+      c.addVariable("material", -c.currentCost.length);
+      for (const d of c.currentCost) {
+        c.deductCost(d, 1);
+      }
+    }
+  })
   .done();
 
 /**
@@ -50,7 +73,28 @@ export const Timaeus = card(322003)
 export const Wagner = card(322004)
   .costSame(2)
   .support("ally")
-  // TODO
+  .variable("material", 2)
+  .on("enter")
+  .do((c) => {
+    const weaponDefs = c.player.initialPiles.filter((c) => c.tags.includes("weapon")).map((c) => c.id);
+    const weaponKinds = new Set(weaponDefs).size;
+    if (weaponKinds >= 3) {
+      c.drawCards(1, { withTag: "weapon" });
+    }
+  })
+  .on("endPhase")
+  .addVariable("material", 1)
+  .on("beforeUseDice", (c) => checkCardTag(c, "weapon"))
+  .usagePerRound(1, { visible: false })
+  .do((c) => {
+    const self = c.caller();
+    if (self.getVariable("material") >= c.currentCost.length) {
+      c.addVariable("material", -c.currentCost.length);
+      for (const d of c.currentCost) {
+        c.deductCost(d, 1);
+      }
+    }
+  })
   .done();
 
 /**
@@ -63,7 +107,12 @@ export const Wagner = card(322004)
 export const ChefMao = card(322005)
   .costSame(1)
   .support("ally")
-  // TODO
+  .on("playCard", (c) => checkCardTag(c, "food"))
+  .usagePerRound(1)
+  .generateDice("randomElement", 1)
+  .on("playCard", (c) => checkCardTag(c, "food"))
+  .usage(1, { autoDispose: false })
+  .drawCards(1, { withTag: "food" })
   .done();
 
 /**
@@ -75,7 +124,8 @@ export const ChefMao = card(322005)
 export const Tubby = card(322006)
   .costSame(2)
   .support("ally")
-  // TODO
+  .on("beforeUseDice", (c) => checkCardTag(c, "place"))
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -86,7 +136,17 @@ export const Tubby = card(322006)
  */
 export const Timmie = card(322007)
   .support("ally")
-  // TODO
+  .variable("pigeon", 1)
+  .on("actionPhase")
+  .do((c) => {
+    const self = c.caller();
+    self.addVariable("pigeon", 1);
+    if (self.getVariable("pigeon") === 3) {
+      c.drawCards(1);
+      c.generateDice(DiceType.Omni, 1);
+      c.dispose();
+    }
+  })
   .done();
 
 /**

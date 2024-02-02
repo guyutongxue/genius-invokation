@@ -732,39 +732,36 @@ export class Game {
       arg,
     );
     this.state = newState;
-    console.log(skillInfo);
-    this.notify([
-      {
+    const notifyEvents: Event[] = [];
+    if (!skillInfo.fromCard) {
+      notifyEvents.push({
         type: "triggered",
-        id: skillInfo.caller.id,
-      },
+        id: skillInfo.caller.id
+      });
+    }
+    for (const [eventName, arg] of eventList) {
       // Damages
-      ...eventList
-        .filter(([n]) => n === "onDamage" || n === "onHeal")
-        .map<DamageEvent>(([_, arg]) => {
-          const a = arg as DamageInfo | HealInfo;
-          return {
-            type: "damage",
-            damage: {
-              type: "type" in a ? a.type : DamageType.Heal,
-              value: "value" in a ? a.value : a.finalValue,
-              target: a.target.id,
-              log: "log" in arg ? (arg.log as string) : "",
-            },
-          };
-        }),
+      if (eventName === "onDamage" || eventName === "onHeal") {
+        notifyEvents.push({
+          type: "damage",
+          damage: {
+            type: "type" in arg ? arg.type : DamageType.Heal,
+            value: "value" in arg ? arg.value : arg.finalValue,
+            target: arg.target.id,
+            log: "log" in arg ? (arg.log as string) : "",
+          },
+        });
+      }
       // Element reactions
-      ...eventList
-        .filter(([n]) => n === "onElementalReaction")
-        .map<ElementalReactionEvent>(([_, arg]) => {
-          const a = arg as ReactionInfo;
-          return {
-            type: "elementalReaction",
-            on: a.target.id,
-            reactionType: a.type,
-          };
-        }),
-    ]);
+      if (eventName === "onElementalReaction") {
+        notifyEvents.push({
+          type: "elementalReaction",
+          on: arg.target.id,
+          reactionType: arg.type,
+        })
+      }
+    }
+    this.notify(notifyEvents);
     await this.io.pause(this.state);
     const hasDefeated = await this.checkDefeated();
     if (hasDefeated) {

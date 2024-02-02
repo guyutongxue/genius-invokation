@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card, canDeductCostType } from "@gi-tcg/core/builder";
 
 /**
  * @id 312101
@@ -10,7 +10,9 @@ import { card } from "@gi-tcg/core/builder";
 export const BrokenRimesEcho = card(312101)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Cryo))
+  .usagePerRound(1)
+  .deductCost(DiceType.Cryo, 1)
   .done();
 
 /**
@@ -23,7 +25,9 @@ export const BrokenRimesEcho = card(312101)
 export const WinestainedTricorne = card(312201)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Hydro))
+  .usagePerRound(1)
+  .deductCost(DiceType.Hydro, 1)
   .done();
 
 /**
@@ -36,7 +40,9 @@ export const WinestainedTricorne = card(312201)
 export const WitchsScorchingHat = card(312301)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Pyro))
+  .usagePerRound(1)
+  .deductCost(DiceType.Pyro, 1)
   .done();
 
 /**
@@ -49,7 +55,9 @@ export const WitchsScorchingHat = card(312301)
 export const ThunderSummonersCrown = card(312401)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Electro))
+  .usagePerRound(1)
+  .deductCost(DiceType.Electro, 1)
   .done();
 
 /**
@@ -62,7 +70,9 @@ export const ThunderSummonersCrown = card(312401)
 export const ViridescentVenerersDiadem = card(312501)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Anemo))
+  .usagePerRound(1)
+  .deductCost(DiceType.Anemo, 1)
   .done();
 
 /**
@@ -75,7 +85,9 @@ export const ViridescentVenerersDiadem = card(312501)
 export const MaskOfSolitudeBasalt = card(312601)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Geo))
+  .usagePerRound(1)
+  .deductCost(DiceType.Geo, 1)
   .done();
 
 /**
@@ -88,7 +100,9 @@ export const MaskOfSolitudeBasalt = card(312601)
 export const LaurelCoronet = card(312701)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Dendro))
+  .usagePerRound(1)
+  .deductCost(DiceType.Dendro, 1)
   .done();
 
 /**

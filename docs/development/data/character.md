@@ -24,4 +24,17 @@ const Ganyu = character(1101)   // 角色 ID
 
 随后的描述方式参见[操作描述](./operations.md)。
 
+### 被动技能
 
+被动技能实际上是角色作为实体的表现。在 `skill` builder chain 中调用 `.type("passive")`，随后的描述被转换为 [caller](./operations.md#caller) 类型为 `"character"` 的实体操作描述。
+
+例：
+
+```ts
+/** 枫原万叶 千早振 被动 */
+const ChihayaburuPassive = skill(15054)
+  .type("passive")
+  .on("skill", (c) => c.eventArg.definition.id === Chihayaburu)
+  .switchActive("my next")
+  .done();
+```

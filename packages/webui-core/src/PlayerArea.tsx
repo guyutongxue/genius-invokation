@@ -22,7 +22,7 @@ export function PlayerArea(props: PlayerAreaProps) {
         }`}
       >
         <div class="h-52 flex flex-row justify-center gap-6">
-          <div class="min-w-40">
+          <div class="min-w-40 grid grid-cols-2 grid-rows-2 gap-2 justify-items-center items-center">
             <For each={props.data.supports}>
               {(support) => <Support data={support} />}
             </For>
@@ -48,7 +48,7 @@ export function PlayerArea(props: PlayerAreaProps) {
               )}
             </For>
           </div>
-          <div class="min-w-40">
+          <div class="min-w-40 grid grid-cols-2 grid-rows-2 gap-2 justify-items-center items-center">
             <For each={props.data.summons}>
               {(summon) => <Summon data={summon} />}
             </For>

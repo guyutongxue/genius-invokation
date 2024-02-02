@@ -11,11 +11,8 @@ export const Frozen = status(106)
   .duration(1)
   .tags("disableSkill")
   .on("beforeDamaged", (c) => [DamageType.Pyro, DamageType.Physical].includes(c.damageInfo.type))
-  .do((c) => {
-    c.increaseDamage(1);
-    c.caller().dispose();
-    return true;
-  })
+  .increaseDamage(1)
+  .dispose()
   .done();
 
 /**
@@ -25,7 +22,7 @@ export const Frozen = status(106)
  * 为我方出战角色提供1点护盾。（可叠加，最多叠加到2点）
  */
 export const Crystallize = combatStatus(111)
-  .shield(1, 2) //
+  .shield(1, 2)
   .done();
 
 /**

@@ -23,8 +23,14 @@ import {
   SummonHandle,
 } from "./type";
 import { EntityArea, ExEntityType } from "../base/entity";
-import { EntityBuilder, EntityBuilderResultT, ExtOfEntity, VariableOptions } from "./entity";
+import {
+  EntityBuilder,
+  EntityBuilderResultT,
+  ExtOfEntity,
+  VariableOptions,
+} from "./entity";
 import { getEntityArea } from "../util";
+import { canSwitchFast } from "./util";
 
 type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
   ? T
@@ -147,6 +153,21 @@ const detailedEventDictionary = {
   }),
   beforeUseDice: defineDescriptor("onBeforeUseDice", (c, r) => {
     return checkRelative(c.state, { who: c.eventWho }, r);
+  }),
+  beforeUseDiceCharacterSkillOrTalent: defineDescriptor(
+    "onBeforeUseDice",
+    (c, r) => {
+      if (c.currentAction.type === "useSkill") {
+        return checkRelative(c.state, c.currentAction.skill.caller.id, r);
+      } else if (c.currentAction.type === "playCard") {
+        return checkRelative(c.state, c.currentAction.target.ids[0], r);
+      } else {
+        return false;
+      }
+    },
+  ),
+  beforeSwitchFast: defineDescriptor("onBeforeUseDice", (c, r) => {
+    return checkRelative(c.state, { who: c.eventWho }, r) && canSwitchFast(c);
   }),
   beforeDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
     return checkRelative(c.state, c.damageInfo.source.id, r);
@@ -355,6 +376,9 @@ export function extendSkillContext<
         return Reflect.set(target, prop, newValue, receiver);
       }
     },
+    has(target, prop) {
+      return Reflect.has(ext, prop) || Reflect.has(target, prop);
+    }
   }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 
@@ -436,7 +460,9 @@ interface UsageOptions extends VariableOptions {
   /** 是否为“每回合使用次数”。默认值为 `false`。 */
   perRound?: boolean;
   /** 是否在每次技能执行完毕后自动 -1。默认值为 `true`。 */
-  auto?: boolean;
+  autoDecrease?: boolean;
+  /** 是否在扣除到 0 后自动弃置实体，默认值为 `true` */
+  autoDispose?: boolean;
 }
 
 export class TriggeredSkillBuilder<
@@ -469,11 +495,11 @@ export class TriggeredSkillBuilder<
   private _listenTo: ListenTo = ListenTo.SameArea;
 
   override do(op: SkillOperation<Ext, CallerType>): this {
-    // 设置了每回合使用次数的技能，在没有剩余使用次数时不进行操作
-    if (this._usageOpt?.perRound) {
+    // 设置了使用次数的技能，在没有剩余使用次数时不进行操作
+    if (this._usageOpt) {
       const { name } = this._usageOpt;
       return super.do((c, e) => {
-        if (c.caller().state.variables[name] <= 0) {
+        if (c.caller().getVariable(name) <= 0) {
           return;
         }
         op(c, e);
@@ -506,7 +532,8 @@ export class TriggeredSkillBuilder<
     }
     this._usageOpt = {
       visible: opt?.visible ?? true,
-      auto: opt?.auto ?? true,
+      autoDecrease: opt?.autoDecrease ?? true,
+      autoDispose: opt?.autoDispose ?? true,
       name,
       perRound,
       recreateMax: opt?.recreateMax ?? count,
@@ -555,13 +582,13 @@ export class TriggeredSkillBuilder<
 
   private buildSkill() {
     if (this._usageOpt) {
-      const { name, auto, perRound } = this._usageOpt;
+      const { name, autoDecrease, autoDispose, perRound } = this._usageOpt;
       this.do((c) => {
-        if (auto) {
+        if (autoDecrease) {
           c.addVariable(name, -1);
         }
         // 带使用次数（非每回合重置的），次数耗尽时弃置
-        if (!perRound && c.caller().state.variables[name] <= 0) {
+        if (autoDispose && !perRound && c.caller().getVariable(name) <= 0) {
           c.dispose();
         }
       });

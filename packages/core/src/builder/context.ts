@@ -1,6 +1,11 @@
 import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
 
-import { EntityArea, EntityDefinition, EntityType, ExEntityType } from "../base/entity";
+import {
+  EntityArea,
+  EntityDefinition,
+  EntityType,
+  ExEntityType,
+} from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
@@ -472,10 +477,12 @@ export class SkillContext<
     ) {
       return;
     }
-    const existSame = entitiesAtArea.find((e) => e.definition.id === id2);
-    if (existSame) {
+    const existOverride = entitiesAtArea.find(
+      (e): e is EntityState => e.definition.id === id2,
+    );
+    if (existOverride) {
       // refresh exist entity's variable
-      for (const prop in existSame.variables) {
+      for (const prop in existOverride.variables) {
         if (prop in def.constants) {
           const valueLimit =
             `${prop}$max` in def.constants
@@ -483,15 +490,20 @@ export class SkillContext<
               : def.constants[prop];
           this.mutate({
             type: "modifyEntityVar",
-            state: existSame,
+            state: existOverride,
             varName: prop,
             value: Math.min(
-              def.constants[prop] + existSame.variables[prop],
+              def.constants[prop] + existOverride.variables[prop],
               valueLimit,
             ),
           });
         }
       }
+      this.emitEvent("onEnter", {
+        entity: getEntityById(this.state, existOverride.id),
+        state: this.state,
+        override: existOverride,
+      });
     } else {
       const initState: EntityState = {
         id: 0,
@@ -509,6 +521,7 @@ export class SkillContext<
       this.emitEvent("onEnter", {
         entity: newState,
         state: this.state,
+        override: null,
       });
     }
   }
@@ -1008,7 +1021,13 @@ export class CharacterContext<
     this.skillContext.setVariable("energy", finalValue, this.state);
     return originalValue - finalValue;
   }
-  
+  getVariable(prop: string) {
+    if (!(prop in this.state.variables)) {
+      throw new Error(`Invalid variable ${prop}`);
+    }
+    return this.state.variables[prop];
+  }
+
   setVariable(prop: string, value: number) {
     this.skillContext.setVariable(prop, value, this.state);
   }
@@ -1058,6 +1077,12 @@ export class EntityContext<
   }
   get who() {
     return this._area.who;
+  }
+  getVariable(prop: string) {
+    if (!(prop in this.state.variables)) {
+      throw new Error(`Invalid variable ${prop}`);
+    }
+    return this.state.variables[prop];
   }
 
   master() {
