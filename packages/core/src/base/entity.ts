@@ -3,9 +3,10 @@ import { TriggeredSkillDefinition } from "./skill";
 
 export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
-  | "immuneControl" // 免疫冻结石化眩晕
+  | "immuneControl" // 免疫冻结石化眩晕（仅出战状态）
   | "shield" // 护盾
   | "debuff" // 自伤（不计入增伤）
+  | "disableEvent" // 禁用事件牌效果（仅出战状态）
   | EquipmentTag
   | SupportTag;
 

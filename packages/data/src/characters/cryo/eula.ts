@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, CharacterState, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 111062
@@ -9,7 +9,24 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * （影响此牌「可用次数」的效果会作用于「能量层数」。）
  */
 export const LightfallSword = summon(111062)
-  // TODO
+  .hintText("3+")
+  .variable("usage", 0)
+  .on("skill", (c, e) => 
+    e.definition.id === FavoniusBladeworkEdel || 
+    e.definition.id === IcetideVortex)
+  .do((c, e) => {
+    if (e.definition.id === IcetideVortex &&
+      c.of<"character">(e.caller).hasEquipment(WellspringOfWarlust)) {
+      c.caller().addVariable("usage", 3);
+    } else {
+      c.caller().addVariable("usage", 2);
+    }
+  })
+  .on("endPhase")
+  .do((c) => {
+    c.damage(DamageType.Physical, 3 + c.caller().getVariable("usage"));
+    c.dispose()
+  })
   .done();
 
 /**
@@ -19,7 +36,9 @@ export const LightfallSword = summon(111062)
  * 所附属角色使用冰潮的涡旋时：移除此状态，使本次伤害+3。
  */
 export const Grimheart = status(111061)
-  // TODO
+  .on("beforeDealDamage", (c) => c.damageInfo.via.definition.id === IcetideVortex)
+  .increaseDamage(3)
+  .dispose()
   .done();
 
 /**
@@ -28,11 +47,14 @@ export const Grimheart = status(111061)
  * @description
  * 造成2点物理伤害。
  */
-export const FavoniusBladeworkEdel = skill(11061)
+export const FavoniusBladeworkEdel: SkillHandle = skill(11061)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .noEnergy()
+  .damage(DamageType.Physical, 2)
+  .if((c) => !c.$(`my summons with definition id ${LightfallSword}`))
+  .gainEnergy(1, "@caller")
   .done();
 
 /**
@@ -41,10 +63,15 @@ export const FavoniusBladeworkEdel = skill(11061)
  * @description
  * 造成2点冰元素伤害，如果本角色未附属冷酷之心，则使其附属冷酷之心。
  */
-export const IcetideVortex = skill(11062)
+export const IcetideVortex: SkillHandle = skill(11062)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .noEnergy()
+  .damage(DamageType.Cryo, 2)
+  .if((c) => !c.caller().hasStatus(Grimheart))
+  .characterStatus(Grimheart, "@caller")
+  .if((c) => !c.$(`my summons with definition id ${LightfallSword}`))
+  .gainEnergy(1, "@caller")
   .done();
 
 /**
@@ -57,7 +84,8 @@ export const GlacialIllumination = skill(11063)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .summon(LightfallSword)
   .done();
 
 /**
@@ -86,5 +114,6 @@ export const WellspringOfWarlust = card(211061)
   .costCryo(3)
   .costEnergy(2)
   .talent(Eula)
-  // TODO
+  .on("enter")
+  .useSkill(GlacialIllumination)
   .done();

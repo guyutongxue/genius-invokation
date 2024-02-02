@@ -18,6 +18,7 @@ export type {
   SupportHandle,
 } from "./type";
 export { DiceType, DamageType, Aura } from "@gi-tcg/typings";
+export { CharacterState, EntityState } from "../base/state";
 
 export {
   getReaction,

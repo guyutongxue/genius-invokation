@@ -9,6 +9,7 @@ import {
   SkillInfo,
   TriggeredSkillDefinition,
   TriggeredSkillFilter,
+  PlayCardInfo,
 } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
@@ -258,11 +259,16 @@ const detailedEventDictionary = {
   }),
 } satisfies Record<string, Descriptor<any>>;
 
+type OverrideExtType = {
+  playCard: PlayCardInfo;
+};
+
 type DetailedEventDictionary = typeof detailedEventDictionary;
 export type DetailedEventNames = keyof DetailedEventDictionary;
-export type DetailedEventExt<E extends DetailedEventNames> = EventExt<
-  DetailedEventDictionary[E][0]
->;
+export type DetailedEventExt<E extends DetailedEventNames> =
+  E extends keyof OverrideExtType
+    ? { eventArg: OverrideExtType[E] }
+    : EventExt<DetailedEventDictionary[E][0]>;
 
 export type SkillInfoGetter = () => SkillInfo;
 
@@ -378,7 +384,7 @@ export function extendSkillContext<
     },
     has(target, prop) {
       return Reflect.has(ext, prop) || Reflect.has(target, prop);
-    }
+    },
   }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 
@@ -511,7 +517,9 @@ export class TriggeredSkillBuilder<
 
   /**
    * 为实体创建名为 `usage` 的变量，表示剩余使用次数。
-   * 在每次技能执行完毕后，若该变量计数达到 0，则弃置该实体。
+   * 在每次技能执行完毕后，若该变量计数达到 0，则不会触发操作。
+   *
+   * 若 `autoDispose` 且非 `perRound`（默认），则同时会弃置实体。
    * @param count
    * @param opt @see UsageOptions
    * @returns
@@ -550,7 +558,7 @@ export class TriggeredSkillBuilder<
     return this.usage(count, { ...opt, perRound: true });
   }
 
-  listenToMySelf(): this {
+  private listenToMySelf(): this {
     this._listenTo = ListenTo.Myself;
     return this;
   }
@@ -714,7 +722,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
 
   done(): SkillHandle {
     if (this._gainEnergy) {
-      this.do((c) => c.gainEnergy(1, "@self"));
+      this.do((c) => c.gainEnergy(1, "@caller"));
     }
     const action: SkillDescription<void> = this.getAction(() => ({}));
     registerSkill({

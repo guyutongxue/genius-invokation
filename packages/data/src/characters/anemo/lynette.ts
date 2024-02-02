@@ -1,4 +1,4 @@
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115082
@@ -10,7 +10,11 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 我方角色受到冰/水/火/雷伤害时：转换此牌的元素类型，改为造成所受到的元素类型的伤害。（离场前仅限一次）
  */
 export const BogglecatBox = summon(115082)
-  // TODO
+  .endPhaseDamage("swirledAnemo", 1)
+  .usage(2)
+  .on("beforeDamaged", (c) => c.of(c.damageInfo.target).isActive())
+  .usagePerRound(1)
+  .decreaseDamage(1)
   .done();
 
 /**
@@ -21,7 +25,9 @@ export const BogglecatBox = summon(115082)
  * 持续回合：1
  */
 export const OverawingAssault = status(115081)
-  // TODO
+  .duration(1)
+  .on("endPhase", (c) => c.caller().master().health >= 6)
+  .damage(DamageType.Piercing, 2, "@master")
   .done();
 
 /**
@@ -31,8 +37,7 @@ export const OverawingAssault = status(115081)
  * 我方出战角色受到伤害时：抵消1点伤害。（每回合1次）
  */
 export const BogglecatBoxsTaunt = combatStatus(115083)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 15081
@@ -44,7 +49,7 @@ export const RapidRitesword = skill(15081)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -56,7 +61,20 @@ export const RapidRitesword = skill(15081)
 export const EnigmaticFeint = skill(15082)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .do((c) => {
+    const count = c.countOfThisSkill();
+    if (count === 0 &&
+      c.caller().health <= 8) {
+      c.heal(2, "@caller")
+      c.characterStatus(OverawingAssault, "@caller")
+    }
+    if (count === 1 && c.caller().hasEquipment(AColdBladeLikeAShadow)) {
+      c.damage(DamageType.Anemo, 5)
+      c.switchActive("opp prev");
+    } else {
+      c.damage(DamageType.Anemo, 3)
+    }
+  })
   .done();
 
 /**
@@ -69,7 +87,8 @@ export const MagicTrickAstonishingShift = skill(15083)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .summon(BogglecatBox)
   .done();
 
 /**
@@ -97,5 +116,6 @@ export const Lynette = character(1508)
 export const AColdBladeLikeAShadow = card(215081)
   .costAnemo(3)
   .talent(Lynette)
-  // TODO
+  .on("enter")
+  .useSkill(EnigmaticFeint)
   .done();

@@ -91,8 +91,7 @@ export class SkillContext<
   /**
    *
    * @param _state 触发此技能之前的游戏状态
-   * @param skillId 技能编号（保证和传入 `registerSkill` 的编号一致）
-   * @param callerId 调用者 ID。主动技能的调用者是角色 ID，卡牌技能的调用者是当前玩家的前台角色 ID。
+   * @param skillInfo
    */
   constructor(
     private _state: GameState,
@@ -185,7 +184,7 @@ export class SkillContext<
    * @returns
    */
   caller(): ExContextType<Readonly, CallerType> {
-    return this.of(this.callerState as any) as any;
+    return this.of(this.skillInfo.caller);
   }
 
   private queryCoerceToCharacters(
@@ -200,6 +199,14 @@ export class SkillContext<
       }
     }
     return result as CharacterContext<Readonly>[];
+  }
+  /** 本回合已经使用了几次此技能 */
+  countOfThisSkill() {
+    return this.state.skillLog.filter(
+      (c) =>
+        c.caller.id === this.skillInfo.caller.id &&
+        c.skill.id === this.skillInfo.definition.id,
+    ).length;
   }
 
   // MUTATIONS
@@ -537,15 +544,11 @@ export class SkillContext<
   }
   characterStatus(
     id: StatusHandle,
-    target?: TargetQueryArg<false, Ext, CallerType>,
+    target: TargetQueryArg<false, Ext, CallerType> = "@caller",
   ) {
-    if (target) {
-      const targets = this.queryCoerceToCharacters(target);
-      for (const t of targets) {
-        this.createEntity("status", id, t.area);
-      }
-    } else {
-      this.createEntity("status", id, this.callerArea);
+    const targets = this.queryCoerceToCharacters(target);
+    for (const t of targets) {
+      this.createEntity("status", id, t.area);
     }
   }
   combatStatus(id: CombatStatusHandle, where: "my" | "opp" = "my") {
@@ -569,7 +572,7 @@ export class SkillContext<
     }
   }
 
-  dispose(target: string | EntityState = "@self") {
+  dispose(target: string | EntityState = "@caller") {
     const targets = this.$$(target as any);
     for (const t of targets) {
       const entityState = t.state;
@@ -783,7 +786,7 @@ export class SkillContext<
   }
 }
 
-type InternalProp = "callerId" | "callerArea";
+type InternalProp = "skillInfo" | "callerArea";
 
 type SkillContextMutativeProps =
   | "mutate"
@@ -798,7 +801,7 @@ type SkillContextMutativeProps =
   | "summon"
   | "combatStatus"
   | "characterStatus"
-  | "disposeEntity"
+  | "dispose"
   | "setVariable"
   | "addVariable"
   | "absorbDice"
@@ -940,21 +943,27 @@ export class CharacterContext<
         v.definition.tags.includes("artifact"),
     );
   }
-  hasWeapon() {
-    return this.state.entities.find(
-      (v) =>
-        v.definition.type === "equipment" &&
-        v.definition.tags.includes("weapon"),
+  hasWeapon(): EntityState | null {
+    return (
+      this.state.entities.find(
+        (v) =>
+          v.definition.type === "equipment" &&
+          v.definition.tags.includes("weapon"),
+      ) ?? null
     );
   }
-  hasEquipment(id: EquipmentHandle) {
-    return this.state.entities.find(
-      (v) => v.definition.type === "equipment" && v.definition.id === id,
+  hasEquipment(id: EquipmentHandle): EntityState | null {
+    return (
+      this.state.entities.find(
+        (v) => v.definition.type === "equipment" && v.definition.id === id,
+      ) ?? null
     );
   }
-  hasStatus(id: StatusHandle) {
-    return this.state.entities.find(
-      (v) => v.definition.type === "status" && v.definition.id === id,
+  hasStatus(id: StatusHandle): EntityState | null {
+    return (
+      this.state.entities.find(
+        (v) => v.definition.type === "status" && v.definition.id === id,
+      ) ?? null
     );
   }
 
@@ -995,22 +1004,22 @@ export class CharacterContext<
     }
     this.skillContext.createEntity("equipment", equipment, this._area);
   }
-  removeArtifact(): EntityState {
+  removeArtifact(): EntityState | null {
     const entity = this.state.entities.find((v) =>
       v.definition.tags.includes("artifact"),
     );
     if (!entity) {
-      throw new Error(`No artifact to remove`);
+      return null;
     }
     this.skillContext.dispose(entity);
     return entity;
   }
-  removeWeapon(): EntityState {
+  removeWeapon(): EntityState | null {
     const entity = this.state.entities.find((v) =>
       v.definition.tags.includes("weapon"),
     );
     if (!entity) {
-      throw new Error(`No weapon to remove`);
+      return null;
     }
     this.skillContext.dispose(entity);
     return entity;

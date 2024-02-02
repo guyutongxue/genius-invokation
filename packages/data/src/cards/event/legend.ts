@@ -59,7 +59,10 @@ export const FreshWindOfFreedom = card(330004)
  */
 export const InEveryHouseAStove = card(330005)
   .legend()
-  // TODO
+  .do((c) => {
+    const count = c.state.roundNumber - 1;
+    c.drawCards(count);
+  })
   .done();
 
 /**
@@ -72,5 +75,8 @@ export const InEveryHouseAStove = card(330005)
 export const PassingOfJudgment = card(330006)
   .costSame(1)
   .legend()
-  // TODO
+  .toCombatStatus(330006, "opp")
+  .tags("disableEvent")
+  .on("playCard", (c, e) => e.card.definition.type === "event")
+  .usage(3)
   .done();

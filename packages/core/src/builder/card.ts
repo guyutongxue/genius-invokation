@@ -124,10 +124,10 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
    * @param id 出战状态定义 id；默认与卡牌定义 id 相同
    * @returns 出战状态 builder
    */
-  toCombatStatus(id?: number) {
+  toCombatStatus(id?: number, where?: "my" | "opp") {
     id ??= this.cardId;
     this.do((c) => {
-      c.combatStatus(id as CombatStatusHandle);
+      c.combatStatus(id as CombatStatusHandle, where);
     }).done();
     return combatStatus(id);
   }

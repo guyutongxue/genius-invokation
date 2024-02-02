@@ -33,7 +33,7 @@ const ShrineOfMaya = combatStatus(117032)
 
 ## 可用次数
 
-通过 `.usage` 方法设置响应操作的可用次数。只有当触发条件满足时，可用次数才会扣除；当某次触发事件执行完毕，扣除可用次数到 0 之后，实体会自动弃置。
+通过 `.usage` 方法设置响应操作的可用次数。只有当触发条件满足时，可用次数才会扣除；当某次触发事件执行完毕，扣除可用次数到 0 之后，实体会自动弃置。每个事件的响应各有一份 `.usage`，故需要在 `.on` 之后设置对应的 `.usage`。
 
 ```ts
 /** 温迪：风域 */
@@ -69,9 +69,23 @@ const BrokenRimesEcho = card(312101)
   .done();
 ```
 
+如果卡牌描述为“下一次……”，其实际等价于可用次数为 1，此时可以用快捷方法 `.once(handler, cond)`，如：
+
+```ts
+/** 岩与契约 */
+const StoneAndContracts = card(331802)
+  .costVoid(3)
+  .requireCharacterTag("liyue")
+  .toCombatStatus()
+  .once("actionPhase")   // 下回合开始阶段
+  .generateDice(DiceType.Omni, 3)
+  .drawCards(1)
+  .done();
+```
+
 ## 变量
 
-使用 `.variable` 为该实体添加一个变量定义，传入初始值；可选地传入最大值。在同一位置重新创建时，若最大值大于初始值，则会累加。
+使用 `.variable` 为该实体添加一个变量定义，传入初始值；可选地传入最大值。在同一位置重新创建时，若最大值大于初始值，则会累加。`.variable` 必须设置在所有 `.on` 之前。
 
 ```ts
 /** 提米 */
@@ -85,3 +99,35 @@ const Timmie = card(322007)
 
 > `.usage` 默认创建名为 `usage` 的变量；`.shield` 默认创建名为 `shield` 的变量。
 
+## 护盾
+
+使用 `.shield` 表明该实体是一个护盾状态，这会添加一个 `.variable("shield", ...)`，并自动添加合适的 `onDamage` 处理函数根据盾量免伤或弃置。
+
+## 持续回合
+
+使用 `.duration` 设置持续回合数。这会添加一个 `.variable("duration", ...)` 并自动在 `onActionPhase` 事件时扣除变量（并在为 0 时弃置）。`.duration` 和 `.variable` 一样必须设置在所有 `.on` 之前。
+
+## 监听范围
+
+几乎所有的事件都只会传播给“局部”的实体；比如对 `onDealDamage` 事件有响应的角色状态，只会在该角色造成伤害时执行。如果希望修改这一行为，使用 `.listenToXxx`：
+- 默认情形：只监听实体所在角色或阵营的事件；
+- `.listenToPlayer()`：会响应我方阵营的所有同名事件；
+- `.listenToAll()`：会响应场上的所有同名事件。
+
+## 召唤物结束阶段操作快捷方法
+
+如果一个召唤物在结束回合造成伤害或治疗，建议使用 `.endPhaseDamage` 快捷方法：
+
+```ts
+/** 冰箭丘丘人 */
+const CryoHilichurlShooter = summon(303211)
+  .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(2)
+  .done();
+```
+
+`.endPhaseDamage` 除了代码量更少外，还额外设置了 `hintText` 属性和 `hintIcon` 变量。`hintText` 是字符串，会展示于召唤物图标左下角；`hintIcon` 则是该字符串的背景图标。在大部分召唤物中，`hintText` 显示结束阶段造成的伤害值，而 `hintIcon` 则是伤害类型。
+
+对于“光降之剑”这种特殊显示则需要手动通过 `.hintText(str)` 和 `.variable("hintIcon", val)` 指明 `hintText` 属性与 `hintIcon` 变量。
+
+`.endPhaseDamage` 还支持传入 `"swirledAnemo"`，即“染色”机制，初始结束阶段伤害为风元素伤害，若我方造成了扩散反应则修改 `hintIcon` 和结束阶段的伤害类型。

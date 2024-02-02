@@ -476,12 +476,6 @@ export class Game {
           await this.useSkill(actionInfo.skill, void 0);
           break;
         case "playCard":
-          this.mutate({
-            type: "disposeCard",
-            who,
-            oldState: actionInfo.card,
-            used: true,
-          });
           if (actionInfo.card.definition.tags.includes("legend")) {
             this.mutate({
               type: "setPlayerFlag",
@@ -490,15 +484,36 @@ export class Game {
               value: true,
             });
           }
-          await this.useSkill(
-            {
-              caller: activeCh,
-              definition: actionInfo.card.definition.skillDefinition,
-              fromCard: actionInfo.card,
-              requestBy: null,
-            },
-            actionInfo.target,
-          );
+          // 裁定之时：禁用效果
+          if (
+            player().combatStatuses.find((st) =>
+              st.definition.tags.includes("disableEvent"),
+            ) &&
+            actionInfo.card.definition.type === "event"
+          ) {
+            this.mutate({
+              type: "disposeCard",
+              who,
+              oldState: actionInfo.card,
+              used: false,
+            });
+          } else {
+            this.mutate({
+              type: "disposeCard",
+              who,
+              oldState: actionInfo.card,
+              used: true,
+            });
+            await this.useSkill(
+              {
+                caller: activeCh,
+                definition: actionInfo.card.definition.skillDefinition,
+                fromCard: actionInfo.card,
+                requestBy: null,
+              },
+              actionInfo.target,
+            );
+          }
           break;
         case "switchActive":
           this.switchActive(who, actionInfo.to);
@@ -736,7 +751,7 @@ export class Game {
     if (!skillInfo.fromCard) {
       notifyEvents.push({
         type: "triggered",
-        id: skillInfo.caller.id
+        id: skillInfo.caller.id,
       });
     }
     for (const [eventName, arg] of eventList) {
@@ -758,7 +773,7 @@ export class Game {
           type: "elementalReaction",
           on: arg.target.id,
           reactionType: arg.type,
-        })
+        });
       }
     }
     this.notify(notifyEvents);

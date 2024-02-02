@@ -1,4 +1,4 @@
-import { DamageType, DiceType, canSwitchDeductCost1, card, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, canSwitchDeductCost1, card, checkCardTag, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -494,7 +494,7 @@ export const MasterOfWeaponry = card(332010)
   .addTarget("my character has equipment with tag (weapon)")
   .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
   .do((c) => {
-    const weapon = c.of(c.targets[0]).removeWeapon();
+    const weapon = c.of(c.targets[0]).removeWeapon()!;
     c.of(c.targets[1]).equip(weapon.definition.id as any);
   })
   .done();
@@ -509,7 +509,7 @@ export const BlessingOfTheDivineRelicsInstallation = card(332011)
   .addTarget("my character has equipment with tag (artifact)")
   .addTarget("my character and not @targets.0")
   .do((c) => {
-    const artifact = c.of(c.targets[0]).removeArtifact();
+    const artifact = c.of(c.targets[0]).removeArtifact()!;
     c.of(c.targets[1]).equip(artifact.definition.id as any);
   })
   .done();
@@ -665,9 +665,7 @@ export const FriendshipEternal = card(332020)
  */
 export const RhythmOfTheGreatDream = card(332021)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => c.currentAction.type === "playCard" &&
-    (c.currentAction.card.definition.tags.includes("weapon") ||
-    c.currentAction.card.definition.tags.includes("artifact")))
+  .once("beforeUseDice", (c) => checkCardTag(c, "weapon") || checkCardTag(c, "artifact"))
   .deductCost(DiceType.Omni, 1)
   .done();
 
@@ -681,8 +679,8 @@ export const RhythmOfTheGreatDream = card(332021)
 export const WhereIsTheUnseenRazor = card(332022)
   .addTarget("my character has equipment with tag (weapon)")
   .do((c) => {
-    const { definition: { id } } = c.of(c.targets[0]).removeArtifact();
-    c.createHandCard(id as any);
+    const { definition } = c.of(c.targets[0]).removeArtifact();
+    c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
   .duration(1)
@@ -739,7 +737,11 @@ export const Lyresong = card(332024)
  * （角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）
  */
 export const TheBoarPrincess = card(332025)
-  // TODO
+  .toCombatStatus()
+  .duration(1)
+  .on("dispose", (c, e) => e.entity.definition.type === "equipment")
+  .usage(2)
+  .generateDice(DiceType.Omni, 1)
   .done();
 
 /**

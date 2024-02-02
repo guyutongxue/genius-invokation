@@ -9,6 +9,7 @@
 - `.requireCharacterTag` 指定“牌组至少包含两个 xx 角色”。
 - `.tags` 指定标签，如 `action` 为战斗行动。
 - `.addTarget` 增加一个卡牌使用目标，可行目标由[实体查询语法](../query.md)给出。
+- `.filter` 设置打出条件；只有条件满足时才能打出
 
 ## 事件牌
 
