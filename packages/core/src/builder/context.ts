@@ -23,6 +23,7 @@ import {
 import {
   allEntitiesAtArea,
   drawCard,
+  elementOfCharacter,
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
@@ -87,7 +88,7 @@ export class SkillContext<
 > {
   private readonly eventPayloads: DeferredAction[] = [];
   public readonly callerArea: EntityArea;
-  
+
   /**
    * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
    * @returns
@@ -201,10 +202,12 @@ export class SkillContext<
   }
   /** 本回合已经使用了几次此技能 */
   countOfThisSkill() {
-    return this.state.skillLog.filter(
-      (c) =>
-        c.caller.id === this.skillInfo.caller.id &&
-        c.skill.id === this.skillInfo.definition.id,
+    return this.state.globalActionLog.filter(
+      ({ roundNumber, action }) =>
+        roundNumber === this.state.roundNumber &&
+        action.type === "useSkill" &&
+        action.skill.caller.id === this.skillInfo.caller.id &&
+        action.skill.definition.id === this.skillInfo.definition.id,
     ).length;
   }
 
@@ -680,18 +683,19 @@ export class SkillContext<
   generateDice(type: DiceType | "randomElement", count: number) {
     let insertedDice: DiceType[] = [];
     if (type === "randomElement") {
+      const diceTypes = [
+        DiceType.Anemo,
+        DiceType.Cryo,
+        DiceType.Dendro,
+        DiceType.Electro,
+        DiceType.Geo,
+        DiceType.Hydro,
+        DiceType.Pyro,
+      ];
       for (let i = 0; i < count; i++) {
-        insertedDice.push(
-          this.random(
-            DiceType.Anemo,
-            DiceType.Cryo,
-            DiceType.Dendro,
-            DiceType.Electro,
-            DiceType.Geo,
-            DiceType.Hydro,
-            DiceType.Pyro,
-          ),
-        );
+        const generated = this.random(...diceTypes);
+        insertedDice.push(generated);
+        diceTypes.splice(diceTypes.indexOf(generated), 1);
       }
     } else {
       insertedDice = new Array<DiceType>(count).fill(type);
@@ -930,10 +934,15 @@ export class CharacterContext<
   isActive() {
     return this.satisfyPosition("active");
   }
+  isMine() {
+    return this.area.who === this.skillContext.callerArea.who;
+  }
   fullEnergy() {
-    return (
-      this.state.variables.energy === this.state.definition.constants.maxEnergy
-    );
+    const state = this.state;
+    return state.variables.energy === state.definition.constants.maxEnergy;
+  }
+  element(): DiceType {
+    return elementOfCharacter(this.state.definition);
   }
   hasArtifact() {
     return this.state.entities.find(

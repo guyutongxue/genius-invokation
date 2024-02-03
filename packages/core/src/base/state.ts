@@ -4,7 +4,7 @@ import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariables } from "./character";
 import { EntityArea, EntityDefinition, EntityVariables } from "./entity";
 import { Mutation } from "./mutation";
-import { SkillDefinition } from "./skill";
+import { ActionInfo, SkillDefinition } from "./skill";
 import { ReadonlyDataStore } from "../builder/registry";
 
 export interface GameConfig {
@@ -23,16 +23,15 @@ export interface IteratorState {
   readonly id: number;
 }
 
-export interface SkillLogEntry {
-  readonly roundNumber: number;
-  readonly caller: CharacterState | EntityState;
-  readonly callerArea: EntityArea;
-  readonly skill: SkillDefinition;
-}
-
 export interface MutationLogEntry {
   readonly roundNumber: number;
   readonly mutation: Mutation;
+}
+
+export interface ActionLogEntry {
+  readonly roundNumber: number;
+  readonly who: 0 | 1;
+  readonly action: ActionInfo;
 }
 
 export interface GameState {
@@ -44,8 +43,8 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly skillLog: readonly SkillLogEntry[];
   readonly mutationLog: readonly MutationLogEntry[];
+  readonly globalActionLog: readonly ActionLogEntry[];
 }
 
 export interface PlayerState {

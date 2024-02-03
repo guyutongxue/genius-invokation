@@ -8,7 +8,6 @@ import {
   EntityState,
   GameState,
   PlayerState,
-  SkillLogEntry,
 } from "./state";
 import {
   disposeEntity,
@@ -18,7 +17,7 @@ import {
   sortDice,
 } from "../util";
 import { EntityArea, EntityDefinition } from "./entity";
-import { SkillDefinition, SkillInfo } from "./skill";
+import { ActionInfo, SkillDefinition, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
 import { CardDefinition } from "./card";
 
@@ -61,13 +60,10 @@ export interface SetWinnerM {
   readonly winner: 0 | 1;
 }
 
-export interface PushSkillLogM {
-  readonly type: "pushSkillLog";
-  readonly skillInfo: SkillInfo;
-}
-
-export interface ClearSkillLogM {
-  readonly type: "clearSkillLog";
+export interface PushActionLogM {
+  readonly type: "pushActionLog";
+  readonly who: 0 | 1;
+  readonly action: ActionInfo;
 }
 
 export interface TransferCardM {
@@ -152,8 +148,7 @@ export type Mutation =
   | StepRoundM
   | SwitchTurnM
   | SetWinnerM
-  | PushSkillLogM
-  | ClearSkillLogM
+  | PushActionLogM
   | TransferCardM
   | SwitchActiveM
   | DisposeCardM
@@ -214,23 +209,14 @@ function doMutation(state: GameState, m: Mutation): GameState {
         draft.winner = m.winner;
       });
     }
-    case "pushSkillLog": {
-      const caller = m.skillInfo.caller;
-      const area = getEntityArea(state, caller.id);
-      const entry: SkillLogEntry = {
-        roundNumber: state.roundNumber,
-        caller,
-        callerArea: area,
-        skill: m.skillInfo.definition,
-      };
+    case "pushActionLog": {
       return produce(state, (draft) => {
-        draft.skillLog.push(entry as Draft<SkillLogEntry>);
-      });
-    }
-    case "clearSkillLog": {
-      return produce(state, (draft) => {
-        draft.skillLog = [];
-      });
+        draft.globalActionLog.push({
+          roundNumber: draft.roundNumber,
+          who: m.who,
+          action: m.action as Draft<ActionInfo>,
+        })
+      })
     }
     case "transferCard": {
       return produce(state, (draft) => {

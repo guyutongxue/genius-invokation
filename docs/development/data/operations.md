@@ -123,7 +123,9 @@ interface CharacterContext {
   positionIndex(): number;
   satisftyPosition(pos: CharacterPosition): boolean;
   isActive(): boolean;
+  isMine(): boolean;
   fullEnergy(): boolean;
+  element(): DiceType;
   hasArtifact(): EntityState | null;
   hasWeapon(): EntityState | null;
   hasStatus(id: StatusHandle): EntityState | null;

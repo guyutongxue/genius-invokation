@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, StatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112042
@@ -11,7 +11,15 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：2
  */
 export const MeleeStance = status(112042)
-  // TODO
+  .duration(2)
+  .conflictWith(112041)
+  .on("beforeDamageType", (c) => c.damageInfo.type === DamageType.Physical)
+  .changeDamageType(DamageType.Hydro)
+  .on("beforeDealDamage", (c) => c.of(c.damageInfo.target).hasStatus(Riptide))
+  .increaseDamage(1)
+  .on("skill", (c) => c.$("opp active")!.hasStatus(Riptide))
+  .usagePerRound(2)
+  .damage(DamageType.Piercing, 1, "opp next")
   .done();
 
 /**
@@ -21,7 +29,7 @@ export const MeleeStance = status(112042)
  * 所附属角色进行重击后：目标角色附属断流。
  */
 export const RangedStance = status(112041)
-  // TODO
+  .conflictWith(112042)
   .done();
 
 /**
@@ -31,8 +39,9 @@ export const RangedStance = status(112041)
  * 所附属角色被击倒后：对所在阵营的出战角色附属「断流」。
  * （处于「近战状态」的达达利亚攻击所附属角色时，会造成额外伤害。）
  */
-export const Riptide = status(112043)
-  // TODO
+export const Riptide: StatusHandle = status(112043)
+  .on("defeated")
+  .do((c) => c.characterStatus(Riptide, "my active"))
   .done();
 
 /**
@@ -45,7 +54,9 @@ export const CuttingTorrent = skill(12041)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
+  .if((c) => c.player.canCharged)
+  .characterStatus(Riptide, "opp active")
   .done();
 
 /**
@@ -57,7 +68,9 @@ export const CuttingTorrent = skill(12041)
 export const FoulLegacyRagingTide = skill(12042)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .characterStatus(MeleeStance)
+  .damage(DamageType.Hydro, 2)
+  .characterStatus(Riptide, "opp active")
   .done();
 
 /**
@@ -82,9 +95,14 @@ export const HavocObliteration = skill(12043)
  * 【被动】战斗开始时，初始附属远程状态。
  * 角色所附属的近战状态效果结束时，重新附属远程状态。
  */
-export const TideWithholder01 = skill(12044)
+export const TideWithholder = skill(12044)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(RangedStance)
+  .on("revive")
+  .characterStatus(RangedStance)
+  .on("dispose", (c, e) => e.entity.definition.id === MeleeStance)
+  .characterStatus(RangedStance)
   .done();
 
 /**
@@ -95,8 +113,7 @@ export const TideWithholder01 = skill(12044)
  */
 export const RangedStanceSkill = skill(12045)
   .type("passive")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 12046
@@ -104,10 +121,9 @@ export const RangedStanceSkill = skill(12045)
  * @description
  * 
  */
-export const TideWithholder = skill(12046)
+export const TideWithholder01 = skill(12046)
   .type("passive")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 1204
@@ -119,7 +135,7 @@ export const Tartaglia = character(1204)
   .tags("hydro", "bow", "fatui")
   .health(10)
   .energy(3)
-  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder01, RangedStanceSkill, TideWithholder)
+  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder)
   .done();
 
 /**
@@ -134,5 +150,9 @@ export const Tartaglia = character(1204)
 export const AbyssalMayhemHydrospout = card(212041)
   .costHydro(3)
   .talent(Tartaglia)
-  // TODO
+  .on("enter")
+  .useSkill(FoulLegacyRagingTide)
+  .on("endPhase")
+  .if((c) => c.$(`opp active has status with definition id ${Riptide}`))
+  .damage(DamageType.Piercing, 1, "opp active")
   .done();

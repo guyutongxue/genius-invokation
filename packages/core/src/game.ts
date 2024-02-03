@@ -12,10 +12,8 @@ import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   Aura,
-  DamageEvent,
   DamageType,
   DiceType,
-  ElementalReactionEvent,
   Event,
   RpcMethod,
   RpcRequest,
@@ -24,7 +22,6 @@ import {
   verifyRpcResponse,
 } from "@gi-tcg/typings";
 import {
-  allEntities,
   drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
@@ -37,23 +34,17 @@ import {
 import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionInfo,
-  DamageInfo,
   DefeatedModifierImpl,
   DeferredAction,
   ElementalTuningInfo,
-  HealInfo,
-  PlayCardInfo,
-  ReactionInfo,
   RollModifierImpl,
-  SkillDefinitionBase,
   SkillInfo,
   SwitchActiveInfo,
   UseDiceModifierImpl,
   UseSkillInfo,
   useSyncSkill,
 } from "./base/skill";
-import { SkillContext } from "./builder/context";
-import { CardDefinition, CardTarget, CardTargetKind } from "./base/card";
+import { CardDefinition, CardTarget } from "./base/card";
 import { executeQueryOnState } from "./query";
 
 export interface PlayerConfig {
@@ -89,8 +80,8 @@ export class Game {
       phase: "initHands",
       currentTurn: 0,
       roundNumber: 0,
-      skillLog: [],
       mutationLog: [],
+      globalActionLog: [],
       winner: null,
       players: [this.initPlayerState(0), this.initPlayerState(1)],
     };
@@ -337,7 +328,6 @@ export class Game {
     // - do `changePhase`
     // - clean `hasDefeated`
     // - clean `declaredEnd`
-    // - do `cleanSkillLog`
     // - emit event `actionPhase`
     this.mutate({
       type: "changePhase",
@@ -366,9 +356,6 @@ export class Game {
       who: 1,
       flagName: "declaredEnd",
       value: false,
-    });
-    this.mutate({
-      type: "clearSkillLog",
     });
     await this.handleEvents([
       "onActionPhase",
@@ -556,6 +543,11 @@ export class Game {
         },
       ]);
       this.mutate({
+        type: "pushActionLog",
+        who,
+        action: actionInfo
+      });
+      this.mutate({
         type: "setPlayerFlag",
         who,
         flagName: "canPlunging",
@@ -739,7 +731,6 @@ export class Game {
     ) {
       return [];
     }
-    this.mutate({ type: "pushSkillLog", skillInfo });
     const oldState = this.state;
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
@@ -955,7 +946,11 @@ export class Game {
     const currentTurn = this.state.currentTurn;
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
     const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
-    const hasDefeated: [boolean, boolean] = [false, false];
+    type DefeateEventArg = {
+      character: CharacterState;
+      state: GameState;
+    };
+    const defeatEvents: DefeateEventArg[] = [];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
@@ -969,6 +964,10 @@ export class Game {
           if (defeatedModifier._immune) {
             continue;
           }
+          defeatEvents.push({
+            character: ch,
+            state: this.state,
+          });
           let mut: Mutation = {
             type: "modifyEntityVar",
             state: ch,
@@ -995,7 +994,6 @@ export class Game {
             value: 0,
           };
           this.mutate(mut);
-          hasDefeated[who] = true;
           // 如果出战角色倒下，那么令用户选择新的出战角色
           if (ch.id === player.activeCharacterId) {
             this.notifyOne(flip(who), [
@@ -1029,7 +1027,10 @@ export class Game {
     if (a1 !== null) {
       await this.switchActive(1, a1);
     }
-    return hasDefeated[0] !== null || hasDefeated[1] !== null;
+    for (const defeatEvent of defeatEvents) {
+      await this.handleEvents(["onDefeated", defeatEvent]);
+    }
+    return defeatEvents.length > 0;
   }
 
   private async handleEvents(...actions: DeferredAction[]) {

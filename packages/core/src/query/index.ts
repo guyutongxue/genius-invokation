@@ -42,6 +42,7 @@ export function executeQuery(
       },
       event: {
         skillCaller: () => ctx.eventArg.caller.id,
+        switchTo: () => ctx.eventArg.to.id
       },
       damage: {
         target: () => ctx.damageInfo.target.id,

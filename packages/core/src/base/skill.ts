@@ -336,8 +336,8 @@ export type ActionInfo = (
   | ElementalTuningInfo
   | DeclareEndInfo
 ) & {
-  cost: readonly DiceType[];
-  fast: boolean;
+  readonly cost: readonly DiceType[];
+  readonly fast: boolean;
 };
 
 type NULL = Record<never, never>;

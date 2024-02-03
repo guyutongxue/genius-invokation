@@ -1,4 +1,16 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, checkDamageSkillType, SkillHandle } from "@gi-tcg/core/builder";
+
+/**
+ * @id 12074
+ * @name 苍鹭震击
+ * @description
+ * （需准备1个行动轮）
+ * 造成3点水元素伤害。
+ */
+export const HeronStrike = skill(12074)
+  .type("elemental")
+  .damage(DamageType.Hydro, 3)
+  .done();
 
 /**
  * @id 112071
@@ -8,7 +20,8 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
 export const HeronShield = status(112071)
-  // TODO
+  .shield(2)
+  .prepare(HeronStrike)
   .done();
 
 /**
@@ -22,7 +35,21 @@ export const HeronShield = status(112071)
  * 持续回合：2
  */
 export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
-  // TODO
+  .duration(2)
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .increaseDamage(1)
+  .on("beforeDamageType", (c) => {
+    const { type, tags } = c.skillInfo.caller.definition;
+    if (type !== "character") { return false; }
+    return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
+  })
+  .changeDamageType(DamageType.Hydro)
+  .on("switchActive")
+  .usagePerRound(1)
+  .damage(DamageType.Hydro, 1)
+  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .usagePerRound(1)
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -35,7 +62,18 @@ export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
  * 持续回合：2
  */
 export const PrayerOfTheCrimsonCrown = combatStatus(112072)
-  // TODO
+  .duration(2)
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .increaseDamage(1)
+  .on("beforeDamageType", (c) => {
+    const { type, tags } = c.skillInfo.caller.definition;
+    if (type !== "character") { return false; }
+    return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
+  })
+  .changeDamageType(DamageType.Hydro)
+  .on("switchActive")
+  .usagePerRound(1)
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -48,7 +86,7 @@ export const GleamingSpearGuardianStance = skill(12071)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -60,7 +98,7 @@ export const GleamingSpearGuardianStance = skill(12071)
 export const SacredRiteHeronsSanctum = skill(12072)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .characterStatus(HeronShield)
   .done();
 
 /**
@@ -69,23 +107,15 @@ export const SacredRiteHeronsSanctum = skill(12072)
  * @description
  * 造成2点水元素伤害，生成赤冕祝祷。
  */
-export const SacredRiteWagtailsTide = skill(12073)
+export const SacredRiteWagtailsTide: SkillHandle = skill(12073)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
-  .done();
-
-/**
- * @id 12074
- * @name 苍鹭震击
- * @description
- * （需准备1个行动轮）
- * 造成3点水元素伤害。
- */
-export const HeronStrike = skill(12074)
-  .type("elemental")
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .if((c) => c.self.hasEquipment(TheOverflow))
+  .combatStatus(PrayerOfTheCrimsonCrown01)
+  .else()
+  .combatStatus(PrayerOfTheCrimsonCrown)
   .done();
 
 /**
@@ -114,5 +144,6 @@ export const TheOverflow = card(212071)
   .costHydro(3)
   .costEnergy(2)
   .talent(Candace)
-  // TODO
+  .on("enter")
+  .useSkill(SacredRiteWagtailsTide)
   .done();

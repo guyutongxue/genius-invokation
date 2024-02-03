@@ -124,14 +124,15 @@ export class EntityBuilder<
         if (shield <= currentValue) {
           c.dispose();
         }
-      });
+      })
+      .endOn();
   }
 
   prepare(skill: SkillHandle, hintCount?: number) {
     if (hintCount) {
       this.variable("preparingSkillHintCount", hintCount);
     }
-    return this.on("replaceAction").useSkill(skill).dispose();
+    return this.on("replaceAction").useSkill(skill).dispose().endOn();
   }
 
   tags(...tags: EntityTag[]): this {

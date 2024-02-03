@@ -112,6 +112,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   support(type: SupportTag) {
     this.type("support").tags(type);
     this.do((c) => {
+      // 支援牌的目标是要弃置的支援区卡牌
+      const targets = c.targets as readonly EntityState[];
+      if (targets.length > 0) {
+        c.dispose(targets[0]);
+      }
       c.createEntity("support", this.cardId as SupportHandle);
     }).done();
     return support(this.cardId).tags(type);

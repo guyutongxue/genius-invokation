@@ -40,8 +40,7 @@ export function exposeMutation(
     case "extendData":
     case "stepRandom":
     case "clearMutationLog":
-    case "pushSkillLog":
-    case "clearSkillLog":
+    case "pushActionLog":
       return null;
     case "changePhase":
       return m;

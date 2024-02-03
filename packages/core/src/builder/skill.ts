@@ -257,6 +257,12 @@ const detailedEventDictionary = {
   selfDispose: defineDescriptor("onDisposing", (c, r) => {
     return c.eventArg.entity.id === r.callerId;
   }),
+  defeated: defineDescriptor("onDefeated", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.character.id, r);
+  }),
+  revive: defineDescriptor("onRevive", (c, r) => {
+    return checkRelative(c.eventArg.state, c.eventArg.character.id, r);
+  }),
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideExtType = {
@@ -551,11 +557,11 @@ export class TriggeredSkillBuilder<
   /**
    * Same as
    * ```
-   *   .usage(count, { ...opt, perRound: true })
+   *   .usage(count, { ...opt, perRound: true, visible: false })
    * ```
    */
   usagePerRound(count: number, opt?: Omit<UsageOptions, "perRound">) {
-    return this.usage(count, { ...opt, perRound: true });
+    return this.usage(count, { ...opt, perRound: true, visible: false });
   }
 
   private listenToMySelf(): this {
@@ -623,6 +629,9 @@ export class TriggeredSkillBuilder<
     this.parent._skillList.push(def);
   }
 
+  endOn() {
+    return this.parent;
+  }
   on<E extends DetailedEventNames>(
     event: E,
     filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>,
