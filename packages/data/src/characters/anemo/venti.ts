@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType, DiceType, canSwitchDeductCost1 } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, DiceType, canSwitchDeductCost1, checkUseDiceSkillType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115034
@@ -9,7 +9,9 @@ import { character, skill, summon, combatStatus, card, DamageType, DiceType, can
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
 export const Stormeye = summon(115034)
-  // TODO
+  .endPhaseDamage("swirledAnemo", 2)
+  .usage(2)
+  .switchActive("recent opp from my active")
   .done();
 
 /**
@@ -20,7 +22,7 @@ export const Stormeye = summon(115034)
  */
 export const WindsOfHarmony = combatStatus(115033)
   .duration(1)
-  .once("beforeUseDice", (c) => c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType === "normal")
+  .once("beforeUseDice", (c) => checkUseDiceSkillType(c, "normal"))
   .deductCost(DiceType.Void, 1)
   .done();
 
@@ -61,7 +63,7 @@ export const DivineMarksmanship = skill(15031)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -70,10 +72,14 @@ export const DivineMarksmanship = skill(15031)
  * @description
  * 造成2点风元素伤害，生成风域。
  */
-export const SkywardSonnet = skill(15032)
+export const SkywardSonnet: SkillHandle = skill(15032)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .if((c) => c.self.hasEquipment(EmbraceOfWinds))
+  .combatStatus(Stormzone01)
+  .else()
+  .combatStatus(Stormzone)
   .done();
 
 /**
@@ -86,7 +92,8 @@ export const WindsGrandOde = skill(15033)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .summon(Stormeye)
   .done();
 
 /**
@@ -116,5 +123,6 @@ export const Venti = character(1503)
 export const EmbraceOfWinds = card(215031)
   .costAnemo(3)
   .talent(Venti)
-  // TODO
+  .on("enter")
+  .useSkill(SkywardSonnet)
   .done();

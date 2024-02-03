@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, canSwitchDeductCost1, DiceType, checkDamageSkillType } from "@gi-tcg/core/builder";
 
 /**
  * @id 115062
@@ -8,7 +8,11 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：1
  */
 export const Descent = status(115062)
-  // TODO
+  .on("beforeUseDice", (c) => c.self.master().isActive() && canSwitchDeductCost1(c))
+  .deductCost(DiceType.Omni, 1)
+  .on("switchActive", (c, e) => c.self.master().id === e.from.id)
+  .usage(1)
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -19,7 +23,9 @@ export const Descent = status(115062)
  * 可用次数：2
  */
 export const Windfavored = status(115061)
-  // TODO
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .usage(2)
+  .increaseDamage(2)
   .done();
 
 /**
@@ -32,7 +38,10 @@ export const YuubanMeigen = skill(15061)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .if((c) => c.self.hasStatus(Windfavored))
+  .damage(DamageType.Anemo, 1, "opp next")
+  .else()
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -44,7 +53,8 @@ export const YuubanMeigen = skill(15061)
 export const HanegaSongOfTheWind = skill(15062)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .characterStatus(Windfavored)
   .done();
 
 /**
@@ -57,7 +67,15 @@ export const KyougenFiveCeremonialPlays = skill(15063)
   .type("burst")
   .costAnemo(3)
   .costEnergy(3)
-  // TODO
+  .do((c) => {
+    const windfavored = c.self.hasStatus(Windfavored);
+    if (windfavored) {
+      c.dispose(windfavored);
+      c.damage(DamageType.Anemo, 8);
+    } else {
+      c.damage(DamageType.Anemo, 7);
+    }
+  })
   .done();
 
 /**
@@ -85,5 +103,10 @@ export const Wanderer = character(1506)
 export const GalesOfReverie = card(215061)
   .costAnemo(4)
   .talent(Wanderer)
-  // TODO
+  .on("enter")
+  .useSkill(HanegaSongOfTheWind)
+  .on("dealDamage", (c, e) => c.self.master().hasStatus(Windfavored) &&
+    e.via.definition.skillType === "normal" &&
+    c.player.canCharged)
+  .characterStatus(Descent)
   .done();

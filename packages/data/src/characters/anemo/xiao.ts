@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, canDeductCostType, checkDamageSkillType, canSwitchDeductCost1, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115042
@@ -9,7 +9,11 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 所附属角色不再附属夜叉傩面时：移除此效果。
  */
 export const ConquerorOfEvilWrathDeity = status(115042)
-  // TODO
+  .on("beforeUseDice", (c) => c.currentAction.type === "useSkill" && 
+    c.skillInfo.definition.id === LemniscaticWindCycling && 
+    canDeductCostType(c, DiceType.Anemo))
+  .usage(2)
+  .deductCost(DiceType.Anemo, 1)
   .done();
 
 /**
@@ -22,7 +26,23 @@ export const ConquerorOfEvilWrathDeity = status(115042)
  * 持续回合：2
  */
 export const YakshasMask = status(115041)
-  // TODO
+  .duration(2)
+  .on("beforeDamageType", (c) => c.damageInfo.type === DamageType.Physical)
+  .changeDamageType(DamageType.Anemo)
+  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Anemo)
+  .increaseDamage(1)
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal") && c.player.canPlunging)
+  .increaseDamage(2)
+  .on("beforeUseDice", (c) => c.self.master().isActive() && canSwitchDeductCost1(c))
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
+  .on("selfDispose")
+  .do((c) => {
+    const conquerorStatus = c.self.master().hasStatus(ConquerorOfEvilWrathDeity);
+    if (conquerorStatus) {
+      c.dispose(conquerorStatus);
+    }
+  })
   .done();
 
 /**
@@ -35,7 +55,7 @@ export const WhirlwindThrust = skill(15041)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -47,7 +67,7 @@ export const WhirlwindThrust = skill(15041)
 export const LemniscaticWindCycling = skill(15042)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 3)
   .done();
 
 /**
@@ -56,11 +76,14 @@ export const LemniscaticWindCycling = skill(15042)
  * @description
  * 造成4点风元素伤害，本角色附属夜叉傩面。
  */
-export const BaneOfAllEvil = skill(15043)
+export const BaneOfAllEvil: SkillHandle = skill(15043)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 4)
+  .characterStatus(YakshasMask)
+  .if((c) => c.self.hasEquipment(ConquerorOfEvilGuardianYaksha))
+  .characterStatus(ConquerorOfEvilWrathDeity)
   .done();
 
 /**
@@ -89,5 +112,6 @@ export const ConquerorOfEvilGuardianYaksha = card(215041)
   .costAnemo(3)
   .costEnergy(2)
   .talent(Xiao)
-  // TODO
+  .on("enter")
+  .useSkill(BaneOfAllEvil)
   .done();

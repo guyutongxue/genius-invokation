@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, Aura, isReactionSwirl } from "@gi-tcg/core/builder";
 
 /**
  * @id 115072
@@ -8,7 +8,38 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  */
 export const MujimujiDaruma = summon(115072)
-  // TODO
+  .endPhaseDamage(DamageType.Anemo, 1)
+  .heal(2, "my characters order by health - maxHealth limit 1")
+  .done();
+
+/**
+ * @id 15074
+ * @name 风风轮舞踢
+ * @description
+ * （需准备1个行动轮）
+ * 造成2点风元素伤害（或被扩散元素的伤害）。
+ */
+export const FuufuuWhirlwindKick = skill(15074)
+  .type("elemental")
+  .do((c) => {
+    switch (c.skillInfo.requestBy?.caller.definition.id) {
+      case FuufuuWindwheelCryo:
+        c.damage(DamageType.Cryo, 2);
+        break;
+      case FuufuuWindwheelHydro:
+        c.damage(DamageType.Hydro, 2);
+        break;
+      case FuufuuWindwheelPyro:
+        c.damage(DamageType.Pyro, 2);
+        break;
+      case FuufuuWindwheelElectro:
+        c.damage(DamageType.Electro, 2);
+        break;
+      default:
+        c.damage(DamageType.Anemo, 2);
+        break;
+    }
+  })
   .done();
 
 /**
@@ -18,7 +49,19 @@ export const MujimujiDaruma = summon(115072)
  * 本角色将在下次行动时，直接使用技能：风风轮舞踢。
  */
 export const FuufuuWindwheel = status(115071)
-  // TODO
+  .prepare(FuufuuWhirlwindKick)
+  .done();
+export const FuufuuWindwheelCryo = status(115071.91)
+  .prepare(FuufuuWhirlwindKick)
+  .done();
+export const FuufuuWindwheelHydro = status(115071.92)
+  .prepare(FuufuuWhirlwindKick)
+  .done();
+export const FuufuuWindwheelPyro = status(115071.93)
+  .prepare(FuufuuWhirlwindKick)
+  .done();
+export const FuufuuWindwheelElectro = status(115071.94)
+  .prepare(FuufuuWhirlwindKick)
   .done();
 
 /**
@@ -31,7 +74,7 @@ export const ShuumatsubanNinjaBlade = skill(15071)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -44,7 +87,28 @@ export const ShuumatsubanNinjaBlade = skill(15071)
 export const YoohooArtFuuinDash = skill(15072)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .do((c) => {
+    const aura = c.$("opp active")!.aura;
+    switch (aura) {
+      case Aura.Cryo:
+      case Aura.CryoDendro:
+        c.characterStatus(FuufuuWindwheelCryo);
+        break;
+      case Aura.Hydro:
+        c.characterStatus(FuufuuWindwheelHydro);
+        break;
+      case Aura.Pyro:
+        c.characterStatus(FuufuuWindwheelPyro);
+        break;
+      case Aura.Electro:
+        c.characterStatus(FuufuuWindwheelElectro);
+        break;
+      default:
+        c.characterStatus(FuufuuWindwheel)
+        break;
+    }
+    c.damage(DamageType.Anemo, 2);
+  })
   .done();
 
 /**
@@ -57,19 +121,8 @@ export const YoohooArtMujinaFlurry = skill(15073)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
-  .done();
-
-/**
- * @id 15074
- * @name 风风轮舞踢
- * @description
- * （需准备1个行动轮）
- * 造成2点风元素伤害（或被扩散元素的伤害）。
- */
-export const FuufuuWhirlwindKick = skill(15074)
-  .type("elemental")
-  // TODO
+  .damage(DamageType.Anemo, 1)
+  .summon(MujimujiDaruma)
   .done();
 
 /**
@@ -97,5 +150,10 @@ export const Sayu = character(1507)
 export const SkivingNewAndImproved = card(215071)
   .costAnemo(3)
   .talent(Sayu)
-  // TODO
+  .on("enter")
+  .useSkill(YoohooArtFuuinDash)
+  .on("dealDamage", (c, e) => c.self.master().isActive() && isReactionSwirl(e))
+  .listenToPlayer()
+  .usagePerRound(1)
+  .drawCards(2)
   .done();

@@ -34,9 +34,9 @@ const Strategize = card(332004) // 给出行动牌 id
   .done();                      // 结束定义
 ```
 
-`.done()` 会返回 `id` 本身，但是在本文档里称其为“句柄”，并在 TypeScript 中约束为特别的具名类型（如 `character` 的 `.done()` 返回 `CharacterHandle`，而 `.talent` 等方法只接受 `CharacterHandle` 而非 `number`）。
+角色牌、行动牌、实体、技能的 id 应当和官方数据 id 保持一致。如果技术限制无法做到，可以使用小数作为 id，只需确保 `Math.floor(id)` 等于官方数据 id。
 
-如果一个方法期望句柄，但是你只持有 `number` 类型的 `id`（比如是来自[对局状态结构](../state.md)的数据），那么你需要一个 `as` 显式转换，即你自己保证这个 `id` 存在一个合法的定义。
+`.done()` 会返回 `id` 本身，但是在本文档里称其为“句柄”，并在 TypeScript 中约束为特别的具名类型（如 `character` 的 `.done()` 返回 `CharacterHandle`，而 `.talent` 等方法只接受 `CharacterHandle` 而非 `number`）。如果一个方法期望句柄，但是你只持有 `number` 类型的 `id`（比如是来自[对局状态结构](../state.md)的数据），那么你需要一个 `as` 显式转换，即你自己保证这个 `id` 存在一个合法的定义。
 
 具体每种数据的定义方式参考一下条目：
 - [角色牌与角色技能](./character.md)

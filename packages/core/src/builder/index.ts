@@ -5,7 +5,11 @@ export { character } from "./character";
 export { skill } from "./skill";
 export { card } from "./card";
 export { summon, status, combatStatus } from "./entity";
-export { beginRegistration, endRegistration, type ReadonlyDataStore } from "./registry";
+export {
+  beginRegistration,
+  endRegistration,
+  type ReadonlyDataStore,
+} from "./registry";
 export type {
   CardHandle,
   CharacterHandle,
@@ -26,5 +30,11 @@ export {
   isReactionRelatedTo,
   isReactionSwirl,
 } from "./reaction";
-export { canSwitchDeductCost1, canDeductCostType, checkDamageSkillType, checkCardTag } from "./util";
+export {
+  canSwitchDeductCost1,
+  canDeductCostType,
+  checkDamageSkillType,
+  checkUseDiceSkillType,
+  checkCardTag,
+} from "./util";
 export { flip } from "@gi-tcg/utils";

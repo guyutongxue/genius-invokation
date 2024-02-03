@@ -267,8 +267,8 @@ export interface SkillInfo {
   readonly fromCard: CardState | null;
   readonly definition: SkillDefinition;
   /**
-   * 若此技能通过 `requestSkill` 如准备技能、天赋牌等触发，
-   * 则此字段指定编写了上述 `useSkill` 的技能的 `SkillInfo`
+   * 若此技能通过 `requestSkill` 如准备技能或天赋牌触发，
+   * 则此字段指定上述技能的 `SkillInfo`
    */
   readonly requestBy: SkillInfo | null;
 }

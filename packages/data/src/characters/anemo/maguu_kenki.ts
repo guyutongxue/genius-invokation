@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, SummonHandle, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 125012
@@ -7,8 +7,11 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成1点冰元素伤害。
  * 可用次数：2
  */
-export const ShadowswordGallopingFrost = summon(125012)
-  // TODO
+export const ShadowswordGallopingFrost: SummonHandle = summon(125012)
+  .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(2)
+  .on("skill", (c, e) => e.definition.id === BlusteringBlade)
+  .damage(DamageType.Cryo, 1)
   .done();
 
 /**
@@ -18,8 +21,11 @@ export const ShadowswordGallopingFrost = summon(125012)
  * 结束阶段：造成1点风元素伤害。
  * 可用次数：2
  */
-export const ShadowswordLoneGale = summon(125011)
-  // TODO
+export const ShadowswordLoneGale: SummonHandle = summon(125011)
+  .endPhaseDamage(DamageType.Anemo, 1)
+  .usage(2)
+  .on("skill", (c, e) => e.definition.id === BlusteringBlade)
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -29,8 +35,7 @@ export const ShadowswordLoneGale = summon(125011)
  * 结束阶段：切换到所附属角色。
  */
 export const TerrormasksReturn = status(125013)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 25011
@@ -42,7 +47,7 @@ export const Ichimonji = skill(25011)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -51,10 +56,12 @@ export const Ichimonji = skill(25011)
  * @description
  * 召唤剑影·孤风。
  */
-export const BlusteringBlade = skill(25012)
+export const BlusteringBlade: SkillHandle = skill(25012)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .summon(ShadowswordLoneGale)
+  .if((c) => c.self.hasEquipment(TranscendentAutomaton))
+  .switchActive("my next")
   .done();
 
 /**
@@ -63,10 +70,12 @@ export const BlusteringBlade = skill(25012)
  * @description
  * 召唤剑影·霜驰。
  */
-export const FrostyAssault = skill(25013)
+export const FrostyAssault: SkillHandle = skill(25013)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .summon(ShadowswordGallopingFrost)
+  .if((c) => c.self.hasEquipment(TranscendentAutomaton))
+  .switchActive("my prev")
   .done();
 
 /**
@@ -79,7 +88,7 @@ export const PseudoTenguSweeper = skill(25014)
   .type("burst")
   .costAnemo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Anemo, 4)
   .done();
 
 /**

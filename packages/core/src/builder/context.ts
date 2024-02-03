@@ -785,7 +785,7 @@ export class SkillContext<
   }
 }
 
-type InternalProp = "skillInfo" | "callerArea";
+type InternalProp = "callerArea";
 
 type SkillContextMutativeProps =
   | "mutate"

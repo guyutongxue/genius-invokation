@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115012
@@ -10,7 +10,13 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 此召唤物在场时：如果此牌的元素类型已转换，则使我方造成的此类元素伤害+1。
  */
 export const LargeWindSpirit01 = summon(115012)
-  // TODO
+  .endPhaseDamage("swirledAnemo", 2)
+  .usage(3)
+  .on("beforeDealDamage", (c) => {
+    const color = c.self.getVariable("hintIcon");
+    return color !== DamageType.Anemo && color === c.damageInfo.type;
+  })
+  .increaseDamage(1)
   .done();
 
 /**
@@ -22,7 +28,8 @@ export const LargeWindSpirit01 = summon(115012)
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
 export const LargeWindSpirit = summon(115011)
-  // TODO
+  .endPhaseDamage("swirledAnemo", 2)
+  .usage(3)
   .done();
 
 /**
@@ -35,7 +42,7 @@ export const WindSpiritCreation = skill(15011)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -47,7 +54,8 @@ export const WindSpiritCreation = skill(15011)
 export const AstableAnemohypostasisCreation6308 = skill(15012)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 3)
+  .switchActive("opp prev")
   .done();
 
 /**
@@ -56,11 +64,15 @@ export const AstableAnemohypostasisCreation6308 = skill(15012)
  * @description
  * 造成1点风元素伤害，召唤大型风灵。
  */
-export const ForbiddenCreationIsomer75TypeIi = skill(15013)
+export const ForbiddenCreationIsomer75TypeIi: SkillHandle = skill(15013)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 1)
+  .if((c) => c.self.hasEquipment(ChaoticEntropy))
+  .summon(LargeWindSpirit01)
+  .else()
+  .summon(LargeWindSpirit)
   .done();
 
 /**
@@ -89,5 +101,6 @@ export const ChaoticEntropy = card(215011)
   .costAnemo(3)
   .costEnergy(2)
   .talent(Sucrose)
-  // TODO
+  .on("enter")
+  .useSkill(ForbiddenCreationIsomer75TypeIi)
   .done();

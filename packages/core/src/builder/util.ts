@@ -12,7 +12,7 @@ import { CardTag } from "../base/card";
  * 检查该实体是否可以执行“切换角色行动视为快速行动”
  *
  * 若当前行动不是切换角色，或者切换角色已经是快速行动时，返回 `false`。
- * @param c `"onBeforeUseDice"` 的 `SkillContext`
+ * @param c `"beforeUseDice"` 的 `SkillContext`
  * @returns
  */
 export function canSwitchFast(c: UseDiceModifier) {
@@ -23,7 +23,7 @@ export function canSwitchFast(c: UseDiceModifier) {
  * 检查该实体是否可以执行“切换角色行动减少1元素骰”
  *
  * 若当前行动不是切换角色，或者切换角色已经不消耗骰子时，返回 `false`。
- * @param c `"onBeforeUseDice"` 的 `SkillContext`
+ * @param c `"beforeUseDice"` 的 `SkillContext`
  * @returns
  */
 export function canSwitchDeductCost1(c: UseDiceModifier) {
@@ -33,7 +33,7 @@ export function canSwitchDeductCost1(c: UseDiceModifier) {
 /**
  * 检查该实体是否可以执行“减少 x 元素骰”。
  * 如果当前骰子需求没有这种元素骰，则返回 `false`
- * @param c `"onBeforeUseDice"` 的 `SkillContext`
+ * @param c `"beforeUseDice"` 的 `SkillContext`
  * @returns
  */
 export function canDeductCostType(c: UseDiceModifier, diceType: DiceType) {
@@ -41,8 +41,8 @@ export function canDeductCostType(c: UseDiceModifier, diceType: DiceType) {
 }
 
 /**
- * 检查正在修改伤害的来源技能是否为普通攻击、元素战技或元素爆发
- * @param c `"onSkillDamage"` 的 `SkillContext`
+ * 检查修改伤害的来源技能是否为普通攻击、元素战技或元素爆发
+ * @param c `"beforeSkillDamage"` 的 `SkillContext`
  * @returns
  */
 export function checkDamageSkillType(
@@ -53,8 +53,17 @@ export function checkDamageSkillType(
 }
 
 /**
- * 检查修改骰子的事件来源是否为“打出带某一标签的手牌”
- * @param c `"onBeforeUseDice"` 的 `SkillContext`
+ * 检查修改骰子的来源是否为普通攻击、元素战技或元素爆发
+ * @param c `"beforeUseDice"` 的 `SkillContext`
+ * @returns
+ */
+export function checkUseDiceSkillType(c: UseDiceModifier, skillType: SkillType) {
+  return c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType === skillType;
+}
+
+/**
+ * 检查修改骰子的来源是否为“打出带某一标签的手牌”
+ * @param c `"beforeUseDice"` 的 `SkillContext`
  * @param cardTag 要检查的标签
  * @returns
  */
