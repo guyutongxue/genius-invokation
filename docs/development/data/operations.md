@@ -34,6 +34,12 @@ const Grimheart = status(111061)
 
 ## `SkillContext`
 
+### `self`
+
+每个技能都有技能的发起者（Caller）：对于实体的相应操作，实体就是发起者；对于角色技能（主动或被动），角色就是发起者；对于使用卡牌的操作，使用卡牌玩家的当前出战角色是发起者。在技能描述中，使用 `c.self` 或者 `@self` 查询访问发起者。比如若角色技能描述称“为自身增加一点充能”，则描述为 `.gainEnergy(1, "@self")`。若实体想要访问自身的变量，使用 `c.self.getVariable`。
+
+`c.self` 会返回用于操作 `CharacterState` 或 `EntityState` 的便捷类。它不仅给出了一些常用的查询状态的函数，还提供一些修改对局状态的方法（但都来自于 `SkillContext`），称为 `CharacterContext` 或 `EntityContext`。比如刚才的 `getVariable` 函数会访问 `.state.variables`，而类似的 `setVariable` 则会调用 `SkillContext` 的 `setVariable(...)`，即作为技能定义操作的一部分。
+
 ### 常用操作列表
 
 以下操作定义于 `SkillContext` 中，它们也同时暴露到声明域中供直接调用：
@@ -46,12 +52,12 @@ interface SkillContext {
   damage(type: DamageType, value: number, target = "opp active"): void;
   apply(type: DamageType, target): void;
   summon(id: SummonHandle, where: "my" | "opp" = "my"): void;
-  characterStatus(id: StatusHandle, target = "@caller"): void;
+  characterStatus(id: StatusHandle, target = "@self"): void;
   combatStatus(id: StatusHandle, where: "my" | "opp" = "my"): void;
   createSupport(id: SupportHandle, where: "my" | "opp"): void;
-  dispose(target = "@caller"): void;
-  setVariable(prop: string, value: number, target = "@caller"): void;
-  addVariable(prop: string, value: number, target = "@caller"): void;
+  dispose(target = "@self"): void;
+  setVariable(prop: string, value: number, target = "@self"): void;
+  addVariable(prop: string, value: number, target = "@self"): void;
   replaceDefinition(target, newCh: CharacterHandle): void;
   generateDice(type: DiceType | "randomElement", count: number): void;
   createHandCard(card: CardHandle): void;
@@ -67,23 +73,7 @@ interface DrawCardsOpt {
 }
 ```
 
-### 不修改对局状态的方法
-
-```ts
-interface SkillContext {
-  state: GameState;
-  player: PlayerState;
-  oppPlayer: PlayerState;
-  isMyTurn(): boolean;
-  $(arg): AnyContext | null;
-  $$(arg): AnyContext[];
-  of(st: EntityState | CharacterState): EntityContext | CharacterContext;
-  caller(): Context-of-CallerType;
-  countOfThisSkill(): number;
-
-  random<T>(...items: T[]): T;
-}
-```
+所有返回 `void` 的函数都被自动添加到声明域以方便编写。
 
 ### 其它修改对局状态的方法
 
@@ -92,6 +82,29 @@ interface SkillContext {
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[];
 }
 ```
+
+由于 `absorbDice` 返回值有意义（为被回收的骰子值），因此不能在声明域使用。
+
+### 不修改对局状态的方法
+
+```ts
+interface SkillContext {
+  state: GameState;
+  player: PlayerState;
+  oppPlayer: PlayerState;
+
+  self: Context-of-CallerType;
+  $(arg): AnyContext | null;
+  $$(arg): AnyContext[];
+  of(st: EntityState | CharacterState): EntityContext | CharacterContext;
+
+  isMyTurn(): boolean;
+  countOfThisSkill(): number;
+
+  random<T>(...items: T[]): T;
+}
+```
+
 
 ## `CharacterContext`
 
@@ -168,3 +181,20 @@ interface EntityContext {
 }
 ```
 
+## 声明域的流程控制
+
+声明域提供了 `.if` 和 `.else` 用来处理简单的流程控制。`.if` 接受一个条件；仅当条件满足时才会执行**下一条**声明域 builder 方法。`.else` 则是仅当上一次出现的 `.if` 不成立时，执行**下一条**声明域 builder 方法。
+
+```ts
+/** 班尼特：美妙旅程 */
+const FantasticVoyage = skill(13033)
+  .type("burst")
+  // [...]
+  .if((c) => c.self.hasEquipment(GrandExpectation))
+  .combatStatus(InspirationField01)
+  .else()
+  .combatStatus(InspirationField)
+  .done();
+```
+
+无法用 `.if` `.else` 控制多条 builder 方法（可以使用 `.do` “括起”；但是这样不如直接在脚本域中使用 `if` 语句）。

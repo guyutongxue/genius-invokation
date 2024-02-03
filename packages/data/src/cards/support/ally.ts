@@ -52,8 +52,7 @@ export const Timaeus = card(322003)
   .on("beforeUseDice", (c) => checkCardTag(c, "artifact"))
   .usagePerRound(1, { visible: false })
   .do((c) => {
-    const self = c.caller();
-    if (self.getVariable("material") >= c.currentCost.length) {
+    if (c.self.getVariable("material") >= c.currentCost.length) {
       c.addVariable("material", -c.currentCost.length);
       for (const d of c.currentCost) {
         c.deductCost(d, 1);
@@ -87,8 +86,7 @@ export const Wagner = card(322004)
   .on("beforeUseDice", (c) => checkCardTag(c, "weapon"))
   .usagePerRound(1, { visible: false })
   .do((c) => {
-    const self = c.caller();
-    if (self.getVariable("material") >= c.currentCost.length) {
+    if (c.self.getVariable("material") >= c.currentCost.length) {
       c.addVariable("material", -c.currentCost.length);
       for (const d of c.currentCost) {
         c.deductCost(d, 1);
@@ -107,10 +105,10 @@ export const Wagner = card(322004)
 export const ChefMao = card(322005)
   .costSame(1)
   .support("ally")
-  .on("playCard", (c) => checkCardTag(c, "food"))
+  .on("playCard", (c, e) => e.card.definition.tags.includes("food"))
   .usagePerRound(1)
   .generateDice("randomElement", 1)
-  .on("playCard", (c) => checkCardTag(c, "food"))
+  .on("playCard", (c, e) => e.card.definition.tags.includes("food"))
   .usage(1, { autoDispose: false })
   .drawCards(1, { withTag: "food" })
   .done();
@@ -139,9 +137,8 @@ export const Timmie = card(322007)
   .variable("pigeon", 1)
   .on("actionPhase")
   .do((c) => {
-    const self = c.caller();
-    self.addVariable("pigeon", 1);
-    if (self.getVariable("pigeon") === 3) {
+    c.self.addVariable("pigeon", 1);
+    if (c.self.getVariable("pigeon") === 3) {
       c.drawCards(1);
       c.generateDice(DiceType.Omni, 1);
       c.dispose();

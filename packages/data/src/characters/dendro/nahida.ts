@@ -21,7 +21,7 @@ export const SeedOfSkandha: StatusHandle = status(117031)
       c.$("opp characters has equipment with definition id 217031") && // 装备有心识蕴藏之种
       c.$("opp combat status with definition id 117032") && // 摩耶之殿在场时
       c.$("opp characters include defeated with tag (pyro)") && // 我方队伍中存在火元素
-      c.caller().master().id === e.target.id // 受到元素反应伤害的对象
+      c.self.master().id === e.target.id // 受到元素反应伤害的对象
     ) {
       c.damage(DamageType.Dendro, 1, "@master")
     } else {
@@ -129,7 +129,7 @@ export const IllusoryHeart = skill(17034)
   .damage(DamageType.Dendro, 4)
   .do((c) => {
     if (
-      c.caller().hasEquipment(TheSeedOfStoredKnowledge) && // 装备有心识蕴藏之种
+      c.self.hasEquipment(TheSeedOfStoredKnowledge) && // 装备有心识蕴藏之种
       c.$("my characters include defeated with tag (hydro)") // 我方队伍中存在水元素
     ) {
       c.combatStatus(ShrineOfMaya01);

@@ -131,3 +131,24 @@ const CryoHilichurlShooter = summon(303211)
 对于“光降之剑”这种特殊显示则需要手动通过 `.hintText(str)` 和 `.variable("hintIcon", val)` 指明 `hintText` 属性与 `hintIcon` 变量。
 
 `.endPhaseDamage` 还支持传入 `"swirledAnemo"`，即“染色”机制，初始结束阶段伤害为风元素伤害，若我方造成了扩散反应则修改 `hintIcon` 和结束阶段的伤害类型。
+
+## 同名异构实体
+
+很多角色的实体会因为天赋牌存在与否产生差异，如班尼特、可莉、砂糖等。当带有天赋的角色试图产生实体，而场上已经有不带天赋的实体时，虽然两个实体的定义 id 不同，但是仍然新实体会把旧实体“冲掉”。使用 `.conflictWith(id)` 来实现这一行为。该 builder 方法会添加 `.on("enter")` 事件的响应：将场上冲突的实体弃置掉。
+
+```ts
+/** 摩耶之殿 */
+// 带天赋版：持续回合 3
+const ShrineOfMaya01 = combatStatus(117033)
+  .conflictWith(117032)
+  .duration(3)
+  // [...]
+  .done();
+
+// 不带天赋版：持续回合 2
+const ShrineOfMaya = combatStatus(117032)
+  .conflictWith(117033)
+  .duration(2)
+  // [...]
+  .done();
+```

@@ -72,7 +72,7 @@ export const StellarisPhantasm = skill(12033)
  */
 export const IllusoryTorrent = skill(12034)
   .type("passive")
-  .on("beforeSwitchFast", (c) => c.caller().isActive())
+  .on("beforeSwitchFast", (c) => c.self.isActive())
   .setFastAction()
   .done();
 

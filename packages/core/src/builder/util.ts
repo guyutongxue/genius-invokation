@@ -53,18 +53,14 @@ export function checkDamageSkillType(
 }
 
 /**
- * 检查事件来源是否为“打出带某一标签的手牌”
- * @param c `"onBeforeUseDice"` 或 `"playCard"` 的 `SkillContext`
+ * 检查修改骰子的事件来源是否为“打出带某一标签的手牌”
+ * @param c `"onBeforeUseDice"` 的 `SkillContext`
  * @param cardTag 要检查的标签
- * @returns 
+ * @returns
  */
-export function checkCardTag(c: UseDiceModifier | { eventArg: ActionInfo }, cardTag: CardTag) {
-  if ("currentAction" in c) {
-    return (
-      c.currentAction.type === "playCard" &&
-      c.currentAction.card.definition.tags.includes(cardTag)
-    );
-  } else {
-    return c.eventArg.type === "playCard" && c.eventArg.card.definition.tags.includes(cardTag);
-  }
+export function checkCardTag(c: UseDiceModifier, cardTag: CardTag) {
+  return (
+    c.currentAction.type === "playCard" &&
+    c.currentAction.card.definition.tags.includes(cardTag)
+  );
 }

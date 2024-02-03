@@ -17,14 +17,14 @@ export const LightfallSword = summon(111062)
   .do((c, e) => {
     if (e.definition.id === IcetideVortex &&
       c.of<"character">(e.caller).hasEquipment(WellspringOfWarlust)) {
-      c.caller().addVariable("usage", 3);
+      c.self.addVariable("usage", 3);
     } else {
-      c.caller().addVariable("usage", 2);
+      c.self.addVariable("usage", 2);
     }
   })
   .on("endPhase")
   .do((c) => {
-    c.damage(DamageType.Physical, 3 + c.caller().getVariable("usage"));
+    c.damage(DamageType.Physical, 3 + c.self.getVariable("usage"));
     c.dispose()
   })
   .done();
@@ -54,7 +54,7 @@ export const FavoniusBladeworkEdel: SkillHandle = skill(11061)
   .noEnergy()
   .damage(DamageType.Physical, 2)
   .if((c) => !c.$(`my summons with definition id ${LightfallSword}`))
-  .gainEnergy(1, "@caller")
+  .gainEnergy(1, "@self")
   .done();
 
 /**
@@ -68,10 +68,10 @@ export const IcetideVortex: SkillHandle = skill(11062)
   .costCryo(3)
   .noEnergy()
   .damage(DamageType.Cryo, 2)
-  .if((c) => !c.caller().hasStatus(Grimheart))
-  .characterStatus(Grimheart, "@caller")
+  .if((c) => !c.self.hasStatus(Grimheart))
+  .characterStatus(Grimheart, "@self")
   .if((c) => !c.$(`my summons with definition id ${LightfallSword}`))
-  .gainEnergy(1, "@caller")
+  .gainEnergy(1, "@self")
   .done();
 
 /**

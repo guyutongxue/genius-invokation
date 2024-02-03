@@ -31,7 +31,7 @@ export function executeQuery(
     },
     candidates: allEntities(ctx.state),
     externals: {
-      caller: () => ctx.skillInfo.caller.id,
+      self: () => ctx.skillInfo.caller.id,
       master: () => {
         const callerId = ctx.skillInfo.caller.id;
         const area = getEntityArea(ctx.state, callerId);

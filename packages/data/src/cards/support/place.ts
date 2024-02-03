@@ -150,7 +150,7 @@ export const Vanarana = card(321011)
   })
   .on("actionPhase")
   .do((c) => {
-    const { state } = c.caller();
+    const { state } = c.self;
     if (state.variables.count === 2) {
       c.generateDice(state.variables.d1, 1);
       c.generateDice(state.variables.d2, 1);

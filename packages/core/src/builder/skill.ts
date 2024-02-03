@@ -487,7 +487,7 @@ export class TriggeredSkillBuilder<
     super(id);
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
     this._triggerFilter = (c, e) => {
-      const { area, state } = c.caller();
+      const { area, state } = c.self;
       return (
         filterDescriptor(c as any, {
           callerArea: area,
@@ -505,7 +505,7 @@ export class TriggeredSkillBuilder<
     if (this._usageOpt) {
       const { name } = this._usageOpt;
       return super.do((c, e) => {
-        if (c.caller().getVariable(name) <= 0) {
+        if (c.self.getVariable(name) <= 0) {
           return;
         }
         op(c, e);
@@ -596,7 +596,7 @@ export class TriggeredSkillBuilder<
           c.addVariable(name, -1);
         }
         // 带使用次数（非每回合重置的），次数耗尽时弃置
-        if (autoDispose && !perRound && c.caller().getVariable(name) <= 0) {
+        if (autoDispose && !perRound && c.self.getVariable(name) <= 0) {
           c.dispose();
         }
       });
@@ -722,7 +722,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
 
   done(): SkillHandle {
     if (this._gainEnergy) {
-      this.do((c) => c.gainEnergy(1, "@caller"));
+      this.do((c) => c.self.gainEnergy(1));
     }
     const action: SkillDescription<void> = this.getAction(() => ({}));
     registerSkill({

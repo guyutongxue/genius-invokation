@@ -679,7 +679,7 @@ export const RhythmOfTheGreatDream = card(332021)
 export const WhereIsTheUnseenRazor = card(332022)
   .addTarget("my character has equipment with tag (weapon)")
   .do((c) => {
-    const { definition } = c.of(c.targets[0]).removeArtifact();
+    const { definition } = c.of(c.targets[0]).removeArtifact()!;
     c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
@@ -719,8 +719,8 @@ export const Pankration = card(332023)
 export const Lyresong = card(332024)
   .addTarget("my character has equipment with tag (artifact)")
   .do((c) => {
-    const { definition: { id } } = c.of(c.targets[0]).removeArtifact();
-    c.createHandCard(id as any);
+    const { definition } = c.of(c.targets[0]).removeArtifact()!;
+    c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
   .duration(1)

@@ -87,6 +87,12 @@ export class SkillContext<
 > {
   private readonly eventPayloads: DeferredAction[] = [];
   public readonly callerArea: EntityArea;
+  
+  /**
+   * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
+   * @returns
+   */
+  public readonly self: ExContextType<Readonly, CallerType>;
 
   /**
    *
@@ -98,6 +104,7 @@ export class SkillContext<
     public readonly skillInfo: SkillInfo,
   ) {
     this.callerArea = getEntityArea(_state, skillInfo.caller.id);
+    this.self = this.of(this.skillInfo.caller);
   }
   get state() {
     return this._state;
@@ -177,14 +184,6 @@ export class SkillContext<
     } else {
       return new EntityContext<Readonly, any>(this, entityState.id);
     }
-  }
-
-  /**
-   * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
-   * @returns
-   */
-  caller(): ExContextType<Readonly, CallerType> {
-    return this.of(this.skillInfo.caller);
   }
 
   private queryCoerceToCharacters(
@@ -544,7 +543,7 @@ export class SkillContext<
   }
   characterStatus(
     id: StatusHandle,
-    target: TargetQueryArg<false, Ext, CallerType> = "@caller",
+    target: TargetQueryArg<false, Ext, CallerType> = "@self",
   ) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
@@ -572,7 +571,7 @@ export class SkillContext<
     }
   }
 
-  dispose(target: string | EntityState = "@caller") {
+  dispose(target: string | EntityState = "@self") {
     const targets = this.$$(target as any);
     for (const t of targets) {
       const entityState = t.state;

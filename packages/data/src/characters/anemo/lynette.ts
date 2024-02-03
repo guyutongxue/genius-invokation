@@ -26,7 +26,7 @@ export const BogglecatBox = summon(115082)
  */
 export const OverawingAssault = status(115081)
   .duration(1)
-  .on("endPhase", (c) => c.caller().master().health >= 6)
+  .on("endPhase", (c) => c.self.master().health >= 6)
   .damage(DamageType.Piercing, 2, "@master")
   .done();
 
@@ -64,11 +64,11 @@ export const EnigmaticFeint = skill(15082)
   .do((c) => {
     const count = c.countOfThisSkill();
     if (count === 0 &&
-      c.caller().health <= 8) {
-      c.heal(2, "@caller")
-      c.characterStatus(OverawingAssault, "@caller")
+      c.self.health <= 8) {
+      c.heal(2, "@self")
+      c.characterStatus(OverawingAssault, "@self")
     }
-    if (count === 1 && c.caller().hasEquipment(AColdBladeLikeAShadow)) {
+    if (count === 1 && c.self.hasEquipment(AColdBladeLikeAShadow)) {
       c.damage(DamageType.Anemo, 5)
       c.switchActive("opp prev");
     } else {

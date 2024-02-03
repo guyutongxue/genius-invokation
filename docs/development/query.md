@@ -41,6 +41,7 @@ with tags (<tag>, ...)        # 限定定义标签
 ```
 
 例如：
+
 ```sh
 characters with health < 6    # 查询生命值小于 6 的角色
 status with definition id 106 # 冻结状态（冻结的定义 id 是 106）
@@ -106,3 +107,15 @@ my characters order by health - maxHealth
 # 我方首个充能未满的角色
 my characters with energy != maxEnergy limit 1
 ```
+
+## 特殊（外部）查询
+
+在查询语句中以 `@` 开头的点分标识符是外部查询。在技能描述的语境下，它们有如下含义：
+
+| 查询                 | 语义                                            |
+| -------------------- | ----------------------------------------------- |
+| `@self`            | `c.caller()`                                    |
+| `@master`            | `c.caller().master()`                           |
+| `@event.skillCaller` | `c.eventArg.caller` `skill` 事件的技能发起者    |
+| `@damage.target`     | `c.damageInfo.target` `beforeDamage` 事件的目标 |
+| `@targets.N`         | `c.targets[N]` 卡牌目标                         |

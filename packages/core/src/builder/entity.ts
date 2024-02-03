@@ -116,7 +116,7 @@ export class EntityBuilder<
     return this.variable("shield", count, { recreateMax: max })
       .on("beforeDamaged")
       .do((c) => {
-        const shield = c.caller().getVariable("shield");
+        const shield = c.self.getVariable("shield");
         const currentValue = c.damageInfo.value;
         const decreased = Math.min(shield, currentValue);
         c.decreaseDamage(decreased);
@@ -185,7 +185,7 @@ export class EntityBuilder<
         })
         .on("endPhase")
         .do((c) => {
-          c.damage(c.caller().state.variables.hintIcon, value, target);
+          c.damage(c.self.state.variables.hintIcon, value, target);
         });
     } else {
       return this.hintIcon(type)
@@ -203,7 +203,7 @@ export class EntityBuilder<
     ) {
       this.on("actionPhase")
         .do((c, e) => {
-          const self = c.caller();
+          const self = c.self;
           // 恢复每回合使用次数
           for (const prop of this._usagePerRoundVarNames) {
             const newValue = self.state.definition.constants[prop];
