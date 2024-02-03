@@ -66,3 +66,4 @@ interface PlayerIO {
 
 ## 设计细节
 
+在阅读源码之前，可以先参阅本项目的[核心数据结构](./state.md)和[结算流程设计](./process.md)。

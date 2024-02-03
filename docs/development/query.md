@@ -51,7 +51,7 @@ characters include defeated with tags (pyro) # 查询我方火系角色
 - 等于运算符是 `=` 而非 `==`。`id = xxx` 可以视作变量限定的特例，但是 `id` 不允许用其它比较运算（也没有意义）。
 - `tags` 要求该实体带有**全部的**标签。如果需要查询“其中一个”，请使用[联合查询](#联合查询)。
 - 一个特殊的标签查询具有语法 `tag <qual> of (<query>)`；其中 `qual` 为 `weapon` `element` 或 `nation`。其查询限定 `<query>` 返回的实体（必须是单个角色）中的武器、元素或国籍标签。比如 `my characters with tag element of (my active)` 返回我方角色中，与出战角色同一元素属性的角色。
-- 使用 `(definition)` 语法来限定查询中的标识符指代定义中的常量而非变量。比如 `health` 指代角色状态的 `health` 即生命值，而 `health (definition)` 指代角色定义中的 `health`，即初始生命值。（在这种语境下，使用 `maxHealth` 是更合适的；当不存在变量名为 `maxHealth` 的变量时会选择定义中的常量。）
+- 使用 `(definition)` 语法来限定查询中的标识符指代定义中的常量而非变量。比如 `health` 指代角色状态的 `health` 即生命值，而 `health (definition)` 指代角色定义中的 `health`，即初始生命值（在这种语境下，使用 `maxHealth` 是更合适的）。
 - 如果变量名和关键字冲突，使用字符串字面量语法括起，如 `"health"`。
 - 查询不满足 with-说明符 的实体，可使用[联合查询](#联合查询)，如 `my characters and not with tags (...)`。
 
@@ -112,10 +112,11 @@ my characters with energy != maxEnergy limit 1
 
 在查询语句中以 `@` 开头的点分标识符是外部查询。在技能描述的语境下，它们有如下含义：
 
-| 查询                 | 语义                                            |
-| -------------------- | ----------------------------------------------- |
-| `@self`            | `c.caller()`                                    |
-| `@master`            | `c.caller().master()`                           |
-| `@event.skillCaller` | `c.eventArg.caller` `skill` 事件的技能发起者    |
-| `@damage.target`     | `c.damageInfo.target` `beforeDamage` 事件的目标 |
-| `@targets.N`         | `c.targets[N]` 卡牌目标                         |
+| 查询                 | 语义                                                    |
+| -------------------- | ------------------------------------------------------- |
+| `@self`              | [`c.self`](./data/operations.md#self)                   |
+| `@master`            | [`c.self.master()`](./data/operations.md#entitycontext) |
+| `@event.skillCaller` | `c.eventArg.caller` `skill` 事件的技能发起者            |
+| `@event.switchTo`    | `c.eventArg.to` `switchActive` 事件的目标               |
+| `@damage.target`     | `c.damageInfo.target` `beforeDamage` 事件的目标         |
+| `@targets.N`         | `c.targets[N]` 卡牌目标                                 |

@@ -13,6 +13,8 @@ const Ganyu = character(1101)   // 角色 ID
   .done();
 ```
 
+`.skills` 中填入主动技能和被动技能，不填入仅能由准备状态触发的技能。
+
 ## `skill` 角色技能
 
 ### 主动技能

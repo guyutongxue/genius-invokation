@@ -44,7 +44,28 @@ export const YunlaiSwordsmanship = skill(14031)
 export const StellarRestoration = skill(14032)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Electro, 3);
+    const requestByCard = c.skillInfo.requestBy?.fromCard?.definition.id === LightningStiletto;
+    const hasLightningStiletto = c.player.hands.find((card) => card.definition.id === LightningStiletto);
+    if (requestByCard || hasLightningStiletto) {
+      if (c.self.hasEquipment(ThunderingPenance)) {
+        c.characterStatus(ElectroElementalInfusion01);
+      } else {
+        c.characterStatus(ElectroElementalInfusion);
+      }
+      if (hasLightningStiletto) {
+        c.mutate({
+          type: "disposeCard",
+          who: c.self.who,
+          oldState: hasLightningStiletto,
+          used: false,
+        });
+      }
+    } else {
+      c.createHandCard(LightningStiletto);
+    }
+  })
   .done();
 
 /**
@@ -71,6 +92,19 @@ export const Keqing = character(1403)
   .health(10)
   .energy(3)
   .skills(YunlaiSwordsmanship, StellarRestoration, StarwardSword)
+  .done();
+
+/**
+ * @id 114031
+ * @name 雷楔
+ * @description
+ * 战斗行动：将刻晴切换到场上，立刻使用星斗归位。本次星斗归位会为刻晴附属雷元素附魔，但是不会再生成雷楔。
+ * （刻晴使用星斗归位时，如果此牌在手中：不会再生成雷楔，而是改为弃置此牌，并为刻晴附属雷元素附魔）
+ */
+export const LightningStiletto = card(114031)
+  .costElectro(3)
+  .tags("action")
+  .useSkill(StellarRestoration)
   .done();
 
 /**

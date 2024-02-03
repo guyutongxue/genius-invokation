@@ -140,7 +140,7 @@ export const Dvalin = character(2502)
   .tags("anemo", "monster")
   .health(10)
   .energy(2)
-  .skills(LaceratingSlash, TempestuousBarrage, DvalinsCleansing, CaelestinumFinaleTermini, PerpetualCleansing, UltimateCleansing)
+  .skills(LaceratingSlash, TempestuousBarrage, DvalinsCleansing, CaelestinumFinaleTermini)
   .done();
 
 /**

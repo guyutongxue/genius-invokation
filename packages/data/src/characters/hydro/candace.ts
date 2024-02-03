@@ -128,7 +128,7 @@ export const Candace = character(1207)
   .tags("hydro", "pole", "sumeru")
   .health(10)
   .energy(2)
-  .skills(GleamingSpearGuardianStance, SacredRiteHeronsSanctum, SacredRiteWagtailsTide, HeronStrike)
+  .skills(GleamingSpearGuardianStance, SacredRiteHeronsSanctum, SacredRiteWagtailsTide)
   .done();
 
 /**

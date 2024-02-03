@@ -185,13 +185,7 @@ export class Game {
     }
   }
 
-  private notify(events: Event[]) {
-    for (const i of [0, 1] as const) {
-      this.notifyOne(i, events);
-    }
-    this.mutate({ type: "clearMutationLog" });
-  }
-  private notifyOne(who: 0 | 1, events: Event[]) {
+  private notifyOne(who: 0 | 1, events: Event[] = []) {
     const player = this.io.players[who];
     player.notify({
       events,
@@ -202,11 +196,17 @@ export class Game {
       newState: exposeState(who, this.state),
     });
   }
+  private async notifyAndPause(events: Event[] = []) {
+    for (const i of [0, 1] as const) {
+      this.notifyOne(i, events);
+    }
+    await this.io.pause(this.state);
+    this.mutate({ type: "clearMutationLog" });
+  }
 
   async start() {
-    this.notify([]);
+    await this.notifyAndPause();
     while (this.state.phase !== "gameEnd") {
-      await this.io.pause(this.state);
       switch (this.state.phase) {
         case "initHands":
           await this.initHands();
@@ -227,9 +227,7 @@ export class Game {
           const _check: never = this.state.phase;
           break;
       }
-      if (this.state.mutationLog.length > 1) {
-        this.notify([]);
-      }
+      await this.notifyAndPause();
     }
   }
 
@@ -249,6 +247,7 @@ export class Game {
       for (let i = 0; i < this.config.initialHands; i++) {
         this.state = drawCard(this.state, who, null);
       }
+      this.notifyOne(who);
     }
     await Promise.all([this.switchCard(0), this.switchCard(1)]);
     this.mutate({
@@ -317,7 +316,7 @@ export class Game {
           who,
           value: initDice,
         });
-        this.notify([]);
+        this.notifyOne(who);
         await this.reroll(who, count);
       }),
     );
@@ -767,12 +766,10 @@ export class Game {
         });
       }
     }
-    this.notify(notifyEvents);
-    await this.io.pause(this.state);
+    await this.notifyAndPause(notifyEvents);
     const hasDefeated = await this.checkDefeated();
     if (hasDefeated) {
-      this.notify([]);
-      await this.io.pause(this.state);
+      await this.notifyAndPause();
     }
     await this.handleEvents(["onSkill", { ...skillInfo, state: oldState }]);
     return eventList;
@@ -787,7 +784,6 @@ export class Game {
   }
 
   private async switchCard(who: 0 | 1) {
-    this.notify([]);
     const { removedHands } = await this.rpc(who, "switchHands", {});
     const cardStates = removedHands.map((id) => {
       const card = this.state.players[who].hands.find((c) => c.id === id);
@@ -808,7 +804,8 @@ export class Game {
     for (let i = 0; i < count; i++) {
       this.state = drawCard(this.state, who, null);
     }
-    this.notify([]);
+    this.notifyOne(who);
+    this.notifyOne(flip(who));
   }
   private async reroll(who: 0 | 1, times: number) {
     for (let i = 0; i < times; i++) {
@@ -831,7 +828,7 @@ export class Game {
           ...this.randomDice(rerollIndexes.length),
         ]),
       });
-      this.notify([]);
+      this.notifyOne(who);
     }
   }
 

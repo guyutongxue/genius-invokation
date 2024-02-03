@@ -94,7 +94,7 @@ export const Beidou = character(1405)
   .tags("electro", "claymore", "liyue")
   .health(10)
   .energy(3)
-  .skills(Oceanborne, Tidecaller, Stormbreaker, Wavestrider)
+  .skills(Oceanborne, Tidecaller, Stormbreaker)
   .done();
 
 /**

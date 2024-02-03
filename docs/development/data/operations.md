@@ -32,6 +32,8 @@ const Grimheart = status(111061)
 
 传入 `.do` 的参数是一个函数，函数的参数 `c` 是 `SkillContext` 类型的对象，调用 `c` 上的一些方法就可以完成对游戏状态的读取和更改。当技能被使用时，核心库会生成好 `c` 实参，然后传入 `do` 的函数参数，从而执行这个实体所定义的操作。在声明域的调用会自动转换为 `.do` 和对其中 `c` 的调用。
 
+本文随后的 TypeScript 代码中，`target` 参数可接受“实体查询字符串”或者“角色或实体状态对象”。
+
 ## `SkillContext`
 
 ### `self`
@@ -46,24 +48,64 @@ const Grimheart = status(111061)
 
 ```ts
 interface SkillContext {
+  // 切换出战角色。target 只能为一个角色；若该角色为我方则切换我方出战角色，反之同理
   switchActive(target): void;
+
+  // 让 target 角色获得能量
   gainEnergy(value: number, target): void;
+
+  // 治疗 target 角色
   heal(value: number, target): void;
+
+  // 对 target 角色造成伤害
   damage(type: DamageType, value: number, target = "opp active"): void;
+
+  // 对 target 角色附着元素
   apply(type: DamageType, target): void;
+
+  // 在 where 阵营召唤召唤物
   summon(id: SummonHandle, where: "my" | "opp" = "my"): void;
+
+  // 为 target 角色附着角色状态
   characterStatus(id: StatusHandle, target = "@self"): void;
+
+  // 在 where 阵营生成出战状态
   combatStatus(id: StatusHandle, where: "my" | "opp" = "my"): void;
+
+  // 在 where 阵营生成支援区实体
   createSupport(id: SupportHandle, where: "my" | "opp"): void;
+
+  // 弃置 target
   dispose(target = "@self"): void;
+
+  // 设置 target 的变量值
   setVariable(prop: string, value: number, target = "@self"): void;
+
+  // 累加 target 的变量值
   addVariable(prop: string, value: number, target = "@self"): void;
+
+  // 替换 target 的角色定义
   replaceDefinition(target, newCh: CharacterHandle): void;
+
+  // 为我方生成 count 个 type 类型骰子。
+  // randomElemnt 用以生成不同的基础类型元素骰子
   generateDice(type: DiceType | "randomElement", count: number): void;
+
+  // 为我方生成手牌（不是从牌堆抽取）
   createHandCard(card: CardHandle): void;
+
+  // 从牌堆抽取手牌
+  // opt.who 决定哪一方抽牌
+  // opt.withTag 要求抽出的手牌必须带有的标签
   drawCards(count: number, opt: DrawCardsOpt): void;
+
+  // 请求执行“选择任意张手牌切换”
   switchCards(): void;
+
+  // 请求执行“重投骰子”
   reroll(times: number): void;
+
+  // 请求执行“执行另一条技能”
   useSkill(skill: SkillHandle | "normal"): void;
 }
 
@@ -79,6 +121,9 @@ interface DrawCardsOpt {
 
 ```ts
 interface SkillContext {
+  // 回收骰子。
+  // seq 策略指按顺序回收；
+  // diff 策略只回收不同颜色的骰子。
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[];
 }
 ```
@@ -89,18 +134,37 @@ interface SkillContext {
 
 ```ts
 interface SkillContext {
+  // 当前最新的对局状态
   state: GameState;
+
+  // 当前最新的我方玩家状态
   player: PlayerState;
+
+  // 当前最新的对方玩家状态
   oppPlayer: PlayerState;
 
+  // 引发此技能的相关信息，如 .caller、.fromCard 或 .requestBy。
+  skillInfo: SkillInfo;
+
+  // 获取执行此技能的发起者 self 的便利对象
   self: Context-of-CallerType;
+
+  // 进行实体查询。只返回查询的首个实体，若没有返回 null
   $(arg): AnyContext | null;
+
+  // 进行实体查询。返回所有查询到的实体的数组
   $$(arg): AnyContext[];
+
+  // 对角色状态或实体状态进行包装，返回其便利对象
   of(st: EntityState | CharacterState): EntityContext | CharacterContext;
 
+  // 是否为我方（执行此技能的发起者的阵营）的回合
   isMyTurn(): boolean;
+
+  // 本回合内，第几次执行本技能（同一发起者）
   countOfThisSkill(): number;
 
+  // 步进游戏状态的随机数发生器，随机选择 items 中的一个值
   random<T>(...items: T[]): T;
 }
 ```
@@ -114,23 +178,44 @@ interface SkillContext {
 
 ```ts
 interface CharacterContext {
-  area: EntityArea;
-  who: 0 | 1;
-  id: number;
-  state: CharacterState
-  health: number;
-  aura: Aura;
+  who: 0 | 1;            // 阵营
+  id: number;            // 实体 id
+  state: CharacterState; // 当前角色状态对象
+  health: number;        // 角色生命值
+  aura: Aura;            // 角色当前附着元素
+
+  // 角色位于第几个（0-起始）
   positionIndex(): number;
+
+  // 角色是否满足某一位置
+  // type CharacterPosition = "active" | "next" | "prev" | "standby";
   satisftyPosition(pos: CharacterPosition): boolean;
+
+  // 角色是否是出战角色
   isActive(): boolean;
+
+  // 角色是否是我方（技能发起者的阵营）角色
   isMine(): boolean;
+
+  // 角色是否满充能
   fullEnergy(): boolean;
+
+  // 角色的元素类型
   element(): DiceType;
+
+  // 角色是否装备了圣遗物。若装备，返回其实体状态对象；否则返回 null
   hasArtifact(): EntityState | null;
+
+  // 角色是否装备了武器。若装备，返回其实体状态对象；否则返回 null
   hasWeapon(): EntityState | null;
+
+  // 角色是否附着了对应定义 id 的角色状态。若有则返回实体状态对象；否则返回 null
   hasStatus(id: StatusHandle): EntityState | null;
+
+  // 查询该角色作为实体区域下的实体
   $$(arg): EntityContext[];
 
+  // 获取角色的状态变量
   getVariable(prop: string): number;
 }
 ```
@@ -139,17 +224,39 @@ interface CharacterContext {
 
 ```ts
 interface CharacterContext {
+  // c.gainEnergy(value, this)
   gainEnergy(value: number = 1): void;
-  heal(value: number): void;
-  damage(type: DamageType, value: number): void;
-  apply(type: DamageType): void;
-  addStatus(status: StatusHandle): void;
-  equip(equipment: EquipmentHandle): void;
-  removeArtifact(): EntityState | null;
-  removeWeapon(): EntityState | null;
-  loseEnergy(value: number = 1): void;
 
+  // c.heal(value, this);
+  // 例如 ch.heal(3) 是治疗 ch 3 点不是治疗别人
+  heal(value: number): void;
+
+  // c.damage(type, value, this);
+  // 例如 ch.damage(0, 3) 是对 ch 造成 3 点物理伤害不是别人
+  damage(type: DamageType, value: number): void;
+
+  // c.apply(type, this);
+  apply(type: DamageType): void;
+
+  // c.characterStatus(status, this);
+  addStatus(status: StatusHandle): void;
+
+  // 为此角色装备实体
+  equip(equipment: EquipmentHandle): void;
+
+  // 若有，移除此角色的圣遗物
+  removeArtifact(): EntityState | null;
+
+  // 若有，移除此角色的武器
+  removeWeapon(): EntityState | null;
+
+  // 移除角色的 value 点能量；返回实际被移除的能量值
+  loseEnergy(value: number = 1): number;
+
+  // 设置角色的状态变量值
   setVariable(prop: string, value: number): void;
+
+  // 累加角色的状态变量值
   addVariable(prop: string, value: number): void;
 }
 ```
@@ -162,13 +269,13 @@ interface CharacterContext {
 
 ```ts
 interface EntityContext {
-  area: EntityArea;
-  who: 0 | 1;
-  id: number;
-  state: EntityState
-  health: number;
-  master(): CharacterContext;
+  area: EntityArea;           // 实体所在区域
+  who: 0 | 1;                 // 阵营
+  id: number;                 // 实体 id
+  state: EntityState          // 当前的实体状态对象
+  master(): CharacterContext; // 若实体位于角色区域，返回角色的便利对象
 
+  // 获取实体状态变量
   getVariable(prop: string): number;
 }
 ```
@@ -177,8 +284,14 @@ interface EntityContext {
 
 ```ts
 interface EntityContext {
+  // 设置实体的状态变量值
   setVariable(prop: string, value: number): void;
+
+  // 累加实体的状态变量值
   addVariable(prop: string, value: number): void;
+
+  // c.dispose(this);
+  // 弃置此牌
   dispose(): void;
 }
 ```

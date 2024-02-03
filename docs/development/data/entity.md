@@ -152,3 +152,11 @@ const ShrineOfMaya = combatStatus(117032)
   // [...]
   .done();
 ```
+
+## 准备技能
+
+使用 `.prepare` 方法来表示准备技能。`.prepare(Skill)` 的含义是，如果在需要玩家行动的时机，该实体存在，则直接执行 `.useSkill(Skill).dispose()`。
+
+事实上，`.useSkill(Skill).dispose()` 被挂在 `onReplaceAction` 事件上，该事件不会被“引发”，而是在玩家行动前检查，如果存在监听它的技能则直接执行。
+
+> 由于被触发的“准备中”技能使用 `useSkill` 执行，故可以通过 `skillInfo.requestBy.caller` 来获取触发该“准备中”技能的实体状态。

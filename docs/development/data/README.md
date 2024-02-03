@@ -42,3 +42,5 @@ const Strategize = card(332004) // 给出行动牌 id
 - [角色牌与角色技能](./character.md)
 - [行动牌](./card.md)
 - [状态、出战状态和召唤物](./entity.md)
+
+此外，`@gi-tcg/data` 的数据维护工作应参考 [generator](./generator.md)。

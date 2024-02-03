@@ -135,7 +135,7 @@ export const Sayu = character(1507)
   .tags("anemo", "claymore", "inazuma")
   .health(10)
   .energy(2)
-  .skills(ShuumatsubanNinjaBlade, YoohooArtFuuinDash, YoohooArtMujinaFlurry, FuufuuWhirlwindKick)
+  .skills(ShuumatsubanNinjaBlade, YoohooArtFuuinDash, YoohooArtMujinaFlurry)
   .done();
 
 /**
