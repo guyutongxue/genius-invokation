@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, SummonHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 122013
@@ -7,13 +7,16 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 我方出战角色受到伤害时：抵消1点伤害。
  * 可用次数：1，耗尽时不弃置此牌。
  * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点水元素伤害。
- * @outdated
- * 我方出战角色受到伤害时：抵消1点伤害。
- * 可用次数：2，耗尽时不弃置此牌。
- * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点水元素伤害。
  */
 export const OceanicMimicFrog = summon(122013)
-  // TODO
+  .hintIcon(DamageType.Hydro)
+  .hintText("2")
+  .on("beforeDamaged", (c) => c.of(c.damageInfo.target).isActive())
+  .usage(1, { autoDispose: false })
+  .decreaseDamage(1)
+  .on("endPhase", (c) => c.getVariable("usage") === 0)
+  .damage(DamageType.Hydro, 2)
+  .dispose()
   .done();
 
 /**
@@ -24,7 +27,8 @@ export const OceanicMimicFrog = summon(122013)
  * 可用次数：3
  */
 export const OceanicMimicRaptor = summon(122012)
-  // TODO
+  .endPhaseDamage(DamageType.Hydro, 1)
+  .usage(3)
   .done();
 
 /**
@@ -35,7 +39,8 @@ export const OceanicMimicRaptor = summon(122012)
  * 可用次数：2
  */
 export const OceanicMimicSquirrel = summon(122011)
-  // TODO
+  .endPhaseDamage(DamageType.Hydro, 2)
+  .usage(2)
   .done();
 
 /**
@@ -48,7 +53,7 @@ export const Surge = skill(22011)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -60,7 +65,18 @@ export const Surge = skill(22011)
 export const OceanidMimicSummoning = skill(22012)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .do((c) => {
+    const mimics = [OceanicMimicFrog, OceanicMimicRaptor, OceanicMimicSquirrel] as number[];
+    const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
+    let target;
+    if (exists.length >= 2) {
+      target = c.random(...exists);
+    } else {
+      const rest = mimics.filter((id) => !exists.includes(id));
+      target = c.random(...rest);
+    }
+    c.summon(target as SummonHandle);
+  })
   .done();
 
 /**
@@ -72,7 +88,21 @@ export const OceanidMimicSummoning = skill(22012)
 export const TheMyriadWilds = skill(22013)
   .type("elemental")
   .costHydro(5)
-  // TODO
+  .do((c) => {
+    const mimics = [OceanicMimicFrog, OceanicMimicRaptor, OceanicMimicSquirrel] as number[];
+    const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
+    for (let i = 0; i < 2; i++) {
+      let target;
+      if (exists.length >= 2) {
+        target = c.random(...exists);
+      } else {
+        const rest = mimics.filter((id) => !exists.includes(id));
+        target = c.random(...rest);
+      }
+      c.summon(target as SummonHandle);
+      exists.push(target);
+    }
+  })
   .done();
 
 /**
@@ -85,7 +115,14 @@ export const TideAndTorrent = skill(22014)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .do((c) => {
+    const summons = c.$$("my summons");
+    const damageValue = 4 + summons.length;
+    c.damage(DamageType.Hydro, damageValue);
+    if (c.self.hasEquipment(StreamingSurge)) {
+      summons.forEach((s) => s.addVariable("usage", 1))
+    }
+  })
   .done();
 
 /**
@@ -114,5 +151,6 @@ export const StreamingSurge = card(222011)
   .costHydro(4)
   .costEnergy(3)
   .talent(RhodeiaOfLoch)
-  // TODO
+  .on("enter")
+  .useSkill(TideAndTorrent)
   .done();

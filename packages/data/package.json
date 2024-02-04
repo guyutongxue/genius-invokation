@@ -5,7 +5,6 @@
   "exports": "./src/index.ts",
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",
-    "generate_images_for_standalone": "bun ./scripts/images/index.ts",
     "check": "tsc --noEmit"
   },
   "dependencies": {

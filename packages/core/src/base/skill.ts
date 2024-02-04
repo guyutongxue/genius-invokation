@@ -229,25 +229,25 @@ export class DamageModifierImpl<InfoT extends DamageInfo = DamageInfo>
 
 export interface DefeatedModifier {
   readonly target: CharacterState;
-  immune(): void;
+  immune(newHealth: number): void;
 }
 
 export class DefeatedModifierImpl implements DefeatedModifier {
   private _caller: CharacterState | EntityState | null = null;
   constructor(public readonly target: CharacterState) {}
-  _immune = false;
+  _immuneTo : null | number = null;
   _log = "";
 
   setCaller(caller: CharacterState | EntityState) {
     this._caller = caller;
   }
 
-  immune() {
+  immune(newHealth: number) {
     if (this._caller === null) {
       throw new Error("caller not set");
     }
-    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) immune to defeated.\n`;
-    this._immune = true;
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) immune to defeated, and heal it to ${newHealth}.\n`;
+    this._immuneTo = newHealth;
   }
 }
 

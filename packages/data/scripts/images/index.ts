@@ -1,8 +1,9 @@
 import { readdir, writeFile, rm, mkdir, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 import Sharp from "sharp";
+
 
 import { characters, cards, summons } from "../prescan";
 // generated from get_skill_images.ts
@@ -10,7 +11,25 @@ import skillImages from "./skill.json";
 // generated from https://github.com/Guyutongxue/gcg-buff-icon-data
 import statusImages from "./status.json";
 
-const dirname = path.join(fileURLToPath(import.meta.url), "..");
+const { values: { inputPath, outputPath } } = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    inputPath: {
+      type: "string",
+      short: "i",
+    },
+    outputPath: {
+      type: "string",
+      short: "o",
+    }
+  }
+})
+if (!inputPath) {
+  throw new Error("Missing input");
+}
+if (!outputPath) {
+  throw new Error("Missing output");
+}
 
 const filenameMap = new Map<string, string>([
   ["0", "UI_Gcg_Buff_Common_Element_Physics"],
@@ -38,7 +57,7 @@ for (const obj of [...characters, ...cards, ...summons]) {
   filenameMap.set(String(obj.id), cardImageFilename);
 }
 
-const imagePath = path.join(dirname, "../../images/Sprite");
+const imagePath = path.join(inputPath, "./Sprite");
 
 if (!existsSync(imagePath)) {
   throw new Error(
@@ -46,11 +65,9 @@ if (!existsSync(imagePath)) {
   );
 }
 
-const TARGET_PATH = path.join(dirname, "../../../standalone/public/assets");
-if (existsSync(TARGET_PATH)) {
-  await rm(TARGET_PATH, { recursive: true, force: true });
+if (!existsSync(outputPath)) {
+  await mkdir(outputPath);
 }
-await mkdir(TARGET_PATH);
 
 const files = await readdir(imagePath);
 const done = new Set<string>();
@@ -92,11 +109,11 @@ for (const [, v] of filenameMap) {
   } else {
     img.resize(null, 20);
   }
-  await img.toFile(path.join(TARGET_PATH, `${v}.webp`));
+  await img.toFile(path.join(outputPath, `${v}.webp`));
   done.add(v);
 }
 
 await writeFile(
-  path.join(TARGET_PATH, "index.json"),
+  path.join(outputPath, "index.json"),
   JSON.stringify(Object.fromEntries(filenameMap), void 0, 2),
 );

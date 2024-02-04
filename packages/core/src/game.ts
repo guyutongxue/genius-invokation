@@ -986,7 +986,8 @@ export class Game {
             defeatedModifier.setCaller(st);
             return defeatedModifier;
           });
-          if (defeatedModifier._immune) {
+          if (defeatedModifier._immuneTo) {
+            // TODO
             continue;
           }
           defeatEvents.push({

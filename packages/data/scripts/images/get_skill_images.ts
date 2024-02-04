@@ -2,7 +2,6 @@
 
 import { characters } from "../prescan";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { writeFile } from "node:fs/promises";
 
 const skillImageMap = new Map<number, string>([
@@ -43,6 +42,6 @@ for (const ch of characters) {
 console.log(skillImageMap);
 
 await writeFile(
-  path.join(fileURLToPath(import.meta.url), "../skill.json"),
+  path.join(import.meta.dirname, "./skill.json"),
   JSON.stringify(Object.fromEntries(skillImageMap), void 0, 2),
 );

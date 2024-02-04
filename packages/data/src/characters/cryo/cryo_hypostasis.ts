@@ -8,7 +8,8 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  */
 export const PiercingIceridge = summon(121033)
-  // TODO
+  .endPhaseDamage(DamageType.Cryo, 1, "recent opp of my active")
+  .usage(2)
   .done();
 
 /**
@@ -18,7 +19,9 @@ export const PiercingIceridge = summon(121033)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  */
 export const CryoCrystalCore = status(121034)
-  // TODO
+  .on("beforeDefeated")
+  .immune(1)
+  .dispose()
   .done();
 
 /**
@@ -29,7 +32,9 @@ export const CryoCrystalCore = status(121034)
  * 可用次数：1
  */
 export const OverwhelmingIce = status(121031)
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .usage(1)
+  .damage(DamageType.Piercing, 1, "opp standby")
   .done();
 
 /**
@@ -42,7 +47,7 @@ export const IcespikeShot = skill(21031)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Cryo, 1)
   .done();
 
 /**
@@ -54,7 +59,8 @@ export const IcespikeShot = skill(21031)
 export const IceRingWaltz = skill(21032)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
+  .characterStatus(OverwhelmingIce)
   .done();
 
 /**
