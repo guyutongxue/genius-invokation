@@ -190,7 +190,10 @@ export const ChangTheNinth = card(322009)
     }
   })
   .on("dealDamage", (c, e) => c.self.getVariable("currentSkill") &&
-    (e.type === DamageType.Physical || e.type === DamageType.Piercing || getReaction(e)))
+    (e.type === DamageType.Physical || e.type === DamageType.Piercing))
+  .listenToAll()
+  .setVariable("hasInspiration", 1)
+  .on("elementalReaction", (c, e) => c.self.getVariable("currentSkill"))
   .listenToAll()
   .setVariable("hasInspiration", 1)
   .on("skill", (c, e) => e.definition.id === c.self.getVariable("currentSkill"))
