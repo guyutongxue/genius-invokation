@@ -1,4 +1,4 @@
-import { CardHandle, DamageType, DiceType, canSwitchDeductCost1, card, checkCardTag, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, card, checkCardTag, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -117,7 +117,7 @@ export const ElementalResonanceShatteringIce = card(331102)
   .tags("resonance")
   .requireCharacterTag("cryo")
   .toStatus("my active")
-  .duration(1)
+  .oneDuration()
   .once("beforeSkillDamage")
   .increaseDamage(2)
   .done();
@@ -324,7 +324,7 @@ export const ElementalResonanceWovenWeeds = card(331701)
  */
 export const WindAndFreedom = card(331801)
   .toCombatStatus()
-  .duration(1)
+  .oneDuration()
   .on("skill")
   .switchActive("next")
   .done();
@@ -393,7 +393,7 @@ export const TheBestestTravelCompanion = card(332001)
  */
 export const ChangingShifts = card(332002)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  .once("beforeSwitchDeductDice")
   .deductCost(DiceType.Omni, 1)
   .done();
 
@@ -665,7 +665,7 @@ export const FriendshipEternal = card(332020)
  */
 export const RhythmOfTheGreatDream = card(332021)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => checkCardTag(c, "weapon") || checkCardTag(c, "artifact"))
+  .once("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon") || checkCardTag(c, "artifact"))
   .deductCost(DiceType.Omni, 1)
   .done();
 
@@ -683,9 +683,8 @@ export const WhereIsTheUnseenRazor = card(332022)
     c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
-  .duration(1)
-  .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
-    c.currentAction.card.definition.tags.includes("weapon"))
+  .oneDuration()
+  .once("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon"))
   .deductCost(DiceType.Omni, 2)
   .done();
 
@@ -723,9 +722,8 @@ export const Lyresong = card(332024)
     c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
-  .duration(1)
-  .once("beforeUseDice", (c) => c.currentAction.type === "playCard" && 
-    c.currentAction.card.definition.tags.includes("artifact"))
+  .oneDuration()
+  .once("beforePlayCardDeductDice", (c) => checkCardTag(c, "artifact"))
   .deductCost(DiceType.Omni, 2)
   .done();
 
@@ -738,7 +736,7 @@ export const Lyresong = card(332024)
  */
 export const TheBoarPrincess = card(332025)
   .toCombatStatus()
-  .duration(1)
+  .oneDuration()
   .on("dispose", (c, e) => e.entity.definition.type === "equipment")
   .usage(2)
   .generateDice(DiceType.Omni, 1)

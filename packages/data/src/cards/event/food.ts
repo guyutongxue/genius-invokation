@@ -1,4 +1,4 @@
-import { card, checkDamageSkillType, combatStatus } from "@gi-tcg/core/builder";
+import { DiceType, canDeductCostType, card, checkDamageSkillType, combatStatus } from "@gi-tcg/core/builder";
 import { Satiated } from "../../commons";
 
 /**
@@ -25,7 +25,9 @@ export const JueyunGuoba = card(333001)
 export const AdeptusTemptation = card(333002)
   .costVoid(2)
   .food()
-  // TODO
+  .toStatus("@targets.0")
+  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "burst"))
+  .increaseDamage(3)
   .done();
 
 /**
@@ -38,7 +40,9 @@ export const AdeptusTemptation = card(333002)
 export const LotusFlowerCrisp = card(333003)
   .costSame(1)
   .food()
-  // TODO
+  .toStatus("@targets.0")
+  .once("beforeDamaged")
+  .decreaseDamage(3)
   .done();
 
 /**
@@ -50,7 +54,12 @@ export const LotusFlowerCrisp = card(333003)
  */
 export const NorthernSmokedChicken = card(333004)
   .food()
-  // TODO
+  .toStatus("@targets.0")
+  .oneDuration()
+  .once("beforeUseDice", (c) => c.currentAction.type === "useSkill" &&
+    c.currentAction.skill.definition.skillType === "normal" &&
+    canDeductCostType(c, DiceType.Void))
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -62,7 +71,7 @@ export const NorthernSmokedChicken = card(333004)
  */
 export const SweetMadame = card(333005)
   .food()
-  // TODO
+  .heal(1, "@targets.0")
   .done();
 
 /**
@@ -88,7 +97,11 @@ export const MondstadtHashBrown = card(333006)
 export const MushroomPizza = card(333007)
   .costSame(1)
   .food()
-  // TODO
+  .heal(1, "@targets.0")
+  .toStatus("@targets.0")
+  .on("endPhase")
+  .usage(2)
+  .heal(1, "@master")
   .done();
 
 /**
@@ -101,7 +114,13 @@ export const MushroomPizza = card(333007)
 export const MintyMeatRolls = card(333008)
   .costSame(1)
   .food()
-  // TODO
+  .toStatus("@targets.0")
+  .oneDuration()
+  .on("beforeUseDice", (c) => c.currentAction.type === "useSkill" &&
+    c.currentAction.skill.definition.skillType === "normal" &&
+    canDeductCostType(c, DiceType.Void))
+  .usage(3)
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -111,7 +130,7 @@ export const MintyMeatRolls = card(333008)
  * 本回合无法通过「料理」复苏角色。
  */
 export const ReviveOnCooldown = combatStatus(303307)
-  .duration(1)
+  .oneDuration()
   .done();
 
 /**
@@ -141,7 +160,10 @@ export const TeyvatFriedEgg = card(333009)
 export const SashimiPlatter = card(333010)
   .costSame(1)
   .food()
-  // TODO
+  .toStatus("@targets.0")
+  .oneDuration()
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -168,8 +190,10 @@ export const TandooriRoastChicken = card(333011)
  */
 export const ButterCrab = card(333012)
   .costVoid(2)
-  .food()
-  // TODO
+  .food({ satiatedTarget: "all my characters" })
+  .toStatus("all my characters")
+  .once("beforeDamaged")
+  .decreaseDamage(2)
   .done();
 
 /**
@@ -181,8 +205,10 @@ export const ButterCrab = card(333012)
  */
 export const FishAndChips = card(333013)
   .costVoid(2)
-  .food()
-  // TODO
+  .food({ satiatedTarget: "all my characters" })
+  .toStatus("all my characters")
+  .once("beforeUseDice", (c) => c.currentAction.type === "useSkill")
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -195,5 +221,9 @@ export const FishAndChips = card(333013)
 export const MatsutakeMeatRolls = card(333014)
   .costSame(2)
   .tags("food")
-  // TODO
+  .heal(2, "@targets.0")
+  .toStatus("@targets.0")
+  .on("endPhase")
+  .usage(3)
+  .heal(1, "@master")
   .done();

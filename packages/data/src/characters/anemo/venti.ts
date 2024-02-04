@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType, DiceType, canSwitchDeductCost1, checkUseDiceSkillType, SkillHandle } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, DiceType, checkUseDiceSkillType, SkillHandle, canDeductCostType } from "@gi-tcg/core/builder";
 
 /**
  * @id 115034
@@ -21,8 +21,8 @@ export const Stormeye = summon(115034)
  * 本回合中，我方角色下次「普通攻击」少花费1个无色元素。
  */
 export const WindsOfHarmony = combatStatus(115033)
-  .duration(1)
-  .once("beforeUseDice", (c) => checkUseDiceSkillType(c, "normal"))
+  .oneDuration()
+  .once("beforeUseDice", (c) => checkUseDiceSkillType(c, "normal") && canDeductCostType(c, DiceType.Void))
   .deductCost(DiceType.Void, 1)
   .done();
 
@@ -34,7 +34,7 @@ export const WindsOfHarmony = combatStatus(115033)
  * 可用次数：2
  */
 export const Stormzone01 = combatStatus(115032)
-  .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  .on("beforeSwitchDeductDice")
   .usage(2)
   .deductCost(DiceType.Omni, 1)
   .combatStatus(WindsOfHarmony)
@@ -48,7 +48,7 @@ export const Stormzone01 = combatStatus(115032)
  * 可用次数：2
  */
 export const Stormzone = combatStatus(115031)
-  .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  .on("beforeSwitchDeductDice")
   .usage(2)
   .deductCost(DiceType.Omni, 1)
   .done();

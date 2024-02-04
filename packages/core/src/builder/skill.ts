@@ -10,6 +10,9 @@ import {
   TriggeredSkillDefinition,
   TriggeredSkillFilter,
   PlayCardInfo,
+  UseDiceModifier,
+  SwitchActiveInfo,
+  UseSkillInfo,
 } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
@@ -31,7 +34,11 @@ import {
   VariableOptions,
 } from "./entity";
 import { getEntityArea } from "../util";
-import { canSwitchFast } from "./util";
+import {
+  canPlayCardDeductCost,
+  canSwitchDeductCost,
+  canSwitchFast,
+} from "./util";
 
 type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
   ? T
@@ -155,18 +162,25 @@ const detailedEventDictionary = {
   beforeUseDice: defineDescriptor("onBeforeUseDice", (c, r) => {
     return checkRelative(c.state, { who: c.eventWho }, r);
   }),
-  beforeUseDiceCharacterSkillOrTalent: defineDescriptor(
-    "onBeforeUseDice",
-    (c, r) => {
-      if (c.currentAction.type === "useSkill") {
-        return checkRelative(c.state, c.currentAction.skill.caller.id, r);
-      } else if (c.currentAction.type === "playCard") {
-        return checkRelative(c.state, c.currentAction.target.ids[0], r);
-      } else {
-        return false;
-      }
-    },
-  ),
+  beforeSwitchDeductDice: defineDescriptor("onBeforeUseDice", (c, r) => {
+    return (
+      checkRelative(c.state, { who: c.eventWho }, r) && canSwitchDeductCost(c)
+    );
+  }),
+  beforePlayCardDeductDice: defineDescriptor("onBeforeUseDice", (c, r) => {
+    return (
+      checkRelative(c.state, { who: c.eventWho }, r) && canPlayCardDeductCost(c)
+    );
+  }),
+  beforeSkillOrTalentDeductDice: defineDescriptor("onBeforeUseDice", (c, r) => {
+    if (c.currentAction.type === "useSkill") {
+      return checkRelative(c.state, c.currentAction.skill.caller.id, r);
+    } else if (c.currentAction.type === "playCard") {
+      return checkRelative(c.state, c.currentAction.target.ids[0], r);
+    } else {
+      return false;
+    }
+  }),
   beforeSwitchFast: defineDescriptor("onBeforeUseDice", (c, r) => {
     return checkRelative(c.state, { who: c.eventWho }, r) && canSwitchFast(c);
   }),
@@ -266,14 +280,17 @@ const detailedEventDictionary = {
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideExtType = {
-  playCard: PlayCardInfo;
+  beforeSwitchDeductDice: UseDiceModifier<SwitchActiveInfo>;
+  beforePlayCardDeductDice: UseDiceModifier<PlayCardInfo>;
+  beforeSkillOrTalentDeductDice: UseDiceModifier<UseSkillInfo | PlayCardInfo>;
+  playCard: { eventArg: PlayCardInfo };
 };
 
 type DetailedEventDictionary = typeof detailedEventDictionary;
 export type DetailedEventNames = keyof DetailedEventDictionary;
 export type DetailedEventExt<E extends DetailedEventNames> =
   E extends keyof OverrideExtType
-    ? { eventArg: OverrideExtType[E] }
+    ? OverrideExtType[E]
     : EventExt<DetailedEventDictionary[E][0]>;
 
 export type SkillInfoGetter = () => SkillInfo;
@@ -506,21 +523,6 @@ export class TriggeredSkillBuilder<
   private _usageOpt: Required<UsageOptions> | null = null;
   private _listenTo: ListenTo = ListenTo.SameArea;
 
-  override do(op: SkillOperation<Ext, CallerType>): this {
-    // 设置了使用次数的技能，在没有剩余使用次数时不进行操作
-    if (this._usageOpt) {
-      const { name } = this._usageOpt;
-      return super.do((c, e) => {
-        if (c.self.getVariable(name) <= 0) {
-          return;
-        }
-        op(c, e);
-      });
-    } else {
-      return super.do(op);
-    }
-  }
-
   /**
    * 为实体创建名为 `usage` 的变量，表示剩余使用次数。
    * 在每次技能执行完毕后，若该变量计数达到 0，则不会触发操作。
@@ -551,6 +553,12 @@ export class TriggeredSkillBuilder<
       name,
       perRound,
       recreateMax: opt?.recreateMax ?? count,
+    };
+    // 增加“检查可用次数”的技能出发条件
+    const oldFilter = this._triggerFilter;
+    this._triggerFilter = (c, e) => {
+      if (!oldFilter(c, e)) return false;
+      return c.getVariable(name) > 0;
     };
     return this;
   }
@@ -602,7 +610,7 @@ export class TriggeredSkillBuilder<
           c.addVariable(name, -1);
         }
         // 带使用次数（非每回合重置的），次数耗尽时弃置
-        if (autoDispose && !perRound && c.self.getVariable(name) <= 0) {
+        if (autoDispose && !perRound && c.getVariable(name) <= 0) {
           c.dispose();
         }
       });

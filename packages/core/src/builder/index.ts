@@ -31,7 +31,6 @@ export {
   isReactionSwirl,
 } from "./reaction";
 export {
-  canSwitchDeductCost1,
   canDeductCostType,
   checkDamageSkillType,
   checkUseDiceSkillType,

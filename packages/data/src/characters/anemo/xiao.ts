@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType, DiceType, canDeductCostType, checkDamageSkillType, canSwitchDeductCost1, SkillHandle } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, canDeductCostType, checkDamageSkillType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115042
@@ -33,7 +33,7 @@ export const YakshasMask = status(115041)
   .increaseDamage(1)
   .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal") && c.player.canPlunging)
   .increaseDamage(2)
-  .on("beforeUseDice", (c) => c.self.master().isActive() && canSwitchDeductCost1(c))
+  .on("beforeSwitchDeductDice", (c) => c.self.master().isActive())
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("selfDispose")

@@ -13,7 +13,7 @@ export const LargeWindSpirit01 = summon(115012)
   .endPhaseDamage("swirledAnemo", 2)
   .usage(3)
   .on("beforeDealDamage", (c) => {
-    const color = c.self.getVariable("hintIcon");
+    const color = c.getVariable("hintIcon");
     return color !== DamageType.Anemo && color === c.damageInfo.type;
   })
   .increaseDamage(1)

@@ -24,7 +24,7 @@ export const LightfallSword = summon(111062)
   })
   .on("endPhase")
   .do((c) => {
-    c.damage(DamageType.Physical, 3 + c.self.getVariable("usage"));
+    c.damage(DamageType.Physical, 3 + c.getVariable("usage"));
     c.dispose()
   })
   .done();

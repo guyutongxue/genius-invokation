@@ -48,37 +48,38 @@
 
 为方便编写卡牌数据，不直接根据核心事件编写技能，而是根据筛选和细分后的细分事件名来编写；传入 `.on` builder chain 方法的是响应细分事件名。响应细分事件=响应核心事件+满足条件。
 
-| 事件名                                | 对应核心事件          | 条件                                      |
-| ------------------------------------- | --------------------- | ----------------------------------------- |
-| `roll`                                | `onRoll`              | **我方**掷骰时                            |
-| `beforeUseDice`                       | `onBeforeUseDice`     | **我方**用骰/设置快速行动时               |
-| `beforeUseDiceCharacterSkillOrTalent` | `onBeforeUseDice`     | 我方使用角色技能或打出天赋牌时            |
-| `beforeSwitchFast`                    | `onBeforeUseDice`     | 我方切换角色且切换角色行动不是快速行动时  |
-| `beforeDamageType`                    | `onBeforeDamage0`     | 我方/所附着角色造成伤害（第一次修改）     |
-| `beforeSkillDamageType`               | `onBeforeDamage0`     | 我方/所附着角色技能造成伤害（第一次修改） |
-| `beforeDealDamage`                    | `onBeforeDamage1`     | 我方/所附着角色造成伤害（第二次修改）     |
-| `beforeSkillDamage`                   | `onBeforeDamage1`     | 我方/所附着角色技能造成伤害（第二次修改） |
-| `beforeDamaged`                       | `onBeforeDamage1`     | 我方/所附着角色受到伤害（第二次修改）     |
-| `beforeDefeated`                      | `onBeforeDefeated`    | 我方/所附着角色免于被击倒                 |
-| `battleBegin`                         | `onBattleBegin`       | 等价                                      |
-| `actionPhase`                         | `onActionPhase`       | 等价                                      |
-| `endPhase`                            | `onEndPhase`          | 等价                                      |
-| `beforeAction`                        | `onBeforeAction`      | **我方**玩家行动前                        |
-| `replaceAction`                       | `onReplaceAction`     | 替换**我方**玩家行动                      |
-| `action`                              | `onAction`            | **我方**玩家行动后                        |
-| `playCard`                            | `onAction`            | 我方玩家打出手牌后                        |
-| `declareEnd`                          | `onDeclareEnd`        | 我方玩家宣布回合结束后                    |
-| `skill`                               | `onSkill`             | **我方**玩家使用**主动角色**技能后        |
-| `switchActive`                        | `onSwitchActive`      | 我方/所附着角色被切出/切入后              |
-| `dealDamage`                          | `onDamage`            | 我方/所附着角色造成伤害后                 |
-| `damaged`                             | `onDamage`            | 我方/所附着角色受到伤害后                 |
-| `healed`                              | `onHeal`              | 我方/所附着角色受到治疗后                 |
-| `elementalReaction`                   | `onElementalReaction` | 我方/所附着**角色上发生**元素伤害后       |
-| `enter`                               | `onEnter`             | 实体**自身**入场时                        |
-| `dispose`                             | `onDisposing`         | 我方实体弃置时                            |
-| `selfDispose`                         | `onDisposing`         | 实体**自身**弃置时                        |
-| `defeated`                            | `onDefeated`          | 我方/所附着角色倒下时                     |
-| `revive`                              | `onRevive`            | **我方**角色复苏时                        |
-
+| 事件名                          | 对应核心事件          | 条件                                      |
+| ------------------------------- | --------------------- | ----------------------------------------- |
+| `roll`                          | `onRoll`              | **我方**掷骰时                            |
+| `beforeUseDice`                 | `onBeforeUseDice`     | **我方**用骰/设置快速行动时               |
+| `beforeSkillOrTalentDeductDice` | `onBeforeUseDice`     | 我方尝试减少角色技能或打出天赋牌的骰子时  |
+| `beforeSwitchDeductDice`        | `onBeforeUseDice`     | 我方尝试减少切换角色行动的骰子时          |
+| `beforePlayCardDeductDice`      | `onBeforeUseDice`     | 我方尝试减少打出手牌的骰子时              |
+| `beforeSwitchFast`              | `onBeforeUseDice`     | 我方尝试设置切换角色行动为快速行动时      |
+| `beforeDamageType`              | `onBeforeDamage0`     | 我方/所附着角色造成伤害（第一次修改）     |
+| `beforeSkillDamageType`         | `onBeforeDamage0`     | 我方/所附着角色技能造成伤害（第一次修改） |
+| `beforeDealDamage`              | `onBeforeDamage1`     | 我方/所附着角色造成伤害（第二次修改）     |
+| `beforeSkillDamage`             | `onBeforeDamage1`     | 我方/所附着角色技能造成伤害（第二次修改） |
+| `beforeDamaged`                 | `onBeforeDamage1`     | 我方/所附着角色受到伤害（第二次修改）     |
+| `beforeDefeated`                | `onBeforeDefeated`    | 我方/所附着角色免于被击倒                 |
+| `battleBegin`                   | `onBattleBegin`       | 等价                                      |
+| `actionPhase`                   | `onActionPhase`       | 等价                                      |
+| `endPhase`                      | `onEndPhase`          | 等价                                      |
+| `beforeAction`                  | `onBeforeAction`      | **我方**玩家行动前                        |
+| `replaceAction`                 | `onReplaceAction`     | 替换**我方**玩家行动                      |
+| `action`                        | `onAction`            | **我方**玩家行动后                        |
+| `playCard`                      | `onAction`            | 我方玩家打出手牌后                        |
+| `declareEnd`                    | `onDeclareEnd`        | 我方玩家宣布回合结束后                    |
+| `skill`                         | `onSkill`             | **我方**玩家使用**主动角色**技能后        |
+| `switchActive`                  | `onSwitchActive`      | 我方/所附着角色被切出/切入后              |
+| `dealDamage`                    | `onDamage`            | 我方/所附着角色造成伤害后                 |
+| `damaged`                       | `onDamage`            | 我方/所附着角色受到伤害后                 |
+| `healed`                        | `onHeal`              | 我方/所附着角色受到治疗后                 |
+| `elementalReaction`             | `onElementalReaction` | 我方/所附着**角色上发生**元素伤害后       |
+| `enter`                         | `onEnter`             | 实体**自身**入场时                        |
+| `dispose`                       | `onDisposing`         | 我方实体弃置时                            |
+| `selfDispose`                   | `onDisposing`         | 实体**自身**弃置时                        |
+| `defeated`                      | `onDefeated`          | 我方/所附着角色倒下时                     |
+| `revive`                        | `onRevive`            | **我方**角色复苏时                        |
 
 上表所述“我方”，是指实体技能发起者的阵营，“我方所附着角色”是指若实体区域是角色的所在角色。该描述仅适用于默认的 [`.listenToXxx` 选项](./entity.md#监听范围)，对于 `.listenToPlayer`，会响应所有“我方”事件，对于 `.listenToAll`，会响应场上所有来源的事件。

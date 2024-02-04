@@ -8,7 +8,7 @@ import { status, combatStatus, summon, DamageType } from "@gi-tcg/core/builder";
  * 角色受到火元素伤害或物理伤害时，移除此效果，使该伤害+2。
  */
 export const Frozen = status(106)
-  .duration(1)
+  .oneDuration()
   .tags("disableSkill")
   .on("beforeDamaged", (c) => [DamageType.Pyro, DamageType.Physical].includes(c.damageInfo.type))
   .increaseDamage(1)
@@ -74,5 +74,5 @@ export const CatalyzingField = combatStatus(117)
  * 本回合无法食用更多「料理」
  */
 export const Satiated = status(303300)
-  .duration(1)
+  .oneDuration()
   .done();

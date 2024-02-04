@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType, canSwitchDeductCost1, DiceType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 112011
@@ -11,10 +11,7 @@ export const MelodyLoop = summon(112011)
   .endPhaseDamage(DamageType.Heal, 1, "all my characters")
   .usage(2)
   .apply(DamageType.Hydro, "active")
-  .on("beforeUseDice", (c) =>
-    c.$("my characters has equipment with definition id 212011") && // 装备有天赋的芭芭拉在场时
-    canSwitchDeductCost1(c)
-  )
+  .on("beforeSwitchDeductDice", (c) => c.$("my characters has equipment with definition id 212011")) // 装备有天赋的芭芭拉在场时
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .done();

@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType, canSwitchDeductCost1, DiceType, checkDamageSkillType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, checkDamageSkillType } from "@gi-tcg/core/builder";
 
 /**
  * @id 115062
@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType, canSwitchDeductCost1, DiceT
  * 可用次数：1
  */
 export const Descent = status(115062)
-  .on("beforeUseDice", (c) => c.self.master().isActive() && canSwitchDeductCost1(c))
+  .on("beforeSwitchDeductDice", (c) => c.self.master().isActive())
   .deductCost(DiceType.Omni, 1)
   .on("switchActive", (c, e) => c.self.master().id === e.from.id)
   .usage(1)

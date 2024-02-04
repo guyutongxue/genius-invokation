@@ -1,4 +1,4 @@
-import { DiceType, card, canDeductCostType } from "@gi-tcg/core/builder";
+import { DiceType, card, canDeductCostType, getReaction, checkDamageSkillType, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 312101
@@ -10,7 +10,7 @@ import { DiceType, card, canDeductCostType } from "@gi-tcg/core/builder";
 export const BrokenRimesEcho = card(312101)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Cryo))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Cryo))
   .usagePerRound(1)
   .deductCost(DiceType.Cryo, 1)
   .done();
@@ -25,7 +25,7 @@ export const BrokenRimesEcho = card(312101)
 export const WinestainedTricorne = card(312201)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Hydro))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Hydro))
   .usagePerRound(1)
   .deductCost(DiceType.Hydro, 1)
   .done();
@@ -40,7 +40,7 @@ export const WinestainedTricorne = card(312201)
 export const WitchsScorchingHat = card(312301)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Pyro))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Pyro))
   .usagePerRound(1)
   .deductCost(DiceType.Pyro, 1)
   .done();
@@ -55,7 +55,7 @@ export const WitchsScorchingHat = card(312301)
 export const ThunderSummonersCrown = card(312401)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Electro))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Electro))
   .usagePerRound(1)
   .deductCost(DiceType.Electro, 1)
   .done();
@@ -70,7 +70,7 @@ export const ThunderSummonersCrown = card(312401)
 export const ViridescentVenerersDiadem = card(312501)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Anemo))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Anemo))
   .usagePerRound(1)
   .deductCost(DiceType.Anemo, 1)
   .done();
@@ -85,7 +85,7 @@ export const ViridescentVenerersDiadem = card(312501)
 export const MaskOfSolitudeBasalt = card(312601)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Geo))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Geo))
   .usagePerRound(1)
   .deductCost(DiceType.Geo, 1)
   .done();
@@ -100,7 +100,7 @@ export const MaskOfSolitudeBasalt = card(312601)
 export const LaurelCoronet = card(312701)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", (c) => canDeductCostType(c, DiceType.Dendro))
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Dendro))
   .usagePerRound(1)
   .deductCost(DiceType.Dendro, 1)
   .done();
@@ -116,7 +116,10 @@ export const LaurelCoronet = card(312701)
 export const BlizzardStrayer = card(312102)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Cryo))
+  .deductCost(DiceType.Cryo, 1)
+  .on("roll")
+  .fixDice(DiceType.Cryo, 2)
   .done();
 
 /**
@@ -130,7 +133,10 @@ export const BlizzardStrayer = card(312102)
 export const HeartOfDepth = card(312202)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Hydro))
+  .deductCost(DiceType.Hydro, 1)
+  .on("roll")
+  .fixDice(DiceType.Hydro, 2)
   .done();
 
 /**
@@ -144,7 +150,10 @@ export const HeartOfDepth = card(312202)
 export const CrimsonWitchOfFlames = card(312302)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Pyro))
+  .deductCost(DiceType.Pyro, 1)
+  .on("roll")
+  .fixDice(DiceType.Pyro, 2)
   .done();
 
 /**
@@ -158,7 +167,10 @@ export const CrimsonWitchOfFlames = card(312302)
 export const ThunderingFury = card(312402)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Electro))
+  .deductCost(DiceType.Electro, 1)
+  .on("roll")
+  .fixDice(DiceType.Electro, 2)
   .done();
 
 /**
@@ -172,7 +184,10 @@ export const ThunderingFury = card(312402)
 export const ViridescentVenerer = card(312502)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Anemo))
+  .deductCost(DiceType.Anemo, 1)
+  .on("roll")
+  .fixDice(DiceType.Anemo, 2)
   .done();
 
 /**
@@ -186,7 +201,10 @@ export const ViridescentVenerer = card(312502)
 export const ArchaicPetra = card(312602)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Geo))
+  .deductCost(DiceType.Geo, 1)
+  .on("roll")
+  .fixDice(DiceType.Geo, 2)
   .done();
 
 /**
@@ -200,7 +218,10 @@ export const ArchaicPetra = card(312602)
 export const DeepwoodMemories = card(312702)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => canDeductCostType(c, DiceType.Dendro))
+  .deductCost(DiceType.Dendro, 1)
+  .on("roll")
+  .fixDice(DiceType.Dendro, 2)
   .done();
 
 /**
@@ -213,7 +234,9 @@ export const DeepwoodMemories = card(312702)
 export const AdventurersBandana = card(312001)
   .costSame(1)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .usagePerRound(3)
+  .heal(1, "@master")
   .done();
 
 /**
@@ -226,7 +249,9 @@ export const AdventurersBandana = card(312001)
 export const LuckyDogsSilverCirclet = card(312002)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "elemental")
+  .usagePerRound(1)
+  .heal(2, "@master")
   .done();
 
 /**
@@ -239,7 +264,9 @@ export const LuckyDogsSilverCirclet = card(312002)
 export const TravelingDoctorsHandkerchief = card(312003)
   .costSame(1)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "burst")
+  .usagePerRound(1)
+  .heal(1, "all my characters")
   .done();
 
 /**
@@ -252,7 +279,10 @@ export const TravelingDoctorsHandkerchief = card(312003)
 export const GamblersEarrings = card(312004)
   .costSame(1)
   .artifact()
-  // TODO
+  .on("defeated", (c, e) => c.self.master().isActive() && !c.of(e.character).isMine())
+  .listenToAll()
+  .usage(3, { autoDispose: false })
+  .generateDice(DiceType.Omni, 2)
   .done();
 
 /**
@@ -265,7 +295,11 @@ export const GamblersEarrings = card(312004)
 export const InstructorsCap = card(312005)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("dealDamage", (c, e) => getReaction(e))
+  .usagePerRound(3)
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+  })
   .done();
 
 /**
@@ -278,7 +312,9 @@ export const InstructorsCap = card(312005)
 export const ExilesCirclet = card(312006)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "burst")
+  .usagePerRound(1)
+  .gainEnergy(1, "my standby")
   .done();
 
 /**
@@ -291,7 +327,9 @@ export const ExilesCirclet = card(312006)
 export const OrnateKabuto = card(312007)
   .costSame(1)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.caller.id !== c.self.master().id && e.definition.skillType === "burst")
+  .listenToPlayer()
+  .gainEnergy(1, "@master")
   .done();
 
 /**
@@ -305,7 +343,22 @@ export const OrnateKabuto = card(312007)
 export const EmblemOfSeveredFate = card(312008)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.caller.id !== c.self.master().id && e.definition.skillType === "burst")
+  .listenToPlayer()
+  .gainEnergy(1, "@master")
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "burst"))
+  .usagePerRound(1)
+  .increaseDamage(2)
+  .done();
+
+/**
+ * @id 301201
+ * @name 重嶂不移
+ * @description
+ * 提供2点护盾，保护所附属的角色。
+ */
+export const UnmovableMountain = status(301201)
+  .shield(2)
   .done();
 
 /**
@@ -318,7 +371,8 @@ export const EmblemOfSeveredFate = card(312008)
 export const GeneralsAncientHelm = card(312009)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("actionPhase")
+  .characterStatus(UnmovableMountain)
   .done();
 
 /**
@@ -332,7 +386,13 @@ export const GeneralsAncientHelm = card(312009)
 export const TenacityOfTheMillelith = card(312010)
   .costSame(3)
   .artifact()
-  // TODO
+  .on("actionPhase")
+  .characterStatus(UnmovableMountain)
+  .on("damaged", (c) => c.self.master().isActive())
+  .usagePerRound(1)
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+  })
   .done();
 
 /**
@@ -345,7 +405,22 @@ export const TenacityOfTheMillelith = card(312010)
 export const ThunderingPoise = card(312011)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => 
+    !(c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType !== "normal"))
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
+  .done();
+
+/**
+ * @id 301203
+ * @name 辰砂往生录（生效中）
+ * @description
+ * 本回合中，角色「普通攻击」造成的伤害+1。
+ */
+const VermillionHereafterEffect = status(301203)
+  .oneDuration()
+  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -359,7 +434,12 @@ export const ThunderingPoise = card(312011)
 export const VermillionHereafter = card(312012)
   .costVoid(3)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => 
+    !(c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType !== "normal"))
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
+  .on("switchActive", (c, e) => c.self.master().id === e.to.id)
+  .characterStatus(VermillionHereafterEffect)
   .done();
 
 /**
@@ -372,7 +452,10 @@ export const VermillionHereafter = card(312012)
 export const CapriciousVisage = card(312013)
   .costVoid(2)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => 
+    !(c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType !== "elemental"))
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -386,7 +469,14 @@ export const CapriciousVisage = card(312013)
 export const ShimenawasReminiscence = card(312014)
   .costVoid(3)
   .artifact()
-  // TODO
+  .on("beforeSkillOrTalentDeductDice", (c) => 
+    !(c.currentAction.type === "useSkill" && c.currentAction.skill.definition.skillType !== "elemental"))
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
+  .on("beforeSkillDamage", (c) =>
+    c.self.master().energy >= 2 &&
+    (checkDamageSkillType(c, "normal") || checkDamageSkillType(c, "elemental")))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -400,7 +490,24 @@ export const ShimenawasReminiscence = card(312014)
 export const CrownOfWatatsumi = card(312015)
   .costSame(1)
   .artifact()
-  // TODO
+  .variable("healedPts", 0, { visible: false })
+  .variable("bubble", 0)
+  .on("healed")
+  .do((c, e) => {
+    c.addVariable("healedPts", e.finalValue);
+    const totalPts = c.getVariable("healedPts");
+    const generatedBubbleCount = Math.floor(totalPts / 3);
+    const restPts = totalPts % 3;
+    const currentBubbleCount = c.getVariable("bubble");
+    c.setVariable("bubble", Math.min(2, currentBubbleCount + generatedBubbleCount));
+    c.setVariable("healedPts", restPts);
+  })
+  .on("beforeDealDamage")
+  .do((c) => {
+    const bubbleCount = c.getVariable("bubble");
+    c.setVariable("bubble", 0);
+    c.increaseDamage(bubbleCount);
+  })
   .done();
 
 /**
@@ -415,7 +522,26 @@ export const CrownOfWatatsumi = card(312015)
 export const OceanhuedClam = card(312016)
   .costVoid(3)
   .artifact()
-  // TODO
+  .variable("healedPts", 0, { visible: false })
+  .variable("bubble", 0)
+  .on("enter")
+  .heal(2, "@master")
+  .on("healed")
+  .do((c, e) => {
+    c.addVariable("healedPts", e.finalValue);
+    const totalPts = c.getVariable("healedPts");
+    const generatedBubbleCount = Math.floor(totalPts / 3);
+    const restPts = totalPts % 3;
+    const currentBubbleCount = c.getVariable("bubble");
+    c.setVariable("bubble", Math.min(2, currentBubbleCount + generatedBubbleCount));
+    c.setVariable("healedPts", restPts);
+  })
+  .on("beforeDealDamage")
+  .do((c) => {
+    const bubbleCount = c.getVariable("bubble");
+    c.setVariable("bubble", 0);
+    c.increaseDamage(bubbleCount);
+  })
   .done();
 
 /**
@@ -429,7 +555,12 @@ export const OceanhuedClam = card(312016)
 export const ShadowOfTheSandKing = card(312017)
   .costSame(1)
   .artifact()
-  // TODO
+  .on("enter")
+  .drawCards(1)
+  .on("damaged", (c, e) => !c.of(e.target).isMine() && getReaction(e))
+  .listenToAll()
+  .usagePerRound(1)
+  .drawCards(1)
   .done();
 
 /**
@@ -443,7 +574,18 @@ export const ShadowOfTheSandKing = card(312017)
 export const GildedDreams = card(312018)
   .costVoid(3)
   .artifact()
-  // TODO
+  .on("enter")
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+    const elementKinds = new Set(c.$$("my characters include defeated").map((ch) => ch.element()));
+    if (elementKinds.size >= 3) {
+      c.generateDice(DiceType.Omni, 1);
+    }
+  })
+  .on("damaged", (c, e) => !c.of(e.target).isMine() && getReaction(e))
+  .listenToAll()
+  .usagePerRound(2)
+  .drawCards(1)
   .done();
 
 /**
@@ -455,7 +597,8 @@ export const GildedDreams = card(312018)
  */
 export const FlowingRings = card(312019)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .drawCards(1)
   .done();
 
 /**
@@ -469,7 +612,16 @@ export const FlowingRings = card(312019)
 export const EchoesOfAnOffering = card(312020)
   .costSame(2)
   .artifact()
-  // TODO
+  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .usagePerRound(1)
+  .drawCards(1)
+  .on("skill")
+  .usagePerRound(1)
+  .do((c) => {
+    if (c.player.dice.length <= c.player.hands.length) {
+      c.generateDice(c.self.master().element(), 1);
+    }
+  })
   .done();
 
 /**
@@ -481,7 +633,9 @@ export const EchoesOfAnOffering = card(312020)
  */
 export const HeartOfKhvarenasBrilliance = card(312021)
   .artifact()
-  // TODO
+  .on("damaged", (c) => c.self.master().isActive())
+  .usagePerRound(1)
+  .drawCards(1)
   .done();
 
 /**
@@ -494,7 +648,14 @@ export const HeartOfKhvarenasBrilliance = card(312021)
 export const VourukashasGlow = card(312022)
   .costSame(1)
   .artifact()
-  // TODO
+  .variable("shouldHeal", 0)
+  .on("damaged", (c) => c.self.master().isActive())
+  .usagePerRound(1)
+  .addVariable("shouldHeal", 1)
+  .drawCards(1)
+  .on("endPhase", (c) => c.getVariable("shouldHeal"))
+  .heal(1, "@master")
+  .setVariable("shouldHeal", 0)
   .done();
 
 /**
@@ -509,5 +670,27 @@ export const VourukashasGlow = card(312022)
 export const VeteransVisage = card(312023)
   .costVoid(2)
   .artifact()
-  // TODO
+  .variable("triggered", 0)
+  .on("actionPhase")
+  .setVariable("triggered", 0)
+  .on("damaged")
+  .do((c) => {
+    c.addVariable("triggered", 1);
+    const triggered = c.getVariable("triggered");
+    if (triggered === 1) {
+      c.generateDice(c.self.master().element(), 1);
+    } else if (triggered === 2) {
+      c.drawCards(1);
+    }
+  })
+  .on("healed")
+  .do((c) => {
+    c.addVariable("triggered", 1);
+    const triggered = c.getVariable("triggered");
+    if (triggered === 1) {
+      c.generateDice(c.self.master().element(), 1);
+    } else if (triggered === 2) {
+      c.drawCards(1);
+    }
+  })
   .done();

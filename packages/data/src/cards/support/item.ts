@@ -1,4 +1,4 @@
-import { DamageType, DiceType, canSwitchDeductCost1, card } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card } from "@gi-tcg/core/builder";
 
 /**
  * @id 323001
@@ -19,16 +19,16 @@ export const ParametricTransformer = card(323001)
       c.setVariable("currentSkill", c.currentAction.skill.definition.id);
     }
   })
-  .on("dealDamage", (c, e) => c.self.getVariable("currentSkill") &&
+  .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
     (e.type !== DamageType.Physical && e.type !== DamageType.Piercing))
   .listenToAll()
   .setVariable("hasProgress", 1)
-  .on("skill", (c, e) => e.definition.id === c.self.getVariable("currentSkill"))
+  .on("skill", (c, e) => e.definition.id === c.getVariable("currentSkill"))
   .listenToAll()
   .do((c) => {
-    if (c.self.getVariable("hasProgress")) {
+    if (c.getVariable("hasProgress")) {
       c.self.addVariable("progress", 1);
-      if (c.self.getVariable("progress") >= 3) {
+      if (c.getVariable("progress") >= 3) {
         c.generateDice("randomElement", 3);
         c.dispose();
       }
@@ -65,7 +65,7 @@ export const RedFeatherFan = card(323003)
   .costSame(2)
   .support("item")
   .on("beforeUseDice", (c) => c.currentAction.type === "switchActive" &&
-    (!c.currentFast || canSwitchDeductCost1(c)))
+    (!c.currentFast || c.currentCost.length > 0))
   .setFastAction()
   .deductCost(DiceType.Omni, 1)
   .done();
@@ -83,7 +83,7 @@ export const TreasureseekingSeelie = card(323004)
   .on("skill")
   .addVariable("clue", 1)
   .do((c) => {
-    if (c.self.getVariable("clue") >= 3) {
+    if (c.getVariable("clue") >= 3) {
       c.drawCards(3);
       c.dispose();
     }
@@ -99,8 +99,7 @@ export const TreasureseekingSeelie = card(323004)
  */
 export const SeedDispensary = card(323005)
   .support("item")
-  .on("beforeUseDice", (c) => c.currentAction.type === "playCard" &&
-    c.currentAction.card.definition.skillDefinition.requiredCost.length === 1 &&
+  .on("beforePlayCardDeductDice", (c) => c.currentAction.card.definition.skillDefinition.requiredCost.length === 1 &&
     ["equipment", "support"].includes(c.currentAction.card.definition.type))
   .deductCost(DiceType.Omni, 1)
   .usage(2)
@@ -117,14 +116,8 @@ export const MementoLens = card(323006)
   .costSame(1)
   .support("item")
   .variable("totalUsage", 2)
-  .on("beforeUseDice", (c) => {
-    const { currentAction, currentCost } = c;
-    if (currentAction.type !== "playCard") {
-      return false;
-    }
-    if (currentCost.length === 0) {
-      return false;
-    }
+  .on("beforePlayCardDeductDice", (c) => {
+    const { currentAction } = c;
     const tags = ["weapon", "artifact", "place", "ally"] as const;
     if (tags.every((tag) => !currentAction.card.definition.tags.includes(tag))) {
       return false;
@@ -139,7 +132,7 @@ export const MementoLens = card(323006)
   .do((c) => {
     c.deductCost(DiceType.Omni, 2);
     c.addVariable("totalUsage", -1);
-    if (c.self.getVariable("totalUsage") <= 0) {
+    if (c.getVariable("totalUsage") <= 0) {
       c.dispose();
     }
   })

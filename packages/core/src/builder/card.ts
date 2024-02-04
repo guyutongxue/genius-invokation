@@ -54,7 +54,7 @@ interface CardTargetExt<TargetKindTs extends CardTargetKind> {
 
 type PredFn<KindTs extends CardTargetKind> = (
   ctx: ExtendedSkillContext<true, CardTargetExt<KindTs>, "character">,
-) => boolean;
+) => unknown;
 
 type TargetQuery = `${string}character${string}` | `${string}summon${string}`;
 type TargetKindOfQuery<Q extends TargetQuery> =

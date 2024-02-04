@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card, checkCardTag } from "@gi-tcg/core/builder";
 
 /**
  * @id 330001
@@ -9,7 +9,11 @@ import { card } from "@gi-tcg/core/builder";
  */
 export const AncientCourtyard = card(330001)
   .legend()
-  // TODO
+  .filter((c) => c.$("my character has equipment with tag (weapon) or my character has equipment with tag (artifact)"))
+  .toCombatStatus(300001)
+  .oneDuration()
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon") || checkCardTag(c, "artifact"))
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -21,7 +25,8 @@ export const AncientCourtyard = card(330001)
  */
 export const CovenantOfRock = card(330002)
   .legend()
-  // TODO
+  .filter((c) => c.player.dice.length === 0)
+  .generateDice("randomElement", 2)
   .done();
 
 /**
@@ -33,7 +38,11 @@ export const CovenantOfRock = card(330002)
  */
 export const JoyousCelebration = card(330003)
   .legend()
-  // TODO
+  .filter((c) => [DiceType.Cryo, DiceType.Hydro, DiceType.Pyro, DiceType.Electro, DiceType.Dendro].includes(c.$("my active")!.element()))
+  .do((c) => {
+    const element = c.$("my active")!.element() as 1 | 2 | 3 | 4 | 7;
+    c.$$("my character with aura != 0").forEach((ch) => ch.apply(element))
+  })
   .done();
 
 
@@ -47,7 +56,18 @@ export const JoyousCelebration = card(330003)
  */
 export const FreshWindOfFreedom = card(330004)
   .legend()
-  // TODO
+  .toCombatStatus(300002)
+  .on("defeated", (c, e) => c.state.phase === "action" && c.isMyTurn() && !c.of(e.character).isMine())
+  .listenToAll()
+  .usage(1)
+  .do((c) => {
+    c.mutate({
+      type: "setPlayerFlag",
+      who: (1 - c.self.who) as 0 | 1,
+      flagName: "skipNextTurn",
+      value: true
+    });
+  })
   .done();
 
 /**

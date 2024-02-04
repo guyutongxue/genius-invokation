@@ -149,6 +149,9 @@ interface SkillContext {
   // 获取执行此技能的发起者 self 的便利对象
   self: Context-of-CallerType;
 
+  // 获取发起者的状态变量
+  getVariable(prop: string): number;
+
   // 进行实体查询。只返回查询的首个实体，若没有返回 null
   $(arg): AnyContext | null;
 
@@ -182,6 +185,7 @@ interface CharacterContext {
   id: number;            // 实体 id
   state: CharacterState; // 当前角色状态对象
   health: number;        // 角色生命值
+  energy: number;        // 角色能量值
   aura: Aura;            // 角色当前附着元素
 
   // 角色位于第几个（0-起始）

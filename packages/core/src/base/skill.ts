@@ -29,7 +29,7 @@ export interface InitiativeSkillDefinition<Arg = void>
 
 export interface RollModifier {
   readonly eventWho: 0 | 1;
-  fixDice(...dice: DiceType[]): void;
+  fixDice(type: DiceType, count: number): void;
   addRerollCount(count: number): void;
 }
 
@@ -43,12 +43,12 @@ export class RollModifierImpl implements RollModifier {
     this._caller = caller;
   }
 
-  fixDice(...dice: DiceType[]): void {
+  fixDice(type: DiceType, count: number): void {
     if (this._caller === null) {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) fix dice ${dice}.\n`;
-    this._fixedDice.push(...dice);
+    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) fix ${count} dice ${type}.\n`;
+    this._fixedDice.push(...Array(count).fill(type));
   }
 
   addRerollCount(count: number): void {
@@ -60,9 +60,9 @@ export class RollModifierImpl implements RollModifier {
   }
 }
 
-export interface UseDiceModifier {
+export interface UseDiceModifier<A extends ActionInfoBase = ActionInfoBase> {
   readonly eventWho: 0 | 1;
-  readonly currentAction: ActionInfo;
+  readonly currentAction: WithActionDetail<A>;
   readonly currentCost: readonly DiceType[];
   readonly currentFast: boolean;
   addCost(type: DiceType, count: number): void;
@@ -329,16 +329,17 @@ export interface DeclareEndInfo {
   readonly who: 0 | 1;
 }
 
-export type ActionInfo = (
+export type ActionInfoBase =
   | UseSkillInfo
   | PlayCardInfo
   | SwitchActiveInfo
   | ElementalTuningInfo
-  | DeclareEndInfo
-) & {
+  | DeclareEndInfo;
+export type WithActionDetail<T extends ActionInfoBase> = T & {
   readonly cost: readonly DiceType[];
   readonly fast: boolean;
 };
+export type ActionInfo = WithActionDetail<ActionInfoBase>; 
 
 type NULL = Record<never, never>;
 

@@ -20,14 +20,25 @@ export function canSwitchFast(c: UseDiceModifier) {
 }
 
 /**
- * 检查该实体是否可以执行“切换角色行动减少1元素骰”
+ * 检查该实体是否可以执行“切换角色行动减少元素骰”
  *
  * 若当前行动不是切换角色，或者切换角色已经不消耗骰子时，返回 `false`。
  * @param c `"beforeUseDice"` 的 `SkillContext`
  * @returns
  */
-export function canSwitchDeductCost1(c: UseDiceModifier) {
+export function canSwitchDeductCost(c: UseDiceModifier) {
   return c.currentAction.type === "switchActive" && c.currentCost.length >= 1;
+}
+
+/**
+ * 检查该实体是否可以执行“打出手牌行动减少元素骰”
+ *
+ * 若当前行动不是打出手牌，或者切换角色已经不消耗骰子时，返回 `false`。
+ * @param c `"beforeUseDice"` 的 `SkillContext`
+ * @returns
+ */
+export function canPlayCardDeductCost(c: UseDiceModifier) {
+  return c.currentAction.type === "playCard" && c.currentCost.length >= 1;
 }
 
 /**

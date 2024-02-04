@@ -106,9 +106,12 @@ export class EntityBuilder<
     return this;
   }
 
-  duration(count: number): this {
-    this.variable("duration", count);
+  duration(count: number, opt?: VariableOptions): this {
+    this.variable("duration", count, opt);
     return this;
+  }
+  oneDuration(opt?: VariableOptions): this {
+    return this.duration(1, { ...opt, visible: false });
   }
 
   shield(count: number, max?: number) {
@@ -116,7 +119,7 @@ export class EntityBuilder<
     return this.variable("shield", count, { recreateMax: max })
       .on("beforeDamaged")
       .do((c) => {
-        const shield = c.self.getVariable("shield");
+        const shield = c.getVariable("shield");
         const currentValue = c.damageInfo.value;
         const decreased = Math.min(shield, currentValue);
         c.decreaseDamage(decreased);

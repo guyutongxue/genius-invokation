@@ -598,6 +598,14 @@ export class SkillContext<
     }
   }
 
+  getVariable(prop: string, target?: CharacterState | EntityState) {
+    if (target) {
+      return this.of(target).getVariable(prop);
+    } else {
+      return this.self.getVariable(prop);
+    }
+  }
+
   setVariable(
     prop: string,
     value: number,
@@ -924,6 +932,9 @@ export class CharacterContext<
 
   get health() {
     return this.state.variables.health;
+  }
+  get energy() {
+    return this.state.variables.energy;
   }
   get aura() {
     return this.state.variables.aura;

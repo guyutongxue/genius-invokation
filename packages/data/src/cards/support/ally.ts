@@ -49,10 +49,10 @@ export const Timaeus = card(322003)
   })
   .on("endPhase")
   .addVariable("material", 1)
-  .on("beforeUseDice", (c) => checkCardTag(c, "artifact"))
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "artifact"))
   .usagePerRound(1)
   .do((c) => {
-    if (c.self.getVariable("material") >= c.currentCost.length) {
+    if (c.getVariable("material") >= c.currentCost.length) {
       c.addVariable("material", -c.currentCost.length);
       for (const d of c.currentCost) {
         c.deductCost(d, 1);
@@ -83,10 +83,10 @@ export const Wagner = card(322004)
   })
   .on("endPhase")
   .addVariable("material", 1)
-  .on("beforeUseDice", (c) => checkCardTag(c, "weapon"))
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon"))
   .usagePerRound(1)
   .do((c) => {
-    if (c.self.getVariable("material") >= c.currentCost.length) {
+    if (c.getVariable("material") >= c.currentCost.length) {
       c.addVariable("material", -c.currentCost.length);
       for (const d of c.currentCost) {
         c.deductCost(d, 1);
@@ -122,7 +122,7 @@ export const ChefMao = card(322005)
 export const Tubby = card(322006)
   .costSame(2)
   .support("ally")
-  .on("beforeUseDice", (c) => checkCardTag(c, "place"))
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "place"))
   .deductCost(DiceType.Omni, 2)
   .done();
 
@@ -138,7 +138,7 @@ export const Timmie = card(322007)
   .on("actionPhase")
   .do((c) => {
     c.self.addVariable("pigeon", 1);
-    if (c.self.getVariable("pigeon") === 3) {
+    if (c.getVariable("pigeon") === 3) {
       c.drawCards(1);
       c.generateDice(DiceType.Omni, 1);
       c.dispose();
@@ -158,12 +158,12 @@ export const Liben = card(322008)
   .variable("collected", 0)
   .on("endPhase")
   .do((c) => {
-    const absorbed = c.absorbDice("diff", 3 - c.self.getVariable("collected"));
+    const absorbed = c.absorbDice("diff", 3 - c.getVariable("collected"));
     c.addVariable("collected", absorbed.length);
   })
   .on("actionPhase")
   .do((c) => {
-    if (c.self.getVariable("collected") >= 3) {
+    if (c.getVariable("collected") >= 3) {
       c.drawCards(2);
       c.generateDice(DiceType.Omni, 2);
       c.dispose();
@@ -189,19 +189,19 @@ export const ChangTheNinth = card(322009)
       c.setVariable("currentSkill", c.currentAction.skill.definition.id);
     }
   })
-  .on("dealDamage", (c, e) => c.self.getVariable("currentSkill") &&
+  .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
     (e.type === DamageType.Physical || e.type === DamageType.Piercing))
   .listenToAll()
   .setVariable("hasInspiration", 1)
-  .on("elementalReaction", (c, e) => c.self.getVariable("currentSkill"))
+  .on("elementalReaction", (c, e) => c.getVariable("currentSkill"))
   .listenToAll()
   .setVariable("hasInspiration", 1)
-  .on("skill", (c, e) => e.definition.id === c.self.getVariable("currentSkill"))
+  .on("skill", (c, e) => e.definition.id === c.getVariable("currentSkill"))
   .listenToAll()
   .do((c) => {
-    if (c.self.getVariable("hasInspiration")) {
+    if (c.getVariable("hasInspiration")) {
       c.self.addVariable("inspiration", 1);
-      if (c.self.getVariable("inspiration") >= 3) {
+      if (c.getVariable("inspiration") >= 3) {
         c.drawCards(2);
         c.dispose();
       }
@@ -281,13 +281,12 @@ export const Hanachirusato = card(322013)
   .on("dispose", (c, e) => e.entity.definition.type === "summon")
   .listenToAll()
   .do((c) => {
-    if (c.self.getVariable("progress") < 3) {
+    if (c.getVariable("progress") < 3) {
       c.addVariable("progress", 1);
     }
   })
-  .on("beforeUseDice", (c) => c.currentCost.length > 0 &&
-    (checkCardTag(c, "weapon") || checkCardTag(c, "artifact")) &&
-    c.self.getVariable("progress") >= 3)
+  .on("beforePlayCardDeductDice", (c) => (checkCardTag(c, "weapon") || checkCardTag(c, "artifact")) &&
+    c.getVariable("progress") >= 3)
   .deductCost(DiceType.Omni, 2)
   .dispose()
   .done();
@@ -319,7 +318,7 @@ export const KidKujirai = card(322014)
 export const Xudong = card(322015)
   .costVoid(2)
   .support("ally")
-  .on("beforeUseDice", (c) => checkCardTag(c, "food") && c.currentCost.length > 0)
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "food"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 2)
   .done();
@@ -334,7 +333,7 @@ export const Xudong = card(322015)
 export const Dunyarzad = card(322016)
   .costSame(1)
   .support("ally")
-  .on("beforeUseDice", (c) => checkCardTag(c, "ally") && c.currentCost.length > 0)
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "ally"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("playCard", (c, e) => e.card.definition.tags.includes("ally"))
@@ -368,7 +367,7 @@ export const Rana = card(322017)
 export const MasterZhang = card(322018)
   .costSame(1)
   .support("ally")
-  .on("beforeUseDice", (c) => checkCardTag(c, "weapon") && c.currentCost.length > 0)
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon"))
   .usagePerRound(1)
   .do((c) => {
     const weaponedCh = c.$$("my characters has equipment with tag (weapon)").length;
@@ -404,7 +403,7 @@ export const Setaria = card(322019)
 export const YayoiNanatsuki = card(322020)
   .costSame(1)
   .support("ally")
-  .on("beforeUseDice", (c) => checkCardTag(c, "artifact") && c.currentCost.length > 0)
+  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "artifact"))
   .usagePerRound(1)
   .do((c) => {
     const artifactedCh = c.$$("my characters has equipment with tag (artifact)").length;
@@ -451,13 +450,13 @@ export const Jeht = card(322022)
     e.card.definition.type === "support" && // 当打出支援牌且支援区曾经是满的，发生一次弃置
     c.player.supports.length === c.state.config.maxSupports)
   .do((c) => {
-    if (c.self.getVariable("experience") < 6) {
+    if (c.getVariable("experience") < 6) {
       c.addVariable("experience", 1);
     }
   })
   .on("skill", (c, e) => e.definition.skillType === "burst")
   .do((c) => {
-    const exp = c.self.getVariable("experience");
+    const exp = c.getVariable("experience");
     if (exp >= 5) {
       c.generateDice(DiceType.Omni, exp - 2);
       c.dispose();
@@ -483,17 +482,17 @@ export const SilverAndMelus = card(322023)
   .listenToAll()
   .do((c, e) => {
     const bit = 1 << e.type;
-    const current = c.self.getVariable("bitset");
+    const current = c.getVariable("bitset");
     if ((current & bit) === 0) {
       c.setVariable("bitset", current | bit);
-      if (c.self.getVariable("count") < 4) {
+      if (c.getVariable("count") < 4) {
         c.addVariable("count", 1);
       }
     }
   })
   .on("endPhase")
   .do((c) => {
-    const count = c.self.getVariable("count");
+    const count = c.getVariable("count");
     if (count >= 3) {
       c.drawCards(count);
       c.dispose();
