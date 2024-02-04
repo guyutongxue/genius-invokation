@@ -141,6 +141,6 @@ export const LaSignora = character(2102)
  */
 export const PainForPain = card(221021)
   .costSame(3)
-  .talent(LaSignora)
+  .talent(LaSignora, "active")
   // TODO
   .done();

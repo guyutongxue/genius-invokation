@@ -84,6 +84,6 @@ export const Lisa = character(1409)
  */
 export const PulsatingWitch = card(214091)
   .costElectro(1)
-  .talent(Lisa)
+  .talent(Lisa, "none")
   // TODO
   .done();

@@ -105,6 +105,6 @@ export const CryoHypostasis = character(2103)
  */
 export const SternfrostPrism = card(221031)
   .costCryo(1)
-  .talent(CryoHypostasis)
+  .talent(CryoHypostasis, "active")
   // TODO
   .done();

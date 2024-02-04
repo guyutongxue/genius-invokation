@@ -85,7 +85,7 @@ const TandooriRoastChicken = card(333011)
 
 ### `.eventTalent` 天赋牌（事件）
 
-诸如“无相之雷”等角色的天赋牌“汲能棱晶”是事件牌。通过 `.eventTalent(ch)` 来指定这一行为；`ch` 是角色句柄。该方法会调用 `.tags("talent")`、增加卡组限定，并自动指定 `.tags("action")`。如果该天赋牌不是战斗行动，则显式指明 `.eventTalent(ch, { action: false })`。
+诸如“无相之雷”等角色的天赋牌“汲能棱晶”是事件牌。通过 `.eventTalent(ch)` 来指定这一行为；`ch` 是角色句柄。该方法会调用 `.tags("talent")`、增加卡组限定，并自动指定 `.tags("action")`。如果该天赋牌不是战斗行动，则显式指明第二参数，见[后文](#talent-天赋牌装备)。
 
 ## 装备牌
 
@@ -101,7 +101,7 @@ const TandooriRoastChicken = card(333011)
 
 大部分天赋牌是装备牌。调用 `.talent(ch)` 方法可声明该牌为 `ch` 的天赋装备牌。该方法会调用卡牌和实体的 `.tags("talent")` 和 `.type("equipment")` ，并添加 `.addTarget` 为对应的 `character`。
 
-默认情况下该方法会调用 `.tags("action")` 表明使用此牌是战斗行动。如果这不满足，则显式指明 `.talent(ch, { action: false })`。
+默认情况下该方法会调用 `.tags("action")` 表明使用此牌是战斗行动。如果这不满足，则显式指明 `.talent(ch, "active")` 或 `.talent(ch, "none")`。`"active"` 指该牌不是战斗行动，但仍然要求天赋角色是出战角色；`"none"` 则和普通装备牌无异，（除限定的使用目标外）没有打出时机的额外要求。
 
 ### 其它装备牌？
 

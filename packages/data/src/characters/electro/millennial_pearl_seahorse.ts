@@ -118,6 +118,6 @@ export const MillennialPearlSeahorse = character(2403)
  * （牌组中包含千年珍珠骏麟，才能加入牌组）
  */
 export const PearlSolidification = card(224031)
-  .talent(MillennialPearlSeahorse)
+  .talent(MillennialPearlSeahorse, "active")
   // TODO
   .done();

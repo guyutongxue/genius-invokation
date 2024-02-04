@@ -62,6 +62,8 @@ type TargetKindOfQuery<Q extends TargetQuery> =
 
 const SATIATED_ID = 303300 as StatusHandle;
 
+type TalentRequirement = "action" | "active" | "none";
+
 class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   CardTargetExt<KindTs>
 > {
@@ -167,24 +169,20 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this.tags("legend");
   }
 
-  talent(ch: CharacterHandle, opt?: { action?: boolean }) {
-    const action = opt?.action ?? true;
-    this.eventTalent(ch, opt);
-    if (action) {
-      // 出战角色必须为天赋角色
-      this.tags("action").filter(
-        (c) => c.$("my active")?.state.definition.id === ch,
-      );
+  talent(ch: CharacterHandle, requires: TalentRequirement = "action") {
+    this.eventTalent(ch, requires);
+    if (requires !== "none") {
+      // 出战角色须为天赋角色
+      this.filter((c) => c.$("my active")?.state.definition.id === ch);
     }
     return this.tags("talent")
       .equipment(`my characters with definition id ${ch}`)
       .tags("talent");
   }
 
-  eventTalent(ch: CharacterHandle, opt?: { action?: boolean }) {
-    const action = opt?.action ?? true;
+  eventTalent(ch: CharacterHandle, requires: TalentRequirement = "action") {
     this._deckRequirement.character = ch;
-    if (action) {
+    if (requires === "action") {
       this.tags("action");
     }
     return this.tags("talent");

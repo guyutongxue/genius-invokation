@@ -105,6 +105,6 @@ export const KamisatoAyaka = character(1105)
  */
 export const KantenSenmyouBlessing = card(211051)
   .costCryo(2)
-  .talent(KamisatoAyaka)
+  .talent(KamisatoAyaka, "none")
   // TODO
   .done();

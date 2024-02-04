@@ -127,6 +127,6 @@ export const AbyssLectorFathomlessFlames = character(2302)
  */
 export const EmbersRekindled = card(223021)
   .costPyro(2)
-  .talent(AbyssLectorFathomlessFlames)
+  .talent(AbyssLectorFathomlessFlames, "none")
   // TODO
   .done();
