@@ -487,7 +487,10 @@ export class SkillContext<
       return;
     }
     const existOverride = entitiesAtArea.find(
-      (e): e is EntityState => e.definition.id === id2,
+      (e): e is EntityState =>
+        e.definition.type !== "character" &&
+        e.definition.type !== "support" &&
+        e.definition.id === id2,
     );
     if (existOverride) {
       // refresh exist entity's variable
@@ -496,7 +499,7 @@ export class SkillContext<
           const valueLimit =
             `${prop}$max` in def.constants
               ? def.constants[`${prop}$max`]
-              : def.constants[prop];
+              : Math.max(existOverride.variables[prop], def.constants[prop]);
           this.mutate({
             type: "modifyEntityVar",
             state: existOverride,
