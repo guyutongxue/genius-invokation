@@ -60,6 +60,8 @@ type ActionInfoWithNewState = ActionInfo & { newState: GameState };
 
 export class Game {
   state: GameState;
+  private finishPromise: Promise<0 | 1 | null>;
+  private resolveFinishPromise: () => void = () => {};
 
   constructor(
     private readonly data: ReadonlyDataStore,
@@ -87,6 +89,7 @@ export class Game {
     };
     this.initPlayerCards(0);
     this.initPlayerCards(1);
+    this.finishPromise = Promise.resolve(null);
   }
 
   mutate(mutation: Mutation) {
@@ -201,34 +204,59 @@ export class Game {
       this.notifyOne(i, events);
     }
     await this.io.pause(this.state);
+    if (this.io.players[0].giveUp) {
+      await this.gotWinner(1);
+    } else if (this.io.players[1].giveUp) {
+      await this.gotWinner(0);
+    }
     this.mutate({ type: "clearMutationLog" });
   }
 
   async start() {
-    await this.notifyAndPause();
-    while (this.state.phase !== "gameEnd") {
-      switch (this.state.phase) {
-        case "initHands":
-          await this.initHands();
-          break;
-        case "initActives":
-          await this.initActives();
-          break;
-        case "roll":
-          await this.rollPhase();
-          break;
-        case "action":
-          await this.actionPhase();
-          break;
-        case "end":
-          await this.endPhase();
-          break;
-        default:
-          const _check: never = this.state.phase;
-          break;
-      }
+    this.finishPromise = new Promise((resolve) => {
+      this.resolveFinishPromise = () => resolve(this.state.winner);
+    });
+    setTimeout(async () => {
       await this.notifyAndPause();
-    }
+      while (this.state.phase !== "gameEnd") {
+        switch (this.state.phase) {
+          case "initHands":
+            await this.initHands();
+            break;
+          case "initActives":
+            await this.initActives();
+            break;
+          case "roll":
+            await this.rollPhase();
+            break;
+          case "action":
+            await this.actionPhase();
+            break;
+          case "end":
+            await this.endPhase();
+            break;
+          default:
+            const _check: never = this.state.phase;
+            break;
+        }
+        await this.notifyAndPause();
+      }
+      this.resolveFinishPromise();
+    });
+    return this.finishPromise;
+  }
+
+  async gotWinner(winner: 0 | 1) {
+    this.mutate({
+      type: "setWinner",
+      winner,
+    });
+    this.mutate({
+      type: "changePhase",
+      newPhase: "gameEnd",
+    });
+    await this.notifyAndPause();
+    this.resolveFinishPromise();
   }
 
   private async rpc<M extends RpcMethod>(
@@ -544,7 +572,7 @@ export class Game {
       this.mutate({
         type: "pushActionLog",
         who,
-        action: actionInfo
+        action: actionInfo,
       });
       this.mutate({
         type: "setPlayerFlag",
@@ -998,10 +1026,15 @@ export class Game {
                 type: "oppChoosingActive",
               },
             ]);
+            const candidates = this.state.players[who].characters
+              .filter((c) => c.variables.alive)
+              .map((c) => c.id);
+            if (candidates.length === 0) {
+              await this.gotWinner(flip(who));
+              return true;
+            }
             activeDefeated[who] = this.rpc(who, "chooseActive", {
-              candidates: this.state.players[who].characters
-                .filter((c) => c.variables.alive)
-                .map((c) => c.id),
+              candidates,
             }).then(({ active }) => {
               return getEntityById(this.state, active, true) as CharacterState;
             });
