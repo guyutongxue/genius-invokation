@@ -168,7 +168,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
   addTarget<Q extends TargetQuery>(
     targetQuery: Q,
-  ): CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]> {
+  ): BuilderWithShortcut<CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]>> {
     this._targetQueries = [...this._targetQueries, targetQuery];
     return this as any;
   }
@@ -294,5 +294,5 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 }
 
 export function card(id: number) {
-  return enableShortcut(new CardBuilder<[]>(id));
+  return enableShortcut(new CardBuilder<readonly []>(id));
 }

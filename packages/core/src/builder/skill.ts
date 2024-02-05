@@ -398,10 +398,6 @@ type ExtractBM<T> = T extends {
   ? Meta
   : never;
 
-type X = BuilderWithShortcut<TriggeredSkillBuilder<{ callerType: "character"; callerVars: "hello"; eventArgType: "character"; }, "roll">>;
-declare let x: X;
-type Y = SkillContextShortCutSource<WritableMetaOf<ExtractBM<X>>>["addVariable"]
-
 /**
  * 为 Builder 添加直达 SkillContext 的函数，即可
  * `.do((c) => c.PROP(ARGS))`

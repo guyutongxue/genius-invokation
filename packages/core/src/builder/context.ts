@@ -568,8 +568,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  getVariable(prop: Meta["callerVars"]): number;
+  // NOTICE: getVariable/setVariable/addVariable 应当将 caller 的严格版声明放在最后一个
+  // 因为 (...args: infer R) 只能获取到重载列表中的最后一个，而严格版是 BuilderWithShortcut 需要的
+
   getVariable(prop: string, target: CharacterState | EntityState): number;
+  getVariable(prop: Meta["callerVars"]): number;
   getVariable(prop: string, target?: CharacterState | EntityState) {
     if (target) {
       return this.of(target).getVariable(prop);
@@ -578,12 +581,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  setVariable(prop: Meta["callerVars"], value: number): void;
   setVariable(
     prop: string,
     value: number,
     target: CharacterState | EntityState,
   ): void;
+  setVariable(prop: Meta["callerVars"], value: number): void;
   setVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
     this.mutate({
@@ -594,12 +597,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
     });
   }
 
-  addVariable(prop: Meta["callerVars"], value: number): void;
   addVariable(
     prop: string,
     value: number,
     target: CharacterState | EntityState,
   ): void;
+  addVariable(prop: Meta["callerVars"], value: number): void;
   addVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
     const finalValue = value + target.variables[prop];
