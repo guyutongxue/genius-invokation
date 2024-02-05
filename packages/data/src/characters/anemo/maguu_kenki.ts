@@ -10,7 +10,7 @@ import { character, skill, summon, status, card, DamageType, SummonHandle, Skill
 export const ShadowswordGallopingFrost: SummonHandle = summon(125012)
   .endPhaseDamage(DamageType.Cryo, 1)
   .usage(2)
-  .on("skill", (c, e) => e.definition.id === BlusteringBlade)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === BlusteringBlade)
   .damage(DamageType.Cryo, 1)
   .done();
 
@@ -24,7 +24,7 @@ export const ShadowswordGallopingFrost: SummonHandle = summon(125012)
 export const ShadowswordLoneGale: SummonHandle = summon(125011)
   .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
-  .on("skill", (c, e) => e.definition.id === BlusteringBlade)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === BlusteringBlade)
   .damage(DamageType.Anemo, 1)
   .done();
 

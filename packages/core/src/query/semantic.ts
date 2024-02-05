@@ -4,9 +4,8 @@ import type { Node, NonterminalNode } from "ohm-js";
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
-  CharacterContext,
   CharacterContextBase,
-  ExtendedSkillContext,
+  SkillContext,
 } from "../builder/context";
 import {
   allEntities,
@@ -18,7 +17,7 @@ import {
 import { EntityArea, EntityType } from "../base/entity";
 
 type AnyState = EntityState | CharacterState;
-type AnySkillContext = ExtendedSkillContext<true, Record<string, any>, any>;
+type AnySkillContext = SkillContext<true, Record<string, any>, any>;
 
 type ExternalQueryFn = (c: AnySkillContext) => number;
 type ExternalQueryEntry = ExternalQueryFn | ExternalQueryDictionary;

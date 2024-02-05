@@ -32,7 +32,7 @@ export const CryoCrystalCore = status(121034)
  * 可用次数：1
  */
 export const OverwhelmingIce = status(121031)
-  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usage(1)
   .damage(DamageType.Piercing, 1, "opp standby")
   .done();
@@ -73,7 +73,9 @@ export const PlungingIceShards = skill(21033)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Piercing, 1, "opp standby")
+  .damage(DamageType.Cryo, 2)
+  .summon(PiercingIceridge)
   .done();
 
 /**
@@ -84,7 +86,8 @@ export const PlungingIceShards = skill(21033)
  */
 export const CryoCrystalCoreSkill = skill(21034)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(CryoCrystalCore)
   .done();
 
 /**
@@ -112,5 +115,6 @@ export const CryoHypostasis = character(2103)
 export const SternfrostPrism = card(221031)
   .costCryo(1)
   .talent(CryoHypostasis, "active")
-  // TODO
+  .on("enter")
+  .characterStatus(CryoCrystalCore)
   .done();

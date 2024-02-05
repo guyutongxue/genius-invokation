@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType, DiceType, checkDamageSkillType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 115062
@@ -8,9 +8,9 @@ import { character, skill, status, card, DamageType, DiceType, checkDamageSkillT
  * 可用次数：1
  */
 export const Descent = status(115062)
-  .on("beforeSwitchDeductDice", (c) => c.self.master().isActive())
+  .on("deductDiceSwitch", (c) => c.self.master().isActive())
   .deductCost(DiceType.Omni, 1)
-  .on("switchActive", (c, e) => c.self.master().id === e.from.id)
+  .on("switchActive", (c, e) => c.self.master().id === e.switchInfo.from.id)
   .usage(1)
   .damage(DamageType.Anemo, 1)
   .done();
@@ -23,7 +23,7 @@ export const Descent = status(115062)
  * 可用次数：2
  */
 export const Windfavored = status(115061)
-  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
   .usage(2)
   .increaseDamage(2)
   .done();

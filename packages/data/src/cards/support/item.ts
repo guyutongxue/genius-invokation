@@ -12,18 +12,18 @@ export const ParametricTransformer = card(323001)
   .variable("progress", 0)
   .variable("hasProgress", 0, { visible: false })
   .variable("currentSkill", 0, { visible: false })
-  .on("beforeUseDice")
+  .on("modifyAction")
   .listenToAll()
-  .do((c) => {
-    if (c.currentAction.type === "useSkill") {
-      c.setVariable("currentSkill", c.currentAction.skill.definition.id);
+  .do((c, e) => {
+    if (e.action.type === "useSkill") {
+      c.setVariable("currentSkill", e.action.skill.definition.id);
     }
   })
   .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
     (e.type !== DamageType.Physical && e.type !== DamageType.Piercing))
   .listenToAll()
   .setVariable("hasProgress", 1)
-  .on("skill", (c, e) => e.definition.id === c.getVariable("currentSkill"))
+  .on("useSkill", (c, e) => e.action.skill.definition.id === c.getVariable("currentSkill"))
   .listenToAll()
   .do((c) => {
     if (c.getVariable("hasProgress")) {
@@ -50,7 +50,7 @@ export const Nre = card(323002)
   .support("item")
   .on("enter")
   .drawCards(1, { withTag: "food" })
-  .on("playCard", (c, e) => e.card.definition.tags.includes("food"))
+  .on("playCard", (c, e) => e.hasCardTag("food"))
   .usagePerRound(1)
   .drawCards(1, { withTag: "food" })
   .done();
@@ -64,8 +64,7 @@ export const Nre = card(323002)
 export const RedFeatherFan = card(323003)
   .costSame(2)
   .support("item")
-  .on("beforeUseDice", (c) => c.currentAction.type === "switchActive" &&
-    (!c.currentFast || c.currentCost.length > 0))
+  .on("modifyAction", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
   .setFastAction()
   .deductCost(DiceType.Omni, 1)
   .done();
@@ -80,7 +79,7 @@ export const TreasureseekingSeelie = card(323004)
   .costSame(1)
   .support("item")
   .variable("clue", 0)
-  .on("skill")
+  .on("useSkill")
   .addVariable("clue", 1)
   .do((c) => {
     if (c.getVariable("clue") >= 3) {
@@ -99,8 +98,8 @@ export const TreasureseekingSeelie = card(323004)
  */
 export const SeedDispensary = card(323005)
   .support("item")
-  .on("beforePlayCardDeductDice", (c) => c.currentAction.card.definition.skillDefinition.requiredCost.length === 1 &&
-    ["equipment", "support"].includes(c.currentAction.card.definition.type))
+  .on("deductDiceCard", (c, e) => e.action.card.definition.skillDefinition.requiredCost.length === 1 &&
+    ["equipment", "support"].includes(e.action.card.definition.type))
   .deductCost(DiceType.Omni, 1)
   .usage(2)
   .done();
@@ -116,21 +115,19 @@ export const MementoLens = card(323006)
   .costSame(1)
   .support("item")
   .variable("totalUsage", 2)
-  .on("beforePlayCardDeductDice", (c) => {
-    const { currentAction } = c;
-    const tags = ["weapon", "artifact", "place", "ally"] as const;
-    if (tags.every((tag) => !currentAction.card.definition.tags.includes(tag))) {
+  .on("deductDiceCard", (c, e) => {
+    if (!e.hasOneOfCardTag("weapon", "artifact", "place", "ally")) {
       return false;
     }
     const played = c.state.globalActionLog.filter(
-      (e) => e.who === c.eventWho && 
-        e.action.type === "playCard" && 
-        e.action.card.definition.id === currentAction.card.definition.id);
+      (log) => log.who === e.who && 
+        log.action.type === "playCard" && 
+        log.action.card.definition.id === e.action.card.definition.id);
     return played.length > 0;
   })
   .usagePerRound(1)
-  .do((c) => {
-    c.deductCost(DiceType.Omni, 2);
+  .do((c, e) => {
+    e.deductCost(DiceType.Omni, 2);
     c.addVariable("totalUsage", -1);
     if (c.getVariable("totalUsage") <= 0) {
       c.dispose();

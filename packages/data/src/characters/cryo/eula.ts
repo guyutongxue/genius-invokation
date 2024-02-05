@@ -11,11 +11,11 @@ import { character, skill, summon, status, card, DamageType, CharacterState, Ski
 export const LightfallSword = summon(111062)
   .hintText("3+")
   .variable("usage", 0)
-  .on("skill", (c, e) => 
-    e.definition.id === FavoniusBladeworkEdel || 
-    e.definition.id === IcetideVortex)
+  .on("useSkill", (c, e) => 
+    e.action.skill.definition.id === FavoniusBladeworkEdel || 
+    e.action.skill.definition.id === IcetideVortex)
   .do((c, e) => {
-    if (e.definition.id === IcetideVortex &&
+    if (e.action.skill.definition.id === IcetideVortex &&
       c.of<"character">(e.caller).hasEquipment(WellspringOfWarlust)) {
       c.self.addVariable("usage", 3);
     } else {
@@ -36,7 +36,7 @@ export const LightfallSword = summon(111062)
  * 所附属角色使用冰潮的涡旋时：移除此状态，使本次伤害+3。
  */
 export const Grimheart = status(111061)
-  .on("beforeDealDamage", (c) => c.damageInfo.via.definition.id === IcetideVortex)
+  .on("modifyDamage", (c, e) => e.damageInfo.via.definition.id === IcetideVortex)
   .increaseDamage(3)
   .dispose()
   .done();

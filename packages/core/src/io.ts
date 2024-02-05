@@ -235,7 +235,7 @@ export function exposeAction(action: ActionInfo): Action {
         cost: action.cost,
         // We can provide more detail hint here
         hints: [PlayCardHint.GeneralTarget, PlayCardHint.GeneralTarget2],
-        targets: action.target.ids,
+        targets: action.targets.map((t) => t.id),
       };
     }
     case "switchActive":

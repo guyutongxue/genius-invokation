@@ -31,7 +31,7 @@ export const PulsingClarity = combatStatus(117052)
  */
 export const SeamlessShield = combatStatus(117053)
   .shield(1)
-  .on("enter", (c, e) => e.override)
+  .on("enter", (c, e) => e.overrided)
   .damage(DamageType.Dendro, 1)
   .heal(1, "my active")
   .on("selfDispose")

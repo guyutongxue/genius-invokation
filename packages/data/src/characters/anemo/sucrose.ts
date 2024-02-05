@@ -12,9 +12,9 @@ import { character, skill, summon, card, DamageType, SkillHandle } from "@gi-tcg
 export const LargeWindSpirit01 = summon(115012)
   .endPhaseDamage("swirledAnemo", 2)
   .usage(3)
-  .on("beforeDealDamage", (c) => {
+  .on("modifyDamage", (c, e) => {
     const color = c.getVariable("hintIcon");
-    return color !== DamageType.Anemo && color === c.damageInfo.type;
+    return color !== DamageType.Anemo && color === e.type;
   })
   .increaseDamage(1)
   .done();

@@ -5,27 +5,19 @@ import {
   SkillDescription,
   SkillType,
   EventNames,
-  EventExt,
   SkillInfo,
   TriggeredSkillDefinition,
   TriggeredSkillFilter,
   PlayCardInfo,
-  UseDiceModifier,
   SwitchActiveInfo,
   UseSkillInfo,
+  EventArgOf,
+  ModifyActionEventArg,
+  ActionEventArg,
 } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
-import {
-  SkillContext,
-  ExtendedSkillContext,
-  StrictlyTypedSkillContext,
-} from "./context";
-import {
-  AppliableDamageType,
-  HandleT,
-  SkillHandle,
-  SummonHandle,
-} from "./type";
+import { SkillContext, TypedSkillContext } from "./context";
+import { SkillHandle } from "./type";
 import { EntityArea, ExEntityType } from "../base/entity";
 import {
   EntityBuilder,
@@ -34,24 +26,15 @@ import {
   VariableOptions,
 } from "./entity";
 import { getEntityArea } from "../util";
-import {
-  canPlayCardDeductCost,
-  canSwitchDeductCost,
-  canSwitchFast,
-} from "./util";
 
-type EventArgOfExt<Ext extends object> = Ext extends { eventArg: infer T }
-  ? T
-  : void;
-
-type SkillOperation<Ext extends object, CallerType extends ExEntityType> = (
-  c: ExtendedSkillContext<false, Ext, CallerType>,
-  e: EventArgOfExt<Ext>,
+type SkillOperation<Ext, CallerType extends ExEntityType> = (
+  c: TypedSkillContext<false, Ext, CallerType>,
+  e: Ext,
 ) => void;
 
-export type SkillFilter<Ext extends object, CallerType extends ExEntityType> = (
-  c: ExtendedSkillContext<true, Ext, CallerType>,
-  e: EventArgOfExt<Ext>,
+export type SkillFilter<Ext, CallerType extends ExEntityType> = (
+  c: TypedSkillContext<true, Ext, CallerType>,
+  e: Ext,
 ) => unknown;
 
 enum ListenTo {
@@ -105,7 +88,8 @@ function checkRelative(
 type Descriptor<E extends EventNames> = readonly [
   E,
   (
-    e: ExtendedSkillContext<true, EventExt<E>, ExEntityType>,
+    c: TypedSkillContext<true, EventArgOf<E>, any>,
+    e: EventArgOf<E>,
     listen: RelativeArg,
   ) => boolean,
 ];
@@ -132,7 +116,7 @@ function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
     skillInfo.definition.skillType !== "card"
   ) {
     // 准备技能不触发
-    if (skillInfo.requestBy?.definition.triggerOn === "onReplaceAction") {
+    if (skillInfo.requestBy?.definition.triggerOn === "replaceAction") {
       return false;
     }
     return true;
@@ -156,134 +140,152 @@ function isDebuff(state: CharacterState | EntityState): boolean {
  * 在监听范围内。
  */
 const detailedEventDictionary = {
-  roll: defineDescriptor("onRoll", (c, r) => {
-    return checkRelative(c.state, { who: c.eventWho }, r);
+  roll: defineDescriptor("modifyRoll", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
   }),
-  beforeUseDice: defineDescriptor("onBeforeUseDice", (c, r) => {
-    return checkRelative(c.state, { who: c.eventWho }, r);
+  modifyAction: defineDescriptor("modifyAction", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
   }),
-  beforeSwitchDeductDice: defineDescriptor("onBeforeUseDice", (c, r) => {
+  deductDiceSwitch: defineDescriptor("modifyAction", (c, e, r) => {
     return (
-      checkRelative(c.state, { who: c.eventWho }, r) && canSwitchDeductCost(c)
+      checkRelative(c.state, { who: e.who }, r) &&
+      e.isSwitchActive() &&
+      e.canDeductCost()
     );
   }),
-  beforePlayCardDeductDice: defineDescriptor("onBeforeUseDice", (c, r) => {
+  deductDiceCard: defineDescriptor("modifyAction", (c, e, r) => {
     return (
-      checkRelative(c.state, { who: c.eventWho }, r) && canPlayCardDeductCost(c)
+      checkRelative(c.state, { who: e.who }, r) &&
+      e.isPlayCard() &&
+      e.canDeductCost()
     );
   }),
-  beforeSkillOrTalentDeductDice: defineDescriptor("onBeforeUseDice", (c, r) => {
-    if (c.currentAction.type === "useSkill") {
-      return checkRelative(c.state, c.currentAction.skill.caller.id, r);
-    } else if (c.currentAction.type === "playCard") {
-      return checkRelative(c.state, c.currentAction.target.ids[0], r);
+  deductDiceSkill: defineDescriptor("modifyAction", (c, e, r) => {
+    return (
+      checkRelative(c.state, { who: e.who }, r) &&
+      e.isUseSkill() &&
+      e.canDeductCost()
+    );
+  }),
+  deductDiceSkillOrTalent: defineDescriptor("modifyAction", (c, e, r) => {
+    if (e.action.type === "useSkill") {
+      return checkRelative(c.state, e.action.skill.caller.id, r);
+    } else if (
+      e.action.type === "playCard" &&
+      e.action.card.definition.tags.includes("talent")
+    ) {
+      return checkRelative(c.state, { who: e.who }, r);
     } else {
       return false;
     }
   }),
-  beforeSwitchFast: defineDescriptor("onBeforeUseDice", (c, r) => {
-    return checkRelative(c.state, { who: c.eventWho }, r) && canSwitchFast(c);
-  }),
-  beforeDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
-    return checkRelative(c.state, c.damageInfo.source.id, r);
-  }),
-  beforeSkillDamageType: defineDescriptor("onBeforeDamage0", (c, r) => {
+  fastSwitch: defineDescriptor("modifyAction", (c, e, r) => {
     return (
-      c.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, c.damageInfo.source.id, r) &&
-      commonInitiativeSkillCheck(c.damageInfo.via)
+      checkRelative(c.state, { who: e.who }, r) &&
+      e.isSwitchActive() &&
+      !e.isFast()
     );
   }),
-  beforeDealDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
+  modifyDamageType: defineDescriptor("modifyDamage0", (c, e, r) => {
+    return checkRelative(c.state, e.damageInfo.source.id, r);
+  }),
+  modifySkillDamageType: defineDescriptor("modifyDamage0", (c, e, r) => {
     return (
-      c.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, c.damageInfo.source.id, r) &&
-      !isDebuff(c.damageInfo.source)
+      e.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.damageInfo.source.id, r) &&
+      commonInitiativeSkillCheck(e.damageInfo.via)
     );
   }),
-  beforeSkillDamage: defineDescriptor("onBeforeDamage1", (c, r) => {
+  modifyDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      c.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, c.damageInfo.source.id, r) &&
-      commonInitiativeSkillCheck(c.damageInfo.via)
+      e.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.damageInfo.source.id, r) &&
+      !isDebuff(e.damageInfo.source)
     );
   }),
-  beforeDamaged: defineDescriptor("onBeforeDamage1", (c, r) => {
+  modifySkillDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      c.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, c.damageInfo.target.id, r)
+      e.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.damageInfo.source.id, r) &&
+      commonInitiativeSkillCheck(e.damageInfo.via)
     );
   }),
-  beforeDefeated: defineDescriptor("onBeforeDefeated", (c, r) => {
-    return checkRelative(c.state, c.target.id, r);
+  beforeDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
+    return (
+      e.damageInfo.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.damageInfo.target.id, r)
+    );
+  }),
+  beforeDefeated: defineDescriptor("onZeroHealth", (c, e, r) => {
+    return checkRelative(c.state, e.character.id, r);
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),
   actionPhase: defineDescriptor("onActionPhase"),
   endPhase: defineDescriptor("onEndPhase"),
-  beforeAction: defineDescriptor("onBeforeAction", (c, r) => {
-    return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
+  beforeAction: defineDescriptor("onBeforeAction", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
   }),
-  replaceAction: defineDescriptor("onReplaceAction", (c, r) => {
-    return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
+  replaceAction: defineDescriptor("replaceAction", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
   }),
-  action: defineDescriptor("onAction", (c, r) => {
-    return checkRelative(c.eventArg.state, { who: c.eventArg.who }, r);
+  action: defineDescriptor("onAction", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
   }),
-  playCard: defineDescriptor("onAction", (c, r) => {
-    if (!checkRelative(c.eventArg.state, { who: c.eventArg.who }, r))
-      return false;
-    return c.eventArg.type === "playCard";
+  playCard: defineDescriptor("onAction", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r) && e.isPlayCard();
   }),
-  declareEnd: defineDescriptor("onAction", (c, r) => {
-    if (!checkRelative(c.eventArg.state, { who: c.eventArg.who }, r))
-      return false;
-    return c.eventArg.type === "declareEnd";
+  useSkill: defineDescriptor("onAction", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r) && e.isUseSkill();
   }),
-  skill: defineDescriptor("onSkill", (c, r) => {
-    if (!checkRelative(c.eventArg.state, c.eventArg.caller.id, r)) return false;
-    return commonInitiativeSkillCheck(c.eventArg);
+  declareEnd: defineDescriptor("onAction", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
   }),
-  switchActive: defineDescriptor("onSwitchActive", (c, r) => {
+  switchActive: defineDescriptor("onSwitchActive", (c, e, r) => {
     return (
-      checkRelative(c.eventArg.state, c.eventArg.from.id, r) ||
-      checkRelative(c.eventArg.state, c.eventArg.to.id, r)
+      checkRelative(c.state, e.switchInfo.from.id, r) ||
+      checkRelative(c.state, e.switchInfo.to.id, r)
     );
   }),
-  dealDamage: defineDescriptor("onDamage", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.source.id, r);
+  switchFrom: defineDescriptor("onSwitchActive", (c, e, r) => {
+    return checkRelative(c.state, e.switchInfo.from.id, r);
   }),
-  damaged: defineDescriptor("onDamage", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.target.id, r);
+  dealDamage: defineDescriptor("onDamage", (c, e, r) => {
+    return checkRelative(c.state, e.source.id, r);
   }),
-  healed: defineDescriptor("onHeal", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.target.id, r);
+  damaged: defineDescriptor("onDamage", (c, e, r) => {
+    return checkRelative(c.state, e.target.id, r);
   }),
-  elementalReaction: defineDescriptor("onElementalReaction", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.target.id, r);
+  healed: defineDescriptor("onHeal", (c, e, r) => {
+    return checkRelative(c.state, e.healInfo.target.id, r);
   }),
-  enter: defineDescriptor("onEnter", (c, r) => {
-    return c.eventArg.entity.id === r.callerId;
+  reaction: defineDescriptor("onReaction", (c, e, r) => {
+    return checkRelative(c.state, e.reactionInfo.target.id, r);
   }),
-  dispose: defineDescriptor("onDisposing", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.entity.id, r);
+  enter: defineDescriptor("onEnter", (c, e, r) => {
+    return e.entity.id === r.callerId;
   }),
-  selfDispose: defineDescriptor("onDisposing", (c, r) => {
-    return c.eventArg.entity.id === r.callerId;
+  dispose: defineDescriptor("onDispose", (c, e, r) => {
+    return checkRelative(c.state, e.entity.id, r);
   }),
-  defeated: defineDescriptor("onDefeated", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.character.id, r);
+  selfDispose: defineDescriptor("onDispose", (c, e, r) => {
+    return e.entity.id === r.callerId;
   }),
-  revive: defineDescriptor("onRevive", (c, r) => {
-    return checkRelative(c.eventArg.state, c.eventArg.character.id, r);
+  defeated: defineDescriptor("onDefeated", (c, e, r) => {
+    return checkRelative(c.state, e.character.id, r);
+  }),
+  revive: defineDescriptor("onRevive", (c, e, r) => {
+    return checkRelative(c.state, c.eventArg.character.id, r);
   }),
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideExtType = {
-  beforeSwitchDeductDice: UseDiceModifier<SwitchActiveInfo>;
-  beforePlayCardDeductDice: UseDiceModifier<PlayCardInfo>;
-  beforeSkillOrTalentDeductDice: UseDiceModifier<UseSkillInfo | PlayCardInfo>;
-  playCard: { eventArg: PlayCardInfo };
+  deductDiceSwitch: ModifyActionEventArg<SwitchActiveInfo>;
+  deductDiceCard: ModifyActionEventArg<PlayCardInfo>;
+  deductDiceSkill: ModifyActionEventArg<UseSkillInfo>;
+  deductDiceSkillOrTalent: ModifyActionEventArg<UseSkillInfo | PlayCardInfo>;
+  playCard: ActionEventArg<PlayCardInfo>;
+  useSkill: ActionEventArg<UseSkillInfo>;
 };
 
 type DetailedEventDictionary = typeof detailedEventDictionary;
@@ -291,19 +293,14 @@ export type DetailedEventNames = keyof DetailedEventDictionary;
 export type DetailedEventExt<E extends DetailedEventNames> =
   E extends keyof OverrideExtType
     ? OverrideExtType[E]
-    : EventExt<DetailedEventDictionary[E][0]>;
+    : EventArgOf<DetailedEventDictionary[E][0]>;
 
 export type SkillInfoGetter = () => SkillInfo;
 
 const EXT_TYPE_HELPER: unique symbol = Symbol();
-type ExtTypeHelperSymbolType = typeof EXT_TYPE_HELPER;
 const CALLER_TYPE_HELPER: unique symbol = Symbol();
-type CallerTypeHelperSymbolType = typeof CALLER_TYPE_HELPER;
 
-export abstract class SkillBuilder<
-  Ext extends object,
-  CallerType extends ExEntityType,
-> {
+export abstract class SkillBuilder<Ext, CallerType extends ExEntityType> {
   declare [EXT_TYPE_HELPER]: Ext;
   declare [CALLER_TYPE_HELPER]: CallerType;
 
@@ -345,70 +342,19 @@ export abstract class SkillBuilder<
    * @param extGenerator 生成扩展点的函数
    * @returns 内部技能描述函数
    */
-  protected getAction(arg?: any): SkillDescription<void> {
+  protected getAction(arg: Ext): SkillDescription<void> {
     return (state, skillInfo) => {
-      const ctx = this.getContext(state, skillInfo, arg);
+      const ctx = new SkillContext<false, Ext, CallerType>(
+        state,
+        skillInfo,
+        arg,
+      );
       for (const op of this.operations) {
-        op(ctx, (ctx as any)?.eventArg);
+        op(ctx, ctx.eventArg);
       }
       return [ctx.state, ctx.events] as const;
     };
   }
-
-  protected getContext(
-    state: GameState,
-    skillInfo: SkillInfo,
-    arg?: any,
-  ): ExtendedSkillContext<false, Ext, CallerType> {
-    const ctx = new SkillContext<false, Ext, CallerType>(state, skillInfo);
-    const ext = this.getExtension(ctx, arg);
-    return extendSkillContext<false, Ext, CallerType>(ctx, ext);
-  }
-
-  /**
-   * 子类需重写此方法以获得 SkillContext 的扩展点。
-   * @param skillCtx
-   * @returns
-   */
-  protected abstract getExtension(
-    skillCtx: SkillContext<false, {}, CallerType>,
-    arg?: any,
-  ): Ext;
-}
-
-/**
- *
- * @param ctx 原 `SkillContext`
- * @param ext 扩展点
- * @returns 通过 `Proxy` 扩展后的 `SkillContext`
- */
-export function extendSkillContext<
-  Readonly extends boolean,
-  Ext extends object,
-  CallerType extends ExEntityType,
->(
-  ctx: ExtendedSkillContext<Readonly, any, CallerType>,
-  ext: Ext,
-): ExtendedSkillContext<Readonly, Ext, CallerType> {
-  return new Proxy(ctx, {
-    get(target, prop, receiver) {
-      if (prop in ext) {
-        return Reflect.get(ext, prop, ext);
-      } else {
-        return Reflect.get(target, prop, receiver);
-      }
-    },
-    set(target, prop, newValue, receiver) {
-      if (prop in ext) {
-        return Reflect.set(ext, prop, newValue, ext);
-      } else {
-        return Reflect.set(target, prop, newValue, receiver);
-      }
-    },
-    has(target, prop) {
-      return Reflect.has(ext, prop) || Reflect.has(target, prop);
-    },
-  }) as ExtendedSkillContext<Readonly, Ext, CallerType>;
 }
 
 // 找到所有返回 void 的方法
@@ -423,17 +369,23 @@ type AvailablePropImpl<
 type AvailablePropOf<Ctx extends object> = {
   [K in keyof Ctx]: AvailablePropImpl<Ctx, K>;
 }[keyof Ctx];
-type SkillContextShortcutProps<
-  Ext extends object,
+
+type SkillContextShortCutSource<
+  Ext,
   CallerType extends ExEntityType,
-> = AvailablePropOf<ExtendedSkillContext<false, Ext, CallerType>>;
+> = TypedSkillContext<false, Ext, CallerType> & Omit<Ext, `_${string}`>;
+
+type SkillContextShortcutProps<
+  Ext,
+  CallerType extends ExEntityType,
+> = AvailablePropOf<SkillContextShortCutSource<Ext, CallerType>>;
 
 // 所有返回 void 的方法的参数类型
 type SkillContextShortcutArgs<
-  Ext extends object,
+  Ext,
   CallerType extends ExEntityType,
-  K extends keyof ExtendedSkillContext<false, Ext, CallerType>,
-> = ExtendedSkillContext<false, Ext, CallerType>[K] extends (
+  K extends keyof SkillContextShortCutSource<Ext, CallerType>,
+> = SkillContextShortCutSource<Ext, CallerType>[K] extends (
   ...args: infer Args
 ) => void
   ? Args
@@ -441,7 +393,7 @@ type SkillContextShortcutArgs<
 
 // 带有直达方法的 Builder，使用 `enableShortcut` 生成
 export type BuilderWithShortcut<
-  Ext extends object,
+  Ext,
   CallerType extends ExEntityType,
   Original extends SkillBuilder<Ext, CallerType>,
 > = Original & {
@@ -457,8 +409,6 @@ type ExtractTArgs<T> = T extends {
   ? readonly [Ext, CallerType]
   : readonly [never, never];
 
-const SHORTCUT_RETURN_VALUE: unique symbol = Symbol();
-
 /**
  * 为 Builder 添加直达 SkillContext 的函数，即可
  * `.do((c) => c.PROP(ARGS))`
@@ -472,10 +422,13 @@ export function enableShortcut<T extends SkillBuilder<any, any>>(
     get(target, prop, receiver) {
       if (prop in target) {
         return Reflect.get(target, prop, receiver);
+      } else if (prop in SkillContext.prototype) {
+        return function (this: T, ...args: any[]) {
+          return this.do((c) => (c as any)[prop](...args));
+        };
       } else {
         return function (this: T, ...args: any[]) {
-          // returning true for counting usage
-          return this.do((c) => (c[prop](...args), SHORTCUT_RETURN_VALUE));
+          return this.do((c) => c.eventArg[prop](...args));
         };
       }
     },
@@ -495,7 +448,7 @@ interface UsageOptions extends VariableOptions {
 }
 
 export class TriggeredSkillBuilder<
-  Ext extends object,
+  Ext,
   CallerType extends ExEntityType,
   EN extends DetailedEventNames,
   V extends string,
@@ -512,7 +465,7 @@ export class TriggeredSkillBuilder<
     this._triggerFilter = (c, e) => {
       const { area, state } = c.self;
       return (
-        filterDescriptor(c as any, {
+        filterDescriptor(c as any, e as any, {
           callerArea: area,
           callerId: state.id,
           listenTo: this._listenTo,
@@ -587,21 +540,6 @@ export class TriggeredSkillBuilder<
     return this;
   }
 
-  protected override getExtension(
-    ctx: SkillContext<false, {}, CallerType>,
-    arg: any,
-  ) {
-    let result: any;
-    if ("state" in arg) {
-      result = {
-        eventArg: arg,
-      };
-    } else {
-      result = arg;
-    }
-    return result;
-  }
-
   private buildSkill() {
     if (this._usageOpt) {
       const { name, autoDecrease, autoDispose, perRound } = this._usageOpt;
@@ -617,7 +555,7 @@ export class TriggeredSkillBuilder<
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
     const filter: TriggeredSkillFilter<any> = (state, caller, arg) => {
-      const ctx = this.getContext(state, caller, arg);
+      const ctx = new SkillContext(state, caller, arg);
       return !!this._triggerFilter(ctx as any, arg);
     };
     const action: SkillDescription<any> = (state, skillInfo, arg) => {
@@ -661,9 +599,10 @@ export class TriggeredSkillBuilder<
   }
 }
 
-export abstract class SkillBuilderWithCost<
-  Ext extends object,
-> extends SkillBuilder<Ext, "character"> {
+export abstract class SkillBuilderWithCost<Ext> extends SkillBuilder<
+  Ext,
+  "character"
+> {
   constructor(skillId: number) {
     super(skillId);
   }
@@ -710,13 +649,6 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
   protected _cost: DiceType[] = [];
   constructor(private readonly skillId: number) {
     super(skillId);
-  }
-
-  protected override getExtension(
-    skillCtx: SkillContext<false, {}, "character">,
-    arg?: any,
-  ) {
-    return {};
   }
 
   noEnergy(): this {

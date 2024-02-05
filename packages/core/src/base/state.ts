@@ -82,3 +82,5 @@ export interface EntityState {
   readonly definition: EntityDefinition;
   readonly variables: EntityVariables;
 }
+
+export type AnyState = CharacterState | EntityState;

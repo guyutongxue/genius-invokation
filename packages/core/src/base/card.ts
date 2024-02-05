@@ -1,6 +1,6 @@
 import { CharacterTag, WeaponTag } from "./character";
 import { InitiativeSkillDefinition, SkillInfo } from "./skill";
-import { CharacterState, GameState } from "./state";
+import { AnyState, GameState } from "./state";
 
 export type WeaponCardTag = Exclude<WeaponTag, "other">;
 
@@ -25,20 +25,20 @@ export interface DeckRequirement {
 
 export type CardTargetKind = readonly ("character" | "summon")[];
 
-export interface CardTarget {
-  ids: number[];
+export interface CardSkillEventArg {
+  targets: AnyState[];
 }
 
-export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardTarget>;
+export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardSkillEventArg>;
 export type PlayCardFilter = (
   state: GameState,
   skillInfo: SkillInfo,
-  arg: CardTarget,
+  arg: CardSkillEventArg,
 ) => boolean;
 export type PlayCardTargetGetter = (
   state: GameState,
   skillInfo: SkillInfo,
-) => CardTarget[];
+) => CardSkillEventArg[];
 
 export interface CardDefinition {
   readonly id: number;

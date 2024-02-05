@@ -1,4 +1,4 @@
-import { CardHandle, DamageType, DiceType, card, checkCardTag, checkDamageSkillType, combatStatus, getReaction, isReactionRelatedTo, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, card, combatStatus, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -58,7 +58,7 @@ export const ElectroHilichurlShooter = summon(303214)
  */
 export const FatuiAmbusherCryoCicinMage = combatStatus(303216)
   .tags("debuff")
-  .on("skill")
+  .on("useSkill")
   .usage(2)
   .damage(DamageType.Cryo, 1, "my active")
   .done();
@@ -72,7 +72,7 @@ export const FatuiAmbusherCryoCicinMage = combatStatus(303216)
  */
 export const FatuiAmbusherMirrorMaiden = combatStatus(303217)
   .tags("debuff")
-  .on("skill")
+  .on("useSkill")
   .usage(2)
   .damage(DamageType.Hydro, 1, "my active")
   .done();
@@ -86,7 +86,7 @@ export const FatuiAmbusherMirrorMaiden = combatStatus(303217)
  */
 export const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
   .tags("debuff")
-  .on("skill")
+  .on("useSkill")
   .usage(2)
   .damage(DamageType.Pyro, 1, "my active")
   .done();
@@ -100,7 +100,7 @@ export const FatuiAmbusherPyroslingerBracer = combatStatus(303218)
  */
 export const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
   .tags("debuff")
-  .on("skill")
+  .on("useSkill")
   .usage(2)
   .damage(DamageType.Electro, 1, "my active")
   .done();
@@ -118,7 +118,7 @@ export const ElementalResonanceShatteringIce = card(331102)
   .requireCharacterTag("cryo")
   .toStatus("my active")
   .oneDuration()
-  .once("beforeSkillDamage")
+  .once("modifySkillDamage")
   .increaseDamage(2)
   .done();
 
@@ -149,7 +149,7 @@ export const ElementalResonanceFerventFlames = card(331302)
   .tags("resonance")
   .requireCharacterTag("pyro")
   .toStatus("my active")
-  .once("beforeSkillDamage", (c) => isReactionRelatedTo(c.damageInfo, DamageType.Pyro))
+  .once("modifySkillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Pyro))
   .increaseDamage(3)
   // TODO
   .done();
@@ -220,7 +220,7 @@ export const ElementalResonanceSprawlingGreenery = card(331702)
     c.$("my combat statuses with definition id 117")?.addVariable("usage", 1);
   })
   .toCombatStatus()
-  .once("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .once("modifyDamage", (c, e) => e.getReaction())
   .increaseDamage(2)
   .done();
 
@@ -325,7 +325,7 @@ export const ElementalResonanceWovenWeeds = card(331701)
 export const WindAndFreedom = card(331801)
   .toCombatStatus()
   .oneDuration()
-  .on("skill")
+  .on("useSkill")
   .switchActive("next")
   .done();
 
@@ -393,7 +393,7 @@ export const TheBestestTravelCompanion = card(332001)
  */
 export const ChangingShifts = card(332002)
   .toCombatStatus()
-  .once("beforeSwitchDeductDice")
+  .once("deductDiceSwitch")
   .deductCost(DiceType.Omni, 1)
   .done();
 
@@ -438,7 +438,7 @@ export const IHaventLostYet = card(332005)
  */
 export const LeaveItToMe = card(332006)
   .toCombatStatus()
-  .once("beforeSwitchFast")
+  .once("fastSwitch")
   .setFastAction()
   .done();
 
@@ -451,7 +451,7 @@ export const LeaveItToMe = card(332006)
 export const WhenTheCraneReturned = card(332007)
   .costSame(1)
   .toCombatStatus()
-  .once("skill")
+  .once("useSkill")
   .switchActive("next")
   .done();
 
@@ -493,9 +493,9 @@ export const CalxsArts = card(332009)
 export const MasterOfWeaponry = card(332010)
   .addTarget("my character has equipment with tag (weapon)")
   .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
-  .do((c) => {
-    const weapon = c.of(c.targets[0]).removeWeapon()!;
-    c.of(c.targets[1]).equip(weapon.definition.id as any);
+  .do((c, e) => {
+    const weapon = c.of(e.targets[0]).removeWeapon()!;
+    c.of(e.targets[1]).equip(weapon.definition.id as any);
   })
   .done();
 
@@ -508,9 +508,9 @@ export const MasterOfWeaponry = card(332010)
 export const BlessingOfTheDivineRelicsInstallation = card(332011)
   .addTarget("my character has equipment with tag (artifact)")
   .addTarget("my character and not @targets.0")
-  .do((c) => {
-    const artifact = c.of(c.targets[0]).removeArtifact()!;
-    c.of(c.targets[1]).equip(artifact.definition.id as any);
+  .do((c, e) => {
+    const artifact = c.of(e.targets[0]).removeArtifact()!;
+    c.of(e.targets[1]).equip(artifact.definition.id as any);
   })
   .done();
 
@@ -523,8 +523,8 @@ export const BlessingOfTheDivineRelicsInstallation = card(332011)
 export const QuickKnit = card(332012)
   .costSame(1)
   .addTarget("my summons")
-  .do((c) => {
-    c.of(c.targets[0]).addVariable("usage", 1);
+  .do((c, e) => {
+    c.of(e.targets[0]).addVariable("usage", 1);
   })
   .done();
 
@@ -537,8 +537,8 @@ export const QuickKnit = card(332012)
 export const SendOff = card(332013)
   .costSame(2)
   .addTarget("opp summon")
-  .do((c) => {
-    c.of(c.targets[0]).addVariable("usage", -2);
+  .do((c, e) => {
+    c.of(e.targets[0]).addVariable("usage", -2);
   })
   .done();
 
@@ -622,7 +622,7 @@ export const PlungingStrike = card(332017)
 export const HeavyStrike = card(332018)
   .costSame(1)
   .toStatus("my active")
-  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
   .increaseDamage(1)
   .if((c) => c.player.canCharged)
   .increaseDamage(1)
@@ -665,7 +665,7 @@ export const FriendshipEternal = card(332020)
  */
 export const RhythmOfTheGreatDream = card(332021)
   .toCombatStatus()
-  .once("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon") || checkCardTag(c, "artifact"))
+  .once("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
   .deductCost(DiceType.Omni, 1)
   .done();
 
@@ -678,13 +678,13 @@ export const RhythmOfTheGreatDream = card(332021)
  */
 export const WhereIsTheUnseenRazor = card(332022)
   .addTarget("my character has equipment with tag (weapon)")
-  .do((c) => {
-    const { definition } = c.of(c.targets[0]).removeArtifact()!;
+  .do((c, e) => {
+    const { definition } = c.of(e.targets[0]).removeArtifact()!;
     c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
   .oneDuration()
-  .once("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon"))
+  .once("deductDiceCard", (c, e) => e.hasCardTag("weapon"))
   .deductCost(DiceType.Omni, 2)
   .done();
 
@@ -717,13 +717,13 @@ export const Pankration = card(332023)
  */
 export const Lyresong = card(332024)
   .addTarget("my character has equipment with tag (artifact)")
-  .do((c) => {
-    const { definition } = c.of(c.targets[0]).removeArtifact()!;
+  .do((c, e) => {
+    const { definition } = c.of(e.targets[0]).removeArtifact()!;
     c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus()
   .oneDuration()
-  .once("beforePlayCardDeductDice", (c) => checkCardTag(c, "artifact"))
+  .once("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
   .deductCost(DiceType.Omni, 2)
   .done();
 

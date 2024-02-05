@@ -33,18 +33,24 @@ import {
 } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 import {
+  ActionEventArg,
   ActionInfo,
-  DefeatedModifierImpl,
-  DeferredAction,
+  CharacterEventArg,
   ElementalTuningInfo,
-  RollModifierImpl,
+  EventAndRequest,
+  EventArg,
+  EventArgOf,
+  EventNames,
+  ModifyActionEventArg,
+  ModifyRollEventArg,
+  PlayerEventArg,
   SkillInfo,
+  SwitchActiveEventArg,
   SwitchActiveInfo,
-  UseDiceModifierImpl,
   UseSkillInfo,
-  useSyncSkill,
+  ZeroHealthEventArg,
 } from "./base/skill";
-import { CardDefinition, CardTarget } from "./base/card";
+import { CardDefinition, CardSkillEventArg } from "./base/card";
 import { executeQueryOnState } from "./query";
 
 export interface PlayerConfig {
@@ -317,11 +323,8 @@ export class Game {
     }
     const rollParams: RollParams[] = [];
     for (const who of [0, 1] as const) {
-      const rollModifier = new RollModifierImpl(who);
-      this.state = useSyncSkill(this.state, "onRoll", (st) => {
-        rollModifier.setCaller(st);
-        return rollModifier;
-      });
+      const rollModifier = new ModifyRollEventArg(this.state, who);
+      await this.emitEvent("modifyRoll", rollModifier);
       console.log(`Player ${who} roll modifier: ${rollModifier._log}`);
       rollParams.push({
         fixed: rollModifier._fixedDice,
@@ -384,12 +387,7 @@ export class Game {
       flagName: "declaredEnd",
       value: false,
     });
-    await this.handleEvents([
-      "onActionPhase",
-      {
-        state: this.state,
-      },
-    ]);
+    await this.emitEvent("onActionPhase", new EventArg(this.state));
   }
   private async actionPhase() {
     const who = this.state.currentTurn;
@@ -411,13 +409,16 @@ export class Game {
         type: "switchTurn",
       });
     } else if ((replacedSkill = hasReplacedAction(player()))) {
-      await this.useSkill(replacedSkill, { who, state: this.state });
+      await this.useSkill(replacedSkill);
       this.mutate({
         type: "switchTurn",
       });
     } else {
-      await this.handleEvents(["onBeforeAction", { who, state: this.state }]);
-      const actions = this.availableAction();
+      await this.emitEvent(
+        "onBeforeAction",
+        new PlayerEventArg(this.state, who),
+      );
+      const actions = await this.availableAction();
       console.log(actions);
       this.notifyOne(flip(who), [
         {
@@ -525,7 +526,9 @@ export class Game {
                 fromCard: actionInfo.card,
                 requestBy: null,
               },
-              actionInfo.target,
+              {
+                targets: actionInfo.targets,
+              },
             );
           }
           break;
@@ -562,13 +565,10 @@ export class Game {
           type: "switchTurn",
         });
       }
-      await this.handleEvents([
+      await this.emitEvent(
         "onAction",
-        {
-          ...actionInfo,
-          state: actionInfo.newState,
-        },
-      ]);
+        new ActionEventArg(actionInfo.newState, actionInfo),
+      );
       this.mutate({
         type: "pushActionLog",
         who,
@@ -592,12 +592,7 @@ export class Game {
     }
   }
   private async endPhase() {
-    await this.handleEvents([
-      "onEndPhase",
-      {
-        state: this.state,
-      },
-    ]);
+    await this.emitEvent("onEndPhase", new EventArg(this.state));
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
         this.state = drawCard(this.state, who, null);
@@ -609,7 +604,7 @@ export class Game {
     });
   }
 
-  availableAction(): ActionInfoWithNewState[] {
+  async availableAction(): Promise<ActionInfoWithNewState[]> {
     const who = this.state.currentTurn;
     const player = this.state.players[who];
     const activeCh = player.characters[getActiveCharacterIndex(player)];
@@ -647,7 +642,7 @@ export class Game {
 
     // Cards
     for (const card of player.hands) {
-      let allTargets: CardTarget[];
+      let allTargets: CardSkillEventArg[];
       const skillInfo: SkillInfo = {
         caller: activeCh,
         definition: card.definition.skillDefinition,
@@ -659,17 +654,17 @@ export class Game {
         card.definition.type === "support" &&
         player.supports.length === this.state.config.maxSupports
       ) {
-        allTargets = player.supports.map((s) => ({ ids: [s.id] }));
+        allTargets = player.supports.map((st) => ({ targets: [st] }));
       } else {
         allTargets = (0, card.definition.getTarget)(this.state, skillInfo);
       }
-      for (const { ids } of allTargets) {
-        if ((0, card.definition.filter)(this.state, skillInfo, { ids })) {
+      for (const arg of allTargets) {
+        if ((0, card.definition.filter)(this.state, skillInfo, arg)) {
           result.push({
             type: "playCard",
             who,
             card,
-            target: { ids },
+            targets: arg.targets,
             cost: [...card.definition.skillDefinition.requiredCost],
             fast: !card.definition.tags.includes("action"),
           });
@@ -719,19 +714,19 @@ export class Game {
       cost: [],
     });
     // Apply beforeUseDice, calculate new state for each action
-    return result.map((actionInfo) => {
-      const diceModifier = new UseDiceModifierImpl(actionInfo);
-      const newState = useSyncSkill(this.state, "onBeforeUseDice", (st) => {
-        diceModifier.setCaller(st);
-        return diceModifier;
+    const resultWithState: ActionInfoWithNewState[] = [];
+    const currentState = this.state;
+    for (const actionInfo of result) {
+      const eventArg = new ModifyActionEventArg(this.state, actionInfo);
+      await this.emitEvent("modifyAction", eventArg, false);
+      console.log(eventArg.action);
+      resultWithState.push({
+        ...eventArg.action,
+        newState: this.state,
       });
-      const newActionInfo = diceModifier.currentAction;
-      console.log(newActionInfo.log);
-      return {
-        ...newActionInfo,
-        newState,
-      };
-    });
+      this.state = currentState;
+    }
+    return resultWithState;
   }
 
   /**
@@ -740,8 +735,9 @@ export class Game {
    */
   private async useSkillImpl(
     skillInfo: SkillInfo,
+    hasIo: boolean,
     arg: any,
-  ): Promise<DeferredAction[]> {
+  ): Promise<EventAndRequest[]> {
     // If caller not exists (consumed by previous skills), do nothing
     try {
       getEntityById(this.state, skillInfo.caller.id, true);
@@ -758,57 +754,57 @@ export class Game {
     ) {
       return [];
     }
-    const oldState = this.state;
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
       skillInfo,
       arg,
     );
     this.state = newState;
-    const notifyEvents: Event[] = [];
-    if (!skillInfo.fromCard) {
-      notifyEvents.push({
-        type: "triggered",
-        id: skillInfo.caller.id,
-      });
-    }
-    for (const [eventName, arg] of eventList) {
-      // Damages
-      if (eventName === "onDamage" || eventName === "onHeal") {
+    if (hasIo) {
+      const notifyEvents: Event[] = [];
+      if (!skillInfo.fromCard) {
         notifyEvents.push({
-          type: "damage",
-          damage: {
-            type: "type" in arg ? arg.type : DamageType.Heal,
-            value: "value" in arg ? arg.value : arg.finalValue,
-            target: arg.target.id,
-            log: "log" in arg ? (arg.log as string) : "",
-          },
+          type: "triggered",
+          id: skillInfo.caller.id,
         });
       }
-      // Element reactions
-      if (eventName === "onElementalReaction") {
-        notifyEvents.push({
-          type: "elementalReaction",
-          on: arg.target.id,
-          reactionType: arg.type,
-        });
+      for (const [eventName, arg] of eventList) {
+        // Damages
+        if (eventName === "onDamage" || eventName === "onHeal") {
+          notifyEvents.push({
+            type: "damage",
+            damage: {
+              type: arg.type,
+              value: arg.value,
+              target: arg.target.id,
+              log: arg.log(),
+            },
+          });
+        }
+        // Element reactions
+        if (eventName === "onReaction") {
+          notifyEvents.push({
+            type: "elementalReaction",
+            on: arg.reactionInfo.target.id,
+            reactionType: arg.reactionInfo.type,
+          });
+        }
+      }
+      await this.notifyAndPause(notifyEvents);
+      const hasDefeated = await this.checkDefeated();
+      if (hasDefeated) {
+        await this.notifyAndPause();
       }
     }
-    await this.notifyAndPause(notifyEvents);
-    const hasDefeated = await this.checkDefeated();
-    if (hasDefeated) {
-      await this.notifyAndPause();
-    }
-    await this.handleEvents(["onSkill", { ...skillInfo, state: oldState }]);
     return eventList;
   }
 
   async useSkill(
     skillInfo: SkillInfo,
-    arg: void | CardTarget | { state: GameState; [props: string]: unknown },
+    arg: void | CardSkillEventArg | EventArgOf<EventNames>,
   ): Promise<void> {
-    const events = await this.useSkillImpl(skillInfo, arg as any);
-    await this.handleEvents(...events);
+    const events = await this.useSkillImpl(skillInfo, true, arg);
+    await this.handleEvents(events, true);
   }
 
   private async switchCard(who: 0 | 1) {
@@ -871,27 +867,31 @@ export class Game {
       value: to,
     });
     if (typeof from !== "undefined") {
-      await this.handleEvents([
+      await this.emitEvent(
         "onSwitchActive",
-        {
+        new SwitchActiveEventArg(oldState, {
           type: "switchActive",
           who,
           from,
           to,
-          state: oldState,
-        },
-      ]);
+        }),
+      );
     }
   }
 
   private async *doHandleEvents(
-    actions: DeferredAction[],
-  ): AsyncGenerator<DeferredAction[], void> {
+    actions: EventAndRequest[],
+    hasIo: boolean,
+  ): AsyncGenerator<EventAndRequest[], void> {
     for (const [name, arg] of actions) {
       if (name === "requestReroll") {
-        await this.reroll(arg.who, arg.times);
-      } else if (name === "requestSwitchCards") {
-        await this.switchCard(arg.who);
+        if (hasIo) {
+          await this.reroll(arg.who, arg.times);
+        }
+      } else if (name === "requestSwitchHands") {
+        if (hasIo) {
+          await this.switchCard(arg.who);
+        }
       } else if (name === "requestUseSkill") {
         const def = this.data.skills.get(arg.requestingSkillId);
         if (typeof def === "undefined") {
@@ -906,9 +906,9 @@ export class Game {
           fromCard: null,
           requestBy: arg.via,
         };
-        yield this.useSkillImpl(skillInfo, void 0);
+        yield this.useSkillImpl(skillInfo, hasIo, void 0);
       } else {
-        const { state: onTimeState } = arg;
+        const onTimeState = arg._getState();
         const currentTurn = onTimeState.currentTurn;
         for (const who of [currentTurn, flip(currentTurn)]) {
           const player = onTimeState.players[who];
@@ -925,7 +925,7 @@ export class Game {
                   fromCard: null,
                   requestBy: null,
                 };
-                yield this.useSkillImpl(skillInfo, arg);
+                yield this.useSkillImpl(skillInfo, hasIo, arg);
               }
             }
             for (const et of ch.entities) {
@@ -937,7 +937,7 @@ export class Game {
                     fromCard: null,
                     requestBy: null,
                   };
-                  yield this.useSkillImpl(skillInfo, arg);
+                  yield this.useSkillImpl(skillInfo, hasIo, arg);
                 }
               }
             }
@@ -956,7 +956,7 @@ export class Game {
                     fromCard: null,
                     requestBy: null,
                   };
-                  yield this.useSkillImpl(skillInfo, arg);
+                  yield this.useSkillImpl(skillInfo, hasIo, arg);
                 }
               }
             }
@@ -971,29 +971,19 @@ export class Game {
     const currentTurn = this.state.currentTurn;
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
     const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
-    type DefeateEventArg = {
-      character: CharacterState;
-      state: GameState;
-    };
-    const defeatEvents: DefeateEventArg[] = [];
+    const defeatEvents: CharacterEventArg[] = [];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
       for (const ch of shiftLeft(player.characters, activeIdx)) {
         if (ch.variables.alive && ch.variables.health <= 0) {
-          const defeatedModifier = new DefeatedModifierImpl(ch);
-          this.state = useSyncSkill(this.state, "onBeforeDefeated", (st) => {
-            defeatedModifier.setCaller(st);
-            return defeatedModifier;
-          });
-          if (defeatedModifier._immuneTo) {
+          const zeroHealthEventArg = new ZeroHealthEventArg(this.state, ch);
+          await this.emitEvent("onZeroHealth", zeroHealthEventArg);
+          if (zeroHealthEventArg._immuneTo) {
             // TODO
             continue;
           }
-          defeatEvents.push({
-            character: ch,
-            state: this.state,
-          });
+          defeatEvents.push(new CharacterEventArg(this.state, ch));
           let mut: Mutation = {
             type: "modifyEntityVar",
             state: ch,
@@ -1059,15 +1049,22 @@ export class Game {
       await this.switchActive(1, a1);
     }
     for (const defeatEvent of defeatEvents) {
-      await this.handleEvents(["onDefeated", defeatEvent]);
+      await this.emitEvent("onDefeated", defeatEvent);
     }
     return defeatEvents.length > 0;
   }
 
-  private async handleEvents(...actions: DeferredAction[]) {
-    for await (const events of this.doHandleEvents(actions)) {
-      await this.handleEvents(...events);
+  private async handleEvents(actions: EventAndRequest[], hasIo: boolean) {
+    for await (const events of this.doHandleEvents(actions, hasIo)) {
+      await this.handleEvents(events, hasIo);
     }
+  }
+  private async emitEvent<E extends EventNames>(
+    name: E,
+    arg: EventArgOf<E>,
+    hasIo = true,
+  ) {
+    await this.handleEvents([[name, arg] as any], hasIo);
   }
 }
 

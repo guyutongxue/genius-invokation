@@ -62,7 +62,7 @@ export const DvalinsSigh = status(125022)
  * 可用次数：1
  */
 export const TotalCollapse = status(125021)
-  .on("beforeDamaged", (c) => [DamageType.Physical, DamageType.Anemo].includes(c.damageInfo.type))
+  .on("beforeDamaged", (c, e) => [DamageType.Physical, DamageType.Anemo].includes(e.type))
   .usage(1)
   .increaseDamage(2)
   .done();

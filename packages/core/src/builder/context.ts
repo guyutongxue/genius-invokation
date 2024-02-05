@@ -1,18 +1,19 @@
 import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
 
-import {
-  EntityArea,
-  EntityDefinition,
-  EntityType,
-  ExEntityType,
-} from "../base/entity";
+import { EntityArea, EntityType, ExEntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
-  DamageModifierImpl,
-  DeferredAction,
+  EVENT_MAP,
+  EventAndRequest,
+  EventAndRequestConstructorArgs,
+  EventAndRequestNames,
+  EventArgOf,
+  InlineEventNames,
+  ModifyDamage0EventArg,
+  SkillDescription,
   SkillInfo,
-  useSyncSkill,
+  constructEventAndRequestArg,
 } from "../base/skill";
 import {
   CardState,
@@ -21,6 +22,7 @@ import {
   GameState,
 } from "../base/state";
 import {
+  allEntities,
   allEntitiesAtArea,
   drawCard,
   elementOfCharacter,
@@ -45,32 +47,18 @@ import {
 } from "./type";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
-import {
-  NontrivialDamageType,
-  OptionalDamageInfo,
-  REACTION_DESCRIPTION,
-  REACTION_MAP,
-} from "./reaction";
+import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
+import { OptionalDamageInfo, getReactionDescription } from "./reaction";
 import { flip } from "@gi-tcg/utils";
+import { GetVarFromExt } from "./entity";
 
 type WrapArray<T> = T extends readonly any[] ? T : T[];
 
-type QueryFn<
-  Readonly extends boolean,
-  Ext extends object,
-  CallerType extends ExEntityType,
-  Ret,
-> = (ctx: ExtendedSkillContext<Readonly, Ext, CallerType>) => Ret;
-
 type TargetQueryArg<
   Readonly extends boolean,
-  Ext extends object,
+  Ext,
   CallerType extends ExEntityType,
-> =
-  | QueryFn<Readonly, Ext, CallerType, CharacterState | CharacterState[]>
-  | CharacterState
-  | CharacterState[]
-  | string;
+> = CharacterState | CharacterState[] | string;
 
 interface DrawCardsOpt {
   who?: "my" | "opp";
@@ -83,10 +71,10 @@ interface DrawCardsOpt {
  */
 export class SkillContext<
   Readonly extends boolean,
-  Ext extends object,
+  Ext,
   CallerType extends ExEntityType,
 > {
-  private readonly eventPayloads: DeferredAction[] = [];
+  private readonly eventAndRequests: EventAndRequest[] = [];
   public readonly callerArea: EntityArea;
 
   /**
@@ -103,6 +91,7 @@ export class SkillContext<
   constructor(
     private _state: GameState,
     public readonly skillInfo: SkillInfo,
+    public readonly eventArg: Ext,
   ) {
     this.callerArea = getEntityArea(_state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
@@ -123,7 +112,38 @@ export class SkillContext<
     return this._state.currentTurn === this.callerArea.who;
   }
 
-  $<Ret>(arg: QueryFn<Readonly, Ext, CallerType, Ret>): Ret;
+  private handleInlineEvent<E extends InlineEventNames>(
+    event: E,
+    arg: EventArgOf<E>,
+  ) {
+    const entities = allEntities(this.state, true);
+    const infos = entities
+      .flatMap((e) =>
+        e.definition.skills
+          .filter((s) => s.triggerOn === event)
+          .map((s) => [e, s] as const),
+      )
+      .map<SkillInfo>(([e, s]) => ({
+        caller: e,
+        definition: s,
+        fromCard: null,
+        requestBy: null,
+      }));
+    for (const info of infos) {
+      arg._setCurrentCaller(info.caller);
+      if (
+        "filter" in info.definition &&
+        !(0, info.definition.filter)(this.state, info, arg)
+      ) {
+        continue;
+      }
+      const desc = info.definition.action as SkillDescription<EventArgOf<E>>;
+      let newEvents;
+      [this._state, newEvents] = desc(this.state, info, arg);
+      this.eventAndRequests.push(...newEvents);
+    }
+  }
+
   $<const Q extends string>(
     arg: Q,
   ): ExContextType<Readonly, GuessedTypeOfQuery<Q>> | undefined;
@@ -146,7 +166,6 @@ export class SkillContext<
    * - 直接传入具体的对象上下文。
    */
 
-  $$<Ret>(arg: QueryFn<Readonly, Ext, CallerType, Ret>): WrapArray<Ret>;
   $$<const Q extends string>(
     arg: Q,
   ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[];
@@ -214,7 +233,7 @@ export class SkillContext<
   // MUTATIONS
 
   get events() {
-    return this.eventPayloads;
+    return this.eventAndRequests;
   }
 
   mutate(...mutations: Mutation[]) {
@@ -223,8 +242,12 @@ export class SkillContext<
     }
   }
 
-  emitEvent(...payloads: DeferredAction) {
-    this.eventPayloads.push(payloads);
+  emitEvent<E extends EventAndRequestNames>(
+    event: E,
+    ...args: EventAndRequestConstructorArgs<E>
+  ) {
+    const arg = constructEventAndRequestArg(event, ...args);
+    this.eventAndRequests.push([event, arg] as any);
   }
 
   switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
@@ -242,12 +265,11 @@ export class SkillContext<
       who: switchToTarget.who,
       value: switchToTarget.state,
     });
-    this.emitEvent("onSwitchActive", {
+    this.emitEvent("onSwitchActive", this.state, {
       type: "switchActive",
       who: switchToTarget.who,
       from: from.state,
       to: switchToTarget.state,
-      state: this.state,
     });
   }
 
@@ -281,10 +303,7 @@ export class SkillContext<
           varName: "alive",
           value: 1,
         });
-        this.emitEvent("onRevive", {
-          character: targetState,
-          state: this.state,
-        });
+        this.emitEvent("onRevive", this.state, targetState);
       }
       const targetInjury =
         targetState.definition.constants.maxHealth -
@@ -296,13 +315,12 @@ export class SkillContext<
         varName: "health",
         value: targetState.variables.health + finalValue,
       });
-      this.emitEvent("onHeal", {
+      this.emitEvent("onHeal", this.state, {
         expectedValue: value,
         finalValue,
         source: this.callerState,
         via: this.skillInfo,
         target: targetState,
-        state: this.state,
       });
     }
   }
@@ -326,25 +344,12 @@ export class SkillContext<
         via: this.skillInfo,
       };
       if (type !== DamageType.Piercing) {
-        const damageModifier = new DamageModifierImpl(damageInfo);
-        this._state = useSyncSkill(
-          this._state,
-          "onBeforeDamage0",
-          (st) => {
-            damageModifier.setCaller(st);
-            return damageModifier;
-          },
-          this.skillInfo,
+        const damageModifier = new ModifyDamage0EventArg(
+          this.state,
+          damageInfo,
         );
-        this._state = useSyncSkill(
-          this._state,
-          "onBeforeDamage1",
-          (st) => {
-            damageModifier.setCaller(st);
-            return damageModifier;
-          },
-          this.skillInfo,
-        );
+        this.handleInlineEvent("modifyDamage0", damageModifier);
+        this.handleInlineEvent("modifyDamage1", damageModifier);
         damageInfo = damageModifier.damageInfo;
 
         if (
@@ -362,7 +367,7 @@ export class SkillContext<
         0,
         targetState.variables.health - damageInfo.value,
       );
-      this.emitEvent("onDamage", { ...damageInfo, state: this._state });
+      this.emitEvent("onDamage", this.state, damageInfo);
       this.mutate({
         type: "modifyEntityVar",
         state: targetState,
@@ -413,23 +418,22 @@ export class SkillContext<
           target: target.state,
           isDamage: false,
         };
-    const damageModifier = new DamageModifierImpl(optDamageInfo);
-    damageModifier.setCaller(this.callerState);
+    const damageModifier = new ModifyDamage0EventArg(this.state, optDamageInfo);
+    damageModifier._setCurrentCaller(this.callerState);
     if (reaction !== null) {
-      this.emitEvent("onElementalReaction", {
+      this.emitEvent("onReaction", this.state, {
         type: reaction,
         via: this.skillInfo,
         target: target.state,
         damage,
-        state: this._state,
       });
-      const reactionDescription = REACTION_DESCRIPTION[reaction];
+      const reactionDescription = getReactionDescription(reaction);
       const [newState, events] = reactionDescription(
         this._state,
         this.skillInfo,
         damageModifier,
       );
-      this.eventPayloads.push(...events);
+      this.eventAndRequests.push(...events);
       this._state = newState;
     }
     return damageModifier.damageInfo;
@@ -511,10 +515,9 @@ export class SkillContext<
           });
         }
       }
-      this.emitEvent("onEnter", {
-        entity: getEntityById(this.state, existOverride.id),
-        state: this.state,
-        override: existOverride,
+      this.emitEvent("onEnter", this.state, {
+        newState: getEntityById(this.state, existOverride.id),
+        overrided: existOverride,
       });
     } else {
       const initState: EntityState = {
@@ -530,10 +533,9 @@ export class SkillContext<
         value: initState,
       });
       const newState = getEntityById(this._state, initState.id);
-      this.emitEvent("onEnter", {
-        entity: newState,
-        state: this.state,
-        override: null,
+      this.emitEvent("onEnter", this.state, {
+        newState,
+        overrided: null,
       });
     }
   }
@@ -586,19 +588,17 @@ export class SkillContext<
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
-      const stateBeforeDispose = this.state;
+      this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
         type: "disposeEntity",
         oldState: entityState,
       });
-      this.emitEvent("onDisposing", {
-        entity: entityState as EntityState,
-        state: stateBeforeDispose,
-      });
     }
   }
 
-  getVariable(prop: string, target?: CharacterState | EntityState) {
+  getVariable(prop: GetVarFromExt<Ext>): number;
+  getVariable(prop: string, target?: CharacterState | EntityState): number;
+  getVariable(prop: any, target?: CharacterState | EntityState) {
     if (target) {
       return this.of(target).getVariable(prop);
     } else {
@@ -606,8 +606,14 @@ export class SkillContext<
     }
   }
 
+  setVariable(prop: GetVarFromExt<Ext>, value: number): void;
   setVariable(
     prop: string,
+    value: number,
+    target?: CharacterState | EntityState,
+  ): void;
+  setVariable(
+    prop: any,
     value: number,
     target?: CharacterState | EntityState,
   ) {
@@ -620,8 +626,14 @@ export class SkillContext<
     });
   }
 
+  addVariable(prop: GetVarFromExt<Ext>, value: number): void;
   addVariable(
     prop: string,
+    value: number,
+    target?: CharacterState | EntityState,
+  ): void;
+  addVariable(
+    prop: any,
     value: number,
     target?: CharacterState | EntityState,
   ) {
@@ -757,17 +769,10 @@ export class SkillContext<
     }
   }
   switchCards() {
-    this.emitEvent("requestSwitchCards", {
-      who: this.callerArea.who,
-      via: this.skillInfo,
-    });
+    this.emitEvent("requestSwitchHands", this.skillInfo, this.callerArea.who);
   }
   reroll(times: number) {
-    this.emitEvent("requestReroll", {
-      who: this.callerArea.who,
-      via: this.skillInfo,
-      times,
-    });
+    this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
   useSkill(skill: SkillHandle | "normal") {
     let skillId;
@@ -784,10 +789,7 @@ export class SkillContext<
     } else {
       skillId = skill;
     }
-    this.emitEvent("requestUseSkill", {
-      via: this.skillInfo,
-      requestingSkillId: skillId,
-    });
+    this.emitEvent("requestUseSkill", this.skillInfo, skillId);
   }
 
   random<T>(...items: T[]): T {
@@ -831,9 +833,9 @@ type SkillContextMutativeProps =
  *
  * `StrictlyTypedCharacterContext` 等同理。
  */
-export type StrictlyTypedSkillContext<
+export type TypedSkillContext<
   Readonly extends boolean,
-  Ext extends object,
+  Ext,
   CallerType extends ExEntityType,
 > = Omit<
   Readonly extends true
@@ -841,12 +843,6 @@ export type StrictlyTypedSkillContext<
     : SkillContext<Readonly, Ext, CallerType>,
   InternalProp
 >;
-
-export type ExtendedSkillContext<
-  Readonly extends boolean,
-  Ext extends object,
-  CallerType extends ExEntityType,
-> = StrictlyTypedSkillContext<Readonly, Ext, CallerType> & Ext;
 
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
@@ -916,7 +912,7 @@ export class CharacterContext<
   Readonly extends boolean,
 > extends CharacterContextBase {
   constructor(
-    private readonly skillContext: SkillContext<Readonly, {}, any>,
+    private readonly skillContext: SkillContext<Readonly, any, any>,
     id: number,
   ) {
     super(skillContext.state, id);

@@ -24,16 +24,4 @@ export type {
 export { DiceType, DamageType, Aura } from "@gi-tcg/typings";
 export type { CharacterState, EntityState } from "../base/state";
 
-export {
-  getReaction,
-  isReaction,
-  isReactionRelatedTo,
-  isReactionSwirl,
-} from "./reaction";
-export {
-  canDeductCostType,
-  checkDamageSkillType,
-  checkUseDiceSkillType,
-  checkCardTag,
-} from "./util";
 export { flip } from "@gi-tcg/utils";

@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType, Aura, isReactionSwirl } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, Aura } from "@gi-tcg/core/builder";
 
 /**
  * @id 115072
@@ -152,7 +152,7 @@ export const SkivingNewAndImproved = card(215071)
   .talent(Sayu)
   .on("enter")
   .useSkill(YoohooArtFuuinDash)
-  .on("dealDamage", (c, e) => c.self.master().isActive() && isReactionSwirl(e))
+  .on("dealDamage", (c, e) => c.self.master().isActive() && e.isSwirl())
   .listenToPlayer()
   .usagePerRound(1)
   .drawCards(2)

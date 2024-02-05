@@ -4,6 +4,8 @@
     "lib": ["ES2023"],
     "module": "ES2022",
     "moduleResolution": "Bundler",
+    
+    "useDefineForClassFields": true,
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

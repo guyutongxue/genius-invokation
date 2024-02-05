@@ -13,15 +13,23 @@ import {
 } from "./skill";
 import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
 import { Draft } from "immer";
-import { isReactionSwirl } from "./reaction";
+import { isReactionSwirl } from "../base/reaction";
+
+declare const VARNAMES: unique symbol;
 
 export type ExtOfEntity<
   Vars extends string,
   Event extends DetailedEventNames,
 > = {
-  setVariable<V extends Vars>(prop: V, value: number): void;
-  addVariable<V extends Vars>(prop: V, value: number): void;
+  [VARNAMES]: Vars
 } & DetailedEventExt<Event>;
+
+type X = BuilderWithShortcut<ExtOfEntity<"clue", "useSkill">, "support", TriggeredSkillBuilder<ExtOfEntity<"clue", "useSkill">, "support", "useSkill", "clue">>;
+declare let x: X;
+
+//x.addVariable();
+
+export type GetVarFromExt<T> = T extends { [VARNAMES]: infer V } ? V : never;
 
 export interface VariableOptions {
   recreateMax?: number;
@@ -103,7 +111,7 @@ export class EntityBuilder<
     if (visible) {
       this._visibleVarName = name;
     }
-    return this;
+    return this as any;
   }
 
   duration(count: number, opt?: VariableOptions): this {
@@ -118,11 +126,11 @@ export class EntityBuilder<
     this.tags("shield");
     return this.variable("shield", count, { recreateMax: max })
       .on("beforeDamaged")
-      .do((c) => {
+      .do((c, e) => {
         const shield = c.getVariable("shield");
-        const currentValue = c.damageInfo.value;
+        const currentValue = e.value;
         const decreased = Math.min(shield, currentValue);
-        c.decreaseDamage(decreased);
+        e.decreaseDamage(decreased);
         c.addVariable("shield", -decreased);
         if (shield <= currentValue) {
           c.dispose();
@@ -182,9 +190,9 @@ export class EntityBuilder<
     if (type === "swirledAnemo") {
       return this.hintIcon(DamageType.Anemo)
         .hintText(`${value}`)
-        .once("dealDamage", (c) => isReactionSwirl(c.eventArg) !== null)
-        .do((c) => {
-          const swirledType = isReactionSwirl(c.eventArg)!;
+        .once("dealDamage", (c, e) => isReactionSwirl(e.damageInfo) !== null)
+        .do((c, e) => {
+          const swirledType = isReactionSwirl(e.damageInfo)!;
           c.setVariable("hintIcon", swirledType);
         })
         .on("endPhase")

@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType, DiceType, canDeductCostType, checkDamageSkillType, SkillHandle } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115042
@@ -9,9 +9,8 @@ import { character, skill, status, card, DamageType, DiceType, canDeductCostType
  * 所附属角色不再附属夜叉傩面时：移除此效果。
  */
 export const ConquerorOfEvilWrathDeity = status(115042)
-  .on("beforeUseDice", (c) => c.currentAction.type === "useSkill" && 
-    c.skillInfo.definition.id === LemniscaticWindCycling && 
-    canDeductCostType(c, DiceType.Anemo))
+  .on("deductDiceSkill", (c, e) => e.action.skill.definition.id === LemniscaticWindCycling && 
+    e.canDeductCostOfType(DiceType.Anemo))
   .usage(2)
   .deductCost(DiceType.Anemo, 1)
   .done();
@@ -27,13 +26,13 @@ export const ConquerorOfEvilWrathDeity = status(115042)
  */
 export const YakshasMask = status(115041)
   .duration(2)
-  .on("beforeDamageType", (c) => c.damageInfo.type === DamageType.Physical)
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Anemo)
-  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Anemo)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Anemo)
   .increaseDamage(1)
-  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal") && c.player.canPlunging)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canPlunging)
   .increaseDamage(2)
-  .on("beforeSwitchDeductDice", (c) => c.self.master().isActive())
+  .on("deductDiceSwitch", (c) => c.self.master().isActive())
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("selfDispose")

@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType, getReaction, StatusHandle } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, StatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 117031
@@ -10,7 +10,7 @@ import { character, skill, status, combatStatus, card, DamageType, getReaction, 
 export const SeedOfSkandha: StatusHandle = status(117031)
   .tags("debuff")
   .on("damaged", (c, e) =>
-    getReaction(e) !== null && 
+    e.getReaction() !== null && 
     c.of(e.target).hasStatus(SeedOfSkandha)
   )
   .listenToPlayer()
@@ -40,7 +40,7 @@ export const SeedOfSkandha: StatusHandle = status(117031)
 export const ShrineOfMaya01 = combatStatus(117033)
   .conflictWith(117032)
   .duration(3)
-  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .on("modifyDamage", (c, e) => e.getReaction())
   .increaseDamage(1)
   .on("enter", (c) => 
     c.$("my characters has equipment with definition id 217031") && // 装备有心识蕴藏之种
@@ -62,7 +62,7 @@ export const ShrineOfMaya01 = combatStatus(117033)
 export const ShrineOfMaya = combatStatus(117032)
   .conflictWith(117033)
   .duration(2)
-  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .on("modifyDamage", (c, e) => e.getReaction())
   .increaseDamage(1)
   .on("enter", (c) => 
     c.$("my characters has equipment with definition id 217031") && // 装备有心识蕴藏之种

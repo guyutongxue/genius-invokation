@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType, DiceType, checkUseDiceSkillType, SkillHandle, canDeductCostType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, DiceType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115034
@@ -22,7 +22,7 @@ export const Stormeye = summon(115034)
  */
 export const WindsOfHarmony = combatStatus(115033)
   .oneDuration()
-  .once("beforeUseDice", (c) => checkUseDiceSkillType(c, "normal") && canDeductCostType(c, DiceType.Void))
+  .once("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
   .deductCost(DiceType.Void, 1)
   .done();
 
@@ -34,7 +34,7 @@ export const WindsOfHarmony = combatStatus(115033)
  * 可用次数：2
  */
 export const Stormzone01 = combatStatus(115032)
-  .on("beforeSwitchDeductDice")
+  .on("deductDiceSwitch")
   .usage(2)
   .deductCost(DiceType.Omni, 1)
   .combatStatus(WindsOfHarmony)
@@ -48,7 +48,7 @@ export const Stormzone01 = combatStatus(115032)
  * 可用次数：2
  */
 export const Stormzone = combatStatus(115031)
-  .on("beforeSwitchDeductDice")
+  .on("deductDiceSwitch")
   .usage(2)
   .deductCost(DiceType.Omni, 1)
   .done();

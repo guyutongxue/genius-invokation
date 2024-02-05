@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType, checkDamageSkillType, SkillHandle } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 12074
@@ -36,9 +36,9 @@ export const HeronShield = status(112071)
  */
 export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
   .duration(2)
-  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
   .increaseDamage(1)
-  .on("beforeDamageType", (c) => {
+  .on("modifyDamageType", (c) => {
     const { type, tags } = c.skillInfo.caller.definition;
     if (type !== "character") { return false; }
     return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
@@ -47,7 +47,7 @@ export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
   .on("switchActive")
   .usagePerRound(1)
   .damage(DamageType.Hydro, 1)
-  .on("skill", (c, e) => e.definition.skillType === "normal")
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usagePerRound(1)
   .damage(DamageType.Hydro, 1)
   .done();
@@ -63,9 +63,9 @@ export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
  */
 export const PrayerOfTheCrimsonCrown = combatStatus(112072)
   .duration(2)
-  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
   .increaseDamage(1)
-  .on("beforeDamageType", (c) => {
+  .on("modifyDamageType", (c) => {
     const { type, tags } = c.skillInfo.caller.definition;
     if (type !== "character") { return false; }
     return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");

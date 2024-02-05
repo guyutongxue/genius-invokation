@@ -11,7 +11,7 @@ import { character, skill, summon, card, DamageType, SummonHandle } from "@gi-tc
 export const OceanicMimicFrog = summon(122013)
   .hintIcon(DamageType.Hydro)
   .hintText("2")
-  .on("beforeDamaged", (c) => c.of(c.damageInfo.target).isActive())
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .on("endPhase", (c) => c.getVariable("usage") === 0)

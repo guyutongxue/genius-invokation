@@ -11,7 +11,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
 export const Reflection = summon(112031)
   .endPhaseDamage(DamageType.Hydro, 1)
   .dispose()
-  .on("beforeDamaged", (c) => c.of(c.damageInfo.target).isActive())
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .done();
@@ -72,7 +72,7 @@ export const StellarisPhantasm = skill(12033)
  */
 export const IllusoryTorrent = skill(12034)
   .type("passive")
-  .on("beforeSwitchFast", (c) => c.self.isActive())
+  .on("fastSwitch", (c) => c.self.isActive())
   .setFastAction()
   .done();
 

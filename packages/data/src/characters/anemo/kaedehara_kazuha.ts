@@ -1,4 +1,4 @@
-import { character, skill, summon, status, combatStatus, card, DamageType, Aura, isReactionSwirl } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, Aura } from "@gi-tcg/core/builder";
 
 /**
  * @id 115052
@@ -21,10 +21,10 @@ export const AutumnWhirlwind = summon(115052)
  * 角色使用技能后：移除此效果。
  */
 export const MidareRanzan = status(115051)
-  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Anemo)
   .increaseDamage(1)
-  .on("skill")
+  .on("useSkill")
   .dispose()
   .done();
 
@@ -36,10 +36,10 @@ export const MidareRanzan = status(115051)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanCryo = status(115053)
-  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Cryo)
   .increaseDamage(1)
-  .on("skill")
+  .on("useSkill")
   .dispose()
   .done();
 
@@ -51,10 +51,10 @@ export const MidareRanzanCryo = status(115053)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanElectro = status(115056)
-  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Electro)
   .increaseDamage(1)
-  .on("skill")
+  .on("useSkill")
   .dispose()
   .done();
 
@@ -66,10 +66,10 @@ export const MidareRanzanElectro = status(115056)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanHydro = status(115054)
-  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Hydro)
   .increaseDamage(1)
-  .on("skill")
+  .on("useSkill")
   .dispose()
   .done();
 
@@ -81,10 +81,10 @@ export const MidareRanzanHydro = status(115054)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanPyro = status(115055)
-  .on("beforeSkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c) => c.player.canPlunging)
   .changeDamageType(DamageType.Pyro)
   .increaseDamage(1)
-  .on("skill")
+  .on("useSkill")
   .dispose()
   .done();
 
@@ -96,7 +96,7 @@ export const MidareRanzanPyro = status(115055)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuCryo = combatStatus(115057)
-  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Cryo)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Cryo)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -109,7 +109,7 @@ export const PoeticsOfFuubutsuCryo = combatStatus(115057)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuElectro = combatStatus(115050)
-  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Electro)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Electro)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -122,7 +122,7 @@ export const PoeticsOfFuubutsuElectro = combatStatus(115050)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuHydro = combatStatus(115058)
-  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Hydro)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Hydro)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -135,7 +135,7 @@ export const PoeticsOfFuubutsuHydro = combatStatus(115058)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuPyro = combatStatus(115059)
-  .on("beforeDealDamage", (c) => c.damageInfo.type === DamageType.Pyro)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -212,7 +212,7 @@ export const KazuhaSlash = skill(15053)
  */
 export const ChihayaburuPassive = skill(15054)
   .type("passive")
-  .on("skill", (c, e) => e.definition.id === Chihayaburu)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === Chihayaburu)
   .switchActive("my next")
   .done();
 
@@ -241,9 +241,9 @@ export const KaedeharaKazuha = character(1505)
 export const PoeticsOfFuubutsu = card(215051)
   .costAnemo(3)
   .talent(KaedeharaKazuha)
-  .on("dealDamage", (c, e) => isReactionSwirl(e))
+  .on("dealDamage", (c, e) => e.isSwirl())
   .do((c, e) => {
-    const swirled = isReactionSwirl(e)!;
+    const swirled = e.isSwirl()!;
     switch (swirled) {
       case DamageType.Cryo:
         c.combatStatus(PoeticsOfFuubutsuCryo);

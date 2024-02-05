@@ -1,4 +1,4 @@
-import { DiceType, canDeductCostType, card, checkDamageSkillType, combatStatus } from "@gi-tcg/core/builder";
+import { DiceType, card, combatStatus } from "@gi-tcg/core/builder";
 import { Satiated } from "../../commons";
 
 /**
@@ -11,7 +11,7 @@ import { Satiated } from "../../commons";
 export const JueyunGuoba = card(333001)
   .food()
   .toStatus("@targets.0")
-  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -26,7 +26,7 @@ export const AdeptusTemptation = card(333002)
   .costVoid(2)
   .food()
   .toStatus("@targets.0")
-  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "burst"))
+  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("burst"))
   .increaseDamage(3)
   .done();
 
@@ -56,9 +56,7 @@ export const NorthernSmokedChicken = card(333004)
   .food()
   .toStatus("@targets.0")
   .oneDuration()
-  .once("beforeUseDice", (c) => c.currentAction.type === "useSkill" &&
-    c.currentAction.skill.definition.skillType === "normal" &&
-    canDeductCostType(c, DiceType.Void))
+  .once("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
   .deductCost(DiceType.Void, 1)
   .done();
 
@@ -116,9 +114,7 @@ export const MintyMeatRolls = card(333008)
   .food()
   .toStatus("@targets.0")
   .oneDuration()
-  .on("beforeUseDice", (c) => c.currentAction.type === "useSkill" &&
-    c.currentAction.skill.definition.skillType === "normal" &&
-    canDeductCostType(c, DiceType.Void))
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
   .usage(3)
   .deductCost(DiceType.Void, 1)
   .done();
@@ -162,7 +158,7 @@ export const SashimiPlatter = card(333010)
   .food()
   .toStatus("@targets.0")
   .oneDuration()
-  .on("beforeSkillDamage", (c) => checkDamageSkillType(c, "normal"))
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -177,7 +173,7 @@ export const TandooriRoastChicken = card(333011)
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters")
-  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "elemental"))
+  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("elemental"))
   .increaseDamage(2)
   .done();
 
@@ -207,7 +203,7 @@ export const FishAndChips = card(333013)
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters")
-  .once("beforeUseDice", (c) => c.currentAction.type === "useSkill")
+  .once("deductDiceSkill")
   .deductCost(DiceType.Omni, 1)
   .done();
 

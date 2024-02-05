@@ -169,7 +169,7 @@ export function hasReplacedAction(player: PlayerState): SkillInfo | null {
       (st) =>
         [
           st,
-          st.definition.skills.find((sk) => sk.triggerOn === "onReplaceAction"),
+          st.definition.skills.find((sk) => sk.triggerOn === "replaceAction"),
         ] as const,
     )
     .filter(([st, sk]) => sk);

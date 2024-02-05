@@ -1,4 +1,4 @@
-import { DiceType, card, checkCardTag } from "@gi-tcg/core/builder";
+import { DiceType, card } from "@gi-tcg/core/builder";
 
 /**
  * @id 330001
@@ -12,7 +12,7 @@ export const AncientCourtyard = card(330001)
   .filter((c) => c.$("my character has equipment with tag (weapon) or my character has equipment with tag (artifact)"))
   .toCombatStatus(300001)
   .oneDuration()
-  .on("beforePlayCardDeductDice", (c) => checkCardTag(c, "weapon") || checkCardTag(c, "artifact"))
+  .on("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
   .deductCost(DiceType.Omni, 2)
   .done();
 
@@ -97,6 +97,6 @@ export const PassingOfJudgment = card(330006)
   .legend()
   .toCombatStatus(330006, "opp")
   .tags("disableEvent")
-  .on("playCard", (c, e) => e.card.definition.type === "event")
+  .on("playCard", (c, e) => e.action.card.definition.type === "event")
   .usage(3)
   .done();

@@ -11,7 +11,7 @@ export const MelodyLoop = summon(112011)
   .endPhaseDamage(DamageType.Heal, 1, "all my characters")
   .usage(2)
   .apply(DamageType.Hydro, "active")
-  .on("beforeSwitchDeductDice", (c) => c.$("my characters has equipment with definition id 212011")) // 装备有天赋的芭芭拉在场时
+  .on("deductDiceSwitch", (c) => c.$("my characters has equipment with definition id 212011")) // 装备有天赋的芭芭拉在场时
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .done();
