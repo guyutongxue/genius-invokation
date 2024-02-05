@@ -16,25 +16,28 @@ import {
   ActionEventArg,
 } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
-import { SkillContext, TypedSkillContext } from "./context";
+import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
 import { SkillHandle } from "./type";
 import { EntityArea, ExEntityType } from "../base/entity";
-import {
-  EntityBuilder,
-  EntityBuilderResultT,
-  ExtOfEntity,
-  VariableOptions,
-} from "./entity";
+import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
 
-type SkillOperation<Ext, CallerType extends ExEntityType> = (
-  c: TypedSkillContext<false, Ext, CallerType>,
-  e: Ext,
+export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
+export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
+  [K in keyof BuilderMetaBase]: BM[K];
+} & { readonly: true };
+export type WritableMetaOf<BM extends BuilderMetaBase> = {
+  [K in keyof BuilderMetaBase]: BM[K];
+} & { readonly: false };
+
+type SkillOperation<Meta extends BuilderMetaBase> = (
+  c: TypedSkillContext<WritableMetaOf<Meta>>,
+  e: Meta["eventArgType"],
 ) => void;
 
-export type SkillFilter<Ext, CallerType extends ExEntityType> = (
-  c: TypedSkillContext<true, Ext, CallerType>,
-  e: Ext,
+export type SkillFilter<Meta extends BuilderMetaBase> = (
+  c: TypedSkillContext<ReadonlyMetaOf<Meta>>,
+  e: Meta["eventArgType"],
 ) => unknown;
 
 enum ListenTo {
@@ -88,7 +91,9 @@ function checkRelative(
 type Descriptor<E extends EventNames> = readonly [
   E,
   (
-    c: TypedSkillContext<true, EventArgOf<E>, any>,
+    c: TypedSkillContext<
+      Omit<ContextMetaBase, "eventArgType"> & { eventArgType: EventArgOf<E> }
+    >,
     e: EventArgOf<E>,
     listen: RelativeArg,
   ) => boolean,
@@ -279,7 +284,7 @@ const detailedEventDictionary = {
   }),
 } satisfies Record<string, Descriptor<any>>;
 
-type OverrideExtType = {
+type OverrideEventArgType = {
   deductDiceSwitch: ModifyActionEventArg<SwitchActiveInfo>;
   deductDiceCard: ModifyActionEventArg<PlayCardInfo>;
   deductDiceSkill: ModifyActionEventArg<UseSkillInfo>;
@@ -290,32 +295,30 @@ type OverrideExtType = {
 
 type DetailedEventDictionary = typeof detailedEventDictionary;
 export type DetailedEventNames = keyof DetailedEventDictionary;
-export type DetailedEventExt<E extends DetailedEventNames> =
-  E extends keyof OverrideExtType
-    ? OverrideExtType[E]
+export type DetailedEventArgOf<E extends DetailedEventNames> =
+  E extends keyof OverrideEventArgType
+    ? OverrideEventArgType[E]
     : EventArgOf<DetailedEventDictionary[E][0]>;
 
 export type SkillInfoGetter = () => SkillInfo;
 
-const EXT_TYPE_HELPER: unique symbol = Symbol();
-const CALLER_TYPE_HELPER: unique symbol = Symbol();
+const BUILDER_META_TYPE: unique symbol = Symbol();
 
-export abstract class SkillBuilder<Ext, CallerType extends ExEntityType> {
-  declare [EXT_TYPE_HELPER]: Ext;
-  declare [CALLER_TYPE_HELPER]: CallerType;
+export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
+  declare [BUILDER_META_TYPE]: Meta;
 
-  protected operations: SkillOperation<Ext, CallerType>[] = [];
+  protected operations: SkillOperation<Meta>[] = [];
   constructor(protected readonly id: number) {}
   protected applyFilter = false;
-  protected _filter: SkillFilter<Ext, CallerType> = () => true;
+  protected _filter: SkillFilter<Meta> = () => true;
 
-  if(filter: SkillFilter<Ext, CallerType>): this {
+  if(filter: SkillFilter<Meta>): this {
     this._filter = filter;
     this.applyFilter = true;
     return this;
   }
 
-  do(op: SkillOperation<Ext, CallerType>): this {
+  do(op: SkillOperation<Meta>): this {
     if (this.applyFilter) {
       this.operations.push((c, e) => {
         if (!(0, this._filter)(c as any, e)) return;
@@ -342,13 +345,9 @@ export abstract class SkillBuilder<Ext, CallerType extends ExEntityType> {
    * @param extGenerator 生成扩展点的函数
    * @returns 内部技能描述函数
    */
-  protected getAction(arg: Ext): SkillDescription<void> {
+  protected getAction(arg: Meta["eventArgType"]): SkillDescription<void> {
     return (state, skillInfo) => {
-      const ctx = new SkillContext<false, Ext, CallerType>(
-        state,
-        skillInfo,
-        arg,
-      );
+      const ctx = new SkillContext<WritableMetaOf<Meta>>(state, skillInfo, arg);
       for (const op of this.operations) {
         op(ctx, ctx.eventArg);
       }
@@ -370,44 +369,38 @@ type AvailablePropOf<Ctx extends object> = {
   [K in keyof Ctx]: AvailablePropImpl<Ctx, K>;
 }[keyof Ctx];
 
-type SkillContextShortCutSource<
-  Ext,
-  CallerType extends ExEntityType,
-> = TypedSkillContext<false, Ext, CallerType> & Omit<Ext, `_${string}`>;
+type SkillContextShortCutSource<Meta extends ContextMetaBase> =
+  TypedSkillContext<Omit<Meta, "readonly"> & { readonly: false }> &
+    Omit<Meta["eventArgType"], `_${string}`>;
 
-type SkillContextShortcutProps<
-  Ext,
-  CallerType extends ExEntityType,
-> = AvailablePropOf<SkillContextShortCutSource<Ext, CallerType>>;
+type SkillContextShortcutProps<Meta extends ContextMetaBase> = AvailablePropOf<
+  SkillContextShortCutSource<Meta>
+>;
 
 // 所有返回 void 的方法的参数类型
 type SkillContextShortcutArgs<
-  Ext,
-  CallerType extends ExEntityType,
-  K extends keyof SkillContextShortCutSource<Ext, CallerType>,
-> = SkillContextShortCutSource<Ext, CallerType>[K] extends (
-  ...args: infer Args
-) => void
+  Meta extends ContextMetaBase,
+  K extends keyof SkillContextShortCutSource<Meta>,
+> = SkillContextShortCutSource<Meta>[K] extends (...args: infer Args) => void
   ? Args
   : never;
 
 // 带有直达方法的 Builder，使用 `enableShortcut` 生成
-export type BuilderWithShortcut<
-  Ext,
-  CallerType extends ExEntityType,
-  Original extends SkillBuilder<Ext, CallerType>,
-> = Original & {
-  [K in SkillContextShortcutProps<Ext, CallerType>]: (
-    ...args: SkillContextShortcutArgs<Ext, CallerType, K>
-  ) => BuilderWithShortcut<Ext, CallerType, Original>;
+export type BuilderWithShortcut<Original> = Original & {
+  [K in SkillContextShortcutProps<WritableMetaOf<ExtractBM<Original>>>]: (
+    ...args: SkillContextShortcutArgs<WritableMetaOf<ExtractBM<Original>>, K>
+  ) => BuilderWithShortcut<Original>;
 };
 
-type ExtractTArgs<T> = T extends {
-  [EXT_TYPE_HELPER]: infer Ext;
-  [CALLER_TYPE_HELPER]: infer CallerType;
+type ExtractBM<T> = T extends {
+  [BUILDER_META_TYPE]: infer Meta extends BuilderMetaBase;
 }
-  ? readonly [Ext, CallerType]
-  : readonly [never, never];
+  ? Meta
+  : never;
+
+type X = BuilderWithShortcut<TriggeredSkillBuilder<{ callerType: "character"; callerVars: "hello"; eventArgType: "character"; }, "roll">>;
+declare let x: X;
+type Y = SkillContextShortCutSource<WritableMetaOf<ExtractBM<X>>>["addVariable"]
 
 /**
  * 为 Builder 添加直达 SkillContext 的函数，即可
@@ -415,9 +408,9 @@ type ExtractTArgs<T> = T extends {
  * 直接简写为
  * `.PROP(ARGS)`
  */
-export function enableShortcut<T extends SkillBuilder<any, any>>(
+export function enableShortcut<T extends SkillBuilder<any>>(
   original: T,
-): BuilderWithShortcut<ExtractTArgs<T>[0], ExtractTArgs<T>[1], T> {
+): BuilderWithShortcut<T> {
   const proxy = new Proxy(original, {
     get(target, prop, receiver) {
       if (prop in target) {
@@ -448,17 +441,18 @@ interface UsageOptions extends VariableOptions {
 }
 
 export class TriggeredSkillBuilder<
-  Ext,
-  CallerType extends ExEntityType,
-  EN extends DetailedEventNames,
-  V extends string,
-> extends SkillBuilder<Ext, CallerType> {
-  private _triggerFilter: SkillFilter<Ext, CallerType>;
+  Meta extends BuilderMetaBase,
+  EventName extends DetailedEventNames,
+> extends SkillBuilder<Meta> {
+  private _triggerFilter: SkillFilter<Meta>;
   constructor(
     id: number,
-    private readonly triggerOn: EN,
-    private readonly parent: EntityBuilder<CallerType, V>,
-    triggerFilter: SkillFilter<Ext, CallerType> = () => true,
+    private readonly triggerOn: EventName,
+    private readonly parent: EntityBuilder<
+      Meta["callerType"],
+      Meta["callerVars"]
+    >,
+    triggerFilter: SkillFilter<Meta> = () => true,
   ) {
     super(id);
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
@@ -580,29 +574,38 @@ export class TriggeredSkillBuilder<
   }
   on<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>,
+    filter?: SkillFilter<{
+      eventArgType: DetailedEventArgOf<E>;
+      callerType: Meta["callerType"];
+      callerVars: Meta["callerVars"];
+    }>,
   ) {
     this.buildSkill();
     return this.parent.on(event, filter);
   }
   once<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<ExtOfEntity<V, E>, CallerType>,
+    filter?: SkillFilter<{
+      eventArgType: DetailedEventArgOf<E>;
+      callerType: Meta["callerType"];
+      callerVars: Meta["callerVars"];
+    }>,
   ) {
     this.buildSkill();
     return this.parent.once(event, filter);
   }
 
-  done(): EntityBuilderResultT<CallerType> {
+  done(): EntityBuilderResultT<Meta["callerType"]> {
     this.buildSkill();
     return this.parent.done();
   }
 }
 
-export abstract class SkillBuilderWithCost<Ext> extends SkillBuilder<
-  Ext,
-  "character"
-> {
+export abstract class SkillBuilderWithCost<EventArg> extends SkillBuilder<{
+  callerType: "character";
+  callerVars: never;
+  eventArgType: EventArg;
+}> {
   constructor(skillId: number) {
     super(skillId);
   }
@@ -643,7 +646,7 @@ export abstract class SkillBuilderWithCost<Ext> extends SkillBuilder<
   }
 }
 
-class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
+class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
   private _skillType: SkillType = "normal";
   private _gainEnergy = true;
   protected _cost: DiceType[] = [];
@@ -673,7 +676,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<{}> {
     if (this._gainEnergy) {
       this.do((c) => c.self.gainEnergy(1));
     }
-    const action: SkillDescription<void> = this.getAction(() => ({}));
+    const action: SkillDescription<void> = this.getAction();
     registerSkill({
       type: "skill",
       skillType: this._skillType,

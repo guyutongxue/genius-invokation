@@ -4,7 +4,8 @@ import type { Node, NonterminalNode } from "ohm-js";
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
-  CharacterContextBase,
+  CharacterBase,
+  ContextMetaBase,
   SkillContext,
 } from "../builder/context";
 import {
@@ -14,10 +15,10 @@ import {
   getEntityById,
   shiftLeft,
 } from "../util";
-import { EntityArea, EntityType } from "../base/entity";
+import { EntityType } from "../base/entity";
 
 type AnyState = EntityState | CharacterState;
-type AnySkillContext = SkillContext<true, Record<string, any>, any>;
+type AnySkillContext = SkillContext<ContextMetaBase>;
 
 type ExternalQueryFn = (c: AnySkillContext) => number;
 type ExternalQueryEntry = ExternalQueryFn | ExternalQueryDictionary;
@@ -74,7 +75,7 @@ function queryCanonical(
         continue;
       }
       if (typeRes.position !== "all") {
-        const chCtx = new CharacterContextBase(this.args.ctx.state, chState.id);
+        const chCtx = new CharacterBase(this.args.ctx.state, chState.id);
         if (!chCtx.satisfyPosition(typeRes.position)) {
           continue;
         }
@@ -208,7 +209,7 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       if (baseState.definition.type !== "character") {
         continue;
       }
-      const baseChCtx = new CharacterContextBase(
+      const baseChCtx = new CharacterBase(
         this.args.ctx.state,
         baseState.id,
       );

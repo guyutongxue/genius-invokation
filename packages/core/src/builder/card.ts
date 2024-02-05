@@ -11,12 +11,13 @@ import {
 } from "../base/card";
 import { registerCard, registerSkill } from "./registry";
 import { SkillDescription, SkillInfo } from "../base/skill";
-import { CharacterContext, SkillContext } from "./context";
+import { Character, SkillContext } from "./context";
 import {
   SkillBuilderWithCost,
   enableShortcut,
   BuilderWithShortcut,
   SkillFilter,
+  ReadonlyMetaOf,
 } from "./skill";
 import {
   CardHandle,
@@ -49,13 +50,24 @@ type StateOf<TargetKindTs extends CardTargetKind> =
       ]
     : readonly [];
 
-interface CardTargetExt<TargetKindTs extends CardTargetKind> {
+interface StrictCardSkillEventArg<TargetKindTs extends CardTargetKind> {
   targets: StateOf<TargetKindTs>;
 }
 
-type PlayCardContextFilter<KindTs extends CardTargetKind> = SkillFilter<
-  CardTargetExt<KindTs>,
-  "character"
+type LooseBuilderMetaForCard = {
+  callerType: "character";
+  callerVars: never;
+  eventArgType: CardSkillEventArg;
+};
+
+type StrictBuilderMetaForCard<KindTs extends CardTargetKind> = {
+  callerType: "character";
+  callerVars: never;
+  eventArgType: StrictCardSkillEventArg<KindTs>;
+};
+
+type StrictCardSkillFilter<KindTs extends CardTargetKind> = SkillFilter<
+  StrictBuilderMetaForCard<KindTs>
 >;
 
 type TargetQuery = `${string}character${string}` | `${string}summon${string}`;
@@ -67,11 +79,11 @@ const SATIATED_ID = 303300 as StatusHandle;
 type TalentRequirement = "action" | "active" | "none";
 
 class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
-  CardTargetExt<KindTs>
+  StrictCardSkillEventArg<KindTs>
 > {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
-  private _filters: PlayCardContextFilter<KindTs>[] = [];
+  private _filters: StrictCardSkillFilter<KindTs>[] = [];
   private _deckRequirement: DeckRequirement = {};
   /**
    * 在料理卡牌的行动结尾添加“设置饱腹状态”操作的目标；
@@ -98,9 +110,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     this.type("equipment")
       .addTarget(target)
       .do((c) => {
-        (c.$("@targets.0") as CharacterContext<false>).equip(
-          this.cardId as EquipmentHandle,
-        );
+        c.$("character and @targets.0")?.equip(this.cardId as EquipmentHandle);
       })
       .done();
     return equipment(this.cardId);
@@ -158,11 +168,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
   addTarget<Q extends TargetQuery>(
     targetQuery: Q,
-  ): BuilderWithShortcut<
-    CardTargetExt<readonly [...KindTs, TargetKindOfQuery<Q>]>,
-    "character",
-    CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]>
-  > {
+  ): CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]> {
     this._targetQueries = [...this._targetQueries, targetQuery];
     return this as any;
   }
@@ -195,7 +201,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this;
   }
 
-  filter(pred: PlayCardContextFilter<KindTs>): this {
+  filter(pred: StrictCardSkillFilter<KindTs>): this {
     this._filters.push(pred);
     return this;
   }
@@ -218,7 +224,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return [[]];
     }
     const [first, ...rest] = targetQuery;
-    const ctx = new SkillContext<true, CardSkillEventArg, "character">(
+    const ctx = new SkillContext<ReadonlyMetaOf<LooseBuilderMetaForCard>>(
       state,
       skillInfo,
       {
@@ -246,11 +252,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return this.getAction(args as any)(state, skillInfo);
     };
     const filterFn: PlayCardFilter = (state, skillInfo, args) => {
-      const ctx = new SkillContext<true, CardTargetExt<KindTs>, "character">(
-        state,
-        skillInfo,
-        args as any,
-      );
+      const ctx = new SkillContext<
+        ReadonlyMetaOf<StrictBuilderMetaForCard<KindTs>>
+      >(state, skillInfo, args as any);
       for (const filter of this._filters) {
         if (!filter(ctx, ctx.eventArg)) {
           return false;

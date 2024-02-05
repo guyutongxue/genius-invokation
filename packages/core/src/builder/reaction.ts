@@ -14,16 +14,23 @@ const BurningFlame = 115 as SummonHandle;
 const DendroCore = 116 as CombatStatusHandle;
 const CatalyzingField = 117 as CombatStatusHandle;
 
-type DamageModifierR = ModifyDamage0EventArg<OptionalDamageInfo>;
+type OptionalDamageModifyEventArg = ModifyDamage0EventArg<OptionalDamageInfo>;
 
 export interface OptionalDamageInfo extends DamageInfo {
   isDamage: boolean;
 }
 
-type ReactionDescription = SkillDescription<DamageModifierR>;
+type ReactionDescription = SkillDescription<OptionalDamageModifyEventArg>;
 const REACTION_DESCRIPTION: Record<Reaction, ReactionDescription> = {} as any;
 
-class ReactionBuilder extends SkillBuilder<DamageModifierR, any> {
+type ReactionContextMeta = {
+  readonly: false;
+  callerVars: never;
+  eventArgType: OptionalDamageModifyEventArg;
+  callerType: any;
+};
+
+class ReactionBuilder extends SkillBuilder<ReactionContextMeta> {
   constructor(private reaction: Reaction) {
     super(reaction);
   }
@@ -39,9 +46,7 @@ function reaction(reaction: Reaction) {
   return enableShortcut(new ReactionBuilder(reaction));
 }
 
-type ReactionAction = (
-  c: TypedSkillContext<false, DamageModifierR, any>,
-) => void;
+type ReactionAction = (c: TypedSkillContext<ReactionContextMeta>) => void;
 
 const pierceToOther: ReactionAction = (c) => {
   if (c.eventArg.damageInfo.isDamage) {

@@ -1,11 +1,11 @@
 import { DamageType } from "@gi-tcg/typings";
 import { EntityTag, EntityVariables, ExEntityType } from "../base/entity";
 import { TriggeredSkillDefinition } from "../base/skill";
-import { EntityContext } from "./context";
+import { Entity } from "./context";
 import { registerEntity, registerPassiveSkill } from "./registry";
 import {
   BuilderWithShortcut,
-  DetailedEventExt,
+  DetailedEventArgOf,
   DetailedEventNames,
   SkillFilter,
   TriggeredSkillBuilder,
@@ -14,22 +14,6 @@ import {
 import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
 import { Draft } from "immer";
 import { isReactionSwirl } from "../base/reaction";
-
-declare const VARNAMES: unique symbol;
-
-export type ExtOfEntity<
-  Vars extends string,
-  Event extends DetailedEventNames,
-> = {
-  [VARNAMES]: Vars
-} & DetailedEventExt<Event>;
-
-type X = BuilderWithShortcut<ExtOfEntity<"clue", "useSkill">, "support", TriggeredSkillBuilder<ExtOfEntity<"clue", "useSkill">, "support", "useSkill", "clue">>;
-declare let x: X;
-
-//x.addVariable();
-
-export type GetVarFromExt<T> = T extends { [VARNAMES]: infer V } ? V : never;
 
 export interface VariableOptions {
   recreateMax?: number;
@@ -40,6 +24,16 @@ export interface VariableOptions {
 // 当 CallerType 是 character 时，正在构建的是被动技能，返回 PassiveSkillHandle
 export type EntityBuilderResultT<CallerType extends ExEntityType> =
   CallerType extends "character" ? PassiveSkillHandle : HandleT<CallerType>;
+
+type BuilderMetaOfEntity<
+  Event extends DetailedEventNames,
+  CallerType extends ExEntityType,
+  Vars extends string,
+> = {
+  callerType: CallerType;
+  callerVars: Vars;
+  eventArgType: DetailedEventArgOf<Event>;
+};
 
 export class EntityBuilder<
   CallerType extends ExEntityType,
@@ -67,7 +61,7 @@ export class EntityBuilder<
   conflictWith(id: number) {
     this.on("enter").do((c) => {
       const ctx = c.$(`my any with definition id ${id}`);
-      if (ctx && ctx instanceof EntityContext) {
+      if (ctx && ctx instanceof Entity) {
         ctx.dispose();
       }
     });
@@ -76,14 +70,13 @@ export class EntityBuilder<
 
   on<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<ExtOfEntity<Vars, E>, CallerType>,
-  ): BuilderWithShortcut<
-    ExtOfEntity<Vars, E>,
-    CallerType,
-    TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>
-  > {
+    filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
+  ) {
+    // BuilderWithShortcut<
+    //   TriggeredSkillBuilder<BuilderMetaOfEntity<E, CallerType, Vars>, E>
+    // >
     return enableShortcut(
-      new TriggeredSkillBuilder<ExtOfEntity<Vars, E>, CallerType, E, Vars>(
+      new TriggeredSkillBuilder<BuilderMetaOfEntity<E, CallerType, Vars>, E>(
         this.generateSkillId(),
         event,
         this,
@@ -93,7 +86,7 @@ export class EntityBuilder<
   }
   once<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<ExtOfEntity<Vars, E>, CallerType>,
+    filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
   ) {
     return this.on(event, filter).usage(1, { visible: false });
   }
@@ -178,13 +171,9 @@ export class EntityBuilder<
     value: number,
     target?: string,
   ): BuilderWithShortcut<
-    ExtOfEntity<Vars | "hintIcon", "endPhase">,
-    CallerType,
     TriggeredSkillBuilder<
-      ExtOfEntity<Vars | "hintIcon", "endPhase">,
-      CallerType,
-      "endPhase",
-      Vars | "hintIcon"
+      BuilderMetaOfEntity<"endPhase", CallerType, Vars | "hintIcon">,
+      "endPhase"
     >
   > {
     if (type === "swirledAnemo") {

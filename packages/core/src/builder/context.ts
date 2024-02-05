@@ -16,6 +16,7 @@ import {
   constructEventAndRequestArg,
 } from "../base/skill";
 import {
+  AnyState,
   CardState,
   CharacterState,
   EntityState,
@@ -38,42 +39,39 @@ import {
   CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
-  ExContextType,
   HandleT,
   SkillHandle,
   StatusHandle,
   SummonHandle,
   SupportHandle,
+  TypedExEntity,
 } from "./type";
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
 import { OptionalDamageInfo, getReactionDescription } from "./reaction";
 import { flip } from "@gi-tcg/utils";
-import { GetVarFromExt } from "./entity";
 
-type WrapArray<T> = T extends readonly any[] ? T : T[];
-
-type TargetQueryArg<
-  Readonly extends boolean,
-  Ext,
-  CallerType extends ExEntityType,
-> = CharacterState | CharacterState[] | string;
+type CharacterTargetArg = CharacterState | CharacterState[] | string;
+type EntityTargetArg = EntityState | EntityState[] | string;
 
 interface DrawCardsOpt {
   who?: "my" | "opp";
   withTag?: CardTag | null;
 }
 
+export type ContextMetaBase = {
+  readonly: boolean;
+  eventArgType: unknown;
+  callerVars: string;
+  callerType: ExEntityType;
+};
+
 /**
  * 用于描述技能的上下文对象。
  * 它们出现在 `.do()` 形式内，将其作为参数传入。
  */
-export class SkillContext<
-  Readonly extends boolean,
-  Ext,
-  CallerType extends ExEntityType,
-> {
+export class SkillContext<Meta extends ContextMetaBase> {
   private readonly eventAndRequests: EventAndRequest[] = [];
   public readonly callerArea: EntityArea;
 
@@ -81,7 +79,7 @@ export class SkillContext<
    * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
    * @returns
    */
-  public readonly self: ExContextType<Readonly, CallerType>;
+  public readonly self: TypedExEntity<Meta, Meta["callerType"]>;
 
   /**
    *
@@ -91,7 +89,7 @@ export class SkillContext<
   constructor(
     private _state: GameState,
     public readonly skillInfo: SkillInfo,
-    public readonly eventArg: Ext,
+    public readonly eventArg: Meta["eventArgType"],
   ) {
     this.callerArea = getEntityArea(_state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
@@ -146,78 +144,58 @@ export class SkillContext<
 
   $<const Q extends string>(
     arg: Q,
-  ): ExContextType<Readonly, GuessedTypeOfQuery<Q>> | undefined;
-  $<T extends EntityState | CharacterState>(
-    arg: T,
-  ): ExContextType<Readonly, T["definition"]["type"]> | undefined;
-  $(arg: any): any {
+  ): TypedExEntity<Meta, GuessedTypeOfQuery<Q>> | undefined {
     const result = this.$$(arg);
-    if (result.length > 0) {
-      return result[0];
-    } else {
-      return void 0;
-    }
+    return result[0];
   }
-
-  /**
-   * 在指定某个角色目标时，可传入的参数类型：
-   * - Query string 形如 `my active character`
-   * - Lambda 返回具体的对象上下文，如 `c => c.targets[0]`。
-   * - 直接传入具体的对象上下文。
-   */
 
   $$<const Q extends string>(
     arg: Q,
-  ): ExContextType<Readonly, GuessedTypeOfQuery<Q>>[];
-  $$<T extends EntityState | CharacterState>(
-    arg: T,
-  ): WrapArray<ExContextType<Readonly, T["definition"]["type"]>>;
-  $$(arg: any): any {
-    if (typeof arg === "function") {
-      const fnResult = arg(this);
-      if (Array.isArray(fnResult)) {
-        return fnResult;
-      } else {
-        return [fnResult];
-      }
-    } else if (typeof arg === "string") {
-      return executeQuery(this, arg);
-    } else if (Array.isArray(arg)) {
-      return arg.map((v) => this.of(v));
-    } else {
-      return [this.of(arg)];
-    }
+  ): TypedExEntity<Meta, GuessedTypeOfQuery<Q>>[] {
+    return executeQuery(this, arg);
   }
 
   // Get context of given entity state
-  of(entityState: EntityState): EntityContext<Readonly>;
-  of(entityState: CharacterState): CharacterContext<Readonly>;
+  of(entityState: EntityState): Entity<Meta>;
+  of(entityState: CharacterState): Character<Meta>;
   of<T extends ExEntityType = ExEntityType>(
     entityId: EntityState | CharacterState | number,
-  ): ExContextType<Readonly, T>;
-  of(entityState: EntityState | CharacterState | number): any {
+  ): TypedExEntity<Meta, T>;
+  of(entityState: EntityState | CharacterState | number): unknown {
     if (typeof entityState === "number") {
       entityState = getEntityById(this._state, entityState, true);
     }
     if (entityState.definition.type === "character") {
-      return new CharacterContext<Readonly>(this, entityState.id);
+      return new Character(this, entityState.id);
     } else {
-      return new EntityContext<Readonly, any>(this, entityState.id);
+      return new Entity(this, entityState.id);
+    }
+  }
+
+  private queryOrOf<TypeT extends ExEntityType>(
+    q: AnyState | AnyState[] | string,
+  ): TypedExEntity<Meta, TypeT>[] {
+    if (Array.isArray(q)) {
+      return q.map((s) => this.of(s));
+    } else if (typeof q === "string") {
+      return this.$$(q) as TypedExEntity<Meta, TypeT>[];
+    } else {
+      return [this.of(q)];
     }
   }
 
   private queryCoerceToCharacters(
-    arg: TargetQueryArg<false, Ext, CallerType>,
-  ): CharacterContext<Readonly>[] {
-    const result = this.$$(arg as any);
+    arg: CharacterTargetArg,
+  ): TypedCharacter<Meta>[] {
+    const result = this.queryOrOf(arg);
     for (const r of result) {
-      if (r instanceof CharacterContext) {
+      if (r instanceof Character) {
         continue;
       } else {
         throw new Error(`Expected character`);
       }
     }
-    return result as CharacterContext<Readonly>[];
+    return result as TypedCharacter<Meta>[];
   }
   /** 本回合已经使用了几次此技能 */
   countOfThisSkill() {
@@ -250,12 +228,12 @@ export class SkillContext<
     this.eventAndRequests.push([event, arg] as any);
   }
 
-  switchActive(target: TargetQueryArg<false, Ext, CallerType>) {
+  switchActive(target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     if (targets.length !== 1) {
       throw new Error("Expected exactly one target");
     }
-    const switchToTarget = targets[0] as CharacterContext<false>;
+    const switchToTarget = targets[0];
     const from = this.$("active character")!;
     if (from.id === switchToTarget.id) {
       return;
@@ -273,7 +251,7 @@ export class SkillContext<
     });
   }
 
-  gainEnergy(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
+  gainEnergy(value: number, target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
@@ -292,7 +270,7 @@ export class SkillContext<
   }
 
   /** 治疗角色。若角色已倒下，则复苏该角色。*/
-  heal(value: number, target: TargetQueryArg<false, Ext, CallerType>) {
+  heal(value: number, target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
@@ -328,7 +306,7 @@ export class SkillContext<
   damage(
     type: DamageType,
     value: number,
-    target: TargetQueryArg<false, Ext, CallerType> = "opp active",
+    target: CharacterTargetArg = "opp active",
   ) {
     if (type === DamageType.Heal) {
       return this.heal(value, target);
@@ -382,10 +360,7 @@ export class SkillContext<
    * @param type 附着的元素类型
    * @param target 角色目标
    */
-  apply(
-    type: AppliableDamageType,
-    target: TargetQueryArg<false, Ext, CallerType>,
-  ) {
+  apply(type: AppliableDamageType, target: CharacterTargetArg) {
     const characters = this.queryCoerceToCharacters(target);
     for (const ch of characters) {
       this.doApply(ch, type);
@@ -393,7 +368,7 @@ export class SkillContext<
   }
 
   private doApply(
-    target: CharacterContext<Readonly>,
+    target: TypedCharacter<Meta>,
     type: NontrivialDamageType,
     damage?: DamageInfo,
   ): DamageInfo {
@@ -549,10 +524,7 @@ export class SkillContext<
       });
     }
   }
-  characterStatus(
-    id: StatusHandle,
-    target: TargetQueryArg<false, Ext, CallerType> = "@self",
-  ) {
+  characterStatus(id: StatusHandle, target: CharacterTargetArg = "@self") {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       this.createEntity("status", id, t.area);
@@ -579,8 +551,8 @@ export class SkillContext<
     }
   }
 
-  dispose(target: string | EntityState = "@self") {
-    const targets = this.$$(target as any);
+  dispose(target: EntityTargetArg = "@self") {
+    const targets = this.queryOrOf(target);
     for (const t of targets) {
       const entityState = t.state;
       if (entityState.definition.type === "character") {
@@ -596,9 +568,9 @@ export class SkillContext<
     }
   }
 
-  getVariable(prop: GetVarFromExt<Ext>): number;
-  getVariable(prop: string, target?: CharacterState | EntityState): number;
-  getVariable(prop: any, target?: CharacterState | EntityState) {
+  getVariable(prop: Meta["callerVars"]): number;
+  getVariable(prop: string, target: CharacterState | EntityState): number;
+  getVariable(prop: string, target?: CharacterState | EntityState) {
     if (target) {
       return this.of(target).getVariable(prop);
     } else {
@@ -606,17 +578,13 @@ export class SkillContext<
     }
   }
 
-  setVariable(prop: GetVarFromExt<Ext>, value: number): void;
+  setVariable(prop: Meta["callerVars"], value: number): void;
   setVariable(
     prop: string,
     value: number,
-    target?: CharacterState | EntityState,
+    target: CharacterState | EntityState,
   ): void;
-  setVariable(
-    prop: any,
-    value: number,
-    target?: CharacterState | EntityState,
-  ) {
+  setVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
     this.mutate({
       type: "modifyEntityVar",
@@ -626,26 +594,19 @@ export class SkillContext<
     });
   }
 
-  addVariable(prop: GetVarFromExt<Ext>, value: number): void;
+  addVariable(prop: Meta["callerVars"], value: number): void;
   addVariable(
     prop: string,
     value: number,
-    target?: CharacterState | EntityState,
+    target: CharacterState | EntityState,
   ): void;
-  addVariable(
-    prop: any,
-    value: number,
-    target?: CharacterState | EntityState,
-  ) {
+  addVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
     const finalValue = value + target.variables[prop];
     this.setVariable(prop, finalValue, target);
   }
 
-  replaceDefinition(
-    target: TargetQueryArg<false, Ext, CallerType>,
-    newCh: CharacterHandle,
-  ) {
+  replaceDefinition(target: CharacterTargetArg, newCh: CharacterHandle) {
     const characters = this.queryCoerceToCharacters(target);
     if (characters.length !== 1) {
       throw new Error(`Replace definition must apply on exact one character`);
@@ -829,20 +790,14 @@ type SkillContextMutativeProps =
   | "useSkill";
 
 /**
- * 所谓 `StrictlyTyped` 是指，若 `Readonly` 则忽略那些可以改变游戏状态的方法。
+ * 所谓 `Typed` 是指，若 `Readonly` 则忽略那些可以改变游戏状态的方法。
  *
- * `StrictlyTypedCharacterContext` 等同理。
+ * `TypedCharacter` 等同理。
  */
-export type TypedSkillContext<
-  Readonly extends boolean,
-  Ext,
-  CallerType extends ExEntityType,
-> = Omit<
-  Readonly extends true
-    ? Omit<SkillContext<Readonly, Ext, CallerType>, SkillContextMutativeProps>
-    : SkillContext<Readonly, Ext, CallerType>,
-  InternalProp
->;
+export type TypedSkillContext<Meta extends ContextMetaBase> =
+  Meta["readonly"] extends true
+    ? Omit<SkillContext<Meta>, SkillContextMutativeProps | InternalProp>
+    : Omit<SkillContext<Meta>, InternalProp>;
 
 export type CharacterPosition = "active" | "next" | "prev" | "standby";
 
@@ -850,7 +805,7 @@ export type CharacterPosition = "active" | "next" | "prev" | "standby";
  * 提供一些针对角色的便利方法，不需要 SkillContext 参与。
  * 仅当保证 GameState 不发生变化时使用。
  */
-export class CharacterContextBase {
+export class CharacterBase {
   protected _area: EntityArea;
   constructor(
     private gameState: GameState,
@@ -908,11 +863,9 @@ export class CharacterContextBase {
   }
 }
 
-export class CharacterContext<
-  Readonly extends boolean,
-> extends CharacterContextBase {
+export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   constructor(
-    private readonly skillContext: SkillContext<Readonly, any, any>,
+    private readonly skillContext: SkillContext<Meta>,
     id: number,
   ) {
     super(skillContext.state, id);
@@ -1066,7 +1019,7 @@ export class CharacterContext<
   }
 }
 
-type CharacterContextMutativeProps =
+type CharacterMutativeProps =
   | "gainEnergy"
   | "heal"
   | "damage"
@@ -1079,18 +1032,15 @@ type CharacterContextMutativeProps =
   | "addVariable"
   | "dispose";
 
-export type StrictlyTypedCharacterContext<Readonly extends boolean> =
-  Readonly extends true
-    ? Omit<CharacterContext<Readonly>, CharacterContextMutativeProps>
-    : CharacterContext<Readonly>;
+export type TypedCharacter<Meta extends ContextMetaBase> =
+  Meta["readonly"] extends true
+    ? Omit<Character<Meta>, CharacterMutativeProps>
+    : Character<Meta>;
 
-export class EntityContext<
-  Readonly extends boolean,
-  TypeT extends EntityType = EntityType,
-> {
+export class Entity<Meta extends ContextMetaBase> {
   private readonly _area: EntityArea;
   constructor(
-    private readonly skillContext: SkillContext<Readonly, any, any>,
+    private readonly skillContext: SkillContext<Meta>,
     public readonly id: number,
   ) {
     this._area = getEntityArea(skillContext.state, id);
@@ -1116,10 +1066,7 @@ export class EntityContext<
     if (this._area.type !== "characters") {
       throw new Error("master() expect a character area");
     }
-    return new CharacterContext<Readonly>(
-      this.skillContext,
-      this._area.characterId,
-    );
+    return new Character<Meta>(this.skillContext, this._area.characterId);
   }
 
   setVariable(prop: string, value: number) {
@@ -1133,11 +1080,9 @@ export class EntityContext<
   }
 }
 
-type EntityContextMutativeProps = "addVariable" | "setVariable" | "dispose";
+type EntityMutativeProps = "addVariable" | "setVariable" | "dispose";
 
-export type StrictlyTypedEntityContext<
-  Readonly extends boolean,
-  TypeT extends EntityType = EntityType,
-> = Readonly extends true
-  ? Omit<EntityContext<Readonly, TypeT>, EntityContextMutativeProps>
-  : EntityContext<Readonly, TypeT>;
+export type TypedEntity<Meta extends ContextMetaBase> =
+  Meta["readonly"] extends true
+    ? Omit<Entity<Meta>, EntityMutativeProps>
+    : Entity<Meta>;
