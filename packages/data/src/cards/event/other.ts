@@ -452,7 +452,7 @@ export const WhenTheCraneReturned = card(332007)
   .costSame(1)
   .toCombatStatus()
   .once("useSkill")
-  .switchActive("next")
+  .switchActive("my next")
   .done();
 
 /**

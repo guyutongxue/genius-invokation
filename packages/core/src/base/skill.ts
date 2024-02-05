@@ -219,7 +219,6 @@ export class ActionEventArg<
 export class ModifyActionEventArg<
   InfoT extends ActionInfoBase,
 > extends ActionEventArg<InfoT> {
-  private _caller: CharacterState | EntityState | null = null;
   private _cost: DiceType[];
   private _deductedCost: (readonly [DiceType, number])[];
   private _fast: boolean;
@@ -279,27 +278,21 @@ export class ModifyActionEventArg<
   }
 
   addCost(type: DiceType, count: number) {
-    if (this._caller === null) {
-      throw new Error("caller not set or no damageInfo provided");
-    }
-    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) add ${count} diceType(${type}) to cost.\n`;
+    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) add ${count} diceType(${type}) to cost.\n`;
     this._cost.push(...new Array<DiceType>(count).fill(type));
   }
   deductCost(type: DiceType, count: number) {
-    if (this._caller === null) {
+    if (this.caller === null) {
       throw new Error("caller not set or no damageInfo provided");
     }
-    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) deduct ${count} diceType(${type}) from cost.\n`;
+    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) deduct ${count} diceType(${type}) from cost.\n`;
     this._deductedCost.push([type, count]);
   }
   setFastAction(): void {
-    if (this._caller === null) {
-      throw new Error("caller not set or no damageInfo provided");
-    }
     if (this._fast) {
       console.warn("Potential error: fast action already set");
     }
-    this._log += `${this._caller.definition.type} ${this._caller.id} (defId = ${this._caller.definition.id}) set fast action.\n`;
+    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) set fast action.\n`;
     this._fast = true;
   }
 }

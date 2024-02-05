@@ -744,13 +744,17 @@ export class Game {
     } catch {
       return [];
     }
-    const skillDef = skillInfo.definition;
+    let filteringState = this.state;
+    if (arg instanceof EventArg) {
+      arg._setCurrentCaller(skillInfo.caller);
+      // 在 arg.state 上做检查，即引发事件的时刻的全局状态，而非现在时刻的状态
+      filteringState = arg._getState();
+    }
     // If skill has a filter and not passed, do nothing
-    // 在 arg.state 上做检查，即引发事件的时刻的全局状态，而非现在时刻的状态
-    const stateToApplyFilter: GameState = arg?.state ?? this.state;
+    const skillDef = skillInfo.definition;
     if (
       "filter" in skillDef &&
-      !(0, skillDef.filter)(stateToApplyFilter, skillInfo, arg)
+      !(0, skillDef.filter)(filteringState, skillInfo, arg)
     ) {
       return [];
     }

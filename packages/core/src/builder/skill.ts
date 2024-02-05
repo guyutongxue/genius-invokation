@@ -320,8 +320,9 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
 
   do(op: SkillOperation<Meta>): this {
     if (this.applyFilter) {
+      const ifFilter = this._filter;
       this.operations.push((c, e) => {
-        if (!(0, this._filter)(c as any, e)) return;
+        if (!ifFilter(c as any, e)) return;
         return op(c, e);
       });
     } else {
