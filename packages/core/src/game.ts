@@ -982,7 +982,7 @@ export class Game {
       for (const ch of shiftLeft(player.characters, activeIdx)) {
         if (ch.variables.alive && ch.variables.health <= 0) {
           const zeroHealthEventArg = new ZeroHealthEventArg(this.state, ch);
-          await this.emitEvent("onZeroHealth", zeroHealthEventArg);
+          await this.emitEvent("modifyZeroHealth", zeroHealthEventArg);
           if (zeroHealthEventArg._immuneTo) {
             // TODO
             continue;

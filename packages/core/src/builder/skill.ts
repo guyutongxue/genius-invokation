@@ -184,7 +184,7 @@ const detailedEventDictionary = {
       return false;
     }
   }),
-  fastSwitch: defineDescriptor("modifyAction", (c, e, r) => {
+  beforeFastSwitch: defineDescriptor("modifyAction", (c, e, r) => {
     return (
       checkRelative(c.state, { who: e.who }, r) &&
       e.isSwitchActive() &&
@@ -221,7 +221,7 @@ const detailedEventDictionary = {
       checkRelative(c.state, e.damageInfo.target.id, r)
     );
   }),
-  beforeDefeated: defineDescriptor("onZeroHealth", (c, e, r) => {
+  beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {
     return checkRelative(c.state, e.character.id, r);
   }),
 
@@ -251,9 +251,6 @@ const detailedEventDictionary = {
       checkRelative(c.state, e.switchInfo.from.id, r) ||
       checkRelative(c.state, e.switchInfo.to.id, r)
     );
-  }),
-  switchFrom: defineDescriptor("onSwitchActive", (c, e, r) => {
-    return checkRelative(c.state, e.switchInfo.from.id, r);
   }),
   dealDamage: defineDescriptor("onDamage", (c, e, r) => {
     return checkRelative(c.state, e.source.id, r);

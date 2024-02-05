@@ -498,10 +498,10 @@ export const EVENT_MAP = {
   onEnter: EnterEventArg,
   onDispose: EntityEventArg,
 
-  onZeroHealth: ZeroHealthEventArg,
+  modifyZeroHealth: ZeroHealthEventArg,
   onDefeated: CharacterEventArg,
   onRevive: CharacterEventArg,
-} satisfies Record<string, abstract new (...args: any[]) => EventArg>;
+} satisfies Record<string, new (...args: any[]) => EventArg>;
 
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
@@ -546,7 +546,7 @@ const REQUEST_MAP = {
   requestSwitchHands: SwitchHandsRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
-} satisfies Record<string, abstract new (...args: any[]) => RequestArg>;
+} satisfies Record<string, new (...args: any[]) => RequestArg>;
 type RequestMap = typeof REQUEST_MAP;
 type RequestNames = keyof RequestMap;
 

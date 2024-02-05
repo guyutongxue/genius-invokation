@@ -438,7 +438,7 @@ export const IHaventLostYet = card(332005)
  */
 export const LeaveItToMe = card(332006)
   .toCombatStatus()
-  .once("fastSwitch")
+  .once("beforeFastSwitch")
   .setFastAction()
   .done();
 

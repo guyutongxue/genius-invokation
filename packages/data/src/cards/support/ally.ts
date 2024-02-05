@@ -24,7 +24,7 @@ export const Paimon = card(322001)
 export const Katheryne = card(322002)
   .costSame(1)
   .support("ally")
-  .on("fastSwitch")
+  .on("beforeFastSwitch")
   .usagePerRound(1)
   .setFastAction()
   .done();
