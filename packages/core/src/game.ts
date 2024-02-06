@@ -54,7 +54,12 @@ import {
 } from "./base/skill";
 import { CardDefinition, CardSkillEventArg } from "./base/card";
 import { executeQueryOnState } from "./query";
-import { GiTcgCoreInternalError, GiTcgDataError, GiTcgError, GiTcgIOError } from "./error";
+import {
+  GiTcgCoreInternalError,
+  GiTcgDataError,
+  GiTcgError,
+  GiTcgIOError,
+} from "./error";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -64,6 +69,8 @@ export interface PlayerConfig {
 }
 
 const INITIAL_ID = -500000;
+
+const IO_CHECK_GIVEUP_INTERVAL = 500;
 
 type ActionInfoWithNewState = ActionInfo & {
   newState: GameState;
@@ -218,12 +225,19 @@ export class Game {
       this.notifyOne(i, events);
     }
     await this.io.pause(this.state);
-    if (this.io.players[0].giveUp) {
-      await this.gotWinner(1);
-    } else if (this.io.players[1].giveUp) {
-      await this.gotWinner(0);
+    if (this.state.phase !== "gameEnd") {
+      this.mutate({ type: "clearMutationLog" });
+      await this.checkGiveUp();
     }
-    this.mutate({ type: "clearMutationLog" });
+  }
+  private checkGiveUp() {
+    if (this.io.players[0].giveUp) {
+      return this.gotWinner(1);
+    } else if (this.io.players[1].giveUp) {
+      return this.gotWinner(0);
+    } else {
+      return null;
+    }
   }
 
   async start() {
@@ -271,7 +285,9 @@ export class Game {
               message += "\n" + e.stack;
             }
           }
-          this.rejectFinishPromise(new GiTcgCoreInternalError(`Unexpected error: ` + message));
+          this.rejectFinishPromise(
+            new GiTcgCoreInternalError(`Unexpected error: ` + message),
+          );
         }
       }
     });
@@ -279,6 +295,9 @@ export class Game {
   }
 
   async gotWinner(winner: 0 | 1) {
+    if (this.state.phase === "gameEnd") {
+      return;
+    }
     this.mutate({
       type: "setWinner",
       winner,
@@ -289,6 +308,7 @@ export class Game {
     });
     await this.notifyAndPause();
     this.resolveFinishPromise();
+    Object.freeze(this);
   }
 
   private async rpc<M extends RpcMethod>(
@@ -301,6 +321,14 @@ export class Game {
     } catch (e) {
       console.warn("Rpc request verify failed", e);
     }
+    // IO 的同时轮询检查是否有投降，若有立即结束对局
+    const interval = setInterval(() => {
+      if (this.state.phase === "gameEnd") {
+        clearInterval(interval);
+      } else {
+        this.checkGiveUp();
+      }
+    }, IO_CHECK_GIVEUP_INTERVAL);
     try {
       const resp = await this.io.players[who].rpc(method, req);
       verifyRpcResponse(method, resp);
@@ -311,6 +339,8 @@ export class Game {
       } else {
         throw new GiTcgIOError(who, String(e));
       }
+    } finally {
+      clearInterval(interval);
     }
   }
 
@@ -488,7 +518,8 @@ export class Game {
         actionInfo.type === "elementalTuning" &&
         (cost[0] === DiceType.Omni || cost[0] === actionInfo.result)
       ) {
-        throw new GiTcgIOError(who,
+        throw new GiTcgIOError(
+          who,
           `Elemental tunning cannot use omni dice or active character's element`,
         );
       }
@@ -499,7 +530,10 @@ export class Game {
         } else {
           const idx = operatingDice.indexOf(consumed);
           if (idx === -1) {
-            throw new GiTcgIOError(who, `Selected dice (${consumed}) not found in player`);
+            throw new GiTcgIOError(
+              who,
+              `Selected dice (${consumed}) not found in player`,
+            );
           }
           operatingDice.splice(idx, 1);
         }
@@ -516,7 +550,10 @@ export class Game {
       const activeCh = player().characters[getActiveCharacterIndex(player())];
       if (requiredEnergy > 0) {
         if (activeCh.variables.energy < requiredEnergy) {
-          throw new GiTcgIOError(who, `Active character does not have enough energy`);
+          throw new GiTcgIOError(
+            who,
+            `Active character does not have enough energy`,
+          );
         }
         this.mutate({
           type: "modifyEntityVar",
@@ -758,7 +795,10 @@ export class Game {
     const currentState = this.state;
     for (const actionInfo of result) {
       const eventArg = new ModifyActionEventArg(this.state, actionInfo);
-      const deferredEventList = await this.emitEventShallow("modifyAction", eventArg);
+      const deferredEventList = await this.emitEventShallow(
+        "modifyAction",
+        eventArg,
+      );
       console.log(eventArg.action);
       resultWithState.push({
         ...eventArg.action,
@@ -1094,7 +1134,10 @@ export class Game {
   }
   // 引发一个事件并处理。其处理过程中引发的级联事件不会递归执行，而是返回给调用者。
   // 同时该事件的处理会禁用 IO。
-  private async emitEventShallow(name: "modifyAction", arg: ModifyActionEventArg<ActionInfo>): Promise<EventAndRequest[]> {
+  private async emitEventShallow(
+    name: "modifyAction",
+    arg: ModifyActionEventArg<ActionInfo>,
+  ): Promise<EventAndRequest[]> {
     const allEvents = [];
     for await (const events of this.doHandleEvents([[name, arg]], false)) {
       allEvents.push(...events);

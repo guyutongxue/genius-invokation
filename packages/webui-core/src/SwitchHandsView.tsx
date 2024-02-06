@@ -35,7 +35,7 @@ export function SwitchHandsView(props: SwitchHandsViewProps) {
       </ul>
       <button
         class="mt-3 btn btn-green"
-        onClick={() => props.onConfirm && props.onConfirm(chosenIds)}
+        onClick={() => props.onConfirm?.(chosenIds)}
       >
         确定
       </button>

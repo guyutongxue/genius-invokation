@@ -37,14 +37,16 @@ export function App() {
     const playerConfig0 = getPlayerConfig(deck0());
     const playerConfig1 = getPlayerConfig(deck1());
     const io: GameIO = {
-      pause,
+      pause: async () => {},
       players: [io0, io1],
     };
     startGame({
       data,
       io,
       playerConfigs: [playerConfig0, playerConfig1],
-    });
+    })
+      .then((winner) => alert(`Winner is ${winner}`))
+      .catch((e) => alert(e instanceof Error ? e.message : String(e)));
     setStarted(true);
   };
 

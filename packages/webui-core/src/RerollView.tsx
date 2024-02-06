@@ -30,7 +30,7 @@ export function RerollView(props: RerollViewProps) {
       </ul>
       <button
         class="mt-6 btn btn-green"
-        onClick={() => props.onConfirm && props.onConfirm(chosenIndexes)}
+        onClick={() => props.onConfirm?.(chosenIndexes)}
       >
         确定
       </button>

@@ -63,14 +63,14 @@ export function DiceSelect(props: DiceSelectProps) {
         <button
           class="btn btn-yellow text-black"
           disabled={merged.disableConfirm || !isValid()}
-          onClick={() => merged.onConfirm && merged.onConfirm(chosenDice())}
+          onClick={() => merged.onConfirm?.(chosenDice())}
         >
           确认
         </button>
         <Show when={!merged.confirmOnly}>
           <button
             class="btn btn-red"
-            onClick={() => merged.onCancel && merged.onCancel()}
+            onClick={() => merged.onCancel?.()}
           >
             取消
           </button>
