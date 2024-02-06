@@ -7,7 +7,11 @@ import {
   GameState,
 } from "./state";
 import { CardTag, PlayCardSkillDefinition } from "./card";
-import { getReaction, isReactionRelatedTo, isReactionSwirl } from "../base/reaction";
+import {
+  getReaction,
+  isReactionRelatedTo,
+  isReactionSwirl,
+} from "../base/reaction";
 import { CharacterDefinition } from "./character";
 
 export interface SkillDefinitionBase<Arg> {
@@ -330,10 +334,15 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
   getReaction(): Reaction | null {
     return getReaction(this.damageInfo);
   }
-  isReactionRelatedTo(target: DamageType) : boolean {
+  isReactionRelatedTo(target: DamageType): boolean {
     return isReactionRelatedTo(this.damageInfo, target);
   }
-  isSwirl(): DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro | null {
+  isSwirl():
+    | DamageType.Cryo
+    | DamageType.Hydro
+    | DamageType.Pyro
+    | DamageType.Electro
+    | null {
     return isReactionSwirl(this.damageInfo);
   }
   isSourceSkillType(skillType: CommonSkillType): boolean {
@@ -368,9 +377,12 @@ class ModifyDamage1EventArg<
   override get damageInfo(): InfoT {
     return {
       ...super.damageInfo,
-      value: Math.ceil(
-        (super.damageInfo.value + this._increased) * this._multiplier -
-          this._decreased,
+      value: Math.max(
+        0,
+        Math.ceil(
+          (super.damageInfo.value + this._increased) * this._multiplier -
+            this._decreased,
+        ),
       ),
       log: this._log,
     };
@@ -472,7 +484,7 @@ export class ZeroHealthEventArg extends CharacterEventArg {
     this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) immune to defeated, and heal it to ${newHealth}.\n`;
     this._immuneInfo = {
       skill: this._currentSkillInfo!,
-      newHealth
+      newHealth,
     };
   }
 }
@@ -587,7 +599,7 @@ export function constructEventAndRequestArg<E extends EventAndRequestNames>(
 }
 
 export type EventAndRequest = {
-  [E in EventAndRequestNames]: [E, EventAndRequestArgOf<E> ];
+  [E in EventAndRequestNames]: [E, EventAndRequestArgOf<E>];
 }[EventAndRequestNames];
 
 export type TriggeredSkillFilter<E extends EventNames> = (
