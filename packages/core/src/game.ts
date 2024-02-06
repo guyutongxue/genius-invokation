@@ -316,6 +316,7 @@ export class Game {
     });
     // For debugging
     Reflect.set(globalThis, "$$", (query: string) => this.query(0, query));
+    await this.emitEvent("onBattleBegin", new EventArg(this.state));
   }
 
   private async rollPhase() {
