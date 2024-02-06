@@ -88,7 +88,7 @@ export class EntityBuilder<
     event: E,
     filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
   ) {
-    return this.on(event, filter).usage(1, { visible: false });
+    return this.on(event, filter).usage<never>(1, { visible: false });
   }
 
   variable<const Name extends string>(
@@ -170,12 +170,7 @@ export class EntityBuilder<
     type: DamageType | "swirledAnemo",
     value: number,
     target?: string,
-  ): BuilderWithShortcut<
-    TriggeredSkillBuilder<
-      BuilderMetaOfEntity<"endPhase", CallerType, Vars | "hintIcon">,
-      "endPhase"
-    >
-  > {
+  ): BuilderWithShortcut<TriggeredSkillBuilder<BuilderMetaOfEntity<"endPhase", CallerType, Vars | "hintIcon">, "endPhase">> {
     if (type === "swirledAnemo") {
       return this.hintIcon(DamageType.Anemo)
         .hintText(`${value}`)
@@ -223,6 +218,7 @@ export class EntityBuilder<
       registerPassiveSkill({
         id: this.id,
         type: "passiveSkill",
+        constants: this._constants,
         skills: this._skillList,
       });
     } else {

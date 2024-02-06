@@ -80,7 +80,7 @@ type SkillDescription<Arg> = (
   arg: Arg,                 // 传递给本次技能调用的额外信息
 ) => readonly [
   GameState,                // 使用技能后的对局状态
-  DeferredAction[]          // 本次技能引发的额外信息
+  EventAndRequest[]         // 本次技能引发的额外信息
 ];
 ```
 

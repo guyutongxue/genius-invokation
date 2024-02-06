@@ -168,7 +168,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
   addTarget<Q extends TargetQuery>(
     targetQuery: Q,
-  ): BuilderWithShortcut<CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]>> {
+  ): BuilderWithShortcut<
+    CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]>
+  > {
     this._targetQueries = [...this._targetQueries, targetQuery];
     return this as any;
   }
@@ -177,27 +179,51 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this.tags("legend");
   }
 
-  talent(ch: CharacterHandle, requires: TalentRequirement = "action") {
-    this.eventTalent(ch, requires);
+  talent(
+    ch: CharacterHandle | CharacterHandle[],
+    requires: TalentRequirement = "action",
+  ) {
+    let chs: CharacterHandle[];
+    if (Array.isArray(ch)) {
+      chs = ch;
+    } else {
+      chs = [ch];
+    }
+    this.eventTalent(chs, requires);
     if (requires !== "none") {
       // 出战角色须为天赋角色
-      this.filter((c) => c.$("my active")?.state.definition.id === ch);
+      this.filter((c) =>
+        chs.includes(c.$("my active")!.state.definition.id as CharacterHandle),
+      );
     }
-    return this.tags("talent")
-      .equipment(`my characters with definition id ${ch}`)
-      .tags("talent");
+    const equiptQuery = chs
+      .map((ch) => `(my characters with definition id ${ch})`)
+      .join(" or ");
+    return this.equipment(equiptQuery as "characters").tags("talent");
   }
 
-  eventTalent(ch: CharacterHandle, requires: TalentRequirement = "action") {
-    this._deckRequirement.character = ch;
+  eventTalent(
+    ch: CharacterHandle | CharacterHandle[],
+    requires: TalentRequirement = "action",
+  ) {
     if (requires === "action") {
       this.tags("action");
+    }
+    if (Array.isArray(ch)) {
+      this.requireCharacter(ch[0]);
+    } else {
+      this.requireCharacter(ch);
     }
     return this.tags("talent");
   }
 
   requireCharacterTag(tag: CharacterTag): this {
     this._deckRequirement.dualCharacterTag = tag;
+    return this;
+  }
+
+  requireCharacter(ch: CharacterHandle): this {
+    this._deckRequirement.character = ch;
     return this;
   }
 

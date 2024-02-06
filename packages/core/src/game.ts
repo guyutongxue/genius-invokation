@@ -22,6 +22,7 @@ import {
   verifyRpcResponse,
 } from "@gi-tcg/typings";
 import {
+  allEntities,
   drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
@@ -37,6 +38,7 @@ import {
   ActionInfo,
   CharacterEventArg,
   ElementalTuningInfo,
+  EntityEventArg,
   EventAndRequest,
   EventArg,
   EventArgOf,
@@ -736,7 +738,7 @@ export class Game {
   private async useSkillImpl(
     skillInfo: SkillInfo,
     hasIo: boolean,
-    arg: any,
+    arg: EventArg | CardSkillEventArg | void,
   ): Promise<EventAndRequest[]> {
     // If caller not exists (consumed by previous skills), do nothing
     try {
@@ -754,14 +756,14 @@ export class Game {
     const skillDef = skillInfo.definition;
     if (
       "filter" in skillDef &&
-      !(0, skillDef.filter)(filteringState, skillInfo, arg)
+      !(0, skillDef.filter)(filteringState, skillInfo, arg as any)
     ) {
       return [];
     }
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
       skillInfo,
-      arg,
+      arg as any,
     );
     this.state = newState;
     if (hasIo) {
@@ -913,56 +915,17 @@ export class Game {
         yield this.useSkillImpl(skillInfo, hasIo, void 0);
       } else {
         const onTimeState = arg._getState();
-        const currentTurn = onTimeState.currentTurn;
-        for (const who of [currentTurn, flip(currentTurn)]) {
-          const player = onTimeState.players[who];
-          const activeIdx = getActiveCharacterIndex(player);
-          for (const ch of shiftLeft(player.characters, activeIdx)) {
-            if (!ch.variables.alive) {
-              continue;
-            }
-            for (const sk of ch.definition.skills) {
-              if (sk.triggerOn === name) {
-                const skillInfo: SkillInfo = {
-                  caller: ch,
-                  definition: sk,
-                  fromCard: null,
-                  requestBy: null,
-                };
-                yield this.useSkillImpl(skillInfo, hasIo, arg);
-              }
-            }
-            for (const et of ch.entities) {
-              for (const sk of et.definition.skills) {
-                if (sk.triggerOn === name) {
-                  const skillInfo: SkillInfo = {
-                    caller: et,
-                    definition: sk,
-                    fromCard: null,
-                    requestBy: null,
-                  };
-                  yield this.useSkillImpl(skillInfo, hasIo, arg);
-                }
-              }
-            }
-          }
-          for (const key of [
-            "combatStatuses",
-            "summons",
-            "supports",
-          ] as const) {
-            for (const et of player[key]) {
-              for (const sk of et.definition.skills) {
-                if (sk.triggerOn === name) {
-                  const skillInfo: SkillInfo = {
-                    caller: et,
-                    definition: sk,
-                    fromCard: null,
-                    requestBy: null,
-                  };
-                  yield this.useSkillImpl(skillInfo, hasIo, arg);
-                }
-              }
+        const entities = allEntities(onTimeState, true);
+        for (const entity of entities) {
+          for (const sk of entity.definition.skills) {
+            if (sk.triggerOn === name) {
+              const skillInfo: SkillInfo = {
+                caller: entity,
+                definition: sk,
+                fromCard: null,
+                requestBy: null,
+              };
+              yield this.useSkillImpl(skillInfo, hasIo, arg);
             }
           }
         }
@@ -976,6 +939,7 @@ export class Game {
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
     const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
     const defeatEvents: CharacterEventArg[] = [];
+    const disposeEvents: EntityEventArg[] = [];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
@@ -983,8 +947,13 @@ export class Game {
         if (ch.variables.alive && ch.variables.health <= 0) {
           const zeroHealthEventArg = new ZeroHealthEventArg(this.state, ch);
           await this.emitEvent("modifyZeroHealth", zeroHealthEventArg);
-          if (zeroHealthEventArg._immuneTo) {
-            // TODO
+          if (zeroHealthEventArg._immuneTo !== null && zeroHealthEventArg._immuneTo > 0) {
+            this.mutate({
+              type: "modifyEntityVar",
+              state: ch,
+              varName: "health",
+              value: zeroHealthEventArg._immuneTo,
+            });
             continue;
           }
           defeatEvents.push(new CharacterEventArg(this.state, ch));
@@ -1001,6 +970,7 @@ export class Game {
               type: "disposeEntity",
               oldState: et,
             });
+            disposeEvents.push(new EntityEventArg(this.state, et));
           }
           mut = {
             ...mut,
@@ -1016,11 +986,6 @@ export class Game {
           this.mutate(mut);
           // 如果出战角色倒下，那么令用户选择新的出战角色
           if (ch.id === player.activeCharacterId) {
-            this.notifyOne(flip(who), [
-              {
-                type: "oppChoosingActive",
-              },
-            ]);
             const candidates = this.state.players[who].characters
               .filter((c) => c.variables.alive)
               .map((c) => c.id);
@@ -1028,6 +993,11 @@ export class Game {
               await this.gotWinner(flip(who));
               return true;
             }
+            this.notifyOne(flip(who), [
+              {
+                type: "oppChoosingActive",
+              },
+            ]);
             activeDefeated[who] = this.rpc(who, "chooseActive", {
               candidates,
             }).then(({ active }) => {
@@ -1054,6 +1024,9 @@ export class Game {
     }
     for (const defeatEvent of defeatEvents) {
       await this.emitEvent("onDefeated", defeatEvent);
+    }
+    for (const disposeEvent of disposeEvents) {
+      await this.emitEvent("onDispose", disposeEvent);
     }
     return defeatEvents.length > 0;
   }

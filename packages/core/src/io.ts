@@ -153,6 +153,18 @@ export function exposeMutation(
 }
 
 function exposeEntity(e: EntityState): EntityData {
+  let equipment: boolean | "weapon" | "artifact";
+  if (e.definition.type === "equipment") {
+    if (e.definition.tags.includes("artifact")) {
+      equipment = "artifact";
+    } else if (e.definition.tags.includes("weapon")) {
+      equipment = "weapon";
+    } else {
+      equipment = true;
+    }
+  } else {
+    equipment = false;
+  }
   return {
     id: e.id,
     definitionId: Math.floor(e.definition.id),
@@ -161,6 +173,7 @@ function exposeEntity(e: EntityState): EntityData {
       : null,
     hintIcon: e.variables.hintIcon ?? null,
     hintText: e.definition.hintText,
+    equipment,
   };
 }
 

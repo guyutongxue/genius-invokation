@@ -222,7 +222,7 @@ const detailedEventDictionary = {
     );
   }),
   beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {
-    return checkRelative(c.state, e.character.id, r);
+    return checkRelative(c.state, e.character.id, r) && e._immuneTo === null;
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),
@@ -277,8 +277,14 @@ const detailedEventDictionary = {
     return checkRelative(c.state, e.character.id, r);
   }),
   revive: defineDescriptor("onRevive", (c, e, r) => {
-    return checkRelative(c.state, c.eventArg.character.id, r);
+    return checkRelative(c.state, e.character.id, r);
   }),
+  replaceCharacterDefinition: defineDescriptor(
+    "onReplaceCharacterDefinition",
+    (c, e, r) => {
+      return checkRelative(c.state, e.character.id, r);
+    },
+  ),
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideEventArgType = {
@@ -423,9 +429,10 @@ export function enableShortcut<T extends SkillBuilder<any>>(
   return proxy as any;
 }
 
-interface UsageOptions extends VariableOptions {
+interface UsageOptions<VarName extends string = string>
+  extends VariableOptions {
   /** 设置变量名。默认的变量名为 `usage`；如果该变量名已被占用，则会在后面加上 `_${skillId}`。*/
-  name?: string;
+  name?: VarName;
   /** 是否为“每回合使用次数”。默认值为 `false`。 */
   perRound?: boolean;
   /** 是否在每次技能执行完毕后自动 -1。默认值为 `true`。 */
@@ -473,7 +480,19 @@ export class TriggeredSkillBuilder<
    * @param opt @see UsageOptions
    * @returns
    */
-  usage(count: number, opt?: UsageOptions): this {
+  usage<VarName extends string = "usage">(
+    count: number,
+    opt?: UsageOptions<VarName>,
+  ): BuilderWithShortcut<
+    TriggeredSkillBuilder<
+      {
+        callerType: Meta["callerType"];
+        callerVars: Meta["callerVars"] | VarName;
+        eventArgType: Meta["eventArgType"];
+      },
+      EventName
+    >
+  > {
     if (this._usageOpt !== null) {
       throw new Error(`Usage called twice`);
     }
@@ -482,7 +501,10 @@ export class TriggeredSkillBuilder<
       opt?.name ??
       // @ts-expect-error private prop
       ("usage" in this.parent._constants ? `usage_${this.id}` : "usage");
-    this.parent.variable(name, count, opt);
+    this.parent.variable(name, count, {
+      ...opt,
+      recreateMax: opt?.recreateMax ?? count,
+    });
     if (perRound) {
       // @ts-expect-error private prop
       this.parent._usagePerRoundVarNames.push(this._usagePerRoundName);
@@ -501,7 +523,7 @@ export class TriggeredSkillBuilder<
       if (!oldFilter(c, e)) return false;
       return c.getVariable(name) > 0;
     };
-    return this;
+    return this as any;
   }
   /**
    * Same as
@@ -665,6 +687,9 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
     this._skillType = type;
     return this;
   }
+
+  /** 此定义未被使用。 */
+  reserve(): void {}
 
   done(): SkillHandle {
     if (this._gainEnergy) {

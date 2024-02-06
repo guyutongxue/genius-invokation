@@ -8,6 +8,7 @@ import {
 } from "./state";
 import { CardTag, PlayCardSkillDefinition } from "./card";
 import { getReaction, isReactionRelatedTo, isReactionSwirl } from "../base/reaction";
+import { CharacterDefinition } from "./character";
 
 export interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
@@ -433,7 +434,7 @@ class ReactionEventArg extends EventArg {
   }
 }
 
-class EntityEventArg extends EventArg {
+export class EntityEventArg extends EventArg {
   constructor(
     state: GameState,
     public readonly entity: CharacterState | EntityState,
@@ -474,6 +475,17 @@ export class ZeroHealthEventArg extends CharacterEventArg {
   }
 }
 
+export class ReplaceCharacterDefinitionEventArg extends CharacterEventArg {
+  constructor(
+    state: GameState,
+    character: CharacterState,
+    public readonly oldDefinition: CharacterDefinition,
+    public readonly newDefinition: CharacterDefinition,
+  ) {
+    super(state, character);
+  }
+}
+
 export const EVENT_MAP = {
   onBattleBegin: EventArg,
 
@@ -501,6 +513,7 @@ export const EVENT_MAP = {
   modifyZeroHealth: ZeroHealthEventArg,
   onDefeated: CharacterEventArg,
   onRevive: CharacterEventArg,
+  onReplaceCharacterDefinition: ReplaceCharacterDefinitionEventArg,
 } satisfies Record<string, new (...args: any[]) => EventArg>;
 
 export type EventMap = typeof EVENT_MAP;

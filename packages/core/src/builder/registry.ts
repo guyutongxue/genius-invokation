@@ -26,6 +26,7 @@ export function beginRegistration() {
 interface PassiveSkillDefinition {
   id: number;
   type: "passiveSkill";
+  constants: Record<string, number>;
   skills: readonly TriggeredSkillDefinition[];
 }
 

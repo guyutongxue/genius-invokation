@@ -14,6 +14,7 @@ class CharacterBuilder {
   private readonly _tags: CharacterTag[] = [];
   private _maxHealth = 10;
   private _maxEnergy = 3;
+  private _constants: Record<string, number> = {};
   private readonly _initiativeSkills: InitiativeSkillDefinition[] = [];
   private readonly _skills: TriggeredSkillDefinition[] = [];
   constructor(private readonly id: number) {}
@@ -27,6 +28,7 @@ class CharacterBuilder {
     for (const sk of skills) {
       const def = getCharacterSkillDefinition(sk);
       if (def.type === "passiveSkill") {
+        this._constants = { ...this._constants, ...def.constants };
         this._skills.push(...def.skills);
       } else {
         this._initiativeSkills.push(def);
@@ -50,6 +52,7 @@ class CharacterBuilder {
       id: this.id,
       tags: this._tags,
       constants: {
+        ...this._constants,
         health: this._maxHealth,
         energy: 0,
         alive: 1,

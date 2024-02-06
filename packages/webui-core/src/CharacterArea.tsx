@@ -68,6 +68,14 @@ export function CharacterArea(props: CharacterAreaProps) {
   const focused = () => focusing() === props.data.id;
   const aura1 = () => props.data.aura & 0xf;
   const aura2 = () => (props.data.aura >> 4) & 0xf;
+
+  const statuses = () => props.data.entities.filter((et) => !et.equipment);
+  const weapon = () =>
+    props.data.entities.find((et) => et.equipment === "weapon");
+  const artifact = () =>
+    props.data.entities.find((et) => et.equipment === "artifact");
+  const otherEquipments = () =>
+    props.data.entities.filter((et) => et.equipment === true);
   return (
     <div class="flex flex-col gap-1 items-center">
       <div class="h-5 flex flex-row items-end gap-2">
@@ -89,6 +97,38 @@ export function CharacterArea(props: CharacterAreaProps) {
           <WaterDrop />
           <div class="absolute">{props.data.health}</div>
         </div>
+        <div class="absolute z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
+          <Show when={weapon()}>
+            {(et) => (
+              <div
+                class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
+                title={`defId = ${et().definitionId}`}
+              >
+                &#x1F5E1;
+              </div>
+            )}
+          </Show>
+          <Show when={artifact()}>
+            {(et) => (
+              <div
+                class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
+                title={`defId = ${et().definitionId}`}
+              >
+                &#x1F451;
+              </div>
+            )}
+          </Show>
+          <For each={otherEquipments()}>
+            {(et) => (
+              <div
+                class="w-6 h-6 rounded-3 text-center line-height-6 bg-yellow-100 border-solid border-1 border-yellow-800"
+                title={`defId = ${et.definitionId}`}
+              >
+                &#x2728;
+              </div>
+            )}
+          </For>
+        </div>
         <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
         <Image
           imageId={props.data.definitionId}
@@ -101,7 +141,7 @@ export function CharacterArea(props: CharacterAreaProps) {
           onClick={() => clickable() && onClick(props.data.id)}
         />
         <div class="absolute left-0 bottom-0 h-6 flex flex-row">
-          <For each={props.data.entities}>{(st) => <Status data={st} />}</For>
+          <For each={statuses()}>{(st) => <Status data={st} />}</For>
         </div>
         <Show when={props.data.defeated}>
           <div class="absolute z-10 top-[50%] left-0 w-full text-center text-5xl font-bold translate-y-[-50%] font-[var(--font-emoji)]">

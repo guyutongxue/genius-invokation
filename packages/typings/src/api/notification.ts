@@ -26,6 +26,7 @@ export interface EntityData {
   variable: number | null;
   hintIcon: number | null;
   hintText: string | null;
+  equipment: "weapon" | "artifact" | boolean;
 }
 
 export interface CardData {

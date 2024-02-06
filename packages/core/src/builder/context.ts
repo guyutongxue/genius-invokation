@@ -475,18 +475,26 @@ export class SkillContext<Meta extends ContextMetaBase> {
       // refresh exist entity's variable
       for (const prop in existOverride.variables) {
         if (prop in def.constants) {
-          const valueLimit =
-            `${prop}$max` in def.constants
-              ? def.constants[`${prop}$max`]
-              : Math.max(existOverride.variables[prop], def.constants[prop]);
+          let newValue = def.constants[prop];
+          if (`${prop}$max` in def.constants) {
+            // 若存在 `$max` 设定（如 usage）累加状态值
+            const limit = def.constants[`${prop}$max`];
+            if (existOverride.variables[prop] < limit) {
+              // 如果当前值比上限低，进行累加
+              newValue = Math.min(
+                limit,
+                existOverride.variables[prop] + def.constants[prop],
+              );
+            } else {
+              // 如果当前值比上限高，维持原样
+              newValue = existOverride.variables[prop];
+            }
+          }
           this.mutate({
             type: "modifyEntityVar",
             state: existOverride,
             varName: prop,
-            value: Math.min(
-              def.constants[prop] + existOverride.variables[prop],
-              valueLimit,
-            ),
+            value: newValue,
           });
         }
       }
@@ -614,6 +622,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (characters.length !== 1) {
       throw new Error(`Replace definition must apply on exact one character`);
     }
+    const ch = characters[0];
+    const oldDef = ch.state.definition;
     const def = this._state.data.characters.get(newCh);
     if (typeof def === "undefined") {
       throw new Error(`Unknown character ${newCh}`);
@@ -623,6 +633,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
       state: characters[0].state,
       newDefinition: def,
     });
+    this.emitEvent(
+      "onReplaceCharacterDefinition",
+      this.state,
+      ch.state,
+      oldDef,
+      def,
+    );
   }
 
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
