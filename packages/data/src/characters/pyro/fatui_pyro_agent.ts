@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 123012
@@ -8,8 +8,21 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：3
  * 所附属角色造成的物理伤害变为火元素伤害。
  */
-export const StealthStatus = status(123012)
-  // TODO
+export const Stealth01 = status(123012)
+  .conflictWith(123011)
+  .variable("usage", 3)
+  .on("beforeDamaged")
+  .decreaseDamage(1)
+  .addVariable("usage", -1)
+  .if((c) => c.getVariable("usage") <= 0)
+  .dispose()
+  .on("modifyDamage")
+  .increaseDamage(1)
+  .addVariable("usage", -1)
+  .if((c) => c.getVariable("usage") <= 0)
+  .dispose()
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Pyro)
   .done();
 
 /**
@@ -20,7 +33,18 @@ export const StealthStatus = status(123012)
  * 可用次数：2
  */
 export const Stealth = status(123011)
-  // TODO
+  .conflictWith(123012)
+  .variable("usage", 2)
+  .on("beforeDamaged")
+  .decreaseDamage(1)
+  .addVariable("usage", -1)
+  .if((c) => c.getVariable("usage") <= 0)
+  .dispose()
+  .on("modifyDamage")
+  .increaseDamage(1)
+  .addVariable("usage", -1)
+  .if((c) => c.getVariable("usage") <= 0)
+  .dispose()
   .done();
 
 /**
@@ -33,7 +57,7 @@ export const Thrust = skill(23011)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -42,10 +66,14 @@ export const Thrust = skill(23011)
  * @description
  * 造成1点火元素伤害，本角色附属潜行。
  */
-export const Prowl = skill(23012)
+export const Prowl: SkillHandle = skill(23012)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 1)
+  .if((c) => c.self.hasEquipment(PaidInFull))
+  .characterStatus(Stealth01)
+  .else()
+  .characterStatus(Stealth)
   .done();
 
 /**
@@ -58,7 +86,7 @@ export const BladeAblaze = skill(23013)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 5)
   .done();
 
 /**
@@ -69,7 +97,8 @@ export const BladeAblaze = skill(23013)
  */
 export const StealthMaster = skill(23014)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(Stealth)
   .done();
 
 /**
@@ -98,5 +127,6 @@ export const FatuiPyroAgent = character(2301)
 export const PaidInFull = card(223011)
   .costPyro(3)
   .talent(FatuiPyroAgent)
-  // TODO
+  .on("enter")
+  .useSkill(Prowl)
   .done();

@@ -125,20 +125,14 @@ export interface EnterEventInfo {
 }
 
 export class EventArg {
-  private _currentCaller: CharacterState | EntityState | null = null;
-  constructor(protected readonly state: GameState) {}
+  _currentSkillInfo: SkillInfo | null = null;
+  constructor(public readonly _state: GameState) {}
 
-  _setCurrentCaller(caller: CharacterState | EntityState) {
-    this._currentCaller = caller;
-  }
-  _getState() {
-    return this.state;
-  }
-  get caller() {
-    if (this._currentCaller === null) {
+  protected get caller(): EntityState | CharacterState {
+    if (this._currentSkillInfo === null) {
       throw new Error("caller not set");
     }
-    return this._currentCaller;
+    return this._currentSkillInfo.caller;
   }
 }
 
@@ -465,13 +459,21 @@ export class CharacterEventArg extends EventArg {
   }
 }
 
+export interface ImmuneInfo {
+  skill: SkillInfo;
+  newHealth: number;
+}
+
 export class ZeroHealthEventArg extends CharacterEventArg {
-  _immuneTo: null | number = null;
+  _immuneInfo: null | ImmuneInfo = null;
   _log = "";
 
   immune(newHealth: number) {
     this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) immune to defeated, and heal it to ${newHealth}.\n`;
-    this._immuneTo = newHealth;
+    this._immuneInfo = {
+      skill: this._currentSkillInfo!,
+      newHealth
+    };
   }
 }
 

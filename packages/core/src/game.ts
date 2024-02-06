@@ -180,6 +180,7 @@ export class Game {
           definition: def,
           variables: def.constants,
           entities: [],
+          damageLog: [],
         },
       });
     }
@@ -748,9 +749,9 @@ export class Game {
     }
     let filteringState = this.state;
     if (arg instanceof EventArg) {
-      arg._setCurrentCaller(skillInfo.caller);
+      arg._currentSkillInfo = skillInfo;
       // 在 arg.state 上做检查，即引发事件的时刻的全局状态，而非现在时刻的状态
-      filteringState = arg._getState();
+      filteringState = arg._state;
     }
     // If skill has a filter and not passed, do nothing
     const skillDef = skillInfo.definition;
@@ -914,7 +915,7 @@ export class Game {
         };
         yield this.useSkillImpl(skillInfo, hasIo, void 0);
       } else {
-        const onTimeState = arg._getState();
+        const onTimeState = arg._state;
         const entities = allEntities(onTimeState, true);
         for (const entity of entities) {
           for (const sk of entity.definition.skills) {
@@ -947,12 +948,25 @@ export class Game {
         if (ch.variables.alive && ch.variables.health <= 0) {
           const zeroHealthEventArg = new ZeroHealthEventArg(this.state, ch);
           await this.emitEvent("modifyZeroHealth", zeroHealthEventArg);
-          if (zeroHealthEventArg._immuneTo !== null && zeroHealthEventArg._immuneTo > 0) {
+          if (
+            zeroHealthEventArg._immuneInfo !== null &&
+            zeroHealthEventArg._immuneInfo.newHealth > 0
+          ) {
             this.mutate({
               type: "modifyEntityVar",
               state: ch,
               varName: "health",
-              value: zeroHealthEventArg._immuneTo,
+              value: zeroHealthEventArg._immuneInfo.newHealth,
+            });
+            this.mutate({
+              type: "pushDamageLog",
+              damage: {
+                type: DamageType.Heal,
+                source: zeroHealthEventArg._immuneInfo.skill.caller,
+                target: ch,
+                value: zeroHealthEventArg._immuneInfo.newHealth,
+                via: zeroHealthEventArg._immuneInfo.skill,
+              },
             });
             continue;
           }

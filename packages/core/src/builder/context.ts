@@ -128,7 +128,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         requestBy: null,
       }));
     for (const info of infos) {
-      arg._setCurrentCaller(info.caller);
+      arg._currentSkillInfo = info;
       if (
         "filter" in info.definition &&
         !(0, info.definition.filter)(this.state, info, arg)
@@ -293,6 +293,16 @@ export class SkillContext<Meta extends ContextMetaBase> {
         varName: "health",
         value: targetState.variables.health + finalValue,
       });
+      this.mutate({
+        type: "pushDamageLog",
+        damage: {
+          type: DamageType.Heal,
+          source: this.skillInfo.caller,
+          target: targetState,
+          value: finalValue,
+          via: this.skillInfo,
+        },
+      });
       this.emitEvent("onHeal", this.state, {
         expectedValue: value,
         finalValue,
@@ -345,13 +355,17 @@ export class SkillContext<Meta extends ContextMetaBase> {
         0,
         targetState.variables.health - damageInfo.value,
       );
-      this.emitEvent("onDamage", this.state, damageInfo);
       this.mutate({
         type: "modifyEntityVar",
         state: targetState,
         varName: "health",
         value: finalHealth,
       });
+      this.mutate({
+        type: "pushDamageLog",
+        damage: damageInfo,
+      });
+      this.emitEvent("onDamage", this.state, damageInfo);
     }
   }
 
@@ -394,7 +408,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           isDamage: false,
         };
     const damageModifier = new ModifyDamage0EventArg(this.state, optDamageInfo);
-    damageModifier._setCurrentCaller(this.callerState);
+    damageModifier._currentSkillInfo = this.skillInfo;
     if (reaction !== null) {
       this.emitEvent("onReaction", this.state, {
         type: reaction,

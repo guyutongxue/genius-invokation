@@ -1,15 +1,4 @@
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
-
-/**
- * @id 124023
- * @name 轰雷禁锢
- * @description
- * 结束阶段：对附属有雷鸣探知的敌方角色造成3点雷元素伤害。（如果敌方不存在符合条件角色，则改为对出战角色造成伤害）
- * 可用次数：1
- */
-export const ThunderingShacklesSummon = summon(124023)
-  // TODO
-  .done();
+import { character, skill, summon, status, combatStatus, card, DamageType, CombatStatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 124022
@@ -19,7 +8,34 @@ export const ThunderingShacklesSummon = summon(124023)
  * （同一方场上最多存在一个此状态。雷音权现的部分技能，会以所附属角色为目标。）
  */
 export const LightningRod = status(124022)
-  // TODO
+  .on("beforeDamaged", (c, e) => [
+      ThunderManifestation as number, 
+      ThunderingShacklesSummon as number
+    ].includes(e.source.definition.id))
+  .increaseDamage(1)
+  .dispose()
+  .done();
+
+/**
+ * @id 124023
+ * @name 轰雷禁锢
+ * @description
+ * 结束阶段：对附属有雷鸣探知的敌方角色造成3点雷元素伤害。（如果敌方不存在符合条件角色，则改为对出战角色造成伤害）
+ * 可用次数：1
+ */
+export const ThunderingShacklesSummon = summon(124023)
+  .hintIcon(DamageType.Electro)
+  .hintText("3")
+  .on("endPhase")
+  .usage(1)
+  .do((c) => {
+    const target = c.$(`opp character has status with definition id ${LightningRod}`);
+    if (target) {
+      c.damage(DamageType.Electro, 3, target.state);
+    } else {
+      c.damage(DamageType.Electro, 3, "opp active");
+    }
+  })
   .done();
 
 /**
@@ -28,8 +44,9 @@ export const LightningRod = status(124022)
  * @description
  * 所在阵营角色使用技能后：对所在阵营出战角色附属雷鸣探知。（每回合1次）
  */
-export const LightningStrikeProbe = combatStatus(124021)
-  // TODO
+export const LightningStrikeProbe: CombatStatusHandle = combatStatus(124021)
+  .on("useSkill")
+  .characterStatus(LightningRod, "my active")
   .done();
 
 /**
@@ -39,8 +56,7 @@ export const LightningStrikeProbe = combatStatus(124021)
  * 我方对附属有雷鸣探知的角色造成的伤害+1。
  */
 export const RollingThunder = combatStatus(124024)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 24021
@@ -52,7 +68,7 @@ export const ThunderousWingslash = skill(24021)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
   .done();
 
 /**
@@ -64,7 +80,14 @@ export const ThunderousWingslash = skill(24021)
 export const StrifefulLightning = skill(24022)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .do((c) => {
+    const target = c.$(`opp character has status with definition id ${LightningRod}`);
+    if (target) {
+      c.damage(DamageType.Electro, 3, target.state);
+    } else {
+      c.damage(DamageType.Electro, 3, "opp active");
+    }
+  })
   .done();
 
 /**
@@ -77,7 +100,8 @@ export const ThunderingShackles = skill(24023)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .summon(ThunderingShacklesSummon)
   .done();
 
 /**
@@ -88,7 +112,8 @@ export const ThunderingShackles = skill(24023)
  */
 export const LightningProbe = skill(24024)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .combatStatus(LightningStrikeProbe, "opp")
   .done();
 
 /**
@@ -116,5 +141,13 @@ export const ThunderManifestation = character(2402)
 export const GrievingEcho = card(224021)
   .costElectro(3)
   .talent(ThunderManifestation)
-  // TODO
+  .on("enter")
+  .useSkill(StrifefulLightning)
+  .on("damaged", (c, e) => {
+    const target = c.of(e.target);
+    return !target.isMine() && target.hasStatus(LightningRod);
+  })
+  .listenToAll()
+  .usagePerRound(1)
+  .drawCards(1)
   .done();

@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 124013
@@ -9,7 +9,11 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 此召唤物在场时：敌方执行「切换角色」行动的元素骰费用+1。（每回合1次）
  */
 export const ChainsOfWardingThunder = summon(124013)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(2)
+  .on("modifyAction", (c, e) => c.self.who !== e.action.who && e.action.type === "switchActive")
+  .listenToAll()
+  .addCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -19,8 +23,7 @@ export const ChainsOfWardingThunder = summon(124013)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到6点生命值。
  */
 export const ElectroCrystalCore01 = status(124015)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 124016
@@ -29,8 +32,7 @@ export const ElectroCrystalCore01 = status(124015)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到10点生命值。
  */
 export const ElectroCrystalCore02 = status(124016)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 124014
@@ -39,7 +41,20 @@ export const ElectroCrystalCore02 = status(124016)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  */
 export const ElectroCrystalCore = status(124014)
-  // TODO
+  .on("beforeDefeated")
+  .immune(1)
+  .done();
+
+/**
+ * @id 24016
+ * @name 猜拳三连击·布
+ * @description
+ * （需准备1个行动轮）
+ * 造成3点雷元素伤害。
+ */
+export const RockpaperscissorsComboPaper = skill(24016)
+  .type("elemental")
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
@@ -49,7 +64,20 @@ export const ElectroCrystalCore = status(124014)
  * 本角色将在下次行动时，直接使用技能：猜拳三连击·布。
  */
 export const RockpaperscissorsComboPaperStatus = status(124012)
-  // TODO
+  .prepare(RockpaperscissorsComboPaper)
+  .done();
+
+/**
+ * @id 24015
+ * @name 猜拳三连击·剪刀
+ * @description
+ * （需准备1个行动轮）
+ * 造成2点雷元素伤害，然后准备技能：猜拳三连击·布。
+ */
+export const RockpaperscissorsComboScissors = skill(24015)
+  .type("elemental")
+  .damage(DamageType.Electro, 2)
+  .characterStatus(RockpaperscissorsComboPaperStatus)
   .done();
 
 /**
@@ -59,7 +87,7 @@ export const RockpaperscissorsComboPaperStatus = status(124012)
  * 本角色将在下次行动时，直接使用技能：猜拳三连击·剪刀。
  */
 export const RockpaperscissorsComboScissorsStatus = status(124011)
-  // TODO
+  .prepare(RockpaperscissorsComboScissors)
   .done();
 
 /**
@@ -72,7 +100,7 @@ export const ElectroCrystalProjection = skill(24011)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
   .done();
 
 /**
@@ -84,7 +112,8 @@ export const ElectroCrystalProjection = skill(24011)
 export const RockpaperscissorsCombo = skill(24012)
   .type("elemental")
   .costElectro(5)
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .characterStatus(RockpaperscissorsComboScissorsStatus)
   .done();
 
 /**
@@ -97,7 +126,8 @@ export const LightningLockdown = skill(24013)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .summon(ChainsOfWardingThunder)
   .done();
 
 /**
@@ -108,31 +138,8 @@ export const LightningLockdown = skill(24013)
  */
 export const ElectroCrystalCoreSkill = skill(24014)
   .type("passive")
-  // TODO
-  .done();
-
-/**
- * @id 24015
- * @name 猜拳三连击·剪刀
- * @description
- * （需准备1个行动轮）
- * 造成2点雷元素伤害，然后准备技能：猜拳三连击·布。
- */
-export const RockpaperscissorsComboScissors = skill(24015)
-  .type("elemental")
-  // TODO
-  .done();
-
-/**
- * @id 24016
- * @name 猜拳三连击·布
- * @description
- * （需准备1个行动轮）
- * 造成3点雷元素伤害。
- */
-export const RockpaperscissorsComboPaper = skill(24016)
-  .type("elemental")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(ElectroCrystalCore)
   .done();
 
 /**
@@ -159,5 +166,6 @@ export const ElectroHypostasis = character(2401)
 export const AbsorbingPrism = card(224011)
   .costElectro(2)
   .eventTalent(ElectroHypostasis)
-  // TODO
+  .heal(3, "my active")
+  .characterStatus(ElectroCrystalCore, "my active")
   .done();

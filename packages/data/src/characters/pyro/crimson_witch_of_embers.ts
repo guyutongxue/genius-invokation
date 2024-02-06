@@ -9,6 +9,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 所附属角色被附属严寒时，移除此效果。
  */
 export const BlazingHeat = status(163011)
+  .conflictWith(121022)
   // TODO
   .done();
 

@@ -8,7 +8,8 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  */
 export const ResonantCoralOrb = summon(124031)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(2)
   .done();
 
 /**
@@ -20,8 +21,7 @@ export const ResonantCoralOrb = summon(124031)
  * 此状态存在期间：所附属角色造成的伤害+1。
  */
 export const FontemerPearl01 = status(124033)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 124032
@@ -32,7 +32,27 @@ export const FontemerPearl01 = status(124033)
  * 我方宣布结束时：如果所附属角色为「出战角色」，则抓1张牌。
  */
 export const FontemerPearl = status(124032)
-  // TODO
+  .variable("decreaseDamageFromSummon", 0)
+  .on("actionPhase")
+  .setVariable("decreaseDamageFromSummon", 0)
+  .on("beforeDamaged")
+  .usage(2, { autoDecrease: false })
+  .decreaseDamage(1)
+  .do((c, e) => {
+    if (e.source.definition.type === "summon") {
+      const maxTime = c.self.master().hasEquipment(PearlSolidification) ? 2 : 1;
+      if (c.getVariable("decreaseDamageFromSummon") < maxTime) {
+        c.addVariable("decreaseDamageFromSummon", 1);
+        return; // 不扣除使用次数
+      }
+    }
+    c.addVariable("usage", -1)
+  })
+  .on("modifyDamage")
+  .increaseDamage(1)
+  .on("declareEnd")
+  .if((c) => c.self.master().isActive())
+  .drawCards(1)
   .done();
 
 /**
@@ -45,7 +65,7 @@ export const TailSweep = skill(24031)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -58,7 +78,7 @@ export const TailSweep = skill(24031)
 export const SwirlingSchoolOfFish = skill(24032)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
@@ -71,7 +91,9 @@ export const FontemerHoarthunder = skill(24033)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
+  .characterStatus(FontemerPearl)
+  .summon(ResonantCoralOrb)
   .done();
 
 /**
@@ -82,7 +104,8 @@ export const FontemerHoarthunder = skill(24033)
  */
 export const PearlArmor = skill(24034)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(FontemerPearl)
   .done();
 
 /**
@@ -91,10 +114,15 @@ export const PearlArmor = skill(24034)
  * @description
  * 
  */
-// export const SwirlingSchoolOfFish = skill(24037)
-//   .type("passive")
-//   // TODO
-//   .done();
+export const SwirlingSchoolOfFishPassive = skill(24037)
+  .type("passive")
+  .on("useSkill", (c, e) => e.action.skill.definition.id === SwirlingSchoolOfFish && c.self.hasStatus(FontemerPearl))
+  .usagePerRound(1, { name: "addPearlUsageCount" })
+  .do((c) => {
+    const pearl = c.self.hasStatus(FontemerPearl)!;
+    c.of(pearl).addVariable("usage", 1);
+  })
+  .done();
 
 /**
  * @id 2403
@@ -106,7 +134,7 @@ export const MillennialPearlSeahorse = character(2403)
   .tags("electro", "monster")
   .health(8)
   .energy(2)
-  .skills(TailSweep, SwirlingSchoolOfFish, FontemerHoarthunder, PearlArmor, SwirlingSchoolOfFish)
+  .skills(TailSweep, SwirlingSchoolOfFish, FontemerHoarthunder, PearlArmor, SwirlingSchoolOfFishPassive)
   .done();
 
 /**
@@ -119,5 +147,15 @@ export const MillennialPearlSeahorse = character(2403)
  */
 export const PearlSolidification = card(224031)
   .talent(MillennialPearlSeahorse, "active")
-  // TODO
+  .on("enter")
+  .do((c) => {
+    const exists = c.self.master().hasStatus(FontemerPearl);
+    if (exists) {
+      c.of(exists).addVariable("usage", 1);
+    } else {
+      c.characterStatus(FontemerPearl);
+      const thisOne = c.self.master().hasStatus(FontemerPearl)!;
+      c.of(thisOne).setVariable("usage", 1);
+    }
+  })
   .done();

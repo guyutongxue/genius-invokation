@@ -8,7 +8,12 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  */
 export const DarkfireFurnace = summon(123021)
-  // TODO
+  .hintIcon(DamageType.Pyro)
+  .hintText("1")
+  .on("endPhase")
+  .usage(2)
+  .damage(DamageType.Piercing, 1, "opp standby")
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -19,7 +24,9 @@ export const DarkfireFurnace = summon(123021)
  * 此护盾耗尽前：所附属角色造成的火元素伤害+1。
  */
 export const AegisOfAbyssalFlame = status(123024)
-  // TODO
+  .shield(3)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -29,7 +36,16 @@ export const AegisOfAbyssalFlame = status(123024)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到3点生命值。
  */
 export const FieryRebirthStatus = status(123022)
-  // TODO
+  .on("beforeDefeated")
+  .immune(3)
+  .do((c) => {
+    const talent = c.self.master().hasEquipment(EmbersRekindled);
+    if (talent) {
+      c.dispose(talent);
+      c.characterStatus(AegisOfAbyssalFlame, "@master");
+    }
+  })
+  .dispose()
   .done();
 
 /**
@@ -40,8 +56,7 @@ export const FieryRebirthStatus = status(123022)
  * 结束阶段：对所附属角色造成6点穿透伤害，然后移除此效果。
  */
 export const QuenchedEmbers = status(123025)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 123023
@@ -52,8 +67,7 @@ export const QuenchedEmbers = status(123025)
  * 此效果存在期间：角色造成的火元素伤害+1。
  */
 export const ShieldOfSurgingFlame = status(123023)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 23021
@@ -65,7 +79,7 @@ export const FlameOfSalvation = skill(23021)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -77,7 +91,7 @@ export const FlameOfSalvation = skill(23021)
 export const SearingPrecept = skill(23022)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
   .done();
 
 /**
@@ -90,7 +104,8 @@ export const OminousStar = skill(23023)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .summon(DarkfireFurnace)
   .done();
 
 /**
@@ -101,7 +116,8 @@ export const OminousStar = skill(23023)
  */
 export const FieryRebirth = skill(23024)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(FieryRebirthStatus)
   .done();
 
 /**
@@ -128,5 +144,11 @@ export const AbyssLectorFathomlessFlames = character(2302)
 export const EmbersRekindled = card(223021)
   .costPyro(2)
   .talent(AbyssLectorFathomlessFlames, "none")
-  // TODO
+  .on("enter")
+  .do((c) => {
+    if (!c.self.master().hasStatus(FieryRebirthStatus)) {
+      c.characterStatus(AegisOfAbyssalFlame, "@master");
+      c.dispose();
+    }
+  })
   .done();

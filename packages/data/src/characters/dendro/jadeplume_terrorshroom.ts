@@ -8,7 +8,26 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段：如果「活化激能」层数已达到上限，就将其清空。同时，角色失去所有充能。
  */
 export const RadicalVitalityStatus = status(127011)
-  // TODO
+  .variable("vitality", 0)
+  .on("dealDamage")
+  .do((c) => {
+    const val = c.getVariable("vitality");
+    const max = c.self.master().hasEquipment(ProliferatingSpores) ? 4 : 3;
+    c.setVariable("vitality", Math.min(val + 1, max));
+  })
+  .on("damaged")
+  .do((c) => {
+    const val = c.getVariable("vitality");
+    const max = c.self.master().hasEquipment(ProliferatingSpores) ? 4 : 3;
+    c.setVariable("vitality", Math.min(val + 1, max));
+  })
+  .on("endPhase")
+  .if((c) => c.getVariable("vitality") >= 3)
+  .do((c) => {
+    c.setVariable("vitality", 0);
+    const ch = c.self.master();
+    ch.loseEnergy(ch.energy);
+  })
   .done();
 
 /**
@@ -21,7 +40,7 @@ export const MajesticDance = skill(27011)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -33,7 +52,7 @@ export const MajesticDance = skill(27011)
 export const VolatileSporeCloud = skill(27012)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 3)
   .done();
 
 /**
@@ -46,7 +65,10 @@ export const FeatherSpreading = skill(27013)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    const val = c.$(`status with definition id ${RadicalVitalityStatus} at @self`)?.getVariable("vitality") ?? 0;
+    c.damage(DamageType.Dendro, 4 + val);
+  })
   .done();
 
 /**
@@ -57,7 +79,10 @@ export const FeatherSpreading = skill(27013)
  */
 export const RadicalVitality = skill(27014)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(RadicalVitalityStatus)
+  .on("revive")
+  .characterStatus(RadicalVitalityStatus)
   .done();
 
 /**
@@ -85,5 +110,6 @@ export const JadeplumeTerrorshroom = character(2701)
 export const ProliferatingSpores = card(227011)
   .costDendro(3)
   .talent(JadeplumeTerrorshroom)
-  // TODO
+  .on("enter")
+  .useSkill(VolatileSporeCloud)
   .done();

@@ -17,7 +17,7 @@ import {
   sortDice,
 } from "../util";
 import { EntityArea, EntityDefinition } from "./entity";
-import { ActionInfo, SkillDefinition, SkillInfo } from "./skill";
+import { ActionInfo, DamageInfo, SkillDefinition, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
 import { CardDefinition } from "./card";
 
@@ -64,6 +64,11 @@ export interface PushActionLogM {
   readonly type: "pushActionLog";
   readonly who: 0 | 1;
   readonly action: ActionInfo;
+}
+
+export interface PushDamageLogM {
+  readonly type: "pushDamageLog";
+  readonly damage: DamageInfo;
 }
 
 export interface TransferCardM {
@@ -149,6 +154,7 @@ export type Mutation =
   | SwitchTurnM
   | SetWinnerM
   | PushActionLogM
+  | PushDamageLogM
   | TransferCardM
   | SwitchActiveM
   | DisposeCardM
@@ -215,8 +221,18 @@ function doMutation(state: GameState, m: Mutation): GameState {
           roundNumber: draft.roundNumber,
           who: m.who,
           action: m.action as Draft<ActionInfo>,
-        })
-      })
+        });
+      });
+    }
+    case "pushDamageLog": {
+      return produce(state, (draft) => {
+        const character = getEntityById(
+          draft,
+          m.damage.target.id,
+          true,
+        ) as Draft<CharacterState>;
+        character.damageLog.push(m.damage as Draft<DamageInfo>);
+      });
     }
     case "transferCard": {
       return produce(state, (draft) => {

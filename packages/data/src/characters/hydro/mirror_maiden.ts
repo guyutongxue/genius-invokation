@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 122022
@@ -10,7 +10,16 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * （同一方场上最多存在一个此状态）
  */
 export const Refraction01 = status(122022)
-  // TODO
+  .duration(3)
+  .on("enter")
+  .do((c) => {
+    c.$$(`(status with definition id ${Refraction01} or status with definition id ${Refraction}) and not @self`)
+      .forEach((e) => e.dispose());
+  })
+  .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
+  .increaseDamage(1)
+  .on("modifyAction", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
+  .addCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -22,7 +31,14 @@ export const Refraction01 = status(122022)
  * （同一方场上最多存在一个此状态）
  */
 export const Refraction = status(122021)
-  // TODO
+  .duration(2)
+  .on("enter")
+  .do((c) => {
+    c.$$(`(status with definition id ${Refraction01} or status with definition id ${Refraction}) and not @self`)
+      .forEach((e) => e.dispose());
+  })
+  .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -35,7 +51,7 @@ export const WaterBall = skill(22021)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -44,10 +60,14 @@ export const WaterBall = skill(22021)
  * @description
  * 造成2点水元素伤害，目标角色附属水光破镜。
  */
-export const InfluxBlast = skill(22022)
+export const InfluxBlast: SkillHandle = skill(22022)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .if((c) => c.self.hasEquipment(MirrorCage))
+  .characterStatus(Refraction01, "opp active")
+  .else()
+  .characterStatus(Refraction, "opp active")
   .done();
 
 /**
@@ -60,7 +80,7 @@ export const RippledReflection = skill(22023)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 5)
   .done();
 
 /**
@@ -89,5 +109,6 @@ export const MirrorMaiden = character(2202)
 export const MirrorCage = card(222021)
   .costHydro(3)
   .talent(MirrorMaiden)
-  // TODO
+  .on("enter")
+  .useSkill(InfluxBlast)
   .done();

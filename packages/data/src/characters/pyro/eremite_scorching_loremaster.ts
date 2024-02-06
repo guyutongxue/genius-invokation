@@ -1,4 +1,30 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, SkillHandle, StatusHandle } from "@gi-tcg/core/builder";
+
+/**
+ * @id 123034
+ * @name 炎之魔蝎·守势
+ * @description
+ * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合至多2次）
+ */
+export const PyroScorpionGuardianStance01: StatusHandle = status(123034)
+  .conflictWith(123033)
+  .on("beforeDamaged", (c) => c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
+  .usagePerRound(2)
+  .decreaseDamage(1)
+  .done();
+
+/**
+ * @id 123033
+ * @name 炎之魔蝎·守势
+ * @description
+ * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合1次）
+ */
+export const PyroScorpionGuardianStance: StatusHandle = status(123033)
+  .conflictWith(123034)
+  .on("beforeDamaged", (c) => c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
+  .usagePerRound(1)
+  .decreaseDamage(1)
+  .done();
 
 /**
  * @id 123032
@@ -9,7 +35,32 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合至多2次，使角色受到的伤害-1。）
  */
 export const SpiritOfOmenPyroScorpion01 = summon(123032)
-  // TODO
+  .conflictWith(123031)
+  .hintIcon(DamageType.Pyro)
+  .hintText("1")
+  .on("endPhase")
+  .usage(2)
+  .do((c) => {
+    if (c.state.globalActionLog.find((log) =>
+        log.who === c.self.who &&
+        log.roundNumber === c.state.roundNumber &&
+        log.action.type === "useSkill" &&
+        [SearingGlare, BlazingStrike].includes(log.action.skill.definition.id as SkillHandle))) {
+      c.damage(DamageType.Pyro, 2);
+    } else {
+      c.damage(DamageType.Pyro, 1);
+    }
+  })
+  .on("enter")
+  .if((c) => c.$(`my equipment with definition id ${Scorpocalypse}`))
+  .characterStatus(PyroScorpionGuardianStance01, `my character with definition id 2303`)
+  .else()
+  .characterStatus(PyroScorpionGuardianStance, `my character with definition id 2303`)
+  .on("actionPhase")
+  .if((c) => c.$(`my equipment with definition id ${Scorpocalypse}`))
+  .characterStatus(PyroScorpionGuardianStance01, `my character with definition id 2303`)
+  .else()
+  .characterStatus(PyroScorpionGuardianStance, `my character with definition id 2303`)
   .done();
 
 /**
@@ -21,27 +72,19 @@ export const SpiritOfOmenPyroScorpion01 = summon(123032)
  * 入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合1次，使角色受到的伤害-1。）
  */
 export const SpiritOfOmenPyroScorpion = summon(123031)
-  // TODO
-  .done();
-
-/**
- * @id 123034
- * @name 炎之魔蝎·守势
- * @description
- * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合至多2次）
- */
-export const PyroScorpionGuardianStanceStatus01 = status(123034)
-  // TODO
-  .done();
-
-/**
- * @id 123033
- * @name 炎之魔蝎·守势
- * @description
- * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合1次）
- */
-export const PyroScorpionGuardianStanceStatus = status(123033)
-  // TODO
+  .conflictWith(123032)
+  .endPhaseDamage(DamageType.Pyro, 1)
+  .usage(2)
+  .on("enter")
+  .if((c) => c.$(`my equipment with definition id ${Scorpocalypse}`))
+  .characterStatus(PyroScorpionGuardianStance01, `my character with definition id 2303`)
+  .else()
+  .characterStatus(PyroScorpionGuardianStance, `my character with definition id 2303`)
+  .on("actionPhase")
+  .if((c) => c.$(`my equipment with definition id ${Scorpocalypse}`))
+  .characterStatus(PyroScorpionGuardianStance01, `my character with definition id 2303`)
+  .else()
+  .characterStatus(PyroScorpionGuardianStance, `my character with definition id 2303`)
   .done();
 
 /**
@@ -54,7 +97,7 @@ export const SearingGlare = skill(23031)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -66,7 +109,7 @@ export const SearingGlare = skill(23031)
 export const BlazingStrike = skill(23032)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
   .done();
 
 /**
@@ -75,11 +118,15 @@ export const BlazingStrike = skill(23032)
  * @description
  * 造成2点火元素伤害，召唤厄灵·炎之魔蝎。
  */
-export const SpiritOfOmensAwakeningPyroScorpion = skill(23033)
+export const SpiritOfOmensAwakeningPyroScorpion: SkillHandle = skill(23033)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 2)
+  .if((c) => c.self.hasEquipment(Scorpocalypse))
+  .summon(SpiritOfOmenPyroScorpion01)
+  .else()
+  .summon(SpiritOfOmenPyroScorpion)
   .done();
 
 /**
@@ -90,7 +137,10 @@ export const SpiritOfOmensAwakeningPyroScorpion = skill(23033)
  */
 export const SpiritOfOmensPower = skill(23034)
   .type("passive")
-  // TODO
+  .on("damaged")
+  .usage(1, { name: "damagedEnergySkillUsage", autoDispose: false })
+  .if((c) => c.self.health <= 7)
+  .gainEnergy(1, "@self")
   .done();
 
 /**
@@ -100,9 +150,7 @@ export const SpiritOfOmensPower = skill(23034)
  * 每回合开始将此角色计数器清零
  */
 export const _23035 = skill(23035)
-  // .type("undefined")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 23036
@@ -110,10 +158,8 @@ export const _23035 = skill(23035)
  * @description
  * 每回合开始如果场上存在召唤物刷新盾
  */
-export const PyroScorpionGuardianStance = skill(23036)
-  // .type("undefined")
-  // TODO
-  .done();
+export const PyroScorpionGuardianStanceSkill = skill(23036)
+  .reserve();
 
 /**
  * @id 23037
@@ -121,10 +167,8 @@ export const PyroScorpionGuardianStance = skill(23036)
  * @description
  * 每回合开始如果场上存在召唤物刷新盾（天赋）
  */
-export const PyroScorpionGuardianStance01 = skill(23037)
-  // .type("undefined")
-  // TODO
-  .done();
+export const PyroScorpionGuardianStanceSkill01 = skill(23037)
+  .reserve();
 
 /**
  * @id 2303
@@ -136,7 +180,7 @@ export const EremiteScorchingLoremaster = character(2303)
   .tags("pyro", "eremite")
   .health(10)
   .energy(2)
-  .skills(SearingGlare, BlazingStrike, SpiritOfOmensAwakeningPyroScorpion, SpiritOfOmensPower, _23035, PyroScorpionGuardianStance, PyroScorpionGuardianStance01)
+  .skills(SearingGlare, BlazingStrike, SpiritOfOmensAwakeningPyroScorpion, SpiritOfOmensPower)
   .done();
 
 /**
@@ -153,5 +197,6 @@ export const Scorpocalypse = card(223031)
   .costPyro(3)
   .costEnergy(2)
   .talent(EremiteScorchingLoremaster)
-  // TODO
+  .on("enter")
+  .useSkill(SpiritOfOmensAwakeningPyroScorpion)
   .done();

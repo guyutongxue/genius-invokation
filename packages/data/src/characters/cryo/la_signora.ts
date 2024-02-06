@@ -1,4 +1,5 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, CharacterHandle } from "@gi-tcg/core/builder";
+import { BlazingHeat, CrimsonWitchOfEmbers } from "../pyro/crimson_witch_of_embers";
 
 /**
  * @id 121023
@@ -8,8 +9,8 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
-export const _121023 = status(121023)
-  .done();
+const IcesealedCrimsonWitchOfEmbers02 = status(121023)
+  .reserve();
 
 /**
  * @id 121024
@@ -19,8 +20,8 @@ export const _121023 = status(121023)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
-export const _121024 = status(121024)
-  .done();
+const IcesealedCrimsonWitchOfEmbers01 = status(121024)
+  .reserve();
 
 /**
  * @id 121021
@@ -31,7 +32,12 @@ export const _121024 = status(121024)
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
 export const IcesealedCrimsonWitchOfEmbers = status(121021)
-  // TODO
+  .on("actionPhase")
+  .if((c) => c.self.master().health <= 4)
+  .dispose()
+  .on("beforeDefeated")
+  .immune(1)
+  .dispose()
   .done();
 
 /**
@@ -43,7 +49,10 @@ export const IcesealedCrimsonWitchOfEmbers = status(121021)
  * 所附属角色被附属炽热时，移除此效果。
  */
 export const SheerCold = status(121022)
-  // TODO
+  .conflictWith(163011)
+  .on("endPhase")
+  .usage(1)
+  .damage(DamageType.Cryo, 1, "@master")
   .done();
 
 /**
@@ -53,7 +62,17 @@ export const SheerCold = status(121022)
  * 结束阶段：如果对方场上的「女士」已转换为「焚尽的炽炎魔女」，则对我方出战角色附属炽热。如果未转换，则对我方出战角色附属严寒，并使对方场上的「女士」失去1点充能。
  */
 export const IncandescentFrostPermeating = combatStatus(121025)
-  // TODO
+  .on("endPhase")
+  .do((c) => {
+    if (c.$(`opp characters with definition id ${CrimsonWitchOfEmbers}`)) {
+      c.characterStatus(BlazingHeat, "my active");
+    }
+    const laSignora = c.$(`opp characters with definition id ${LaSignora}`);
+    if (laSignora) {
+      c.characterStatus(SheerCold, "my active");
+      laSignora.loseEnergy(1);
+    }
+  })
   .done();
 
 /**
@@ -66,7 +85,7 @@ export const FrostbladeHailstorm = skill(21021)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Cryo, 1)
   .done();
 
 /**
@@ -78,7 +97,8 @@ export const FrostbladeHailstorm = skill(21021)
 export const BitingShards = skill(21022)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .characterStatus(SheerCold, "opp active")
   .done();
 
 /**
@@ -91,7 +111,9 @@ export const CarmineChrysalis = skill(21023)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 4)
+  .heal(2, "@self")
+  .dispose(`status with definition id ${IcesealedCrimsonWitchOfEmbers} at @self`)
   .done();
 
 /**
@@ -102,7 +124,8 @@ export const CarmineChrysalis = skill(21023)
  */
 export const MightOfDelusion = skill(21024)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(IcesealedCrimsonWitchOfEmbers)
   .done();
 
 /**
@@ -111,9 +134,10 @@ export const MightOfDelusion = skill(21024)
  * @description
  * 
  */
-export const InfernosAwakening = skill(21025)
-  // .type("undefined")
-  // TODO
+export const InfernosAwakening = skill(21025) // 定义为：当移除冰封的炽炎魔女时，转换角色形态
+  .type("passive")
+  .on("dispose", (c, e) => e.entity.definition.id === IcesealedCrimsonWitchOfEmbers)
+  .replaceDefinition("@master", CrimsonWitchOfEmbers)
   .done();
 
 /**
@@ -141,6 +165,19 @@ export const LaSignora = character(2102)
  */
 export const PainForPain = card(221021)
   .costSame(3)
-  .talent(LaSignora, "active")
-  // TODO
+  .talent([LaSignora, CrimsonWitchOfEmbers], "active")
+  .on("enter")
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 3);
+  })
+  .on("beforeDamaged", (c, e) => e.value >= 3)
+  .usagePerRound(1)
+  .decreaseDamage(1)
+  .do((c) => {
+    if (c.self.master().state.definition.id === LaSignora) {
+      c.characterStatus(SheerCold, "opp active");
+    } else {
+      c.characterStatus(BlazingHeat, "opp active");
+    }
+  })
   .done();

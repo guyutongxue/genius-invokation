@@ -4,7 +4,7 @@ import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariables } from "./character";
 import { EntityArea, EntityDefinition, EntityVariables } from "./entity";
 import { Mutation } from "./mutation";
-import { ActionInfo, SkillDefinition } from "./skill";
+import { ActionInfo, DamageInfo, SkillDefinition } from "./skill";
 import { ReadonlyDataStore } from "../builder/registry";
 
 export interface GameConfig {
@@ -75,6 +75,7 @@ export interface CharacterState {
   readonly definition: CharacterDefinition;
   readonly entities: readonly EntityState[];
   readonly variables: CharacterVariables;
+  readonly damageLog: DamageInfo[];
 }
 
 export interface EntityState {

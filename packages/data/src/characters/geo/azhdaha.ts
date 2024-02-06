@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, CharacterHandle, Aura } from "@gi-tcg/core/builder";
 
 /**
  * @id 126021
@@ -8,7 +8,19 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 角色汲取了一种和当前不同的元素后：生成1个所汲取元素类型的元素骰。
  */
 export const StoneFacetsElementalAbsorption = status(126021)
-  // TODO
+  .variable("bitset", 1 << 6)
+  .on("replaceCharacterDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
+  .do((c) => {
+    let diceType = DiceType.Geo;
+    switch (c.self.master().state.definition.id) {
+      case AzhdahaCryo: diceType = DiceType.Cryo; break;
+      case AzhdahaHydro: diceType = DiceType.Hydro; break;
+      case AzhdahaPyro: diceType = DiceType.Pyro; break;
+      case AzhdahaElectro: diceType = DiceType.Electro; break;
+    };
+    c.setVariable("bitset", c.getVariable("bitset") & (1 << diceType));
+    c.generateDice(diceType, 1);
+  })
   .done();
 
 /**
@@ -18,7 +30,21 @@ export const StoneFacetsElementalAbsorption = status(126021)
  * 角色受到冰/水/火/雷元素伤害后：如果角色当前未汲取该元素的力量，则移除此状态，然后角色汲取对应元素的力量。
  */
 export const StoneFacetsElementalCrystallization = status(126022)
-  // TODO
+  .on("damaged")
+  .do((c, e) => {
+    let targetDef: CharacterHandle;
+    switch (e.type) {
+      case DamageType.Cryo: targetDef = AzhdahaCryo; break;
+      case DamageType.Hydro: targetDef = AzhdahaHydro; break;
+      case DamageType.Pyro: targetDef = AzhdahaPyro; break;
+      case DamageType.Electro: targetDef = AzhdahaElectro; break;
+      default: return;
+    }
+    if (c.self.master().state.definition.id !== targetDef) {
+      c.replaceDefinition("@master", targetDef);
+      c.dispose();
+    }
+  })
   .done();
 
 /**
@@ -32,7 +58,15 @@ export const StoneFacetsElementalCrystallization = status(126022)
  * 如果角色当前已汲取火元素，则汲取雷元素的力量。
  */
 export const StoneFacetsElementalSummoning = status(126023)
-  // TODO
+  .on("endPhase")
+  .do((c) => {
+    switch (c.self.master().state.definition.id) {
+      default: c.replaceDefinition("@master", AzhdahaHydro); break;
+      case AzhdahaHydro: c.replaceDefinition("@master", AzhdahaCryo); break;
+      case AzhdahaCryo: c.replaceDefinition("@master", AzhdahaPyro); break;
+      case AzhdahaPyro: c.replaceDefinition("@master", AzhdahaElectro); break;
+    }
+  })
   .done();
 
 /**
@@ -45,7 +79,7 @@ export const SunderingCharge = skill(26021)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -58,7 +92,17 @@ export const SunderingCharge = skill(26021)
 export const AuraOfMajesty = skill(26022)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .do((c) => {
+    const targetAura = c.$("opp active")!.aura;
+    c.damage(DamageType.Geo, 3);
+    switch (targetAura) {
+      case Aura.Cryo: c.replaceDefinition("@master", AzhdahaCryo); break;
+      case Aura.Hydro: c.replaceDefinition("@master", AzhdahaHydro); break;
+      case Aura.Pyro: c.replaceDefinition("@master", AzhdahaPyro); break;
+      case Aura.Electro: c.replaceDefinition("@master", AzhdahaElectro); break;
+      default: c.characterStatus(StoneFacetsElementalCrystallization); break;
+    }
+  })
   .done();
 
 /**
@@ -71,7 +115,16 @@ export const DecimatingRockfall = skill(26024)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    const absortionSt = c.self.hasStatus(StoneFacetsElementalAbsorption)!;
+    const bitset = c.of(absortionSt).getVariable("bitset");
+    let bonus = 0;
+    if (bitset & (1 << DiceType.Cryo)) bonus++;
+    if (bitset & (1 << DiceType.Hydro)) bonus++;
+    if (bitset & (1 << DiceType.Pyro)) bonus++;
+    if (bitset & (1 << DiceType.Electro)) bonus++;
+    c.damage(DamageType.Geo, 4 + bonus);
+  })
   .done();
 
 /**
@@ -82,7 +135,10 @@ export const DecimatingRockfall = skill(26024)
  */
 export const StoneFacets = skill(26025)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(StoneFacetsElementalAbsorption)
+  .on("revive")
+  .characterStatus(StoneFacetsElementalAbsorption)
   .done();
 
 /**
@@ -99,19 +155,6 @@ export const Azhdaha = character(2602)
   .done();
 
 /**
- * @id 226022
- * @name 晦朔千引
- * @description
- * 战斗行动：我方出战角色为若陀龙王时，对该角色打出。使若陀龙王附属磐岩百相·元素凝晶，然后生成每种我方角色所具有的元素类型的元素骰各1个。
- * （牌组中包含若陀龙王，才能加入牌组）
- */
-export const LunarCyclesUnending = card(226022)
-  .costSame(2)
-  .eventTalent(Azhdaha)
-  // TODO
-  .done();
-
-/**
  * @id 66013
  * @name 霜刺破袭
  * @description
@@ -120,7 +163,8 @@ export const LunarCyclesUnending = card(226022)
 export const FrostspikeWave = skill(66013)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
+  .characterStatus(StoneFacetsElementalCrystallization)
   .done();
 
 /**
@@ -145,7 +189,8 @@ export const AzhdahaCryo = character(6601)
 export const TorrentialRebuke = skill(66023)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 3)
+  .characterStatus(StoneFacetsElementalCrystallization)
   .done();
 
 /**
@@ -170,7 +215,8 @@ export const AzhdahaHydro = character(6602)
 export const BlazingRebuke = skill(66033)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .characterStatus(StoneFacetsElementalCrystallization)
   .done();
 
 /**
@@ -195,7 +241,8 @@ export const AzhdahaPyro = character(6603)
 export const ThunderstormWave = skill(66043)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 3)
+  .characterStatus(StoneFacetsElementalCrystallization)
   .done();
 
 /**
@@ -209,4 +256,22 @@ export const AzhdahaElectro = character(6604)
   .health(10)
   .energy(2)
   .skills(SunderingCharge, AuraOfMajesty, ThunderstormWave, DecimatingRockfall, StoneFacets)
+  .done();
+
+/**
+ * @id 226022
+ * @name 晦朔千引
+ * @description
+ * 战斗行动：我方出战角色为若陀龙王时，对该角色打出。使若陀龙王附属磐岩百相·元素凝晶，然后生成每种我方角色所具有的元素类型的元素骰各1个。
+ * （牌组中包含若陀龙王，才能加入牌组）
+ */
+export const LunarCyclesUnending = card(226022)
+  .costSame(2)
+  .eventTalent([Azhdaha, AzhdahaCryo, AzhdahaHydro, AzhdahaPyro, AzhdahaElectro])
+  .characterStatus(StoneFacetsElementalCrystallization)
+  .do((c) => {
+    for (const ch of c.$$("my characters include defeated")) {
+      c.generateDice(ch.element(), 1);
+    }
+  })
   .done();

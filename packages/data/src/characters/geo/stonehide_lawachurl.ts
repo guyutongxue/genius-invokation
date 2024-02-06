@@ -9,7 +9,13 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 角色所附属的「岩盔」被移除后：也移除此状态。
  */
 export const StoneForce = status(126012)
-  // TODO
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Geo)
+  .on("modifyDamage")
+  .usagePerRound(1)
+  .increaseDamage(1)
+  .on("dispose", (c, e) => e.entity.definition.id === Stonehide)
+  .dispose()
   .done();
 
 /**
@@ -20,7 +26,11 @@ export const StoneForce = status(126012)
  * 可用次数：3
  */
 export const Stonehide = status(126011)
-  // TODO
+  .on("beforeDamaged")
+  .usage(3)
+  .decreaseDamage(1)
+  .if((c, e) => e.type === DamageType.Geo)
+  .addVariable("usage", -1)
   .done();
 
 /**
@@ -33,7 +43,7 @@ export const PlamaLawa = skill(26011)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -45,7 +55,7 @@ export const PlamaLawa = skill(26011)
 export const MovoLawa = skill(26012)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .damage(DamageType.Physical, 3)
   .done();
 
 /**
@@ -58,7 +68,7 @@ export const UpaShato = skill(26013)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Physical, 5)
   .done();
 
 /**
@@ -69,7 +79,9 @@ export const UpaShato = skill(26013)
  */
 export const InfusedStonehide = skill(26014)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(Stonehide)
+  .characterStatus(StoneForce)
   .done();
 
 /**
@@ -98,5 +110,13 @@ export const StonehideReforged = card(226011)
   .costGeo(4)
   .costEnergy(2)
   .talent(StonehideLawachurl)
-  // TODO
+  .on("enter")
+  .useSkill(UpaShato)
+  .on("defeated", (c, e) => {
+    // 伤害记录中最后一条为本角色造成
+    const damages = e.character.damageLog;
+    return damages[damages.length - 1].source.id === c.self.master().id;
+  })
+  .characterStatus(Stonehide, "@master")
+  .characterStatus(StoneForce, "@master")
   .done();

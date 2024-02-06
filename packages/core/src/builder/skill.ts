@@ -222,7 +222,7 @@ const detailedEventDictionary = {
     );
   }),
   beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {
-    return checkRelative(c.state, e.character.id, r) && e._immuneTo === null;
+    return checkRelative(c.state, e.character.id, r) && e._immuneInfo === null;
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),

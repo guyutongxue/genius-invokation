@@ -1,4 +1,5 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, StatusHandle } from "@gi-tcg/core/builder";
+import { SheerCold } from "./la_signora";
 
 /**
  * @id 121033
@@ -18,9 +19,11 @@ export const PiercingIceridge = summon(121033)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。
  */
-export const CryoCrystalCore = status(121034)
+export const CryoCrystalCore: StatusHandle = status(121034)
   .on("beforeDefeated")
   .immune(1)
+  .if((c) => c.self.master().hasEquipment(SternfrostPrism))
+  .characterStatus(SheerCold, "opp active")
   .dispose()
   .done();
 
