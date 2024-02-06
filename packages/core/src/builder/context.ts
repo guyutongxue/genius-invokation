@@ -129,6 +129,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
       }));
     for (const info of infos) {
       arg._currentSkillInfo = info;
+      try {
+        getEntityById(this.state, info.caller.id, true);
+      } catch {
+        continue;
+      }
       if (
         "filter" in info.definition &&
         !(0, info.definition.filter)(this.state, info, arg)
