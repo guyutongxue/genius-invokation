@@ -12,6 +12,7 @@ import {
   UseSkillInfo,
 } from "../base/skill";
 import { CardSkillEventArg } from "../base/card";
+import { GiTcgDataError } from "../error";
 
 export function executeQuery<
   Meta extends ContextMetaBase,
@@ -35,7 +36,7 @@ export function executeQuery<
         const callerId = ctx.skillInfo.caller.id;
         const area = getEntityArea(ctx.state, callerId);
         if (area.type !== "characters") {
-          throw new Error(`This caller do not have @master`);
+          throw new GiTcgDataError(`This caller do not have @master`);
         }
         return area.characterId;
       },

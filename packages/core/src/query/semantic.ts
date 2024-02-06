@@ -16,6 +16,7 @@ import {
   shiftLeft,
 } from "../util";
 import { EntityType } from "../base/entity";
+import { GiTcgQueryError } from "../error";
 
 type AnyState = EntityState | CharacterState;
 type AnySkillContext = SkillContext<ContextMetaBase>;
@@ -209,10 +210,7 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       if (baseState.definition.type !== "character") {
         continue;
       }
-      const baseChCtx = new CharacterBase(
-        this.args.ctx.state,
-        baseState.id,
-      );
+      const baseChCtx = new CharacterBase(this.args.ctx.state, baseState.id);
       const baseIdx = baseChCtx.positionIndex();
       const baseLen = state.players[baseChCtx.who].characters.length;
       const baseRatio = baseIdx - (baseLen / 2 - 0.5);
@@ -365,7 +363,9 @@ const tagSpecifierDict: QueryLangActionDict<string[]> = {
     const queryCtx = { ...this.args.ctx, resetCandidates };
     const result = query.doQuery(queryCtx);
     if (result.length !== 1) {
-      console.warn(`Indirect tag specifier (${query.sourceString}) is expected to be unique, got ${result.length} instead`);
+      console.warn(
+        `Indirect tag specifier (${query.sourceString}) is expected to be unique, got ${result.length} instead`,
+      );
     }
     const tags = result.flatMap((st) => st.definition.tags);
 
@@ -486,11 +486,16 @@ export function doSemanticQueryAction(
 ): AnyState[] {
   const match = grammar.match(source);
   if (match.failed()) {
-    throw new Error(`Query is invalid:
-${match.message}`);
+    throw new GiTcgQueryError(source, queryArg, match.message);
   }
-  // console.log("matched: ", match);
-  const result: AnyState[] = semantics(match).doQuery(queryArg);
-  // console.log("result: ", result);
-  return result;
+  try {
+    const result: AnyState[] = semantics(match).doQuery(queryArg);
+    return result;
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new GiTcgQueryError(source, queryArg, e.message);
+    } else {
+      throw e;
+    }
+  }
 }

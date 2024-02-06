@@ -32,7 +32,6 @@
   }
 
   .focused {
-    cursor: pointer;
     outline: 6px solid yellow;
   }
 
@@ -73,6 +72,8 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.2s;
     outline: none;
+    cursor: pointer;
+    user-select: none;
 
     border-radius: 9999px;
     color: white;

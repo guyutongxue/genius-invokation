@@ -51,6 +51,7 @@ import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
 import { OptionalDamageInfo, getReactionDescription } from "./reaction";
 import { flip } from "@gi-tcg/utils";
+import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -197,7 +198,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       if (r instanceof Character) {
         continue;
       } else {
-        throw new Error(`Expected character`);
+        throw new GiTcgDataError(`Expected character target, but query ${arg} found noncharacter entities`);
       }
     }
     return result as TypedCharacter<Meta>[];
@@ -236,7 +237,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   switchActive(target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     if (targets.length !== 1) {
-      throw new Error("Expected exactly one target");
+      throw new GiTcgDataError("Expected exactly one target when switching active");
     }
     const switchToTarget = targets[0];
     const from = this.$("active character")!;
@@ -441,7 +442,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const id2 = id as number;
     const def = this._state.data.entities.get(id2);
     if (typeof def === "undefined") {
-      throw new Error(`Unknown entity id ${id2}`);
+      throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
     if (typeof area === "undefined") {
       switch (type) {
@@ -464,7 +465,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           };
           break;
         default:
-          throw new Error(
+          throw new GiTcgDataError(
             `Creating entity of type ${type} requires explicit area`,
           );
       }
@@ -583,7 +584,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     for (const t of targets) {
       const entityState = t.state;
       if (entityState.definition.type === "character") {
-        throw new Error(
+        throw new GiTcgDataError(
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
@@ -639,13 +640,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
   replaceDefinition(target: CharacterTargetArg, newCh: CharacterHandle) {
     const characters = this.queryCoerceToCharacters(target);
     if (characters.length !== 1) {
-      throw new Error(`Replace definition must apply on exact one character`);
+      throw new GiTcgDataError(`Replace definition must apply on exact one character`);
     }
     const ch = characters[0];
     const oldDef = ch.state.definition;
     const def = this._state.data.characters.get(newCh);
     if (typeof def === "undefined") {
-      throw new Error(`Unknown character ${newCh}`);
+      throw new GiTcgDataError(`Unknown character definition id ${newCh}`);
     }
     this.mutate({
       type: "replaceCharacterDefinition",
@@ -699,7 +700,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       }
       default: {
         const _: never = strategy;
-        throw new Error(`Invalid strategy ${strategy}`);
+        throw new GiTcgDataError(`Invalid strategy ${strategy}`);
       }
     }
   }
@@ -737,7 +738,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   createHandCard(cardId: CardHandle) {
     const cardDef = this._state.data.cards.get(cardId);
     if (typeof cardDef === "undefined") {
-      throw new Error(`Unknown card ${cardId}`);
+      throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
     const cardState: CardState = {
       id: 0,
@@ -782,7 +783,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         (sk) => sk.skillType === "normal",
       );
       if (normalSkills.length !== 1) {
-        throw new Error("Expected exactly one normal skill");
+        throw new GiTcgDataError("Expected exactly one normal skill on active character");
       }
       skillId = normalSkills[0].id;
     } else {
@@ -864,7 +865,7 @@ export class CharacterBase {
     const player = currentState.players[this.who];
     const thisIdx = player.characters.findIndex((ch) => ch.id === this._id);
     if (thisIdx === -1) {
-      throw new Error("Invalid character index");
+      throw new GiTcgCoreInternalError("Invalid character index");
     }
     return thisIdx;
   }
@@ -889,7 +890,7 @@ export class CharacterBase {
         break;
       default: {
         const _: never = pos;
-        throw new Error(`Invalid position ${pos}`);
+        throw new GiTcgDataError(`Invalid position ${pos}`);
       }
     }
     // find correct next and prev index
@@ -912,7 +913,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   get state(): CharacterState {
     const entity = getEntityById(this.skillContext.state, this._id, true);
     if (entity.definition.type !== "character") {
-      throw new Error("Expected character");
+      throw new GiTcgCoreInternalError("Expected character");
     }
     return entity as CharacterState;
   }
@@ -1041,7 +1042,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   }
   getVariable(prop: string) {
     if (!(prop in this.state.variables)) {
-      throw new Error(`Invalid variable ${prop}`);
+      throw new GiTcgDataError(`Invalid variable ${prop}`);
     }
     return this.state.variables[prop];
   }
@@ -1053,7 +1054,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     this.skillContext.addVariable(prop, value, this.state);
   }
   dispose(): never {
-    throw new Error(`Cannot dispose character (or passive skill)`);
+    throw new GiTcgDataError(`Cannot dispose character (or passive skill)`);
   }
 }
 
@@ -1095,14 +1096,14 @@ export class Entity<Meta extends ContextMetaBase> {
   }
   getVariable(prop: string) {
     if (!(prop in this.state.variables)) {
-      throw new Error(`Invalid variable ${prop}`);
+      throw new GiTcgDataError(`Invalid variable ${prop}`);
     }
     return this.state.variables[prop];
   }
 
   master() {
     if (this._area.type !== "characters") {
-      throw new Error("master() expect a character area");
+      throw new GiTcgDataError("master() expect a character area");
     }
     return new Character<Meta>(this.skillContext, this._area.characterId);
   }

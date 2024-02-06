@@ -7,12 +7,13 @@ import {
   SkillDefinition,
   TriggeredSkillDefinition,
 } from "../base/skill";
+import { GiTcgDataError } from "../error";
 
 let currentStore: DataStore | null = null;
 
 export function beginRegistration() {
   if (currentStore !== null) {
-    throw new Error("Already in registration");
+    throw new GiTcgDataError("Already in registration");
   }
   currentStore = {
     characters: new Map(),
@@ -47,7 +48,7 @@ export type ReadonlyDataStore = Immutable<DataStore>;
 
 function getCurrentStore(): DataStore {
   if (currentStore === null) {
-    throw new Error("Not in registration");
+    throw new GiTcgDataError("Not in registration");
   }
   return currentStore;
 }
@@ -58,7 +59,7 @@ function register<C extends RegisterCategory>(
 ) {
   const store = getCurrentStore()[type];
   if (store.has(value.id)) {
-    throw new Error(`Duplicate ${type} id ${value.id}`);
+    throw new GiTcgDataError(`Duplicate ${type} id ${value.id}`);
   }
   store.set(value.id, value);
 }
@@ -85,7 +86,7 @@ function getDefinition<C extends RegisterCategory>(
   const store = getCurrentStore();
   const result = store[type].get(id);
   if (typeof result === "undefined") {
-    throw new Error(`Unknown ${type} id ${id}`);
+    throw new GiTcgDataError(`Unknown ${type} id ${id}`);
   }
   return result as DefinitionMap[C];
 }
@@ -108,7 +109,7 @@ export function getCharacterSkillDefinition(
   try {
     const def = getSkillDefinition(id);
     if (def.triggerOn !== null || def.skillType === "card") {
-      throw new Error("Skill found but not a character skill");
+      throw new GiTcgDataError("Skill found but not a character skill");
     }
     return def;
   } catch {}

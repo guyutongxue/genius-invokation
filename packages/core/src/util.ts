@@ -15,6 +15,7 @@ import { flip } from "@gi-tcg/utils";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
 import { SkillDefinition, SkillInfo } from "./base/skill";
+import { GiTcgCoreInternalEntityNotFoundError, GiTcgCoreInternalError } from "./error";
 
 export function getEntityById(
   state: GameState,
@@ -51,7 +52,7 @@ export function getEntityById(
       }
     }
   }
-  throw new Error(`Cannot found such entity`);
+  throw new GiTcgCoreInternalError(`Cannot found entity ${id}`);
 }
 
 /**
@@ -102,7 +103,7 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
       }
     }
   }
-  throw new Error(`Cannot found such entity`);
+  throw new GiTcgCoreInternalEntityNotFoundError(state, id);
 }
 
 export function allEntitiesAtArea(
@@ -115,7 +116,7 @@ export function allEntitiesAtArea(
     const characters = player.characters;
     const idx = characters.findIndex((ch) => ch.id === area.characterId);
     if (idx === -1) {
-      throw new Error(`Cannot found such entity`);
+      throw new GiTcgCoreInternalEntityNotFoundError(state, area.characterId);
     }
     result.push(characters[idx]);
     result.push(...characters[idx].entities);
@@ -143,7 +144,7 @@ export function disposeEntity(state: Draft<GameState>, id: number) {
       }
     }
   }
-  throw new Error(`Cannot found such entity`);
+  throw new GiTcgCoreInternalEntityNotFoundError(state, id);
 }
 
 export function getActiveCharacterIndex(player: PlayerState): number {
@@ -151,7 +152,7 @@ export function getActiveCharacterIndex(player: PlayerState): number {
     (ch) => ch.id === player.activeCharacterId,
   );
   if (activeIdx === -1) {
-    throw new Error("Invalid active character index");
+    throw new GiTcgCoreInternalError("Invalid active character index");
   }
   return activeIdx;
 }

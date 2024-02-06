@@ -22,6 +22,7 @@ import { SkillHandle } from "./type";
 import { EntityArea, ExEntityType } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
+import { GiTcgDataError } from "../error";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -78,7 +79,7 @@ function checkRelative(
         return true;
       default:
         const _: never = r.listenTo;
-        throw new Error(`Unknown listenTo: ${_}`);
+        throw new GiTcgDataError(`Unknown listenTo: ${_}`);
     }
   } else {
     if (r.listenTo === ListenTo.All) {
@@ -495,7 +496,7 @@ export class TriggeredSkillBuilder<
     >
   > {
     if (this._usageOpt !== null) {
-      throw new Error(`Usage called twice`);
+      throw new GiTcgDataError(`Usage called twice`);
     }
     const perRound = opt?.perRound ?? false;
     const name =

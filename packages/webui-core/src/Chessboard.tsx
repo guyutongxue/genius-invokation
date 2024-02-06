@@ -194,6 +194,8 @@ export function createPlayer(
   >({});
   const [prepareTuning, setPrepareTuning] = createSignal(false);
 
+  let rejectRpc: (e: Error) => void = () => {};
+
   const action = alternativeAction ?? {
     onNotify: ({ events }) => {
       let currentFocusing: number | null = null;
@@ -374,25 +376,39 @@ export function createPlayer(
         action.onNotify(msg);
       }
     },
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    rpc: async (method, req): Promise<any> => {
-      switch (method) {
-        case "switchHands":
-          return action.onSwitchHands();
-        case "chooseActive":
-          return action.onChooseActive(req as ChooseActiveRequest);
-        case "rerollDice":
-          return action.onRerollDice();
-        case "action":
-          return action.onAction(req as ActionRequest);
-        default:
-          throw new Error("Unknown method");
-      }
+    rpc: (method, req) => {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      return new Promise<any>((resolve, reject) => {
+        rejectRpc = reject;
+        switch (method) {
+          case "switchHands":
+            action.onSwitchHands().then(resolve).catch(reject);
+            break;
+          case "chooseActive":
+            action
+              .onChooseActive(req as ChooseActiveRequest)
+              .then(resolve)
+              .catch(reject);
+            break;
+          case "rerollDice":
+            action.onRerollDice().then(resolve).catch(reject);
+            break;
+          case "action":
+            action
+              .onAction(req as ActionRequest)
+              .then(resolve)
+              .catch(reject);
+            break;
+          default:
+            reject("Unknown method");
+        }
+      });
     },
   };
   createEffect(() => {
     if (giveUp()) {
       io.giveUp = true;
+      rejectRpc(new Error("User give up when rpc"));
     }
   });
 
@@ -514,6 +530,18 @@ export function createPlayer(
                 hands={myPlayer().hands}
                 onConfirm={notifyHandSwitched}
               />
+            </div>
+          </Show>
+          <button
+            class="absolute right-10 top-2 btn btn-red-500"
+            onClick={() => setGiveUp(true)}
+            disabled={giveUp()}
+          >
+            {giveUp() ? "已放弃对局" : "走此小道"}
+          </button>
+          <Show when={stateData().phase === "gameEnd"}>
+            <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
+              {stateData().winner === who ? "胜利" : "失败"}
             </div>
           </Show>
         </PlayerContext.Provider>

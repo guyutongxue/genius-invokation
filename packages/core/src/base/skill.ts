@@ -13,6 +13,7 @@ import {
   isReactionSwirl,
 } from "../base/reaction";
 import { CharacterDefinition } from "./character";
+import { GiTcgCoreInternalError } from "../error";
 
 export interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
@@ -134,7 +135,7 @@ export class EventArg {
 
   protected get caller(): EntityState | CharacterState {
     if (this._currentSkillInfo === null) {
-      throw new Error("caller not set");
+      throw new GiTcgCoreInternalError("EventArg caller not set");
     }
     return this._currentSkillInfo.caller;
   }
@@ -281,9 +282,6 @@ export class ModifyActionEventArg<
     this._cost.push(...new Array<DiceType>(count).fill(type));
   }
   deductCost(type: DiceType, count: number) {
-    if (this.caller === null) {
-      throw new Error("caller not set or no damageInfo provided");
-    }
     this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) deduct ${count} diceType(${type}) from cost.\n`;
     this._deductedCost.push([type, count]);
   }

@@ -54,6 +54,7 @@ import {
 } from "./base/skill";
 import { CardDefinition, CardSkillEventArg } from "./base/card";
 import { executeQueryOnState } from "./query";
+import { GiTcgCoreInternalError, GiTcgDataError, GiTcgError, GiTcgIOError } from "./error";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -64,12 +65,16 @@ export interface PlayerConfig {
 
 const INITIAL_ID = -500000;
 
-type ActionInfoWithNewState = ActionInfo & { newState: GameState };
+type ActionInfoWithNewState = ActionInfo & {
+  newState: GameState;
+  deferredEventList: EventAndRequest[];
+};
 
 export class Game {
   state: GameState;
   private finishPromise: Promise<0 | 1 | null>;
   private resolveFinishPromise: () => void = () => {};
+  private rejectFinishPromise: (e: GiTcgError) => void = () => {};
 
   constructor(
     private readonly data: ReadonlyDataStore,
@@ -130,7 +135,7 @@ export class Game {
     let initialPiles: readonly CardDefinition[] = config.cards.map((id) => {
       const def = this.data.cards.get(id);
       if (typeof def === "undefined") {
-        throw new Error(`Unknown card id ${id}`);
+        throw new GiTcgDataError(`Unknown card id ${id}`);
       }
       return def;
     });
@@ -170,7 +175,7 @@ export class Game {
     for (const ch of config.characters) {
       const def = this.data.characters.get(ch);
       if (typeof def === "undefined") {
-        throw new Error(`Unknown character id ${ch}`);
+        throw new GiTcgDataError(`Unknown character id ${ch}`);
       }
       this.mutate({
         type: "createCharacter",
@@ -222,35 +227,53 @@ export class Game {
   }
 
   async start() {
-    this.finishPromise = new Promise((resolve) => {
+    this.finishPromise = new Promise((resolve, reject) => {
       this.resolveFinishPromise = () => resolve(this.state.winner);
+      this.rejectFinishPromise = (e) => reject(e);
     });
     setTimeout(async () => {
-      await this.notifyAndPause();
-      while (this.state.phase !== "gameEnd") {
-        switch (this.state.phase) {
-          case "initHands":
-            await this.initHands();
-            break;
-          case "initActives":
-            await this.initActives();
-            break;
-          case "roll":
-            await this.rollPhase();
-            break;
-          case "action":
-            await this.actionPhase();
-            break;
-          case "end":
-            await this.endPhase();
-            break;
-          default:
-            const _check: never = this.state.phase;
-            break;
-        }
+      try {
         await this.notifyAndPause();
+        while (this.state.phase !== "gameEnd") {
+          switch (this.state.phase) {
+            case "initHands":
+              await this.initHands();
+              break;
+            case "initActives":
+              await this.initActives();
+              break;
+            case "roll":
+              await this.rollPhase();
+              break;
+            case "action":
+              await this.actionPhase();
+              break;
+            case "end":
+              await this.endPhase();
+              break;
+            default:
+              const _check: never = this.state.phase;
+              break;
+          }
+          await this.notifyAndPause();
+        }
+        this.resolveFinishPromise();
+      } catch (e) {
+        if (e instanceof GiTcgIOError) {
+          await this.gotWinner(flip(e.who));
+        } else if (e instanceof GiTcgError) {
+          this.rejectFinishPromise(e);
+        } else {
+          let message = String(e);
+          if (e instanceof Error) {
+            message = e.message;
+            if (e.stack) {
+              message += "\n" + e.stack;
+            }
+          }
+          this.rejectFinishPromise(new GiTcgCoreInternalError(`Unexpected error: ` + message));
+        }
       }
-      this.resolveFinishPromise();
     });
     return this.finishPromise;
   }
@@ -273,10 +296,22 @@ export class Game {
     method: M,
     req: RpcRequest[M],
   ): Promise<RpcResponse[M]> {
-    verifyRpcRequest(method, req);
-    const resp = await this.io.players[who].rpc(method, req);
-    verifyRpcResponse(method, resp);
-    return resp;
+    try {
+      verifyRpcRequest(method, req);
+    } catch (e) {
+      console.warn("Rpc request verify failed", e);
+    }
+    try {
+      const resp = await this.io.players[who].rpc(method, req);
+      verifyRpcResponse(method, resp);
+      return resp;
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new GiTcgIOError(who, e.message, { cause: e?.cause });
+      } else {
+        throw new GiTcgIOError(who, String(e));
+      }
+    }
   }
 
   private async initHands() {
@@ -433,10 +468,11 @@ export class Game {
         candidates: actions.map(exposeAction),
       });
       if (chosenIndex < 0 || chosenIndex >= actions.length) {
-        throw new Error(`User chosen index out of range`);
+        throw new GiTcgIOError(who, `User chosen index out of range`);
       }
       const actionInfo = actions[chosenIndex];
       this.state = actionInfo.newState;
+      await this.handleEvents(actionInfo.deferredEventList, true);
       this.mutate({
         type: "setPlayerFlag",
         who,
@@ -446,13 +482,13 @@ export class Game {
 
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {
-        throw new Error(`Selected dice doesn't meet requirement`);
+        throw new GiTcgIOError(who, `Selected dice doesn't meet requirement`);
       }
       if (
         actionInfo.type === "elementalTuning" &&
         (cost[0] === DiceType.Omni || cost[0] === actionInfo.result)
       ) {
-        throw new Error(
+        throw new GiTcgIOError(who,
           `Elemental tunning cannot use omni dice or active character's element`,
         );
       }
@@ -463,7 +499,7 @@ export class Game {
         } else {
           const idx = operatingDice.indexOf(consumed);
           if (idx === -1) {
-            throw new Error(`Selected dice (${consumed}) not found in player`);
+            throw new GiTcgIOError(who, `Selected dice (${consumed}) not found in player`);
           }
           operatingDice.splice(idx, 1);
         }
@@ -480,7 +516,7 @@ export class Game {
       const activeCh = player().characters[getActiveCharacterIndex(player())];
       if (requiredEnergy > 0) {
         if (activeCh.variables.energy < requiredEnergy) {
-          throw new Error(`Active character does not have enough energy`);
+          throw new GiTcgIOError(who, `Active character does not have enough energy`);
         }
         this.mutate({
           type: "modifyEntityVar",
@@ -722,11 +758,12 @@ export class Game {
     const currentState = this.state;
     for (const actionInfo of result) {
       const eventArg = new ModifyActionEventArg(this.state, actionInfo);
-      await this.emitEvent("modifyAction", eventArg, false);
+      const deferredEventList = await this.emitEventShallow("modifyAction", eventArg);
       console.log(eventArg.action);
       resultWithState.push({
         ...eventArg.action,
         newState: this.state,
+        deferredEventList,
       });
       this.state = currentState;
     }
@@ -820,7 +857,7 @@ export class Game {
     const cardStates = removedHands.map((id) => {
       const card = this.state.players[who].hands.find((c) => c.id === id);
       if (typeof card === "undefined") {
-        throw new Error(`Unknown card id ${id}`);
+        throw new GiTcgDataError(`Unknown card id ${id}`);
       }
       return card;
     });
@@ -903,10 +940,7 @@ export class Game {
       } else if (name === "requestUseSkill") {
         const def = this.data.skills.get(arg.requestingSkillId);
         if (typeof def === "undefined") {
-          throw new Error(`Unknown skill id ${arg.requestingSkillId}`);
-        }
-        if (def.triggerOn !== null) {
-          throw new Error(`Cannot request skill with trigger event`);
+          throw new GiTcgDataError(`Unknown skill id ${arg.requestingSkillId}`);
         }
         const skillInfo: SkillInfo = {
           caller: arg.caller,
@@ -1057,6 +1091,15 @@ export class Game {
     hasIo = true,
   ) {
     await this.handleEvents([[name, arg] as any], hasIo);
+  }
+  // 引发一个事件并处理。其处理过程中引发的级联事件不会递归执行，而是返回给调用者。
+  // 同时该事件的处理会禁用 IO。
+  private async emitEventShallow(name: "modifyAction", arg: ModifyActionEventArg<ActionInfo>): Promise<EventAndRequest[]> {
+    const allEvents = [];
+    for await (const events of this.doHandleEvents([[name, arg]], false)) {
+      allEvents.push(...events);
+    }
+    return allEvents;
   }
 }
 
