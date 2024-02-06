@@ -489,8 +489,8 @@ export function doSemanticQueryAction(
     throw new Error(`Query is invalid:
 ${match.message}`);
   }
-  console.log("matched: ", match);
+  // console.log("matched: ", match);
   const result: AnyState[] = semantics(match).doQuery(queryArg);
-  console.log("result: ", result);
+  // console.log("result: ", result);
   return result;
 }

@@ -14,7 +14,7 @@ export const OceanicMimicFrog = summon(122013)
   .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
-  .on("endPhase", (c) => c.self.getVariable("usage") === 0)
+  .on("endPhase", (c) => c.self.getVariable("usage") <= 0)
   .damage(DamageType.Hydro, 2)
   .dispose()
   .done();

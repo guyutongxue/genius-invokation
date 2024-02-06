@@ -353,7 +353,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           damageInfo = this.doApply(t, damageInfo.type, damageInfo);
         }
 
-        console.log((damageInfo as any).log);
+        console.log(damageInfo);
       }
 
       const finalHealth = Math.max(
@@ -775,11 +775,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
   useSkill(skill: SkillHandle | "normal") {
+    const activeCh = this.$("active character")!.state;
     let skillId;
     if (skill === "normal") {
-      const normalSkills = this.$(
-        "active character",
-      )!.state.definition.initiativeSkills.filter(
+      const normalSkills = activeCh.definition.initiativeSkills.filter(
         (sk) => sk.skillType === "normal",
       );
       if (normalSkills.length !== 1) {
@@ -789,7 +788,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     } else {
       skillId = skill;
     }
-    this.emitEvent("requestUseSkill", this.skillInfo, skillId);
+    this.emitEvent("requestUseSkill", this.skillInfo, activeCh, skillId);
   }
 
   random<T>(...items: T[]): T {

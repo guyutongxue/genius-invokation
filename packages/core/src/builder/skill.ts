@@ -14,6 +14,7 @@ import {
   EventArgOf,
   ModifyActionEventArg,
   ActionEventArg,
+  DamageInfo,
 } from "../base/skill";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
@@ -65,11 +66,11 @@ function checkRelative(
         return r.callerId === entityIdOrWhoIntf;
       // @ts-expect-error fallthrough
       case ListenTo.SameArea:
-        if (
-          r.callerArea.type === "characters" &&
-          entityArea.type === "characters"
-        ) {
-          return r.callerArea.characterId === entityArea.characterId;
+        if (r.callerArea.type === "characters") {
+          return (
+            entityArea.type === "characters" &&
+            r.callerArea.characterId === entityArea.characterId
+          );
         }
       case ListenTo.SamePlayer:
         return r.callerArea.who === entityArea.who;
@@ -129,10 +130,10 @@ function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
   return false;
 }
 
-function isDebuff(state: CharacterState | EntityState): boolean {
+function isDebuff(state: GameState, damageInfo: DamageInfo): boolean {
   return (
-    state.definition.type !== "character" &&
-    state.definition.tags.includes("debuff")
+    getEntityArea(state, damageInfo.source.id).who ===
+    getEntityArea(state, damageInfo.target.id).who
   );
 }
 
@@ -205,7 +206,7 @@ const detailedEventDictionary = {
     return (
       e.damageInfo.type !== DamageType.Piercing &&
       checkRelative(c.state, e.damageInfo.source.id, r) &&
-      !isDebuff(e.damageInfo.source)
+      !isDebuff(c.state, e.damageInfo)
     );
   }),
   modifySkillDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
@@ -586,6 +587,7 @@ export class TriggeredSkillBuilder<
   }
 
   endOn() {
+    this.buildSkill();
     return this.parent;
   }
   on<E extends DetailedEventNames>(

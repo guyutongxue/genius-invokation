@@ -909,7 +909,7 @@ export class Game {
           throw new Error(`Cannot request skill with trigger event`);
         }
         const skillInfo: SkillInfo = {
-          caller: arg.via.caller,
+          caller: arg.caller,
           definition: def,
           fromCard: null,
           requestBy: arg.via,

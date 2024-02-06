@@ -538,7 +538,10 @@ export const SendOff = card(332013)
   .costSame(2)
   .addTarget("opp summon")
   .do((c, e) => {
-    c.of(e.targets[0]).addVariable("usage", -2);
+    c.addVariable("usage", -2, e.targets[0]);
+    if (c.getVariable("usage", e.targets[0]) <= 0) {
+      c.dispose(e.targets[0]);
+    }
   })
   .done();
 

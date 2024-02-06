@@ -16,6 +16,8 @@ export const CryoCicins: SummonHandle = summon(121011)
   .addVariable("usage", 1)
   .on("damaged", (c, e) => c.self.master().state.definition.id === FatuiCryoCicinMage && e.getReaction())
   .addVariable("usage", -1)
+  .if((c) => c.getVariable("usage") <= 0)
+  .dispose()
   .done();
 
 /**

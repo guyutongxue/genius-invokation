@@ -59,13 +59,11 @@ export class EntityBuilder<
   ) {}
 
   conflictWith(id: number) {
-    this.on("enter").do((c) => {
-      const ctx = c.$(`my any with definition id ${id}`);
-      if (ctx && ctx instanceof Entity) {
-        ctx.dispose();
-      }
-    });
-    return this;
+    return this.on("enter", (c) => c.$(`my any with definition id ${id}`))
+      .do((c) => {
+        c.$$(`my any with definition id ${id}`).forEach((e) => e.dispose());
+      })
+      .endOn();
   }
 
   on<E extends DetailedEventNames>(
@@ -170,13 +168,18 @@ export class EntityBuilder<
     type: DamageType | "swirledAnemo",
     value: number,
     target?: string,
-  ): BuilderWithShortcut<TriggeredSkillBuilder<BuilderMetaOfEntity<"endPhase", CallerType, Vars | "hintIcon">, "endPhase">> {
+  ): BuilderWithShortcut<
+    TriggeredSkillBuilder<
+      BuilderMetaOfEntity<"endPhase", CallerType, Vars | "hintIcon">,
+      "endPhase"
+    >
+  > {
     if (type === "swirledAnemo") {
       return this.hintIcon(DamageType.Anemo)
         .hintText(`${value}`)
-        .once("dealDamage", (c, e) => isReactionSwirl(e.damageInfo) !== null)
+        .once("dealDamage", (c, e) => e.isSwirl() !== null)
         .do((c, e) => {
-          const swirledType = isReactionSwirl(e.damageInfo)!;
+          const swirledType = e.isSwirl()!;
           c.setVariable("hintIcon", swirledType);
         })
         .on("endPhase")

@@ -562,10 +562,11 @@ class RerollRequestArg extends RequestArg {
 
 class UseSkillRequestArg extends RequestArg {
   constructor(
-    via: SkillInfo,
+    requestBy: SkillInfo,
+    public readonly caller: CharacterState,
     public readonly requestingSkillId: number,
   ) {
-    super(via);
+    super(requestBy);
   }
 }
 
