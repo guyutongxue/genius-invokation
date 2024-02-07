@@ -31,7 +31,15 @@ export function DiceSelect(props: DiceSelectProps) {
       merged.required,
       merged.value.filter((d) => !merged.disabledDice.includes(d)),
     );
-    setChosen(autoChosen);
+    const chosenResult = [];
+    for (let i = 0; i < merged.value.length; i++) {
+      if (merged.disabledDice.includes(merged.value[i])) {
+        chosenResult.push(false);
+      } else {
+        chosenResult.push(autoChosen.shift()!);
+      }
+    }
+    setChosen(chosenResult);
   });
   const chosenDice = () => props.value.filter((_, i) => chosen[i]);
   const flipChosen = (index: number) => {
