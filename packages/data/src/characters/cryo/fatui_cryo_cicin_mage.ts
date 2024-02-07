@@ -46,8 +46,7 @@ export const FlowingCicinShield = combatStatus(121012)
  * 提供1点护盾，保护我方出战角色。（可叠加，最多叠加到2点）
  */
 export const RebelliousShield = combatStatus(121013)
-  .shield(1, 2)
-  .done();
+  .reserve(); // 错误分类至此
 
 /**
  * @id 21011
