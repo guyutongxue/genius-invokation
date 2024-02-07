@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 114012
@@ -10,7 +10,13 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  */
 export const Oz01 = summon(114012)
   .conflictWith(114011)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(2)
+  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Fischl && e.isSkillType("normal"))
+  .damage(DamageType.Electro, 2)
+  .addVariable("usage", -1)
+  .if((c) => c.getVariable("usage") <= 0)
+  .dispose()
   .done();
 
 /**
@@ -22,7 +28,8 @@ export const Oz01 = summon(114012)
  */
 export const Oz = summon(114011)
   .conflictWith(114012)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(2)
   .done();
 
 /**
@@ -35,7 +42,7 @@ export const BoltsOfDownfall = skill(14011)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -44,10 +51,14 @@ export const BoltsOfDownfall = skill(14011)
  * @description
  * 造成1点雷元素伤害，召唤奥兹。
  */
-export const Nightrider = skill(14012)
+export const Nightrider: SkillHandle = skill(14012)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 1)
+  .if((c) => c.self.hasEquipment(StellarPredator))
+  .summon(Oz01)
+  .else()
+  .summon(Oz)
   .done();
 
 /**
@@ -60,7 +71,8 @@ export const MidnightPhantasmagoria = skill(14013)
   .type("burst")
   .costElectro(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Piercing, 2, "opp standby")
+  .damage(DamageType.Electro, 4)
   .done();
 
 /**
@@ -89,5 +101,6 @@ export const Fischl = character(1401)
 export const StellarPredator = card(214011)
   .costElectro(3)
   .talent(Fischl)
-  // TODO
+  .on("enter")
+  .useSkill(Nightrider)
   .done();

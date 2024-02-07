@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 111023
@@ -8,7 +8,9 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const DrunkenMist = summon(111023)
-  // TODO
+  .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(2)
+  .heal(2, "my active")
   .done();
 
 /**
@@ -19,7 +21,7 @@ export const DrunkenMist = summon(111023)
  */
 export const CatclawShield01 = combatStatus(111022)
   .conflictWith(111021)
-  // TODO
+  .shield(2)
   .done();
 
 /**
@@ -30,7 +32,7 @@ export const CatclawShield01 = combatStatus(111022)
  */
 export const CatclawShield = combatStatus(111021)
   .conflictWith(111022)
-  // TODO
+  .shield(1)
   .done();
 
 /**
@@ -43,7 +45,7 @@ export const KatzleinStyle = skill(11021)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -52,10 +54,14 @@ export const KatzleinStyle = skill(11021)
  * @description
  * 造成2点冰元素伤害，生成猫爪护盾。
  */
-export const IcyPaws = skill(11022)
+export const IcyPaws: SkillHandle = skill(11022)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .if((c) => c.self.hasEquipment(ShakenNotPurred))
+  .combatStatus(CatclawShield01)
+  .else()
+  .combatStatus(CatclawShield)
   .done();
 
 /**
@@ -68,7 +74,9 @@ export const SignatureMix = skill(11023)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Cryo, 1)
+  .heal(2, "@self")
+  .summon(DrunkenMist)
   .done();
 
 /**
@@ -96,5 +104,6 @@ export const Diona = character(1102)
 export const ShakenNotPurred = card(211021)
   .costCryo(3)
   .talent(Diona)
-  // TODO
+  .on("enter")
+  .useSkill(IcyPaws)
   .done();

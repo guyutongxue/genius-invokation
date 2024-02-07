@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 114092
@@ -8,7 +8,8 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  */
 export const LightningRoseSummon = summon(114092)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 2)
+  .usage(2)
   .done();
 
 /**
@@ -20,7 +21,17 @@ export const LightningRoseSummon = summon(114092)
  * 所附属角色受到苍雷伤害时：移除此状态，每层「引雷」使此伤害+1。
  */
 export const Conductive = status(114091)
-  // TODO
+  .variable("conductive", 2, { recreateAdditional: 1, recreateMax: 4 })
+  .on("endPhase")
+  .do((c) => {
+    const newVal = c.getVariable("conductive") + 1;
+    c.setVariable("conductive", Math.min(newVal, 4));
+  })
+  .on("beforeDamaged", (c, e) => e.via.definition.id === VioletArc)
+  .do((c, e) => {
+    e.increaseDamage(c.getVariable("conductive"));
+    c.dispose();
+  })
   .done();
 
 /**
@@ -34,7 +45,9 @@ export const LightningTouch = skill(14091)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
+  .if((c) => c.skillInfo.charged)
+  .characterStatus(Conductive, "opp active")
   .done();
 
 /**
@@ -43,10 +56,12 @@ export const LightningTouch = skill(14091)
  * @description
  * 造成2点雷元素伤害；如果敌方出战角色未附属引雷，则使其附属引雷。
  */
-export const VioletArc = skill(14092)
+export const VioletArc: SkillHandle = skill(14092)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .if((c) => !c.$(`status ${Conductive} at opp active`))
+  .characterStatus(Conductive, "opp active")
   .done();
 
 /**
@@ -59,7 +74,8 @@ export const LightningRose = skill(14093)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .summon(LightningRoseSummon)
   .done();
 
 /**
@@ -85,5 +101,7 @@ export const Lisa = character(1409)
 export const PulsatingWitch = card(214091)
   .costElectro(1)
   .talent(Lisa, "none")
-  // TODO
+  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)
+  .usagePerRound(1)
+  .characterStatus(Conductive, "opp active")
   .done();

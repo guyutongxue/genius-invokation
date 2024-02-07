@@ -23,13 +23,12 @@ export const GardenOfPurity = summon(112062)
  * 可用次数：3
  */
 export const TakimeguriKanka: StatusHandle = status(112061)
-  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
   .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .usage(3)
+  .increaseDamage(1)
   .if((c, e) => c.self.master().hasEquipment(KyoukaFuushi) && c.of(e.target).health <= 6)
-  .increaseDamage(2)
-  .else()
   .increaseDamage(1)
   .done();
 

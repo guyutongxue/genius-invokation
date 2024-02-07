@@ -1,4 +1,4 @@
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 111031
@@ -8,7 +8,8 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 可用次数：3
  */
 export const Icicle = combatStatus(111031)
-  // TODO
+  .on("switchActive")
+  .damage(DamageType.Cryo, 2)
   .done();
 
 /**
@@ -21,7 +22,7 @@ export const CeremonialBladework = skill(11031)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -30,10 +31,10 @@ export const CeremonialBladework = skill(11031)
  * @description
  * 造成3点冰元素伤害。
  */
-export const Frostgnaw = skill(11032)
+export const Frostgnaw: SkillHandle = skill(11032)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
   .done();
 
 /**
@@ -46,7 +47,8 @@ export const GlacialWaltz = skill(11033)
   .type("burst")
   .costCryo(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 1)
+  .combatStatus(Icicle)
   .done();
 
 /**
@@ -74,5 +76,9 @@ export const Kaeya = character(1103)
 export const ColdbloodedStrike = card(211031)
   .costCryo(4)
   .talent(Kaeya)
-  // TODO
+  .on("enter")
+  .useSkill(Frostgnaw)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === Frostgnaw)
+  .usagePerRound(1)
+  .heal(2, "@master")
   .done();

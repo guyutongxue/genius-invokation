@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 111081
@@ -9,7 +9,10 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 此召唤物在场时，七七使用「普通攻击」后：治疗受伤最多的我方角色1点。
  */
 export const HeraldOfFrost = summon(111081)
-  // TODO
+  .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(3)
+  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
+  .heal(1, "my characters order by health - maxHealth limit 1")
   .done();
 
 /**
@@ -20,7 +23,15 @@ export const HeraldOfFrost = summon(111081)
  * 可用次数：3
  */
 export const FortunepreservingTalisman = combatStatus(111082)
-  // TODO
+  .on("useSkill")
+  .usage(3, { autoDecrease: false })
+  .do((c, e) => {
+    const skillCaller = c.of<"character">(e.action.skill.caller);
+    if (skillCaller.health < skillCaller.state.definition.constants.maxHealth) {
+      skillCaller.heal(2);
+      c.addVariable("usage", -1);
+    }
+  })
   .done();
 
 /**
@@ -33,7 +44,7 @@ export const AncientSwordArt = skill(11081)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -42,10 +53,10 @@ export const AncientSwordArt = skill(11081)
  * @description
  * 召唤寒病鬼差。
  */
-export const AdeptusArtHeraldOfFrost = skill(11082)
+export const AdeptusArtHeraldOfFrost: SkillHandle = skill(11082)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .summon(HeraldOfFrost)
   .done();
 
 /**
@@ -58,7 +69,8 @@ export const AdeptusArtPreserverOfFortune = skill(11083)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
+  .combatStatus(FortunepreservingTalisman)
   .done();
 
 /**
@@ -87,5 +99,13 @@ export const RiteOfResurrection = card(211081)
   .costCryo(5)
   .costEnergy(3)
   .talent(Qiqi)
-  // TODO
+  .on("enter")
+  .useSkill(AdeptusArtPreserverOfFortune)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === AdeptusArtPreserverOfFortune)
+  .usage(2, { autoDispose: false })
+  .do((c) => {
+    for (const ch of c.$$(`all my defeated characters`)) {
+      ch.heal(2);
+    }
+  })
   .done();

@@ -9,7 +9,11 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const ElectroElementalInfusion01 = status(114034)
   .conflictWith(114032)
-  // TODO
+  .duration(3)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Electro)
+  .on("modifySkillDamage", (c, e) => e.type === DamageType.Electro)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -21,7 +25,9 @@ export const ElectroElementalInfusion01 = status(114034)
  */
 export const ElectroElementalInfusion = status(114032)
   .conflictWith(114034)
-  // TODO
+  .duration(2)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Electro)
   .done();
 
 /**
@@ -34,7 +40,7 @@ export const YunlaiSwordsmanship = skill(14031)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -80,7 +86,8 @@ export const StarwardSword = skill(14033)
   .type("burst")
   .costElectro(4)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Piercing, 3, "opp standby")
+  .damage(DamageType.Electro, 4)
   .done();
 
 /**
@@ -122,5 +129,6 @@ export const LightningStiletto = card(114031)
 export const ThunderingPenance = card(214031)
   .costElectro(3)
   .talent(Keqing)
-  // TODO
+  .on("enter")
+  .useSkill(StellarRestoration)
   .done();

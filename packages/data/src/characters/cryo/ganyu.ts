@@ -8,7 +8,8 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const SacredCryoPearl = summon(111011)
-  // TODO
+  .endPhaseDamage(DamageType.Cryo, 1)
+  .damage(DamageType.Piercing, 1, "opp standby")
   .done();
 
 /**
@@ -19,7 +20,9 @@ export const SacredCryoPearl = summon(111011)
  * 可用次数：2
  */
 export const IceLotus = combatStatus(111012)
-  // TODO
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
+  .usage(2)
+  .decreaseDamage(1)
   .done();
 
 /**
@@ -32,7 +35,7 @@ export const LiutianArchery = skill(11011)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -44,7 +47,8 @@ export const LiutianArchery = skill(11011)
 export const TrailOfTheQilin = skill(11012)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 1)
+  .combatStatus(IceLotus)
   .done();
 
 /**
@@ -56,7 +60,14 @@ export const TrailOfTheQilin = skill(11012)
 export const FrostflakeArrow = skill(11013)
   .type("normal")
   .costCryo(5)
-  // TODO
+  .do((c) => {
+    if (c.self.hasEquipment(UndividedHeart) && c.countOfThisSkill() > 0) {
+      c.damage(DamageType.Piercing, 3, "opp standby");
+    } else {
+      c.damage(DamageType.Piercing, 2, "opp standby");
+    }
+    c.damage(DamageType.Cryo, 2);
+  })
   .done();
 
 /**
@@ -69,7 +80,9 @@ export const CelestialShower = skill(11014)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Piercing, 1, "opp standby")
+  .damage(DamageType.Cryo, 2)
+  .summon(SacredCryoPearl)
   .done();
 
 /**
@@ -97,5 +110,6 @@ export const Ganyu = character(1101)
 export const UndividedHeart = card(211011)
   .costCryo(5)
   .talent(Ganyu)
-  // TODO
+  .on("enter")
+  .useSkill(FrostflakeArrow)
   .done();

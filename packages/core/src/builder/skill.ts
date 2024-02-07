@@ -34,12 +34,12 @@ export type WritableMetaOf<BM extends BuilderMetaBase> = {
 
 type SkillOperation<Meta extends BuilderMetaBase> = (
   c: TypedSkillContext<WritableMetaOf<Meta>>,
-  e: Meta["eventArgType"],
+  e: Omit<Meta["eventArgType"], `_${string}`>,
 ) => void;
 
 export type SkillFilter<Meta extends BuilderMetaBase> = (
   c: TypedSkillContext<ReadonlyMetaOf<Meta>>,
-  e: Meta["eventArgType"],
+  e: Omit<Meta["eventArgType"], `_${string}`>,
 ) => unknown;
 
 enum ListenTo {
@@ -191,7 +191,8 @@ const detailedEventDictionary = {
     return (
       e.damageInfo.type !== DamageType.Piercing &&
       checkRelative(c.state, e.damageInfo.source.id, r) &&
-      commonInitiativeSkillCheck(e.damageInfo.via)
+      commonInitiativeSkillCheck(e.damageInfo.via) &&
+      e.damageInfo.fromReaction === null
     );
   }),
   modifyDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
@@ -205,7 +206,8 @@ const detailedEventDictionary = {
     return (
       e.damageInfo.type !== DamageType.Piercing &&
       checkRelative(c.state, e.damageInfo.source.id, r) &&
-      commonInitiativeSkillCheck(e.damageInfo.via)
+      commonInitiativeSkillCheck(e.damageInfo.via) &&
+      e.damageInfo.fromReaction === null
     );
   }),
   beforeDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
@@ -466,7 +468,7 @@ export class TriggeredSkillBuilder<
       );
     };
   }
-  private _usageOpt: Required<UsageOptions> | null = null;
+  private _usageOpt: Omit<Required<UsageOptions>, `recreate_${string}`>  | null = null;
   private _listenTo: ListenTo = ListenTo.SameArea;
 
   /**
@@ -512,6 +514,7 @@ export class TriggeredSkillBuilder<
       autoDispose: opt?.autoDispose ?? true,
       name,
       perRound,
+      recreateAdditional: opt?.recreateAdditional ?? count,
       recreateMax: opt?.recreateMax ?? count,
     };
     if (

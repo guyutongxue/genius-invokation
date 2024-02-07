@@ -61,6 +61,7 @@ export interface DamageInfo {
   readonly source: CharacterState | EntityState;
   readonly via: SkillInfo;
   readonly target: CharacterState;
+  readonly fromReaction: Reaction | null;
   readonly log?: string;
 }
 

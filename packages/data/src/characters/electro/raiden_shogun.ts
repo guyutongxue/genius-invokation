@@ -9,7 +9,10 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 此召唤物在场时：我方角色「元素爆发」造成的伤害+1。
  */
 export const EyeOfStormyJudgment = summon(114071)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(3)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -20,7 +23,23 @@ export const EyeOfStormyJudgment = summon(114071)
  * 所附属角色使用奥义·梦想真说时：消耗所有「愿力」，每点「愿力」使造成的伤害+1。
  */
 export const ChakraDesiderataStatus = status(114072)
-  // TODO
+  .variable("chakra", 0)
+  .on("useSkill", (c, e) => e.isSkillType("burst") && e.action.skill.caller.id !== c.self.master().id)
+  .listenToPlayer()
+  .do((c) => {
+    const currentVal = c.getVariable("chakra");
+    c.setVariable("chakra", Math.min(3, currentVal + 1));
+  })
+  .on("modifySkillDamage", (c, e) => e.via.definition.id === SecretArtMusouShinsetsu)
+  .do((c, e) => {
+    const currentVal = c.getVariable("chakra");
+    if (c.self.master().hasEquipment(WishesUnnumbered)) {
+      e.increaseDamage(currentVal * 2);
+    } else {
+      e.increaseDamage(currentVal);
+    }
+    c.setVariable("chakra", 0);
+  })
   .done();
 
 /**
@@ -33,7 +52,7 @@ export const Origin = skill(14071)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -45,7 +64,7 @@ export const Origin = skill(14071)
 export const TranscendenceBalefulOmen = skill(14072)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .summon(EyeOfStormyJudgment)
   .done();
 
 /**
@@ -58,7 +77,8 @@ export const SecretArtMusouShinsetsu = skill(14073)
   .type("burst")
   .costElectro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 3)
+  .gainEnergy(2, "all my characters and not @self")
   .done();
 
 /**
@@ -69,7 +89,10 @@ export const SecretArtMusouShinsetsu = skill(14073)
  */
 export const ChakraDesiderata = skill(14074)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(ChakraDesiderataStatus)
+  .on("revive")
+  .characterStatus(ChakraDesiderataStatus)
   .done();
 
 /**
@@ -98,5 +121,6 @@ export const WishesUnnumbered = card(214071)
   .costElectro(4)
   .costEnergy(2)
   .talent(RaidenShogun)
-  // TODO
+  .on("enter")
+  .useSkill(SecretArtMusouShinsetsu)
   .done();

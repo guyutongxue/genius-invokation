@@ -25,7 +25,7 @@ export const DarkfireFurnace = summon(123021)
  */
 export const AegisOfAbyssalFlame = status(123024)
   .shield(3)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro)
+  .on("modifySkillDamage", (c, e) => e.type === DamageType.Pyro)
   .increaseDamage(1)
   .done();
 

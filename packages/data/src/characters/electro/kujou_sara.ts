@@ -1,4 +1,19 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
+
+/**
+ * @id 114063
+ * @name 鸣煌护持
+ * @description
+ * 所附属角色元素战技和元素爆发造成的伤害+1。
+ * 可用次数：2
+ */
+export const CrowfeatherCover = status(114063)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("elemental") || e.viaSkillType("burst"))
+  .usage(2)
+  .increaseDamage(1)
+  .if((c) => c.$(`my equipment with definition id ${SinOfPride}`))
+  .increaseDamage(1)
+  .done();
 
 /**
  * @id 114061
@@ -8,7 +23,9 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：1
  */
 export const TenguJuuraiAmbush = summon(114061)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(1)
+  .characterStatus(CrowfeatherCover, "my active")
   .done();
 
 /**
@@ -19,18 +36,9 @@ export const TenguJuuraiAmbush = summon(114061)
  * 可用次数：2
  */
 export const TenguJuuraiStormcluster = summon(114062)
-  // TODO
-  .done();
-
-/**
- * @id 114063
- * @name 鸣煌护持
- * @description
- * 所附属角色元素战技和元素爆发造成的伤害+1。
- * 可用次数：2
- */
-export const CrowfeatherCover = status(114063)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 2)
+  .usage(2)
+  .characterStatus(CrowfeatherCover, "my active")
   .done();
 
 /**
@@ -43,7 +51,7 @@ export const TenguBowmanship = skill(14061)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -52,10 +60,11 @@ export const TenguBowmanship = skill(14061)
  * @description
  * 造成1点雷元素伤害，召唤天狗咒雷·伏。
  */
-export const TenguStormcall = skill(14062)
+export const TenguStormcall: SkillHandle = skill(14062)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 1)
+  .summon(TenguJuuraiAmbush)
   .done();
 
 /**
@@ -64,11 +73,12 @@ export const TenguStormcall = skill(14062)
  * @description
  * 造成1点雷元素伤害，召唤天狗咒雷·雷砾。
  */
-export const SubjugationKoukouSendou = skill(14063)
+export const SubjugationKoukouSendou: SkillHandle = skill(14063)
   .type("burst")
   .costElectro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
+  .summon(TenguJuuraiStormcluster)
   .done();
 
 /**
@@ -96,5 +106,6 @@ export const KujouSara = character(1406)
 export const SinOfPride = card(214061)
   .costElectro(3)
   .talent(KujouSara)
-  // TODO
+  .on("enter")
+  .useSkill(TenguStormcall)
   .done();

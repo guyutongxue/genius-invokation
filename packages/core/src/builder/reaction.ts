@@ -8,6 +8,8 @@ import { SkillBuilder, enableShortcut } from "./skill";
 import { TypedSkillContext } from "./context";
 import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
 
+export const CALLED_FROM_REACTION: unique symbol = Symbol();
+
 const Frozen = 106 as StatusHandle;
 const Crystallize = 111 as CombatStatusHandle;
 const BurningFlame = 115 as SummonHandle;
@@ -48,12 +50,15 @@ function reaction(reaction: Reaction) {
 
 type ReactionAction = (c: TypedSkillContext<ReactionContextMeta>) => void;
 
-const pierceToOther: ReactionAction = (c) => {
-  if (c.eventArg.damageInfo.isDamage) {
-    c.eventArg.increaseDamage(1);
-    c.damage(DamageType.Piercing, 1, "opp character and not @damage.target");
-  }
-};
+const pierceToOther =
+  (reaction: Reaction): ReactionAction =>
+  (c) => {
+    if (c.eventArg.damageInfo.isDamage) {
+      c.eventArg.increaseDamage(1);
+      (c as any)[CALLED_FROM_REACTION] = reaction;
+      c.damage(DamageType.Piercing, 1, "opp character and not @damage.target");
+    }
+  };
 
 const crystallize: ReactionAction = (c) => {
   c.eventArg.increaseDamage(1);
@@ -62,6 +67,7 @@ const crystallize: ReactionAction = (c) => {
 
 const swirl = (srcElement: DamageType): ReactionAction => {
   return (c) => {
+    (c as any)[CALLED_FROM_REACTION] = srcElement + 106;
     if (c.eventArg.damageInfo.isDamage) {
       c.damage(srcElement, 1, "opp character and not @damage.target");
     }
@@ -80,16 +86,16 @@ function initialize() {
     .done();
 
   reaction(Reaction.Overloaded)
-    .if((c) => c.$$(`@damage.target and active`).length > 0)
+    .if((c, e) => c.of(e.target).isActive())
     .switchActive("opp next")
     .done();
 
   reaction(Reaction.Superconduct)
-    .do(pierceToOther) //
+    .do(pierceToOther(Reaction.Superconduct))
     .done();
 
   reaction(Reaction.ElectroCharged)
-    .do(pierceToOther) //
+    .do(pierceToOther(Reaction.ElectroCharged))
     .done();
 
   reaction(Reaction.Frozen)

@@ -9,7 +9,7 @@ import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/co
  */
 export const PyroInfusion = status(113011)
   .duration(2)
-  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Pyro)
   .done();
 

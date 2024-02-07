@@ -16,6 +16,7 @@ import { Draft } from "immer";
 import { isReactionSwirl } from "../base/reaction";
 
 export interface VariableOptions {
+  recreateAdditional?: number;
   recreateMax?: number;
   /** 该值是否在前端可见，默认为 `true`。仅最后一次添加的变量会显示。 */
   visible?: boolean;
@@ -65,7 +66,10 @@ export class EntityBuilder<
       .do((c) => {
         // 将位于相同实体区域的目标实体移除
         for (const entity of c.$$(`my any with definition id ${id}`)) {
-          if (entity.area.type === "characters" && c.self.area.type === "characters") {
+          if (
+            entity.area.type === "characters" &&
+            c.self.area.type === "characters"
+          ) {
             if (entity.area.characterId === c.self.area.characterId) {
               entity.dispose();
             }
@@ -107,6 +111,7 @@ export class EntityBuilder<
   ): EntityBuilder<CallerType, Vars | Name> {
     this._constants[name] = value;
     if (typeof opt?.recreateMax === "number") {
+      this._constants[name + "$add"] = opt.recreateAdditional ?? value;
       this._constants[name + "$max"] = opt.recreateMax;
     }
     const visible = opt?.visible ?? true;
@@ -187,7 +192,12 @@ export class EntityBuilder<
     if (type === "swirledAnemo") {
       return this.hintIcon(DamageType.Anemo)
         .hintText(`${value}`)
-        .once("dealDamage", (c, e) => e.isSwirl() !== null)
+        .once(
+          "dealDamage",
+          (c, e) =>
+            ["character", "summon"].includes(e.source.definition.type) &&
+            e.isSwirl() !== null,
+        )
         .do((c, e) => {
           const swirledType = e.isSwirl()!;
           c.setVariable("hintIcon", swirledType);

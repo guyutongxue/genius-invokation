@@ -10,7 +10,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const ChisellightMirror = status(117061)
   .duration(2, { recreateMax: 3 })
-  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Dendro)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .damage(DamageType.Dendro, 1)

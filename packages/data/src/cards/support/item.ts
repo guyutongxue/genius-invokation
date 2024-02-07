@@ -1,4 +1,4 @@
-import { DamageType, DiceType, card } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, combatStatus } from "@gi-tcg/core/builder";
 
 /**
  * @id 323001
@@ -54,6 +54,19 @@ export const Nre = card(323002)
   .done();
 
 /**
+ * @id 302303
+ * @name 红羽团扇（生效中）
+ * @description
+ * 本回合中，我方执行的下次「切换角色」行动视为「快速行动」而非「战斗行动」，并且少花费1个元素骰。
+ */
+export const RedFeatherFanStatus = combatStatus(302303)
+  .oneDuration()
+  .once("modifyAction", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
+  .setFastAction()
+  .deductCost(DiceType.Omni, 1)
+  .done();
+
+/**
  * @id 323003
  * @name 红羽团扇
  * @description
@@ -62,9 +75,9 @@ export const Nre = card(323002)
 export const RedFeatherFan = card(323003)
   .costSame(2)
   .support("item")
-  .on("modifyAction", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
-  .setFastAction()
-  .deductCost(DiceType.Omni, 1)
+  .on("switchActive")
+  .usagePerRound(1)
+  .combatStatus(RedFeatherFanStatus)
   .done();
 
 /**

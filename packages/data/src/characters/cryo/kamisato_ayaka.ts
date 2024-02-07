@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, PassiveSkillHandle, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 111051
@@ -8,7 +8,8 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：2
  */
 export const FrostflakeSekiNoTo = summon(111051)
-  // TODO
+  .endPhaseDamage(DamageType.Cryo, 2)
+  .usage(2)
   .done();
 
 /**
@@ -20,7 +21,11 @@ export const FrostflakeSekiNoTo = summon(111051)
  */
 export const CryoElementalInfusion01 = status(111053)
   .conflictWith(111052)
-  // TODO
+  .oneDuration()
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Cryo)
+  .on("modifySkillDamage", (c, e) => e.type === DamageType.Cryo)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -32,7 +37,9 @@ export const CryoElementalInfusion01 = status(111053)
  */
 export const CryoElementalInfusion = status(111052)
   .conflictWith(111053)
-  // TODO
+  .oneDuration()
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Cryo)
   .done();
 
 /**
@@ -45,7 +52,7 @@ export const KamisatoArtKabuki = skill(11051)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -57,7 +64,7 @@ export const KamisatoArtKabuki = skill(11051)
 export const KamisatoArtHyouka = skill(11052)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
   .done();
 
 /**
@@ -70,7 +77,8 @@ export const KamisatoArtSoumetsu = skill(11053)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Cryo, 4)
+  .summon(FrostflakeSekiNoTo)
   .done();
 
 /**
@@ -79,9 +87,13 @@ export const KamisatoArtSoumetsu = skill(11053)
  * @description
  * 【被动】此角色被切换为「出战角色」时，附属冰元素附魔。
  */
-export const KamisatoArtSenho = skill(11054)
+export const KamisatoArtSenho: PassiveSkillHandle = skill(11054)
   .type("passive")
-  // TODO
+  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.id)
+  .if((c) => c.self.hasEquipment(KantenSenmyouBlessing))
+  .characterStatus(CryoElementalInfusion01)
+  .else()
+  .characterStatus(CryoElementalInfusion)
   .done();
 
 /**
@@ -108,5 +120,7 @@ export const KamisatoAyaka = character(1105)
 export const KantenSenmyouBlessing = card(211051)
   .costCryo(2)
   .talent(KamisatoAyaka, "none")
-  // TODO
+  .on("deductDiceSwitch", (c, e) => e.action.to.id === c.self.master().id)
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
   .done();

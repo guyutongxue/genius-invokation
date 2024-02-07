@@ -48,8 +48,6 @@ export const FontemerPearl = status(124032)
     }
     c.addVariable("usage", -1)
   })
-  .on("modifyDamage")
-  .increaseDamage(1)
   .on("declareEnd")
   .if((c) => c.self.master().isActive())
   .drawCards(1)

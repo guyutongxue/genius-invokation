@@ -9,9 +9,9 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 角色所附属的「岩盔」被移除后：也移除此状态。
  */
 export const StoneForce = status(126012)
-  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Geo)
-  .on("modifyDamage")
+  .on("modifySkillDamage")
   .usagePerRound(1)
   .increaseDamage(1)
   .on("dispose", (c, e) => e.entity.definition.id === Stonehide)

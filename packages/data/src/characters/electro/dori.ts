@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 114101
@@ -8,7 +8,8 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：1
  */
 export const AftersalesServiceRounds = summon(114101)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(1)
   .done();
 
 /**
@@ -21,7 +22,23 @@ export const AftersalesServiceRounds = summon(114101)
  */
 export const Jinni01 = summon(114103)
   .conflictWith(114102)
-  // TODO
+  .hintIcon(DamageType.Heal)
+  .hintText("2")
+  .on("endPhase")
+  .usage(2)
+  .do((c) => {
+    const ch = c.$("my active")!;
+    if (ch.health <= 6) {
+      ch.heal(3);
+    } else {
+      ch.heal(2);
+    }
+    if (ch.energy === 0) {
+      ch.gainEnergy(2);
+    } else {
+      ch.gainEnergy(1);
+    }
+  })
   .done();
 
 /**
@@ -33,7 +50,9 @@ export const Jinni01 = summon(114103)
  */
 export const Jinni = summon(114102)
   .conflictWith(114103)
-  // TODO
+  .endPhaseDamage(DamageType.Heal, 2, "my active")
+  .usage(2)
+  .gainEnergy(1, "my active")
   .done();
 
 /**
@@ -46,7 +65,7 @@ export const MarvelousSworddanceModified = skill(14101)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -58,7 +77,8 @@ export const MarvelousSworddanceModified = skill(14101)
 export const SpiritwardingLampTroubleshooterCannon = skill(14102)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .summon(AftersalesServiceRounds)
   .done();
 
 /**
@@ -67,11 +87,15 @@ export const SpiritwardingLampTroubleshooterCannon = skill(14102)
  * @description
  * 造成1点雷元素伤害，召唤灯中幽精。
  */
-export const AlcazarzaraysExactitude = skill(14103)
+export const AlcazarzaraysExactitude: SkillHandle = skill(14103)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
+  .if((c) => c.self.hasEquipment(DiscretionarySupplement))
+  .summon(Jinni01)
+  .else()
+  .summon(Jinni)
   .done();
 
 /**
@@ -100,5 +124,6 @@ export const DiscretionarySupplement = card(214101)
   .costElectro(3)
   .costEnergy(2)
   .talent(Dori)
-  // TODO
+  .on("enter")
+  .useSkill(AlcazarzaraysExactitude)
   .done();

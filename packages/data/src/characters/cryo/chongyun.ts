@@ -1,4 +1,4 @@
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 111042
@@ -9,7 +9,15 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  */
 export const ChonghuaFrostField01 = combatStatus(111042)
   .conflictWith(111041)
-  // TODO
+  .duration(2)
+  .on("modifySkillDamageType", (c) => {
+    const { type, tags } = c.skillInfo.caller.definition;
+    if (type !== "character") { return false; }
+    return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
+  })
+  .changeDamageType(DamageType.Cryo)
+  .if((c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -21,7 +29,13 @@ export const ChonghuaFrostField01 = combatStatus(111042)
  */
 export const ChonghuaFrostField = combatStatus(111041)
   .conflictWith(111042)
-  // TODO
+  .duration(2)
+  .on("modifySkillDamageType", (c) => {
+    const { type, tags } = c.skillInfo.caller.definition;
+    if (type !== "character") { return false; }
+    return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
+  })
+  .changeDamageType(DamageType.Cryo)
   .done();
 
 /**
@@ -34,7 +48,7 @@ export const Demonbane = skill(11041)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -43,10 +57,14 @@ export const Demonbane = skill(11041)
  * @description
  * 造成3点冰元素伤害，生成重华叠霜领域。
  */
-export const ChonghuasLayeredFrost = skill(11042)
+export const ChonghuasLayeredFrost: SkillHandle = skill(11042)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
+  .if((c) => c.self.hasEquipment(SteadyBreathing))
+  .combatStatus(ChonghuaFrostField01)
+  .else()
+  .combatStatus(ChonghuaFrostField)
   .done();
 
 /**
@@ -59,7 +77,7 @@ export const CloudpartingStar = skill(11043)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Cryo, 7)
   .done();
 
 /**
@@ -88,5 +106,6 @@ export const Chongyun = character(1104)
 export const SteadyBreathing = card(211041)
   .costCryo(3)
   .talent(Chongyun)
-  // TODO
+  .on("enter")
+  .useSkill(ChonghuasLayeredFrost)
   .done();

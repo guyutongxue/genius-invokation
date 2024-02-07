@@ -38,6 +38,7 @@ import { combatStatus, status } from ".";
 import { equipment, support } from "./entity";
 import { CharacterTag } from "../base/character";
 import { ExEntityType } from "../base/entity";
+import { GuessedTypeOfQuery } from "../query/types";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -70,9 +71,8 @@ type StrictCardSkillFilter<KindTs extends CardTargetKind> = SkillFilter<
   StrictBuilderMetaForCard<KindTs>
 >;
 
-type TargetQuery = `${string}character${string}` | `${string}summon${string}`;
-type TargetKindOfQuery<Q extends TargetQuery> =
-  Q extends `${string}character${string}` ? "character" : "summon";
+type TargetQuery = `${string}character${string}` | `${string}summon${string}` | `${string}support${string}`;
+type TargetKindOfQuery<Q extends TargetQuery> = GuessedTypeOfQuery<Q>;
 
 const SATIATED_ID = 303300 as StatusHandle;
 

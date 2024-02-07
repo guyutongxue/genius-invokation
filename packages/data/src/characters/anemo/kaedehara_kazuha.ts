@@ -96,7 +96,7 @@ export const MidareRanzanPyro = status(115055)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuCryo = combatStatus(115057)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Cryo)
+  .on("modifyDamage", (c, e) => ["character", "summon"].includes(e.source.definition.type) && e.type === DamageType.Cryo)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -109,7 +109,7 @@ export const PoeticsOfFuubutsuCryo = combatStatus(115057)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuElectro = combatStatus(115050)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Electro)
+  .on("modifyDamage", (c, e) => ["character", "summon"].includes(e.source.definition.type) && e.type === DamageType.Electro)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -122,7 +122,7 @@ export const PoeticsOfFuubutsuElectro = combatStatus(115050)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuHydro = combatStatus(115058)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Hydro)
+  .on("modifyDamage", (c, e) => ["character", "summon"].includes(e.source.definition.type) && e.type === DamageType.Hydro)
   .usage(2)
   .increaseDamage(1)
   .done();
@@ -135,7 +135,7 @@ export const PoeticsOfFuubutsuHydro = combatStatus(115058)
  * 可用次数：2
  */
 export const PoeticsOfFuubutsuPyro = combatStatus(115059)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro)
+  .on("modifyDamage", (c, e) => ["character", "summon"].includes(e.source.definition.type) && e.type === DamageType.Pyro)
   .usage(2)
   .increaseDamage(1)
   .done();

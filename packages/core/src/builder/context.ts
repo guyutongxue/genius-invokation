@@ -1,4 +1,4 @@
-import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
+import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 
 import { EntityArea, EntityType, EntityVariables, ExEntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
@@ -49,7 +49,7 @@ import {
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
-import { OptionalDamageInfo, getReactionDescription } from "./reaction";
+import { CALLED_FROM_REACTION, OptionalDamageInfo, getReactionDescription } from "./reaction";
 import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 
@@ -90,7 +90,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   constructor(
     private _state: GameState,
     public readonly skillInfo: SkillInfo,
-    public readonly eventArg: Meta["eventArgType"],
+    public readonly eventArg: Omit<Meta["eventArgType"], `_${string}`>,
   ) {
     this.callerArea = getEntityArea(_state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
@@ -312,6 +312,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           target: targetState,
           value: finalValue,
           via: this.skillInfo,
+          fromReaction: this.fromReaction,
         },
       });
       this.emitEvent("onHeal", this.state, {
@@ -341,6 +342,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type,
         value,
         via: this.skillInfo,
+        fromReaction: this.fromReaction,
       };
       if (type !== DamageType.Piercing) {
         const damageModifier = new ModifyDamage0EventArg(
@@ -392,6 +394,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
+  private get fromReaction(): Reaction | null {
+    return (this as any)[CALLED_FROM_REACTION] ?? null;
+  }
+
   private doApply(
     target: TypedCharacter<Meta>,
     type: NontrivialDamageType,
@@ -417,6 +423,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           via: this.skillInfo,
           target: target.state,
           isDamage: false,
+          fromReaction: this.fromReaction,
         };
     const damageModifier = new ModifyDamage0EventArg(this.state, optDamageInfo);
     damageModifier._currentSkillInfo = this.skillInfo;
@@ -499,20 +506,22 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (existOverride) {
       // refresh exist entity's variable
       for (const prop in existOverride.variables) {
-        if (prop in def.constants) {
+        const oldValue = existOverride.variables[prop];
+        if (typeof def.constants[prop] === "number") {
           let newValue = def.constants[prop];
           if (`${prop}$max` in def.constants) {
             // 若存在 `$max` 设定（如 usage）累加状态值
             const limit = def.constants[`${prop}$max`];
-            if (existOverride.variables[prop] < limit) {
+            const additional = def.constants[`${prop}$add`] ?? newValue;
+            if (oldValue < limit) {
               // 如果当前值比上限低，进行累加
               newValue = Math.min(
                 limit,
-                existOverride.variables[prop] + def.constants[prop],
+                oldValue + additional,
               );
             } else {
               // 如果当前值比上限高，维持原样
-              newValue = existOverride.variables[prop];
+              newValue = oldValue;
             }
           }
           this.mutate({

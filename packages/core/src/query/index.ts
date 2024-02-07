@@ -47,7 +47,7 @@ export function executeQuery<
       },
       damage: {
         target: () =>
-          (ctx.eventArg as DamageEventArg<DamageInfo>).damageInfo.target.id,
+          (ctx.eventArg as DamageEventArg<DamageInfo>).target.id,
       },
       targets: Object.fromEntries(
         new Array(targetLength)

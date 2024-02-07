@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 114052
@@ -8,7 +8,21 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const SummonerOfLightning = status(114052)
-  // TODO
+  .oneDuration()
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
+  .deductCost(DiceType.Void, 1)
+  .done();
+
+/**
+ * @id 14054
+ * @name 踏潮
+ * @description
+ * （需准备1个行动轮）
+ * 造成3点雷元素伤害。
+ */
+export const Wavestrider = skill(14054)
+  .type("elemental")
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
@@ -19,7 +33,8 @@ export const SummonerOfLightning = status(114052)
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
 export const TidecallerSurfEmbrace = status(114051)
-  // TODO
+  .prepare(Wavestrider)
+  .shield(2)
   .done();
 
 /**
@@ -31,7 +46,11 @@ export const TidecallerSurfEmbrace = status(114051)
  * 持续回合：2
  */
 export const ThunderbeastsTarge = combatStatus(114053)
-  // TODO
+  .duration(2)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .damage(DamageType.Electro, 1)
+  .on("beforeDamaged", (c, e) => e.value >= 3)
+  .decreaseDamage(1)
   .done();
 
 /**
@@ -44,7 +63,7 @@ export const Oceanborne = skill(14051)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -56,7 +75,7 @@ export const Oceanborne = skill(14051)
 export const Tidecaller = skill(14052)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .characterStatus(TidecallerSurfEmbrace)
   .done();
 
 /**
@@ -69,19 +88,8 @@ export const Stormbreaker = skill(14053)
   .type("burst")
   .costElectro(3)
   .costEnergy(3)
-  // TODO
-  .done();
-
-/**
- * @id 14054
- * @name 踏潮
- * @description
- * （需准备1个行动轮）
- * 造成3点雷元素伤害。
- */
-export const Wavestrider = skill(14054)
-  .type("elemental")
-  // TODO
+  .damage(DamageType.Electro, 2)
+  .combatStatus(ThunderbeastsTarge)
   .done();
 
 /**
@@ -109,5 +117,9 @@ export const Beidou = character(1405)
 export const LightningStorm = card(214051)
   .costElectro(3)
   .talent(Beidou)
-  // TODO
+  .on("enter")
+  .useSkill(Tidecaller)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === Wavestrider)
+  .usagePerRound(2)
+  .characterStatus(SummonerOfLightning)
   .done();

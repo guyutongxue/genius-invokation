@@ -22,9 +22,9 @@ export const BloodBlossom = status(113072)
  */
 export const ParamitaPapilio = status(113071)
   .duration(2)
-  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Pyro)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro)
+  .on("modifySkillDamage", (c, e) => e.type === DamageType.Pyro)
   .increaseDamage(1)
   .done();
 
@@ -103,6 +103,6 @@ export const SanguineRouge = card(213071)
   .talent(HuTao)
   .on("enter")
   .useSkill(GuideToAfterlife)
-  .on("modifyDamage", (c) => c.self.master().health <= 6)
+  .on("modifySkillDamage", (c) => c.self.master().health <= 6)
   .increaseDamage(1)
   .done();

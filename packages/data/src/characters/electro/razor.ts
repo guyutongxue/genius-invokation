@@ -8,7 +8,9 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：2
  */
 export const TheWolfWithin = status(114021)
-  // TODO
+  .duration(2)
+  .on("useSkill", (c, e) => e.isSkillType("normal") || e.isSkillType("elemental"))
+  .damage(DamageType.Electro, 2)
   .done();
 
 /**
@@ -21,7 +23,7 @@ export const SteelFang = skill(14021)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -33,7 +35,7 @@ export const SteelFang = skill(14021)
 export const ClawAndThunder = skill(14022)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
@@ -46,7 +48,8 @@ export const LightningFang = skill(14023)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 3)
+  .characterStatus(TheWolfWithin)
   .done();
 
 /**
@@ -75,5 +78,9 @@ export const Razor = character(1402)
 export const Awakening = card(214021)
   .costElectro(3)
   .talent(Razor)
-  // TODO
+  .on("enter")
+  .useSkill(ClawAndThunder)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === ClawAndThunder)
+  .usagePerRound(1)
+  .gainEnergy(1, "my characters with tag (electro) and with energy < maxEnergy limit 1")
   .done();

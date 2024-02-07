@@ -8,7 +8,14 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const CelestialDreamsphere = summon(111093)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(2)
+  .do((c) => {
+    const star = c.$(`my combat status with definition id ${ShootingStar}`);
+    if (star) {
+      star.addVariable("star", 1);
+    } 
+  })
   .done();
 
 /**
@@ -18,7 +25,7 @@ export const CelestialDreamsphere = summon(111093)
  * 提供2点护盾，保护我方出战角色。
  */
 export const CurtainOfSlumberShield = combatStatus(111091)
-  // TODO
+  .shield(2)
   .done();
 
 /**
@@ -29,7 +36,18 @@ export const CurtainOfSlumberShield = combatStatus(111091)
  * 重复生成此出战状态时：累积2枚「晚星」。
  */
 export const ShootingStar = combatStatus(111092)
-  // TODO
+  .variable("star", 0, { recreateAdditional: 2, recreateMax: Infinity })
+  .on("useSkill")
+  .do((c) => {
+    c.addVariable("star", 1);
+    if (c.getVariable("star") >= 4) {
+      c.addVariable("star", -4);
+      c.damage(DamageType.Cryo, 1);
+      if (c.$(`my equipment with definition id ${LightsRemit}`)) {
+        c.drawCards(1);
+      }
+    }
+  })
   .done();
 
 /**
@@ -42,7 +60,7 @@ export const SwordOfTheRadiantPath = skill(11091)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -54,7 +72,8 @@ export const SwordOfTheRadiantPath = skill(11091)
 export const NightsOfFormalFocus = skill(11092)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .combatStatus(CurtainOfSlumberShield)
+  .combatStatus(ShootingStar)
   .done();
 
 /**
@@ -67,7 +86,8 @@ export const DreamOfTheStarstreamShaker = skill(11093)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 3)
+  .summon(CelestialDreamsphere)
   .done();
 
 /**
@@ -95,5 +115,6 @@ export const Layla = character(1109)
 export const LightsRemit = card(211091)
   .costCryo(3)
   .talent(Layla)
-  // TODO
+  .on("enter")
+  .useSkill(NightsOfFormalFocus)
   .done();

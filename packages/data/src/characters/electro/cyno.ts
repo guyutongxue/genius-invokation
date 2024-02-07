@@ -11,7 +11,20 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 大于等于6级时：「凭依」级数-4。
  */
 export const PactswornPathclearer = status(114041)
-  // TODO
+  .variable("reliance", 0)
+  .on("endPhase")
+  .do((c) => {
+    const newVal = c.getVariable("reliance") + 1;
+    if (newVal >= 6) {
+      c.setVariable("reliance", newVal - 4);
+    } else {
+      c.setVariable("reliance", newVal);
+    }
+  })
+  .on("modifySkillDamageType", (c, e) => c.getVariable("reliance") >= 2 && e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Electro)
+  .on("modifySkillDamage", (c, e) => c.getVariable("reliance") >= 4)
+  .increaseDamage(2)
   .done();
 
 /**
@@ -24,7 +37,7 @@ export const InvokersSpear = skill(14041)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -36,7 +49,7 @@ export const InvokersSpear = skill(14041)
 export const SecretRiteChasmicSoulfarer = skill(14042)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
@@ -50,7 +63,16 @@ export const SacredRiteWolfsSwiftness = skill(14043)
   .type("burst")
   .costElectro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 4)
+  .do((c) => {
+    const status = c.self.hasStatus(PactswornPathclearer)!;
+    const newVal = c.getVariable("reliance", status) + 2;
+    if (newVal >= 6) {
+      c.setVariable("reliance", newVal - 4, status);
+    } else {
+      c.setVariable("reliance", newVal, status);
+    }
+  })
   .done();
 
 /**
@@ -61,7 +83,10 @@ export const SacredRiteWolfsSwiftness = skill(14043)
  */
 export const LawfulEnforcer = skill(14044)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(PactswornPathclearer)
+  .on("revive")
+  .characterStatus(PactswornPathclearer)
   .done();
 
 /**
@@ -89,5 +114,11 @@ export const Cyno = character(1404)
 export const FeatherfallJudgment = card(214041)
   .costElectro(3)
   .talent(Cyno)
-  // TODO
+  .on("enter")
+  .useSkill(SecretRiteChasmicSoulfarer)
+  .on("modifySkillDamage", (c, e) => {
+    const status = c.self.master().hasStatus(PactswornPathclearer)!;
+    return c.getVariable("reliance", status) % 2 === 0 && e.via.definition.id === SecretRiteChasmicSoulfarer;
+  })
+  .increaseDamage(1)
   .done();

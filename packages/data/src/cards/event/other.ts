@@ -149,9 +149,9 @@ export const ElementalResonanceFerventFlames = card(331302)
   .tags("resonance")
   .requireCharacterTag("pyro")
   .toStatus("my active")
+  .oneDuration()
   .once("modifySkillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Pyro))
   .increaseDamage(3)
-  // TODO
   .done();
 
 /**
@@ -195,6 +195,7 @@ export const ElementalResonanceEnduringRock = card(331602)
   .tags("resonance")
   .requireCharacterTag("geo")
   .toCombatStatus()
+  .oneDuration()
   .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
   .do((c) => {
     c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
@@ -220,6 +221,7 @@ export const ElementalResonanceSprawlingGreenery = card(331702)
     c.$("my combat statuses with definition id 117")?.addVariable("usage", 1);
   })
   .toCombatStatus()
+  .oneDuration()
   .once("modifyDamage", (c, e) => e.getReaction())
   .increaseDamage(2)
   .done();
@@ -627,6 +629,7 @@ export const PlungingStrike = card(332017)
 export const HeavyStrike = card(332018)
   .costSame(1)
   .toStatus("my active")
+  .oneDuration()
   .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .if((c, e) => e.viaChargedAttack())
@@ -755,7 +758,12 @@ export const TheBoarPrincess = card(332025)
  */
 export const FallsAndFortune = card(332026)
   .costSame(1)
-  // TODO
+  .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
+  .toCombatStatus()
+  .oneDuration()
+  .on("modifyAction", (c, e) => e.action.type === "switchActive")
+  .listenToAll()
+  .addCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -765,7 +773,10 @@ export const FallsAndFortune = card(332026)
  * 目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。
  */
 export const FlickeringFourleafSigil = card(332027)
-  // TODO
+  .addTarget("my characters")
+  .toStatus("@targets.0")
+  .on("endPhase")
+  .switchActive("@master")
   .done();
 
 /**
@@ -776,7 +787,26 @@ export const FlickeringFourleafSigil = card(332027)
  * 我方打出原本费用不多于「备战度」的「武器」或「圣遗物」时：移除所有「备战度」，以免费打出该牌。
  */
 export const MachineAssemblyLine = card(332028)
-  // TODO
+  .addTarget("my characters")
+  .toStatus("@targets.0")
+  .variable("readiness", 0)
+  .on("damaged")
+  .do((c) => {
+    c.setVariable("readiness", Math.min(2, c.getVariable("readiness") + 1));
+  })
+  .on("healed")
+  .do((c) => {
+    c.setVariable("readiness", Math.min(2, c.getVariable("readiness") + 1));
+  })
+  .once("deductDiceCard", (c, e) =>
+    e.hasOneOfCardTag("weapon", "artifact") &&
+    e.action.card.definition.skillDefinition.requiredCost.length <= c.getVariable("readiness"))
+  .do((c, e) => {
+    for (const dice of e.cost) {
+      e.deductCost(dice, 1);
+    }
+    c.setVariable("readiness", 0);
+  })
   .done();
 
 /**
@@ -787,5 +817,17 @@ export const MachineAssemblyLine = card(332028)
  * 本回合中，我方下次打出支援牌时：少花费1个元素骰。
  */
 export const SunyataFlower = card(332029)
-  // TODO
+  .addTarget("my supports")
+  .dispose("@targets.0")
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((card) => card.type === "support");
+    const card0 = c.random(...candidates);
+    const card1 = c.random(...candidates);
+    c.createHandCard(card0.id as CardHandle);
+    c.createHandCard(card1.id as CardHandle);
+  })
+  .toCombatStatus()
+  .oneDuration()
+  .once("deductDiceCard", (c, e) => e.action.card.definition.type === "support")
+  .deductCost(DiceType.Omni, 1)
   .done();

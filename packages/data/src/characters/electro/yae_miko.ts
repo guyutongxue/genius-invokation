@@ -1,4 +1,4 @@
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 114081
@@ -9,7 +9,11 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 我方宣布结束时：如果此牌的可用次数至少为4，则造成1点雷元素伤害。（需消耗可用次数）
  */
 export const SesshouSakura = summon(114081)
-  // TODO
+  .endPhaseDamage(DamageType.Electro, 1)
+  .usage(3, { recreateMax: 6 })
+  .on("declareEnd", (c) => c.getVariable("usage") >= 4)
+  .damage(DamageType.Electro, 1)
+  .addVariable("usage", -1)
   .done();
 
 /**
@@ -19,7 +23,9 @@ export const SesshouSakura = summon(114081)
  * 本回合中，所附属角色下次施放野干役咒·杀生樱时少花费2个元素骰。
  */
 export const RiteOfDispatch = status(114082)
-  // TODO
+  .oneDuration()
+  .once("deductDiceSkill", (c, e) => e.action.skill.definition.id === YakanEvocationSesshouSakura)
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -30,7 +36,9 @@ export const RiteOfDispatch = status(114082)
  * 可用次数：1
  */
 export const TenkoThunderbolts = combatStatus(114083)
-  // TODO
+  .on("beforeAction")
+  .usage(1)
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
@@ -43,7 +51,7 @@ export const SpiritfoxSineater = skill(14081)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
   .done();
 
 /**
@@ -55,7 +63,7 @@ export const SpiritfoxSineater = skill(14081)
 export const YakanEvocationSesshouSakura = skill(14082)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .summon(SesshouSakura)
   .done();
 
 /**
@@ -68,7 +76,17 @@ export const GreatSecretArtTenkoKenshin = skill(14083)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Electro, 4)
+    const sakura = c.$(`my summon with definition id ${SesshouSakura}`);
+    if (sakura) {
+      sakura.dispose();
+      c.combatStatus(TenkoThunderbolts);
+      if (c.self.hasEquipment(TheShrinesSacredShade)) {
+        c.characterStatus(RiteOfDispatch);
+      }
+    }
+  })
   .done();
 
 /**
@@ -97,5 +115,6 @@ export const TheShrinesSacredShade = card(214081)
   .costElectro(3)
   .costEnergy(2)
   .talent(YaeMiko)
-  // TODO
+  .on("enter")
+  .useSkill(GreatSecretArtTenkoKenshin)
   .done();

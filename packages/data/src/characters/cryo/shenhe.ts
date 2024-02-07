@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 111073
@@ -9,7 +9,11 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 此召唤物在场时：敌方角色受到的冰元素伤害和物理伤害+1。
  */
 export const TalismanSpirit = summon(111073)
-  // TODO
+  .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(2)
+  .on("beforeDamaged", (c, e) => !c.of(e.target).isMine() && [DamageType.Cryo, DamageType.Physical].includes(e.type))
+  .listenToAll()
+  .increaseDamage(1)
   .done();
 
 /**
@@ -22,7 +26,19 @@ export const TalismanSpirit = summon(111073)
  */
 export const IcyQuill01 = combatStatus(111072)
   .conflictWith(111071)
-  // TODO
+  .variable("noUsageEffect", 1, { visible: false }) // 每回合一次不消耗可用次数
+  .on("actionPhase")
+  .setVariable("noUsageEffect", 1)
+  .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
+  .usage(2, { autoDecrease: false })
+  .increaseDamage(1)
+  .do((c, e) => {
+    if (e.viaSkillType("normal") && c.getVariable("noUsageEffect")) {
+      c.setVariable("noUsageEffect", 0);
+    } else {
+      c.addVariable("usage", -1);
+    }
+  })
   .done();
 
 /**
@@ -34,7 +50,9 @@ export const IcyQuill01 = combatStatus(111072)
  */
 export const IcyQuill = combatStatus(111071)
   .conflictWith(111072)
-  // TODO
+  .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
+  .usage(2, { autoDecrease: false })
+  .increaseDamage(1)
   .done();
 
 /**
@@ -47,7 +65,7 @@ export const DawnstarPiercer = skill(11071)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -56,10 +74,14 @@ export const DawnstarPiercer = skill(11071)
  * @description
  * 造成2点冰元素伤害，生成冰翎。
  */
-export const SpringSpiritSummoning = skill(11072)
+export const SpringSpiritSummoning: SkillHandle = skill(11072)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .if((c) => c.self.hasEquipment(MysticalAbandon))
+  .combatStatus(IcyQuill01)
+  .else()
+  .combatStatus(IcyQuill)
   .done();
 
 /**
@@ -72,7 +94,8 @@ export const DivineMaidensDeliverance = skill(11073)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 1)
+  .summon(TalismanSpirit)
   .done();
 
 /**
@@ -100,5 +123,6 @@ export const Shenhe = character(1107)
 export const MysticalAbandon = card(211071)
   .costCryo(3)
   .talent(Shenhe)
-  // TODO
+  .on("enter")
+  .useSkill(SpringSpiritSummoning)
   .done();
