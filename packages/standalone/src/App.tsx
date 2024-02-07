@@ -31,8 +31,6 @@ export function App() {
   const [io0, Chessboard0] = createPlayer(0);
   const [io1, Chessboard1] = createPlayer(1);
 
-  const [pausing, pause, resume] = createWaitNotify();
-
   const onStart = () => {
     const playerConfig0 = getPlayerConfig(deck0());
     const playerConfig1 = getPlayerConfig(deck1());
@@ -74,11 +72,6 @@ export function App() {
           </div>
         }
       >
-        <div>
-          <button disabled={!pausing()} onClick={resume}>
-            Step
-          </button>
-        </div>
         <Chessboard0 />
         <Chessboard1 />
       </Show>

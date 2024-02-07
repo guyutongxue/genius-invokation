@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card } from "@gi-tcg/core/builder";
 
 /**
  * @id 311101
@@ -10,7 +10,8 @@ import { card } from "@gi-tcg/core/builder";
 export const MagicGuide = card(311101)
   .costSame(2)
   .weapon("catalyst")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
   .done();
 
 /**
@@ -24,7 +25,13 @@ export const MagicGuide = card(311101)
 export const SacrificialFragments = card(311102)
   .costSame(3)
   .weapon("catalyst")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("elemental"))
+  .usagePerRound(1)
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+  })
   .done();
 
 /**
@@ -38,7 +45,11 @@ export const SacrificialFragments = card(311102)
 export const SkywardAtlas = card(311103)
   .costSame(3)
   .weapon("catalyst")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usagePerRound(1)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -52,7 +63,12 @@ export const SkywardAtlas = card(311103)
 export const AThousandFloatingDreams = card(311104)
   .costSame(3)
   .weapon("catalyst")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifyDamage", (c, e) => e.getReaction())
+  .listenToPlayer()
+  .usagePerRound(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -66,7 +82,10 @@ export const AThousandFloatingDreams = card(311104)
 export const FruitOfFulfillment = card(311105)
   .costVoid(3)
   .weapon("catalyst")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter")
+  .drawCards(2)
   .done();
 
 /**
@@ -80,7 +99,17 @@ export const FruitOfFulfillment = card(311105)
 export const LostPrayerToTheSacredWinds = card(311106)
   .costSame(3)
   .weapon("catalyst")
-  // TODO
+  .variable("extraDamage", 0)
+  .on("modifyDamage")
+  .do((c, e) => {
+    e.increaseDamage(c.getVariable("extraDamage"));
+  })
+  .on("endPhase")
+  .do((c) => {
+    if (c.getVariable("extraDamage") < 2) {
+      c.addVariable("extraDamage", 1);
+    }
+  })
   .done();
 
 /**
@@ -94,5 +123,9 @@ export const LostPrayerToTheSacredWinds = card(311106)
 export const TulaytullahsRemembrance = card(311107)
   .costSame(3)
   .weapon("catalyst")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.canCharged && e.canDeductCostOfType(DiceType.Void))
+  .usagePerRound(2)
+  .deductCost(DiceType.Void, 1)
   .done();

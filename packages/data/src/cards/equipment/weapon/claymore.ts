@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311301
@@ -10,7 +10,8 @@ import { card } from "@gi-tcg/core/builder";
 export const WhiteIronGreatsword = card(311301)
   .costSame(2)
   .weapon("claymore")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
   .done();
 
 /**
@@ -24,7 +25,13 @@ export const WhiteIronGreatsword = card(311301)
 export const SacrificialGreatsword = card(311302)
   .costSame(3)
   .weapon("claymore")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("elemental"))
+  .usagePerRound(1)
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+  })
   .done();
 
 /**
@@ -38,6 +45,14 @@ export const SacrificialGreatsword = card(311302)
 export const WolfsGravestone = card(311303)
   .costSame(3)
   .weapon("claymore")
+  .on("modifySkillDamage")
+  .do((c, e) => {
+    if (c.of(e.target).health <= 6) {
+      e.increaseDamage(3);
+    } else {
+      e.increaseDamage(1);
+    }
+  })
   // TODO
   .done();
 
@@ -52,7 +67,21 @@ export const WolfsGravestone = card(311303)
 export const SkywardPride = card(311304)
   .costSame(3)
   .weapon("claymore")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usagePerRound(1)
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 121013
+ * @name 叛逆的守护
+ * @description
+ * 提供1点护盾，保护我方出战角色。（可叠加，最多叠加到2点）
+ */
+const RebelliousShield = status(121013)
+  .shield(1, 2)
   .done();
 
 /**
@@ -66,7 +95,34 @@ export const SkywardPride = card(311304)
 export const TheBell = card(311305)
   .costSame(3)
   .weapon("claymore")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill")
+  .characterStatus(RebelliousShield)
+  .done();
+
+/**
+ * @id 301105
+ * @name 沙海守望·主动出击
+ * @description
+ * 本回合内，所附属角色下次造成的伤害额外+1。
+ */
+const DesertWatchTakeTheInitiative = status(301105)
+  .oneDuration()
+  .once("modifySkillDamage")
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 301106
+ * @name 沙海守望·攻势防御
+ * @description
+ * 本回合内，所附属角色下次造成的伤害额外+1。
+ */
+const DesertWatchOffensiveDefense = status(301106)
+  .oneDuration()
+  .once("modifySkillDamage")
+  .increaseDamage(1)
   .done();
 
 /**
@@ -81,5 +137,10 @@ export const TheBell = card(311305)
 export const BeaconOfTheReedSea = card(311306)
   .costSame(3)
   .weapon("claymore")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill")
+  .characterStatus(DesertWatchTakeTheInitiative)
+  .on("damaged")
+  .characterStatus(DesertWatchOffensiveDefense)
   .done();

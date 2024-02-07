@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311501
@@ -10,7 +10,8 @@ import { card } from "@gi-tcg/core/builder";
 export const TravelersHandySword = card(311501)
   .costSame(2)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
   .done();
 
 /**
@@ -24,7 +25,13 @@ export const TravelersHandySword = card(311501)
 export const SacrificialSword = card(311502)
   .costSame(3)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("elemental"))
+  .usagePerRound(1)
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+  })
   .done();
 
 /**
@@ -38,7 +45,13 @@ export const SacrificialSword = card(311502)
 export const AquilaFavonia = card(311503)
   .costSame(3)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => !c.of<"character">(e.action.skill.caller).isMine())
+  .listenToAll()
+  .usagePerRound(2)
+  .if((c) => c.self.master().isActive())
+  .heal(1, "@master")
   .done();
 
 /**
@@ -52,7 +65,11 @@ export const AquilaFavonia = card(311503)
 export const SkywardBlade = card(311504)
   .costSame(3)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usagePerRound(1)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -66,7 +83,11 @@ export const SkywardBlade = card(311504)
 export const FavoniusSword = card(311505)
   .costSame(3)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("elemental"))
+  .usagePerRound(1)
+  .gainEnergy(1, "@master")
   .done();
 
 /**
@@ -80,7 +101,25 @@ export const FavoniusSword = card(311505)
 export const LightOfFoliarIncision = card(311506)
   .costSame(3)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usagePerRound(2)
+  .generateDice("randomElement", 1)
+  .done();
+
+/**
+ * @id 301107
+ * @name 原木刀（生效中）
+ * @description
+ * 角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。
+ */
+export const SapwoodBladeStatus = status(301107)
+  .oneDuration()
+  .once("useSkill", (c, e) => e.isSkillType("normal"))
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 2);
+  })
   .done();
 
 /**
@@ -94,5 +133,8 @@ export const LightOfFoliarIncision = card(311506)
 export const SapwoodBlade = card(311507)
   .costVoid(3)
   .weapon("sword")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter")
+  .characterStatus(SapwoodBladeStatus, "@master")
   .done();

@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card, combatStatus, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311201
@@ -10,7 +10,8 @@ import { card } from "@gi-tcg/core/builder";
 export const RavenBow = card(311201)
   .costSame(2)
   .weapon("bow")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
   .done();
 
 /**
@@ -24,7 +25,13 @@ export const RavenBow = card(311201)
 export const SacrificialBow = card(311202)
   .costSame(3)
   .weapon("bow")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("elemental"))
+  .usagePerRound(1)
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 1);
+  })
   .done();
 
 /**
@@ -38,7 +45,11 @@ export const SacrificialBow = card(311202)
 export const SkywardHarp = card(311203)
   .costSame(3)
   .weapon("bow")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usagePerRound(1)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -52,7 +63,24 @@ export const SkywardHarp = card(311203)
 export const AmosBow = card(311204)
   .costSame(3)
   .weapon("bow")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => e.via.definition.requiredCost.length >= 5)
+  .usagePerRound(1)
+  .increaseDamage(2)
+  .done();
+
+/**
+ * @id 301102
+ * @name 千年的大乐章·别离之歌
+ * @description
+ * 我方角色造成的伤害+1。
+ * 持续回合：2
+ */
+const MillennialMovementFarewellSong = combatStatus(301102)
+  .duration(2)
+  .on("modifySkillDamage")
+  .increaseDamage(1)
   .done();
 
 /**
@@ -66,7 +94,22 @@ export const AmosBow = card(311204)
 export const ElegyForTheEnd = card(311205)
   .costSame(3)
   .weapon("bow")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("burst"))
+  .combatStatus(MillennialMovementFarewellSong)
+  .done();
+
+/**
+ * @id 301103
+ * @name 王下近侍（生效中）
+ * @description
+ * 角色在本回合中，下次使用「元素战技」或装备「天赋」时：少花费2个元素骰。
+ */
+export const KingsSquireStatus = status(301103)
+  .oneDuration()
+  .once("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -80,5 +123,8 @@ export const ElegyForTheEnd = card(311205)
 export const KingsSquire = card(311206)
   .costSame(3)
   .weapon("bow")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter")
+  .characterStatus(KingsSquireStatus, "@master")
   .done();

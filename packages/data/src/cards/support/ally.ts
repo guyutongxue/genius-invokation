@@ -182,12 +182,10 @@ export const ChangTheNinth = card(322009)
   .variable("inspiration", 0)
   .variable("hasInspiration", 0, { visible: false })
   .variable("currentSkill", 0, { visible: false })
-  .on("modifyAction")
+  .on("deductDiceSkill")
   .listenToAll()
   .do((c, e) => {
-    if (e.action.type === "useSkill") {
-      c.setVariable("currentSkill", e.action.skill.definition.id);
-    }
+    c.setVariable("currentSkill", e.action.skill.definition.id);
   })
   .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
     (e.type === DamageType.Physical || e.type === DamageType.Piercing))
@@ -220,19 +218,12 @@ export const ChangTheNinth = card(322009)
 export const Ellin = card(322010)
   .costSame(2)
   .support("ally")
-  .on("modifyAction", (c, e) => {
-    const { action, cost } = e;
-    if (action.type !== "useSkill") {
-      return false;
-    }
-    if (cost.length === 0) {
-      return false;
-    }
+  .on("deductDiceSkill", (c, e) => {
     const used = c.state.globalActionLog.find(
       (log) => log.roundNumber === c.state.roundNumber &&
         log.who === e.who &&
         log.action.type === "useSkill" &&
-        log.action.skill.definition.id === action.skill.definition.id);
+        log.action.skill.definition.id === e.action.skill.definition.id);
     return !!used;
   })
   .usagePerRound(1)

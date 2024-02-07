@@ -276,6 +276,19 @@ export class ModifyActionEventArg<
   canDeductCostOfType(diceType: DiceType) {
     return this.action.cost.includes(diceType);
   }
+  isSkillOrTalentOf(character: CharacterState) {
+    if (this.action.type === "useSkill") {
+      const skillDefId = this.action.skill.definition.id;
+      return !!character.definition.initiativeSkills.find(
+        (def) => def.id === skillDefId,
+      );
+    } else if (this.action.type === "playCard") {
+      return (
+        this.action.card.definition.tags.includes("talent") &&
+        this.action.targets.find((target) => target.id === character.id)
+      );
+    }
+  }
 
   addCost(type: DiceType, count: number) {
     this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) add ${count} diceType(${type}) to cost.\n`;

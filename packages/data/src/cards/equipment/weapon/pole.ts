@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311401
@@ -10,7 +10,17 @@ import { card } from "@gi-tcg/core/builder";
 export const WhiteTassel = card(311401)
   .costSame(2)
   .weapon("pole")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 301101
+ * @name 千岩之护
+ * 根据「璃月」角色的数量提供护盾，保护所附属的角色。
+ */
+export const LithicGuard = status(301101)
+  .shield(0)
   .done();
 
 /**
@@ -24,7 +34,17 @@ export const WhiteTassel = card(311401)
 export const LithicSpear = card(311402)
   .costSame(3)
   .weapon("pole")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter")
+  .do((c) => {
+    const liyueCount = c.$$(`my characters include defeated with tag (liyue)`).length;
+    if (liyueCount > 0) {
+      c.characterStatus(LithicGuard, "@master");
+      const st = c.$(`status with definition id ${LithicGuard} at @master`)!;
+      st.setVariable("shield", Math.min(liyueCount, 3));
+    }
+  })
   .done();
 
 /**
@@ -38,7 +58,11 @@ export const LithicSpear = card(311402)
 export const SkywardSpine = card(311403)
   .costSame(3)
   .weapon("pole")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usagePerRound(1)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -53,7 +77,20 @@ export const SkywardSpine = card(311403)
 export const VortexVanquisher = card(311404)
   .costSame(3)
   .weapon("pole")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("modifySkillDamage", (c, e) => {
+    return !!c.$("(my combat statuses with tag (shield)) or status with tag (shield) at @master");
+  })
+  .increaseDamage(1)
+  .on("useSkill")
+  .usagePerRound(1)
+  .do((c) => {
+    const shieldCombatStatus = c.$("my combat status with tag (shield)");
+    if (shieldCombatStatus) {
+      shieldCombatStatus.addVariable("shield", 1)
+    }
+  })
   .done();
 
 /**
@@ -67,7 +104,24 @@ export const VortexVanquisher = card(311404)
 export const EngulfingLightning = card(311405)
   .costSame(3)
   .weapon("pole")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter", (c) => c.self.master().energy === 0)
+  .gainEnergy(1, "@master")
+  .on("actionPhase", (c) => c.self.master().energy === 0)
+  .gainEnergy(1, "@master")
+  .done();
+
+/**
+ * @id 301104
+ * @name 贯月矢（生效中）
+ * @description
+ * 角色在本回合中，下次使用「元素战技」或装备「天赋」时：少花费2个元素骰。
+ */
+export const MoonpiercerStatus = status(301104)
+  .oneDuration()
+  .once("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -81,7 +135,10 @@ export const EngulfingLightning = card(311405)
 export const Moonpiercer = card(311406)
   .costSame(3)
   .weapon("pole")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter")
+  .characterStatus(MoonpiercerStatus, "@master")
   .done();
 
 /**
@@ -95,5 +152,17 @@ export const Moonpiercer = card(311406)
 export const PrimordialJadeWingedspear = card(311407)
   .costSame(3)
   .weapon("pole")
-  // TODO
+  .variable("extraDamage", 1)
+  .on("actionPhase")
+  .setVariable("extraDamage", 0)
+  .on("modifySkillDamage")
+  .do((c, e) => {
+    e.increaseDamage(c.getVariable("extraDamage"));
+  })
+  .on("useSkill")
+  .do((c, e) => {
+    if (c.getVariable("extraDamage") < 3) {
+      c.addVariable("extraDamage", 1);
+    }
+  })
   .done();

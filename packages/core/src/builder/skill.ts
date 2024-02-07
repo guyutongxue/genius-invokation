@@ -153,6 +153,9 @@ const detailedEventDictionary = {
   modifyAction: defineDescriptor("modifyAction", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
+  deductDice: defineDescriptor("modifyAction", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r) && e.canDeductCost();
+  }),
   deductDiceSwitch: defineDescriptor("modifyAction", (c, e, r) => {
     return (
       checkRelative(c.state, { who: e.who }, r) &&
@@ -173,18 +176,6 @@ const detailedEventDictionary = {
       e.isUseSkill() &&
       e.canDeductCost()
     );
-  }),
-  deductDiceSkillOrTalent: defineDescriptor("modifyAction", (c, e, r) => {
-    if (e.action.type === "useSkill") {
-      return checkRelative(c.state, e.action.skill.caller.id, r);
-    } else if (
-      e.action.type === "playCard" &&
-      e.action.card.definition.tags.includes("talent")
-    ) {
-      return checkRelative(c.state, { who: e.who }, r);
-    } else {
-      return false;
-    }
   }),
   beforeFastSwitch: defineDescriptor("modifyAction", (c, e, r) => {
     return (
@@ -293,7 +284,6 @@ type OverrideEventArgType = {
   deductDiceSwitch: ModifyActionEventArg<SwitchActiveInfo>;
   deductDiceCard: ModifyActionEventArg<PlayCardInfo>;
   deductDiceSkill: ModifyActionEventArg<UseSkillInfo>;
-  deductDiceSkillOrTalent: ModifyActionEventArg<UseSkillInfo | PlayCardInfo>;
   playCard: ActionEventArg<PlayCardInfo>;
   useSkill: ActionEventArg<UseSkillInfo>;
 };
