@@ -21,13 +21,12 @@ function getPlayerConfig(shareCode: string): PlayerConfig {
 export function App() {
   const [started, setStarted] = createSignal(false);
   const [deck0, setDeck0] = createSignal(
-    "AbAw+gkPAsBQ/dsPDeGhAToQDiHQA/EQD0EgBfMQD2FAB/UQD4FgO/cTD8GAPfkND9AA",
+    "AVCg3jUPA0Bw9ZUPCVCw9qMPCoBw+KgPDNEgCMIQDKFgCsYQDLGQC8kQDeEQDtEQDfAA",
   );
-  //"AVCg3jUPA0Bw9ZUPCVCw9qMPCoBw+KgPDNEgCMIQDKFgCsYQDLGQC8kQDeEQDtEQDfAA"
   const [deck1, setDeck1] = createSignal(
-    "AbAw+gkPAsBQ/dsPDeGhAToQDiHQA/EQD0EgBfMQD2FAB/UQD4FgO/cTD8GAPfkND9AA",
+    "AeFB8ggQAxEB85gQCkFx9b4QDVEh9skQDWGR+coQDdLRA9wRDqLxDOARD7IBD+ERD+EB",
   );
-  //"AeFB8ggQAxEB85gQCkFx9b4QDVEh9skQDWGR+coQDdLRA9wRDqLxDOARD7IBD+ERD+EB"
+  
   const [io0, Chessboard0] = createPlayer(0);
   const [io1, Chessboard1] = createPlayer(1);
 
@@ -35,7 +34,7 @@ export function App() {
     const playerConfig0 = getPlayerConfig(deck0());
     const playerConfig1 = getPlayerConfig(deck1());
     const io: GameIO = {
-      pause: async () => {},
+      pause: () => new Promise((resolve) => setTimeout(resolve, 500)),
       players: [io0, io1],
     };
     startGame({

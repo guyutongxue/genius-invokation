@@ -468,7 +468,8 @@ export class TriggeredSkillBuilder<
       );
     };
   }
-  private _usageOpt: Omit<Required<UsageOptions>, `recreate_${string}`>  | null = null;
+  private _usageOpt: Omit<Required<UsageOptions>, `recreate_${string}`> | null =
+    null;
   private _listenTo: ListenTo = ListenTo.SameArea;
 
   /**
@@ -499,7 +500,7 @@ export class TriggeredSkillBuilder<
     const perRound = opt?.perRound ?? false;
     const name =
       opt?.name ??
-      ("usage" in this.parent._constants ? `usage_${this.id}` : "usage");
+      (isFinite(this.parent._constants.usage) ? `usage_${this.id}` : "usage");
     this.parent.variable(name, count, {
       ...opt,
       recreateMax: opt?.recreateMax ?? count,
