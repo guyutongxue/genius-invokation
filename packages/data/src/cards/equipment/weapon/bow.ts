@@ -47,7 +47,7 @@ export const SkywardHarp = card(311203)
   .weapon("bow")
   .on("modifySkillDamage")
   .increaseDamage(1)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .usagePerRound(1)
   .increaseDamage(1)
   .done();

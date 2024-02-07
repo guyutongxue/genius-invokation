@@ -21,7 +21,7 @@ export const AutumnWhirlwind = summon(115052)
  * 角色使用技能后：移除此效果。
  */
 export const MidareRanzan = status(115051)
-  .on("modifySkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
   .changeDamageType(DamageType.Anemo)
   .increaseDamage(1)
   .on("useSkill")
@@ -36,7 +36,7 @@ export const MidareRanzan = status(115051)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanCryo = status(115053)
-  .on("modifySkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
   .changeDamageType(DamageType.Cryo)
   .increaseDamage(1)
   .on("useSkill")
@@ -51,7 +51,7 @@ export const MidareRanzanCryo = status(115053)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanElectro = status(115056)
-  .on("modifySkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
   .changeDamageType(DamageType.Electro)
   .increaseDamage(1)
   .on("useSkill")
@@ -66,7 +66,7 @@ export const MidareRanzanElectro = status(115056)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanHydro = status(115054)
-  .on("modifySkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
   .changeDamageType(DamageType.Hydro)
   .increaseDamage(1)
   .on("useSkill")
@@ -81,7 +81,7 @@ export const MidareRanzanHydro = status(115054)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanPyro = status(115055)
-  .on("modifySkillDamageType", (c) => c.player.canPlunging)
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
   .changeDamageType(DamageType.Pyro)
   .increaseDamage(1)
   .on("useSkill")

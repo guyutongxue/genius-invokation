@@ -116,5 +116,6 @@ export const MaguuKenki = character(2501)
 export const TranscendentAutomaton = card(225011)
   .costAnemo(3)
   .talent(MaguuKenki)
-  // TODO
+  .on("enter")
+  .useSkill(BlusteringBlade)
   .done();

@@ -23,7 +23,7 @@ export const Descent = status(115062)
  * 可用次数：2
  */
 export const Windfavored = status(115061)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .usage(2)
   .increaseDamage(2)
   .done();
@@ -105,8 +105,6 @@ export const GalesOfReverie = card(215061)
   .talent(Wanderer)
   .on("enter")
   .useSkill(HanegaSongOfTheWind)
-  .on("dealDamage", (c, e) => c.self.master().hasStatus(Windfavored) &&
-    e.via.definition.skillType === "normal" &&
-    c.player.canCharged)
+  .on("dealDamage", (c, e) => c.self.master().hasStatus(Windfavored) && e.via.charged)
   .characterStatus(Descent)
   .done();

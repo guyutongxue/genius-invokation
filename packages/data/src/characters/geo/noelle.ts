@@ -15,7 +15,7 @@ export const SweepingTimeStatus = status(116022)
   .deductCost(DiceType.Geo, 1)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Geo)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(2)
   .done();
 

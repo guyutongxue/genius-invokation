@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 113062
@@ -9,7 +9,11 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  */
 export const ExplosiveSpark01 = status(113062)
   .conflictWith(113061)
-  // TODO
+  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
+  .deductCost(DiceType.Pyro, 1)
+  .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
+  .usage(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -21,7 +25,11 @@ export const ExplosiveSpark01 = status(113062)
  */
 export const ExplosiveSpark = status(113061)
   .conflictWith(113062)
-  // TODO
+  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
+  .deductCost(DiceType.Pyro, 1)
+  .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
+  .usage(1)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -32,7 +40,9 @@ export const ExplosiveSpark = status(113061)
  * 可用次数：2
  */
 export const SparksNSplashStatus = combatStatus(113063)
-  // TODO
+  .on("useSkill")
+  .usage(2)
+  .damage(DamageType.Pyro, 2, "my active")
   .done();
 
 /**
@@ -45,7 +55,7 @@ export const Kaboom = skill(13061)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -54,10 +64,14 @@ export const Kaboom = skill(13061)
  * @description
  * 造成3点火元素伤害，本角色附属爆裂火花。
  */
-export const JumpyDumpty = skill(13062)
+export const JumpyDumpty: SkillHandle = skill(13062)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .if((c) => c.self.hasEquipment(PoundingSurprise))
+  .characterStatus(ExplosiveSpark01)
+  .else()
+  .characterStatus(ExplosiveSpark)
   .done();
 
 /**
@@ -70,7 +84,8 @@ export const SparksNSplash = skill(13063)
   .type("burst")
   .costPyro(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .combatStatus(SparksNSplashStatus, "opp")
   .done();
 
 /**
@@ -98,5 +113,6 @@ export const Klee = character(1306)
 export const PoundingSurprise = card(213061)
   .costPyro(3)
   .talent(Klee)
-  // TODO
+  .on("enter")
+  .useSkill(JumpyDumpty)
   .done();

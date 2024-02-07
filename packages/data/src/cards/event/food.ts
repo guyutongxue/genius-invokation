@@ -11,7 +11,7 @@ import { Satiated } from "../../commons";
 export const JueyunGuoba = card(333001)
   .food()
   .toStatus("@targets.0")
-  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -26,7 +26,7 @@ export const AdeptusTemptation = card(333002)
   .costVoid(2)
   .food()
   .toStatus("@targets.0")
-  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("burst"))
+  .once("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
   .increaseDamage(3)
   .done();
 
@@ -158,7 +158,7 @@ export const SashimiPlatter = card(333010)
   .food()
   .toStatus("@targets.0")
   .oneDuration()
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -173,7 +173,7 @@ export const TandooriRoastChicken = card(333011)
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters")
-  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("elemental"))
+  .once("modifySkillDamage", (c, e) => e.viaSkillType("elemental"))
   .increaseDamage(2)
   .done();
 

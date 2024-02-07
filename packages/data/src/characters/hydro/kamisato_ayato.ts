@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, StatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112062
@@ -9,7 +9,10 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 此召唤物在场时：我方角色「普通攻击」造成的伤害+1。
  */
 export const GardenOfPurity = summon(112062)
-  // TODO
+  .endPhaseDamage(DamageType.Hydro, 2)
+  .usage(2)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
   .done();
 
 /**
@@ -19,8 +22,15 @@ export const GardenOfPurity = summon(112062)
  * 所附属角色普通攻击造成的伤害+1，造成的物理伤害变为水元素伤害。
  * 可用次数：3
  */
-export const TakimeguriKanka = status(112061)
-  // TODO
+export const TakimeguriKanka: StatusHandle = status(112061)
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Hydro)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .usage(3)
+  .if((c, e) => c.self.master().hasEquipment(KyoukaFuushi) && c.of(e.target).health <= 6)
+  .increaseDamage(2)
+  .else()
+  .increaseDamage(1)
   .done();
 
 /**
@@ -33,7 +43,7 @@ export const KamisatoArtMarobashi = skill(12061)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -45,7 +55,8 @@ export const KamisatoArtMarobashi = skill(12061)
 export const KamisatoArtKyouka = skill(12062)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .characterStatus(TakimeguriKanka)
   .done();
 
 /**
@@ -58,7 +69,8 @@ export const KamisatoArtSuiyuu = skill(12063)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 1)
+  .summon(GardenOfPurity)
   .done();
 
 /**
@@ -86,5 +98,6 @@ export const KamisatoAyato = character(1206)
 export const KyoukaFuushi = card(212061)
   .costHydro(3)
   .talent(KamisatoAyato)
-  // TODO
+  .on("enter")
+  .useSkill(KamisatoArtKyouka)
   .done();

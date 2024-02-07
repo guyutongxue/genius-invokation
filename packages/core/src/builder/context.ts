@@ -127,6 +127,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
         definition: s,
         fromCard: null,
         requestBy: null,
+        charged: false,
+        plunging: false,
       }));
     for (const info of infos) {
       arg._currentSkillInfo = info;

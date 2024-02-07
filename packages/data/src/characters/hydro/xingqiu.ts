@@ -1,4 +1,4 @@
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112022
@@ -8,7 +8,9 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 可用次数：3
  */
 export const RainbowBladework = combatStatus(112022)
-  // TODO
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usage(3)
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -20,7 +22,9 @@ export const RainbowBladework = combatStatus(112022)
  */
 export const RainSword01 = combatStatus(112023)
   .conflictWith(112021)
-  // TODO
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 2)
+  .usage(3)
+  .decreaseDamage(1)
   .done();
 
 /**
@@ -32,7 +36,9 @@ export const RainSword01 = combatStatus(112023)
  */
 export const RainSword = combatStatus(112021)
   .conflictWith(112023)
-  // TODO
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 3)
+  .usage(2)
+  .decreaseDamage(1)
   .done();
 
 /**
@@ -45,7 +51,7 @@ export const GuhuaStyle = skill(12021)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -54,10 +60,15 @@ export const GuhuaStyle = skill(12021)
  * @description
  * 造成2点水元素伤害，本角色附着水元素，生成雨帘剑。
  */
-export const FatalRainscreen = skill(12022)
+export const FatalRainscreen: SkillHandle = skill(12022)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .apply(DamageType.Hydro, "@self")
+  .if((c) => c.self.hasEquipment(TheScentRemained))
+  .combatStatus(RainSword01)
+  .else()
+  .combatStatus(RainSword)
   .done();
 
 /**
@@ -70,7 +81,9 @@ export const Raincutter = skill(12023)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .apply(DamageType.Hydro, "@self")
+  .combatStatus(RainbowBladework)
   .done();
 
 /**
@@ -98,5 +111,6 @@ export const Xingqiu = character(1202)
 export const TheScentRemained = card(212021)
   .costHydro(3)
   .talent(Xingqiu)
-  // TODO
+  .on("enter")
+  .useSkill(FatalRainscreen)
   .done();

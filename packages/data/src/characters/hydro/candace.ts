@@ -37,7 +37,7 @@ export const HeronShield = status(112071)
 export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
   .conflictWith(112072)
   .duration(2)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("modifyDamageType", (c) => {
     const { type, tags } = c.skillInfo.caller.definition;
@@ -65,7 +65,7 @@ export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
 export const PrayerOfTheCrimsonCrown = combatStatus(112072)
   .conflictWith(112073)
   .duration(2)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("modifyDamageType", (c) => {
     const { type, tags } = c.skillInfo.caller.definition;

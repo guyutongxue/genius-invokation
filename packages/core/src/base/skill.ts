@@ -51,6 +51,8 @@ export interface SkillInfo {
    * 则此字段指定上述技能的 `SkillInfo`
    */
   readonly requestBy: SkillInfo | null;
+  readonly charged: boolean;
+  readonly plunging: boolean;
 }
 
 export interface DamageInfo {
@@ -214,6 +216,12 @@ export class ActionEventArg<
       return false;
     }
   }
+  isChargedAttack(): this is ActionEventArg<UseSkillInfo> {
+    return this.isUseSkill() && this.action.skill.charged;
+  }
+  isPlungingAttack(): this is ActionEventArg<UseSkillInfo> {
+    return this.isUseSkill() && this.action.skill.plunging;
+  }
   hasCardTag(tag: CardTag) {
     if (this.action.type === "playCard") {
       return this.action.card.definition.tags.includes(tag);
@@ -358,8 +366,14 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
     | null {
     return isReactionSwirl(this.damageInfo);
   }
-  isSourceSkillType(skillType: CommonSkillType): boolean {
+  viaSkillType(skillType: CommonSkillType): boolean {
     return this.via.definition.skillType === skillType;
+  }
+  viaChargedAttack(): boolean {
+    return this.via.charged;
+  }
+  viaPlungingAttack(): boolean {
+    return this.via.plunging;
   }
   log() {
     return this.damageInfo.log ?? "";

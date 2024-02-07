@@ -1,4 +1,4 @@
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 112082
@@ -9,7 +9,20 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 我方宣布结束时：如果此牌的可用次数至少为2，则造成2点草元素伤害。（需消耗可用次数）
  */
 export const BountifulCore = summon(112082)
-  // TODO
+  .hintIcon(DamageType.Dendro)
+  .hintText("2")
+  .on("endPhase")
+  .usage(1, { recreateMax: 3 })
+  .if((c) => c.$(`my equipment with definition id ${TheStarrySkiesTheirFlowersRain}`))
+  .damage(DamageType.Dendro, 3)
+  .else()
+  .damage(DamageType.Dendro, 2)
+  .on("declareEnd", (c) => c.getVariable("usage") >= 2)
+  .if((c) => c.$(`my equipment with definition id ${TheStarrySkiesTheirFlowersRain}`))
+  .damage(DamageType.Dendro, 3)
+  .else()
+  .damage(DamageType.Dendro, 2)
+  .addVariable("usage", -1)
   .done();
 
 /**
@@ -20,7 +33,9 @@ export const BountifulCore = summon(112082)
  * 可用次数：1
  */
 export const LingeringAeon = status(112083)
-  // TODO
+  .on("endPhase")
+  .usage(1)
+  .damage(DamageType.Hydro, 3, "@master")
   .done();
 
 /**
@@ -30,8 +45,7 @@ export const LingeringAeon = status(112083)
  * 敌方角色受到绽放反应时：我方不再生成草原核，而是改为召唤丰穰之核。
  */
 export const GoldenChalicesBounty = combatStatus(112081)
-  // TODO
-  .done();
+  .done(); // 相关处理在绽放的代码里
 
 /**
  * @id 12081
@@ -43,7 +57,7 @@ export const DanceOfSamser = skill(12081)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -55,7 +69,13 @@ export const DanceOfSamser = skill(12081)
 export const DanceOfHaftkarsvar = skill(12082)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 3)
+  .do((c) => {
+    const elements = new Set(c.$$(`all my characters include defeated`).map((c) => c.element()));
+    if (elements.size === 2 && elements.has(DiceType.Hydro) && elements.has(DiceType.Dendro)) {
+      c.combatStatus(GoldenChalicesBounty);
+    }
+  })
   .done();
 
 /**
@@ -68,7 +88,8 @@ export const DanceOfAbzendegiDistantDreamsListeningSpring = skill(12083)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .characterStatus(LingeringAeon, "opp active")
   .done();
 
 /**
@@ -96,5 +117,6 @@ export const Nilou = character(1208)
 export const TheStarrySkiesTheirFlowersRain = card(212081)
   .costHydro(3)
   .talent(Nilou)
-  // TODO
+  .on("enter")
+  .useSkill(DanceOfHaftkarsvar)
   .done();

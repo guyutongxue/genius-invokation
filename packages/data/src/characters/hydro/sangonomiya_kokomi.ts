@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, SummonHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112051
@@ -7,8 +7,16 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：造成1点水元素伤害，治疗我方出战角色1点。
  * 可用次数：2
  */
-export const BakeKurage = summon(112051)
-  // TODO
+export const BakeKurage: SummonHandle = summon(112051)
+  .hintIcon(DamageType.Hydro)
+  .hintText("1")
+  .on("endPhase")
+  .usage(2)
+  .if((c) => c.$(`my equipment with definition id ${TamakushiCasket}`))
+  .damage(DamageType.Hydro, 2)
+  .else()
+  .damage(DamageType.Hydro, 1)
+  .heal(1, "my active")
   .done();
 
 /**
@@ -20,7 +28,11 @@ export const BakeKurage = summon(112051)
  * 持续回合：2
  */
 export const CeremonialGarment = status(112052)
-  // TODO
+  .duration(2)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .heal(1, "all my characters")
   .done();
 
 /**
@@ -33,7 +45,7 @@ export const TheShapeOfWater = skill(12051)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -45,7 +57,8 @@ export const TheShapeOfWater = skill(12051)
 export const KuragesOath = skill(12052)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .apply(DamageType.Hydro, "@self")
+  .summon(BakeKurage)
   .done();
 
 /**
@@ -58,7 +71,20 @@ export const NereidsAscension = skill(12053)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Hydro, 2);
+    c.heal(1, "all my characters");
+    c.characterStatus(CeremonialGarment);
+    if (c.self.hasEquipment(TamakushiCasket)) {
+      let summon = c.$(`my summon with definition id ${BakeKurage}`);
+      if (summon) {
+        summon.addVariable("usage", 1);
+      } else {
+        summon = c.createEntity("summon", BakeKurage)!;
+        summon.setVariable("usage", 1);
+      }
+    }
+  })
   .done();
 
 /**
@@ -88,5 +114,6 @@ export const TamakushiCasket = card(212051)
   .costHydro(3)
   .costEnergy(2)
   .talent(SangonomiyaKokomi)
-  // TODO
+  .on("enter")
+  .useSkill(NereidsAscension)
   .done();

@@ -1,4 +1,4 @@
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 113111
@@ -7,7 +7,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 为我方出战角色提供1点护盾。（可叠加，最多叠加到3点）
  */
 export const BlazingBarrier = combatStatus(113111)
-  // TODO
+  .shield(1, 3)
   .done();
 
 /**
@@ -19,7 +19,10 @@ export const BlazingBarrier = combatStatus(113111)
  */
 export const ScorchingOoyoroi01 = combatStatus(113113)
   .conflictWith(113112)
-  // TODO
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usage(3)
+  .damage(DamageType.Pyro, 1)
+  .combatStatus(BlazingBarrier)
   .done();
 
 /**
@@ -31,7 +34,10 @@ export const ScorchingOoyoroi01 = combatStatus(113113)
  */
 export const ScorchingOoyoroi = combatStatus(113112)
   .conflictWith(113113)
-  // TODO
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usage(2)
+  .damage(DamageType.Pyro, 1)
+  .combatStatus(BlazingBarrier)
   .done();
 
 /**
@@ -44,7 +50,7 @@ export const SwiftshatterSpear = skill(13111)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -56,7 +62,8 @@ export const SwiftshatterSpear = skill(13111)
 export const BlazingBlessing = skill(13112)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 2)
+  .combatStatus(BlazingBarrier)
   .done();
 
 /**
@@ -65,11 +72,16 @@ export const BlazingBlessing = skill(13112)
  * @description
  * 造成2点火元素伤害，生成烈烧佑命护盾和炽火大铠。
  */
-export const CrimsonOoyoroi = skill(13113)
+export const CrimsonOoyoroi: SkillHandle = skill(13113)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 2)
+  .combatStatus(BlazingBarrier)
+  .if((c) => c.self.hasEquipment(ASubordinatesSkills))
+  .combatStatus(ScorchingOoyoroi01)
+  .else()
+  .combatStatus(ScorchingOoyoroi)
   .done();
 
 /**
@@ -98,5 +110,6 @@ export const ASubordinatesSkills = card(213111)
   .costPyro(3)
   .costEnergy(2)
   .talent(Thoma)
-  // TODO
+  .on("enter")
+  .useSkill(CrimsonOoyoroi)
   .done();

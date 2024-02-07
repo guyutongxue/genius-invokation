@@ -183,6 +183,8 @@ export function hasReplacedAction(player: PlayerState): SkillInfo | null {
     definition: definition as SkillDefinition,
     requestBy: null,
     fromCard: null,
+    charged: false,
+    plunging: false,
   };
 }
 

@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/co
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 export const ScarletSeal = status(113081)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canCharged)
+  .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
   .usage(1, { recreateMax: 2 })
   .increaseDamage(2)
   .done();
@@ -23,7 +23,7 @@ export const ScarletSeal = status(113081)
  */
 export const Brilliance = status(113082)
   .duration(2)
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.canCharged && e.canDeductCostOfType(DiceType.Pyro))
+  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
   .usagePerRound(1)
   .deductCost(DiceType.Pyro, 1)
   .on("endPhase")
@@ -100,7 +100,7 @@ export const RightOfFinalInterpretation = card(213081)
   .variable("triggerSeal", 0)
   .on("enter")
   .useSkill(SealOfApproval)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canCharged && c.of(e.target).health <= 6)
+  .on("modifySkillDamage", (c, e) => e.viaChargedAttack() && c.of(e.target).health <= 6)
   .increaseDamage(1)
   .if((c) => c.self.master().hasStatus(ScarletSeal))
   .setVariable("triggerSeal", 1)

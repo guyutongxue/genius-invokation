@@ -20,17 +20,11 @@ export const ClusterbloomArrow = summon(117022)
  * 可用次数：2
  */
 export const VijnanaSuffusion = status(117021)
-  .variable("doSummon", 0, { visible: false })
-  .on("modifySkillDamageType", (c, e) =>
-    e.isSourceSkillType("normal") && 
-    c.player.canCharged && 
-    e.type === DamageType.Physical)
+  .on("modifySkillDamageType", (c, e) => e.viaChargedAttack() && e.type === DamageType.Physical)
   .usage(2)
   .changeDamageType(DamageType.Dendro)
-  .setVariable("doSummon", 1)
-  .on("useSkill", (c) => c.getVariable("doSummon"))
+  .on("useSkill", (c, e) => e.isChargedAttack())
   .summon(ClusterbloomArrow)
-  .setVariable("doSummon", 0)
   .done();
 
 /**
@@ -102,8 +96,7 @@ export const KeenSight = card(217021)
   .useSkill(VijnanaphalaMine)
   .on("deductDiceSkill", (c, e) => 
     c.self.master().hasStatus(VijnanaSuffusion) && 
-    e.isSkillType("normal") &&
-    c.player.canCharged &&
+    e.isChargedAttack() &&
     e.canDeductCostOfType(DiceType.Void))
   .deductCost(DiceType.Void, 1)
   .done();

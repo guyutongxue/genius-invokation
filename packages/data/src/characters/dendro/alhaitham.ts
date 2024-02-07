@@ -14,7 +14,7 @@ export const ChisellightMirror = status(117061)
   .changeDamageType(DamageType.Dendro)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .damage(DamageType.Dendro, 1)
-  .on("useSkill", (c, e) => e.isSkillType("normal") && c.player.canCharged)
+  .on("useSkill", (c, e) => e.isChargedAttack())
   .addVariable("duration", 1)
   .done();
 

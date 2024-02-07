@@ -346,7 +346,7 @@ export const EmblemOfSeveredFate = card(312008)
   .on("useSkill", (c, e) => e.action.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
   .listenToPlayer()
   .gainEnergy(1, "@master")
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("burst"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
   .usagePerRound(1)
   .increaseDamage(2)
   .done();
@@ -418,7 +418,7 @@ export const ThunderingPoise = card(312011)
  */
 const VermillionHereafterEffect = status(301203)
   .oneDuration()
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -471,7 +471,7 @@ export const ShimenawasReminiscence = card(312014)
   .deductCost(DiceType.Omni, 1)
   .on("modifySkillDamage", (c, e) =>
     c.self.master().energy >= 2 &&
-    (e.isSourceSkillType("normal") || e.isSourceSkillType("elemental")))
+    (e.viaSkillType("normal") || e.viaSkillType("elemental")))
   .increaseDamage(1)
   .done();
 

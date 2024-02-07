@@ -62,7 +62,7 @@ export const SkywardSpine = card(311403)
   .weapon("pole")
   .on("modifySkillDamage")
   .increaseDamage(1)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .usagePerRound(1)
   .increaseDamage(1)
   .done();

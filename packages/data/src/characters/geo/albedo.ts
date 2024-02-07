@@ -11,7 +11,7 @@ import { character, skill, summon, card, DamageType, DiceType } from "@gi-tcg/co
 export const SolarIsotoma = summon(116041)
   .endPhaseDamage(DamageType.Geo, 1)
   .usage(3)
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.canPlunging && e.canDeductCostOfType(DiceType.Void))
+  .on("deductDiceSkill", (c, e) => e.isPlungingAttack() && e.canDeductCostOfType(DiceType.Void))
   .usagePerRound(1)
   .deductCost(DiceType.Void, 1)
   .done();
@@ -86,8 +86,7 @@ export const DescentOfDivinity = card(216041)
   .useSkill(AbiogenesisSolarIsotoma)
   .on("modifySkillDamage", (c, e) =>
     c.$(`my summons with definition id ${SolarIsotoma}`) &&
-    e.isSourceSkillType("normal") &&
-    c.player.canPlunging)
+    e.viaPlungingAttack())
   .listenToPlayer()
   .increaseDamage(1)
   .done();

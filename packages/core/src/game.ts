@@ -170,7 +170,6 @@ export class Game {
       supports: [],
       declaredEnd: false,
       canPlunging: false,
-      canCharged: false,
       hasDefeated: false,
       legendUsed: false,
       skipNextTurn: false,
@@ -503,12 +502,6 @@ export class Game {
       const actionInfo = actions[chosenIndex];
       this.state = actionInfo.newState;
       await this.handleEvents(actionInfo.deferredEventList, true);
-      this.mutate({
-        type: "setPlayerFlag",
-        who,
-        flagName: "canCharged",
-        value: player().dice.length % 2 === 0,
-      });
 
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {
@@ -602,6 +595,8 @@ export class Game {
                 definition: actionInfo.card.definition.skillDefinition,
                 fromCard: actionInfo.card,
                 requestBy: null,
+                charged: false,
+                plunging: false,
               },
               {
                 targets: actionInfo.targets,
@@ -707,6 +702,8 @@ export class Game {
               definition: s,
               fromCard: null,
               requestBy: null,
+              charged: s.skillType === "normal" && player.dice.length % 2 === 0,
+              plunging: s.skillType === "normal" && player.canPlunging,
             },
           }))
           .map((s) => ({
@@ -725,6 +722,8 @@ export class Game {
         definition: card.definition.skillDefinition,
         fromCard: card,
         requestBy: null,
+        charged: false,
+        plunging: false,
       };
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
@@ -987,6 +986,8 @@ export class Game {
           definition: def,
           fromCard: null,
           requestBy: arg.via,
+          charged: false,  // Can this be charged?
+          plunging: false,
         };
         yield this.useSkillImpl(skillInfo, hasIo, void 0);
       } else {
@@ -1000,6 +1001,8 @@ export class Game {
                 definition: sk,
                 fromCard: null,
                 requestBy: null,
+                charged: false,
+                plunging: false,
               };
               yield this.useSkillImpl(skillInfo, hasIo, arg);
             }

@@ -53,7 +53,6 @@ export const WolfsGravestone = card(311303)
       e.increaseDamage(1);
     }
   })
-  // TODO
   .done();
 
 /**
@@ -69,7 +68,7 @@ export const SkywardPride = card(311304)
   .weapon("claymore")
   .on("modifySkillDamage")
   .increaseDamage(1)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .usagePerRound(1)
   .increaseDamage(1)
   .done();

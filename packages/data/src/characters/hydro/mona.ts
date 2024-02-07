@@ -23,7 +23,9 @@ export const Reflection = summon(112031)
  * 我方造成技能伤害时：移除此状态，使本次伤害加倍。
  */
 export const IllusoryBubble = combatStatus(112032)
-  // TODO
+  .on("modifySkillDamage")
+  .multiplyDamage(2)
+  .dispose()
   .done();
 
 /**
@@ -36,7 +38,7 @@ export const RippleOfFate = skill(12031)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -48,7 +50,8 @@ export const RippleOfFate = skill(12031)
 export const MirrorReflectionOfDoom = skill(12032)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 1)
+  .summon(Reflection)
   .done();
 
 /**
@@ -61,7 +64,8 @@ export const StellarisPhantasm = skill(12033)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Hydro, 4)
+  .combatStatus(IllusoryBubble)
   .done();
 
 /**
@@ -102,5 +106,7 @@ export const ProphecyOfSubmersion = card(212031)
   .costHydro(3)
   .costEnergy(3)
   .talent(Mona)
-  // TODO
+  .on("modifyDamage", (c, e) => e.isReactionRelatedTo(DamageType.Hydro))
+  .listenToPlayer()
+  .increaseDamage(2)
   .done();

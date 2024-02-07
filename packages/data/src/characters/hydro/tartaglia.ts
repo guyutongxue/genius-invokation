@@ -55,7 +55,7 @@ export const CuttingTorrent = skill(12041)
   .costHydro(1)
   .costVoid(2)
   .damage(DamageType.Physical, 2)
-  .if((c) => c.player.canCharged)
+  .if((c) => c.skillInfo.charged)
   .characterStatus(Riptide, "opp active")
   .done();
 
@@ -85,7 +85,15 @@ export const HavocObliteration = skill(12043)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .do((c) => {
+    if (c.self.hasStatus(RangedStance)) {
+      c.damage(DamageType.Hydro, 5);
+      c.self.gainEnergy(2);
+      c.characterStatus(Riptide, "opp active");
+    } else {
+      c.damage(DamageType.Hydro, 7);
+    }
+  })
   .done();
 
 /**

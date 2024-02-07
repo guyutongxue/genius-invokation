@@ -1,4 +1,4 @@
-import { card } from "@gi-tcg/core/builder";
+import { DiceType, EntityState, card } from "@gi-tcg/core/builder";
 
 /**
  * @id 321001
@@ -10,7 +10,9 @@ import { card } from "@gi-tcg/core/builder";
 export const LiyueHarborWharf = card(321001)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("endPhase")
+  .usage(2)
+  .drawCards(2)
   .done();
 
 /**
@@ -23,7 +25,10 @@ export const LiyueHarborWharf = card(321001)
 export const KnightsOfFavoniusLibrary = card(321002)
   .costSame(1)
   .support("place")
-  // TODO
+  .on("enter")
+  .reroll(1)
+  .on("roll")
+  .addRerollCount(1)
   .done();
 
 /**
@@ -34,7 +39,10 @@ export const KnightsOfFavoniusLibrary = card(321002)
  */
 export const JadeChamber = card(321003)
   .support("place")
-  // TODO
+  .on("roll")
+  .do((c, e) => {
+    e.fixDice(c.$("my active")!.element(), 2);
+  })
   .done();
 
 /**
@@ -46,7 +54,9 @@ export const JadeChamber = card(321003)
 export const DawnWinery = card(321004)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("deductDiceSwitch")
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -88,7 +98,9 @@ export const FavoniusCathedral = card(321006)
 export const Tenshukaku = card(321007)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("actionPhase")
+  .if((c) => new Set(c.player.dice).size >= 5)
+  .generateDice(DiceType.Omni, 1)
   .done();
 
 /**
@@ -101,7 +113,11 @@ export const Tenshukaku = card(321007)
 export const GrandNarukamiShrine = card(321008)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("enter")
+  .generateDice("randomElement", 1)
+  .on("actionPhase")
+  .usage(2)
+  .generateDice("randomElement", 1)
   .done();
 
 /**
@@ -114,7 +130,9 @@ export const GrandNarukamiShrine = card(321008)
 export const SangonomiyaShrine = card(321009)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("endPhase")
+  .usage(2)
+  .heal(1, "all my characters")
   .done();
 
 /**
@@ -126,7 +144,11 @@ export const SangonomiyaShrine = card(321009)
 export const SumeruCity = card(321010)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("deductDice", (c, e) =>
+    (e.isUseSkill() || e.hasCardTag("talent")) && 
+    (c.player.dice.length <= c.player.hands.length))
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -171,7 +193,11 @@ export const Vanarana = card(321011)
 export const ChinjuForest = card(321012)
   .costSame(1)
   .support("place")
-  // TODO
+  .on("actionPhase", (c) => !c.isMyTurn())
+  .usage(3)
+  .do((c) => {
+    c.generateDice(c.$("my active")!.element(), 1);
+  })
   .done();
 
 /**
@@ -183,7 +209,11 @@ export const ChinjuForest = card(321012)
  */
 export const GoldenHouse = card(321013)
   .support("place")
-  // TODO
+  .on("deductDiceCard", (c, e) =>
+    e.hasOneOfCardTag("weapon", "artifact") &&
+    e.action.card.definition.skillDefinition.requiredCost.length >= 3)
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -196,7 +226,9 @@ export const GoldenHouse = card(321013)
 export const GandharvaVille = card(321014)
   .costSame(1)
   .support("place")
-  // TODO
+  .on("beforeAction", (c) => c.player.dice.length === 0)
+  .usagePerRound(1)
+  .generateDice(DiceType.Omni, 1)
   .done();
 
 /**
@@ -210,7 +242,19 @@ export const GandharvaVille = card(321014)
 export const StormterrorsLair = card(321015)
   .costSame(2)
   .support("place")
-  // TODO
+  .on("enter")
+  .drawCards(1, { withTag: "talent" })
+  .on("deductDice", (c, e) => {
+    if (e.hasCardTag("talent")) {
+      return true;
+    } else if (e.isUseSkill()) {
+      return e.action.skill.definition.requiredCost.length >= 4;
+    } else {
+      return false;
+    }
+  })
+  .usagePerRound(1)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -223,7 +267,9 @@ export const StormterrorsLair = card(321015)
 export const WeepingWillowOfTheLake = card(321016)
   .costSame(1)
   .support("place")
-  // TODO
+  .on("endPhase", (c) => c.player.hands.length <= 2)
+  .usage(2)
+  .drawCards(2)
   .done();
 
 /**
@@ -236,5 +282,17 @@ export const WeepingWillowOfTheLake = card(321016)
 export const OperaEpiclese = card(321017)
   .costSame(1)
   .support("place")
-  // TODO
+  .on("beforeAction", (c) => {
+    function costOfEquipment(equipment: EntityState) {
+      const cardDef = c.state.data.cards.get(equipment.definition.id)!;
+      return cardDef.skillDefinition.requiredCost.length;
+    }
+    const myCost = c.$$(`my equipments`).map((entity) => costOfEquipment(entity.state)).reduce((a, b) => a + b, 0);
+    const oppCost = c.$$(`opp equipments`).map((entity) => costOfEquipment(entity.state)).reduce((a, b) => a + b, 0);
+    return myCost >= oppCost;
+  })
+  .usagePerRound(1)
+  .do((c) => {
+    c.generateDice(c.$("my active")!.element(), 1);
+  })
   .done();

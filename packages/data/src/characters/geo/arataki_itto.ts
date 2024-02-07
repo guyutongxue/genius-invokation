@@ -8,12 +8,11 @@ import { character, skill, summon, status, card, DamageType, DiceType } from "@g
  * 可用次数：1（可叠加，最多叠加到3次）
  */
 export const SuperlativeSuperstrength = status(116054)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canCharged)
+  .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
   .usage(1, { recreateMax: 3 })
   .increaseDamage(1)
   .on("deductDiceSkill", (c, e) =>
-    e.isSkillType("normal") &&
-    c.player.canCharged && 
+    e.isChargedAttack() && 
     c.getVariable("usage") >= 2 && 
     e.canDeductCostOfType(DiceType.Void))
   .deductCost(DiceType.Void, 1)
@@ -51,7 +50,7 @@ export const RagingOniKing = status(116053)
   .duration(2)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Geo)
-  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usagePerRound(1)
@@ -72,7 +71,7 @@ export const FightClubLegend = skill(16051)
     if (
         c.self.hasEquipment(AratakiIchiban) && // 带有装备
         c.countOfThisSkill() > 0 &&            // 本回合使用过
-        c.player.canCharged                    // 触发乱神之怪力（重击）
+        c.skillInfo.charged                    // 触发乱神之怪力（重击）
       ) {
       c.damage(DamageType.Physical, 3);
     } else {

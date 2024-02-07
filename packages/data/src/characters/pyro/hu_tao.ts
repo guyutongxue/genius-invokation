@@ -8,7 +8,8 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 可用次数：1
  */
 export const BloodBlossom = status(113072)
-  // TODO
+  .on("endPhase")
+  .damage(DamageType.Pyro, 1, "@master")
   .done();
 
 /**
@@ -20,7 +21,11 @@ export const BloodBlossom = status(113072)
  * 持续回合：2
  */
 export const ParamitaPapilio = status(113071)
-  // TODO
+  .duration(2)
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Pyro)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -33,7 +38,9 @@ export const SecretSpearOfWangsheng = skill(13071)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
+  .if((c) => c.self.hasStatus(ParamitaPapilio) && c.skillInfo.charged)
+  .characterStatus(BloodBlossom, "opp active")
   .done();
 
 /**
@@ -45,7 +52,7 @@ export const SecretSpearOfWangsheng = skill(13071)
 export const GuideToAfterlife = skill(13072)
   .type("elemental")
   .costPyro(2)
-  // TODO
+  .characterStatus(ParamitaPapilio)
   .done();
 
 /**
@@ -58,7 +65,15 @@ export const SpiritSoother = skill(13073)
   .type("burst")
   .costPyro(3)
   .costEnergy(3)
-  // TODO
+  .do((c) => {
+    if (c.self.health <= 6) {
+      c.damage(DamageType.Pyro, 5);
+      c.heal(3, "@self");
+    } else {
+      c.damage(DamageType.Pyro, 4);
+      c.heal(2, "@self");
+    }
+  })
   .done();
 
 /**
@@ -86,5 +101,8 @@ export const HuTao = character(1307)
 export const SanguineRouge = card(213071)
   .costPyro(2)
   .talent(HuTao)
-  // TODO
+  .on("enter")
+  .useSkill(GuideToAfterlife)
+  .on("modifyDamage", (c) => c.self.master().health <= 6)
+  .increaseDamage(1)
   .done();

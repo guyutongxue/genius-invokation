@@ -627,9 +627,9 @@ export const PlungingStrike = card(332017)
 export const HeavyStrike = card(332018)
   .costSame(1)
   .toStatus("my active")
-  .once("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
-  .if((c) => c.player.canCharged)
+  .if((c, e) => e.viaChargedAttack())
   .increaseDamage(1)
   .done();
 

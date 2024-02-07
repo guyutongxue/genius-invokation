@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 112091
@@ -9,7 +9,16 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 所附属角色普通攻击时：如果「破局」已有2层，则消耗2层「破局」，使造成的物理伤害转换为水元素伤害，并抓1张牌。
  */
 export const BreakthroughStatus = status(112091)
-  // TODO
+  .variable("break", 1, { recreateMax: 3 })
+  .on("endPhase")
+  .do((c) => {
+    const currentBreak = c.getVariable("break");
+    c.setVariable("break", Math.min(currentBreak + 1, 3));
+  })
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && c.getVariable("break") >= 2)
+  .addVariable("break", -2)
+  .changeDamageType(DamageType.Hydro)
+  .drawCards(1)
   .done();
 
 /**
@@ -20,7 +29,9 @@ export const BreakthroughStatus = status(112091)
  * 持续回合：2
  */
 export const ExquisiteThrow = combatStatus(112092)
-  // TODO
+  .duration(2)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .damage(DamageType.Hydro, 2)
   .done();
 
 /**
@@ -33,7 +44,7 @@ export const StealthyBowshot = skill(12091)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -45,7 +56,12 @@ export const StealthyBowshot = skill(12091)
 export const LingeringLifeline = skill(12092)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Hydro, 3);
+    const breakSt = c.of(c.self.hasStatus(BreakthroughStatus)!);
+    const currentBreakVal = breakSt.getVariable("break");
+    breakSt.setVariable("break", Math.min(currentBreakVal + 2, 3));
+  })
   .done();
 
 /**
@@ -58,7 +74,8 @@ export const DepthclarionDice = skill(12093)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Hydro, 1)
+  .combatStatus(ExquisiteThrow)
   .done();
 
 /**
@@ -69,7 +86,10 @@ export const DepthclarionDice = skill(12093)
  */
 export const Breakthrough = skill(12094)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(BreakthroughStatus)
+  .on("revive")
+  .characterStatus(BreakthroughStatus)
   .done();
 
 /**
@@ -97,5 +117,11 @@ export const Yelan = character(1209)
 export const TurnControl = card(212091)
   .costHydro(3)
   .talent(Yelan)
-  // TODO
+  .on("enter")
+  .useSkill(LingeringLifeline)
+  .on("roll")
+  .do((c, e) => {
+    const elements = new Set(c.$$("my characters include defeated").map((char) => char.element()));
+    e.fixDice(DiceType.Omni, Math.min(elements.size, 3));
+  })
   .done();
