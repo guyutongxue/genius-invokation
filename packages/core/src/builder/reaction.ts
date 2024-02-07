@@ -131,9 +131,14 @@ function initialize() {
     .increaseDamage(1)
     // Nilou
     .if((c) => c.$$(`combat status with definition id 112081`).length)
-    .combatStatus(DendroCore);
+    .combatStatus(DendroCore)
+    .done();
 
-  reaction(Reaction.Quicken).combatStatus(CatalyzingField);
+  reaction(Reaction.Quicken)
+    .if((c, e) => e.damageInfo.isDamage)
+    .increaseDamage(1)
+    .combatStatus(CatalyzingField)
+    .done();
 }
 
 let initialized = false;
