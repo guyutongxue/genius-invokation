@@ -55,8 +55,7 @@
 | `modifyAction`               | `modifyAction`                 | **我方**用骰/设置快速行动时               |
 | `deductDiceSwitch`           | `modifyAction`                 | 我方尝试减少切换角色行动的骰子时          |
 | `deductDiceCard`             | `modifyAction`                 | 我方尝试减少打出手牌的骰子时              |
-| `deductDiceSkill`            | `modifyAction`                 | 我方尝试减少角色技能的骰子时              |
-| `deductDiceSkillOrTalent`    | `modifyAction`                 | 我方尝试减少角色技能或打出天赋牌的骰子时  |
+| `deductDiceSkill`            | `modifyAction`                 | 我方/所附着角色尝试减少角色技能的骰子时   |
 | `beforeFastSwitch`           | `modifyAction`                 | 我方尝试设置切换角色行动为快速行动时      |
 | `modifyDamageType`           | `modifyDamage0`                | 我方/所附着角色造成伤害（第一次修改）     |
 | `modifySkillDamageType`      | `modifyDamage0`                | 我方/所附着角色技能造成伤害（第一次修改） |
