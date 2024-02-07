@@ -1044,6 +1044,7 @@ export class Game {
                 target: ch,
                 value: zeroHealthEventArg._immuneInfo.newHealth,
                 via: zeroHealthEventArg._immuneInfo.skill,
+                fromReaction: null
               },
             });
             continue;
@@ -1106,6 +1107,9 @@ export class Game {
           value: true,
         });
       }
+    }
+    if (defeatEvents.length > 0) {
+      await this.notifyAndPause();
     }
     const [a0, a1] = await Promise.all(activeDefeated);
     if (a0 !== null) {

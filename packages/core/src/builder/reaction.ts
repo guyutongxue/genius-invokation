@@ -56,20 +56,35 @@ const pierceToOther =
     if (c.eventArg.damageInfo.isDamage) {
       c.eventArg.increaseDamage(1);
       (c as any)[CALLED_FROM_REACTION] = reaction;
-      c.damage(DamageType.Piercing, 1, "opp character and not @damage.target");
+      const who = c.of(c.eventArg.target).who;
+      for (const character of c.state.players[who].characters) {
+        if (
+          character.variables.alive &&
+          character.id !== c.eventArg.target.id
+        ) {
+          c.damage(DamageType.Piercing, 1, character);
+        }
+      }
     }
   };
 
 const crystallize: ReactionAction = (c) => {
   c.eventArg.increaseDamage(1);
-  c.combatStatus(Crystallize);
+  const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
+  c.combatStatus(Crystallize, player);
 };
 
 const swirl = (srcElement: DamageType): ReactionAction => {
   return (c) => {
     (c as any)[CALLED_FROM_REACTION] = srcElement + 106;
-    if (c.eventArg.damageInfo.isDamage) {
-      c.damage(srcElement, 1, "opp character and not @damage.target");
+    const who = c.of(c.eventArg.target).who;
+    for (const character of c.state.players[who].characters) {
+      if (
+        character.variables.alive &&
+        character.variables.id !== c.eventArg.target.id
+      ) {
+        c.damage(srcElement, 1, character);
+      }
     }
   };
 };
@@ -87,7 +102,10 @@ function initialize() {
 
   reaction(Reaction.Overloaded)
     .if((c, e) => c.of(e.target).isActive())
-    .switchActive("opp next")
+    .do((c) => {
+      const player = c.of(c.eventArg.target).isMine() ? "my" : "opp";
+      c.switchActive(`${player} next`);
+    })
     .done();
 
   reaction(Reaction.Superconduct)
@@ -123,21 +141,31 @@ function initialize() {
   reaction(Reaction.Burning)
     .if((c, e) => e.damageInfo.isDamage)
     .increaseDamage(1)
-    .summon(BurningFlame)
+    .do((c) => {
+      const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
+      c.summon(BurningFlame, player);
+    })
     .done();
 
   reaction(Reaction.Bloom)
     .if((c, e) => e.damageInfo.isDamage)
     .increaseDamage(1)
-    // Nilou
-    .if((c) => c.$$(`combat status with definition id 112081`).length)
-    .combatStatus(DendroCore)
+    .do((c) => {
+      const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
+      if (!c.$(`${player} combat status with definition id 112081`)) {
+        // 如果没有金杯的丰馈（妮露），就生成草原核
+        c.combatStatus(DendroCore, player);
+      }
+    })
     .done();
 
   reaction(Reaction.Quicken)
     .if((c, e) => e.damageInfo.isDamage)
     .increaseDamage(1)
-    .combatStatus(CatalyzingField)
+    .do((c) => {
+      const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
+      c.combatStatus(CatalyzingField, player);
+    })
     .done();
 }
 

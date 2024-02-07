@@ -45,7 +45,10 @@ export const LingeringAeon = status(112083)
  * 敌方角色受到绽放反应时：我方不再生成草原核，而是改为召唤丰穰之核。
  */
 export const GoldenChalicesBounty = combatStatus(112081)
-  .done(); // 相关处理在绽放的代码里
+  .on("reaction", (c, e) => !c.of(e.reactionInfo.target).isMine())
+  .listenToAll()
+  .summon(BountifulCore)
+  .done(); // 不再生成草原核的部分由核心反应代码提供
 
 /**
  * @id 12081
