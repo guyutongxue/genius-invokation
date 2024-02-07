@@ -9,7 +9,12 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点火元素伤害。
  */
 export const BaronBunny = summon(113041)
-  // TODO
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
+  .usage(1, { autoDispose: false })
+  .decreaseDamage(2)
+  .on("endPhase", (c) => c.getVariable("usage") <= 0)
+  .damage(DamageType.Pyro, 2)
+  .dispose()
   .done();
 
 /**
@@ -22,7 +27,7 @@ export const Sharpshooter = skill(13041)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -34,7 +39,7 @@ export const Sharpshooter = skill(13041)
 export const ExplosivePuppet = skill(13042)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .summon(BaronBunny)
   .done();
 
 /**
@@ -47,7 +52,8 @@ export const FieryRain = skill(13043)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Piercing, 2, "opp standby")
+  .damage(DamageType.Pyro, 2)
   .done();
 
 /**
@@ -76,5 +82,14 @@ export const Amber = character(1304)
 export const BunnyTriggered = card(213041)
   .costPyro(3)
   .talent(Amber)
-  // TODO
+  .on("enter")
+  .useSkill(ExplosivePuppet)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .do((c) => {
+    const bunny = c.$(`my summon with definition id ${BaronBunny}`);
+    if (bunny) {
+      c.damage(DamageType.Pyro, 4);
+      bunny.dispose();
+    }
+  })
   .done();

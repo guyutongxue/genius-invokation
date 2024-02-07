@@ -31,6 +31,10 @@ export interface EntityDefinition {
 
 export interface EntityVariables {
   readonly duration: number;
+  readonly usage: number;
+  // usage 到达 0 后是否自动弃置
+  //（用于判断“送你一程”扣除使用次数后是否弃置召唤物）
+  readonly disposeWhenUsageIsZero: number;
   readonly [key: string]: number;
 }
 

@@ -34,6 +34,7 @@ export const WindsOfHarmony = combatStatus(115033)
  * 可用次数：2
  */
 export const Stormzone01 = combatStatus(115032)
+  .conflictWith(115031)
   .on("deductDiceSwitch")
   .usage(2)
   .deductCost(DiceType.Omni, 1)
@@ -48,6 +49,7 @@ export const Stormzone01 = combatStatus(115032)
  * 可用次数：2
  */
 export const Stormzone = combatStatus(115031)
+  .conflictWith(115032)
   .on("deductDiceSwitch")
   .usage(2)
   .deductCost(DiceType.Omni, 1)

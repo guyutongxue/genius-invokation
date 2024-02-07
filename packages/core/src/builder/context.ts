@@ -1,6 +1,6 @@
 import { Aura, DamageType, DiceType } from "@gi-tcg/typings";
 
-import { EntityArea, EntityType, ExEntityType } from "../base/entity";
+import { EntityArea, EntityType, EntityVariables, ExEntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
@@ -204,13 +204,16 @@ export class SkillContext<Meta extends ContextMetaBase> {
     return result as TypedCharacter<Meta>[];
   }
   /** 本回合已经使用了几次此技能 */
-  countOfThisSkill() {
+  countOfThisSkill(): number {
+    return this.countOfSkill(this.skillInfo.caller.id, this.skillInfo.definition.id as SkillHandle);
+  }
+  countOfSkill(callerId: number, handle: SkillHandle): number {
     return this.state.globalActionLog.filter(
       ({ roundNumber, action }) =>
         roundNumber === this.state.roundNumber &&
         action.type === "useSkill" &&
-        action.skill.caller.id === this.skillInfo.caller.id &&
-        action.skill.definition.id === this.skillInfo.definition.id,
+        action.skill.caller.id === callerId &&
+        action.skill.definition.id === handle,
     ).length;
   }
 
@@ -438,7 +441,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     type: TypeT,
     id: HandleT<TypeT>,
     area?: EntityArea,
-  ) {
+  ): Entity<Meta> | null {
     const id2 = id as number;
     const def = this._state.data.entities.get(id2);
     if (typeof def === "undefined") {
@@ -483,7 +486,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       def.type === "status" &&
       def.tags.includes("disableSkill")
     ) {
-      return;
+      return null;
     }
     const existOverride = entitiesAtArea.find(
       (e): e is EntityState =>
@@ -518,10 +521,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
           });
         }
       }
+      const newState = getEntityById(this.state, existOverride.id);
       this.emitEvent("onEnter", this.state, {
-        newState: getEntityById(this.state, existOverride.id),
+        newState,
         overrided: existOverride,
       });
+      return this.of(newState);
     } else {
       const initState: EntityState = {
         id: 0,
@@ -540,6 +545,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         newState,
         overrided: null,
       });
+      return this.of(newState);
     }
   }
   summon(id: SummonHandle, where: "my" | "opp" = "my") {
@@ -782,8 +788,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
       const normalSkills = activeCh.definition.initiativeSkills.filter(
         (sk) => sk.skillType === "normal",
       );
-      if (normalSkills.length !== 1) {
-        throw new GiTcgDataError("Expected exactly one normal skill on active character");
+      if (normalSkills.length === 0) {
+        throw new GiTcgDataError("Expected one normal skill on active character");
       }
       skillId = normalSkills[0].id;
     } else {
@@ -902,6 +908,10 @@ export class CharacterBase {
   }
 }
 
+interface AddStatusOptions {
+  variables: Partial<EntityVariables>;
+}
+
 export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   constructor(
     private readonly skillContext: SkillContext<Meta>,
@@ -995,8 +1005,18 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   apply(type: AppliableDamageType) {
     this.skillContext.apply(type, this.state);
   }
-  addStatus(status: StatusHandle) {
-    this.skillContext.createEntity("status", status, this._area);
+  addStatus(status: StatusHandle, opt?: AddStatusOptions) {
+    const st = this.skillContext.createEntity("status", status, this._area);
+    if (st === null) {
+      return;
+    }
+    const variables = opt?.variables ?? {};
+    for (const prop in variables) {
+      const value = variables[prop];
+      if (typeof value === "number") {
+        this.skillContext.setVariable(prop, value, st.state);
+      }
+    }
   }
   equip(equipment: EquipmentHandle) {
     // Remove exist artifact/weapon first

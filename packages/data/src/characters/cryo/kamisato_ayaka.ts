@@ -19,6 +19,7 @@ export const FrostflakeSekiNoTo = summon(111051)
  * （持续到回合结束）
  */
 export const CryoElementalInfusion01 = status(111053)
+  .conflictWith(111052)
   // TODO
   .done();
 
@@ -30,6 +31,7 @@ export const CryoElementalInfusion01 = status(111053)
  * （持续到回合结束）
  */
 export const CryoElementalInfusion = status(111052)
+  .conflictWith(111053)
   // TODO
   .done();
 

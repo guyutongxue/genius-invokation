@@ -18,6 +18,7 @@ export const BlazingBarrier = combatStatus(113111)
  * 可用次数：3
  */
 export const ScorchingOoyoroi01 = combatStatus(113113)
+  .conflictWith(113112)
   // TODO
   .done();
 
@@ -29,6 +30,7 @@ export const ScorchingOoyoroi01 = combatStatus(113113)
  * 可用次数：2
  */
 export const ScorchingOoyoroi = combatStatus(113112)
+  .conflictWith(113113)
   // TODO
   .done();
 

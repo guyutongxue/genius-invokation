@@ -10,6 +10,7 @@ import { character, skill, summon, card, DamageType, SkillHandle } from "@gi-tcg
  * 此召唤物在场时：如果此牌的元素类型已转换，则使我方造成的此类元素伤害+1。
  */
 export const LargeWindSpirit01 = summon(115012)
+  .conflictWith(115011)
   .endPhaseDamage("swirledAnemo", 2)
   .usage(3)
   .on("modifyDamage", (c, e) => {
@@ -28,6 +29,7 @@ export const LargeWindSpirit01 = summon(115012)
  * 我方角色或召唤物引发扩散反应后：转换此牌的元素类型，改为造成被扩散的元素类型的伤害。（离场前仅限一次）
  */
 export const LargeWindSpirit = summon(115011)
+  .conflictWith(115012)
   .endPhaseDamage("swirledAnemo", 2)
   .usage(3)
   .done();

@@ -8,6 +8,7 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 持续回合：2
  */
 export const ChonghuaFrostField01 = combatStatus(111042)
+  .conflictWith(111041)
   // TODO
   .done();
 
@@ -19,6 +20,7 @@ export const ChonghuaFrostField01 = combatStatus(111042)
  * 持续回合：2
  */
 export const ChonghuaFrostField = combatStatus(111041)
+  .conflictWith(111042)
   // TODO
   .done();
 

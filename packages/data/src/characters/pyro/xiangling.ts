@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 113021
@@ -8,7 +8,8 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const Guoba = summon(113021)
-  // TODO
+  .endPhaseDamage(DamageType.Pyro, 2)
+  .usage(2)
   .done();
 
 /**
@@ -19,7 +20,9 @@ export const Guoba = summon(113021)
  * 可用次数：2
  */
 export const PyronadoStatus = combatStatus(113022)
-  // TODO
+  .on("useSkill")
+  .usage(2)
+  .damage(DamageType.Pyro, 2)
   .done();
 
 /**
@@ -32,7 +35,7 @@ export const DoughFu = skill(13021)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -41,10 +44,12 @@ export const DoughFu = skill(13021)
  * @description
  * 召唤锅巴。
  */
-export const GuobaAttack = skill(13022)
+export const GuobaAttack: SkillHandle = skill(13022)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .if((c) => c.self.hasEquipment(Crossfire))
+  .damage(DamageType.Pyro, 1)
+  .summon(Guoba)
   .done();
 
 /**
@@ -57,7 +62,8 @@ export const Pyronado = skill(13023)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .combatStatus(PyronadoStatus)
   .done();
 
 /**
@@ -85,5 +91,6 @@ export const Xiangling = character(1302)
 export const Crossfire = card(213021)
   .costPyro(3)
   .talent(Xiangling)
-  // TODO
+  .on("enter")
+  .useSkill(GuobaAttack)
   .done();

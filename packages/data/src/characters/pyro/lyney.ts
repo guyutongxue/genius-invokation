@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, Aura } from "@gi-tcg/core/builder";
 
 /**
  * @id 113101
@@ -8,7 +8,8 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 export const GrinmalkinHat = summon(113101)
-  // TODO
+  .endPhaseDamage(DamageType.Pyro, 1)
+  .usage(1, { recreateMax: 2 })
   .done();
 
 /**
@@ -19,7 +20,17 @@ export const GrinmalkinHat = summon(113101)
  * 角色使用眩惑光戏法时：每层隐具余数使伤害+1。技能结算后，耗尽隐具余数，每层治疗角色1点。
  */
 export const PropSurplus = status(113102)
-  // TODO
+  .variable("surplus", 0)
+  .on("modifySkillDamage", (c, e) => e.via.definition.id === BewilderingLights)
+  .do((c, e) => {
+    e.increaseDamage(c.getVariable("surplus"));
+  })
+  .on("useSkill", (c, e) => e.action.skill.definition.id === BewilderingLights)
+  .do((c) => {
+    const surplus = c.getVariable("surplus");
+    c.setVariable("surplus", 0);
+    c.heal(surplus, "@master");
+  })
   .done();
 
 /**
@@ -32,7 +43,7 @@ export const CardForceTranslocation = skill(13101)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -45,7 +56,17 @@ export const CardForceTranslocation = skill(13101)
 export const PropArrow = skill(13102)
   .type("normal")
   .costPyro(3)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Pyro, 2);
+    c.summon(GrinmalkinHat);
+    const surplusSt = c.self.hasStatus(PropSurplus);
+    if (surplusSt){
+      c.addVariable("surplus", 1, surplusSt);
+    }
+    if (c.self.health >= 6) {
+      c.damage(DamageType.Piercing, 1, "@self");
+    }
+  })
   .done();
 
 /**
@@ -57,7 +78,7 @@ export const PropArrow = skill(13102)
 export const BewilderingLights = skill(13103)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
   .done();
 
 /**
@@ -70,7 +91,15 @@ export const WondrousTrickMiracleParade = skill(13104)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Pyro, 3);
+    c.summon(GrinmalkinHat);
+    const surplusSt = c.self.hasStatus(PropSurplus);
+    if (surplusSt){
+      c.addVariable("surplus", 1, surplusSt);
+    }
+  
+  })
   .done();
 
 /**
@@ -98,5 +127,11 @@ export const Lyney = character(1310)
 export const ConclusiveOvation = card(213101)
   .costPyro(3)
   .talent(Lyney)
-  // TODO
+  .on("enter")
+  .useSkill(PropArrow)
+  .on("modifyDamage", (c, e) =>
+    [Lyney as number, GrinmalkinHat as number].includes(e.source.definition.id) && 
+    c.of(e.target).aura === Aura.Pyro)
+  .usagePerRound(1)
+  .increaseDamage(2)
   .done();

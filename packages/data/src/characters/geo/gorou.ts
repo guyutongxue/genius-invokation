@@ -1,4 +1,5 @@
 import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { Crystallize } from "../../commons";
 
 /**
  * @id 116062
@@ -8,7 +9,10 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const GeneralsGlory = summon(116062)
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
+  .if((c) => c.$$(`my character include defeated with tag (geo)`).length >= 2)
+  .combatStatus(Crystallize)
   .done();
 
 /**
@@ -19,7 +23,9 @@ export const GeneralsGlory = summon(116062)
  * 持续回合：2（可叠加，最多叠加到3回合）
  */
 export const GeneralsWarBanner = combatStatus(116061)
-  // TODO
+  .duration(2, { recreateMax: 3 })
+  .on("modifySkillDamage", (c, e) => e.type === DamageType.Geo)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -32,7 +38,7 @@ export const RippingFangFletching = skill(16061)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -44,7 +50,8 @@ export const RippingFangFletching = skill(16061)
 export const InuzakaAllroundDefense = skill(16062)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .damage(DamageType.Geo, 2)
+  .combatStatus(GeneralsWarBanner)
   .done();
 
 /**
@@ -57,7 +64,9 @@ export const JuugaForwardUntoVictory = skill(16063)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Geo, 2)
+  .combatStatus(GeneralsWarBanner)
+  .summon(GeneralsGlory)
   .done();
 
 /**
@@ -85,5 +94,11 @@ export const Gorou = character(1606)
 export const RushingHoundSwiftAsTheWind = card(216061)
   .costGeo(3)
   .talent(Gorou)
-  // TODO
+  .on("enter")
+  .useSkill(InuzakaAllroundDefense)
+  .on("skillDamage", (c, e) => e.type === DamageType.Geo)
+  .listenToPlayer()
+  .usagePerRound(1)
+  .if((c) => c.$(`my combat status with definition id ${GeneralsWarBanner}`))
+  .drawCards(1)
   .done();

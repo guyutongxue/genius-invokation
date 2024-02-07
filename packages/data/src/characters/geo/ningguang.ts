@@ -1,4 +1,4 @@
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, CombatStatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 116011
@@ -7,8 +7,14 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 我方出战角色受到至少为2的伤害时：抵消1点伤害。
  * 可用次数：2
  */
-export const JadeScreenStatus = combatStatus(116011)
-  // TODO
+export const JadeScreenStatus: CombatStatusHandle = combatStatus(116011)
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 2)
+  .usage(2)
+  .decreaseDamage(1)
+  .on("modifyDamage", (c, e) => e.type === DamageType.Geo && 
+    c.$(`my equipment with definition id ${StrategicReserve}`))
+  .listenToPlayer()
+  .increaseDamage(1)
   .done();
 
 /**
@@ -21,7 +27,7 @@ export const SparklingScatter = skill(16011)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Geo, 1)
   .done();
 
 /**
@@ -33,7 +39,8 @@ export const SparklingScatter = skill(16011)
 export const JadeScreen = skill(16012)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .damage(DamageType.Geo, 2)
+  .combatStatus(JadeScreenStatus)
   .done();
 
 /**
@@ -46,7 +53,10 @@ export const Starshatter = skill(16013)
   .type("burst")
   .costGeo(3)
   .costEnergy(3)
-  // TODO
+  .if((c) => c.$(`my combat status with definition id ${JadeScreenStatus}`))
+  .damage(DamageType.Geo, 8)
+  .else()
+  .damage(DamageType.Geo, 6)
   .done();
 
 /**
@@ -74,5 +84,6 @@ export const Ningguang = character(1601)
 export const StrategicReserve = card(216011)
   .costGeo(4)
   .talent(Ningguang)
-  // TODO
+  .on("enter")
+  .useSkill(JadeScreen)
   .done();

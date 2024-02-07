@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 116022
@@ -9,7 +9,14 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 持续回合：2
  */
 export const SweepingTimeStatus = status(116022)
-  // TODO
+  .duration(2)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Geo))
+  .usagePerRound(1)
+  .deductCost(DiceType.Geo, 1)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Geo)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .increaseDamage(2)
   .done();
 
 /**
@@ -20,7 +27,9 @@ export const SweepingTimeStatus = status(116022)
  * 此护盾耗尽前，我方受到的物理伤害减半。（向上取整）
  */
 export const FullPlate = combatStatus(116021)
-  // TODO
+  .shield(2)
+  .on("beforeDamaged", (c, e) => e.type === DamageType.Physical)
+  .multiplyDamage(0.5)
   .done();
 
 /**
@@ -33,7 +42,7 @@ export const FavoniusBladeworkMaid = skill(16021)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -45,7 +54,8 @@ export const FavoniusBladeworkMaid = skill(16021)
 export const Breastplate = skill(16022)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .damage(DamageType.Geo, 1)
+  .combatStatus(FullPlate)
   .done();
 
 /**
@@ -58,7 +68,8 @@ export const SweepingTime = skill(16023)
   .type("burst")
   .costGeo(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Geo, 4)
+  .characterStatus(SweepingTimeStatus)
   .done();
 
 /**
@@ -86,5 +97,14 @@ export const Noelle = character(1602)
 export const IGotYourBack = card(216021)
   .costGeo(3)
   .talent(Noelle)
-  // TODO
+  .on("enter")
+  .useSkill(Breastplate)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usagePerRound(1, { autoDecrease: false })
+  .do((c) => {
+    if (c.$(`my combat status with definition id ${FullPlate}`)) {
+      c.heal(1, "all my characters");
+      c.addVariable("usage", -1);
+    }
+  })
   .done();

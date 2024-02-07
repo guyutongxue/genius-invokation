@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 116041
@@ -9,7 +9,11 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 此召唤物在场时：我方角色进行下落攻击时少花费1个无色元素。（每回合1次）
  */
 export const SolarIsotoma = summon(116041)
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(3)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.canPlunging && e.canDeductCostOfType(DiceType.Void))
+  .usagePerRound(1)
+  .deductCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -22,7 +26,7 @@ export const FavoniusBladeworkWeiss = skill(16041)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -34,7 +38,7 @@ export const FavoniusBladeworkWeiss = skill(16041)
 export const AbiogenesisSolarIsotoma = skill(16042)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .summon(SolarIsotoma)
   .done();
 
 /**
@@ -47,7 +51,10 @@ export const RiteOfProgenitureTectonicTide = skill(16043)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
-  // TODO
+  .if((c) => c.$(`my summons with definition id ${SolarIsotoma}`))
+  .damage(DamageType.Geo, 6)
+  .else()
+  .damage(DamageType.Geo, 4)
   .done();
 
 /**
@@ -75,5 +82,12 @@ export const Albedo = character(1604)
 export const DescentOfDivinity = card(216041)
   .costGeo(3)
   .talent(Albedo)
-  // TODO
+  .on("enter")
+  .useSkill(AbiogenesisSolarIsotoma)
+  .on("modifySkillDamage", (c, e) =>
+    c.$(`my summons with definition id ${SolarIsotoma}`) &&
+    e.isSourceSkillType("normal") &&
+    c.player.canPlunging)
+  .listenToPlayer()
+  .increaseDamage(1)
   .done();

@@ -9,7 +9,13 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：2（可叠加，最多叠加到3回合）
  */
 export const ChisellightMirror = status(117061)
-  // TODO
+  .duration(2, { recreateMax: 3 })
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Dendro)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .damage(DamageType.Dendro, 1)
+  .on("useSkill", (c, e) => e.isSkillType("normal") && c.player.canCharged)
+  .addVariable("duration", 1)
   .done();
 
 /**
@@ -22,7 +28,7 @@ export const AbductiveReasoning = skill(17061)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -34,7 +40,8 @@ export const AbductiveReasoning = skill(17061)
 export const UniversalityAnElaborationOnForm = skill(17062)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .characterStatus(ChisellightMirror)
   .done();
 
 /**
@@ -48,7 +55,28 @@ export const ParticularFieldFettersOfPhenomena = skill(17063)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    const mirror = c.self.hasStatus(ChisellightMirror);
+    const duration = mirror ? c.getVariable("duration", mirror) : 0 ;
+    const damageValue = 4 + duration;
+    c.damage(DamageType.Dendro, damageValue);
+    if (duration > 0 && duration < 3) {
+      if (c.self.hasEquipment(Structuration)) {
+        c.self.addStatus(ChisellightMirror, {
+          variables: {
+            duration: 3
+          }
+        });
+        c.drawCards(1);
+      } else {
+        c.self.addStatus(ChisellightMirror, {
+          variables: {
+            duration: 3 - duration
+          }
+        });
+      }
+    }
+  })
   .done();
 
 /**
@@ -77,5 +105,6 @@ export const Structuration = card(217061)
   .costDendro(3)
   .costEnergy(2)
   .talent(Alhaitham)
-  // TODO
+  .on("enter")
+  .useSkill(ParticularFieldFettersOfPhenomena)
   .done();

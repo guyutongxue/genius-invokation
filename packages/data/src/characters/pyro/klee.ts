@@ -8,6 +8,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const ExplosiveSpark01 = status(113062)
+  .conflictWith(113061)
   // TODO
   .done();
 
@@ -19,6 +20,7 @@ export const ExplosiveSpark01 = status(113062)
  * 可用次数：1
  */
 export const ExplosiveSpark = status(113061)
+  .conflictWith(113062)
   // TODO
   .done();
 

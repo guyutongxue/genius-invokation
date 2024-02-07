@@ -1,4 +1,23 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
+
+/**
+ * @id 116054
+ * @name 乱神之怪力
+ * @description
+ * 所附属角色进行重击时：造成的伤害+1。如果可用次数至少为2，则少花费1个无色元素。
+ * 可用次数：1（可叠加，最多叠加到3次）
+ */
+export const SuperlativeSuperstrength = status(116054)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canCharged)
+  .usage(1, { recreateMax: 3 })
+  .increaseDamage(1)
+  .on("deductDiceSkill", (c, e) =>
+    e.isSkillType("normal") &&
+    c.player.canCharged && 
+    c.getVariable("usage") >= 2 && 
+    e.canDeductCostOfType(DiceType.Void))
+  .deductCost(DiceType.Void, 1)
+  .done();
 
 /**
  * @id 116051
@@ -10,7 +29,14 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 结束阶段：弃置此牌，造成1点岩元素伤害。
  */
 export const Ushi = summon(116051)
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .dispose()
+  .on("beforeDamaged")
+  .usage(1, { autoDispose: false })
+  .decreaseDamage(1)
+  .on("damaged")
+  .usage(1, { autoDecrease: false, name: "addStatusUsage" })
+  .characterStatus(SuperlativeSuperstrength, `my characters with definition id 1605`)
   .done();
 
 /**
@@ -22,18 +48,14 @@ export const Ushi = summon(116051)
  * 所附属角色普通攻击后：为其附属乱神之怪力。（每回合1次）
  */
 export const RagingOniKing = status(116053)
-  // TODO
-  .done();
-
-/**
- * @id 116054
- * @name 乱神之怪力
- * @description
- * 所附属角色进行重击时：造成的伤害+1。如果可用次数至少为2，则少花费1个无色元素。
- * 可用次数：1（可叠加，最多叠加到3次）
- */
-export const SuperlativeSuperstrength = status(116054)
-  // TODO
+  .duration(2)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Geo)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usagePerRound(1)
+  .characterStatus(SuperlativeSuperstrength, "@master")
   .done();
 
 /**
@@ -46,7 +68,17 @@ export const FightClubLegend = skill(16051)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .do((c) => {
+    if (
+        c.self.hasEquipment(AratakiIchiban) && // 带有装备
+        c.countOfThisSkill() > 0 &&            // 本回合使用过
+        c.player.canCharged                    // 触发乱神之怪力（重击）
+      ) {
+      c.damage(DamageType.Physical, 3);
+    } else {
+      c.damage(DamageType.Physical, 2);
+    }
+  })
   .done();
 
 /**
@@ -58,7 +90,9 @@ export const FightClubLegend = skill(16051)
 export const MasatsuZetsugiAkaushiBurst = skill(16052)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .damage(DamageType.Geo, 1)
+  .summon(Ushi)
+  .characterStatus(SuperlativeSuperstrength)
   .done();
 
 /**
@@ -71,7 +105,8 @@ export const RoyalDescentBeholdIttoTheEvil = skill(16053)
   .type("burst")
   .costGeo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Geo, 4)
+  .characterStatus(RagingOniKing)
   .done();
 
 /**
@@ -100,5 +135,6 @@ export const AratakiIchiban = card(216051)
   .costGeo(1)
   .costVoid(2)
   .talent(AratakiItto)
-  // TODO
+  .on("enter")
+  .useSkill(FightClubLegend)
   .done();

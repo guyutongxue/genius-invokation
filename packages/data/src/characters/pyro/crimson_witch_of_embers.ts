@@ -10,8 +10,19 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const BlazingHeat = status(163011)
   .conflictWith(121022)
-  // TODO
+  .on("endPhase")
+  .usage(1)
+  .damage(DamageType.Pyro, 1, "@master")
   .done();
+
+/**
+ * @id 63014
+ * @name 红莲旋火
+ * @description
+ * 造成3点火元素伤害。
+ */
+export const CrimsonFlamespin = skill(63014)
+  .reserve();
 
 /**
  * @id 163012
@@ -21,8 +32,7 @@ export const BlazingHeat = status(163011)
  * 准备技能期间：提供3点护盾，保护所附属的角色。
  */
 export const EncarmineVortex = status(163012)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 63011
@@ -34,7 +44,7 @@ export const CrimsonLotusMoth = skill(63011)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -46,7 +56,8 @@ export const CrimsonLotusMoth = skill(63011)
 export const DecimatingLash = skill(63012)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 2)
+  .characterStatus(BlazingHeat, "opp active")
   .done();
 
 /**
@@ -59,18 +70,7 @@ export const WhirlingBlaze = skill(63013)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
-  .done();
-
-/**
- * @id 63014
- * @name 红莲旋火
- * @description
- * 造成3点火元素伤害。
- */
-export const CrimsonFlamespin = skill(63014)
-  .type("burst")
-  // TODO
+  .damage(DamageType.Pyro, 6)
   .done();
 
 /**
@@ -83,5 +83,5 @@ export const CrimsonWitchOfEmbers = character(6301)
   .tags("pyro", "fatui")
   .health(10)
   .energy(2)
-  .skills(CrimsonLotusMoth, DecimatingLash, WhirlingBlaze, CrimsonFlamespin)
+  .skills(CrimsonLotusMoth, DecimatingLash, WhirlingBlaze)
   .done();

@@ -172,8 +172,8 @@ const detailedEventDictionary = {
   }),
   deductDiceSkill: defineDescriptor("modifyAction", (c, e, r) => {
     return (
-      checkRelative(c.state, { who: e.who }, r) &&
       e.isUseSkill() &&
+      checkRelative(c.state, e.action.skill.caller.id, r) &&
       e.canDeductCost()
     );
   }),
@@ -247,6 +247,12 @@ const detailedEventDictionary = {
   }),
   dealDamage: defineDescriptor("onDamage", (c, e, r) => {
     return checkRelative(c.state, e.source.id, r);
+  }),
+  skillDamage: defineDescriptor("onDamage", (c, e, r) => {
+    return (
+      checkRelative(c.state, e.source.id, r) &&
+      commonInitiativeSkillCheck(e.damageInfo.via)
+    );
   }),
   damaged: defineDescriptor("onDamage", (c, e, r) => {
     return checkRelative(c.state, e.target.id, r);
@@ -491,7 +497,6 @@ export class TriggeredSkillBuilder<
     const perRound = opt?.perRound ?? false;
     const name =
       opt?.name ??
-      // @ts-expect-error private prop
       ("usage" in this.parent._constants ? `usage_${this.id}` : "usage");
     this.parent.variable(name, count, {
       ...opt,
@@ -509,7 +514,14 @@ export class TriggeredSkillBuilder<
       perRound,
       recreateMax: opt?.recreateMax ?? count,
     };
-    // 增加“检查可用次数”的技能出发条件
+    if (
+      name === "usage" &&
+      !this._usageOpt.perRound &&
+      this._usageOpt.autoDispose
+    ) {
+      this.parent._constants.disposeWhenUsageIsZero = 1;
+    }
+    // 增加“检查可用次数”的技能触发条件
     const oldFilter = this._triggerFilter;
     this._triggerFilter = (c, e) => {
       if (!oldFilter(c, e)) return false;
@@ -523,7 +535,10 @@ export class TriggeredSkillBuilder<
    *   .usage(count, { ...opt, perRound: true, visible: false })
    * ```
    */
-  usagePerRound(count: number, opt?: Omit<UsageOptions, "perRound">) {
+  usagePerRound<VarName extends string = "usage">(
+    count: number,
+    opt?: Omit<UsageOptions<VarName>, "perRound">,
+  ) {
     return this.usage(count, { ...opt, perRound: true, visible: false });
   }
 

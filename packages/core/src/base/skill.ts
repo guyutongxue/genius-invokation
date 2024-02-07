@@ -179,21 +179,36 @@ export class ActionEventArg<
     return this._action;
   }
 
-  isSwitchActive() {
+  isSwitchActive(): this is ActionEventArg<SwitchActiveInfo> {
     return this.action.type === "switchActive";
   }
-  isPlayCard() {
+  isPlayCard(): this is ActionEventArg<PlayCardInfo> {
     return this.action.type === "playCard";
   }
-  isUseSkill() {
+  isUseSkill(): this is ActionEventArg<UseSkillInfo> {
     return this.action.type === "useSkill";
   }
-  isDeclareEnd() {
+  isDeclareEnd(): this is ActionEventArg<DeclareEndInfo> {
     return this.action.type === "declareEnd";
+  }
+  isSkillOrTalentOf(character: CharacterState): boolean {
+    if (this.action.type === "useSkill") {
+      const skillDefId = this.action.skill.definition.id;
+      return !!character.definition.initiativeSkills.find(
+        (def) => def.id === skillDefId,
+      );
+    } else if (this.action.type === "playCard") {
+      return !!(
+        this.action.card.definition.tags.includes("talent") &&
+        this.action.targets.find((target) => target.id === character.id)
+      );
+    } else {
+      return false;
+    }
   }
 
   isSkillType(skillType: CommonSkillType): boolean {
-    if (this.action.type === "useSkill") {
+    if (this.isUseSkill()) {
       return this.action.skill.definition.skillType === skillType;
     } else {
       return false;
@@ -275,19 +290,6 @@ export class ModifyActionEventArg<
   }
   canDeductCostOfType(diceType: DiceType) {
     return this.action.cost.includes(diceType);
-  }
-  isSkillOrTalentOf(character: CharacterState) {
-    if (this.action.type === "useSkill") {
-      const skillDefId = this.action.skill.definition.id;
-      return !!character.definition.initiativeSkills.find(
-        (def) => def.id === skillDefId,
-      );
-    } else if (this.action.type === "playCard") {
-      return (
-        this.action.card.definition.tags.includes("talent") &&
-        this.action.targets.find((target) => target.id === character.id)
-      );
-    }
   }
 
   addCost(type: DiceType, count: number) {

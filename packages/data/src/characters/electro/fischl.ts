@@ -9,6 +9,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 菲谢尔普通攻击后：造成2点雷元素伤害。（需消耗可用次数）
  */
 export const Oz01 = summon(114012)
+  .conflictWith(114011)
   // TODO
   .done();
 
@@ -20,6 +21,7 @@ export const Oz01 = summon(114012)
  * 可用次数：2
  */
 export const Oz = summon(114011)
+  .conflictWith(114012)
   // TODO
   .done();
 

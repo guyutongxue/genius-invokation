@@ -8,6 +8,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：3
  */
 export const ElectroElementalInfusion01 = status(114034)
+  .conflictWith(114032)
   // TODO
   .done();
 
@@ -19,6 +20,7 @@ export const ElectroElementalInfusion01 = status(114034)
  * 持续回合：2
  */
 export const ElectroElementalInfusion = status(114032)
+  .conflictWith(114034)
   // TODO
   .done();
 

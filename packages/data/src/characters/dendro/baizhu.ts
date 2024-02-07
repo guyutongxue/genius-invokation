@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, CombatStatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 117051
@@ -8,7 +8,34 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：1
  */
 export const GossamerSprite = summon(117051)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(1)
+  .heal(1, "my active")
+  .done();
+
+/**
+ * @id 117053
+ * @name 无郤气护盾
+ * @description
+ * 提供1点护盾，保护我方出战角色。
+ * 此效果被移除，或被重复生成时：造成1点草元素伤害，治疗我方出战角色1点。
+ */
+export const SeamlessShield: CombatStatusHandle = combatStatus(117053)
+  .shield(1)
+  .on("enter", (c, e) => e.overrided)
+  .damage(DamageType.Dendro, 1)
+  .heal(1, "my active")
+  .if((c) => c.$(`my equipment with definition id ${AllThingsAreOfTheEarth}`))
+  .do((c) => {
+    c.generateDice(c.$(`my active`)!.element(), 1);
+  })
+  .on("selfDispose")
+  .damage(DamageType.Dendro, 1)
+  .heal(1, "my active")
+  .if((c) => c.$(`my equipment with definition id ${AllThingsAreOfTheEarth}`))
+  .do((c) => {
+    c.generateDice(c.$(`my active`)!.element(), 1);
+  })
   .done();
 
 /**
@@ -19,24 +46,9 @@ export const GossamerSprite = summon(117051)
  * 可用次数：2
  */
 export const PulsingClarity = combatStatus(117052)
-  // TODO
-  .done();
-
-/**
- * @id 117053
- * @name 无郤气护盾
- * @description
- * 提供1点护盾，保护我方出战角色。
- * 此效果被移除，或被重复生成时：造成1点草元素伤害，治疗我方出战角色1点。
- */
-export const SeamlessShield = combatStatus(117053)
-  .shield(1)
-  .on("enter", (c, e) => e.overrided)
-  .damage(DamageType.Dendro, 1)
-  .heal(1, "my active")
-  .on("selfDispose")
-  .damage(DamageType.Dendro, 1)
-  .heal(1, "my active")
+  .on("actionPhase")
+  .usage(2)
+  .combatStatus(SeamlessShield)
   .done();
 
 /**
@@ -49,7 +61,7 @@ export const TheClassicsOfAcupuncture = skill(17051)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Dendro, 1)
   .done();
 
 /**
@@ -61,7 +73,8 @@ export const TheClassicsOfAcupuncture = skill(17051)
 export const UniversalDiagnosis = skill(17052)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 1)
+  .summon(GossamerSprite)
   .done();
 
 /**
@@ -74,7 +87,8 @@ export const HolisticRevivification = skill(17053)
   .type("burst")
   .costDendro(4)
   .costEnergy(2)
-  // TODO
+  .combatStatus(PulsingClarity)
+  .combatStatus(SeamlessShield)
   .done();
 
 /**
@@ -103,5 +117,6 @@ export const AllThingsAreOfTheEarth = card(217051)
   .costDendro(4)
   .costEnergy(2)
   .talent(Baizhu)
-  // TODO
+  .on("enter")
+  .useSkill(HolisticRevivification)
   .done();

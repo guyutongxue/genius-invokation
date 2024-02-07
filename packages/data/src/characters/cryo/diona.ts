@@ -18,6 +18,7 @@ export const DrunkenMist = summon(111023)
  * 为我方出战角色提供2点护盾。
  */
 export const CatclawShield01 = combatStatus(111022)
+  .conflictWith(111021)
   // TODO
   .done();
 
@@ -28,6 +29,7 @@ export const CatclawShield01 = combatStatus(111022)
  * 为我方出战角色提供1点护盾。
  */
 export const CatclawShield = combatStatus(111021)
+  .conflictWith(111022)
   // TODO
   .done();
 

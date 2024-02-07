@@ -1,4 +1,4 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 113011
@@ -8,7 +8,9 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：2
  */
 export const PyroInfusion = status(113011)
-  // TODO
+  .duration(2)
+  .on("modifyDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Pyro)
   .done();
 
 /**
@@ -21,7 +23,7 @@ export const TemperedSword = skill(13011)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -33,7 +35,10 @@ export const TemperedSword = skill(13011)
 export const SearingOnslaught = skill(13012)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .if((c) => c.countOfThisSkill() === 2)
+  .damage(DamageType.Pyro, 5)
+  .else()
+  .damage(DamageType.Pyro, 3)
   .done();
 
 /**
@@ -46,7 +51,8 @@ export const Dawn = skill(13013)
   .type("burst")
   .costPyro(4)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Pyro, 8)
+  .characterStatus(PyroInfusion)
   .done();
 
 /**
@@ -74,5 +80,11 @@ export const Diluc = character(1301)
 export const FlowingFlame = card(213011)
   .costPyro(3)
   .talent(Diluc)
-  // TODO
+  .on("enter")
+  .useSkill(SearingOnslaught)
+  .on("deductDiceSkill", (c, e) =>
+    e.action.skill.definition.id === SearingOnslaught && 
+    c.countOfSkill(e.action.skill.caller.id, SearingOnslaught) === 1 &&
+    e.canDeductCostOfType(DiceType.Pyro))
+  .deductCost(DiceType.Pyro, 1)
   .done();

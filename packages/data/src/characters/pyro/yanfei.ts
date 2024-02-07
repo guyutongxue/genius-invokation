@@ -1,4 +1,17 @@
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
+
+/**
+ * @id 113081
+ * @name 丹火印
+ * @description
+ * 角色进行重击时：造成的伤害+2。
+ * 可用次数：1（可叠加，最多叠加到2次）
+ */
+export const ScarletSeal = status(113081)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canCharged)
+  .usage(1, { recreateMax: 2 })
+  .increaseDamage(2)
+  .done();
 
 /**
  * @id 113082
@@ -9,18 +22,12 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：2
  */
 export const Brilliance = status(113082)
-  // TODO
-  .done();
-
-/**
- * @id 113081
- * @name 丹火印
- * @description
- * 角色进行重击时：造成的伤害+2。
- * 可用次数：1（可叠加，最多叠加到2次）
- */
-export const ScarletSeal = status(113081)
-  // TODO
+  .duration(2)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.canCharged && e.canDeductCostOfType(DiceType.Pyro))
+  .usagePerRound(1)
+  .deductCost(DiceType.Pyro, 1)
+  .on("endPhase")
+  .characterStatus(ScarletSeal, "@master")
   .done();
 
 /**
@@ -33,7 +40,7 @@ export const SealOfApproval = skill(13081)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -45,7 +52,8 @@ export const SealOfApproval = skill(13081)
 export const SignedEdict = skill(13082)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .characterStatus(ScarletSeal)
   .done();
 
 /**
@@ -58,7 +66,9 @@ export const DoneDeal = skill(13083)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .characterStatus(ScarletSeal)
+  .characterStatus(Brilliance)
   .done();
 
 /**
@@ -87,5 +97,14 @@ export const RightOfFinalInterpretation = card(213081)
   .costPyro(1)
   .costVoid(2)
   .talent(Yanfei)
-  // TODO
+  .variable("triggerSeal", 0)
+  .on("enter")
+  .useSkill(SealOfApproval)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal") && c.player.canCharged && c.of(e.target).health <= 6)
+  .increaseDamage(1)
+  .if((c) => c.self.master().hasStatus(ScarletSeal))
+  .setVariable("triggerSeal", 1)
+  .on("useSkill", (c) => c.getVariable("triggerSeal"))
+  .drawCards(1)
+  .setVariable("triggerSeal", 0)
   .done();

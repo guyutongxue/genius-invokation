@@ -1,4 +1,4 @@
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 117022
@@ -8,7 +8,8 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 export const ClusterbloomArrow = summon(117022)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(1, { recreateMax: 2 })
   .done();
 
 /**
@@ -19,7 +20,17 @@ export const ClusterbloomArrow = summon(117022)
  * 可用次数：2
  */
 export const VijnanaSuffusion = status(117021)
-  // TODO
+  .variable("doSummon", 0, { visible: false })
+  .on("modifySkillDamageType", (c, e) =>
+    e.isSourceSkillType("normal") && 
+    c.player.canCharged && 
+    e.type === DamageType.Physical)
+  .usage(2)
+  .changeDamageType(DamageType.Dendro)
+  .setVariable("doSummon", 1)
+  .on("useSkill", (c) => c.getVariable("doSummon"))
+  .summon(ClusterbloomArrow)
+  .setVariable("doSummon", 0)
   .done();
 
 /**
@@ -32,7 +43,7 @@ export const KhandaBarrierbuster = skill(17021)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -44,7 +55,8 @@ export const KhandaBarrierbuster = skill(17021)
 export const VijnanaphalaMine = skill(17022)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .characterStatus(VijnanaSuffusion)
   .done();
 
 /**
@@ -57,7 +69,8 @@ export const FashionersTanglevineShaft = skill(17023)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Piercing, 1, "opp standby")
+  .damage(DamageType.Dendro, 4)
   .done();
 
 /**
@@ -85,5 +98,12 @@ export const Tighnari = character(1702)
 export const KeenSight = card(217021)
   .costDendro(4)
   .talent(Tighnari)
-  // TODO
+  .on("enter")
+  .useSkill(VijnanaphalaMine)
+  .on("deductDiceSkill", (c, e) => 
+    c.self.master().hasStatus(VijnanaSuffusion) && 
+    e.isSkillType("normal") &&
+    c.player.canCharged &&
+    e.canDeductCostOfType(DiceType.Void))
+  .deductCost(DiceType.Void, 1)
   .done();

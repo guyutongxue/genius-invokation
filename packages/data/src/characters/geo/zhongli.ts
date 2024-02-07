@@ -8,7 +8,8 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 可用次数：2
  */
 export const StoneStele = summon(116031)
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
   .done();
 
 /**
@@ -18,7 +19,8 @@ export const StoneStele = summon(116031)
  * 角色无法使用技能。（持续到回合结束）
  */
 export const Petrification = status(116033)
-  // TODO
+  .oneDuration()
+  .tags("disableSkill")
   .done();
 
 /**
@@ -28,7 +30,7 @@ export const Petrification = status(116033)
  * 为我方出战角色提供2点护盾。
  */
 export const JadeShield = combatStatus(116032)
-  // TODO
+  .shield(2)
   .done();
 
 /**
@@ -41,7 +43,7 @@ export const RainOfStone = skill(16031)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -53,7 +55,8 @@ export const RainOfStone = skill(16031)
 export const DominusLapidis = skill(16032)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .damage(DamageType.Geo, 1)
+  .summon(StoneStele)
   .done();
 
 /**
@@ -65,7 +68,9 @@ export const DominusLapidis = skill(16032)
 export const DominusLapidisStrikingStone = skill(16033)
   .type("elemental")
   .costGeo(5)
-  // TODO
+  .damage(DamageType.Geo, 3)
+  .summon(StoneStele)
+  .combatStatus(JadeShield)
   .done();
 
 /**
@@ -78,7 +83,8 @@ export const PlanetBefall = skill(16034)
   .type("burst")
   .costGeo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Geo, 4)
+  .characterStatus(Petrification, "opp active")
   .done();
 
 /**
@@ -106,5 +112,12 @@ export const Zhongli = character(1603)
 export const DominanceOfEarth = card(216031)
   .costGeo(5)
   .talent(Zhongli)
-  // TODO
+  .on("enter")
+  .useSkill(DominusLapidisStrikingStone)
+  .on("modifyDamage", (c, e) => {
+    return e.type === DamageType.Geo &&
+      e.source.definition.type === "summon" &&
+      !!c.$(`(my combat status with tag (shield)) or (status with tag (shield) at my active)`);
+  })
+  .increaseDamage(1)
   .done();

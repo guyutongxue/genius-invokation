@@ -1,4 +1,4 @@
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 113053
@@ -9,7 +9,14 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：3
  */
 export const NiwabiEnshou01 = status(113053)
-  // TODO
+  .conflictWith(113051)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Pyro)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usage(3)
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -20,7 +27,12 @@ export const NiwabiEnshou01 = status(113053)
  * 可用次数：2
  */
 export const NiwabiEnshou = status(113051)
-  // TODO
+  .conflictWith(113053)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Pyro)
+  .on("modifySkillDamage", (c, e) => e.isSourceSkillType("normal"))
+  .usage(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -31,7 +43,9 @@ export const NiwabiEnshou = status(113051)
  * 持续回合：2
  */
 export const AurousBlaze = combatStatus(113052)
-  // TODO
+  .duration(2)
+  .on("useSkill", (c, e) => e.action.skill.caller.definition.id !== Yoimiya)
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -44,7 +58,7 @@ export const FireworkFlareup = skill(13051)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -53,10 +67,14 @@ export const FireworkFlareup = skill(13051)
  * @description
  * 本角色附属庭火焰硝。（此技能不产生充能）
  */
-export const NiwabiFiredance = skill(13052)
+export const NiwabiFiredance: SkillHandle = skill(13052)
   .type("elemental")
   .costPyro(1)
-  // TODO
+  .noEnergy()
+  .if((c) => c.self.hasEquipment(NaganoharaMeteorSwarm))
+  .characterStatus(NiwabiEnshou01)
+  .else()
+  .characterStatus(NiwabiEnshou)
   .done();
 
 /**
@@ -65,11 +83,12 @@ export const NiwabiFiredance = skill(13052)
  * @description
  * 造成3点火元素伤害，生成琉金火光。
  */
-export const RyuukinSaxifrage = skill(13053)
+export const RyuukinSaxifrage: SkillHandle = skill(13053)
   .type("burst")
   .costPyro(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Pyro, 3)
+  .combatStatus(AurousBlaze)
   .done();
 
 /**
@@ -97,5 +116,6 @@ export const Yoimiya = character(1305)
 export const NaganoharaMeteorSwarm = card(213051)
   .costPyro(2)
   .talent(Yoimiya)
-  // TODO
+  .on("enter")
+  .useSkill(NiwabiFiredance)
   .done();

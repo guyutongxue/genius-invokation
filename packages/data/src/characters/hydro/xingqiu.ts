@@ -19,6 +19,7 @@ export const RainbowBladework = combatStatus(112022)
  * 可用次数：3
  */
 export const RainSword01 = combatStatus(112023)
+  .conflictWith(112021)
   // TODO
   .done();
 
@@ -30,6 +31,7 @@ export const RainSword01 = combatStatus(112023)
  * 可用次数：2
  */
 export const RainSword = combatStatus(112021)
+  .conflictWith(112023)
   // TODO
   .done();
 

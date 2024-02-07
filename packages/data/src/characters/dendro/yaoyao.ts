@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 117042
@@ -8,7 +8,20 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const YueguiThrowingMode01 = summon(117042)
-  // TODO
+  .conflictWith(117041)
+  .hintIcon(DamageType.Dendro)
+  .hintText("1")
+  .on("endPhase")
+  .usage(2)
+  .do((c) => {
+    if (c.getVariable("usage") === 1) {
+      c.damage(DamageType.Dendro, 2);
+      c.heal(2, "my characters order by health - maxHealth limit 1");
+    } else {
+      c.damage(DamageType.Dendro, 1);
+      c.heal(1, "my characters order by health - maxHealth limit 1");
+    }
+  })
   .done();
 
 /**
@@ -19,7 +32,10 @@ export const YueguiThrowingMode01 = summon(117042)
  * 可用次数：2
  */
 export const YueguiThrowingMode = summon(117041)
-  // TODO
+  .conflictWith(117042)
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(2)
+  .heal(1, "my characters order by health - maxHealth limit 1")
   .done();
 
 /**
@@ -30,7 +46,10 @@ export const YueguiThrowingMode = summon(117041)
  * 可用次数：3
  */
 export const AdeptalLegacy = combatStatus(117043)
-  // TODO
+  .on("switchActive")
+  .usage(3)
+  .damage(DamageType.Dendro, 1)
+  .heal(1, "my active")
   .done();
 
 /**
@@ -43,7 +62,7 @@ export const TossNTurnSpear = skill(17041)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -52,10 +71,13 @@ export const TossNTurnSpear = skill(17041)
  * @description
  * 召唤月桂·抛掷型。
  */
-export const RaphanusSkyCluster = skill(17042)
+export const RaphanusSkyCluster: SkillHandle = skill(17042)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .if((c) => c.self.hasEquipment(Beneficent))
+  .summon(YueguiThrowingMode01)
+  .else()
+  .summon(YueguiThrowingMode)
   .done();
 
 /**
@@ -68,7 +90,8 @@ export const MoonjadeDescent = skill(17043)
   .type("burst")
   .costDendro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Dendro, 1)
+  .combatStatus(AdeptalLegacy)
   .done();
 
 /**
@@ -96,5 +119,6 @@ export const Yaoyao = character(1704)
 export const Beneficent = card(217041)
   .costDendro(3)
   .talent(Yaoyao)
-  // TODO
+  .on("enter")
+  .useSkill(RaphanusSkyCluster)
   .done();

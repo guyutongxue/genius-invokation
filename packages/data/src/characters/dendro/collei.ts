@@ -1,4 +1,4 @@
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 117011
@@ -8,7 +8,8 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const CuileinAnbar = summon(117011)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 2)
+  .usage(2)
   .done();
 
 /**
@@ -19,7 +20,10 @@ export const CuileinAnbar = summon(117011)
  * 持续回合：1
  */
 export const Sprout = combatStatus(117012)
-  // TODO
+  .duration(1)
+  .on("skillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Dendro))
+  .usagePerRound(1)
+  .damage(DamageType.Dendro, 1)
   .done();
 
 /**
@@ -32,7 +36,7 @@ export const SupplicantsBowmanship = skill(17011)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -41,10 +45,12 @@ export const SupplicantsBowmanship = skill(17011)
  * @description
  * 造成3点草元素伤害。
  */
-export const FloralBrush = skill(17012)
+export const FloralBrush: SkillHandle = skill(17012)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 3)
+  .if((c) => c.self.hasEquipment(FloralSidewinder))
+  .combatStatus(Sprout)
   .done();
 
 /**
@@ -57,7 +63,8 @@ export const TrumpcardKitty = skill(17013)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .summon(CuileinAnbar)
   .done();
 
 /**
@@ -85,5 +92,6 @@ export const Collei = character(1701)
 export const FloralSidewinder = card(217011)
   .costDendro(4)
   .talent(Collei)
-  // TODO
+  .on("enter")
+  .useSkill(FloralBrush)
   .done();

@@ -41,10 +41,12 @@ export class EntityBuilder<
 > {
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
-  private _usagePerRoundVarNames: string[] = [];
+  _usagePerRoundVarNames: string[] = [];
   private _tags: EntityTag[] = [];
-  private _constants: Draft<EntityVariables> = {
+  _constants: Draft<EntityVariables> = {
     duration: Infinity,
+    usage: Infinity,
+    disposeWhenUsageIsZero: 0,
   };
   private _visibleVarName: string | null = null;
   private _hintText: string | null = null;
@@ -61,7 +63,16 @@ export class EntityBuilder<
   conflictWith(id: number) {
     return this.on("enter", (c) => c.$(`my any with definition id ${id}`))
       .do((c) => {
-        c.$$(`my any with definition id ${id}`).forEach((e) => e.dispose());
+        // 将位于相同实体区域的目标实体移除
+        for (const entity of c.$$(`my any with definition id ${id}`)) {
+          if (entity.area.type === "characters" && c.self.area.type === "characters") {
+            if (entity.area.characterId === c.self.area.characterId) {
+              entity.dispose();
+            }
+          } else if (entity.area.type === c.self.area.type) {
+            entity.dispose();
+          }
+        }
       })
       .endOn();
   }
@@ -105,11 +116,10 @@ export class EntityBuilder<
     return this as any;
   }
 
-  duration(count: number, opt?: VariableOptions): this {
-    this.variable("duration", count, opt);
-    return this;
+  duration(count: number, opt?: VariableOptions) {
+    return this.variable("duration", count, opt);
   }
-  oneDuration(opt?: VariableOptions): this {
+  oneDuration(opt?: VariableOptions) {
     return this.duration(1, { ...opt, visible: false });
   }
 

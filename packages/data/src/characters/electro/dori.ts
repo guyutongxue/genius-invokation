@@ -20,6 +20,7 @@ export const AftersalesServiceRounds = summon(114101)
  * 可用次数：2
  */
 export const Jinni01 = summon(114103)
+  .conflictWith(114102)
   // TODO
   .done();
 
@@ -31,6 +32,7 @@ export const Jinni01 = summon(114103)
  * 可用次数：2
  */
 export const Jinni = summon(114102)
+  .conflictWith(114103)
   // TODO
   .done();
 
