@@ -1,4 +1,5 @@
 /* @refresh reload */
+import "core-js";
 import { render } from "solid-js/web";
 
 import "./index.css";

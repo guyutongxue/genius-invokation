@@ -14,9 +14,6 @@
     "build": "bun build.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
-    "@rollup/plugin-babel": "^6.0.4",
     "@types/bun": "^1.0.4",
     "bun": "^1.0.25"
   }
