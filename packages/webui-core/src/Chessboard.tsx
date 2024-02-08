@@ -153,6 +153,7 @@ export interface PlayerContextValue {
   focusing: Accessor<number | null>;
   onClick: (id: number) => void;
   setPrepareTuning: (value: boolean) => void;
+  assetApiEndpoint: string;
 }
 
 export interface AgentActions {
@@ -168,9 +169,14 @@ export function usePlayerContext(): Readonly<PlayerContextValue> {
   return useContext(PlayerContext)!;
 }
 
+export interface WebUiOption {
+  alternativeAction?: AgentActions;
+  assetApiEndpoint?: string;
+}
+
 export function createPlayer(
   who: 0 | 1,
-  alternativeAction?: AgentActions,
+  { alternativeAction, assetApiEndpoint }: WebUiOption = {},
 ): [io: PlayerIO, Chessboard: (props: ComponentProps<"div">) => JSX.Element] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
@@ -436,7 +442,7 @@ export function createPlayer(
     const [local, restProps] = splitProps(props, ["class"]);
     return (
       <div
-        class={`gi-tcg-chessboard relative flex flex-col ${local.class}`}
+        class={`gi-tcg-chessboard relative flex flex-col ${local.class} select-none`}
         {...restProps}
       >
         <PlayerContext.Provider
@@ -448,9 +454,10 @@ export function createPlayer(
             focusing,
             onClick: notifyElementClicked,
             setPrepareTuning,
+            assetApiEndpoint: assetApiEndpoint ?? "https://gi-tcg-assets.vercel.app/api"
           }}
         >
-          <div class="w-full b-solid b-black b-2 relative select-none">
+          <div class="w-full b-solid b-black b-2 relative">
             <PlayerArea data={stateData().players[1 - who]} opp={true} />
             <PlayerArea data={stateData().players[who]} opp={false} />
           </div>

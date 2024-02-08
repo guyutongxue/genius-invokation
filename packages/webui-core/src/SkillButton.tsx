@@ -19,7 +19,7 @@ export function SkillButton(props: SkillButtonProps) {
         disabled={!clickable()}
         onClick={() => clickable() && onClick(props.data.definitionId)}
       >
-        <Image imageId={props.data.definitionId} />
+        <Image imageId={props.data.definitionId} class="max-w-full" />
       </button>
       <DiceCost
         class="flex flex-row"

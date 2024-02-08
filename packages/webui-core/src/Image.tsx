@@ -1,36 +1,28 @@
 import { ComponentProps, Show, createResource, splitProps } from "solid-js";
-
-import { getAssetPath } from "./config";
+import { usePlayerContext } from "./Chessboard";
 
 export interface ImageProps extends ComponentProps<"img"> {
   imageId: number;
 }
 
-const allAssets = new Map<number, string>();
-async function tryFetch(imageId: number, retry = 5): Promise<string> {
-  if (allAssets.has(imageId)) {
-    return allAssets.get(imageId)!;
+const cachedObjectUrls = new Map<string, string>();
+async function cachedFetch(url: string): Promise<string> {
+  if (cachedObjectUrls.has(url)) {
+    return cachedObjectUrls.get(url)!;
   }
-  const assetUrl = getAssetPath(imageId);
-  if (assetUrl === null) {
-    return Promise.reject("asset url not found");
-  }
-  if (retry <= 0) {
-    return Promise.reject("retry exhausted");
-  }
-  return fetch(assetUrl)
+  return fetch(url)
     .then((r) => r.blob())
     .then((blob) => {
       const objectUrl = URL.createObjectURL(blob);
-      allAssets.set(imageId, objectUrl);
+      cachedObjectUrls.set(url, objectUrl);
       return objectUrl;
-    })
-    .catch(() => tryFetch(imageId, retry - 1));
+    });
 }
 
 export function Image(props: ImageProps) {
   const [local, rest] = splitProps(props, ["imageId", "width", "height"]);
-  const [url] = createResource(() => tryFetch(local.imageId));
+  const { assetApiEndpoint } = usePlayerContext();
+  const [url] = createResource(() => cachedFetch(`${assetApiEndpoint}/images/${local.imageId}`));
   const classNames = "flex items-center justify-center object-cover";
   const innerProps = (): ComponentProps<"img"> => ({
     ...rest,

@@ -440,6 +440,7 @@ export const IHaventLostYet = card(332005)
   .filter((c) => c.player.hasDefeated && !c.$(`my combat status with definition id ${IHaventLostYetCooldown}`))
   .generateDice(DiceType.Omni, 1)
   .gainEnergy(1, "my active")
+  .combatStatus(IHaventLostYetCooldown)
   .done();
 
 /**

@@ -110,7 +110,7 @@ export function Dice(props: DiceProps) {
   }, props);
 
   return (
-    <div class="relative select-none flex items-center justify-center">
+    <div class="relative flex items-center justify-center">
       <Show
         when={merged.type !== 9}
         fallback={<EnergyIcon size={merged.size} />}

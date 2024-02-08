@@ -38,7 +38,7 @@ export function Card(props: CardProps) {
         }
       >
         <div
-          class="card relative"
+          class="card relative rotated"
           classList={{ selected: selected() }}
           onClick={() => clickable() && onClick(props.data.id)}
           // </div>@dragstart="dragstartHandler"

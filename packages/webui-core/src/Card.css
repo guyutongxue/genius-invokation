@@ -1,7 +1,6 @@
 .gi-tcg-chessboard {
   .hands-area {
     .card-wrapper {
-      height: 100%;
       perspective: 800px;
       aspect-ratio: 1/2;
       transition: all 0.3s;
@@ -21,13 +20,19 @@
     }
 
     .card {
-      height: 100%;
       aspect-ratio: 7/12;
-      transform: rotate3d(0, 1, 0, 30deg);
       transition: all 0.3s;
     }
     .rotated {
       transform: rotate3d(0, 1, 0, 30deg);
+    }
+  }
+
+  .card-wrapper {
+    height: 100%;
+
+    .card {
+      height: 100%;
     }
   }
 }
