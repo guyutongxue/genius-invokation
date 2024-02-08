@@ -506,8 +506,7 @@ export class TriggeredSkillBuilder<
       recreateMax: opt?.recreateMax ?? count,
     });
     if (perRound) {
-      // @ts-expect-error private prop
-      this.parent._usagePerRoundVarNames.push(this._usagePerRoundName);
+      this.parent._usagePerRoundVarNames.push(name);
     }
     this._usageOpt = {
       visible: opt?.visible ?? true,
@@ -592,7 +591,6 @@ export class TriggeredSkillBuilder<
       action,
     };
     registerSkill(def);
-    // @ts-expect-error private prop
     this.parent._skillList.push(def);
   }
 

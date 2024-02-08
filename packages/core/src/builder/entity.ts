@@ -41,7 +41,7 @@ export class EntityBuilder<
   Vars extends string = never,
 > {
   private _skillNo = 0;
-  private _skillList: TriggeredSkillDefinition[] = [];
+  _skillList: TriggeredSkillDefinition[] = [];
   _usagePerRoundVarNames: string[] = [];
   private _tags: EntityTag[] = [];
   _constants: Draft<EntityVariables> = {
@@ -234,8 +234,7 @@ export class EntityBuilder<
             self.dispose();
           }
         })
-        // @ts-expect-error private prop
-        .buildSkill();
+        .endOn();
     }
     if (this.type === "character") {
       registerPassiveSkill({

@@ -10,8 +10,8 @@ import { character, skill, combatStatus, card, DamageType, SkillHandle } from "@
 export const ChonghuaFrostField01 = combatStatus(111042)
   .conflictWith(111041)
   .duration(2)
-  .on("modifySkillDamageType", (c) => {
-    const { type, tags } = c.skillInfo.caller.definition;
+  .on("modifySkillDamageType", (c, e) => {
+    const { type, tags } = e.via.caller.definition;
     if (type !== "character") { return false; }
     return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
   })
