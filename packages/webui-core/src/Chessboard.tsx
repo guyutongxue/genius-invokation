@@ -454,7 +454,7 @@ export function createPlayer(
             focusing,
             onClick: notifyElementClicked,
             setPrepareTuning,
-            assetApiEndpoint: assetApiEndpoint ?? "https://gi-tcg-assets.vercel.app/api"
+            assetApiEndpoint: assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api"
           }}
         >
           <div class="w-full b-solid b-black b-2 relative">

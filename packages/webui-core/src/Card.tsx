@@ -27,7 +27,7 @@ export function Card(props: CardProps) {
   };
   const dragEnd = () => {
     setPrepareTuning(false);
-  }
+  };
 
   return (
     <div class="card-wrapper">
@@ -41,8 +41,6 @@ export function Card(props: CardProps) {
           class="card relative rotated"
           classList={{ selected: selected() }}
           onClick={() => clickable() && onClick(props.data.id)}
-          // </div>@dragstart="dragstartHandler"
-          // @dragend="dragendHandler"
           draggable={draggable()}
           onDragStart={dragStart}
           onDragEnd={dragEnd}
