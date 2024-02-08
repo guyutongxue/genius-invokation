@@ -421,13 +421,23 @@ export const Strategize = card(332004)
   .done();
 
 /**
+ * @id 303205
+ * @name 本大爷还没有输！（冷却中）
+ * @description
+ * 本回合无法再打出「本大爷还没有输！」。
+ */
+export const IHaventLostYetCooldown = combatStatus(303205)
+  .oneDuration()
+  .done()
+
+/**
  * @id 332005
  * @name 本大爷还没有输！
  * @description
  * 本回合有我方角色被击倒，才能打出：生成1个万能元素，我方当前出战角色获得1点充能。（每回合中，最多只能打出1张「本大爷还没有输！」。）
  */
 export const IHaventLostYet = card(332005)
-  .filter((c) => c.player.hasDefeated)
+  .filter((c) => c.player.hasDefeated && !c.$(`my combat status with definition id ${IHaventLostYetCooldown}`))
   .generateDice(DiceType.Omni, 1)
   .gainEnergy(1, "my active")
   .done();

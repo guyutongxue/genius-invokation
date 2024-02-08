@@ -327,7 +327,7 @@ export const Dunyarzad = card(322016)
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("playCard", (c, e) => e.hasCardTag("ally"))
-  .usage(1, { autoDispose: false })
+  .usage(1, { autoDispose: false, visible: false })
   .drawCards(1, { withTag: "ally" })
   .done();
 
