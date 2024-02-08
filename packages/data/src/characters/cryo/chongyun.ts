@@ -30,8 +30,8 @@ export const ChonghuaFrostField01 = combatStatus(111042)
 export const ChonghuaFrostField = combatStatus(111041)
   .conflictWith(111042)
   .duration(2)
-  .on("modifySkillDamageType", (c) => {
-    const { type, tags } = c.skillInfo.caller.definition;
+  .on("modifySkillDamageType", (c, e) => {
+    const { type, tags } = e.via.caller.definition;
     if (type !== "character") { return false; }
     return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
   })
