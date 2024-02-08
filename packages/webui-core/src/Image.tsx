@@ -22,7 +22,7 @@ async function cachedFetch(url: string): Promise<string> {
 export function Image(props: ImageProps) {
   const [local, rest] = splitProps(props, ["imageId", "width", "height"]);
   const { assetApiEndpoint } = usePlayerContext();
-  const [url] = createResource(() => cachedFetch(`${assetApiEndpoint}/images/${local.imageId}`));
+  const [url] = createResource(() => cachedFetch(`${assetApiEndpoint}/images/${local.imageId}?thumb=1`));
   const classNames = "flex items-center justify-center object-cover";
   const innerProps = (): ComponentProps<"img"> => ({
     ...rest,
