@@ -9,15 +9,20 @@
     "preview": "NODE_ENV=production bunx --bun vite preview"
   },
   "dependencies": {
-    "solid-js": "^1.8.7",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
-    "@gi-tcg/webui-core": "workspace:*"
+    "@gi-tcg/webui-core": "workspace:*",
+    "core-js": "3.35.1",
+    "solid-js": "^1.8.7"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "@genshin-db/tcg": "^5.0.9",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@types/core-js": "^2.5.8",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
-    "vite-plugin-solid": "^2.8.0",
-    "@genshin-db/tcg": "^5.0.9"
+    "vite-plugin-solid": "^2.8.0"
   }
 }
