@@ -5,6 +5,7 @@ import { Status } from "./Entity";
 import { For, Index, Show } from "solid-js";
 import { usePlayerContext } from "./Chessboard";
 import { DICE_COLOR } from "./Dice";
+import { Interactable } from "./Interactable";
 
 export interface CharacterAreaProps {
   data: CharacterData;
@@ -60,12 +61,8 @@ function WaterDrop() {
 }
 
 export function CharacterArea(props: CharacterAreaProps) {
-  const { allSelected, allClickable, allDamages, focusing, onClick } =
-    usePlayerContext();
-  const selected = () => allSelected.includes(props.data.id);
-  const clickable = () => allClickable.includes(props.data.id);
+  const { allDamages } = usePlayerContext();
   const damaged = () => allDamages.find((d) => d.target === props.data.id);
-  const focused = () => focusing() === props.data.id;
   const aura1 = () => props.data.aura & 0xf;
   const aura2 = () => (props.data.aura >> 4) & 0xf;
 
@@ -86,12 +83,10 @@ export function CharacterArea(props: CharacterAreaProps) {
           <Image imageId={aura2()} class="h-5 w-5" />
         </Show>
       </div>
-      <div
-        class="h-40 relative"
-        title={`id=${props.data.id}`}
-        classList={{
-          selected: selected(),
-        }}
+      <Interactable
+        class="h-40 relative rounded-xl"
+        id={props.data.id}
+        definitionId={props.data.definitionId}
       >
         <div class="absolute z-10 left-[-15px] top-[-20px] flex items-center justify-center">
           <WaterDrop />
@@ -135,10 +130,7 @@ export function CharacterArea(props: CharacterAreaProps) {
           class="h-full rounded-xl"
           classList={{
             "brightness-50": props.data.defeated,
-            clickable: clickable(),
-            focused: focused(),
           }}
-          onClick={() => clickable() && onClick(props.data.id)}
         />
         <div class="absolute left-0 bottom-0 h-6 flex flex-row">
           <For each={statuses()}>{(st) => <Status data={st} />}</For>
@@ -163,7 +155,7 @@ export function CharacterArea(props: CharacterAreaProps) {
             </div>
           )}
         </Show>
-      </div>
+      </Interactable>
     </div>
   );
 }

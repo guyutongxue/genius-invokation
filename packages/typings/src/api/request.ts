@@ -1,3 +1,4 @@
+import { StateData } from "./notification";
 import type { DiceType, PlayCardHint } from "../enums";
 
 export interface RerollDiceRequest {}
@@ -29,6 +30,7 @@ export interface UseSkillAction {
   type: "useSkill";
   skill: number;
   cost: readonly DiceType[];
+  preview?: StateData;
 }
 
 export interface ElementalTuningAction {

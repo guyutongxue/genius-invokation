@@ -2,38 +2,38 @@ import type { EntityData } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Show } from "solid-js";
 import { usePlayerContext } from "./Chessboard";
+import { Interactable } from "./Interactable";
 
 export interface EntityProps {
   data: EntityData;
 }
 
 export function Summon(props: EntityProps) {
-  const { allSelected, allClickable, focusing, onClick } = usePlayerContext();
-  const selected = () => allSelected.includes(props.data.id);
-  const clickable = () => allClickable.includes(props.data.id);
-  const focused = () => focusing() === props.data.id;
   return (
-    <div
-      class="relative h-15 w-15"
-      classList={{
-        selected: selected(),
-      }}
+    <Interactable
+      class="relative h-15 w-15 rounded-lg"
+      id={props.data.id}
+      definitionId={props.data.definitionId}
     >
       <Image
         imageId={props.data.definitionId}
         class="h-full w-full rounded-lg"
-        classList={{
-          clickable: clickable(),
-          focused: focused(),
-        }}
-        onClick={() => clickable() && onClick(props.data.id)}
       />
       <Show when={props.data.variable !== null}>
         <div class="absolute right-0 top-0 bg-white b-1 b-solid b-black w-6 h-6 rounded-3 translate-x-[50%] translate-y-[-50%] flex justify-center items-center">
           {props.data.variable}
         </div>
       </Show>
-    </div>
+      <Show when={props.data.hintIcon !== null}>
+        <div class="absolute h-5 min-w-0 left-0 bottom-0 bg-white bg-opacity-70 flex items-center">
+          <Image
+            imageId={props.data.hintIcon!}
+            class="h-4 w-4 left-0 bottom-0"
+          />
+          { props.data.hintText }
+        </div>
+      </Show>
+    </Interactable>
   );
 }
 

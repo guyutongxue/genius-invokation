@@ -6,6 +6,7 @@ import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
 import { ELEMENTAL_TUNING_OFFSET, usePlayerContext } from "./Chessboard";
 import { Show } from "solid-js";
+import { Interactable } from "./Interactable";
 
 export interface CardProps {
   data: CardData;
@@ -13,22 +14,8 @@ export interface CardProps {
 }
 
 export function Card(props: CardProps) {
-  const { allClickable, allSelected, allCosts, onClick, setPrepareTuning } =
-    usePlayerContext();
-  const draggable = () =>
-    allClickable.includes(props.data.id + ELEMENTAL_TUNING_OFFSET);
-  const selected = () => allSelected.includes(props.data.id);
-  const clickable = () => allClickable.includes(props.data.id);
+  const { allCosts } = usePlayerContext();
   const realCost = () => allCosts[props.data.id];
-
-  const dragStart = (e: DragEvent) => {
-    e.dataTransfer!.setData("text/plain", props.data.id.toString());
-    setPrepareTuning(true);
-  };
-  const dragEnd = () => {
-    setPrepareTuning(false);
-  };
-
   return (
     <div class="card-wrapper">
       <Show
@@ -37,18 +24,14 @@ export function Card(props: CardProps) {
           <div class="h-full aspect-[7/12] rotated flex items-center justify-center bg-gray-600 b-gray-700 b-solid b-4 color-white rounded" />
         }
       >
-        <div
-          class="card relative rotated"
-          classList={{ selected: selected() }}
-          onClick={() => clickable() && onClick(props.data.id)}
-          draggable={draggable()}
-          onDragStart={dragStart}
-          onDragEnd={dragEnd}
+        <Interactable
+          class="card relative rotated rounded-lg"
+          id={props.data.id}
+          definitionId={props.data.definitionId}
         >
           <Image
             imageId={props.data.definitionId}
             class="h-full rounded-lg shadow-lg"
-            classList={{ clickable: clickable() }}
             title={`id = ${props.data.id}`}
           />
           <DiceCost
@@ -56,7 +39,7 @@ export function Card(props: CardProps) {
             cost={props.data.definitionCost}
             realCost={realCost()}
           />
-        </div>
+        </Interactable>
       </Show>
     </div>
   );

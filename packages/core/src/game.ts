@@ -28,7 +28,6 @@ import {
   getActiveCharacterIndex,
   getEntityById,
   hasReplacedAction,
-  shiftLeft,
   shuffle,
   sortDice,
 } from "./util";
@@ -692,26 +691,25 @@ export class Game {
     ) {
       // Use skill is disabled, skip
     } else {
-      result.push(
-        ...activeCh.definition.initiativeSkills
-          .map<UseSkillInfo>((s) => ({
-            type: "useSkill",
-            who,
-            skill: {
-              caller: activeCh,
-              definition: s,
-              fromCard: null,
-              requestBy: null,
-              charged: s.skillType === "normal" && player.dice.length % 2 === 0,
-              plunging: s.skillType === "normal" && player.canPlunging,
-            },
-          }))
-          .map((s) => ({
-            ...s,
-            fast: false,
-            cost: [...s.skill.definition.requiredCost],
-          })),
-      );
+      for (const skill of activeCh.definition.initiativeSkills) {
+        const skillInfo = {
+          caller: activeCh,
+          definition: skill,
+          fromCard: null,
+          requestBy: null,
+          charged: skill.skillType === "normal" && player.dice.length % 2 === 0,
+          plunging: skill.skillType === "normal" && player.canPlunging,
+        };
+        const previewState = await this.getStatePreview(skillInfo);
+        result.push({
+          type: "useSkill",
+          who,
+          skill: skillInfo,
+          fast: false,
+          cost: [...skill.requiredCost],
+          preview: previewState,
+        });
+      }
     }
 
     // Cards
@@ -883,6 +881,21 @@ export class Game {
     return eventList;
   }
 
+  /** 获取主动技能的使用后对局预览 */
+  async getStatePreview(skillInfo: SkillInfo) {
+    const oldState = this.state;
+    let newState = this.state;
+    try {
+      const events = await this.useSkillImpl(skillInfo, false, void 0);
+      await this.handleEvents(events, false);
+      newState = this.state;
+    } catch {
+    } finally {
+      this.state = oldState;
+      return newState;
+    }
+  }
+
   async useSkill(
     skillInfo: SkillInfo,
     arg: void | CardSkillEventArg | EventArgOf<EventNames>,
@@ -1022,7 +1035,7 @@ export class Game {
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
-      for (const ch of shiftLeft(player.characters, activeIdx)) {
+      for (const ch of player.characters.shiftLeft(activeIdx)) {
         if (ch.variables.alive && ch.variables.health <= 0) {
           const zeroHealthEventArg = new ZeroHealthEventArg(this.state, ch);
           await this.emitEvent("modifyZeroHealth", zeroHealthEventArg);

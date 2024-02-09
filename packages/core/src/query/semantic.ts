@@ -13,7 +13,6 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
-  shiftLeft,
 } from "../util";
 import { EntityType } from "../base/entity";
 import { GiTcgQueryError } from "../error";
@@ -223,7 +222,7 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
         ...ch,
         index: i,
       }));
-      const shiftedTargetChs = shiftLeft(targetChs, targetActiveIndex);
+      const shiftedTargetChs = targetChs.shiftLeft(targetActiveIndex);
       const orderFn = (ch: CharacterState & { index: number }) => {
         if (!ch.variables.alive) {
           return Infinity;

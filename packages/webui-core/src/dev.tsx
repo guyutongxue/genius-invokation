@@ -41,7 +41,7 @@ function App() {
   const [pausing, pause, resume] = createWaitNotify();
 
   const io: GameIO = {
-    pause,
+    pause: async () => new Promise((r) => setTimeout(r, 500)),
     players: [io0, io1],
   };
   startGame({

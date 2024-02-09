@@ -15,7 +15,10 @@ import { flip } from "@gi-tcg/utils";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
 import { SkillDefinition, SkillInfo } from "./base/skill";
-import { GiTcgCoreInternalEntityNotFoundError, GiTcgCoreInternalError } from "./error";
+import {
+  GiTcgCoreInternalEntityNotFoundError,
+  GiTcgCoreInternalError,
+} from "./error";
 
 export function getEntityById(
   state: GameState,
@@ -68,7 +71,7 @@ export function allEntities(
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
     const activeIdx = getActiveCharacterIndex(player);
-    for (const ch of shiftLeft(player.characters, activeIdx)) {
+    for (const ch of player.characters.shiftLeft(activeIdx)) {
       if (excludeDefeated && ch.variables.health <= 0) {
         continue;
       }
@@ -261,10 +264,9 @@ export function sortDice(
   player: PlayerState,
   dice: readonly DiceType[],
 ): DiceType[] {
-  const characterElements = shiftLeft(
-    player.characters,
-    getActiveCharacterIndex(player),
-  ).map((ch) => elementOfCharacter(ch.definition));
+  const characterElements = player.characters
+    .shiftLeft(getActiveCharacterIndex(player))
+    .map((ch) => elementOfCharacter(ch.definition));
   const value = (d: DiceType) => {
     if (d === DiceType.Omni) return -1000;
     const idx = characterElements.indexOf(d);
@@ -274,9 +276,26 @@ export function sortDice(
   return dice.toSorted((a, b) => value(a) - value(b));
 }
 
-export function shiftLeft<T>(arr: readonly T[], idx: number): T[] {
-  return [...arr.slice(idx), ...arr.slice(0, idx)];
+declare global {
+  interface ReadonlyArray<T> {
+    shiftLeft: typeof shiftLeft;
+    last: typeof arrayLast;
+  }
+  interface Array<T> {
+    /** Won't mutate original array. */
+    shiftLeft: typeof shiftLeft;
+    last: typeof arrayLast;
+  }
 }
+
+function shiftLeft<T>(this: readonly T[], idx: number): T[] {
+  return [...this.slice(idx), ...this.slice(0, idx)];
+}
+function arrayLast<T>(this: readonly T[]): T {
+  return this[this.length - 1];
+}
+Array.prototype.shiftLeft = shiftLeft;
+Array.prototype.last = arrayLast;
 
 // Shuffle an array. No use of state random generator
 export function shuffle<T>(arr: readonly T[]): readonly T[] {

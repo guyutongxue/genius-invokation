@@ -35,6 +35,7 @@ import { RerollView } from "./RerollView";
 import { Dice } from "./Dice";
 import { SwitchHandsView } from "./SwitchHandsView";
 import { SkillButton } from "./SkillButton";
+import { CardDescription, CardDescrptionProps } from "./CardDescription";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -152,6 +153,7 @@ export interface PlayerContextValue {
   allDamages: readonly DamageData[];
   focusing: Accessor<number | null>;
   onClick: (id: number) => void;
+  onHover: (mouse: "enter" | "leave", id: number) => void;
   setPrepareTuning: (value: boolean) => void;
   assetApiEndpoint: string;
 }
@@ -438,6 +440,31 @@ export function createPlayer(
     setPrepareTuning(false);
   };
 
+  const [cardDescriptionProps, setCardDescriptionProps] =
+    createStore<CardDescrptionProps>({
+      id: 0,
+      show: false,
+      type: "tcgcharactercards",
+      x: 0,
+      y: 0,
+      z: 15,
+    });
+  const onHover = (mouse: "enter" | "leave", id: number) => {
+    if (mouse === "enter") {
+      setTimeout(() => {
+        if (!cardDescriptionProps.show) {
+          setCardDescriptionProps((p) => ({
+            ...p,
+            id,
+            show: true,
+          }));
+        }
+      }, 100);
+    } else {
+      setCardDescriptionProps((p) => ({ ...p, show: false }));
+    }
+  };
+
   function Chessboard(props: ComponentProps<"div">) {
     const [local, restProps] = splitProps(props, ["class"]);
     return (
@@ -453,8 +480,10 @@ export function createPlayer(
             allDamages,
             focusing,
             onClick: notifyElementClicked,
+            onHover,
             setPrepareTuning,
-            assetApiEndpoint: assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api"
+            assetApiEndpoint:
+              assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
           }}
         >
           <div class="w-full b-solid b-black b-2 relative">
@@ -551,6 +580,7 @@ export function createPlayer(
               {stateData().winner === who ? "胜利" : "失败"}
             </div>
           </Show>
+          <CardDescription {...cardDescriptionProps} />
         </PlayerContext.Provider>
       </div>
     );

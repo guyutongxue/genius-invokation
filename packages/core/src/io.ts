@@ -240,6 +240,7 @@ export function exposeAction(action: ActionInfo): Action {
         type: "useSkill",
         skill: Math.floor(action.skill.definition.id),
         cost: action.cost,
+        preview: exposeState(action.who, action.preview),
       };
     }
     case "playCard": {

@@ -84,6 +84,7 @@ export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
   readonly skill: SkillInfo;
+  readonly preview: GameState;
 }
 
 export interface PlayCardInfo {

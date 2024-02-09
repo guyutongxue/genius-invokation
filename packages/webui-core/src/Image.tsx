@@ -1,28 +1,15 @@
 import { ComponentProps, Show, createResource, splitProps } from "solid-js";
 import { usePlayerContext } from "./Chessboard";
+import { cached } from "./fetch";
 
 export interface ImageProps extends ComponentProps<"img"> {
   imageId: number;
 }
 
-const cachedObjectUrls = new Map<string, string>();
-async function cachedFetch(url: string): Promise<string> {
-  if (cachedObjectUrls.has(url)) {
-    return cachedObjectUrls.get(url)!;
-  }
-  return fetch(url)
-    .then((r) => r.blob())
-    .then((blob) => {
-      const objectUrl = URL.createObjectURL(blob);
-      cachedObjectUrls.set(url, objectUrl);
-      return objectUrl;
-    });
-}
-
 export function Image(props: ImageProps) {
   const [local, rest] = splitProps(props, ["imageId", "width", "height"]);
   const { assetApiEndpoint } = usePlayerContext();
-  const [url] = createResource(() => cachedFetch(`${assetApiEndpoint}/images/${local.imageId}?thumb=1`));
+  const [url] = createResource(() => cached(`${assetApiEndpoint}/images/${local.imageId}?thumb=1`));
   const classNames = "flex items-center justify-center object-cover";
   const innerProps = (): ComponentProps<"img"> => ({
     ...rest,
