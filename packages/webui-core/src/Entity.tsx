@@ -30,7 +30,7 @@ export function Summon(props: EntityProps) {
             imageId={props.data.hintIcon!}
             class="h-4 w-4 left-0 bottom-0"
           />
-          { props.data.hintText }
+          {props.data.hintText}
         </div>
       </Show>
     </Interactable>
@@ -40,22 +40,18 @@ export function Summon(props: EntityProps) {
 export { Summon as Support };
 
 export function Status(props: EntityProps) {
-  const { focusing } = usePlayerContext();
-  const focused = () => focusing() === props.data.id;
   return (
-    <div class="relative w-5">
-      <Image
-        imageId={props.data.definitionId}
-        class="h-5"
-        classList={{
-          focused: focused(),
-        }}
-      />
+    <Interactable
+      class="relative h-5 w-5"
+      id={props.data.id}
+      definitionId={props.data.definitionId}
+    >
+      <Image imageId={props.data.definitionId} class="h-5 w-5" />
       <Show when={props.data.variable !== null}>
         <div class="absolute bottom-0 right-0 text-xs">
           {props.data.variable}
         </div>
       </Show>
-    </div>
+    </Interactable>
   );
 }

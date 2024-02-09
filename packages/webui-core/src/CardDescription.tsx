@@ -1,4 +1,5 @@
-import { Show } from "solid-js";
+import { ComponentProps, Show, splitProps } from "solid-js";
+import { usePlayerContext } from "./Chessboard";
 
 export type TypeKey =
   | "tcgcharactercards"
@@ -7,28 +8,26 @@ export type TypeKey =
   | "tcgstatuseffects"
   | "tcgkeywords";
 
-export interface CardDescrptionProps {
-  show: boolean;
-  id: number;
-  type: TypeKey;
-  x: number;
-  y: number;
-  z: number;
+export interface CardDescrptionProps extends ComponentProps<"div"> {
+  definitionId: number;
+  type?: TypeKey;
 }
 
 export function CardDescription(props: CardDescrptionProps) {
+  const [local, rest] = splitProps(props, ["definitionId", "type"]);
   return (
-    <Show when={props.show}>
-      <div
-        class="absolute w-30 h-30 bg-white rounded-5"
-        style={{
-          left: `${props.x}px`,
-          top: `${props.y}px`,
-          "z-index": props.z,
-        }}
-      >
-        test {props.id}
+    <div {...rest}>
+      <div class="w-30 h-30 rounded-md bg-white cursor-auto">
+        test {local.definitionId}
       </div>
-    </Show>
+    </div>
   );
+}
+
+export interface RootCardDescriptionProps {
+  show: boolean;
+  id: number;
+  definitionId: number;
+  x: number;
+  y: number;
 }

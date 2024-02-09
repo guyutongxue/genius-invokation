@@ -1,22 +1,17 @@
-import { JSX } from "solid-js";
+import { JSX, Show, createSignal } from "solid-js";
 import { ELEMENTAL_TUNING_OFFSET, usePlayerContext } from "./Chessboard";
+import { CardDescription } from "./CardDescription";
 
 export interface InteractableProps {
   id: number;
   class?: string;
-  definitionId?: number;
+  definitionId: number;
   children: JSX.Element;
 }
 
 export function Interactable(props: InteractableProps) {
-  const {
-    allClickable,
-    allSelected,
-    onClick,
-    focusing,
-    onHover,
-    setPrepareTuning,
-  } = usePlayerContext();
+  const { allClickable, allSelected, onClick, focusing, setPrepareTuning } =
+    usePlayerContext();
   const selected = () => allSelected.includes(props.id);
   const clickable = () => allClickable.includes(props.id);
   const focused = () => focusing() === props.id;
@@ -29,26 +24,30 @@ export function Interactable(props: InteractableProps) {
   const dragEnd = () => {
     setPrepareTuning(false);
   };
+
+  let ref: HTMLDivElement;
+
   return (
     <div
-      class={props.class}
+      ref={ref!}
+      class={`relative group ${props.class}`}
       classList={{
         selected: selected(),
         clickable: clickable(),
         focused: focused(),
       }}
       onClick={() => clickable() && onClick(props.id)}
-      onMouseEnter={() =>
-        props.definitionId && onHover("enter", props.definitionId)
-      }
-      onMouseLeave={() =>
-        props.definitionId && onHover("leave", props.definitionId)
-      }
       draggable={draggable()}
       onDragStart={dragStart}
       onDragEnd={dragEnd}
     >
       {props.children}
+      <div class="absolute top-0 left-0 translate-y-[-100%] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all pb-2 z-30">
+        <CardDescription
+          class="shadow-lg"
+          definitionId={props.definitionId}
+        />
+      </div>
     </div>
   );
 }

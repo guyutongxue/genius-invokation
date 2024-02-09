@@ -25,7 +25,7 @@ export function SwitchHandsView(props: SwitchHandsViewProps) {
             >
               <Card data={card} />
               <Show when={chosenIds.includes(card.id)}>
-                <div class="absolute top-[50%] left-0 w-full text-center text-6xl font-bold text-red-600 translate-y-[-50%]">
+                <div class="absolute top-[50%] left-0 w-full text-center text-6xl font-bold text-red-600 translate-y-[-50%] pointer-events-none">
                   &#8856;
                 </div>
               </Show>

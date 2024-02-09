@@ -83,11 +83,7 @@ export function CharacterArea(props: CharacterAreaProps) {
           <Image imageId={aura2()} class="h-5 w-5" />
         </Show>
       </div>
-      <Interactable
-        class="h-40 relative rounded-xl"
-        id={props.data.id}
-        definitionId={props.data.definitionId}
-      >
+      <div class="h-40 relative">
         <div class="absolute z-10 left-[-15px] top-[-20px] flex items-center justify-center">
           <WaterDrop />
           <div class="absolute">{props.data.health}</div>
@@ -95,44 +91,53 @@ export function CharacterArea(props: CharacterAreaProps) {
         <div class="absolute z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
           <Show when={weapon()}>
             {(et) => (
-              <div
+              <Interactable
                 class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
-                title={`defId = ${et().definitionId}`}
+                id={et().id}
+                definitionId={et().definitionId}
               >
                 &#x1F5E1;
-              </div>
+              </Interactable>
             )}
           </Show>
           <Show when={artifact()}>
             {(et) => (
-              <div
+              <Interactable
                 class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
-                title={`defId = ${et().definitionId}`}
+                id={et().id}
+                definitionId={et().definitionId}
               >
                 &#x1F451;
-              </div>
+              </Interactable>
             )}
           </Show>
           <For each={otherEquipments()}>
             {(et) => (
-              <div
-                class="w-6 h-6 rounded-3 text-center line-height-6 bg-yellow-100 border-solid border-1 border-yellow-800"
-                title={`defId = ${et.definitionId}`}
+              <Interactable
+                class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
+                id={et.id}
+                definitionId={et.definitionId}
               >
                 &#x2728;
-              </div>
+              </Interactable>
             )}
           </For>
         </div>
         <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
-        <Image
-          imageId={props.data.definitionId}
-          class="h-full rounded-xl"
-          classList={{
-            "brightness-50": props.data.defeated,
-          }}
-        />
-        <div class="absolute left-0 bottom-0 h-6 flex flex-row">
+        <Interactable
+          class="h-full w-full rounded-xl"
+          id={props.data.id}
+          definitionId={props.data.definitionId}
+        >
+          <Image
+            imageId={props.data.definitionId}
+            class="h-full rounded-xl"
+            classList={{
+              "brightness-50": props.data.defeated,
+            }}
+          />
+        </Interactable>
+        <div class="absolute z-10 left-0 bottom-0 h-6 flex flex-row">
           <For each={statuses()}>{(st) => <Status data={st} />}</For>
         </div>
         <Show when={props.data.defeated}>
@@ -155,7 +160,7 @@ export function CharacterArea(props: CharacterAreaProps) {
             </div>
           )}
         </Show>
-      </Interactable>
+      </div>
     </div>
   );
 }

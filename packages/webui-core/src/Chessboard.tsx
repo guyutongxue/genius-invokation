@@ -35,7 +35,6 @@ import { RerollView } from "./RerollView";
 import { Dice } from "./Dice";
 import { SwitchHandsView } from "./SwitchHandsView";
 import { SkillButton } from "./SkillButton";
-import { CardDescription, CardDescrptionProps } from "./CardDescription";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -153,7 +152,6 @@ export interface PlayerContextValue {
   allDamages: readonly DamageData[];
   focusing: Accessor<number | null>;
   onClick: (id: number) => void;
-  onHover: (mouse: "enter" | "leave", id: number) => void;
   setPrepareTuning: (value: boolean) => void;
   assetApiEndpoint: string;
 }
@@ -439,30 +437,16 @@ export function createPlayer(
     notifyElementClicked(cardId + ELEMENTAL_TUNING_OFFSET);
     setPrepareTuning(false);
   };
-
-  const [cardDescriptionProps, setCardDescriptionProps] =
-    createStore<CardDescrptionProps>({
-      id: 0,
-      show: false,
-      type: "tcgcharactercards",
-      x: 0,
-      y: 0,
-      z: 15,
-    });
-  const onHover = (mouse: "enter" | "leave", id: number) => {
-    if (mouse === "enter") {
-      setTimeout(() => {
-        if (!cardDescriptionProps.show) {
-          setCardDescriptionProps((p) => ({
-            ...p,
-            id,
-            show: true,
-          }));
-        }
-      }, 100);
-    } else {
-      setCardDescriptionProps((p) => ({ ...p, show: false }));
-    }
+  const contextValue: PlayerContextValue = {
+    allClickable,
+    allSelected,
+    allCosts,
+    allDamages,
+    focusing,
+    onClick: notifyElementClicked,
+    setPrepareTuning,
+    assetApiEndpoint:
+      assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
   };
 
   function Chessboard(props: ComponentProps<"div">) {
@@ -472,20 +456,7 @@ export function createPlayer(
         class={`gi-tcg-chessboard relative flex flex-col ${local.class} select-none`}
         {...restProps}
       >
-        <PlayerContext.Provider
-          value={{
-            allClickable,
-            allSelected,
-            allCosts,
-            allDamages,
-            focusing,
-            onClick: notifyElementClicked,
-            onHover,
-            setPrepareTuning,
-            assetApiEndpoint:
-              assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
-          }}
-        >
+        <PlayerContext.Provider value={contextValue}>
           <div class="w-full b-solid b-black b-2 relative">
             <PlayerArea data={stateData().players[1 - who]} opp={true} />
             <PlayerArea data={stateData().players[who]} opp={false} />
@@ -580,7 +551,6 @@ export function createPlayer(
               {stateData().winner === who ? "胜利" : "失败"}
             </div>
           </Show>
-          <CardDescription {...cardDescriptionProps} />
         </PlayerContext.Provider>
       </div>
     );
