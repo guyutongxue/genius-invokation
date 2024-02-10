@@ -51,7 +51,7 @@ export const IcyQuill01 = combatStatus(111072)
 export const IcyQuill = combatStatus(111071)
   .conflictWith(111072)
   .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
-  .usage(2, { autoDecrease: false })
+  .usage(2)
   .increaseDamage(1)
   .done();
 
