@@ -222,7 +222,7 @@ export class Game {
     for (const i of [0, 1] as const) {
       this.notifyOne(i, events);
     }
-    await this.io.pause(this.state);
+    await this.io.pause?.(this.state);
     if (this.state.phase !== "gameEnd") {
       this.mutate({ type: "clearMutationLog" });
       await this.checkGiveUp();
@@ -272,6 +272,7 @@ export class Game {
         this.resolveFinishPromise();
       } catch (e) {
         if (e instanceof GiTcgIOError) {
+          this.io.onIoError?.(e);
           await this.gotWinner(flip(e.who));
         } else if (e instanceof GiTcgError) {
           this.rejectFinishPromise(e);

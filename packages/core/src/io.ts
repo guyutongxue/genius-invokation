@@ -17,6 +17,7 @@ import {
 import { CardState, CharacterState, EntityState, GameState } from ".";
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
+import { GiTcgIOError } from "./error";
 
 export interface PlayerIO {
   giveUp: boolean;
@@ -28,7 +29,8 @@ export interface PlayerIO {
 }
 
 export interface GameIO {
-  pause: (st: GameState) => Promise<unknown>;
+  pause?: (st: GameState) => Promise<unknown>;
+  onIoError?: (e: GiTcgIOError) => void;
   players: [PlayerIO, PlayerIO];
 }
 

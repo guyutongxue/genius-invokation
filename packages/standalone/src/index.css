@@ -1,8 +1,61 @@
 body,
 html {
   margin: 0;
+  min-height: 100vh;
 }
 
 * {
   box-sizing: border-box;
+}
+
+#root {
+  margin: 0 auto;
+  width: min(100vw, 1280px);
+  overflow: hidden;
+}
+
+.title {
+  width: 100%;
+  text-align: center;
+  font-size: 1.3rem;
+  margin: 0.2rem 0;
+  font-family: "汉仪文黑-85W", sans-serif;
+}
+
+.config-panel {
+  width: 100%;
+  padding: 0 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+
+  .config-panel__title {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .config-panel__deck {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    input {
+      flex-grow: 1;
+      flex-shrink: 1;
+      font-family: monospace;
+    }
+  }
+
+  .config-panel__description {
+    margin: 1rem 0;
+  }
+
+  button {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 0.2rem;
+  }
 }

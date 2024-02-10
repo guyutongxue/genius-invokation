@@ -170,14 +170,27 @@ export function usePlayerContext(): Readonly<PlayerContextValue> {
 }
 
 export interface WebUiOption {
+  onGiveUp?: () => void;
   alternativeAction?: AgentActions;
   assetApiEndpoint?: string;
 }
 
+export interface PlayerIOWithCancellation extends PlayerIO {
+  cancelRpc: () => void;
+}
+
+// Remove proxy
+function sanitize<T>(value: T): T{
+  return JSON.parse(JSON.stringify(value));
+}
+
 export function createPlayer(
   who: 0 | 1,
-  { alternativeAction, assetApiEndpoint }: WebUiOption = {},
-): [io: PlayerIO, Chessboard: (props: ComponentProps<"div">) => JSX.Element] {
+  { onGiveUp, alternativeAction, assetApiEndpoint }: WebUiOption = {},
+): [
+  io: PlayerIOWithCancellation,
+  Chessboard: (props: ComponentProps<"div">) => JSX.Element,
+] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
   const [giveUp, setGiveUp] = createSignal(false);
   const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
@@ -200,23 +213,17 @@ export function createPlayer(
   >({});
   const [prepareTuning, setPrepareTuning] = createSignal(false);
 
-  let rejectRpc: (e: Error) => void = () => {};
+  const clearIo = () => {
+    setClickable([]);
+    setSelected([]);
+    setAllCosts({});
+    setDiceSelectProp();
+  };
+  let rejectRpc: (e: Error) => void = () => {
+    clearIo();
+  };
 
   const action = alternativeAction ?? {
-    onNotify: ({ events }) => {
-      let currentFocusing: number | null = null;
-      const currentDamages: DamageData[] = [];
-      for (const event of events) {
-        if (event.type === "damage") {
-          currentDamages.push(event.damage);
-        }
-        if (event.type === "triggered") {
-          currentFocusing = event.id;
-        }
-      }
-      setAllDamages(currentDamages);
-      setFocusing(currentFocusing);
-    },
     onSwitchHands: async () => {
       return { removedHands: await waitHandSwitch() };
     },
@@ -374,10 +381,22 @@ export function createPlayer(
       return result;
     },
   };
-  const io: PlayerIO = {
+  const io: PlayerIOWithCancellation = {
     giveUp: false,
     notify: (msg) => {
       setStateData(msg.newState);
+      let currentFocusing: number | null = null;
+      const currentDamages: DamageData[] = [];
+      for (const event of msg.events) {
+        if (event.type === "damage") {
+          currentDamages.push(event.damage);
+        }
+        if (event.type === "triggered") {
+          currentFocusing = event.id;
+        }
+      }
+      setAllDamages(currentDamages);
+      setFocusing(currentFocusing);
       if (action.onNotify) {
         action.onNotify(msg);
       }
@@ -385,23 +404,36 @@ export function createPlayer(
     rpc: (method, req) => {
       /* eslint-disable @typescript-eslint/no-explicit-any */
       return new Promise<any>((resolve, reject) => {
-        rejectRpc = reject;
+        rejectRpc = (e) => {
+          clearIo();
+          reject(e);
+        };
         switch (method) {
           case "switchHands":
-            action.onSwitchHands().then(resolve).catch(reject);
+            action
+              .onSwitchHands()
+              .then(sanitize)
+              .then(resolve)
+              .catch(reject);
             break;
           case "chooseActive":
             action
               .onChooseActive(req as ChooseActiveRequest)
+              .then(sanitize)
               .then(resolve)
               .catch(reject);
             break;
           case "rerollDice":
-            action.onRerollDice().then(resolve).catch(reject);
+            action
+              .onRerollDice()
+              .then(sanitize)
+              .then(resolve)
+              .catch(reject);
             break;
           case "action":
             action
               .onAction(req as ActionRequest)
+              .then(sanitize)
               .then(resolve)
               .catch(reject);
             break;
@@ -410,10 +442,14 @@ export function createPlayer(
         }
       });
     },
+    cancelRpc: () => {
+      rejectRpc(new Error("User canceled the request"));
+    },
   };
   createEffect(() => {
     if (giveUp()) {
       io.giveUp = true;
+      onGiveUp?.();
       rejectRpc(new Error("User give up when rpc"));
     }
   });
