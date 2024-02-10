@@ -40,6 +40,7 @@ export const PrayerOfTheCrimsonCrown01 = combatStatus(112073)
   .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("modifySkillDamageType", (c, e) => {
+    if (e.type !== DamageType.Physical) return false;
     const { type, tags } = e.via.caller.definition;
     if (type !== "character") { return false; }
     return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
@@ -68,6 +69,7 @@ export const PrayerOfTheCrimsonCrown = combatStatus(112072)
   .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("modifySkillDamageType", (c, e) => {
+    if (e.type !== DamageType.Physical) return false;
     const { type, tags } = e.via.caller.definition;
     if (type !== "character") { return false; }
     return tags.includes("sword") || tags.includes("claymore") || tags.includes("pole");
