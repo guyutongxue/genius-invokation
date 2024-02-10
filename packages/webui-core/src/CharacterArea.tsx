@@ -18,7 +18,7 @@ interface EnergyBarProps {
 
 function EnergyBar(props: EnergyBarProps) {
   return (
-    <div class="absolute z-10 right-[-10px] top-0 flex flex-col gap-2">
+    <div class="absolute z-1 right-[-10px] top-0 flex flex-col gap-2">
       <Index each={Array(props.total).fill(0)}>
         {(_, i) => (
           <svg // 能量点
@@ -84,11 +84,12 @@ export function CharacterArea(props: CharacterAreaProps) {
         </Show>
       </div>
       <div class="h-40 relative">
-        <div class="absolute z-10 left-[-15px] top-[-20px] flex items-center justify-center">
+        <div class="absolute z-1 left-[-15px] top-[-20px] flex items-center justify-center">
           <WaterDrop />
           <div class="absolute">{props.data.health}</div>
         </div>
-        <div class="absolute z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
+        <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
+        <div class="absolute z-3 hover:z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
           <Show when={weapon()}>
             {(et) => (
               <Interactable
@@ -123,7 +124,6 @@ export function CharacterArea(props: CharacterAreaProps) {
             )}
           </For>
         </div>
-        <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
         <Interactable
           class="h-full w-full rounded-xl"
           id={props.data.id}
@@ -137,11 +137,11 @@ export function CharacterArea(props: CharacterAreaProps) {
             }}
           />
         </Interactable>
-        <div class="absolute z-10 left-0 bottom-0 h-6 flex flex-row">
+        <div class="absolute z-3 hover:z-10 left-0 bottom-0 h-6 flex flex-row">
           <For each={statuses()}>{(st) => <Status data={st} />}</For>
         </div>
         <Show when={props.data.defeated}>
-          <div class="absolute z-10 top-[50%] left-0 w-full text-center text-5xl font-bold translate-y-[-50%] font-[var(--font-emoji)]">
+          <div class="absolute z-5 top-[50%] left-0 w-full text-center text-5xl font-bold translate-y-[-50%] font-[var(--font-emoji)]">
             &#9760;
           </div>
         </Show>

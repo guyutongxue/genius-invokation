@@ -16,6 +16,18 @@
 
   --btn-color: darkgray;
 
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: lightgrey;
+    border          : 3px solid transparent;
+    border-radius   : 5px;
+    background-clip : padding-box;
+  }
+
   ul,
   ol {
     padding: 0;
@@ -50,6 +62,9 @@
     font-family: var(--font-emoji);
   }
 
+  button {
+    line-height: unset;
+  }
   button:not(:disabled) {
     cursor: pointer;
   }

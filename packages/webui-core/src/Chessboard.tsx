@@ -491,7 +491,7 @@ export function createPlayer(
               </Show>
             </div>
           </div>
-          <div class="absolute right-0 top-0 z-10 h-full min-w-8 flex flex-col bg-yellow-800">
+          <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col bg-yellow-800">
             <Show
               when={diceSelectProp()}
               fallback={
@@ -512,7 +512,7 @@ export function createPlayer(
             </For>
           </div>
           <div
-            class="absolute right-0 top-0 h-full z-10 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
+            class="absolute right-0 top-0 h-full z-15 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
             classList={{
               invisible: !prepareTuning(),
               "w-0": !prepareTuning(),

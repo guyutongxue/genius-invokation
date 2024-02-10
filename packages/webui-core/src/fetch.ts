@@ -2,7 +2,7 @@
 const cache = new Map<string, string>();
 export async function cached(url: string) {
   if (cache.has(url)) {
-    return cache.get(url);
+    return cache.get(url)!;
   }
   const response = await fetch(url);
   const blob = await response.blob();

@@ -17,7 +17,7 @@ export function Card(props: CardProps) {
   const { allCosts } = usePlayerContext();
   const realCost = () => allCosts[props.data.id];
   return (
-    <div class="card-wrapper">
+    <div class="card-wrapper z-10">
       <Show
         when={props.data.definitionId > 0}
         fallback={

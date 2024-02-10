@@ -44,8 +44,8 @@ export function Interactable(props: InteractableProps) {
       {props.children}
       <div class="absolute top-0 left-0 translate-y-[-100%] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all pb-2 z-30">
         <CardDescription
-          class="shadow-lg"
           definitionId={props.definitionId}
+          entityId={props.id}
         />
       </div>
     </div>

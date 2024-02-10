@@ -55,19 +55,11 @@ export function PlayerArea(props: PlayerAreaProps) {
           </div>
         </div>
         <div
-          class={`h-30 flex flex-row mx-4 hands-area ${
+          class={`relative h-30 flex flex-row mx-4 hands-area ${
             props.opp ? "justify-end" : "justify-start"
           }`}
         >
-          <For each={props.data.hands}>
-            {(card) => (
-              <Card
-                data={card}
-                // onDragstart={onDragstart}
-                // onDragend={ondragend}
-              />
-            )}
-          </For>
+          <For each={props.data.hands}>{(card) => <Card data={card} />}</For>
         </div>
       </div>
     </div>
