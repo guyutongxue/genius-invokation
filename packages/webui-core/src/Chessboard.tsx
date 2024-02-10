@@ -542,7 +542,7 @@ export function createPlayer(
               />
             </Show>
           </div>
-          <div class="absolute right-10 bottom-0 z-5 flex flex-row gap-2">
+          <div class="absolute right-10 bottom-0 z-12 flex flex-row gap-2">
             <For each={myPlayer().skills}>
               {(skill) => <SkillButton data={skill} />}
             </For>
