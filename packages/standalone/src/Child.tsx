@@ -22,7 +22,6 @@ export function Child() {
     if (!("method" in data)) {
       return;
     }
-    console.log(data);
     switch (data.method) {
       case "notify": {
         if (!Array.isArray(data.params)) {
@@ -36,7 +35,6 @@ export function Child() {
           return;
         }
         const result = await uiIo.rpc(...(data.params as [any, any]));
-        console.log(result);
         (e.source as WindowProxy)?.postMessage({
           giTcg: "1.0",
           method: "rpc",

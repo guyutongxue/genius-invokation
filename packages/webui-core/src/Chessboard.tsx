@@ -576,7 +576,7 @@ export function createPlayer(
             </div>
           </Show>
           <button
-            class="absolute right-10 top-2 btn btn-red-500"
+            class="absolute right-10 top-2 z-15 btn btn-red-500"
             onClick={() => setGiveUp(true)}
             disabled={giveUp()}
           >

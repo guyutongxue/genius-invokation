@@ -34,12 +34,31 @@ export function App() {
 
   const [uiIo, Chessboard] = createPlayer(1);
 
-  let popupWindow: Window | null = null;
+  let [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
+
+  const showPopup = () => {
+    if (popupWindow() === null) {
+      setPopupWindow(
+        window.open(
+          window.location.href,
+          "_blank",
+          "popup=yes, depended=yes, height=750, width=750",
+        ),
+      );
+      // 不知道为什么 onbeforeload 不起作用
+      const interval = setInterval(() => {
+        if (popupWindow()?.closed) {
+          clearInterval(interval);
+          childIo.giveUp = true;
+        }
+      }, 1000);
+    }
+  };
 
   const childIo: PlayerIO = {
     giveUp: false,
     notify: (...params) => {
-      popupWindow?.postMessage({
+      popupWindow()?.postMessage({
         giTcg: "1.0",
         method: "notify",
         params,
@@ -56,7 +75,6 @@ export function App() {
           if (data.giTcg !== "1.0") {
             return;
           }
-          console.log(data);
           if (!("method" in data)) {
             return;
           }
@@ -67,7 +85,7 @@ export function App() {
         };
         window?.addEventListener("message", handler);
       });
-      popupWindow?.postMessage({
+      popupWindow()?.postMessage({
         giTcg: "1.0",
         method: "rpc",
         params,
@@ -85,29 +103,40 @@ export function App() {
       players: [childIo, uiIo],
     };
 
-    popupWindow = window.open(
-      window.location.href,
-      "_blank",
-      "popup=yes, depended=yes, height=750, width=750",
-    );
-    popupWindow?.addEventListener("beforeunload", () => {
-      childIo.giveUp = true;
-    });
+    showPopup();
 
     startGame({
       data,
       io,
       playerConfigs: [playerConfig0, playerConfig1],
-    })
-      .then((winner) => alert(`Winner is ${winner}`))
-      .catch((e) => alert(e instanceof Error ? e.message : String(e)));
+    }).catch((e) => alert(e instanceof Error ? e.message : String(e)));
     setStarted(true);
+  };
+
+  const childGiveUpHandler = (e: MessageEvent) => {
+    const { data } = e;
+    if (typeof data !== "object" || data === null) {
+      return;
+    }
+    if (data.giTcg !== "1.0") {
+      return;
+    }
+    if (!("method" in data)) {
+      return;
+    }
+    if (data.method === "giveUp") {
+      childIo.giveUp = true;
+    }
   };
 
   onMount(() => {
     window.addEventListener("beforeunload", () => {
-      popupWindow?.close();
+      popupWindow()?.close();
     });
+    window.addEventListener("message", childGiveUpHandler);
+  });
+  onCleanup(() => {
+    window.removeEventListener("message", childGiveUpHandler);
   });
 
   return (
