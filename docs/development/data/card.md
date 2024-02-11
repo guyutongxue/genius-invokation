@@ -52,7 +52,7 @@ const ElementalResonanceShatteringIce = card(331102)
 /** 交给我吧！ */
 const LeaveItToMe = card(332006)
   .toCombatStatus()
-  .once("beforeUseDice", (c) => canSwitchFast(c))
+  .once("beforeFastSwitch")
   .setFastAction()
   .done();
 ```
@@ -62,10 +62,21 @@ const LeaveItToMe = card(332006)
 通常情况下，使用 `.food()` 方法就够了。该方法会指定 `.tags("food")`，然后调用 `.addTarget` 为不带饱腹状态的角色，并在所有行动的结尾添加 `.characterStatus` 增加目标角色的饱腹状态。例：
 
 ```ts
+/** 绝云锅巴 */
+const JueyunGuoba = card(333001)
+  .food()
+  .toStatus("@targets.0")
+  // [...]
+  .done();
+```
+
+若打出的目标有额外限制，如治疗牌要求目标生命值未满，则可使用 `.food({ extraTargetRestraint: "with health < maxHealth" })`：
+
+```ts
 /** 蒙德土豆饼 */
 const MondstadtHashBrown = card(333006)
   .costSame(1)
-  .food()
+  .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(2, "@targets.0")
   .done();
 ```
@@ -78,7 +89,8 @@ const TandooriRoastChicken = card(333011)
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters")
-  .once("beforeSkillDamage", (c) => checkDamageSkillType(c, "elemental"))
+  .oneDuration()
+  .once("modifySkillDamage", (c, e) => e.viaSkillType("elemental"))
   .increaseDamage(2)
   .done();
 ```

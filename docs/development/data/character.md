@@ -37,7 +37,7 @@ const Ganyu = character(1101)   // 角色 ID
 /** 枫原万叶 千早振 被动 */
 const ChihayaburuPassive = skill(15054)
   .type("passive")
-  .on("skill", (c) => c.eventArg.definition.id === Chihayaburu)
+  .on("useSkill", (c, e) => e.action.skill.definition.id === Chihayaburu)
   .switchActive("my next")
   .done();
 ```

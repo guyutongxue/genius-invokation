@@ -13,14 +13,14 @@
 
 // 声明域描述方式：
 const Grimheart = status(111061)
-  .on("beforeDealDamage", /** [...] */)
+  .on("modifyDamage", /** [...] */)
   .increaseDamage(3)
   .dispose()
   .done();
 
 // 脚本域描述方式：
 const Grimheart = status(111061)
-  .on("beforeDealDamage", (c) => /** [...] */)
+  .on("modifyDamage", (c) => /** [...] */)
   .do((c) => {
     c.increaseDamage(3);
     c.dispose();

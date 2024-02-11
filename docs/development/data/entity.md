@@ -24,14 +24,14 @@ const FavoniusCathedral = card(321006)
 /** 摩耶之殿：我方造成元素反应时，伤害 +1 */
 const ShrineOfMaya = combatStatus(117032)
   // [...]
-  .on("beforeDealDamage", (c) => getReaction(c.damageInfo) !== null)
+  .on("modifyDamage", (c, e) => e.getReaction())
   .increaseDamage(1)
   // [...]
 ```
 
-所有的触发事件都提供了额外的信息，比如“使用技能后”时间的额外信息为 `c.eventArg`，是一个 `SkillInfo` 对象。所有的异步事件的额外信息都在 `c.eventArg` 内；同步事件则注入在 `c` 参数内，具体参考文档见 ???。此外，我还提供了一些常见的条件检测函数，也从 `@gi-tcg/core/builder` 导出。
+所有的触发事件都提供了额外的信息，比如“使用技能后”时间的额外信息为 `c.eventArg`，是一个 `SkillInfo` 对象。所有的异步事件的额外信息都在 `c.eventArg` 内；同步事件则注入在 `c` 参数内，具体参考文档见 [events](./events.md)。
 
-`c.eventArg` 可直接从条件判断函数的第二个参数访问，如 `(c, e) => checkFoo(e)`。
+`c.eventArg` 可直接从条件判断函数的第二个参数访问，如 `(c, e) => e.foo()`。
 
 ## 可用次数
 
@@ -40,7 +40,8 @@ const ShrineOfMaya = combatStatus(117032)
 ```ts
 /** 温迪：风域 */
 const Stormzone = combatStatus(115031)
-  .on("beforeUseDice", (c) => canSwitchDeductCost1(c))
+  // [...]
+  .on("deductDiceSwitch")
   .usage(2)
   .deductCost(DiceType.Omni, 1)
   .done();
@@ -52,7 +53,7 @@ const Stormzone = combatStatus(115031)
 /** 莫娜：虚影 */
 const Reflection = summon(112031)
   // [...]
-  .on("beforeDamaged", (c) => c.of(c.damageInfo.target).isActive())
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .done();
@@ -65,7 +66,7 @@ const Reflection = summon(112031)
 const BrokenRimesEcho = card(312101)
   .costVoid(2)
   .artifact()
-  .on("beforeUseDiceCharacterSkillOrTalent", /** [...] */)
+  .on("deductDice", (c, e) => /* [...] */)
   .usagePerRound(1)
   .deductCost(DiceType.Cryo, 1)
   .done();
