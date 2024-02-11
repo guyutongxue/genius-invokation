@@ -176,7 +176,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   legend(): this {
-    return this.tags("legend");
+    return this.tags("legend").filter((c) => !c.player.legendUsed);
   }
 
   talent(

@@ -8,7 +8,7 @@ import { character, skill, status, card, DamageType, DiceType, CharacterHandle, 
  * 角色汲取了一种和当前不同的元素后：生成1个所汲取元素类型的元素骰。
  */
 export const StoneFacetsElementalAbsorption = status(126021)
-  .variable("bitset", 1 << 6)
+  .variable("bitset", 1 << 6, { visible: false })
   .on("replaceCharacterDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
   .do((c) => {
     let diceType = DiceType.Geo;
