@@ -19,7 +19,7 @@ export const FierySanctumField = summon(113093)
     e.decreaseDamage(1);
     const dehya = c.$(`my standby characters with definition id ${Dehya}`)!;
     if (dehya.health >= 7) {
-      dehya.damage(1, DamageType.Piercing);
+      dehya.damage(DamageType.Piercing, 1);
     }
   })
   .done();
