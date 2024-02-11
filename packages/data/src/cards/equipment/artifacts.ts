@@ -494,8 +494,7 @@ export const CrownOfWatatsumi = card(312015)
     const totalPts = c.getVariable("healedPts");
     const generatedBubbleCount = Math.floor(totalPts / 3);
     const restPts = totalPts % 3;
-    const currentBubbleCount = c.getVariable("bubble");
-    c.setVariable("bubble", Math.min(2, currentBubbleCount + generatedBubbleCount));
+    c.addVariableWithMax("bubble", generatedBubbleCount, 2);
     c.setVariable("healedPts", restPts);
   })
   .on("modifySkillDamage")
@@ -528,8 +527,7 @@ export const OceanhuedClam = card(312016)
     const totalPts = c.getVariable("healedPts");
     const generatedBubbleCount = Math.floor(totalPts / 3);
     const restPts = totalPts % 3;
-    const currentBubbleCount = c.getVariable("bubble");
-    c.setVariable("bubble", Math.min(2, currentBubbleCount + generatedBubbleCount));
+    c.addVariableWithMax("bubble", generatedBubbleCount, 2);
     c.setVariable("healedPts", restPts);
   })
   .on("modifySkillDamage")

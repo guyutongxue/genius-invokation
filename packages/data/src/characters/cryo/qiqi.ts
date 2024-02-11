@@ -26,6 +26,7 @@ export const FortunepreservingTalisman = combatStatus(111082)
   .on("useSkill")
   .usage(3, { autoDecrease: false })
   .do((c, e) => {
+    // 在使用技能且结算之后（而非使用技能的时刻）检测生命值
     const skillCaller = c.of<"character">(e.action.skill.caller);
     if (skillCaller.health < skillCaller.state.definition.constants.maxHealth) {
       skillCaller.heal(2);

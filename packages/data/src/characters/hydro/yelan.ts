@@ -11,10 +11,7 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType } fr
 export const BreakthroughStatus = status(112091)
   .variable("break", 1, { recreateMax: 3 })
   .on("endPhase")
-  .do((c) => {
-    const currentBreak = c.getVariable("break");
-    c.setVariable("break", Math.min(currentBreak + 1, 3));
-  })
+  .addVariableWithMax("break", 1, 3)
   .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && c.getVariable("break") >= 2)
   .addVariable("break", -2)
   .changeDamageType(DamageType.Hydro)
@@ -59,8 +56,7 @@ export const LingeringLifeline = skill(12092)
   .do((c) => {
     c.damage(DamageType.Hydro, 3);
     const breakSt = c.of(c.self.hasStatus(BreakthroughStatus)!);
-    const currentBreakVal = breakSt.getVariable("break");
-    breakSt.setVariable("break", Math.min(currentBreakVal + 2, 3));
+    breakSt.addVariableWithMax("break", 2, 3);
   })
   .done();
 

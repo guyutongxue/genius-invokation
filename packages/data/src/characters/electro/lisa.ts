@@ -23,10 +23,7 @@ export const LightningRoseSummon = summon(114092)
 export const Conductive = status(114091)
   .variable("conductive", 2, { recreateAdditional: 1, recreateMax: 4 })
   .on("endPhase")
-  .do((c) => {
-    const newVal = c.getVariable("conductive") + 1;
-    c.setVariable("conductive", Math.min(newVal, 4));
-  })
+  .addVariableWithMax("conductive", 1, 4)
   .on("beforeDamaged", (c, e) => e.via.definition.id === VioletArc)
   .do((c, e) => {
     e.increaseDamage(c.getVariable("conductive"));

@@ -105,11 +105,7 @@ export const LostPrayerToTheSacredWinds = card(311106)
     e.increaseDamage(c.getVariable("extraDamage"));
   })
   .on("endPhase")
-  .do((c) => {
-    if (c.getVariable("extraDamage") < 2) {
-      c.addVariable("extraDamage", 1);
-    }
-  })
+  .addVariableWithMax("extraDamage", 1, 2)
   .done();
 
 /**

@@ -84,6 +84,9 @@ interface SkillContext {
   // 累加 target 的变量值
   addVariable(prop: string, value: number, target = "@self"): void;
 
+  // 累加 target 的变量值，但是不超过上限 maxLimit
+  addVariableWithMax(prop: string, value: number, maxLimit: number, target = "@self"): void;
+
   // 替换 target 的角色定义
   replaceDefinition(target, newCh: CharacterHandle): void;
 
@@ -259,9 +262,8 @@ interface CharacterContext {
 
   // 设置角色的状态变量值
   setVariable(prop: string, value: number): void;
-
-  // 累加角色的状态变量值
   addVariable(prop: string, value: number): void;
+  addVariableWithMax(prop: string, value: number, maxLimit: number): void;
 }
 ```
 
@@ -290,9 +292,8 @@ interface EntityContext {
 interface EntityContext {
   // 设置实体的状态变量值
   setVariable(prop: string, value: number): void;
-
-  // 累加实体的状态变量值
   addVariable(prop: string, value: number): void;
+  addVariableWithMax(prop: string, value: number, maxLimit: number): void;
 
   // c.dispose(this);
   // 弃置此牌

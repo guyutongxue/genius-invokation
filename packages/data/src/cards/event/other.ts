@@ -802,13 +802,9 @@ export const MachineAssemblyLine = card(332028)
   .toStatus("@targets.0", 303228)
   .variable("readiness", 0)
   .on("damaged")
-  .do((c) => {
-    c.setVariable("readiness", Math.min(2, c.getVariable("readiness") + 1));
-  })
+  .addVariableWithMax("readiness", 1, 2)
   .on("healed")
-  .do((c) => {
-    c.setVariable("readiness", Math.min(2, c.getVariable("readiness") + 1));
-  })
+  .addVariableWithMax("readiness", 1, 2)
   .once("deductDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
     e.action.card.definition.skillDefinition.requiredCost.length <= c.getVariable("readiness"))

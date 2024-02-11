@@ -26,10 +26,7 @@ export const ChakraDesiderataStatus = status(114072)
   .variable("chakra", 0)
   .on("useSkill", (c, e) => e.isSkillType("burst") && e.action.skill.caller.id !== c.self.master().id)
   .listenToPlayer()
-  .do((c) => {
-    const currentVal = c.getVariable("chakra");
-    c.setVariable("chakra", Math.min(3, currentVal + 1));
-  })
+  .addVariableWithMax("chakra", 1, 3)
   .on("modifySkillDamage", (c, e) => e.via.definition.id === SecretArtMusouShinsetsu)
   .do((c, e) => {
     const currentVal = c.getVariable("chakra");

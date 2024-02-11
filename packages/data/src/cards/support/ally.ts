@@ -137,7 +137,7 @@ export const Timmie = card(322007)
   .variable("pigeon", 1)
   .on("actionPhase")
   .do((c) => {
-    c.self.addVariable("pigeon", 1);
+    c.addVariable("pigeon", 1);
     if (c.getVariable("pigeon") === 3) {
       c.drawCards(1);
       c.generateDice(DiceType.Omni, 1);
@@ -198,7 +198,7 @@ export const ChangTheNinth = card(322009)
   .listenToAll()
   .do((c) => {
     if (c.getVariable("hasInspiration")) {
-      c.self.addVariable("inspiration", 1);
+      c.addVariable("inspiration", 1);
       if (c.getVariable("inspiration") >= 3) {
         c.drawCards(2);
         c.dispose();
@@ -271,11 +271,7 @@ export const Hanachirusato = card(322013)
   .variable("progress", 0)
   .on("dispose", (c, e) => e.entity.definition.type === "summon")
   .listenToAll()
-  .do((c) => {
-    if (c.getVariable("progress") < 3) {
-      c.addVariable("progress", 1);
-    }
-  })
+  .addVariableWithMax("progress", 1, 3)
   .on("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact") && c.getVariable("progress") >= 3)
   .deductCost(DiceType.Omni, 2)
   .dispose()
@@ -436,11 +432,7 @@ export const Jeht = card(322022)
   .support("ally")
   .variable("experience", 0)
   .on("dispose", (c, e) => e.entity.definition.type === "support")
-  .do((c) => {
-    if (c.getVariable("experience") < 6) {
-      c.addVariable("experience", 1);
-    }
-  })
+  .addVariableWithMax("experience", 1, 6)
   .on("useSkill", (c, e) => e.isSkillType("burst"))
   .do((c) => {
     const exp = c.getVariable("experience");
@@ -472,9 +464,7 @@ export const SilverAndMelus = card(322023)
     const current = c.getVariable("bitset");
     if ((current & bit) === 0) {
       c.setVariable("bitset", current | bit);
-      if (c.getVariable("count") < 4) {
-        c.addVariable("count", 1);
-      }
+      c.addVariableWithMax("count", 1, 4);
     }
   })
   .on("endPhase")

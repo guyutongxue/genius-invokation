@@ -162,9 +162,5 @@ export const PrimordialJadeWingedspear = card(311407)
     e.increaseDamage(c.getVariable("extraDamage"));
   })
   .on("useSkill")
-  .do((c, e) => {
-    if (c.getVariable("extraDamage") < 3) {
-      c.addVariable("extraDamage", 1);
-    }
-  })
+  .addVariableWithMax("extraDamage", 1, 3)
   .done();

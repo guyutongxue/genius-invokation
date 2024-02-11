@@ -11,15 +11,13 @@ export const RadicalVitalityStatus = status(127011)
   .variable("vitality", 0)
   .on("dealDamage")
   .do((c) => {
-    const val = c.getVariable("vitality");
     const max = c.self.master().hasEquipment(ProliferatingSpores) ? 4 : 3;
-    c.setVariable("vitality", Math.min(val + 1, max));
+    c.addVariableWithMax("vitality", 1, max);
   })
   .on("damaged")
   .do((c) => {
-    const val = c.getVariable("vitality");
     const max = c.self.master().hasEquipment(ProliferatingSpores) ? 4 : 3;
-    c.setVariable("vitality", Math.min(val + 1, max));
+    c.addVariableWithMax("vitality", 1, max);
   })
   .on("endPhase")
   .if((c) => c.getVariable("vitality") >= 3)

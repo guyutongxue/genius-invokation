@@ -1,6 +1,11 @@
 import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 
-import { EntityArea, EntityType, EntityVariables, ExEntityType } from "../base/entity";
+import {
+  EntityArea,
+  EntityType,
+  EntityVariables,
+  ExEntityType,
+} from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
@@ -49,7 +54,11 @@ import {
 import { CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
-import { CALLED_FROM_REACTION, OptionalDamageInfo, getReactionDescription } from "./reaction";
+import {
+  CALLED_FROM_REACTION,
+  OptionalDamageInfo,
+  getReactionDescription,
+} from "./reaction";
 import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 
@@ -200,14 +209,19 @@ export class SkillContext<Meta extends ContextMetaBase> {
       if (r instanceof Character) {
         continue;
       } else {
-        throw new GiTcgDataError(`Expected character target, but query ${arg} found noncharacter entities`);
+        throw new GiTcgDataError(
+          `Expected character target, but query ${arg} found noncharacter entities`,
+        );
       }
     }
     return result as TypedCharacter<Meta>[];
   }
   /** 本回合已经使用了几次此技能 */
   countOfThisSkill(): number {
-    return this.countOfSkill(this.skillInfo.caller.id, this.skillInfo.definition.id as SkillHandle);
+    return this.countOfSkill(
+      this.skillInfo.caller.id,
+      this.skillInfo.definition.id as SkillHandle,
+    );
   }
   countOfSkill(callerId: number, handle: SkillHandle): number {
     return this.state.globalActionLog.filter(
@@ -242,7 +256,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
   switchActive(target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     if (targets.length !== 1) {
-      throw new GiTcgDataError("Expected exactly one target when switching active");
+      throw new GiTcgDataError(
+        "Expected exactly one target when switching active",
+      );
     }
     const switchToTarget = targets[0];
     const from = this.$("active character")!;
@@ -515,10 +531,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
             const additional = def.constants[`${prop}$add`] ?? newValue;
             if (oldValue < limit) {
               // 如果当前值比上限低，进行累加
-              newValue = Math.min(
-                limit,
-                oldValue + additional,
-              );
+              newValue = Math.min(limit, oldValue + additional);
             } else {
               // 如果当前值比上限高，维持原样
               newValue = oldValue;
@@ -654,10 +667,34 @@ export class SkillContext<Meta extends ContextMetaBase> {
     this.setVariable(prop, finalValue, target);
   }
 
+  addVariableWithMax(
+    prop: string,
+    value: number,
+    maxLimit: number,
+    target: CharacterState | EntityState,
+  ): void;
+  addVariableWithMax(
+    prop: Meta["callerVars"],
+    value: number,
+    maxLimit: number,
+  ): void;
+  addVariableWithMax(
+    prop: any,
+    value: number,
+    maxLimit: number,
+    target?: CharacterState | EntityState,
+  ) {
+    target ??= this.callerState;
+    const finalValue = Math.min(maxLimit, value + target.variables[prop]);
+    this.setVariable(prop, finalValue, target);
+  }
+
   replaceDefinition(target: CharacterTargetArg, newCh: CharacterHandle) {
     const characters = this.queryCoerceToCharacters(target);
     if (characters.length !== 1) {
-      throw new GiTcgDataError(`Replace definition must apply on exact one character`);
+      throw new GiTcgDataError(
+        `Replace definition must apply on exact one character`,
+      );
     }
     const ch = characters[0];
     const oldDef = ch.state.definition;
@@ -800,7 +837,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         (sk) => sk.skillType === "normal",
       );
       if (normalSkills.length === 0) {
-        throw new GiTcgDataError("Expected one normal skill on active character");
+        throw new GiTcgDataError(
+          "Expected one normal skill on active character",
+        );
       }
       skillId = normalSkills[0].id;
     } else {
@@ -837,6 +876,7 @@ type SkillContextMutativeProps =
   | "dispose"
   | "setVariable"
   | "addVariable"
+  | "addVariableWithMax"
   | "absorbDice"
   | "generateDice"
   | "createHandCard"
@@ -1084,6 +1124,9 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   addVariable(prop: string, value: number) {
     this.skillContext.addVariable(prop, value, this.state);
   }
+  addVariableWithMax(prop: string, value: number, maxLimit: number) {
+    this.skillContext.addVariableWithMax(prop, value, maxLimit, this.state);
+  }
   dispose(): never {
     throw new GiTcgDataError(`Cannot dispose character (or passive skill)`);
   }
@@ -1100,6 +1143,7 @@ type CharacterMutativeProps =
   | "removeWeapon"
   | "setVariable"
   | "addVariable"
+  | "addVariableWithMax"
   | "dispose";
 
 export type TypedCharacter<Meta extends ContextMetaBase> =
@@ -1145,12 +1189,19 @@ export class Entity<Meta extends ContextMetaBase> {
   addVariable(prop: string, value: number) {
     this.skillContext.addVariable(prop, value, this.state);
   }
+  addVariableWithMax(prop: string, value: number, maxLimit: number) {
+    this.skillContext.addVariableWithMax(prop, value, maxLimit, this.state);
+  }
   dispose() {
     this.skillContext.dispose(this.state);
   }
 }
 
-type EntityMutativeProps = "addVariable" | "setVariable" | "dispose";
+type EntityMutativeProps =
+  | "setVariable"
+  | "addVariable"
+  | "addVariableWithMax"
+  | "dispose";
 
 export type TypedEntity<Meta extends ContextMetaBase> =
   Meta["readonly"] extends true
