@@ -435,9 +435,7 @@ export const Jeht = card(322022)
   .costVoid(2)
   .support("ally")
   .variable("experience", 0)
-  .on("playCard", (c, e) => 
-    e.action.card.definition.type === "support" && // 当打出支援牌且支援区曾经是满的，发生一次弃置
-    c.player.supports.length === c.state.config.maxSupports)
+  .on("dispose", (c, e) => e.entity.definition.type === "support")
   .do((c) => {
     if (c.getVariable("experience") < 6) {
       c.addVariable("experience", 1);

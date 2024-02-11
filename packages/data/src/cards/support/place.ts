@@ -245,16 +245,16 @@ export const StormterrorsLair = card(321015)
   .on("enter")
   .drawCards(1, { withTag: "talent" })
   .on("deductDice", (c, e) => {
-    if (e.hasCardTag("talent")) {
-      return true;
-    } else if (e.isUseSkill()) {
-      return e.action.skill.definition.requiredCost.length >= 4;
-    } else {
-      return false;
-    }
+    return e.hasCardTag("talent") ||
+      (e.isUseSkill() && e.action.skill.definition.requiredCost.length >= 4);
   })
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
+  .on("deductDice", (c, e) => {
+    return e.hasCardTag("talent") ||
+      (e.isUseSkill() && e.action.skill.definition.requiredCost.length >= 4);
+  })
+  .usage(3) // 重复一遍条件用于扣除总使用次数
   .done();
 
 /**
