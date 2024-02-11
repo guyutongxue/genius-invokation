@@ -71,7 +71,7 @@ export const NorthernSmokedChicken = card(333004)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const SweetMadame = card(333005)
-  .food()
+  .food({ extraTargetRestraint: "not with health = maxHealth" })
   .heal(1, "@targets.0")
   .done();
 
@@ -84,7 +84,7 @@ export const SweetMadame = card(333005)
  */
 export const MondstadtHashBrown = card(333006)
   .costSame(1)
-  .food()
+  .food({ extraTargetRestraint: "not with health = maxHealth" })
   .heal(2, "@targets.0")
   .done();
 
@@ -97,7 +97,7 @@ export const MondstadtHashBrown = card(333006)
  */
 export const MushroomPizza = card(333007)
   .costSame(1)
-  .food()
+  .food({ extraTargetRestraint: "not with health = maxHealth" })
   .heal(1, "@targets.0")
   .toStatus("@targets.0")
   .on("endPhase")
@@ -222,7 +222,7 @@ export const FishAndChips = card(333013)
  */
 export const MatsutakeMeatRolls = card(333014)
   .costSame(2)
-  .tags("food")
+  .food({ extraTargetRestraint: "not with health = maxHealth" })
   .heal(2, "@targets.0")
   .toStatus("@targets.0")
   .on("endPhase")

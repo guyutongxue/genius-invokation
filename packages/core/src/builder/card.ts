@@ -78,6 +78,11 @@ const SATIATED_ID = 303300 as StatusHandle;
 
 type TalentRequirement = "action" | "active" | "none";
 
+interface FoodOption {
+  satiatedTarget?: string;
+  extraTargetRestraint?: string;
+}
+
 class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   StrictCardSkillEventArg<KindTs>
 > {
@@ -233,11 +238,16 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   // 增加 food 标签，增加目标（我方非饱腹角色）
-  food(opt?: { satiatedTarget?: string }) {
+  food(opt?: FoodOption) {
     this._satiatedTarget = opt?.satiatedTarget ?? "@targets.0";
-    return this.tags("food").addTarget(
-      "my characters and not has status with definition id = 303300",
-    );
+    const defaultTarget = "my characters and not has status with definition id = 303300";
+    let target;
+    if (opt?.extraTargetRestraint) {
+      target = `(${defaultTarget}) and (${opt.extraTargetRestraint})`;
+    } else {
+      target = defaultTarget;
+    }
+    return this.tags("food").addTarget(target as "character");
   }
 
   private generateTargetList(
