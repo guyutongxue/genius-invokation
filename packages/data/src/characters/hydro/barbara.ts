@@ -1,4 +1,4 @@
-import { character, skill, summon, card, DamageType, DiceType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, DiceType, SummonHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112011
@@ -7,11 +7,11 @@ import { character, skill, summon, card, DamageType, DiceType } from "@gi-tcg/co
  * 结束阶段：治疗所有我方角色1点，然后对我方出战角色附着水元素。
  * 可用次数：2
  */
-export const MelodyLoop = summon(112011)
+export const MelodyLoop: SummonHandle = summon(112011)
   .endPhaseDamage(DamageType.Heal, 1, "all my characters")
   .usage(2)
   .apply(DamageType.Hydro, "active")
-  .on("deductDiceSwitch", (c) => c.$("my characters has equipment with definition id 212011")) // 装备有天赋的芭芭拉在场时
+  .on("deductDiceSwitch", (c) => c.$(`my equipment with definition id ${GloriousSeason}`)) // 天赋在场时
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .done();
