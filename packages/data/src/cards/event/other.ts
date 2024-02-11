@@ -328,7 +328,7 @@ export const WindAndFreedom = card(331801)
   .toCombatStatus(303181)
   .oneDuration()
   .on("useSkill")
-  .switchActive("next")
+  .switchActive("my next")
   .done();
 
 /**

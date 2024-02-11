@@ -16,15 +16,17 @@ export function DiceCost(props: DiceCostProps) {
     let result: [type: DiceType, count: number, color: DiceColor][] = [];
     if (local.realCost) {
       const realCostMap = diceToMap(local.realCost);
-      for (const [type, count] of realCostMap.entries()) {
+      const allCostType = new Set([...local.cost, ...local.realCost]);
+      for (const type of allCostType) {
+        const realCount = realCostMap.get(type) ?? 0;
         const originalCount = costMap.get(type) ?? 0;
         const color =
-          count > originalCount
+        realCount > originalCount
             ? "increased"
-            : count < originalCount
+            : realCount < originalCount
               ? "decreased"
               : "normal";
-        result.push([type, count, color]);
+        result.push([type, realCount, color]);
       }
     } else {
       result = [...costMap.entries()].map(([type, count]) => [
