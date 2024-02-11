@@ -11,7 +11,7 @@ export const Frozen = status(106)
   .oneDuration()
   .tags("disableSkill")
   .on("beforeDamaged", (c, e) => [DamageType.Pyro, DamageType.Physical].includes(e.type))
-  .increaseDamage(1)
+  .increaseDamage(2)
   .dispose()
   .done();
 
