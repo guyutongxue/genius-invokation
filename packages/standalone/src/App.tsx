@@ -186,7 +186,11 @@ export function App() {
           setStarted(true);
         } catch (error) {
           console.error(error);
-          alert(`Error parsing input: ${error instanceof Error ? error.message : error}`);
+          alert(
+            `Error parsing input: ${
+              error instanceof Error ? error.message : error
+            }`,
+          );
         }
       };
       reader.readAsText(file);
@@ -356,7 +360,7 @@ export function App() {
           )}
         </Show>
       </Show>
-      <details>
+      <details classList={{ hidden: import.meta.env.PROD }}>
         <summary>开发者选项</summary>
         <button disabled={stateLog().length === 0} onClick={exportLog}>
           导出日志
