@@ -59,6 +59,7 @@ import {
   GiTcgError,
   GiTcgIOError,
 } from "./error";
+import { GameStateLogEntry } from "./log";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -77,23 +78,28 @@ type ActionInfoWithNewState = ActionInfo & {
 };
 
 export class Game {
-  state: GameState;
+  private readonly data: ReadonlyDataStore;
+  private readonly config: GameConfig;
+  private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
+  private readonly io: GameIO;
+
+  private state: GameState;
+  private _stateLog: GameStateLogEntry[] = [];
   private finishPromise: Promise<0 | 1 | null>;
   private resolveFinishPromise: () => void = () => {};
   private rejectFinishPromise: (e: GiTcgError) => void = () => {};
 
-  constructor(
-    private readonly data: ReadonlyDataStore,
-    private readonly config: GameConfig,
-    private readonly playerConfigs: [PlayerConfig, PlayerConfig],
-    private readonly io: GameIO,
-  ) {
+  constructor(opt: GameOption) {
+    this.data = opt.data;
+    this.config = mergeGameConfigWithDefault(opt.gameConfig);
+    this.playerConfigs = opt.playerConfigs;
+    this.io = opt.io;
     const initRandomState = minstd.factory({
-      seed: config.randomSeed,
+      seed: this.config.randomSeed,
     }).state;
     this.state = {
-      data,
-      config,
+      data: this.data,
+      config: this.config,
       iterators: {
         random: initRandomState,
         id: INITIAL_ID,
@@ -106,9 +112,18 @@ export class Game {
       winner: null,
       players: [this.initPlayerState(0), this.initPlayerState(1)],
     };
+    this._stateLog.push({
+      state: this.state,
+      canResume: false,
+      events: []
+    });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
     this.finishPromise = Promise.resolve(null);
+  }
+
+  get stateLog() {
+    return this._stateLog;
   }
 
   mutate(mutation: Mutation) {
@@ -207,10 +222,10 @@ export class Game {
     }
   }
 
-  private notifyOne(who: 0 | 1, events: Event[] = []) {
+  private notifyOne(who: 0 | 1, events: readonly Event[] = []) {
     const player = this.io.players[who];
     player.notify({
-      events,
+      events: [...events],
       mutations: this.state.mutationLog.flatMap((m) => {
         const ex = exposeMutation(who, m.mutation);
         return ex ? [ex] : [];
@@ -218,7 +233,12 @@ export class Game {
       newState: exposeState(who, this.state),
     });
   }
-  private async notifyAndPause(events: Event[] = []) {
+  private async notifyAndPause(events: readonly Event[], canResume = false) {
+    this._stateLog.push({
+      state: this.state,
+      canResume,
+      events
+    });
     for (const i of [0, 1] as const) {
       this.notifyOne(i, events);
     }
@@ -245,7 +265,7 @@ export class Game {
     });
     setTimeout(async () => {
       try {
-        await this.notifyAndPause();
+        await this.notifyAndPause([], true);
         while (this.state.phase !== "gameEnd") {
           switch (this.state.phase) {
             case "initHands":
@@ -267,7 +287,7 @@ export class Game {
               const _check: never = this.state.phase;
               break;
           }
-          await this.notifyAndPause();
+          await this.notifyAndPause([], true);
         }
         this.resolveFinishPromise();
       } catch (e) {
@@ -305,7 +325,7 @@ export class Game {
       type: "changePhase",
       newPhase: "gameEnd",
     });
-    await this.notifyAndPause();
+    await this.notifyAndPause([], false);
     this.resolveFinishPromise();
     Object.freeze(this);
   }
@@ -384,6 +404,9 @@ export class Game {
   }
 
   private async rollPhase() {
+    this.mutate({
+      type: "stepRound",
+    });
     // onRoll event
     interface RollParams {
       fixed: readonly DiceType[];
@@ -419,9 +442,6 @@ export class Game {
         await this.reroll(who, count);
       }),
     );
-    this.mutate({
-      type: "stepRound",
-    });
     // Change to action phase:
     // - do `changePhase`
     // - clean `hasDefeated`
@@ -876,7 +896,7 @@ export class Game {
       await this.notifyAndPause(notifyEvents);
       const hasDefeated = await this.checkDefeated();
       if (hasDefeated) {
-        await this.notifyAndPause();
+        await this.notifyAndPause([]);
       }
     }
     return eventList;
@@ -1123,7 +1143,7 @@ export class Game {
       }
     }
     if (defeatEvents.length > 0) {
-      await this.notifyAndPause();
+      await this.notifyAndPause([]);
     }
     const [a0, a1] = await Promise.all(activeDefeated);
     if (a0 !== null) {
@@ -1167,29 +1187,23 @@ export class Game {
   }
 }
 
-export interface StartOption {
+export interface GameOption {
   data: ReadonlyDataStore;
-  gameConfig?: GameConfig;
-  playerConfigs: [PlayerConfig, PlayerConfig];
+  gameConfig?: Partial<GameConfig>;
+  playerConfigs: readonly [PlayerConfig, PlayerConfig];
   io: GameIO;
 }
 
-export async function startGame(opt: StartOption): Promise<0 | 1 | null> {
-  const game = new Game(
-    opt.data,
-    opt.gameConfig ?? {
-      initialDice: 8,
-      initialHands: 5,
-      maxDice: 16,
-      maxHands: 10,
-      maxRounds: 15,
-      maxSummons: 4,
-      maxSupports: 4,
-      randomSeed: Math.floor(Math.random() * 21474836) + 1,
-    },
-    opt.playerConfigs,
-    opt.io,
-  );
-  await game.start();
-  return game.state.winner;
+function mergeGameConfigWithDefault(config?: Partial<GameConfig>): GameConfig {
+  return {
+    initialDice: 8,
+    initialHands: 5,
+    maxDice: 16,
+    maxHands: 10,
+    maxRounds: 15,
+    maxSummons: 4,
+    maxSupports: 4,
+    randomSeed: Math.floor(Math.random() * 21474836) + 1,
+    ...config,
+  };
 }

@@ -268,7 +268,7 @@ export const AzhdahaElectro = character(6604)
 export const LunarCyclesUnending = card(226022)
   .costSame(2)
   .eventTalent([Azhdaha, AzhdahaCryo, AzhdahaHydro, AzhdahaPyro, AzhdahaElectro])
-  .characterStatus(StoneFacetsElementalCrystallization)
+  .characterStatus(StoneFacetsElementalCrystallization, "@master")
   .do((c) => {
     for (const ch of c.$$("my characters include defeated")) {
       c.generateDice(ch.element(), 1);

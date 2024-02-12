@@ -48,6 +48,7 @@ class CharacterBuilder {
 
   done(): CharacterHandle {
     registerCharacter({
+      __definition: "character",
       type: "character",
       id: this.id,
       tags: this._tags,

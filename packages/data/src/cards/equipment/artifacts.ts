@@ -372,7 +372,7 @@ export const GeneralsAncientHelm = card(312009)
   .costSame(2)
   .artifact()
   .on("actionPhase")
-  .characterStatus(UnmovableMountain)
+  .characterStatus(UnmovableMountain, "@master")
   .done();
 
 /**
@@ -387,7 +387,7 @@ export const TenacityOfTheMillelith = card(312010)
   .costSame(3)
   .artifact()
   .on("actionPhase")
-  .characterStatus(UnmovableMountain)
+  .characterStatus(UnmovableMountain, "@master")
   .on("damaged", (c) => c.self.master().isActive())
   .usagePerRound(1)
   .do((c) => {
@@ -437,7 +437,7 @@ export const VermillionHereafter = card(312012)
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("switchActive", (c, e) => c.self.master().id === e.switchInfo.to.id)
-  .characterStatus(VermillionHereafterEffect)
+  .characterStatus(VermillionHereafterEffect, "@master")
   .done();
 
 /**

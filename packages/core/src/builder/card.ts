@@ -8,6 +8,7 @@ import {
   PlayCardTargetGetter,
   SupportTag,
   WeaponCardTag,
+  PlayCardSkillDefinition,
 } from "../base/card";
 import { registerCard, registerSkill } from "./registry";
 import { SkillDescription, SkillInfo } from "../base/skill";
@@ -307,9 +308,10 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       );
       return targetIdsList.map((targets) => ({ targets }));
     };
-    const skillDef = {
-      type: "skill" as const,
-      skillType: "card" as const,
+    const skillDef: PlayCardSkillDefinition = {
+      __definition: "skill",
+      type: "skill",
+      skillType: "card",
       id: this.cardId,
       triggerOn: null,
       requiredCost: this._cost,
@@ -317,6 +319,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     };
     registerSkill(skillDef);
     registerCard({
+      __definition: "card",
       id: this.cardId,
       type: this._type,
       tags: this._tags,

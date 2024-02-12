@@ -97,7 +97,7 @@ export const TheBell = card(311305)
   .on("modifySkillDamage")
   .increaseDamage(1)
   .on("useSkill")
-  .characterStatus(RebelliousShield)
+  .characterStatus(RebelliousShield, "my active")
   .done();
 
 /**
@@ -139,7 +139,7 @@ export const BeaconOfTheReedSea = card(311306)
   .on("modifySkillDamage")
   .increaseDamage(1)
   .on("useSkill")
-  .characterStatus(DesertWatchTakeTheInitiative)
+  .characterStatus(DesertWatchTakeTheInitiative, "@master")
   .on("damaged")
-  .characterStatus(DesertWatchOffensiveDefense)
+  .characterStatus(DesertWatchOffensiveDefense, "@master")
   .done();

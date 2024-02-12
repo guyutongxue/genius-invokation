@@ -106,5 +106,5 @@ export const GalesOfReverie = card(215061)
   .on("enter")
   .useSkill(HanegaSongOfTheWind)
   .on("dealDamage", (c, e) => c.self.master().hasStatus(Windfavored) && e.via.charged)
-  .characterStatus(Descent)
+  .characterStatus(Descent, "@master")
   .done();

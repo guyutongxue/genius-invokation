@@ -1,5 +1,5 @@
 import data from "@gi-tcg/data";
-import { GameIO, PlayerConfig, PlayerIO, startGame } from "@gi-tcg/core";
+import { Game, GameIO, PlayerConfig, PlayerIO } from "@gi-tcg/core";
 
 import { createPlayer, createWaitNotify } from "@gi-tcg/webui-core";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
@@ -98,6 +98,7 @@ export function App() {
   const onStart = () => {
     const playerConfig0 = getPlayerConfig(deck0());
     const playerConfig1 = getPlayerConfig(deck1());
+    const playerConfigs = [playerConfig0, playerConfig1] as const;
     const io: GameIO = {
       pause: () => new Promise((resolve) => setTimeout(resolve, 500)),
       players: [childIo, uiIo],
@@ -105,11 +106,10 @@ export function App() {
 
     showPopup();
 
-    startGame({
-      data,
-      io,
-      playerConfigs: [playerConfig0, playerConfig1],
-    }).catch((e) => alert(e instanceof Error ? e.message : String(e)));
+    const game = new Game({ data, io, playerConfigs });
+    game
+      .start()
+      .catch((e) => alert(e instanceof Error ? e.message : String(e)));
     setStarted(true);
   };
 

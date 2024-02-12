@@ -119,5 +119,5 @@ export const SternfrostPrism = card(221031)
   .costCryo(1)
   .talent(CryoHypostasis, "active")
   .on("enter")
-  .characterStatus(CryoCrystalCore)
+  .characterStatus(CryoCrystalCore, "@master")
   .done();

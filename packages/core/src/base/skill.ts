@@ -16,6 +16,7 @@ import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 
 export interface SkillDefinitionBase<Arg> {
+  readonly __definition: "skill";
   readonly type: "skill";
   readonly id: number;
   readonly action: SkillDescription<Arg>;

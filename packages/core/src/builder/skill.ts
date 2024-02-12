@@ -582,6 +582,7 @@ export class TriggeredSkillBuilder<
       return this.getAction(arg)(state, skillInfo);
     };
     const def: TriggeredSkillDefinition = {
+      __definition: "skill",
       type: "skill",
       skillType: null,
       id: this.id,
@@ -707,6 +708,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
     }
     const action: SkillDescription<void> = this.getAction();
     registerSkill({
+      __definition: "skill",
       type: "skill",
       skillType: this._skillType,
       id: this.skillId,

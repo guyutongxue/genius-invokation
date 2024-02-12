@@ -245,6 +245,7 @@ export class EntityBuilder<
       });
     } else {
       registerEntity({
+        __definition: "entity",
         id: this.id,
         visibleVarName: this._visibleVarName,
         constants: this._constants,

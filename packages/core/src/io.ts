@@ -31,7 +31,7 @@ export interface PlayerIO {
 export interface GameIO {
   pause?: (st: GameState) => Promise<unknown>;
   onIoError?: (e: GiTcgIOError) => void;
-  players: [PlayerIO, PlayerIO];
+  players: readonly [PlayerIO, PlayerIO];
 }
 
 export function exposeMutation(
