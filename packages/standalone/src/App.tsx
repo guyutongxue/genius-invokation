@@ -5,6 +5,7 @@ import {
   GameStateLogEntry,
   PlayerConfig,
   exposeState,
+  serializeGameState,
 } from "@gi-tcg/core";
 
 import {
@@ -143,6 +144,20 @@ export function App() {
   const enableLog = () => {
     setViewingWho(1);
     setViewingLogIndex(stateLog().length - 2);
+  };
+  const exportLog = () => {
+    const logs = stateLog().map((entry) => ({
+      state: serializeGameState(entry.state),
+      events: entry.events,
+      canResume: entry.canResume,
+    }));
+    const blob = new Blob([JSON.stringify(logs)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "gameLog.json";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   let game: Game | null = null;
@@ -305,6 +320,12 @@ export function App() {
             </>
           )}
         </Show>
+        <details>
+          <summary>开发者选项</summary>
+          <button disabled={stateLog().length === 0} onClick={exportLog}>
+            导出日志
+          </button>
+        </details>
       </Show>
     </div>
   );
