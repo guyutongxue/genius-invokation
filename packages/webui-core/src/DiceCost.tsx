@@ -1,4 +1,4 @@
-import type { DiceType } from "@gi-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 import { diceToMap } from "@gi-tcg/utils";
 import { ComponentProps, For, splitProps } from "solid-js";
 
@@ -17,6 +17,9 @@ export function DiceCost(props: DiceCostProps) {
     if (local.realCost) {
       const realCostMap = diceToMap(local.realCost);
       const allCostType = new Set([...local.cost, ...local.realCost]);
+      if (allCostType.size === 0) {
+        allCostType.add(DiceType.Omni);
+      }
       for (const type of allCostType) {
         const realCount = realCostMap.get(type) ?? 0;
         const originalCount = costMap.get(type) ?? 0;

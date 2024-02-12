@@ -27,7 +27,7 @@ export function CardDescription(props: CardDescrptionProps) {
   const [local, rest] = splitProps(props, ["definitionId", "entityId", "type"]);
   const { assetApiEndpoint } = usePlayerContext();
   const [data] = createResource(() =>
-    cached(`${assetApiEndpoint}/data/${local.definitionId}`)
+    cached(`${assetApiEndpoint()}/data/${local.definitionId}`)
       .then(fetch)
       .then((r) => r.json()),
   );
@@ -54,7 +54,7 @@ export function CardDescription(props: CardDescrptionProps) {
   };
   return (
     <div {...rest}>
-      <div class="max-h-70 w-50 rounded-md bg-yellow-100 cursor-auto p-1 overflow-x-auto shadow-md">
+      <div class="max-h-70 w-50 rounded-md bg-yellow-100 cursor-auto p-1 overflow-x-auto shadow-md text-start">
         <Image imageId={local.definitionId} class="w-10 float-left mr-1" />
         <h3 class="mt-1 mb-2">
           {data.state === "ready" ? data().name : "加载中"}{" "}

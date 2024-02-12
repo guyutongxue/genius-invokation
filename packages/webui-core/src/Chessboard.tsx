@@ -23,6 +23,7 @@ import type {
   SwitchHandsResponse,
   PlayCardAction,
   DamageData,
+  Event,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -153,7 +154,7 @@ export interface PlayerContextValue {
   focusing: Accessor<number | null>;
   onClick: (id: number) => void;
   setPrepareTuning: (value: boolean) => void;
-  assetApiEndpoint: string;
+  assetApiEndpoint: Accessor<string>;
 }
 
 export interface AgentActions {
@@ -180,13 +181,13 @@ export interface PlayerIOWithCancellation extends PlayerIO {
 }
 
 // Remove proxy
-function sanitize<T>(value: T): T{
+function sanitize<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
 
 export function createPlayer(
   who: 0 | 1,
-  { onGiveUp, alternativeAction, assetApiEndpoint }: WebUiOption = {},
+  opt: WebUiOption = {},
 ): [
   io: PlayerIOWithCancellation,
   Chessboard: (props: ComponentProps<"div">) => JSX.Element,
@@ -218,12 +219,16 @@ export function createPlayer(
     setSelected([]);
     setAllCosts({});
     setDiceSelectProp();
+    notifyHandSwitched([]);
+    notifyDiceSelected([]);
+    notifyRerolled([]);
+    notifyElementClicked(0);
   };
   let rejectRpc: (e: Error) => void = () => {
     clearIo();
   };
 
-  const action = alternativeAction ?? {
+  const action = opt.alternativeAction ?? {
     onSwitchHands: async () => {
       return { removedHands: await waitHandSwitch() };
     },
@@ -405,16 +410,12 @@ export function createPlayer(
       /* eslint-disable @typescript-eslint/no-explicit-any */
       return new Promise<any>((resolve, reject) => {
         rejectRpc = (e) => {
-          clearIo();
           reject(e);
+          clearIo();
         };
         switch (method) {
           case "switchHands":
-            action
-              .onSwitchHands()
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
+            action.onSwitchHands().then(sanitize).then(resolve).catch(reject);
             break;
           case "chooseActive":
             action
@@ -424,11 +425,7 @@ export function createPlayer(
               .catch(reject);
             break;
           case "rerollDice":
-            action
-              .onRerollDice()
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
+            action.onRerollDice().then(sanitize).then(resolve).catch(reject);
             break;
           case "action":
             action
@@ -449,7 +446,7 @@ export function createPlayer(
   createEffect(() => {
     if (giveUp()) {
       io.giveUp = true;
-      onGiveUp?.();
+      opt.onGiveUp?.();
       rejectRpc(new Error("User give up when rpc"));
     }
   });
@@ -473,6 +470,8 @@ export function createPlayer(
     notifyElementClicked(cardId + ELEMENTAL_TUNING_OFFSET);
     setPrepareTuning(false);
   };
+  const assetApiEndpoint = () =>
+    opt.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api";
   const contextValue: PlayerContextValue = {
     allClickable,
     allSelected,
@@ -481,116 +480,185 @@ export function createPlayer(
     focusing,
     onClick: notifyElementClicked,
     setPrepareTuning,
-    assetApiEndpoint:
-      assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
+    assetApiEndpoint,
   };
 
-  function Chessboard(props: ComponentProps<"div">) {
-    const [local, restProps] = splitProps(props, ["class"]);
-    return (
-      <div
-        class={`gi-tcg-chessboard relative flex flex-col ${local.class} select-none`}
-        {...restProps}
-      >
-        <PlayerContext.Provider value={contextValue}>
-          <div class="w-full b-solid b-black b-2 relative">
-            <PlayerArea data={stateData().players[1 - who]} opp={true} />
-            <PlayerArea data={stateData().players[who]} opp={false} />
-          </div>
-          <div class="absolute left-0 top-[50%] translate-y-[-50%]">
-            <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
-              <Dice
-                type={8 /* omni */}
-                text={`${stateData().players[1 - who].dice.length}`}
-                size={32}
-              />
-            </div>
-            <div class="flex items-center gap-2">
-              <div
-                class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
-                classList={{
-                  "bg-yellow-300": stateData().currentTurn === who,
-                  "bg-blue-200": stateData().currentTurn !== who,
-                }}
-              >
-                <div class="text-lg">{stateData().roundNumber}</div>
-                <div class="text-sm text-gray">{stateData().phase}</div>
-              </div>
-              <Show when={allClickable.includes(DECLARE_END_ID)}>
-                <button
-                  class="btn btn-green-500"
-                  v-if="clickable.includes(DECLARE_END_ID)"
-                  onClick={() => notifyElementClicked(DECLARE_END_ID)}
-                >
-                  结束回合
-                </button>
-              </Show>
-            </div>
-          </div>
-          <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col bg-yellow-800">
-            <Show
-              when={diceSelectProp()}
-              fallback={
-                <For each={myPlayer().dice}>{(d) => <Dice type={d} />}</For>
-              }
-            >
-              <DiceSelect
-                {...diceSelectProp()}
-                value={myPlayer().dice}
-                onConfirm={notifyDiceSelected}
-                onCancel={() => notifyDiceSelected(void 0)}
-              />
-            </Show>
-          </div>
-          <div class="absolute right-10 bottom-0 z-12 flex flex-row gap-2">
-            <For each={myPlayer().skills}>
-              {(skill) => <SkillButton data={skill} />}
-            </For>
-          </div>
-          <div
-            class="absolute right-0 top-0 h-full z-15 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
-            classList={{
-              invisible: !prepareTuning(),
-              "w-0": !prepareTuning(),
-              "w-40": prepareTuning(),
-            }}
-            onDragEnter={tuningDragEnter}
-            onDragOver={tuningDragOver}
-            onDragLeave={tuningDragLeave}
-            onDrop={tuningDrop}
-          >
-            <span>拖动到此处</span>
-            <span>以元素调和</span>
-          </div>
-          <Show when={rerolling()}>
-            <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
-              <RerollView dice={myPlayer().dice} onConfirm={notifyRerolled} />
-            </div>
-          </Show>
-          <Show when={handSwitching()}>
-            <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
-              <SwitchHandsView
-                hands={myPlayer().hands}
-                onConfirm={notifyHandSwitched}
-              />
-            </div>
-          </Show>
+  const ChessboardWithIO = () => (
+    <PlayerContext.Provider value={contextValue}>
+      <Chessboard stateData={stateData()} who={who}>
+        <Show when={allClickable.includes(DECLARE_END_ID)}>
           <button
-            class="absolute left-2 top-2 z-15 btn btn-red-500"
-            onClick={() => setGiveUp(true)}
-            disabled={giveUp()}
+            class="absolute left-22 top-[50%] translate-y-[-50%] btn btn-green-500"
+            v-if="clickable.includes(DECLARE_END_ID)"
+            onClick={() => notifyElementClicked(DECLARE_END_ID)}
           >
-            {giveUp() ? "已放弃对局" : "走此小道"}
+            结束回合
           </button>
-          <Show when={stateData().phase === "gameEnd"}>
-            <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
-              {stateData().winner === who ? "胜利" : "失败"}
-            </div>
+        </Show>
+        <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col bg-yellow-800">
+          <Show
+            when={diceSelectProp()}
+            fallback={
+              <For each={myPlayer().dice}>{(d) => <Dice type={d} />}</For>
+            }
+          >
+            <DiceSelect
+              {...diceSelectProp()}
+              value={myPlayer().dice}
+              onConfirm={notifyDiceSelected}
+              onCancel={() => notifyDiceSelected(void 0)}
+            />
           </Show>
-        </PlayerContext.Provider>
-      </div>
-    );
-  }
+        </div>
+        <div
+          class="absolute right-0 top-0 h-full z-15 opacity-80 items-center justify-center bg-yellow-300 flex flex-col transition-all"
+          classList={{
+            invisible: !prepareTuning(),
+            "w-0": !prepareTuning(),
+            "w-40": prepareTuning(),
+          }}
+          onDragEnter={tuningDragEnter}
+          onDragOver={tuningDragOver}
+          onDragLeave={tuningDragLeave}
+          onDrop={tuningDrop}
+        >
+          <span>拖动到此处</span>
+          <span>以元素调和</span>
+        </div>
+        <Show when={rerolling()}>
+          <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
+            <RerollView dice={myPlayer().dice} onConfirm={notifyRerolled} />
+          </div>
+        </Show>
+        <Show when={handSwitching()}>
+          <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
+            <SwitchHandsView
+              hands={myPlayer().hands}
+              onConfirm={notifyHandSwitched}
+            />
+          </div>
+        </Show>
+        <button
+          class="absolute left-2 top-2 z-15 btn btn-red-500"
+          onClick={() => setGiveUp(true)}
+          disabled={giveUp()}
+        >
+          {giveUp() ? "已放弃对局" : "走此小道"}
+        </button>
+      </Chessboard>
+    </PlayerContext.Provider>
+  );
 
-  return [io, Chessboard];
+  return [io, ChessboardWithIO];
+}
+
+interface ChessboardProps extends ComponentProps<"div"> {
+  stateData: StateData;
+  who: 0 | 1;
+  children?: JSX.Element;
+}
+
+function Chessboard(props: ChessboardProps) {
+  const [local, restProps] = splitProps(props, [
+    "class",
+    "stateData",
+    "who",
+    "children",
+  ]);
+  return (
+    <div
+      class={`gi-tcg-chessboard relative flex flex-col ${
+        local.class ?? ""
+      } select-none`}
+      {...restProps}
+    >
+      <div class="w-full b-solid b-black b-2 relative">
+        <PlayerArea data={local.stateData.players[1 - local.who]} opp={true} />
+        <PlayerArea data={local.stateData.players[local.who]} opp={false} />
+      </div>
+      <div class="absolute left-0 top-[50%] translate-y-[-50%]">
+        <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
+          <Dice
+            type={8 /* omni */}
+            text={`${local.stateData.players[1 - local.who].dice.length}`}
+            size={32}
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <div
+            class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
+            classList={{
+              "bg-yellow-300": local.stateData.currentTurn === local.who,
+              "bg-blue-200": local.stateData.currentTurn !== local.who,
+            }}
+          >
+            <div class="text-lg">{local.stateData.roundNumber}</div>
+            <div class="text-sm text-gray">{local.stateData.phase}</div>
+          </div>
+        </div>
+      </div>
+      <div class="absolute right-10 bottom-0 z-12 flex flex-row gap-2">
+        <For each={local.stateData.players[local.who].skills}>
+          {(skill) => <SkillButton data={skill} />}
+        </For>
+      </div>
+      {local.children}
+      <Show when={local.stateData.phase === "gameEnd"}>
+        <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
+          {local.stateData.winner === local.who ? "胜利" : "失败"}
+        </div>
+      </Show>
+    </div>
+  );
+}
+
+export interface StandaloneChessboardProps extends ChessboardProps {
+  events?: readonly Event[];
+  assetApiEndpoint?: string;
+}
+
+export function StandaloneChessboard(props: StandaloneChessboardProps) {
+  const [local, restProps] = splitProps(props, ["events", "assetApiEndpoint"]);
+
+  const [allDamages, setAllDamages] = createStore<DamageData[]>([]);
+  const [focusing, setFocusing] = createSignal<number | null>(null);
+
+  createEffect(() => {
+    let currentFocusing: number | null = null;
+    const currentDamages: DamageData[] = [];
+    for (const event of local.events ?? []) {
+      if (event.type === "damage") {
+        currentDamages.push(event.damage);
+      }
+      if (event.type === "triggered") {
+        currentFocusing = event.id;
+      }
+    }
+    setAllDamages(currentDamages);
+    setFocusing(currentFocusing);
+  });
+
+  const contextValue = (): PlayerContextValue => ({
+    allClickable: [],
+    allCosts: [],
+    allDamages,
+    allSelected: [],
+    assetApiEndpoint: () =>
+      local.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
+    focusing,
+    onClick: () => {},
+    setPrepareTuning: () => {},
+  });
+
+  return (
+    <PlayerContext.Provider value={contextValue()}>
+      <Chessboard {...restProps}>
+        <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col bg-yellow-800">
+          <For each={restProps.stateData.players[restProps.who].dice}>
+            {(d) => <Dice type={d} />}
+          </For>
+        </div>
+      </Chessboard>
+    </PlayerContext.Provider>
+  );
 }

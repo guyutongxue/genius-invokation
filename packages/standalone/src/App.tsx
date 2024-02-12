@@ -1,7 +1,17 @@
 import data from "@gi-tcg/data";
-import { Game, GameIO, PlayerConfig, PlayerIO } from "@gi-tcg/core";
+import {
+  Game,
+  GameIO,
+  GameStateLogEntry,
+  PlayerConfig,
+  exposeState,
+} from "@gi-tcg/core";
 
-import { createPlayer, createWaitNotify } from "@gi-tcg/webui-core";
+import {
+  StandaloneChessboard,
+  createPlayer,
+  PlayerIOWithCancellation,
+} from "@gi-tcg/webui-core";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
 import { decode } from "./sharingCode";
 import shareIdMap from "./shareId.json";
@@ -21,6 +31,7 @@ function getPlayerConfig(shareCode: string): PlayerConfig {
 
 export function App() {
   if (window.opener !== null) {
+    // eslint-disable-next-line solid/components-return-once
     return <Child />;
   }
 
@@ -34,28 +45,28 @@ export function App() {
 
   const [uiIo, Chessboard] = createPlayer(1);
 
-  let [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
+  const [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
 
   const showPopup = () => {
-    if (popupWindow() === null) {
-      setPopupWindow(
-        window.open(
-          window.location.href,
-          "_blank",
-          "popup=yes, depended=yes, height=750, width=750",
-        ),
-      );
-      // 不知道为什么 onbeforeload 不起作用
-      const interval = setInterval(() => {
-        if (popupWindow()?.closed) {
-          clearInterval(interval);
-          childIo.giveUp = true;
-        }
-      }, 1000);
+    if (popupWindow() !== null) {
+      return;
     }
+    const newWindow = window.open(
+      window.location.href,
+      "_blank",
+      "popup=yes, depended=yes, height=750, width=750",
+    );
+    setPopupWindow(newWindow);
+    // 不知道为什么 onbeforeload 不起作用
+    const autoGiveupWhenChildCloseInterval = window.setInterval(() => {
+      if (newWindow?.closed && autoGiveupWhenChildCloseInterval !== null) {
+        window.clearInterval(autoGiveupWhenChildCloseInterval);
+        childIo.giveUp = true;
+      }
+    }, 1000);
   };
 
-  const childIo: PlayerIO = {
+  const childIo: PlayerIOWithCancellation = {
     giveUp: false,
     notify: (...params) => {
       popupWindow()?.postMessage({
@@ -93,24 +104,70 @@ export function App() {
       });
       return result;
     },
+    cancelRpc: () => {
+      popupWindow()?.postMessage({
+        giTcg: "1.0",
+        method: "cancelRpc",
+      });
+    },
   };
 
-  const onStart = () => {
+  const [stateLog, setStateLog] = createSignal<GameStateLogEntry[]>([]);
+  // -1 代表不显示历史
+  const [viewingLogIndex, setViewingLogIndex] = createSignal<number>(-1);
+  const [viewingWho, setViewingWho] = createSignal<0 | 1>(1);
+  const viewingState = (): GameStateLogEntry | undefined => {
+    const index = viewingLogIndex();
+    return stateLog()[index];
+  };
+  const enableLog = () => {
+    setViewingWho(1);
+    setViewingLogIndex(stateLog().length - 2);
+  };
+
+  let game: Game | null = null;
+  const pause = async () => {
+    if (game !== null) {
+      setStateLog(game.stateLog);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  };
+
+  const onGameError = (e: unknown, from: Game) => {
+    if (from === game) {
+      alert(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const getGameOption = () => {
     const playerConfig0 = getPlayerConfig(deck0());
     const playerConfig1 = getPlayerConfig(deck1());
     const playerConfigs = [playerConfig0, playerConfig1] as const;
     const io: GameIO = {
-      pause: () => new Promise((resolve) => setTimeout(resolve, 500)),
+      pause,
       players: [childIo, uiIo],
     };
+    return { data, io, playerConfigs };
+  };
 
+  const onStart = () => {
     showPopup();
+    const initialGame = new Game(getGameOption());
+    game = initialGame;
+    initialGame.start().catch((e) => onGameError(e, initialGame));
 
-    const game = new Game({ data, io, playerConfigs });
-    game
-      .start()
-      .catch((e) => alert(e instanceof Error ? e.message : String(e)));
     setStarted(true);
+  };
+
+  const resumeGame = async () => {
+    const logs = stateLog().slice(0, viewingLogIndex() + 1);
+    childIo.cancelRpc();
+    uiIo.cancelRpc();
+    game?.terminate();
+    const newGame = new Game(getGameOption());
+    game = newGame;
+    newGame.startWithStateLog(logs).catch((e) => onGameError(e, newGame));
+    setViewingLogIndex(-1);
   };
 
   const childGiveUpHandler = (e: MessageEvent) => {
@@ -171,8 +228,58 @@ export function App() {
           </div>
         }
       >
-        <div class="title">后手方棋盘</div>
-        <Chessboard />
+        <Show
+          when={viewingState()}
+          fallback={
+            <>
+              <div class="title-row">
+                <span class="title">后手方棋盘</span>
+                <button disabled={stateLog().length <= 1} onClick={enableLog}>
+                  查看历史
+                </button>
+              </div>
+              <Chessboard />
+            </>
+          }
+        >
+          {(state) => (
+            <>
+              <div class="title-row">
+                <span class="title">后手方棋盘（查看历史中）</span>
+                <Show
+                  when={
+                    viewingLogIndex() < stateLog().length - 1 &&
+                    state().canResume
+                  }
+                >
+                  <button onClick={resumeGame}>从此处继续</button>
+                </Show>
+                <button onClick={() => setViewingWho((i) => (1 - i) as 0 | 1)}>
+                  切换玩家
+                </button>
+                <button
+                  disabled={viewingLogIndex() <= 1}
+                  onClick={() => setViewingLogIndex((i) => i - 1)}
+                >
+                  后退一步
+                </button>
+                <button
+                  disabled={viewingLogIndex() >= stateLog().length - 1}
+                  onClick={() => setViewingLogIndex((i) => i + 1)}
+                >
+                  前进一步
+                </button>
+                <button onClick={() => setViewingLogIndex(-1)}>返回游戏</button>
+              </div>
+              <StandaloneChessboard
+                class="grayscale"
+                stateData={exposeState(viewingWho(), state().state)}
+                who={viewingWho()}
+                events={state().events}
+              />
+            </>
+          )}
+        </Show>
       </Show>
     </div>
   );

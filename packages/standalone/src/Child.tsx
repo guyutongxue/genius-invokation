@@ -6,8 +6,8 @@ export function Child() {
     onGiveUp: () => {
       window.opener?.postMessage({
         giTcg: "1.0",
-        method: "giveUp"
-      })
+        method: "giveUp",
+      });
     },
   });
 
@@ -35,12 +35,19 @@ export function Child() {
           return;
         }
         const result = await uiIo.rpc(...(data.params as [any, any]));
-        (e.source as WindowProxy)?.postMessage({
-          giTcg: "1.0",
-          method: "rpc",
-          result,
-          id: data.id
-        }, "*");
+        (e.source as WindowProxy)?.postMessage(
+          {
+            giTcg: "1.0",
+            method: "rpc",
+            result,
+            id: data.id,
+          },
+          "*",
+        );
+        break;
+      }
+      case "cancelRpc": {
+        uiIo.cancelRpc();
         break;
       }
     }
@@ -56,7 +63,9 @@ export function Child() {
 
   return (
     <div>
-      <div class="title">先手方棋盘</div>
+      <div class="title-row">
+        <span class="title">先手方棋盘</span>
+      </div>
       <Chessboard />
     </div>
   );

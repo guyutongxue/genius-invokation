@@ -15,11 +15,21 @@ html {
 }
 
 .title {
-  width: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
   text-align: center;
   font-size: 1.3rem;
   margin: 0.2rem 0;
   font-family: "汉仪文黑-85W", sans-serif;
+}
+
+.title-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .config-panel {
@@ -58,4 +68,8 @@ html {
     font-weight: bold;
     padding: 0.2rem;
   }
+}
+
+.grayscale {
+  filter: grayscale(50%);
 }

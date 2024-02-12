@@ -85,7 +85,8 @@ export class Game {
 
   private state: GameState;
   private _stateLog: GameStateLogEntry[] = [];
-  private finishPromise: Promise<0 | 1 | null>;
+  private _terminated = false;
+  private finishPromise: Promise<0 | 1 | null> | null = null;
   private resolveFinishPromise: () => void = () => {};
   private rejectFinishPromise: (e: GiTcgError) => void = () => {};
 
@@ -119,7 +120,6 @@ export class Game {
     });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
-    this.finishPromise = Promise.resolve(null);
   }
 
   get stateLog() {
@@ -234,6 +234,9 @@ export class Game {
     });
   }
   private async notifyAndPause(events: readonly Event[], canResume = false) {
+    if (this._terminated) {
+      return;
+    }
     this._stateLog.push({
       state: this.state,
       canResume,
@@ -258,7 +261,10 @@ export class Game {
     }
   }
 
-  async start() {
+  async start(): Promise<0 | 1 | null> {
+    if (this.finishPromise !== null) {
+      throw new GiTcgCoreInternalError(`Game already started. Please use a new Game instance instead of start multiple time.`);
+    }
     this.finishPromise = new Promise((resolve, reject) => {
       this.resolveFinishPromise = () => resolve(this.state.winner);
       this.rejectFinishPromise = (e) => reject(e);
@@ -266,7 +272,7 @@ export class Game {
     setTimeout(async () => {
       try {
         await this.notifyAndPause([], true);
-        while (this.state.phase !== "gameEnd") {
+        while (!this._terminated && this.state.phase !== "gameEnd") {
           switch (this.state.phase) {
             case "initHands":
               await this.initHands();
@@ -313,7 +319,28 @@ export class Game {
     return this.finishPromise;
   }
 
-  async gotWinner(winner: 0 | 1) {
+  async startFromState(state: GameState) {
+    if (this.finishPromise !== null) {
+      throw new GiTcgCoreInternalError(`Game already started. Please use a new Game instance instead of start multiple time.`);
+    }
+    this.state = state;
+    return this.start();
+  }
+
+  async startWithStateLog(log: readonly GameStateLogEntry[]) {
+    if (this.finishPromise !== null) {
+      throw new GiTcgCoreInternalError(`Game already started. Please use a new Game instance instead of start multiple time.`);
+    }
+    if (log.length === 0) {
+      throw new GiTcgCoreInternalError("Provided state log should at least contains 1 log entry");
+    }
+    const allLogs = [...log];
+    this.state = allLogs.pop()!.state;
+    this._stateLog = allLogs;
+    return this.start();
+  }
+
+  private async gotWinner(winner: 0 | 1) {
     if (this.state.phase === "gameEnd") {
       return;
     }
@@ -327,6 +354,12 @@ export class Game {
     });
     await this.notifyAndPause([], false);
     this.resolveFinishPromise();
+    this._terminated = true;
+    Object.freeze(this);
+  }
+
+  terminate() {
+    this._terminated = true;
     Object.freeze(this);
   }
 
@@ -335,6 +368,9 @@ export class Game {
     method: M,
     req: RpcRequest[M],
   ): Promise<RpcResponse[M]> {
+    if (this._terminated) {
+      throw new GiTcgCoreInternalError(`Game has been terminated`);
+    }
     try {
       verifyRpcRequest(method, req);
     } catch (e) {
@@ -342,7 +378,7 @@ export class Game {
     }
     // IO 的同时轮询检查是否有投降，若有立即结束对局
     const interval = setInterval(() => {
-      if (this.state.phase === "gameEnd") {
+      if (this._terminated || this.state.phase === "gameEnd") {
         clearInterval(interval);
       } else {
         this.checkGiveUp();

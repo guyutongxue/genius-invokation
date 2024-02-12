@@ -3,7 +3,7 @@ import "solid-devtools";
 import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";
-import { GameIO, PlayerConfig, startGame } from "@gi-tcg/core";
+import { Game, GameIO, PlayerConfig } from "@gi-tcg/core";
 
 import { createPlayer } from "./index";
 import { createWaitNotify } from "./utils";
@@ -45,11 +45,12 @@ function App() {
     pause: async () => new Promise((r) => setTimeout(r, 500)),
     players: [io0, io1],
   };
-  startGame({
+  const game = new Game({
     data,
     io,
     playerConfigs: [playerConfig0, playerConfig1],
   });
+  game.start();
 
   return (
     <div class="min-w-180 flex flex-col gap-2">

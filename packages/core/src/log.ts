@@ -12,20 +12,28 @@ export interface GameStateLogEntry {
   readonly events: readonly Event[];
 }
 
-export type SerializedState<T> = {
-  [K in keyof T]: T[K] extends { __definition: infer D, id: number }
-    ? { 
-      __definition: D,
-      id: number
-    }
-    : SerializedState<T[K]>;
-};
+export type SerializedState<T> = T extends Int32Array
+  ? number[]
+  : T extends ReadonlyArray<infer U>
+    ? SerializedState<U>[]
+    : T extends object
+      ? {
+          [K in keyof T]: T[K] extends { __definition: infer D; id: number }
+            ? {
+                __definition: D;
+                id: number;
+              }
+            : SerializedState<T[K]>;
+        }
+      : T;
 
-export type SerializedGameState = Exclude<SerializedState<GameState>, "data">;
+export type SerializedGameState = Omit<SerializedState<GameState>, "data">;
 
 function serializeImpl<T>(v: T): SerializedState<T>;
 function serializeImpl(v: unknown): any {
-  if (Array.isArray(v)) {
+  if (v instanceof Int32Array) {
+    return Array.from(v);
+  } else if (Array.isArray(v)) {
     return v.map(serializeImpl);
   } else if (typeof v === "object" && v !== null) {
     if ("__definition" in v && "id" in v) {
@@ -45,7 +53,9 @@ function serializeImpl(v: unknown): any {
 }
 
 export function serializeGameState(state: GameState): SerializedGameState {
-  return serializeImpl(state);
+  const result: Omit<GameState, "data"> & { data?: unknown } = { ...state };
+  delete result.data;
+  return serializeImpl(result);
 }
 
 function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
@@ -73,7 +83,12 @@ function deserializeImpl(data: ReadonlyDataStore, v: unknown): any {
   }
 }
 
-export function deserializeGameState(data: ReadonlyDataStore, state: SerializedGameState): GameState {
-  return deserializeImpl(data, state);
+export function deserializeGameState(
+  data: ReadonlyDataStore,
+  state: SerializedGameState,
+): GameState {
+  return {
+    data,
+    ...deserializeImpl<Omit<GameState, "data">>(data, state),
+  };
 }
-
