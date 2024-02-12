@@ -111,7 +111,8 @@ export class Game {
       currentTurn: 0,
       roundNumber: 0,
       mutationLog: [],
-      globalActionLog: [],
+      globalPlayCardLog: [],
+      globalUseSkillLog: [],
       winner: null,
       players: [this.initPlayerState(0), this.initPlayerState(1)],
     };

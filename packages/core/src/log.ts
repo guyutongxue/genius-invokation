@@ -27,7 +27,7 @@ export type SerializedState<T> = T extends Int32Array
         }
       : T;
 
-export type SerializedGameState = Omit<SerializedState<GameState>, "data">;
+export type SerializedGameState = Omit<SerializedState<GameState>, "data" | "mutationLog">;
 
 function serializeImpl<T>(v: T): SerializedState<T>;
 function serializeImpl(v: unknown): any {
@@ -52,14 +52,19 @@ function serializeImpl(v: unknown): any {
   }
 }
 
+type MakePropPartial<T, K extends PropertyKey> = Omit<T, K> & {
+  [K2 in K]?: unknown;
+};
+
 export function serializeGameState(state: GameState): SerializedGameState {
-  const result: Omit<GameState, "data"> & { data?: unknown } = { ...state };
+  const result: MakePropPartial<GameState, "data" | "mutationLog"> = { ...state };
   delete result.data;
+  delete result.mutationLog;
   return serializeImpl(result);
 }
 
 function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
-  return ["character", "entity", "skill", "card"].includes(defKey as string);
+  return ["characters", "entities", "skills", "cards"].includes(defKey as string);
 }
 
 function deserializeImpl<T>(data: ReadonlyDataStore, v: SerializedState<T>): T;
@@ -89,6 +94,7 @@ export function deserializeGameState(
 ): GameState {
   return {
     data,
-    ...deserializeImpl<Omit<GameState, "data">>(data, state),
+    mutationLog: [],
+    ...deserializeImpl<Omit<GameState, "data" | "mutationLog">>(data, state),
   };
 }

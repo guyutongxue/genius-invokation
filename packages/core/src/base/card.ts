@@ -41,7 +41,7 @@ export type PlayCardTargetGetter = (
 ) => CardSkillEventArg[];
 
 export interface CardDefinition {
-  readonly __definition: "card";
+  readonly __definition: "cards";
   readonly id: number;
   readonly type: CardType;
   readonly tags: readonly CardTag[];

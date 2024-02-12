@@ -41,11 +41,10 @@ export const SpiritOfOmenPyroScorpion01 = summon(123032)
   .on("endPhase")
   .usage(2)
   .do((c) => {
-    if (c.state.globalActionLog.find((log) =>
+    if (c.state.globalUseSkillLog.find((log) =>
         log.who === c.self.who &&
         log.roundNumber === c.state.roundNumber &&
-        log.action.type === "useSkill" &&
-        [SearingGlare, BlazingStrike].includes(log.action.skill.definition.id as SkillHandle))) {
+        [SearingGlare, BlazingStrike].includes(log.skill.definition.id as SkillHandle))) {
       c.damage(DamageType.Pyro, 2);
     } else {
       c.damage(DamageType.Pyro, 1);

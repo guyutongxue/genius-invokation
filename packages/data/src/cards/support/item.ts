@@ -130,10 +130,8 @@ export const MementoLens = card(323006)
     if (!e.hasOneOfCardTag("weapon", "artifact", "place", "ally")) {
       return false;
     }
-    const played = c.state.globalActionLog.filter(
-      (log) => log.who === e.who && 
-        log.action.type === "playCard" && 
-        log.action.card.definition.id === e.action.card.definition.id);
+    const played = c.state.globalPlayCardLog.filter(
+      (log) => log.who === e.who && log.card.definition.id === e.action.card.definition.id);
     return played.length > 0;
   })
   .usagePerRound(1)

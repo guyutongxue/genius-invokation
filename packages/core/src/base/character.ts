@@ -36,7 +36,7 @@ export type ArkheTag =
 export type CharacterTag = ElementTag | WeaponTag | NationTag | ArkheTag;
 
 export interface CharacterDefinition {
-  readonly __definition: "character";
+  readonly __definition: "characters";
   readonly type: "character";
   readonly id: number;
   readonly tags: readonly CharacterTag[];

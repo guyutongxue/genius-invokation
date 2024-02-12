@@ -218,11 +218,24 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "pushActionLog": {
       return produce(state, (draft) => {
-        draft.globalActionLog.push({
-          roundNumber: draft.roundNumber,
-          who: m.who,
-          action: m.action as Draft<ActionInfo>,
-        });
+        switch (m.action.type) {
+          case "playCard": {
+            draft.globalPlayCardLog.push({
+              roundNumber: draft.roundNumber,
+              who: m.who,
+              card: m.action.card as Draft<CardState>,
+            });
+            break;
+          }
+          case "useSkill": {
+            draft.globalUseSkillLog.push({
+              roundNumber: draft.roundNumber,
+              who: m.who,
+              skill: m.action.skill as Draft<SkillInfo>,
+            });
+            break;
+          }
+        }
       });
     }
     case "pushDamageLog": {
@@ -242,7 +255,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const dst = m.path === "pilesToHands" ? player.hands : player.piles;
         const cardIdx = src.findIndex((c) => c.id === m.value.id);
         if (cardIdx === -1) {
-          throw new GiTcgCoreInternalError(`Card ${m.value.id} not found in source`);
+          throw new GiTcgCoreInternalError(
+            `Card ${m.value.id} not found in source`,
+          );
         }
         const card = src[cardIdx];
         src.splice(cardIdx, 1);
@@ -260,7 +275,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const player = draft.players[m.who];
         const cardIdx = player.hands.findIndex((c) => c.id === m.oldState.id);
         if (cardIdx === -1) {
-          throw new GiTcgCoreInternalError(`Card ${m.oldState.id} not found in hands`);
+          throw new GiTcgCoreInternalError(
+            `Card ${m.oldState.id} not found in hands`,
+          );
         }
         player.hands.splice(cardIdx, 1);
       });
@@ -285,7 +302,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
             (c) => c.id === where.characterId,
           );
           if (!character) {
-            throw new GiTcgCoreInternalError(`Character ${where.characterId} not found`);
+            throw new GiTcgCoreInternalError(
+              `Character ${where.characterId} not found`,
+            );
           }
           value.id = draft.iterators.id--;
           character.entities.push(value as Draft<EntityState>);
@@ -337,7 +356,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     default: {
       const _: never = m;
-      throw new GiTcgCoreInternalError(`Unknown mutation type: ${JSON.stringify(m)}`);
+      throw new GiTcgCoreInternalError(
+        `Unknown mutation type: ${JSON.stringify(m)}`,
+      );
     }
   }
 }

@@ -219,11 +219,11 @@ export const Ellin = card(322010)
   .costSame(2)
   .support("ally")
   .on("deductDiceSkill", (c, e) => {
-    const used = c.state.globalActionLog.find(
-      (log) => log.roundNumber === c.state.roundNumber &&
+    const used = c.state.globalUseSkillLog.find(
+      (log) =>
+        log.roundNumber === c.state.roundNumber &&
         log.who === e.who &&
-        log.action.type === "useSkill" &&
-        log.action.skill.definition.id === e.action.skill.definition.id);
+        log.skill.definition.id === e.action.skill.definition.id);
     return !!used;
   })
   .usagePerRound(1)

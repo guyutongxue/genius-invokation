@@ -309,7 +309,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       return targetIdsList.map((targets) => ({ targets }));
     };
     const skillDef: PlayCardSkillDefinition = {
-      __definition: "skill",
+      __definition: "skills",
       type: "skill",
       skillType: "card",
       id: this.cardId,
@@ -319,7 +319,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     };
     registerSkill(skillDef);
     registerCard({
-      __definition: "card",
+      __definition: "cards",
       id: this.cardId,
       type: this._type,
       tags: this._tags,

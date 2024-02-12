@@ -20,7 +20,7 @@ export type EntityType =
 export type ExEntityType = "character" | EntityType;
 
 export interface EntityDefinition {
-  readonly __definition: "entity";
+  readonly __definition: "entities";
   readonly type: EntityType;
   readonly id: number;
   readonly visibleVarName: string | null;

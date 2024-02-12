@@ -224,12 +224,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
     );
   }
   countOfSkill(callerId: number, handle: SkillHandle): number {
-    return this.state.globalActionLog.filter(
-      ({ roundNumber, action }) =>
+    return this.state.globalUseSkillLog.filter(
+      ({ roundNumber, skill }) =>
         roundNumber === this.state.roundNumber &&
-        action.type === "useSkill" &&
-        action.skill.caller.id === callerId &&
-        action.skill.definition.id === handle,
+        skill.caller.id === callerId &&
+        skill.definition.id === handle,
     ).length;
   }
 

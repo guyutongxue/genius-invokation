@@ -4,6 +4,7 @@ import {
   GameIO,
   GameStateLogEntry,
   PlayerConfig,
+  deserializeGameState,
   exposeState,
   serializeGameState,
 } from "@gi-tcg/core";
@@ -159,6 +160,39 @@ export function App() {
     a.click();
     URL.revokeObjectURL(url);
   };
+  const importLog = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement)?.files?.[0];
+      if (!file) {
+        alert(`Failed to read uploaded file`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const contents = event.target?.result as string;
+        try {
+          const logs: any[] = JSON.parse(contents);
+          setStateLog(
+            logs.map((entry) => ({
+              state: deserializeGameState(data, entry.state),
+              events: entry.events,
+              canResume: entry.canResume,
+            })),
+          );
+          setViewingLogIndex(0);
+          setStarted(true);
+        } catch (error) {
+          console.error(error);
+          alert(`Error parsing input: ${error instanceof Error ? error.message : error}`);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
 
   let game: Game | null = null;
   const pause = async () => {
@@ -170,6 +204,7 @@ export function App() {
 
   const onGameError = (e: unknown, from: Game) => {
     if (from === game) {
+      console.error(e);
       alert(e instanceof Error ? e.message : String(e));
     }
   };
@@ -320,13 +355,16 @@ export function App() {
             </>
           )}
         </Show>
-        <details>
-          {/* <summary>开发者选项</summary>
-          <button disabled={stateLog().length === 0} onClick={exportLog}>
-            导出日志
-          </button> */}
-        </details>
       </Show>
+      <details>
+        <summary>开发者选项</summary>
+        <button disabled={stateLog().length === 0} onClick={exportLog}>
+          导出日志
+        </button>
+        <button disabled={started()} onClick={importLog}>
+          导入日志
+        </button>
+      </details>
     </div>
   );
 }

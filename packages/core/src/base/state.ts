@@ -2,9 +2,9 @@ import { PhaseType, DiceType } from "@gi-tcg/typings";
 
 import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariables } from "./character";
-import { EntityArea, EntityDefinition, EntityVariables } from "./entity";
+import { EntityDefinition, EntityVariables } from "./entity";
 import { Mutation } from "./mutation";
-import { ActionInfo, DamageInfo, SkillDefinition } from "./skill";
+import { DamageInfo, SkillInfo } from "./skill";
 import { ReadonlyDataStore } from "../builder/registry";
 
 export interface GameConfig {
@@ -28,10 +28,16 @@ export interface MutationLogEntry {
   readonly mutation: Mutation;
 }
 
-export interface ActionLogEntry {
+export interface PlayCardLogEntry {
   readonly roundNumber: number;
   readonly who: 0 | 1;
-  readonly action: ActionInfo;
+  readonly card: CardState;
+}
+
+export interface UseSkillLogEntry {
+  readonly roundNumber: number;
+  readonly who: 0 | 1;
+  readonly skill: SkillInfo;
 }
 
 export interface GameState {
@@ -44,7 +50,8 @@ export interface GameState {
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
   readonly mutationLog: readonly MutationLogEntry[];
-  readonly globalActionLog: readonly ActionLogEntry[];
+  readonly globalPlayCardLog: readonly PlayCardLogEntry[];
+  readonly globalUseSkillLog: readonly UseSkillLogEntry[];
 }
 
 export interface PlayerState {
