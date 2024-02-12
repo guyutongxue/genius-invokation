@@ -195,14 +195,14 @@ export function nextRandom(
   oldState: IteratorState,
 ): readonly [number, IteratorState] {
   const factory = minstd.factory({
-    state: oldState.random,
+    state: new Int32Array(oldState.random),
   });
   // [1, 2147483646]
   const randInt = factory();
   return [
     randInt,
     {
-      random: factory.state,
+      random: [...factory.state],
       id: oldState.id,
     },
   ];

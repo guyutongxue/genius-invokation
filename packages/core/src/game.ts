@@ -104,7 +104,7 @@ export class Game {
       data: this.data,
       config: this.config,
       iterators: {
-        random: initRandomState,
+        random: [...initRandomState],
         id: INITIAL_ID,
       },
       phase: "initHands",
@@ -930,7 +930,7 @@ export class Game {
             type: "useCommonSkill",
             who: callerArea.who,
             skill: skillDef.id,
-          })
+          });
         }
       }
       for (const [eventName, arg] of eventList) {

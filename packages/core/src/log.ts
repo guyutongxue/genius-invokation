@@ -1,7 +1,3 @@
-import { CardDefinition } from "./base/card";
-import { CharacterDefinition } from "./base/character";
-import { EntityDefinition } from "./base/entity";
-import { SkillDefinition } from "./base/skill";
 import { GameState } from "./base/state";
 import { Event } from "@gi-tcg/typings";
 import { ReadonlyDataStore } from "./builder";
@@ -12,28 +8,27 @@ export interface GameStateLogEntry {
   readonly events: readonly Event[];
 }
 
-export type SerializedState<T> = T extends Int32Array
-  ? number[]
-  : T extends ReadonlyArray<infer U>
-    ? SerializedState<U>[]
-    : T extends object
-      ? {
-          [K in keyof T]: T[K] extends { __definition: infer D; id: number }
-            ? {
-                __definition: D;
-                id: number;
-              }
-            : SerializedState<T[K]>;
-        }
-      : T;
+export type SerializedState<T> = T extends ReadonlyArray<infer U>
+  ? SerializedState<U>[]
+  : T extends object
+    ? {
+        [K in keyof T]: T[K] extends { __definition: infer D; id: number }
+          ? {
+              __definition: D;
+              id: number;
+            }
+          : SerializedState<T[K]>;
+      }
+    : T;
 
-export type SerializedGameState = Omit<SerializedState<GameState>, "data" | "mutationLog">;
+export type SerializedGameState = Omit<
+  SerializedState<GameState>,
+  "data" | "mutationLog"
+>;
 
 function serializeImpl<T>(v: T): SerializedState<T>;
 function serializeImpl(v: unknown): any {
-  if (v instanceof Int32Array) {
-    return Array.from(v);
-  } else if (Array.isArray(v)) {
+  if (Array.isArray(v)) {
     return v.map(serializeImpl);
   } else if (typeof v === "object" && v !== null) {
     if ("__definition" in v && "id" in v) {
@@ -57,14 +52,18 @@ type MakePropPartial<T, K extends PropertyKey> = Omit<T, K> & {
 };
 
 export function serializeGameState(state: GameState): SerializedGameState {
-  const result: MakePropPartial<GameState, "data" | "mutationLog"> = { ...state };
+  const result: MakePropPartial<GameState, "data" | "mutationLog"> = {
+    ...state,
+  };
   delete result.data;
   delete result.mutationLog;
   return serializeImpl(result);
 }
 
 function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
-  return ["characters", "entities", "skills", "cards"].includes(defKey as string);
+  return ["characters", "entities", "skills", "cards"].includes(
+    defKey as string,
+  );
 }
 
 function deserializeImpl<T>(data: ReadonlyDataStore, v: SerializedState<T>): T;
@@ -92,15 +91,13 @@ export function deserializeGameState(
   data: ReadonlyDataStore,
   state: SerializedGameState,
 ): GameState {
-  const result = deserializeImpl<Omit<GameState, "data" | "mutationLog">>(data, state);
-  const randomState = new Int32Array(state.iterators.random);
+  const result = deserializeImpl<Omit<GameState, "data" | "mutationLog">>(
+    data,
+    state,
+  );
   return {
     data,
     mutationLog: [],
     ...result,
-    iterators: {
-      id: result.iterators.id,
-      random: randomState,
-    }
   };
 }

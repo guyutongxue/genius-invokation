@@ -19,7 +19,7 @@ export interface GameConfig {
 }
 
 export interface IteratorState {
-  readonly random: Int32Array;
+  readonly random: number[];
   readonly id: number;
 }
 
