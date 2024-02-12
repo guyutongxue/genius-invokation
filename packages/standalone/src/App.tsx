@@ -321,10 +321,10 @@ export function App() {
           )}
         </Show>
         <details>
-          <summary>开发者选项</summary>
+          {/* <summary>开发者选项</summary>
           <button disabled={stateLog().length === 0} onClick={exportLog}>
             导出日志
-          </button>
+          </button> */}
         </details>
       </Show>
     </div>
