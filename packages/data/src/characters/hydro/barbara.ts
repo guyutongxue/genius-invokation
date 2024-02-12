@@ -10,7 +10,7 @@ import { character, skill, summon, card, DamageType, DiceType, SummonHandle } fr
 export const MelodyLoop: SummonHandle = summon(112011)
   .endPhaseDamage(DamageType.Heal, 1, "all my characters")
   .usage(2)
-  .apply(DamageType.Hydro, "active")
+  .apply(DamageType.Hydro, "my active")
   .on("deductDiceSwitch", (c) => c.$(`my equipment with definition id ${GloriousSeason}`)) // 天赋在场时
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)

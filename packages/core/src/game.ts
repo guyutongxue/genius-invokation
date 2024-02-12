@@ -116,7 +116,7 @@ export class Game {
     this._stateLog.push({
       state: this.state,
       canResume: false,
-      events: []
+      events: [],
     });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
@@ -240,7 +240,7 @@ export class Game {
     this._stateLog.push({
       state: this.state,
       canResume,
-      events
+      events,
     });
     for (const i of [0, 1] as const) {
       this.notifyOne(i, events);
@@ -263,7 +263,9 @@ export class Game {
 
   async start(): Promise<0 | 1 | null> {
     if (this.finishPromise !== null) {
-      throw new GiTcgCoreInternalError(`Game already started. Please use a new Game instance instead of start multiple time.`);
+      throw new GiTcgCoreInternalError(
+        `Game already started. Please use a new Game instance instead of start multiple time.`,
+      );
     }
     this.finishPromise = new Promise((resolve, reject) => {
       this.resolveFinishPromise = () => resolve(this.state.winner);
@@ -321,7 +323,9 @@ export class Game {
 
   async startFromState(state: GameState) {
     if (this.finishPromise !== null) {
-      throw new GiTcgCoreInternalError(`Game already started. Please use a new Game instance instead of start multiple time.`);
+      throw new GiTcgCoreInternalError(
+        `Game already started. Please use a new Game instance instead of start multiple time.`,
+      );
     }
     this.state = state;
     return this.start();
@@ -329,10 +333,14 @@ export class Game {
 
   async startWithStateLog(log: readonly GameStateLogEntry[]) {
     if (this.finishPromise !== null) {
-      throw new GiTcgCoreInternalError(`Game already started. Please use a new Game instance instead of start multiple time.`);
+      throw new GiTcgCoreInternalError(
+        `Game already started. Please use a new Game instance instead of start multiple time.`,
+      );
     }
     if (log.length === 0) {
-      throw new GiTcgCoreInternalError("Provided state log should at least contains 1 log entry");
+      throw new GiTcgCoreInternalError(
+        "Provided state log should at least contains 1 log entry",
+      );
     }
     const allLogs = [...log];
     this.state = allLogs.pop()!.state;
@@ -354,13 +362,20 @@ export class Game {
     });
     await this.notifyAndPause([], false);
     this.resolveFinishPromise();
-    this._terminated = true;
-    Object.freeze(this);
+    if (!this._terminated) {
+      this._terminated = true;
+      Object.freeze(this);
+    }
   }
 
   terminate() {
-    this._terminated = true;
-    Object.freeze(this);
+    this.rejectFinishPromise(
+      new GiTcgCoreInternalError("User call terminate."),
+    );
+    if (!this._terminated) {
+      this._terminated = true;
+      Object.freeze(this);
+    }
   }
 
   private async rpc<M extends RpcMethod>(
@@ -1056,7 +1071,7 @@ export class Game {
           definition: def,
           fromCard: null,
           requestBy: arg.via,
-          charged: false,  // Can this be charged?
+          charged: false, // Can this be charged?
           plunging: false,
         };
         yield this.useSkillImpl(skillInfo, hasIo, void 0);
@@ -1114,7 +1129,7 @@ export class Game {
                 target: ch,
                 value: zeroHealthEventArg._immuneInfo.newHealth,
                 via: zeroHealthEventArg._immuneInfo.skill,
-                fromReaction: null
+                fromReaction: null,
               },
             });
             continue;

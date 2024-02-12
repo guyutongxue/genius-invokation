@@ -10,7 +10,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
 export const DandelionField = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
-  .heal(1, "active")
+  .heal(1, "my active")
   .on("modifyDamage", (c, e) => 
     c.$("my characters has equipment with definition id 215021") && // 装备有天赋的琴在场时
     e.type === DamageType.Anemo

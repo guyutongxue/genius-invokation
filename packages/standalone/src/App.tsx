@@ -245,7 +245,9 @@ export function App() {
           {(state) => (
             <>
               <div class="title-row">
-                <span class="title">后手方棋盘（查看历史中）</span>
+                <span class="title">
+                  {viewingWho() ? "后" : "先"}手方棋盘（查看历史中）
+                </span>
                 <Show
                   when={
                     viewingLogIndex() < stateLog().length - 1 &&
@@ -258,7 +260,7 @@ export function App() {
                   切换玩家
                 </button>
                 <button
-                  disabled={viewingLogIndex() <= 1}
+                  disabled={viewingLogIndex() <= 0}
                   onClick={() => setViewingLogIndex((i) => i - 1)}
                 >
                   后退一步
