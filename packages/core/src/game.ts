@@ -26,6 +26,7 @@ import {
   drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
+  getEntityArea,
   getEntityById,
   hasReplacedAction,
   shuffle,
@@ -60,6 +61,7 @@ import {
   GiTcgIOError,
 } from "./error";
 import { GameStateLogEntry } from "./log";
+import { EntityArea } from "./base/entity";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -889,8 +891,9 @@ export class Game {
     arg: EventArg | CardSkillEventArg | void,
   ): Promise<EventAndRequest[]> {
     // If caller not exists (consumed by previous skills), do nothing
+    let callerArea: EntityArea;
     try {
-      getEntityById(this.state, skillInfo.caller.id, true);
+      callerArea = getEntityArea(this.state, skillInfo.caller.id);
     } catch {
       return [];
     }
@@ -921,6 +924,13 @@ export class Game {
           type: "triggered",
           id: skillInfo.caller.id,
         });
+        if (skillDef.triggerOn === null) {
+          notifyEvents.push({
+            type: "useCommonSkill",
+            who: callerArea.who,
+            skill: skillDef.id,
+          })
+        }
       }
       for (const [eventName, arg] of eventList) {
         // Damages

@@ -47,7 +47,7 @@ export function App() {
 
   const [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
 
-  const showPopup = () => {
+  const showPopup = async () => {
     if (popupWindow() !== null) {
       return;
     }
@@ -62,8 +62,28 @@ export function App() {
       if (newWindow?.closed && autoGiveupWhenChildCloseInterval !== null) {
         window.clearInterval(autoGiveupWhenChildCloseInterval);
         childIo.giveUp = true;
+        setPopupWindow(null);
       }
     }, 1000);
+    await new Promise<void>((resolve) => {
+      const handler = (e: MessageEvent) => {
+        const { data } = e;
+        if (typeof data !== "object" || data === null) {
+          return;
+        }
+        if (data.giTcg !== "1.0") {
+          return;
+        }
+        if (!("method" in data)) {
+          return;
+        }
+        if (data.method === "initialized") {
+          window?.removeEventListener("message", handler);
+          resolve();
+        }
+      };
+      window?.addEventListener("message", handler);
+    });
   };
 
   const childIo: PlayerIOWithCancellation = {
@@ -150,8 +170,8 @@ export function App() {
     return { data, io, playerConfigs };
   };
 
-  const onStart = () => {
-    showPopup();
+  const onStart = async () => {
+    await showPopup();
     const initialGame = new Game(getGameOption());
     game = initialGame;
     initialGame.start().catch((e) => onGameError(e, initialGame));
@@ -160,6 +180,9 @@ export function App() {
   };
 
   const resumeGame = async () => {
+    childIo.giveUp = false;
+    uiIo.giveUp = false;
+    await showPopup();
     const logs = stateLog().slice(0, viewingLogIndex() + 1);
     childIo.cancelRpc();
     uiIo.cancelRpc();

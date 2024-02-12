@@ -55,6 +55,10 @@ export function Child() {
 
   onMount(() => {
     window.addEventListener("message", messageHandler);
+    window.opener?.postMessage({
+      giTcg: "1.0",
+      method: "initialized",
+    });
   });
 
   onCleanup(() => {

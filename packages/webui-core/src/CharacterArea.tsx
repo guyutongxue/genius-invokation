@@ -3,7 +3,7 @@ import { Image } from "./Image";
 import { Status } from "./Entity";
 // import { usePlayerContext } from "./chessboard";
 import { For, Index, Show } from "solid-js";
-import { usePlayerContext } from "./Chessboard";
+import { useEventContext, usePlayerContext } from "./Chessboard";
 import { DICE_COLOR } from "./Dice";
 import { Interactable } from "./Interactable";
 
@@ -61,8 +61,8 @@ function WaterDrop() {
 }
 
 export function CharacterArea(props: CharacterAreaProps) {
-  const { allDamages } = usePlayerContext();
-  const damaged = () => allDamages.find((d) => d.target === props.data.id);
+  const { allDamages } = useEventContext();
+  const damaged = () => allDamages().find((d) => d.target === props.data.id);
   const aura1 = () => props.data.aura & 0xf;
   const aura2 = () => (props.data.aura >> 4) & 0xf;
 

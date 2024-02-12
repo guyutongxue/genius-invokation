@@ -146,17 +146,6 @@ function buildAllCardClickState(
   return result;
 }
 
-export interface PlayerContextValue {
-  allClickable: readonly number[];
-  allSelected: readonly number[];
-  allCosts: Readonly<Record<number, readonly DiceType[]>>;
-  allDamages: readonly DamageData[];
-  focusing: Accessor<number | null>;
-  onClick: (id: number) => void;
-  setPrepareTuning: (value: boolean) => void;
-  assetApiEndpoint: Accessor<string>;
-}
-
 export interface AgentActions {
   onNotify?: (msg: NotificationMessage) => void;
   onSwitchHands: () => Promise<SwitchHandsResponse>;
@@ -165,9 +154,27 @@ export interface AgentActions {
   onAction: (req: ActionRequest) => Promise<ActionResponse>;
 }
 
+export interface PlayerContextValue {
+  readonly allClickable: readonly number[];
+  readonly allSelected: readonly number[];
+  readonly allCosts: Readonly<Record<number, readonly DiceType[]>>;
+  readonly onClick: (id: number) => void;
+  readonly setPrepareTuning: (value: boolean) => void;
+  readonly assetApiEndpoint: Accessor<string>;
+}
+
+export interface EventContextValue {
+  readonly allDamages: Accessor<readonly DamageData[]>;
+  readonly focusing: Accessor<number | null>;
+}
+
 const PlayerContext = createContext<PlayerContextValue>();
 export function usePlayerContext(): Readonly<PlayerContextValue> {
   return useContext(PlayerContext)!;
+}
+const EventContext = createContext<EventContextValue>();
+export function useEventContext(): Readonly<EventContextValue> {
+  return useContext(EventContext)!;
 }
 
 export interface WebUiOption {
@@ -193,6 +200,7 @@ export function createPlayer(
   Chessboard: (props: ComponentProps<"div">) => JSX.Element,
 ] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
+  const [events, setEvents] = createSignal<Event[]>([]);
   const [giveUp, setGiveUp] = createSignal(false);
   const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
   const [handSwitching, waitHandSwitch, notifyHandSwitched] =
@@ -205,8 +213,6 @@ export function createPlayer(
 
   const [allClickable, setClickable] = createStore<number[]>([]);
   const [allSelected, setSelected] = createStore<number[]>([]);
-  const [allDamages, setAllDamages] = createStore<DamageData[]>([]);
-  const [focusing, setFocusing] = createSignal<number | null>(null);
   const [, waitElementClick, notifyElementClicked] = createWaitNotify<number>();
 
   const [allCosts, setAllCosts] = createStore<
@@ -390,18 +396,7 @@ export function createPlayer(
     giveUp: false,
     notify: (msg) => {
       setStateData(msg.newState);
-      let currentFocusing: number | null = null;
-      const currentDamages: DamageData[] = [];
-      for (const event of msg.events) {
-        if (event.type === "damage") {
-          currentDamages.push(event.damage);
-        }
-        if (event.type === "triggered") {
-          currentFocusing = event.id;
-        }
-      }
-      setAllDamages(currentDamages);
-      setFocusing(currentFocusing);
+      setEvents(msg.events);
       if (action.onNotify) {
         action.onNotify(msg);
       }
@@ -472,20 +467,18 @@ export function createPlayer(
   };
   const assetApiEndpoint = () =>
     opt.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api";
-  const contextValue: PlayerContextValue = {
+  const playerContextValue: PlayerContextValue = {
     allClickable,
     allSelected,
     allCosts,
-    allDamages,
-    focusing,
     onClick: notifyElementClicked,
     setPrepareTuning,
     assetApiEndpoint,
   };
 
   const ChessboardWithIO = () => (
-    <PlayerContext.Provider value={contextValue}>
-      <Chessboard stateData={stateData()} who={who}>
+    <PlayerContext.Provider value={playerContextValue}>
+      <Chessboard stateData={stateData()} who={who} events={events()}>
         <Show when={allClickable.includes(DECLARE_END_ID)}>
           <button
             class="absolute left-22 top-[50%] translate-y-[-50%] btn btn-green-500"
@@ -554,6 +547,7 @@ export function createPlayer(
 
 interface ChessboardProps extends ComponentProps<"div"> {
   stateData: StateData;
+  events: readonly Event[];
   who: 0 | 1;
   children?: JSX.Element;
 }
@@ -562,65 +556,12 @@ function Chessboard(props: ChessboardProps) {
   const [local, restProps] = splitProps(props, [
     "class",
     "stateData",
+    "events",
     "who",
     "children",
   ]);
-  return (
-    <div
-      class={`gi-tcg-chessboard relative flex flex-col ${
-        local.class ?? ""
-      } select-none`}
-      {...restProps}
-    >
-      <div class="w-full b-solid b-black b-2 relative">
-        <PlayerArea data={local.stateData.players[1 - local.who]} opp={true} />
-        <PlayerArea data={local.stateData.players[local.who]} opp={false} />
-      </div>
-      <div class="absolute left-0 top-[50%] translate-y-[-50%]">
-        <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
-          <Dice
-            type={8 /* omni */}
-            text={`${local.stateData.players[1 - local.who].dice.length}`}
-            size={32}
-          />
-        </div>
-        <div class="flex items-center gap-2">
-          <div
-            class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
-            classList={{
-              "bg-yellow-300": local.stateData.currentTurn === local.who,
-              "bg-blue-200": local.stateData.currentTurn !== local.who,
-            }}
-          >
-            <div class="text-lg">{local.stateData.roundNumber}</div>
-            <div class="text-sm text-gray">{local.stateData.phase}</div>
-          </div>
-        </div>
-      </div>
-      <div class="absolute right-10 bottom-0 z-12 flex flex-row gap-2">
-        <For each={local.stateData.players[local.who].skills}>
-          {(skill) => <SkillButton data={skill} />}
-        </For>
-      </div>
-      {local.children}
-      <Show when={local.stateData.phase === "gameEnd"}>
-        <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
-          {local.stateData.winner === local.who ? "胜利" : "失败"}
-        </div>
-      </Show>
-    </div>
-  );
-}
 
-export interface StandaloneChessboardProps extends ChessboardProps {
-  events?: readonly Event[];
-  assetApiEndpoint?: string;
-}
-
-export function StandaloneChessboard(props: StandaloneChessboardProps) {
-  const [local, restProps] = splitProps(props, ["events", "assetApiEndpoint"]);
-
-  const [allDamages, setAllDamages] = createStore<DamageData[]>([]);
+  const [allDamages, setAllDamages] = createSignal<DamageData[]>([]);
   const [focusing, setFocusing] = createSignal<number | null>(null);
 
   createEffect(() => {
@@ -638,14 +579,71 @@ export function StandaloneChessboard(props: StandaloneChessboardProps) {
     setFocusing(currentFocusing);
   });
 
+  return (
+    <EventContext.Provider value={{ allDamages, focusing }}>
+      <div
+        class={`gi-tcg-chessboard relative flex flex-col ${
+          local.class ?? ""
+        } select-none`}
+        {...restProps}
+      >
+        <div class="w-full b-solid b-black b-2 relative">
+          <PlayerArea
+            data={local.stateData.players[1 - local.who]}
+            opp={true}
+          />
+          <PlayerArea data={local.stateData.players[local.who]} opp={false} />
+        </div>
+        <div class="absolute left-0 top-[50%] translate-y-[-50%]">
+          <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
+            <Dice
+              type={8 /* omni */}
+              text={`${local.stateData.players[1 - local.who].dice.length}`}
+              size={32}
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <div
+              class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
+              classList={{
+                "bg-yellow-300": local.stateData.currentTurn === local.who,
+                "bg-blue-200": local.stateData.currentTurn !== local.who,
+              }}
+            >
+              <div class="text-lg">{local.stateData.roundNumber}</div>
+              <div class="text-sm text-gray">{local.stateData.phase}</div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute right-10 bottom-0 z-12 flex flex-row gap-2">
+          <For each={local.stateData.players[local.who].skills}>
+            {(skill) => <SkillButton data={skill} />}
+          </For>
+        </div>
+        {local.children}
+        <Show when={local.stateData.phase === "gameEnd"}>
+          <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
+            {local.stateData.winner === local.who ? "胜利" : "失败"}
+          </div>
+        </Show>
+      </div>
+    </EventContext.Provider>
+  );
+}
+
+export interface StandaloneChessboardProps extends ChessboardProps {
+  assetApiEndpoint?: string;
+}
+
+export function StandaloneChessboard(props: StandaloneChessboardProps) {
+  const [local, restProps] = splitProps(props, ["assetApiEndpoint"]);
+
   const contextValue = (): PlayerContextValue => ({
     allClickable: [],
     allCosts: [],
-    allDamages,
     allSelected: [],
     assetApiEndpoint: () =>
       local.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
-    focusing,
     onClick: () => {},
     setPrepareTuning: () => {},
   });

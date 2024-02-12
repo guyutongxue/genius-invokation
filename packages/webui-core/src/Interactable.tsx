@@ -1,5 +1,9 @@
-import { JSX, Show, createSignal } from "solid-js";
-import { ELEMENTAL_TUNING_OFFSET, usePlayerContext } from "./Chessboard";
+import { JSX } from "solid-js";
+import {
+  ELEMENTAL_TUNING_OFFSET,
+  useEventContext,
+  usePlayerContext,
+} from "./Chessboard";
 import { CardDescription } from "./CardDescription";
 
 export interface InteractableProps {
@@ -10,8 +14,9 @@ export interface InteractableProps {
 }
 
 export function Interactable(props: InteractableProps) {
-  const { allClickable, allSelected, onClick, focusing, setPrepareTuning } =
+  const { allClickable, allSelected, onClick, setPrepareTuning } =
     usePlayerContext();
+  const { focusing } = useEventContext();
   const selected = () => allSelected.includes(props.id);
   const clickable = () => allClickable.includes(props.id);
   const focused = () => focusing() === props.id;
