@@ -92,9 +92,15 @@ export function deserializeGameState(
   data: ReadonlyDataStore,
   state: SerializedGameState,
 ): GameState {
+  const result = deserializeImpl<Omit<GameState, "data" | "mutationLog">>(data, state);
+  const randomState = new Int32Array(state.iterators.random);
   return {
     data,
     mutationLog: [],
-    ...deserializeImpl<Omit<GameState, "data" | "mutationLog">>(data, state),
+    ...result,
+    iterators: {
+      id: result.iterators.id,
+      random: randomState,
+    }
   };
 }
