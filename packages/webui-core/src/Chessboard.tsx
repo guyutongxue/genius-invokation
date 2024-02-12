@@ -534,9 +534,9 @@ export function createPlayer(
         <button
           class="absolute left-2 top-2 z-15 btn btn-red-500"
           onClick={() => setGiveUp(true)}
-          disabled={giveUp()}
+          disabled={io.giveUp}
         >
-          {giveUp() ? "已放弃对局" : "走此小道"}
+          {io.giveUp ? "已放弃对局" : "走此小道"}
         </button>
       </Chessboard>
     </PlayerContext.Provider>
