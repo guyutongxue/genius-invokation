@@ -383,13 +383,13 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
   }
 }
 
-class ModifyDamage1EventArg<
+export class ModifyDamage1EventArg<
   InfoT extends DamageInfo,
 > extends DamageEventArg<InfoT> {
   private _increased = 0;
   private _multiplier = 1;
   private _decreased = 0;
-  protected _log = "";
+  protected _log = super.damageInfo.log ?? "";
 
   increaseDamage(value: number) {
     this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) increase damage by ${value}.\n`;

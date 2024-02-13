@@ -16,6 +16,7 @@ import {
   EventArgOf,
   InlineEventNames,
   ModifyDamage0EventArg,
+  ModifyDamage1EventArg,
   SkillDescription,
   SkillInfo,
   constructEventAndRequestArg,
@@ -360,13 +361,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         fromReaction: this.fromReaction,
       };
       if (type !== DamageType.Piercing) {
-        const damageModifier = new ModifyDamage0EventArg(
-          this.state,
-          damageInfo,
-        );
-        this.handleInlineEvent("modifyDamage0", damageModifier);
-        this.handleInlineEvent("modifyDamage1", damageModifier);
-        damageInfo = damageModifier.damageInfo;
+        const modifier0 = new ModifyDamage0EventArg(this.state, damageInfo);
+        this.handleInlineEvent("modifyDamage0", modifier0);
+        damageInfo = modifier0.damageInfo;
 
         if (
           damageInfo.type !== DamageType.Physical &&
@@ -376,7 +373,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
           damageInfo = this.doApply(t, damageInfo.type, damageInfo);
         }
 
-        console.log(damageInfo);
+        const modifier1 = new ModifyDamage1EventArg(this.state, damageInfo);
+        this.handleInlineEvent("modifyDamage1", modifier1);
+        damageInfo = modifier1.damageInfo;
       }
 
       const finalHealth = Math.max(
