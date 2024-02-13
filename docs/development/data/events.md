@@ -67,7 +67,7 @@
 | `actionPhase`                | `onActionPhase`                | 等价                                      |
 | `endPhase`                   | `onEndPhase`                   | 等价                                      |
 | `beforeAction`               | `onBeforeAction`               | **我方**玩家行动前                        |
-| `replaceAction`              | `replaceAction`                | 替换**我方**玩家行动                      |
+| `replaceAction`              | `replaceAction`                | 等价                      |
 | `action`                     | `onAction`                     | **我方**玩家行动后                        |
 | `playCard`                   | `onAction`                     | 我方玩家打出手牌后                        |
 | `declareEnd`                 | `onAction`                     | 我方玩家宣布回合结束后                    |
