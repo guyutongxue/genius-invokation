@@ -274,7 +274,7 @@ export class Game {
       this.resolveFinishPromise = () => resolve(this.state.winner);
       this.rejectFinishPromise = (e) => reject(e);
     });
-    setTimeout(async () => {
+    (async () => {
       try {
         await this.notifyAndPause([], true);
         while (!this._terminated && this.state.phase !== "gameEnd") {
@@ -320,7 +320,7 @@ export class Game {
           );
         }
       }
-    });
+    })();
     return this.finishPromise;
   }
 
