@@ -267,40 +267,69 @@ export class ModifyActionEventArg<
   }
 
   get cost() {
-    const proj = (type: DiceType): number => {
-      if (type == DiceType.Omni) return 100;
-      else return type;
-    };
-    const deducted = this._deductedCost.toSorted(
-      ([a], [b]) => proj(a) - proj(b),
-    );
-    const finalCost = [...this._cost];
-    for (const [type, count] of deducted) {
-      if (type === DiceType.Omni) {
-        for (let i = 0; i < count; i++) {
-          finalCost.pop();
-        }
-      } else {
-        for (let i = 0; i < count; i++) {
-          const idx = finalCost.lastIndexOf(type);
-          if (idx === -1) {
-            // console.warn("Potential error: deducting non-exist dice type");
-            continue;
-          }
-          finalCost.splice(idx, 1);
+    // 消耗相同骰子时，只考虑“任意元素骰”的减费
+    if (this._cost.length === 0 || this._cost.includes(DiceType.Same)) {
+      let totalCount = this._cost.length;
+      for (const [type, count] of this._deductedCost) {
+        if (type === DiceType.Omni) {
+          totalCount = Math.max(0, totalCount - count);
         }
       }
+      const result: DiceType[] = [];
+      for (let i = 0; i < totalCount; i++) {
+        result.push(DiceType.Same);
+      }
+      return result;
     }
-    return finalCost;
+    // 否则，先考察有色元素骰，再考虑无色骰子
+    const result = [...this._cost];
+    // 对于所有减骰效果，优先考虑无色元素，其次是有色元素，最后是任意元素
+    const allDeduction = this._deductedCost.map(([type, count]) => [type, count] as [DiceType, number]).toSorted(([a], [b]) => a - b);
+    for (const diceType of [
+      DiceType.Cryo,
+      DiceType.Hydro,
+      DiceType.Pyro,
+      DiceType.Electro,
+      DiceType.Anemo,
+      DiceType.Geo,
+      DiceType.Dendro,
+      DiceType.Void,
+    ]) {
+      for (;;) {
+        const index = result.indexOf(diceType);
+        if (index === -1) {
+          break;
+        }
+        const deductionIndex = allDeduction.findIndex(
+          ([type]) => {
+            if (diceType === DiceType.Void) {
+              return true;
+            } else {
+              return type === diceType || type === DiceType.Omni;
+            }
+          },
+        );
+        if (deductionIndex === -1) {
+          break;
+        }
+        const deduction = allDeduction[deductionIndex];
+        deduction[1]--;
+        if (deduction[1] === 0) {
+          allDeduction.splice(deductionIndex, 1);
+        }
+        result.splice(index, 1);
+      }
+    }
+    return result;
   }
   isFast() {
     return this._fast;
   }
   canDeductCost() {
-    return this.action.cost.length > 0;
+    return this.cost.length > 0;
   }
   canDeductCostOfType(diceType: DiceType) {
-    return this.action.cost.includes(diceType);
+    return this.cost.includes(diceType) || this.cost.includes(DiceType.Void);
   }
 
   addCost(type: DiceType, count: number) {
