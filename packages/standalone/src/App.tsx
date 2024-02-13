@@ -4,9 +4,9 @@ import {
   GameIO,
   GameStateLogEntry,
   PlayerConfig,
-  deserializeGameState,
+  deserializeGameStateLog,
   exposeState,
-  serializeGameState,
+  serializeGameStateLog,
 } from "@gi-tcg/core";
 
 import {
@@ -147,11 +147,7 @@ export function App() {
     setViewingLogIndex(stateLog().length - 2);
   };
   const exportLog = () => {
-    const logs = stateLog().map((entry) => ({
-      state: serializeGameState(entry.state),
-      events: entry.events,
-      canResume: entry.canResume,
-    }));
+    const logs = serializeGameStateLog(stateLog());
     const blob = new Blob([JSON.stringify(logs)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -174,14 +170,8 @@ export function App() {
       reader.onload = (event) => {
         const contents = event.target?.result as string;
         try {
-          const logs: any[] = JSON.parse(contents);
-          setStateLog(
-            logs.map((entry) => ({
-              state: deserializeGameState(data, entry.state),
-              events: entry.events,
-              canResume: entry.canResume,
-            })),
-          );
+          const logs = JSON.parse(contents);
+          setStateLog(deserializeGameStateLog(data, logs));
           setViewingLogIndex(0);
           setStarted(true);
         } catch (error) {
@@ -360,7 +350,7 @@ export function App() {
           )}
         </Show>
       </Show>
-      <details classList={{ hidden: import.meta.env.PROD }}>
+      <details>
         <summary>开发者选项</summary>
         <button disabled={stateLog().length === 0} onClick={exportLog}>
           导出日志

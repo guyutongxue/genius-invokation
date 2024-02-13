@@ -8,40 +8,48 @@ export interface GameStateLogEntry {
   readonly events: readonly Event[];
 }
 
-export type SerializedState<T> = T extends ReadonlyArray<infer U>
-  ? SerializedState<U>[]
-  : T extends object
-    ? {
-        [K in keyof T]: T[K] extends { __definition: infer D; id: number }
-          ? {
-              __definition: D;
-              id: number;
-            }
-          : SerializedState<T[K]>;
-      }
-    : T;
+interface StoreEntry {
+  key: any;
+  value: any;
+}
 
-export type SerializedGameState = Omit<
-  SerializedState<GameState>,
-  "data" | "mutationLog"
->;
-
-function serializeImpl<T>(v: T): SerializedState<T>;
-function serializeImpl(v: unknown): any {
+function serializeImpl(store: StoreEntry[], v: unknown): any {
+  if (
+    typeof v === "number" ||
+    typeof v === "string" ||
+    typeof v === "boolean" ||
+    v === null
+  ) {
+    return v;
+  }
+  const index = store.findIndex((entry) => entry.key === v);
+  if (index !== -1) {
+    return { $: index };
+  }
   if (Array.isArray(v)) {
-    return v.map(serializeImpl);
-  } else if (typeof v === "object" && v !== null) {
+    const result = v.map((obj) => serializeImpl(store, obj));
+    if (result.length >= 2) {
+      store.push({ key: v, value: result });
+      return { $: store.length - 1 };
+    } else {
+      return result;
+    }
+  }
+  if (typeof v === "object") {
     if ("__definition" in v && "id" in v) {
-      return {
-        __definition: v.__definition,
+      const result = {
+        $$: v.__definition,
         id: v.id,
       };
+      store.push({ key: v, value: result });
+      return { $: store.length - 1 };
     }
     const result: any = {};
     for (const key in v) {
-      result[key] = serializeImpl((v as Record<any, any>)[key]);
+      result[key] = serializeImpl(store, (v as Record<any, any>)[key]);
     }
-    return result;
+    store.push({ key: v, value: result });
+    return { $: store.length - 1 };
   } else {
     return v;
   }
@@ -51,13 +59,40 @@ type MakePropPartial<T, K extends PropertyKey> = Omit<T, K> & {
   [K2 in K]?: unknown;
 };
 
-export function serializeGameState(state: GameState): SerializedGameState {
-  const result: MakePropPartial<GameState, "data" | "mutationLog"> = {
-    ...state,
+interface SerializedLogEntry {
+  s: unknown;
+  e: readonly Event[];
+  r: boolean;
+}
+
+interface SerializedLog {
+  store: any[];
+  log: SerializedLogEntry[];
+};
+
+export function serializeGameStateLog(
+  log: readonly GameStateLogEntry[],
+): SerializedLog {
+  console.log(log[0].state.players[0].initialPiles === log[1].state.players[0].initialPiles);
+  const logResult: SerializedLogEntry[] = [];
+  const store: StoreEntry[] = [];
+  for (const entry of log) {
+    const omittedState: MakePropPartial<GameState, "data" | "mutationLog"> = {
+      ...entry.state,
+    };
+    delete omittedState.data;
+    delete omittedState.mutationLog;
+    const stateResult = serializeImpl(store, omittedState);
+    logResult.push({
+      s: stateResult,
+      e: entry.events,
+      r: entry.canResume,
+    });
+  }
+  return {
+    store: store.map(({ value }) => value),
+    log: logResult,
   };
-  delete result.data;
-  delete result.mutationLog;
-  return serializeImpl(result);
 }
 
 function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
@@ -66,20 +101,39 @@ function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
   );
 }
 
-function deserializeImpl<T>(data: ReadonlyDataStore, v: SerializedState<T>): T;
-function deserializeImpl(data: ReadonlyDataStore, v: unknown): any {
+function deserializeImpl(
+  data: ReadonlyDataStore,
+  store: readonly any[],
+  restoredStore: Record<number, any>,
+  v: unknown,
+): any {
   if (Array.isArray(v)) {
-    return v.map((x) => deserializeImpl(data, x));
+    return v.map((x) => deserializeImpl(data, store, restoredStore, x));
   } else if (typeof v === "object" && v !== null) {
-    if ("__definition" in v && "id" in v) {
-      const defKey = v.__definition;
-      if (isValidDefKey(defKey)) {
-        return data[defKey].get(v.id as number);
+    if ("$" in v && typeof v.$ === "number") {
+      if (!(v.$ in restoredStore)) {
+        const refTarget = store[v.$];
+        const restoredTarget = deserializeImpl(
+          data,
+          store,
+          restoredStore,
+          refTarget,
+        );
+        restoredStore[v.$] = restoredTarget;
       }
+      return restoredStore[v.$];
+    }
+    if ("$$" in v && "id" in v && isValidDefKey(v.$$)) {
+      return data[v.$$].get(v.id as number);
     }
     const result: any = {};
     for (const key in v) {
-      result[key] = deserializeImpl(data, (v as Record<any, any>)[key]);
+      result[key] = deserializeImpl(
+        data,
+        store,
+        restoredStore,
+        (v as Record<any, any>)[key],
+      );
     }
     return result;
   } else {
@@ -87,17 +141,23 @@ function deserializeImpl(data: ReadonlyDataStore, v: unknown): any {
   }
 }
 
-export function deserializeGameState(
+export function deserializeGameStateLog(
   data: ReadonlyDataStore,
-  state: SerializedGameState,
-): GameState {
-  const result = deserializeImpl<Omit<GameState, "data" | "mutationLog">>(
-    data,
-    state,
-  );
-  return {
-    data,
-    mutationLog: [],
-    ...result,
-  };
+  { store, log }: SerializedLog,
+): GameStateLogEntry[] {
+  const restoredStore: Record<number, any> = {};
+  const result: GameStateLogEntry[] = [];
+  for (const entry of log) {
+    const restoredState = deserializeImpl(data, store, restoredStore, entry.s);
+    result.push({
+      state: {
+        data,
+        mutationLog: [],
+        ...restoredState,
+      },
+      events: entry.e,
+      canResume: entry.r,
+    })
+  }
+  return result;
 }
