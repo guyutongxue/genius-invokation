@@ -67,11 +67,11 @@
 | `actionPhase`                | `onActionPhase`                | 等价                                      |
 | `endPhase`                   | `onEndPhase`                   | 等价                                      |
 | `beforeAction`               | `onBeforeAction`               | **我方**玩家行动前                        |
-| `replaceAction`              | `replaceAction`                | 等价                      |
+| `replaceAction`              | `replaceAction`                | 等价                                      |
 | `action`                     | `onAction`                     | **我方**玩家行动后                        |
 | `playCard`                   | `onAction`                     | 我方玩家打出手牌后                        |
+| `useSkill`                   | `onAction`                     | 我方/所附着**角色使用主动技能**后         |
 | `declareEnd`                 | `onAction`                     | 我方玩家宣布回合结束后                    |
-| `useSkill`                   | `onAction`                     | **我方**玩家使用**主动角色**技能后        |
 | `switchActive`               | `onSwitchActive`               | 我方/所附着角色被切出/切入后              |
 | `dealDamage`                 | `onDamage`                     | 我方/所附着角色造成伤害后                 |
 | `damaged`                    | `onDamage`                     | 我方/所附着角色受到伤害后                 |

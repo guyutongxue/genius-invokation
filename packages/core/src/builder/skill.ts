@@ -234,7 +234,7 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who: e.who }, r) && e.isPlayCard();
   }),
   useSkill: defineDescriptor("onAction", (c, e, r) => {
-    return checkRelative(c.state, { who: e.who }, r) && e.isUseSkill();
+    return e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r);
   }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
