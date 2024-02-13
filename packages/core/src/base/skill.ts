@@ -281,7 +281,7 @@ export class ModifyActionEventArg<
       }
       return result;
     }
-    // 否则，先考察有色元素骰，再考虑无色骰子
+    // 否则，在骰子需求列表中，先考察有色元素骰，再考虑无色骰子
     const result = [...this._cost];
     // 对于所有减骰效果，优先考虑无色元素，其次是有色元素，最后是任意元素
     const allDeduction = this._deductedCost.map(([type, count]) => [type, count] as [DiceType, number]).toSorted(([a], [b]) => a - b);
