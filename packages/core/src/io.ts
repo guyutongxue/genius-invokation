@@ -3,7 +3,6 @@ import {
   CardData,
   CharacterData,
   EntityData,
-  Event,
   ExposedMutation,
   NotificationMessage,
   PlayCardHint,

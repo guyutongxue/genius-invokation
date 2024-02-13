@@ -11,7 +11,6 @@ import {
 } from "./state";
 import {
   disposeEntity,
-  getEntityArea,
   getEntityById,
   nextRandom,
   sortDice,

@@ -73,7 +73,6 @@ interface SerializedLog {
 export function serializeGameStateLog(
   log: readonly GameStateLogEntry[],
 ): SerializedLog {
-  console.log(log[0].state.players[0].initialPiles === log[1].state.players[0].initialPiles);
   const logResult: SerializedLogEntry[] = [];
   const store: StoreEntry[] = [];
   for (const entry of log) {

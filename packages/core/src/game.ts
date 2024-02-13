@@ -1,15 +1,5 @@
 import minstd from "@stdlib/random-base-minstd";
 import { checkDice, flip } from "@gi-tcg/utils";
-
-import {
-  CharacterState,
-  EntityState,
-  GameConfig,
-  GameState,
-  PlayerState,
-} from "./base/state";
-import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
-import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   Aura,
   DamageType,
@@ -21,6 +11,15 @@ import {
   verifyRpcRequest,
   verifyRpcResponse,
 } from "@gi-tcg/typings";
+import {
+  CharacterState,
+  EntityState,
+  GameConfig,
+  GameState,
+  PlayerState,
+} from "./base/state";
+import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
+import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   allEntities,
   drawCard,
@@ -50,7 +49,6 @@ import {
   SkillInfo,
   SwitchActiveEventArg,
   SwitchActiveInfo,
-  UseSkillInfo,
   ZeroHealthEventArg,
 } from "./base/skill";
 import { CardDefinition, CardSkillEventArg } from "./base/card";
@@ -131,7 +129,9 @@ export class Game {
   }
 
   mutate(mutation: Mutation) {
-    this.state = applyMutation(this.state, mutation);
+    if (!this._terminated) {
+      this.state = applyMutation(this.state, mutation);
+    }
   }
 
   query(who: 0 | 1, query: string): (CharacterState | EntityState)[] {
@@ -278,7 +278,7 @@ export class Game {
     (async () => {
       try {
         await this.notifyAndPause([], true);
-        while (!this._terminated && this.state.phase !== "gameEnd") {
+        while (!this._terminated) {
           switch (this.state.phase) {
             case "initHands":
               await this.initHands();
@@ -296,12 +296,10 @@ export class Game {
               await this.endPhase();
               break;
             default:
-              const _check: never = this.state.phase;
               break;
           }
           await this.notifyAndPause([], true);
         }
-        this.resolveFinishPromise();
       } catch (e) {
         if (e instanceof GiTcgIOError) {
           this.io.onIoError?.(e);
@@ -352,18 +350,18 @@ export class Game {
     return this.start();
   }
 
-  private async gotWinner(winner: 0 | 1) {
-    if (this.state.phase === "gameEnd") {
-      return;
-    }
-    this.mutate({
-      type: "setWinner",
-      winner,
-    });
+  /** 胜负已定，切换到 gameEnd 阶段 */
+  private async gotWinner(winner: 0 | 1 | null) {
     this.mutate({
       type: "changePhase",
       newPhase: "gameEnd",
     });
+    if (winner !== null) {
+      this.mutate({
+        type: "setWinner",
+        winner,
+      });
+    }
     await this.notifyAndPause([], false);
     this.resolveFinishPromise();
     if (!this._terminated) {
@@ -371,7 +369,7 @@ export class Game {
       Object.freeze(this);
     }
   }
-
+  /** 强制终止游戏，不再进行额外改动 */
   terminate() {
     this.rejectFinishPromise(
       new GiTcgCoreInternalError("User call terminate."),
@@ -397,7 +395,7 @@ export class Game {
     }
     // IO 的同时轮询检查是否有投降，若有立即结束对局
     const interval = setInterval(() => {
-      if (this._terminated || this.state.phase === "gameEnd") {
+      if (this._terminated) {
         clearInterval(interval);
       } else {
         this.checkGiveUp();
@@ -447,8 +445,16 @@ export class Game {
         return getEntityById(this.state, active, true) as CharacterState;
       }),
     );
-    await this.switchActive(0, a0);
-    await this.switchActive(1, a1);
+    this.mutate({
+      type: "switchActive",
+      who: 0,
+      value: a0,
+    });
+    this.mutate({
+      type: "switchActive",
+      who: 1,
+      value: a1,
+    });
     this.mutate({
       type: "changePhase",
       newPhase: "roll",
@@ -471,7 +477,6 @@ export class Game {
     for (const who of [0, 1] as const) {
       const rollModifier = new ModifyRollEventArg(this.state, who);
       await this.emitEvent("modifyRoll", rollModifier);
-      console.log(`Player ${who} roll modifier: ${rollModifier._log}`);
       rollParams.push({
         fixed: rollModifier._fixedDice,
         count: 1 + rollModifier._extraRerollCount,
@@ -567,7 +572,6 @@ export class Game {
         new PlayerEventArg(this.state, who),
       );
       const actions = await this.availableAction();
-      console.log(actions);
       this.notifyOne(flip(who), [
         {
           type: "oppAction",
@@ -750,10 +754,14 @@ export class Game {
         this.state = drawCard(this.state, who, null);
       }
     }
-    this.mutate({
-      type: "changePhase",
-      newPhase: "roll",
-    });
+    if (this.state.roundNumber >= this.config.maxRounds) {
+      this.gotWinner(null);
+    } else {
+      this.mutate({
+        type: "changePhase",
+        newPhase: "roll",
+      });
+    }
   }
 
   async availableAction(): Promise<ActionInfoWithNewState[]> {
@@ -871,7 +879,6 @@ export class Game {
         "modifyAction",
         eventArg,
       );
-      console.log(eventArg.action);
       resultWithState.push({
         ...eventArg.action,
         newState: this.state,
@@ -1037,26 +1044,23 @@ export class Game {
   }
 
   private async switchActive(who: 0 | 1, to: CharacterState) {
-    const from = this.state.players[who].characters.find(
-      (ch) => ch.id === this.state.players[who].activeCharacterId,
-    );
+    const player = this.state.players[who];
+    const from = player.characters[getActiveCharacterIndex(player)];
     const oldState = this.state;
     this.mutate({
       type: "switchActive",
       who,
       value: to,
     });
-    if (typeof from !== "undefined") {
-      await this.emitEvent(
-        "onSwitchActive",
-        new SwitchActiveEventArg(oldState, {
-          type: "switchActive",
-          who,
-          from,
-          to,
-        }),
-      );
-    }
+    await this.emitEvent(
+      "onSwitchActive",
+      new SwitchActiveEventArg(oldState, {
+        type: "switchActive",
+        who,
+        from,
+        to,
+      }),
+    );
   }
 
   private async *doHandleEvents(
@@ -1075,7 +1079,9 @@ export class Game {
       } else if (name === "requestUseSkill") {
         const def = this.data.skills.get(arg.requestingSkillId);
         if (typeof def === "undefined") {
-          throw new GiTcgDataError(`Unknown skill id ${arg.requestingSkillId}`);
+          throw new GiTcgDataError(
+            `Unknown skill id ${arg.requestingSkillId} (requested by ${arg.caller.id} (defId = ${arg.caller.definition.id}))`,
+          );
         }
         const skillInfo: SkillInfo = {
           caller: arg.caller,
@@ -1207,12 +1213,15 @@ export class Game {
     if (defeatEvents.length > 0) {
       await this.notifyAndPause([]);
     }
-    const [a0, a1] = await Promise.all(activeDefeated);
-    if (a0 !== null) {
-      await this.switchActive(0, a0);
+    const newActives = await Promise.all(activeDefeated);
+    // “双死”：当前轮次的切换事件先发生
+    const firstSwitchActiveTarget = newActives[currentTurn];
+    const secondSwitchActiveTarget = newActives[flip(currentTurn)];
+    if (firstSwitchActiveTarget !== null) {
+      await this.switchActive(currentTurn, firstSwitchActiveTarget);
     }
-    if (a1 !== null) {
-      await this.switchActive(1, a1);
+    if (secondSwitchActiveTarget !== null) {
+      await this.switchActive(flip(currentTurn), secondSwitchActiveTarget);
     }
     for (const defeatEvent of defeatEvents) {
       await this.emitEvent("onDefeated", defeatEvent);
@@ -1235,8 +1244,10 @@ export class Game {
   ) {
     await this.handleEvents([[name, arg] as any], hasIo);
   }
-  // 引发一个事件并处理。其处理过程中引发的级联事件不会递归执行，而是返回给调用者。
-  // 同时该事件的处理会禁用 IO。
+  /**
+   * 引发一个事件并处理。其处理过程中引发的级联事件不会递归执行，而是返回给调用者。
+   * 同时该事件的处理会禁用 IO。
+   */
   private async emitEventShallow(
     name: "modifyAction",
     arg: ModifyActionEventArg<ActionInfo>,

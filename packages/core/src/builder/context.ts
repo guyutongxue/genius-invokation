@@ -9,7 +9,6 @@ import {
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
-  EVENT_MAP,
   EventAndRequest,
   EventAndRequestConstructorArgs,
   EventAndRequestNames,

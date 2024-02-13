@@ -12,7 +12,7 @@ import {
 } from "../base/card";
 import { registerCard, registerSkill } from "./registry";
 import { SkillDescription, SkillInfo } from "../base/skill";
-import { Character, SkillContext } from "./context";
+import { SkillContext } from "./context";
 import {
   SkillBuilderWithCost,
   enableShortcut,
@@ -34,7 +34,6 @@ import {
   EntityState,
   GameState,
 } from "../base/state";
-import { getEntityById } from "../util";
 import { combatStatus, status } from ".";
 import { equipment, support } from "./entity";
 import { CharacterTag } from "../base/character";

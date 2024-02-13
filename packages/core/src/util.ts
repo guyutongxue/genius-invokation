@@ -1,7 +1,7 @@
 import { Draft } from "immer";
 import minstd from "@stdlib/random-base-minstd";
 import { DiceType } from "@gi-tcg/typings";
-
+import { flip } from "@gi-tcg/utils";
 import {
   CharacterState,
   EntityState,
@@ -11,7 +11,6 @@ import {
 } from "./base/state";
 import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
-import { flip } from "@gi-tcg/utils";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
 import { SkillDefinition, SkillInfo } from "./base/skill";
@@ -155,7 +154,7 @@ export function getActiveCharacterIndex(player: PlayerState): number {
     (ch) => ch.id === player.activeCharacterId,
   );
   if (activeIdx === -1) {
-    throw new GiTcgCoreInternalError("Invalid active character index");
+    throw new GiTcgCoreInternalError(`Invalid active character id ${player.activeCharacterId}`);
   }
   return activeIdx;
 }

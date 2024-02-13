@@ -142,7 +142,6 @@ function buildAllCardClickState(
   for (const [k, v] of grouped) {
     result.set(k, oneCardState([k], v));
   }
-  console.log(result);
   return result;
 }
 

@@ -16,10 +16,10 @@ import {
   ActionEventArg,
   DamageInfo,
 } from "../base/skill";
-import { CharacterState, EntityState, GameState } from "../base/state";
+import { GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
 import { SkillHandle } from "./type";
-import { EntityArea, ExEntityType } from "../base/entity";
+import { EntityArea } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
 import { GiTcgDataError } from "../error";
