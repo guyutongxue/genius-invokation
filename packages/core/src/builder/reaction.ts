@@ -81,7 +81,7 @@ const swirl = (srcElement: DamageType): ReactionAction => {
     for (const character of c.state.players[who].characters) {
       if (
         character.variables.alive &&
-        character.variables.id !== c.eventArg.target.id
+        character.id !== c.eventArg.target.id
       ) {
         c.damage(srcElement, 1, character);
       }
