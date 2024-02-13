@@ -9,7 +9,7 @@ import { createPlayer } from "./index";
 import { createWaitNotify } from "./utils";
 
 const playerConfig0: PlayerConfig = {
-  characters: [1306, 2301, 1503],
+  characters: [1306, 2301, 1507],
   cards: [
     333004, 312302, 311107,
     // 223011, 311501, 311502, 311503, 312001, 312002, 312003, 332011,

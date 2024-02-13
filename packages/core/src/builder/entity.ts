@@ -1,7 +1,6 @@
 import { DamageType } from "@gi-tcg/typings";
 import { EntityTag, EntityVariables, ExEntityType } from "../base/entity";
 import { TriggeredSkillDefinition } from "../base/skill";
-import { Entity } from "./context";
 import { registerEntity, registerPassiveSkill } from "./registry";
 import {
   BuilderWithShortcut,
@@ -13,7 +12,7 @@ import {
 } from "./skill";
 import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
 import { Draft } from "immer";
-import { isReactionSwirl } from "../base/reaction";
+import { GiTcgDataError } from "../error";
 
 export interface VariableOptions {
   recreateAdditional?: number;
@@ -146,10 +145,19 @@ export class EntityBuilder<
   }
 
   prepare(skill: SkillHandle, hintCount?: number) {
+    if (this.type !== "status") {
+      throw new GiTcgDataError("Only status can have prepare skill");
+    }
     if (hintCount) {
       this.variable("preparingSkillHintCount", hintCount);
     }
-    return this.on("replaceAction").useSkill(skill).dispose().endOn();
+    return (this as unknown as EntityBuilder<"status", Vars>)
+      .on("replaceAction")
+      .useSkill(skill)
+      .dispose()
+      .on("switchActive", (c, e) => e.switchInfo.from.id === c.self.master().id)
+      .dispose()
+      .endOn();
   }
 
   tags(...tags: EntityTag[]): this {

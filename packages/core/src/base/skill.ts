@@ -566,7 +566,7 @@ export const EVENT_MAP = {
   onActionPhase: EventArg,
   onEndPhase: EventArg,
 
-  replaceAction: PlayerEventArg,
+  replaceAction: EventArg,
 
   onBeforeAction: PlayerEventArg,
   modifyAction: ModifyActionEventArg,

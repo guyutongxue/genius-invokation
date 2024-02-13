@@ -21,23 +21,13 @@ export const MujimujiDaruma = summon(115072)
  */
 export const FuufuuWhirlwindKick = skill(15074)
   .type("elemental")
+  .noEnergy()
   .do((c) => {
-    switch (c.skillInfo.requestBy?.caller.definition.id) {
-      case FuufuuWindwheelCryo:
-        c.damage(DamageType.Cryo, 2);
-        break;
-      case FuufuuWindwheelHydro:
-        c.damage(DamageType.Hydro, 2);
-        break;
-      case FuufuuWindwheelPyro:
-        c.damage(DamageType.Pyro, 2);
-        break;
-      case FuufuuWindwheelElectro:
-        c.damage(DamageType.Electro, 2);
-        break;
-      default:
-        c.damage(DamageType.Anemo, 2);
-        break;
+    const damageType = c.skillInfo.requestBy?.caller.variables.swirled;
+    if (damageType) {
+      c.damage(damageType, 2);
+    } else {
+      c.damage(DamageType.Anemo, 2);
     }
   })
   .done();
@@ -49,18 +39,7 @@ export const FuufuuWhirlwindKick = skill(15074)
  * 本角色将在下次行动时，直接使用技能：风风轮舞踢。
  */
 export const FuufuuWindwheel = status(115071)
-  .prepare(FuufuuWhirlwindKick)
-  .done();
-export const FuufuuWindwheelCryo = status(115071.91)
-  .prepare(FuufuuWhirlwindKick)
-  .done();
-export const FuufuuWindwheelHydro = status(115071.92)
-  .prepare(FuufuuWhirlwindKick)
-  .done();
-export const FuufuuWindwheelPyro = status(115071.93)
-  .prepare(FuufuuWhirlwindKick)
-  .done();
-export const FuufuuWindwheelElectro = status(115071.94)
+  .variable("swirled", 0, { visible: false })
   .prepare(FuufuuWhirlwindKick)
   .done();
 
@@ -89,24 +68,30 @@ export const YoohooArtFuuinDash = skill(15072)
   .costAnemo(3)
   .do((c) => {
     const aura = c.$("opp active")!.aura;
+    let fuufuuWindType: DamageType;
     switch (aura) {
       case Aura.Cryo:
       case Aura.CryoDendro:
-        c.characterStatus(FuufuuWindwheelCryo);
+        fuufuuWindType = DamageType.Cryo;
         break;
       case Aura.Hydro:
-        c.characterStatus(FuufuuWindwheelHydro);
+        fuufuuWindType = DamageType.Hydro;
         break;
       case Aura.Pyro:
-        c.characterStatus(FuufuuWindwheelPyro);
+        fuufuuWindType = DamageType.Pyro;
         break;
       case Aura.Electro:
-        c.characterStatus(FuufuuWindwheelElectro);
+        fuufuuWindType = DamageType.Electro;
         break;
       default:
-        c.characterStatus(FuufuuWindwheel)
+        fuufuuWindType = DamageType.Anemo;
         break;
     }
+    c.self.addStatus(FuufuuWindwheel, {
+      variables: {
+        swirled: fuufuuWindType
+      }
+    });
     c.damage(DamageType.Anemo, 2);
   })
   .done();

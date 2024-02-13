@@ -18,6 +18,7 @@ export const DraconicMajesty = status(125024)
  */
 export const UltimateCleansing = skill(25026)
   .type("elemental")
+  .noEnergy()
   .damage(DamageType.Anemo, 2, "opp prev")
   .done();
 
@@ -40,6 +41,7 @@ export const DvalinsSigh01 = status(125023)
  */
 export const PerpetualCleansing = skill(25025)
   .type("elemental")
+  .noEnergy()
   .damage(DamageType.Anemo, 1, "opp next")
   .characterStatus(DvalinsSigh01)
   .done();

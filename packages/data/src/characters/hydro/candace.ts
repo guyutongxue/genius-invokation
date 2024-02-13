@@ -9,6 +9,7 @@ import { character, skill, status, combatStatus, card, DamageType, SkillHandle }
  */
 export const HeronStrike = skill(12074)
   .type("elemental")
+  .noEnergy()
   .damage(DamageType.Hydro, 3)
   .done();
 

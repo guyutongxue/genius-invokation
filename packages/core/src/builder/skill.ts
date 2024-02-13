@@ -226,9 +226,7 @@ const detailedEventDictionary = {
   beforeAction: defineDescriptor("onBeforeAction", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  replaceAction: defineDescriptor("replaceAction", (c, { who }, r) => {
-    return checkRelative(c.state, { who }, r);
-  }),
+  replaceAction: defineDescriptor("replaceAction"),
   action: defineDescriptor("onAction", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),

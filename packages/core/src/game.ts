@@ -28,9 +28,10 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
-  hasReplacedAction,
+  findReplaceAction,
   shuffle,
   sortDice,
+  isSkillDisabled,
 } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 import {
@@ -535,7 +536,9 @@ export class Game {
     const who = this.state.currentTurn;
     // 使用 getter 防止状态变化后原有 player 过时的问题
     const player = () => this.state.players[who];
-    let replacedSkill;
+    const activeCh = () =>
+      player().characters[getActiveCharacterIndex(player())];
+    let replaceAction: SkillInfo | null;
     if (player().declaredEnd) {
       this.mutate({
         type: "switchTurn",
@@ -550,8 +553,11 @@ export class Game {
       this.mutate({
         type: "switchTurn",
       });
-    } else if ((replacedSkill = hasReplacedAction(player()))) {
-      await this.useSkill(replacedSkill);
+    } else if (
+      (replaceAction = findReplaceAction(activeCh())) &&
+      !isSkillDisabled(activeCh())
+    ) {
+      await this.useSkill(replaceAction, new EventArg(this.state));
       this.mutate({
         type: "switchTurn",
       });
@@ -614,9 +620,9 @@ export class Game {
       const requiredEnergy = actionInfo.cost.filter(
         (x) => x === DiceType.Energy,
       ).length;
-      const activeCh = player().characters[getActiveCharacterIndex(player())];
+      const currentEnergy = activeCh().variables.energy;
       if (requiredEnergy > 0) {
-        if (activeCh.variables.energy < requiredEnergy) {
+        if (currentEnergy < requiredEnergy) {
           throw new GiTcgIOError(
             who,
             `Active character does not have enough energy`,
@@ -624,9 +630,9 @@ export class Game {
         }
         this.mutate({
           type: "modifyEntityVar",
-          state: activeCh,
+          state: activeCh(),
           varName: "energy",
-          value: activeCh.variables.energy - requiredEnergy,
+          value: currentEnergy - requiredEnergy,
         });
       }
 
@@ -665,7 +671,7 @@ export class Game {
             });
             await this.useSkill(
               {
-                caller: activeCh,
+                caller: activeCh(),
                 definition: actionInfo.card.definition.skillDefinition,
                 fromCard: actionInfo.card,
                 requestBy: null,
@@ -693,7 +699,7 @@ export class Game {
             who,
             value: sortDice(player(), [
               ...player().dice,
-              elementOfCharacter(activeCh.definition),
+              elementOfCharacter(activeCh().definition),
             ]),
           });
           break;
@@ -757,13 +763,7 @@ export class Game {
     const result: ActionInfo[] = [];
 
     // Skills
-    if (
-      activeCh.entities.find(
-        (e) =>
-          e.definition.type === "status" &&
-          e.definition.tags.includes("disableSkill"),
-      )
-    ) {
+    if (isSkillDisabled(activeCh)) {
       // Use skill is disabled, skip
     } else {
       for (const skill of activeCh.definition.initiativeSkills) {

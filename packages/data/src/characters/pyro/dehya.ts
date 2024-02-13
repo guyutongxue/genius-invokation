@@ -41,6 +41,7 @@ export const BlazingLionessFlamemanesFist = status(113091)
  */
 export const IncinerationDrive = skill(13095)
   .type("burst")
+  .noEnergy()
   .damage(DamageType.Pyro, 3)
   .done();
 

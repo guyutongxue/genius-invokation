@@ -22,6 +22,7 @@ export const SummonerOfLightning = status(114052)
  */
 export const Wavestrider = skill(14054)
   .type("elemental")
+  .noEnergy()
   .damage(DamageType.Electro, 3)
   .done();
 

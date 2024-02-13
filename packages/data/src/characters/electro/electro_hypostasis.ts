@@ -54,6 +54,7 @@ export const ElectroCrystalCore = status(124014)
  */
 export const RockpaperscissorsComboPaper = skill(24016)
   .type("elemental")
+  .noEnergy()
   .damage(DamageType.Electro, 3)
   .done();
 
@@ -76,6 +77,7 @@ export const RockpaperscissorsComboPaperStatus = status(124012)
  */
 export const RockpaperscissorsComboScissors = skill(24015)
   .type("elemental")
+  .noEnergy()
   .damage(DamageType.Electro, 2)
   .characterStatus(RockpaperscissorsComboPaperStatus)
   .done();

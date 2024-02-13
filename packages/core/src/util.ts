@@ -165,10 +165,8 @@ export interface CheckPreparingResult {
   skillId: number;
 }
 
-export function hasReplacedAction(player: PlayerState): SkillInfo | null {
-  // J目前只找角色状态上的准备中（替换玩家行动）
-  const activeCh = player.characters[getActiveCharacterIndex(player)];
-  const candidates = activeCh.entities
+export function findReplaceAction(character: CharacterState): SkillInfo | null {
+  const candidates = character.entities
     .map(
       (st) =>
         [
@@ -189,6 +187,10 @@ export function hasReplacedAction(player: PlayerState): SkillInfo | null {
     charged: false,
     plunging: false,
   };
+}
+
+export function isSkillDisabled(character: CharacterState): boolean {
+  return character.entities.some((st) => st.definition.tags.includes("disableSkill"));
 }
 
 export function nextRandom(

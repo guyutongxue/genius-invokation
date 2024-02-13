@@ -100,7 +100,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
   constructor(
     private _state: GameState,
     public readonly skillInfo: SkillInfo,
-    public readonly eventArg: Omit<Meta["eventArgType"], `_${string}`>,
+    public readonly eventArg: Meta["eventArgType"] extends object
+      ? Omit<Meta["eventArgType"], `_${string}`>
+      : Meta["eventArgType"],
   ) {
     this.callerArea = getEntityArea(_state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
