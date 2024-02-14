@@ -1267,7 +1267,7 @@ export interface GameOption {
   io: GameIO;
 }
 
-function mergeGameConfigWithDefault(config?: Partial<GameConfig>): GameConfig {
+export function mergeGameConfigWithDefault(config?: Partial<GameConfig>): GameConfig {
   return {
     initialDice: 8,
     initialHands: 5,

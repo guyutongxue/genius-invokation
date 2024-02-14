@@ -41,7 +41,7 @@ type DefinitionMap = {
 
 type RegisterCategory = keyof DefinitionMap;
 
-type DataStore = {
+export type DataStore = {
   [K in RegisterCategory]: Map<number, DefinitionMap[K]>;
 };
 export type ReadonlyDataStore = Immutable<DataStore>;

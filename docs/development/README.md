@@ -14,7 +14,7 @@
 
 ## 使用接口
 
-核心库暴露了 `startGame` 函数以启动一个对局。其传入的参数大致为：
+核心库暴露了 `Game` 类代表对局。其构造参数大致为：
 
 ```ts
 interface StartOption {
@@ -27,6 +27,10 @@ interface PlayerConfig {
   readonly cards: number[];
   readonly characters: number[];
 }
+
+// 使用：
+const game = new Game(option);
+const winner = await game.start();
 ```
 
 大部分字段都是显然的。
@@ -59,6 +63,17 @@ interface PlayerIO {
 关于玩家 IO 的详细说明，参见 [io](./io.md)。
 
 每次对局进行到一个“暂停点”处，就会调用一次 `pause`，方便使用方调试。
+
+## 开发环境
+
+在 Linux 或 macOS 环境下安装 [Bun](https://bun.sh)，在仓库根目录下执行：
+
+```sh
+bun install
+bun run build # 部分包需要额外的构建步骤产出 JS 源码
+```
+
+随后即可调试修改数据定义包、核心包或者其它代码。
 
 ## 数据定义
 
