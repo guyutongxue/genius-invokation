@@ -12,10 +12,12 @@ export const ParametricTransformer = card(323001)
   .variable("progress", 0)
   .variable("hasProgress", 0, { visible: false })
   .variable("currentSkill", 0, { visible: false })
-  .on("deductDiceSkill")
+  .on("modifyAction")
   .listenToAll()
   .do((c, e) => {
-    c.setVariable("currentSkill", e.action.skill.definition.id);
+    if (e.action.type === "useSkill") {
+      c.setVariable("currentSkill", e.action.skill.definition.id);
+    }
   })
   .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
     (e.type !== DamageType.Physical && e.type !== DamageType.Piercing))

@@ -809,9 +809,7 @@ export const MachineAssemblyLine = card(332028)
     e.hasOneOfCardTag("weapon", "artifact") &&
     e.action.card.definition.skillDefinition.requiredCost.length <= c.getVariable("readiness"))
   .do((c, e) => {
-    for (const dice of e.cost) {
-      e.deductCost(dice, 1);
-    }
+    e.deductCost(DiceType.Omni, e.cost.length);
     c.setVariable("readiness", 0);
   })
   .done();

@@ -54,9 +54,7 @@ export const Timaeus = card(322003)
   .do((c, e) => {
     if (c.getVariable("material") >= e.cost.length) {
       c.addVariable("material", -e.cost.length);
-      for (const d of e.cost) {
-        e.deductCost(d, 1);
-      }
+      e.deductCost(DiceType.Omni, e.cost.length);
     }
   })
   .done();
@@ -88,9 +86,7 @@ export const Wagner = card(322004)
   .do((c, e) => {
     if (c.getVariable("material") >= e.cost.length) {
       c.addVariable("material", -e.cost.length);
-      for (const d of e.cost) {
-        e.deductCost(d, 1);
-      }
+      e.deductCost(DiceType.Omni, e.cost.length);
     }
   })
   .done();
@@ -182,10 +178,12 @@ export const ChangTheNinth = card(322009)
   .variable("inspiration", 0)
   .variable("hasInspiration", 0, { visible: false })
   .variable("currentSkill", 0, { visible: false })
-  .on("deductDiceSkill")
+  .on("modifyAction")
   .listenToAll()
   .do((c, e) => {
-    c.setVariable("currentSkill", e.action.skill.definition.id);
+    if (e.action.type === "useSkill") {
+      c.setVariable("currentSkill", e.action.skill.definition.id);
+    }
   })
   .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
     (e.type === DamageType.Physical || e.type === DamageType.Piercing))
