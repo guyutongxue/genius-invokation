@@ -1,4 +1,4 @@
-import { CardHandle, DamageType, DiceType, card } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, card, flip } from "@gi-tcg/core/builder";
 
 /**
  * @id 322001
@@ -289,8 +289,20 @@ export const KidKujirai = card(322014)
   .do((c) => {
     c.generateDice(DiceType.Omni, 1);
     if (c.oppPlayer.supports.length < c.state.config.maxSupports) {
-      c.createSupport(KidKujirai, "opp");
-      c.dispose();
+      // 手动 mutate，因为“转移到”既不触发弃置事件，也不触发引入事件
+      const selfState = c.self.state;
+      c.mutate({
+        type: "createEntity",
+        value: c.self.state,
+        where: {
+          type: "supports",
+          who: flip(c.self.who)
+        }
+      });
+      c.mutate({
+        type: "disposeEntity",
+        oldState: selfState
+      });
     }
   })
   .done();

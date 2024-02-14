@@ -597,16 +597,17 @@ export class SkillContext<Meta extends ContextMetaBase> {
       });
     }
   }
-  createSupport(id: SupportHandle, where: "my" | "opp") {
-    if (where === "my") {
-      this.createEntity("support", id);
-    } else {
-      this.createEntity("support", id, {
-        type: "supports",
-        who: flip(this.callerArea.who),
-      });
-    }
-  }
+  // 禁用，因为暂时用不到
+  // createSupport(id: SupportHandle, where: "my" | "opp") {
+  //   if (where === "my") {
+  //     this.createEntity("support", id);
+  //   } else {
+  //     this.createEntity("support", id, {
+  //       type: "supports",
+  //       who: flip(this.callerArea.who),
+  //     });
+  //   }
+  // }
 
   dispose(target: EntityTargetArg = "@self") {
     const targets = this.queryOrOf(target);
