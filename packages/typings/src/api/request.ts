@@ -6,10 +6,16 @@ export interface RerollDiceRequest {}
 export interface SwitchHandsRequest {}
 
 export interface ChooseActiveRequest {
+  /**
+   * @minItems 1
+   */
   candidates: readonly number[];
 }
 
 export interface ActionRequest {
+  /**
+   * @minItems 1
+   */
   candidates: readonly Action[];
 }
 
