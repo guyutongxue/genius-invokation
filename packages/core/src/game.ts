@@ -12,6 +12,7 @@ import {
   verifyRpcResponse,
 } from "@gi-tcg/typings";
 import {
+  AnyState,
   CharacterState,
   EntityState,
   GameConfig,
@@ -134,7 +135,7 @@ export class Game {
     }
   }
 
-  query(who: 0 | 1, query: string): (CharacterState | EntityState)[] {
+  query(who: 0 | 1, query: string): AnyState[] {
     return executeQueryOnState(this.state, who, query);
   }
 
