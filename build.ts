@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-// @ts-check
 import { $ } from "bun";
 
 const folderNames = ["typings", "core", "webui-core", "standalone"]
