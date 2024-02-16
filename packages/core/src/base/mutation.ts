@@ -25,14 +25,6 @@ type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
 };
 
-export interface ExtendDataM {
-  readonly type: "extendData";
-  readonly cards: readonly CardDefinition[];
-  readonly characters: readonly CharacterDefinition[];
-  readonly entities: readonly EntityDefinition[];
-  readonly skills: readonly SkillDefinition[];
-}
-
 export interface ClearMutationLogM {
   readonly type: "clearMutationLog";
 }
@@ -146,7 +138,6 @@ export interface SetPlayerFlagM {
 }
 
 export type Mutation =
-  | ExtendDataM
   | ClearMutationLogM
   | StepRandomM
   | ChangePhaseM
@@ -169,22 +160,6 @@ export type Mutation =
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
-    case "extendData": {
-      return produce(state, (draft) => {
-        for (const c of m.characters) {
-          draft.data.characters.set(c.id, c as Draft<CharacterDefinition>);
-        }
-        for (const e of m.entities) {
-          draft.data.entities.set(e.id, e as Draft<EntityDefinition>);
-        }
-        for (const s of m.skills) {
-          draft.data.skills.set(s.id, s as Draft<SkillDefinition>);
-        }
-        for (const c of m.cards) {
-          draft.data.cards.set(c.id, c as Draft<CardDefinition>);
-        }
-      });
-    }
     case "clearMutationLog": {
       return produce(state, (draft) => {
         draft.mutationLog = [];
