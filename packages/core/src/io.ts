@@ -20,8 +20,8 @@ import { GiTcgIOError } from "./error";
 
 export interface PlayerIO {
   giveUp: boolean;
-  notify: (notification: NotificationMessage) => void;
-  rpc: <M extends RpcMethod>(
+  readonly notify: (notification: NotificationMessage) => void;
+  readonly rpc: <M extends RpcMethod>(
     method: M,
     data: RpcRequest[M],
   ) => Promise<RpcResponse[M]>;
