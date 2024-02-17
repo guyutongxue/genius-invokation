@@ -6,14 +6,14 @@ import {
 } from "./Chessboard";
 import { CardDescription } from "./CardDescription";
 
-export interface InteractableProps {
+export interface InteractiveProps {
   id: number;
   class?: string;
   definitionId: number;
   children: JSX.Element;
 }
 
-export function Interactable(props: InteractableProps) {
+export function Interactive(props: InteractiveProps) {
   const { allClickable, allSelected, onClick, setPrepareTuning } =
     usePlayerContext();
   const { focusing } = useEventContext();
@@ -30,11 +30,8 @@ export function Interactable(props: InteractableProps) {
     setPrepareTuning(false);
   };
 
-  let ref: HTMLDivElement;
-
   return (
     <div
-      ref={ref!}
       class={`relative group ${props.class}`}
       classList={{
         selected: selected(),

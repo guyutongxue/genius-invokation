@@ -2,7 +2,7 @@ import type { EntityData } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Show } from "solid-js";
 import { usePlayerContext } from "./Chessboard";
-import { Interactable } from "./Interactable";
+import { Interactive } from "./Interactive";
 
 export interface EntityProps {
   data: EntityData;
@@ -10,7 +10,7 @@ export interface EntityProps {
 
 export function Summon(props: EntityProps) {
   return (
-    <Interactable
+    <Interactive
       class="relative h-15 w-15 rounded-lg"
       id={props.data.id}
       definitionId={props.data.definitionId}
@@ -33,7 +33,7 @@ export function Summon(props: EntityProps) {
           {props.data.hintText}
         </div>
       </Show>
-    </Interactable>
+    </Interactive>
   );
 }
 
@@ -41,7 +41,7 @@ export { Summon as Support };
 
 export function Status(props: EntityProps) {
   return (
-    <Interactable
+    <Interactive
       class="relative h-5 w-5"
       id={props.data.id}
       definitionId={props.data.definitionId}
@@ -52,6 +52,6 @@ export function Status(props: EntityProps) {
           {props.data.variable}
         </div>
       </Show>
-    </Interactable>
+    </Interactive>
   );
 }

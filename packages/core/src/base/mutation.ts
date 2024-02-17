@@ -137,6 +137,11 @@ export interface SetPlayerFlagM {
   readonly value: boolean;
 }
 
+export interface IncreaseDisposedSupportCountM {
+  readonly type: "increaseDisposedSupportCount";
+  readonly who: 0 | 1;
+}
+
 export type Mutation =
   | ClearMutationLogM
   | StepRandomM
@@ -156,7 +161,8 @@ export type Mutation =
   | ModifyEntityVarM
   | ReplaceCharacterDefinitionM
   | ResetDiceM
-  | SetPlayerFlagM;
+  | SetPlayerFlagM
+  | IncreaseDisposedSupportCountM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -326,6 +332,11 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "setPlayerFlag": {
       return produce(state, (draft) => {
         draft.players[m.who][m.flagName] = m.value;
+      });
+    }
+    case "increaseDisposedSupportCount": {
+      return produce(state, (draft) => {
+        draft.players[m.who].disposedSupportCount++;
       });
     }
     default: {

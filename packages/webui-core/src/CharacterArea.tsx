@@ -5,7 +5,7 @@ import { Status } from "./Entity";
 import { For, Index, Show } from "solid-js";
 import { useEventContext, usePlayerContext } from "./Chessboard";
 import { DICE_COLOR } from "./Dice";
-import { Interactable } from "./Interactable";
+import { Interactive } from "./Interactive";
 
 export interface CharacterAreaProps {
   data: CharacterData;
@@ -92,39 +92,39 @@ export function CharacterArea(props: CharacterAreaProps) {
         <div class="absolute z-3 hover:z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
           <Show when={weapon()}>
             {(et) => (
-              <Interactable
+              <Interactive
                 class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
               >
                 &#x1F5E1;
-              </Interactable>
+              </Interactive>
             )}
           </Show>
           <Show when={artifact()}>
             {(et) => (
-              <Interactable
+              <Interactive
                 class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
               >
                 &#x1F451;
-              </Interactable>
+              </Interactive>
             )}
           </Show>
           <For each={otherEquipments()}>
             {(et) => (
-              <Interactable
+              <Interactive
                 class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
                 id={et.id}
                 definitionId={et.definitionId}
               >
                 &#x2728;
-              </Interactable>
+              </Interactive>
             )}
           </For>
         </div>
-        <Interactable
+        <Interactive
           class="h-full w-full rounded-xl"
           id={props.data.id}
           definitionId={props.data.definitionId}
@@ -136,7 +136,7 @@ export function CharacterArea(props: CharacterAreaProps) {
               "brightness-50": props.data.defeated,
             }}
           />
-        </Interactable>
+        </Interactive>
         <div class="absolute z-3 hover:z-10 left-0 bottom-0 h-6 flex flex-row">
           <For each={statuses()}>{(st) => <Status data={st} />}</For>
         </div>

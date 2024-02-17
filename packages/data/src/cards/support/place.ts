@@ -282,6 +282,7 @@ export const WeepingWillowOfTheLake = card(321016)
 export const OperaEpiclese = card(321017)
   .costSame(1)
   .support("place")
+  .variable("usage", 3)
   .on("beforeAction", (c) => {
     function costOfEquipment(equipment: EntityState) {
       const cardDef = c.state.data.cards.get(equipment.definition.id)!;
@@ -294,5 +295,9 @@ export const OperaEpiclese = card(321017)
   .usagePerRound(1)
   .do((c) => {
     c.generateDice(c.$("my active")!.element(), 1);
+    c.addVariable("usage", -1);
+    if (c.getVariable("usage") <= 0) {
+      c.dispose();
+    }
   })
   .done();

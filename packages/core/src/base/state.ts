@@ -69,6 +69,7 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
+  readonly disposedSupportCount: number;
 }
 
 export interface CardState {

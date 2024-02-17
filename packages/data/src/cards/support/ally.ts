@@ -1,4 +1,4 @@
-import { CardHandle, DamageType, DiceType, card, flip } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SupportHandle, card, flip } from "@gi-tcg/core/builder";
 
 /**
  * @id 322001
@@ -414,20 +414,24 @@ export const YayoiNanatsuki = card(322020)
  * 我方打出「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌后：随机生成1张「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌，将其加入手牌。（每回合1次）
  * 可用次数：3
  */
-export const Mamere = card(322021)
+export const Mamere: SupportHandle = card(322021)
   .support("ally")
-  .on("playCard", (c, e) => {
-    if (e.action.card.definition.id === Mamere) {
-      return false;
-    }
-    return e.hasOneOfCardTag("food", "place", "ally", "item");
-  })
+  .on("playCard", (c, e) => 
+    e.action.card.definition.id !== Mamere &&
+    e.hasOneOfCardTag("food", "place", "ally", "item")
+  )
+  .usage(3)
   .do((c) => {
     const tags = ["food", "place", "ally", "item"] as const;
     const candidates = [...c.state.data.cards.values()].filter((c) => c.id !== Mamere && tags.some((tag) => c.tags.includes(tag)));
     const card = c.random(...candidates);
     c.createHandCard(card.id as CardHandle);
   })
+  .on("playCard", (c, e) => 
+    e.action.card.definition.id !== Mamere &&
+    e.hasOneOfCardTag("food", "place", "ally", "item")
+  )
+  .usagePerRound(1)
   .done();
 
 /**
@@ -441,6 +445,10 @@ export const Jeht = card(322022)
   .costVoid(2)
   .support("ally")
   .variable("experience", 0)
+  .on("enter")
+  .do((c) => {
+    c.setVariable("experience", c.player.disposedSupportCount);
+  })
   .on("dispose", (c, e) => e.entity.definition.type === "support")
   .addVariableWithMax("experience", 1, 6)
   .on("useSkill", (c, e) => e.isSkillType("burst"))

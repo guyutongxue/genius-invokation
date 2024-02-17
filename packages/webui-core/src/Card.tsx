@@ -6,7 +6,7 @@ import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
 import { ELEMENTAL_TUNING_OFFSET, usePlayerContext } from "./Chessboard";
 import { Show } from "solid-js";
-import { Interactable } from "./Interactable";
+import { Interactive } from "./Interactive";
 
 export interface CardProps {
   data: CardData;
@@ -24,7 +24,7 @@ export function Card(props: CardProps) {
           <div class="h-full aspect-[7/12] rotated flex items-center justify-center bg-gray-600 b-gray-700 b-solid b-4 color-white rounded" />
         }
       >
-        <Interactable
+        <Interactive
           class="card relative rotated rounded-lg"
           id={props.data.id}
           definitionId={props.data.definitionId}
@@ -39,7 +39,7 @@ export function Card(props: CardProps) {
             cost={props.data.definitionCost}
             realCost={realCost()}
           />
-        </Interactable>
+        </Interactive>
       </Show>
     </div>
   );

@@ -59,7 +59,7 @@ const EMPTY_STATE_DATA: StateData = {
   players: [EMPTY_PLAYER_DATA, EMPTY_PLAYER_DATA],
 };
 
-/** 点击“结束回合”的行为 ID */
+/** 点击“宣布结束”的行为 ID */
 export const DECLARE_END_ID = 0;
 /**  将卡牌作为元素调和素材时的点击行为 ID*/
 export const ELEMENTAL_TUNING_OFFSET = -11072100;

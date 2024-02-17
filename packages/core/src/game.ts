@@ -192,6 +192,7 @@ export class Game {
       hasDefeated: false,
       legendUsed: false,
       skipNextTurn: false,
+      disposedSupportCount: 0,
     };
   }
   /** 初始化玩家的角色牌和牌堆 */

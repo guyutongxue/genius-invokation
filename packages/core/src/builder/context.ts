@@ -612,6 +612,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   dispose(target: EntityTargetArg = "@self") {
     const targets = this.queryOrOf(target);
     for (const t of targets) {
+      const who = t.who;
       const entityState = t.state;
       if (entityState.definition.type === "character") {
         throw new GiTcgDataError(
@@ -623,6 +624,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type: "disposeEntity",
         oldState: entityState,
       });
+      if (entityState.definition.type === "support") {
+        this.mutate({
+          type: "increaseDisposedSupportCount",
+          who,
+        });
+      }
     }
   }
 
