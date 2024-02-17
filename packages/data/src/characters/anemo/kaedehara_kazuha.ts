@@ -179,7 +179,6 @@ export const GaryuuBladework = skill(15051)
 export const Chihayaburu = skill(15052)
   .type("elemental")
   .costAnemo(3)
-  .damage(DamageType.Anemo, 3)
   .do((c) => {
     const aura = c.$("opp active")!.aura;
     let midareRanzan;
@@ -203,6 +202,7 @@ export const Chihayaburu = skill(15052)
     }
     c.characterStatus(midareRanzan);
   })
+  .damage(DamageType.Anemo, 3)
   .done();
 
 /**

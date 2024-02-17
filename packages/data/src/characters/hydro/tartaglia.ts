@@ -55,9 +55,7 @@ export const RangedStance = status(112041)
  * （处于「近战状态」的达达利亚攻击所附属角色时，会造成额外伤害。）
  */
 export const Riptide: StatusHandle = status(112043)
-  .on("defeated")
-  .do((c) => c.characterStatus(Riptide, "my active"))
-  .done();
+  .done(); // 无法响应所附属角色被击倒后的事件，移动到达达利亚被动技能
 
 /**
  * @id 12041
@@ -144,9 +142,15 @@ export const RangedStanceSkill = skill(12045)
  * @description
  * 
  */
-export const TideWithholder01 = skill(12046)
+export const AddRiptideToNextCharacter = skill(12046)
   .type("passive")
-  .reserve();
+  .on("defeated", (c, e) => {
+    const ch = c.of(e.character);
+    return !ch.isMine() && ch.hasStatus(Riptide);
+  })
+  .listenToAll()
+  .characterStatus(Riptide, "opp active")
+  .done();
 
 /**
  * @id 1204
@@ -158,7 +162,7 @@ export const Tartaglia = character(1204)
   .tags("hydro", "bow", "fatui")
   .health(10)
   .energy(3)
-  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder)
+  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder, AddRiptideToNextCharacter)
   .done();
 
 /**

@@ -130,8 +130,9 @@ export const StonehideReforged = card(226011)
   .on("defeated", (c, e) => {
     // 伤害记录中最后一条为本角色造成
     const damages = e.character.damageLog;
-    return damages[damages.length - 1].source.id === c.self.master().id;
+    return !c.of(e.character).isMine() && damages[damages.length - 1].source.id === c.self.master().id;
   })
+  .listenToAll()
   .characterStatus(Stonehide, "@master")
   .characterStatus(StoneForce, "@master")
   .done();
