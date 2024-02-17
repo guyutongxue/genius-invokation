@@ -596,6 +596,7 @@ export const EVENT_MAP = {
   onReaction: ReactionEventArg,
 
   onEnter: EnterEventArg,
+  onBeforeDispose: EntityEventArg,
   onDispose: EntityEventArg,
 
   modifyZeroHealth: ZeroHealthEventArg,
@@ -607,7 +608,7 @@ export const EVENT_MAP = {
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
 
-export type InlineEventNames = "modifyDamage0" | "modifyDamage1";
+export type InlineEventNames = "modifyDamage0" | "modifyDamage1" | "onBeforeDispose";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 

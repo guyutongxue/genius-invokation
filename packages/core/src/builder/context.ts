@@ -24,6 +24,7 @@ import {
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
+  EntityEventArg,
   EventAndRequest,
   EventAndRequestConstructorArgs,
   EventAndRequestNames,
@@ -634,6 +635,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
+      this.handleInlineEvent("onBeforeDispose", new EntityEventArg(this.state, entityState));
       this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
         type: "disposeEntity",

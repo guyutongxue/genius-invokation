@@ -284,7 +284,7 @@ const detailedEventDictionary = {
   dispose: defineDescriptor("onDispose", (c, e, r) => {
     return checkRelative(c.state, e.entity.id, r);
   }),
-  selfDispose: defineDescriptor("onDispose", (c, e, r) => {
+  selfDispose: defineDescriptor("onBeforeDispose", (c, e, r) => {
     return e.entity.id === r.callerId;
   }),
   defeated: defineDescriptor("onDefeated", (c, e, r) => {
