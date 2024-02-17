@@ -1178,12 +1178,12 @@ export class Game {
           this.mutate(mut);
           // 清空角色装备与状态、元素附着、能量
           for (const et of ch.entities) {
+            // FIX ME: what about onBeforeDispose event?
+            disposeEvents.push(new EntityEventArg(this.state, et));
             this.mutate({
               type: "disposeEntity",
               oldState: et,
             });
-            // FIX ME: what about onBeforeDispose event?
-            disposeEvents.push(new EntityEventArg(this.state, et));
           }
           mut = {
             ...mut,
