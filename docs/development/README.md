@@ -1,5 +1,7 @@
 # 开发说明
 
+**建议阅读：[slices](https://docs.qq.com/slide/DRVZOcGttRGhhVnNF)**
+
 本项目目前使用 monorepo 划分和管理包，共有如下包：
 
 - **核心部分**
