@@ -13,6 +13,7 @@
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
     "@gi-tcg/webui-core": "workspace:*",
+    "@vercel/analytics": "^1.2.0",
     "core-js": "3.35.1",
     "solid-js": "^1.8.7"
   },
