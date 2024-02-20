@@ -1,11 +1,8 @@
 {
   "name": "@gi-tcg/utils",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
   "exports": "./src/index.ts",
-  "scripts": {
-    "build": "tsc"
-  },
   "devDependencies": {
     "@gi-tcg/typings": "workspace:*",
     "typescript": "^5.1.3"
