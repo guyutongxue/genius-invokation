@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "@types/bun": "^1.0.4",
-    "bun": "^1.0.25"
+    "bun": "^1.0.28"
   }
 }

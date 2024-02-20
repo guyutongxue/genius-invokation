@@ -16,6 +16,8 @@
 
 import { $ } from "bun";
 
+$.throws(true);
+
 const folderNames = ["typings", "core", "webui-core", "standalone"]
 
 for (const folder of folderNames) {
