@@ -1,0 +1,35 @@
+{
+  "name": "@gi-tcg/webui",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "bunx --bun vite",
+    "build": "NODE_ENV=production bunx --bun vite build"
+  },
+  "dependencies": {
+    "solid-element": "^1.8.0",
+    "solid-js": "^1.8.15",
+    "@gi-tcg/webui-core": "workspace:*",
+    "@gi-tcg/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "babel-plugin-transform-css-import-to-string": "^0.0.2",
+    "babel-preset-solid": "^1.8.15",
+    "rollup": "^4.12.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-import-css": "^3.4.0",
+    "vite": "^5.0.8",
+    "vite-plugin-dts": "^3.7.0",
+    "vite-plugin-solid": "^2.10.1"
+  }
+}

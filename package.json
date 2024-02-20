@@ -7,6 +7,7 @@
     "packages/data",
     "packages/utils",
     "packages/webui-core",
+    "packages/webui",
     "packages/standalone"
   ],
   "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",

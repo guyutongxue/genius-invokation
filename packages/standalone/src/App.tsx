@@ -29,6 +29,7 @@ import {
   createPlayer,
   PlayerIOWithCancellation,
 } from "@gi-tcg/webui-core";
+import "@gi-tcg/webui-core/style.css";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
 import { decode } from "./sharingCode";
 import shareIdMap from "./shareId.json";

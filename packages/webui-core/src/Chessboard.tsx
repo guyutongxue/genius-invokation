@@ -66,7 +66,7 @@ const EMPTY_PLAYER_DATA: PlayerData = {
   legendUsed: false,
 };
 
-const EMPTY_STATE_DATA: StateData = {
+export const EMPTY_STATE_DATA: StateData = {
   currentTurn: 0,
   phase: "initHands",
   roundNumber: 0,

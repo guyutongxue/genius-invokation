@@ -23,9 +23,8 @@ import {
   RpcMethod,
   RpcRequest,
   RpcResponse,
-  verifyRpcRequest,
-  verifyRpcResponse,
 } from "@gi-tcg/typings";
+import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings/verify";
 import {
   AnyState,
   CharacterState,

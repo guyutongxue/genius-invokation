@@ -14,10 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import "./index.css";
-import "virtual:uno.css";
 
 export {
   createPlayer,
+  EMPTY_STATE_DATA,
   type WebUiOption,
   StandaloneChessboard,
   type StandaloneChessboardProps,

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType } from "@gi-tcg/typings";
+import type { DiceType } from "@gi-tcg/typings";
 import { diceToMap } from "@gi-tcg/utils";
 import { ComponentProps, For, splitProps } from "solid-js";
 
@@ -33,7 +33,7 @@ export function DiceCost(props: DiceCostProps) {
       const realCostMap = diceToMap(local.realCost);
       const allCostType = new Set([...local.cost, ...local.realCost]);
       if (allCostType.size === 0) {
-        allCostType.add(DiceType.Omni);
+        allCostType.add(8 /* Omni */);
       }
       for (const type of allCostType) {
         const realCount = realCostMap.get(type) ?? 0;

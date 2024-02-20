@@ -33,4 +33,10 @@ export default [
       "@typescript-eslint/no-unused-vars": 1,
     },
   },
+  {
+    files: ["**/*.cjs"],
+    env: {
+      commonjs: true,
+    }
+  }
 ];

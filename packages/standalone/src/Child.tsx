@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { createPlayer } from "@gi-tcg/webui-core";
+import "@gi-tcg/webui-core/style.css";
 import { onCleanup, onMount } from "solid-js";
 
 export function Child() {

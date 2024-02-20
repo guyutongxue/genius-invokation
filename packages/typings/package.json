@@ -2,7 +2,10 @@
   "name": "@gi-tcg/typings",
   "version": "0.0.0",
   "type": "module",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./verify": "./src/verify.ts"
+  },
   "scripts": {
     "build": "bun scripts/generate_schema.ts"
   },
