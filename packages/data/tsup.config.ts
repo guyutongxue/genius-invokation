@@ -20,7 +20,7 @@ export default defineConfig({
     index: "./src/index.ts",
   },
   format: "esm",
-  clean: true,
+  // clean: true,
   experimentalDts: true,
   sourcemap: true,
   minify: true,

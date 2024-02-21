@@ -21,7 +21,7 @@ export default defineConfig({
     verify: "./src/verify.ts"
   },
   format: "esm",
-  clean: true,
+  // clean: true,
   experimentalDts: true,
   sourcemap: true,
   minify: true,

@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export * from "./enums";
-export * from "./api/notification";
-export * from "./api/request";
-export * from "./api/response";
-export * from "./api/user";
-export * from "./api/mutation";
+export type * from "./api/notification";
+export type * from "./api/request";
+export type * from "./api/response";
+export type * from "./api/user";
+export type * from "./api/mutation";

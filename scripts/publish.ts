@@ -24,15 +24,8 @@ import { PackageJson } from "type-fest";
 
 $.throws(true);
 
-const packages = ["typings", "utils", "core", "data", "webui"];
-const needBuild = ["typings", "core", "webui-core"];
+const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
 const VERSION = "0.1.0";
-
-const built: string[] = [];
-for (const pkg of needBuild) {
-  await $`bun run build`.cwd(`packages/${pkg}`);
-  built.push(pkg);
-}
 
 interface PackageInfo {
   directory: string;
@@ -41,20 +34,37 @@ interface PackageInfo {
 
 const packageInfos: PackageInfo[] = [];
 for (const pkg of packages) {
+  console.log(`Building and verifying package: ${pkg}`);
   const directory = `packages/${pkg}`;
   if (!existsSync(directory)) {
     throw new Error(`Package directory not found: ${directory}`);
   }
   const packageJson: PackageJson = await Bun.file(`${directory}/package.json`).json();
-  if (!built.includes(pkg) && ("build" in (packageJson.scripts ?? {}))) {
-    await $`bun run build`.cwd(directory);
+  if ("build" in (packageJson.scripts ?? {})) {
+    await $`bun run build`.cwd(directory).quiet();
   }
   if ("build:publish" in (packageJson.scripts ?? {})) {
-    await $`bun run build:publish`.cwd(directory);
+    await $`bun run build:publish`.cwd(directory).quiet();
   }
   if ("exports:publish" in packageJson) {
     packageJson.exports = packageJson["exports:publish"] as any;
     delete packageJson["exports:publish"];
+  }
+  if (!packageJson.dependencies) {
+    packageJson.dependencies = {};
+  }
+  const packageJsonDeps = packageJson.dependencies!;
+  for (const [key, value] of Object.entries(packageJsonDeps)) {
+    if (value?.startsWith("workspace:")) {
+      const foundDep = packageInfos.find((info) => info.packageJson.name === key);
+      if (!foundDep) {
+        throw new Error(`Workspace dependency of ${pkg} not found: ${key}`);
+      }
+      packageJsonDeps[key] = foundDep.packageJson.version;
+    }
+  }
+  if (packageJson.devDependencies) {
+    delete packageJson.devDependencies;
   }
   packageInfos.push({ directory, packageJson });
   if (!existsSync(`${directory}/dist`)) {
@@ -70,17 +80,17 @@ const licensePath = "LICENSE";
 
 for (const { packageJson, directory } of packageInfos) {
   const { name, version } = packageJson;
+  console.log(`Publishing package: ${name}`);
   if (!version?.startsWith(VERSION)) {
     throw new Error(`Version not starts with ${VERSION}: ${name}`);
   }
-  await $`rm -rf ${publishDir}`;
-  await $`mkdir -p ${publishDir}/dist`;
-  await $`cp -r ${directory}/dist ${publishDir}/dist`;
-  await $`echo ${JSON.stringify(packageJson, void 0, 2)} > ${publishDir}/package.json`;
-  await $`cp ${directory}/README.md ${publishDir}/README.md`;
-  await $`cp ${licensePath} ${publishDir}/LICENSE`;
-  await $`bunx --bun attw --pack ${publishDir}`;
+  await $`rm -rf ${publishDir}`.quiet();
+  await $`mkdir -p ${publishDir}`.quiet();
+  await $`cp -r ${directory}/dist ${publishDir}/`.quiet();
+  await $`echo ${JSON.stringify(packageJson, void 0, 2)} > ${publishDir}/package.json`.quiet();
+  await $`cp ${directory}/README.md ${publishDir}/`.quiet();
+  await $`cp ${licensePath} ${publishDir}/`.quiet();
+  // Bro attw is so strict
+  await $`bunx --bun attw --pack ${publishDir}`.nothrow();
   await $`npm publish --access public --dry-run`.cwd(publishDir);
-
-  throw "not implemented";
 }

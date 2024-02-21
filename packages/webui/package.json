@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "solid-element": "^1.8.0",
-    "solid-js": "^1.8.15",
-    "@gi-tcg/webui-core": "workspace:*"
+    "solid-js": "^1.8.15"
   },
   "devDependencies": {
+    "@gi-tcg/webui-core": "workspace:*",
     "rollup-plugin-node-externals": "^7.0.1",
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.7.0",

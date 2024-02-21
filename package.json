@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.14.0",
+    "@microsoft/api-extractor": "^7.40.4",
     "@types/bun": "^1.0.4",
     "bun": "^1.0.28",
     "tsup": "^8.0.2",
