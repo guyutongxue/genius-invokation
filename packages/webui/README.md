@@ -18,3 +18,5 @@ const chessboard = document.createElement("gi-tcg-standalone-chessboard");
 chessboard.stateData = /* ... */;
 document.body.append(chessboard);
 ```
+
+A live example can be found [here](https://stackblitz.com/edit/gi-tcg-example?file=src%2Fmain.js).

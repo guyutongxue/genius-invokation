@@ -25,7 +25,7 @@ import { PackageJson } from "type-fest";
 $.throws(true);
 
 const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.1.5";
+const VERSION = "0.1.6";
 
 interface PackageInfo {
   directory: string;
@@ -33,6 +33,19 @@ interface PackageInfo {
 }
 
 const packageInfos: PackageInfo[] = [];
+
+function transferWorkspaceDeps(deps: Partial<Record<string, string>> = {}) {
+  for (const [key, value] of Object.entries(deps)) {
+    if (value?.startsWith("workspace:")) {
+      const foundDep = packageInfos.find((info) => info.packageJson.name === key);
+      if (!foundDep) {
+        throw new Error(`Workspace dependency not found: ${key}`);
+      }
+      deps[key] = foundDep.packageJson.version;
+    }
+  }
+}
+
 for (const pkg of packages) {
   console.log(`Building and verifying package: ${pkg}`);
   const directory = `packages/${pkg}`;
@@ -53,16 +66,8 @@ for (const pkg of packages) {
   if (!packageJson.dependencies) {
     packageJson.dependencies = {};
   }
-  const packageJsonDeps = packageJson.dependencies!;
-  for (const [key, value] of Object.entries(packageJsonDeps)) {
-    if (value?.startsWith("workspace:")) {
-      const foundDep = packageInfos.find((info) => info.packageJson.name === key);
-      if (!foundDep) {
-        throw new Error(`Workspace dependency of ${pkg} not found: ${key}`);
-      }
-      packageJsonDeps[key] = foundDep.packageJson.version;
-    }
-  }
+  transferWorkspaceDeps(packageJson.dependencies);
+  transferWorkspaceDeps(packageJson.peerDependencies);
   if (packageJson.devDependencies) {
     delete packageJson.devDependencies;
   }
