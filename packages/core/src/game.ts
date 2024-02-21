@@ -28,7 +28,6 @@ import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings/verify";
 import {
   AnyState,
   CharacterState,
-  EntityState,
   GameConfig,
   GameState,
   PlayerState,

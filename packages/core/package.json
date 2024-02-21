@@ -6,9 +6,20 @@
     ".": "./src/index.ts",
     "./builder": "./src/builder/index.ts"
   },
+  "exports:publish": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./builder": {
+      "import": "./dist/builder.js",
+      "types": "./dist/builder.d.ts"
+    }
+  },
   "scripts": {
     "generate_parser": "bunx --bun ohm generateBundles -et src/query/query.ohm",
     "build": "bun run generate_parser",
+    "build:publish": "bunx --bun tsup",
     "check": "bunx --bun tsc --noEmit"
   },
   "dependencies": {

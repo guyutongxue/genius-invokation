@@ -17,11 +17,15 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import devtools from "solid-devtools/vite";
 import solid from "vite-plugin-solid";
-import { libInjectCss } from "vite-plugin-lib-inject-css";
+import nodeExternals from "rollup-plugin-node-externals";
 import dts from "vite-plugin-dts";
 
 export default defineConfig({
   plugins: [
+    {
+      ...nodeExternals(),
+      enforce: "pre",
+    },
     devtools({
       autoname: true,
       locator: {
@@ -32,17 +36,19 @@ export default defineConfig({
       },
     }),
     solid(),
-    dts({ rollupTypes: true }),
+    dts({
+      bundledPackages: [
+        "@gi-tcg/core",
+        "@gi-tcg/typings",
+      ],
+      rollupTypes: true
+    }),
   ],
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       formats: ["es"],
       fileName: "index",
-    },
-    minify: false,
-    rollupOptions: {
-      external: ["solid-js", /^solid-js\/.*/],
     },
   },
 });

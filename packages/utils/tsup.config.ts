@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 // Copyright (C) 2024 Guyutongxue
 // 
 // This program is free software: you can redistribute it and/or modify
@@ -14,12 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { $ } from "bun";
+import { defineConfig } from "tsup";
 
-$.throws(true);
-
-const folderNames = ["typings", "core", "webui-core", "standalone"]
-
-for (const folder of folderNames) {
-  await $`bun run build`.cwd(`packages/${folder}`);
-}
+export default defineConfig({
+  entry: {
+    index: "./src/index.ts"
+  },
+  format: "esm",
+  clean: true,
+  experimentalDts: true,
+  sourcemap: true,
+  minify: true,
+});

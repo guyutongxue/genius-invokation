@@ -6,14 +6,24 @@
     ".": "./src/index.ts",
     "./verify": "./src/verify.ts"
   },
+  "exports:publish": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./verify": {
+      "import": "./dist/verify.js",
+      "types": "./dist/verify.d.ts"
+    }
+  },
   "scripts": {
-    "build": "bun scripts/generate_schema.ts"
+    "build": "bun scripts/generate_schema.ts",
+    "build:publish": "bunx --bun tsup"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",
     "case-anything": "^2.1.13",
     "glob": "^10.2.7",
-    "tsup": "^7.1.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6",
     "typescript-json-schema": "^0.57.0"

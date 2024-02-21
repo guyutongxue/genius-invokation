@@ -12,10 +12,13 @@
   ],
   "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",
   "scripts": {
-    "build": "bun build.ts"
+    "build": "bun scripts/build.ts"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.14.0",
     "@types/bun": "^1.0.4",
-    "bun": "^1.0.28"
+    "bun": "^1.0.28",
+    "tsup": "^8.0.2",
+    "type-fest": "^4.10.2"
   }
 }

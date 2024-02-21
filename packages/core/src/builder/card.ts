@@ -14,6 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import {
+  AnyState,
+  CharacterState,
+  EntityState,
+  GameState,
+} from "../base/state";
+import {
   CardTag,
   CardSkillEventArg,
   CardTargetKind,
@@ -25,8 +31,10 @@ import {
   WeaponCardTag,
   PlayCardSkillDefinition,
 } from "../base/card";
-import { registerCard, registerSkill } from "./registry";
+import { CharacterTag } from "../base/character";
+import { ExEntityType } from "../base/entity";
 import { SkillDescription, SkillInfo } from "../base/skill";
+import { registerCard, registerSkill } from "./registry";
 import { SkillContext } from "./context";
 import {
   SkillBuilderWithCost,
@@ -43,16 +51,7 @@ import {
   StatusHandle,
   SupportHandle,
 } from "./type";
-import {
-  AnyState,
-  CharacterState,
-  EntityState,
-  GameState,
-} from "../base/state";
-import { combatStatus, status } from ".";
-import { equipment, support } from "./entity";
-import { CharacterTag } from "../base/character";
-import { ExEntityType } from "../base/entity";
+import { combatStatus, status, equipment, support } from "./entity";
 import { GuessedTypeOfQuery } from "../query/types";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
