@@ -25,7 +25,7 @@ import { PackageJson } from "type-fest";
 $.throws(true);
 
 const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 
 interface PackageInfo {
   directory: string;
@@ -66,6 +66,7 @@ for (const pkg of packages) {
   if (packageJson.devDependencies) {
     delete packageJson.devDependencies;
   }
+  packageJson.repository = "github:Guyutongxue/genius-invokation";
   packageInfos.push({ directory, packageJson });
   if (!existsSync(`${directory}/dist`)) {
     throw new Error(`Package dist directory not found: ${directory}`);

@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/data",
-  "version": "0.1.1+gi-4-4-0",
+  "version": "0.1.2+gi-4-4-0",
   "type": "module",
   "exports": "./src/index.ts",
   "exports:publish": {
