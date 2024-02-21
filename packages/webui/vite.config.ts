@@ -28,6 +28,9 @@ export default defineConfig({
     solid(),
     dts({
       rollupTypes: true,
+      bundledPackages: [
+        "@gi-tcg/webui-core"
+      ]
     }),
   ],
   build: {
