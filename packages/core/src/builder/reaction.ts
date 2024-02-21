@@ -47,22 +47,6 @@ type ReactionContextMeta = {
   callerType: any;
 };
 
-class ReactionBuilder extends SkillBuilder<ReactionContextMeta> {
-  constructor(private reaction: Reaction) {
-    super(reaction);
-  }
-
-  done() {
-    REACTION_DESCRIPTION[this.reaction] = (st, id, d) => {
-      return this.getAction(d)(st, id);
-    };
-  }
-}
-
-function reaction(reaction: Reaction) {
-  return enableShortcut(new ReactionBuilder(reaction));
-}
-
 type ReactionAction = (c: TypedSkillContext<ReactionContextMeta>) => void;
 
 const pierceToOther =
@@ -105,6 +89,23 @@ const swirl = (srcElement: DamageType): ReactionAction => {
 };
 
 function initialize() {
+  // 此处有循环依赖。若 ReactionBuilder 在顶级，
+  // 且打包后比 SkillBuilder 出现的位置更早，则会发生错误
+  class ReactionBuilder extends SkillBuilder<ReactionContextMeta> {
+    constructor(private reaction: Reaction) {
+      super(reaction);
+    }
+    done() {
+      REACTION_DESCRIPTION[this.reaction] = (st, id, d) => {
+        return this.getAction(d)(st, id);
+      };
+    }
+  }
+  
+  function reaction(reaction: Reaction) {
+    return enableShortcut(new ReactionBuilder(reaction));
+  }
+
   reaction(Reaction.Melt)
     .if((c, e) => e.damageInfo.isDamage)
     .increaseDamage(2)

@@ -13,9 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// 解决循环依赖问题
-import "./context";
-
 export { character } from "./character";
 export { skill } from "./skill";
 export { card } from "./card";

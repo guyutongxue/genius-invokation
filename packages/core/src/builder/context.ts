@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Aura, DamageType, DiceType, Reaction } from "@gi-tcg/typings";
+import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 
 import {
   EntityArea,
@@ -64,7 +64,6 @@ import {
   SkillHandle,
   StatusHandle,
   SummonHandle,
-  SupportHandle,
   TypedExEntity,
 } from "./type";
 import { CardTag } from "../base/card";
