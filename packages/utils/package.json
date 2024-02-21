@@ -1,11 +1,11 @@
 {
   "name": "@gi-tcg/utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "exports": "./src/index.ts",
   "exports:publish": {
-    "import": "./dist/index.js",
-    "types": "./dist/index.d.ts"
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
   },
   "scripts": {
     "build:publish": "bunx --bun tsup"

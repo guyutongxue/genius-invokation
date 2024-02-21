@@ -1,12 +1,10 @@
 {
   "name": "@gi-tcg/webui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
   },
   "scripts": {
     "dev": "bunx --bun vite",

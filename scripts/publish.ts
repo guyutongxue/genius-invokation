@@ -25,7 +25,7 @@ import { PackageJson } from "type-fest";
 $.throws(true);
 
 const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 interface PackageInfo {
   directory: string;
@@ -92,5 +92,5 @@ for (const { packageJson, directory } of packageInfos) {
   await $`cp ${licensePath} ${publishDir}/`.quiet();
   // Bro attw is so strict
   await $`bunx --bun attw --pack ${publishDir}`.nothrow();
-  await $`npm publish --access public --dry-run`.cwd(publishDir);
+  await $`npm publish --access public`.cwd(publishDir);
 }

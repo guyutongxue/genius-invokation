@@ -1,11 +1,11 @@
 {
   "name": "@gi-tcg/data",
-  "version": "0.1.0+gi-4-4-0",
+  "version": "0.1.1+gi-4-4-0",
   "type": "module",
   "exports": "./src/index.ts",
   "exports:publish": {
-    "import": "./dist/index.js",
-    "types": "./dist/index.d.ts"
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
   },
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",

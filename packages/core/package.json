@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -8,12 +8,12 @@
   },
   "exports:publish": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./builder": {
-      "import": "./dist/builder.js",
-      "types": "./dist/builder.d.ts"
+      "types": "./dist/builder.d.ts",
+      "import": "./dist/builder.js"
     }
   },
   "scripts": {
