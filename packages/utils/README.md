@@ -1,4 +1,4 @@
-# `@gi-tcg/utils` Utility functions for Genius Invokation
+# `@gi-tcg/utils` Utility Functions for Genius Invokation
 
 > **Warning**
 >

@@ -1,4 +1,4 @@
-# `@gi-tcg/core` Genius Invokation Core Library
+# `@gi-tcg/core` Genius Invokation Simulator Core Library
 
 > **Warning**
 >
