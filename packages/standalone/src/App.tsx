@@ -31,20 +31,11 @@ import {
 } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
-import { decode } from "./sharingCode";
-import shareIdMap from "./shareId.json";
+import { decode } from "@gi-tcg/utils";
 import { Child } from "./Child";
 
 function getPlayerConfig(shareCode: string): PlayerConfig {
-  const [ch0, ch1, ch2, ...cards] = decode(shareCode).map(
-    (sid) => (shareIdMap as any)[sid],
-  );
-  return {
-    characters: [ch0, ch1, ch2],
-    cards,
-    noShuffle: import.meta.env.DEV,
-    alwaysOmni: import.meta.env.DEV,
-  };
+  return decode(shareCode);
 }
 
 export function App() {

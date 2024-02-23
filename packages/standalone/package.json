@@ -12,6 +12,7 @@
   "dependencies": {
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
+    "@gi-tcg/utils": "workspace:*",
     "@gi-tcg/webui-core": "workspace:*",
     "@vercel/analytics": "^1.2.0",
     "core-js": "3.35.1",
@@ -20,7 +21,6 @@
   "devDependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",
-    "@genshin-db/tcg": "^5.0.9",
     "@rollup/plugin-babel": "^6.0.4",
     "@types/core-js": "^2.5.8",
     "@typescript-eslint/eslint-plugin": "^6.21.0",

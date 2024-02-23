@@ -28,6 +28,6 @@ const map = Object.fromEntries(
   ]),
 );
 
-const path = new URL("../src/shareId.json", import.meta.url);
+const path = new URL("../src/share_id.json", import.meta.url);
 
 Bun.write(path, JSON.stringify(map));

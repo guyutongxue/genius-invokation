@@ -1,17 +1,19 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import shareIdMap from "./share_id.json";
 
 const BLOCK_WORDS = [
   /64/i,
@@ -27,7 +29,8 @@ const BLOCK_WORDS = [
   /xjp/i,
 ];
 
-export function decode(src: string) {
+/** 解析原始分享码为分享码 id 数组 */
+export function decodeRaw(src: string) {
   const arr = Array.from(atob(src), (c) => c.codePointAt(0)!);
   if (arr.length !== 51) {
     throw new Error("Invalid input");
@@ -46,7 +49,8 @@ export function decode(src: string) {
   return result;
 }
 
-export function encode(arr: readonly number[]) {
+/** 将原始分享码 id 数组编码为分享码 */
+export function encodeRaw(arr: readonly number[]) {
   const padded = [...arr, 0];
   const reordered = Array.from({ length: 17 }).flatMap((_, i) => [
     padded[i * 2] >> 4,
@@ -64,4 +68,60 @@ export function encode(arr: readonly number[]) {
     }
   }
   throw new Error("Not found");
+}
+
+export interface Deck {
+  readonly cards: number[];
+  readonly characters: number[];
+}
+
+/**
+ * 将分享码 id 转换为卡牌定义 id
+ * @param shareId 分享码 id
+ * @returns 卡牌定义 id
+ */
+export function shareIdToId(shareId: number): number {
+  const map = shareIdMap as Record<string, number>;
+  const id = map[shareId];
+  if (!id) {
+    throw new Error(`Invalid share ID ${shareId}`);
+  }
+  return Number(id);
+}
+
+/**
+ * 将卡牌定义 id 转换为分享码 id
+ * @param id 卡牌定义 id
+ * @returns 分享码 id
+ */
+export function idToShareId(id: number): number {
+  const map = shareIdMap as Record<string, number>;
+  const shareId = Object.entries(map).find(([, v]) => v === id);
+  if (!shareId) {
+    throw new Error(`Invalid ID ${id}`);
+  }
+  return Number(shareId[0]);
+}
+
+/**
+ * 将牌组编码为分享码
+ * @param deck 牌组（卡牌定义 id）
+ * @returns 分享码
+ */
+export function encode(deck: Deck) {
+  const raw = [...deck.characters, ...deck.cards].map(idToShareId);
+  return encodeRaw(raw);
+}
+
+/**
+ * 将分享码解析为牌组
+ * @param src 分享码
+ * @returns 解析得到的牌组（卡牌定义 id）
+ */
+export function decode(src: string) {
+  const raw = decodeRaw(src).map(shareIdToId);
+  return {
+    characters: raw.slice(0, 3),
+    cards: raw.slice(3),
+  };
 }
