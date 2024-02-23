@@ -25,7 +25,7 @@ import { PackageJson } from "type-fest";
 $.throws(true);
 
 const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.1.6";
+const VERSION = "0.1.7";
 
 interface PackageInfo {
   directory: string;
