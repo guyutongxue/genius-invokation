@@ -264,7 +264,7 @@ export class Game {
     for (const i of [0, 1] as const) {
       this.notifyOne(i, events);
     }
-    await this.io.pause?.(this.state);
+    await this.io.pause?.(this.state, [...events]);
     if (this.state.phase !== "gameEnd") {
       this.mutate({ type: "clearMutationLog" });
       await this.checkGiveUp();
@@ -436,8 +436,8 @@ export class Game {
       for (let i = 0; i < this.config.initialHands; i++) {
         this.state = drawCard(this.state, who, null);
       }
-      this.notifyOne(who);
     }
+    this.notifyAndPause([]);
     await Promise.all([this.switchCard(0), this.switchCard(1)]);
     this.mutate({
       type: "changePhase",
@@ -1277,10 +1277,10 @@ export class Game {
 }
 
 export interface GameOption {
-  data: ReadonlyDataStore;
-  gameConfig?: Partial<GameConfig>;
-  playerConfigs: readonly [PlayerConfig, PlayerConfig];
-  io: GameIO;
+  readonly data: ReadonlyDataStore;
+  readonly gameConfig?: Partial<GameConfig>;
+  readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
+  readonly io: GameIO;
 }
 
 export function mergeGameConfigWithDefault(
