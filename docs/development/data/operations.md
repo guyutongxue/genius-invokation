@@ -72,8 +72,8 @@ interface SkillContext {
   // 在 where 阵营生成出战状态
   combatStatus(id: StatusHandle, where: "my" | "opp" = "my"): void;
 
-  // 在 where 阵营生成支援区实体
-  createSupport(id: SupportHandle, where: "my" | "opp"): void;
+  // 将 target 实体转移到 area（即先弃置后生成）
+  transferEntity(target, area: EntityArea): void;
 
   // 弃置 target
   dispose(target = "@self"): void;
