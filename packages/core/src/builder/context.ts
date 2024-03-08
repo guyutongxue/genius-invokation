@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -612,17 +612,26 @@ export class SkillContext<Meta extends ContextMetaBase> {
       });
     }
   }
-  // 禁用，因为暂时用不到
-  // createSupport(id: SupportHandle, where: "my" | "opp") {
-  //   if (where === "my") {
-  //     this.createEntity("support", id);
-  //   } else {
-  //     this.createEntity("support", id, {
-  //       type: "supports",
-  //       who: flip(this.callerArea.who),
-  //     });
-  //   }
-  // }
+
+  transferEntity(target: EntityTargetArg, area: EntityArea) {
+    const targets = this.queryOrOf(target);
+    for (const target of targets) {
+      if (target.state.definition.type === "character") {
+        throw new GiTcgDataError(`Cannot transfer a character`);
+      }
+      const state = target.state as EntityState;
+      this.mutate({
+        type: "disposeEntity",
+        oldState: state,
+      });
+      const newState = { ...state };
+      this.mutate({
+        type: "createEntity",
+        value: newState,
+        where: area,
+      });
+    }
+  }
 
   dispose(target: EntityTargetArg = "@self") {
     const targets = this.queryOrOf(target);
@@ -634,7 +643,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
-      this.handleInlineEvent("onBeforeDispose", new EntityEventArg(this.state, entityState));
+      this.handleInlineEvent(
+        "onBeforeDispose",
+        new EntityEventArg(this.state, entityState),
+      );
       this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
         type: "disposeEntity",

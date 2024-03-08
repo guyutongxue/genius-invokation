@@ -302,19 +302,9 @@ export const KidKujirai = card(322014)
   .do((c) => {
     c.generateDice(DiceType.Omni, 1);
     if (c.oppPlayer.supports.length < c.state.config.maxSupports) {
-      // 手动 mutate，因为“转移到”既不触发弃置事件，也不触发引入事件
-      const selfState = c.self.state;
-      c.mutate({
-        type: "createEntity",
-        value: c.self.state,
-        where: {
-          type: "supports",
-          who: flip(c.self.who)
-        }
-      });
-      c.mutate({
-        type: "disposeEntity",
-        oldState: selfState
+      c.transferEntity(c.self.state, {
+        type: "supports",
+        who: flip(c.self.who)
       });
     }
   })

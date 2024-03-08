@@ -24,12 +24,11 @@ import { createPlayer } from "./index";
 import { createWaitNotify } from "./utils";
 
 const playerConfig0: PlayerConfig = {
-  characters: [1204, 2301, 1705],
+  characters: [1204, 1304, 1503],
   cards: [
-    212041,
-    // 333004, 312302, 311107,
-    // 223011, 311501, 311502, 311503, 312001, 312002, 312003, 332011,
-    // 322022, 322023, 322021, 322001, 322002, 322003, 322004, 332015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
+    312020, 
+    311201, 311202, 312023, 312019, 312016,
+    332011, 332010,
     331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
     332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
@@ -58,7 +57,10 @@ function App() {
   const [pausing, pause, resume] = createWaitNotify();
 
   const io: GameIO = {
-    pause: async () => new Promise((r) => setTimeout(r, 500)),
+    pause: (state, events) => {
+      console.log({ state, events });
+      return new Promise((r) => setTimeout(r, 500))
+    },
     players: [io0, io1],
   };
   const game = new Game({

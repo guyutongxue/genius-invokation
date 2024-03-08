@@ -61,6 +61,7 @@ export class EntityBuilder<
   _constants: Draft<EntityVariables> = {
     duration: Infinity,
     usage: Infinity,
+    usagePerRound: Infinity,
     disposeWhenUsageIsZero: 0,
   };
   private _visibleVarName: string | null = null;

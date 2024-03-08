@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -249,7 +249,9 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who: e.who }, r) && e.isPlayCard();
   }),
   useSkill: defineDescriptor("onAction", (c, e, r) => {
-    return e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r);
+    return (
+      e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
+    );
   }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
@@ -511,9 +513,20 @@ export class TriggeredSkillBuilder<
       throw new GiTcgDataError(`Usage called twice`);
     }
     const perRound = opt?.perRound ?? false;
-    const name =
-      opt?.name ??
-      (isFinite(this.parent._constants.usage) ? `usage_${this.id}` : "usage");
+    let name: string;
+    if (opt?.name) {
+      if (this.parent._constants[opt.name]) {
+        throw new GiTcgDataError(`variable name "${opt.name}" is already used. Try another.`);
+      }
+      name = opt.name;
+    } else {
+      const base = (opt?.perRound ? "usagePerRound" : "usage");
+      if (isFinite(this.parent._constants[base])) {
+        name = `${base}_${this.id}`;
+      } else {
+        name = base;
+      }
+    }
     this.parent.variable(name, count, {
       ...opt,
       recreateMax: opt?.recreateMax ?? count,
@@ -551,11 +564,24 @@ export class TriggeredSkillBuilder<
    *   .usage(count, { ...opt, perRound: true, visible: false })
    * ```
    */
-  usagePerRound<VarName extends string = "usage">(
+  usagePerRound<VarName extends string = "usagePerRound">(
     count: number,
     opt?: Omit<UsageOptions<VarName>, "perRound">,
-  ) {
-    return this.usage(count, { ...opt, perRound: true, visible: false });
+  ): BuilderWithShortcut<
+    TriggeredSkillBuilder<
+      {
+        callerType: Meta["callerType"];
+        callerVars: Meta["callerVars"] | VarName;
+        eventArgType: Meta["eventArgType"];
+      },
+      EventName
+    >
+  > {
+    return this.usage(count, {
+      ...opt,
+      perRound: true,
+      visible: false,
+    }) as any;
   }
 
   private listenToMySelf(): this {

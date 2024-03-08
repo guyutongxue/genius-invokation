@@ -522,8 +522,19 @@ export const MasterOfWeaponry = card(332010)
   .addTarget("my character has equipment with tag (weapon)")
   .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
   .do((c, e) => {
-    const weapon = c.of(e.targets[0]).removeWeapon()!;
-    c.of(e.targets[1]).equip(weapon.definition.id as any);
+    const weapon = c.of(c.of(e.targets[0]).hasWeapon()!);
+    for (const prop in weapon.state.definition.constants) {
+      if (prop.startsWith("usagePerRound")) {
+        weapon.setVariable(prop, weapon.state.definition.constants[prop]);
+      }
+    }
+    const target = c.of(e.targets[1]);
+    const area = {
+      type: "characters" as const,
+      who: target.who,
+      characterId: target.id,
+    };
+    c.transferEntity(weapon.state, area);
   })
   .done();
 
@@ -537,8 +548,19 @@ export const BlessingOfTheDivineRelicsInstallation = card(332011)
   .addTarget("my character has equipment with tag (artifact)")
   .addTarget("my character and not @targets.0")
   .do((c, e) => {
-    const artifact = c.of(e.targets[0]).removeArtifact()!;
-    c.of(e.targets[1]).equip(artifact.definition.id as any);
+    const artifact = c.of(c.of(e.targets[0]).hasArtifact()!);
+    for (const prop in artifact.state.definition.constants) {
+      if (prop.startsWith("usagePerRound")) {
+        artifact.setVariable(prop, artifact.state.definition.constants[prop]);
+      }
+    }
+    const target = c.of(e.targets[1]);
+    const area = {
+      type: "characters" as const,
+      who: target.who,
+      characterId: target.id,
+    };
+    c.transferEntity(artifact.state, area);
   })
   .done();
 

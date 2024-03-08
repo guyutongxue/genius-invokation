@@ -30,10 +30,9 @@ import {
   nextRandom,
   sortDice,
 } from "../util";
-import { EntityArea, EntityDefinition } from "./entity";
+import { EntityArea } from "./entity";
 import { ActionInfo, DamageInfo, SkillDefinition, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
-import { CardDefinition } from "./card";
 import { GiTcgCoreInternalError } from "../error";
 
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {

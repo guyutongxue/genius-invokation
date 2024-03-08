@@ -29,7 +29,7 @@ import {
   StateData,
   Event
 } from "@gi-tcg/typings";
-import { CardState, CharacterState, EntityState, GameState } from ".";
+import { CardState, CharacterState, EntityState, GameState } from "./base/state";
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
