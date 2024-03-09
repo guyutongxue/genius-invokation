@@ -117,6 +117,8 @@ function initialize() {
     .done();
 
   reaction(Reaction.Overloaded)
+    .if((c, e) => e.damageInfo.isDamage)
+    .increaseDamage(2)
     .if((c, e) => c.of(e.target).isActive())
     .do((c) => {
       const player = c.of(c.eventArg.target).isMine() ? "my" : "opp";
