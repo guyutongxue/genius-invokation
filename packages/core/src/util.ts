@@ -85,16 +85,21 @@ export function allEntities(
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
     const activeIdx = getActiveCharacterIndex(player);
-    for (const ch of player.characters.shiftLeft(activeIdx)) {
-      if (excludeDefeated && ch.variables.health <= 0) {
-        continue;
+    // 根据一些测试表明，游戏实际的响应顺序并非规则书所述，而是
+    // 出战角色、出战角色装备和状态、出战状态、后台角色、后台角色装备和状态
+    // 召唤物、支援牌
+    // （即出战状态区夹在出战角色区和后台角色区之间）
+    const [active, ...standby] = player.characters.shiftLeft(activeIdx);
+    if (!excludeDefeated || active.variables.health > 0) {
+      result.push(active, ...active.entities);
+    }
+    result.push(...player.combatStatuses);
+    for (const ch of standby) {
+      if (!excludeDefeated || active.variables.health > 0) {
+        result.push(ch, ...ch.entities);
       }
-      result.push(ch);
-      result.push(...ch.entities);
     }
-    for (const key of ["combatStatuses", "summons", "supports"] as const) {
-      result.push(...player[key]);
-    }
+    result.push(...player.summons, ...player.supports);
   }
   return result;
 }
