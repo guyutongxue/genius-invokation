@@ -198,6 +198,16 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this.tags("legend").filter((c) => !c.player.legendUsed);
   }
 
+  private getTalentTarget(
+    ch: CharacterHandle | CharacterHandle[],
+  ): `${string}character${string}` {
+    if (Array.isArray(ch)) {
+      return ch.map((c) => `(my characters with definition id ${c})`).join(" or ") as any;
+    } else {
+      return `my characters with definition id ${ch}`;
+    }
+  }
+
   talent(
     ch: CharacterHandle | CharacterHandle[],
     requires: TalentRequirement = "action",
@@ -215,10 +225,8 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
         chs.includes(c.$("my active")!.state.definition.id as CharacterHandle),
       );
     }
-    const equiptQuery = chs
-      .map((ch) => `(my characters with definition id ${ch})`)
-      .join(" or ");
-    return this.equipment(equiptQuery as "characters").tags("talent");
+    const equipQuery = this.getTalentTarget(ch);
+    return this.equipment(equipQuery).tags("talent");
   }
 
   eventTalent(
@@ -233,7 +241,8 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     } else {
       this.requireCharacter(ch);
     }
-    return this.tags("talent");
+    const targetQuery = this.getTalentTarget(ch);
+    return this.tags("talent").addTarget(targetQuery);
   }
 
   requireCharacterTag(tag: CharacterTag): this {
