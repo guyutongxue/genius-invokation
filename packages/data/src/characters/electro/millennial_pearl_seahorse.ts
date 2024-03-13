@@ -166,9 +166,9 @@ export const PearlSolidification = card(224031)
     if (exists) {
       c.of(exists).addVariable("usage", 1);
     } else {
-      c.self.master().addStatus(FontemerPearl, {
-        variables: {
-          usaage: 1
+      c.characterStatus(FontemerPearl, "@master", {
+        overrideVariables: {
+          usage: 1
         }
       });
     }

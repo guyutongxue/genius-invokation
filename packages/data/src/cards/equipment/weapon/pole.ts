@@ -55,8 +55,8 @@ export const LithicSpear = card(311402)
   .do((c) => {
     const liyueCount = c.$$(`my characters include defeated with tag (liyue)`).length;
     if (liyueCount > 0) {
-      c.self.master().addStatus(LithicGuard, {
-        variables: {
+      c.characterStatus(LithicGuard, "@master", {
+        overrideVariables: {
           shield: Math.min(liyueCount, 3)
         }
       });

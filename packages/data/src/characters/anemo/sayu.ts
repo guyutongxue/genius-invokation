@@ -102,8 +102,8 @@ export const YoohooArtFuuinDash = skill(15072)
         fuufuuWindType = DamageType.Anemo;
         break;
     }
-    c.self.addStatus(FuufuuWindwheel, {
-      variables: {
+    c.characterStatus(FuufuuWindwheel, "@self", {
+      overrideVariables: {
         swirled: fuufuuWindType
       }
     });

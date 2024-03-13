@@ -106,15 +106,16 @@ export const OTearsIShallRepay: SkillHandle = skill(12102)
  * @description
  * 造成2点水元素伤害，对所有后台敌人造成1点穿透伤害，生成可用次数为2的源水之滴。
  */
-export const OTidesIHaveReturned = skill(12103)
+export const OTidesIHaveReturned: SkillHandle = skill(12103)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
   .damage(DamageType.Piercing, 1, "opp standby")
   .damage(DamageType.Hydro, 2)
-  .do((c) => {
-    const drop = c.createEntity("combatStatus", SourcewaterDroplet);
-    drop?.addVariableWithMax("usage", 1, 3);
+  .combatStatus(SourcewaterDroplet, "my", {
+    overrideVariables: {
+      usage: 2
+    }
   })
   .done();
 

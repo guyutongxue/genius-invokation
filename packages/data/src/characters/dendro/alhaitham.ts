@@ -78,14 +78,14 @@ export const ParticularFieldFettersOfPhenomena = skill(17063)
     if (duration > 0 && duration < 3) {
       if (c.self.hasEquipment(Structuration)) {
         c.self.addStatus(ChisellightMirror, {
-          variables: {
+          overrideVariables: {
             duration: 3
           }
         });
         c.drawCards(1);
       } else {
         c.self.addStatus(ChisellightMirror, {
-          variables: {
+          overrideVariables: {
             duration: 3 - duration
           }
         });

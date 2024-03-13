@@ -483,12 +483,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
     type: TypeT,
     id: HandleT<TypeT>,
     area?: EntityArea,
+    opt: CreateEntityOptions = {},
   ): Entity<Meta> | null {
     const id2 = id as number;
     const def = this._state.data.entities.get(id2);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
+    const constants = { ...def.constants, ...(opt.overrideVariables ?? {}) };
     if (typeof area === "undefined") {
       switch (type) {
         case "combatStatus":
@@ -540,12 +542,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
       // refresh exist entity's variable
       for (const prop in existOverride.variables) {
         const oldValue = existOverride.variables[prop];
-        if (typeof def.constants[prop] === "number") {
-          let newValue = def.constants[prop];
-          if (`${prop}$max` in def.constants) {
+        if (typeof constants[prop] === "number") {
+          let newValue = constants[prop]!;
+          if (`${prop}$max` in constants) {
             // 若存在 `$max` 设定（如 usage）累加状态值
-            const limit = def.constants[`${prop}$max`];
-            const additional = def.constants[`${prop}$add`] ?? newValue;
+            const limit = constants[`${prop}$max`]!;
+            const additional = constants[`${prop}$add`] ?? newValue;
             if (oldValue < limit) {
               // 如果当前值比上限低，进行累加
               newValue = Math.min(limit, oldValue + additional);
@@ -573,7 +575,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         id: 0,
         definition: def,
         variables: Object.fromEntries(
-          Object.entries(def.constants).filter(([k]) => !k.includes("$")),
+          Object.entries(constants).filter(([k]) => !k.includes("$")),
         ) as any,
       };
       this.mutate({
@@ -589,30 +591,52 @@ export class SkillContext<Meta extends ContextMetaBase> {
       return this.of(newState);
     }
   }
-  summon(id: SummonHandle, where: "my" | "opp" = "my") {
+  summon(
+    id: SummonHandle,
+    where: "my" | "opp" = "my",
+    opt: CreateEntityOptions = {},
+  ) {
     if (where === "my") {
-      this.createEntity("summon", id);
+      this.createEntity("summon", id, void 0, opt);
     } else {
-      this.createEntity("summon", id, {
-        type: "summons",
-        who: flip(this.callerArea.who),
-      });
+      this.createEntity(
+        "summon",
+        id,
+        {
+          type: "summons",
+          who: flip(this.callerArea.who),
+        },
+        opt,
+      );
     }
   }
-  characterStatus(id: StatusHandle, target: CharacterTargetArg = "@self") {
+  characterStatus(
+    id: StatusHandle,
+    target: CharacterTargetArg = "@self",
+    opt: CreateEntityOptions = {},
+  ) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      this.createEntity("status", id, t.area);
+      this.createEntity("status", id, t.area, opt);
     }
   }
-  combatStatus(id: CombatStatusHandle, where: "my" | "opp" = "my") {
+  combatStatus(
+    id: CombatStatusHandle,
+    where: "my" | "opp" = "my",
+    opt: CreateEntityOptions = {},
+  ) {
     if (where === "my") {
-      this.createEntity("combatStatus", id);
+      this.createEntity("combatStatus", id, void 0, opt);
     } else {
-      this.createEntity("combatStatus", id, {
-        type: "combatStatuses",
-        who: flip(this.callerArea.who),
-      });
+      this.createEntity(
+        "combatStatus",
+        id,
+        {
+          type: "combatStatuses",
+          who: flip(this.callerArea.who),
+        },
+        opt,
+      );
     }
   }
 
@@ -997,8 +1021,8 @@ export class CharacterBase {
   }
 }
 
-interface AddStatusOptions {
-  variables: Partial<EntityVariables>;
+interface CreateEntityOptions {
+  overrideVariables?: Partial<EntityVariables>;
 }
 
 export class Character<Meta extends ContextMetaBase> extends CharacterBase {
@@ -1094,18 +1118,8 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   apply(type: AppliableDamageType) {
     this.skillContext.apply(type, this.state);
   }
-  addStatus(status: StatusHandle, opt?: AddStatusOptions) {
-    const st = this.skillContext.createEntity("status", status, this._area);
-    if (st === null) {
-      return;
-    }
-    const variables = opt?.variables ?? {};
-    for (const prop in variables) {
-      const value = variables[prop];
-      if (typeof value === "number") {
-        this.skillContext.setVariable(prop, value, st.state);
-      }
-    }
+  addStatus(status: StatusHandle, opt?: CreateEntityOptions) {
+    this.skillContext.createEntity("status", status, this._area, opt);
   }
   equip(equipment: EquipmentHandle) {
     // Remove exist artifact/weapon first
