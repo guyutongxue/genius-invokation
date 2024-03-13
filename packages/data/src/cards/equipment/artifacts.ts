@@ -583,19 +583,21 @@ export const ShadowOfTheSandKing = card(312017)
  * @id 312018
  * @name 饰金之梦
  * @description
- * 入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则额外生成1个万能元素。
+ * 入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。
  * 所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）
  * （角色最多装备1件「圣遗物」）
  */
 export const GildedDreams = card(312018)
-  .costVoid(3)
+  .costSame(3)
   .artifact()
   .on("enter")
   .do((c) => {
-    c.generateDice(c.self.master().element(), 1);
+    const diceType = c.self.master().element();
     const elementKinds = new Set(c.$$("my characters include defeated").map((ch) => ch.element()));
     if (elementKinds.size >= 3) {
-      c.generateDice(DiceType.Omni, 1);
+      c.generateDice(diceType, 2);
+    } else {
+      c.generateDice(diceType, 1);
     }
   })
   .on("damaged", (c, e) => !c.of(e.target).isMine() && e.getReaction())

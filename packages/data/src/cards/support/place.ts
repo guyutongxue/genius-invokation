@@ -38,7 +38,6 @@ export const LiyueHarborWharf = card(321001)
  * 投掷阶段：获得额外一次重投机会。
  */
 export const KnightsOfFavoniusLibrary = card(321002)
-  .costSame(1)
   .support("place")
   .on("enter")
   .reroll(1)
@@ -51,6 +50,7 @@ export const KnightsOfFavoniusLibrary = card(321002)
  * @name 群玉阁
  * @description
  * 投掷阶段：2个元素骰初始总是投出我方出战角色类型的元素。
+ * 行动阶段开始时：如果我方手牌数量不多于3，则弃置此牌，生成1个万能元素骰。
  */
 export const JadeChamber = card(321003)
   .support("place")
@@ -58,6 +58,10 @@ export const JadeChamber = card(321003)
   .do((c, e) => {
     e.fixDice(c.$("my active")!.element(), 2);
   })
+  .on("actionPhase")
+  .if((c) => c.player.hands.length <= 3)
+  .generateDice(DiceType.Omni, 1)
+  .dispose()
   .done();
 
 /**
