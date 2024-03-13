@@ -117,3 +117,20 @@ export const PassingOfJudgment = card(330006)
   .on("playCard", (c, e) => e.action.card.definition.type === "event")
   .usage(3)
   .done();
+
+/**
+ * @id 330007
+ * @name 抗争之日·碎梦之时
+ * @description
+ * 本回合中，目标我方角色受到的伤害-1。（最多生效4次）
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ */
+export const DayOfResistanceMomentOfShatteredDreams = card(330007)
+  .legend()
+  .addTarget("my character")
+  .toStatus("@targets.0", 300004)
+  .oneDuration()
+  .on("beforeDamaged")
+  .usage(4)
+  .decreaseDamage(1)
+  .done();

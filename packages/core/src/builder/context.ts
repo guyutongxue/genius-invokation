@@ -344,6 +344,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           target: targetState,
           value: finalValue,
           via: this.skillInfo,
+          roundNumber: this.state.roundNumber,
           fromReaction: this.fromReaction,
         },
       });
@@ -374,6 +375,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type,
         value,
         via: this.skillInfo,
+        roundNumber: this.state.roundNumber,
         fromReaction: this.fromReaction,
       };
       if (type !== DamageType.Piercing) {
@@ -453,6 +455,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           via: this.skillInfo,
           target: target.state,
           isDamage: false,
+          roundNumber: this.state.roundNumber,
           fromReaction: this.fromReaction,
         };
     const damageModifier = new ModifyDamage0EventArg(this.state, optDamageInfo);
@@ -1203,6 +1206,9 @@ export class Entity<Meta extends ContextMetaBase> {
   }
   get who() {
     return this._area.who;
+  }
+  isMine() {
+    return this.area.who === this.skillContext.callerArea.who;
   }
   getVariable(prop: string) {
     if (!(prop in this.state.variables)) {

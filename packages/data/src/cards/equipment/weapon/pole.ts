@@ -133,7 +133,7 @@ export const EngulfingLightning = card(311405)
  * @id 301104
  * @name 贯月矢（生效中）
  * @description
- * 角色在本回合中，下次使用「元素战技」或装备「天赋」时：少花费2个元素骰。
+ * 在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时：少花费2个元素骰。
  */
 export const MoonpiercerStatus = status(301104)
   .oneDuration()
@@ -146,7 +146,7 @@ export const MoonpiercerStatus = status(301104)
  * @name 贯月矢
  * @description
  * 角色造成的伤害+1。
- * 入场时：所附属角色在本回合中，下次使用「元素战技」或装备「天赋」时少花费2个元素骰。
+ * 入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const Moonpiercer = card(311406)

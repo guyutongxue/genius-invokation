@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card } from "@gi-tcg/core/builder";
+import { DiceType, card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311101
@@ -139,4 +139,50 @@ export const TulaytullahsRemembrance = card(311107)
   .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Void))
   .usagePerRound(2)
   .deductCost(DiceType.Void, 1)
+  .done();
+
+/**
+ * @id 301108
+ * @name 万世的浪涛
+ * @description
+ * 角色在本回合中，下次造成的伤害+2。
+ */
+export const AeonWave = status(301108)
+  .oneDuration()
+  .once("modifySkillDamage")
+  .increaseDamage(2)
+  .done();
+
+/**
+ * @id 311108
+ * @name 万世流涌大典
+ * @description
+ * 角色造成的伤害+1。
+ * 角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+export const TomeOfTheEternalFlow = card(311108)
+  .costSame(3)
+  .weapon("catalyst")
+  .variable("usagePerRound", 1)
+  .on("actionPhase")
+  .setVariable("usagePerRound", 1)
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("damaged")
+  .do((c) => {
+    if (c.getVariable("usagePerRound") > 0 &&
+      c.self.master().state.damageLog.filter((v) => v.roundNumber === c.state.roundNumber).length >= 2) {
+      c.characterStatus(AeonWave, "@master");
+      c.addVariable("usagePerRound", -1);
+    }
+  })
+  .on("healed")
+  .do((c) => {
+    if (c.getVariable("usagePerRound") > 0 &&
+      c.self.master().state.damageLog.filter((v) => v.roundNumber === c.state.roundNumber).length >= 2) {
+      c.characterStatus(AeonWave, "@master");
+      c.addVariable("usagePerRound", -1);
+    }
+  })
   .done();

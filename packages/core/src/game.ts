@@ -1161,6 +1161,7 @@ export class Game {
                 target: ch,
                 value: zeroHealthEventArg._immuneInfo.newHealth,
                 via: zeroHealthEventArg._immuneInfo.skill,
+                roundNumber: this.state.roundNumber,
                 fromReaction: null,
               },
             });

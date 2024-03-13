@@ -109,6 +109,24 @@ export const CryoCrystalCoreSkill = skill(21034)
   .done();
 
 /**
+ * @id 121035
+ * @name 冰晶核心
+ * @description
+ * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到6点生命值。
+ */
+export const CryoCrystalCore01 = status(121035)
+  .reserve();
+
+/**
+ * @id 121036
+ * @name 冰晶核心
+ * @description
+ * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到10点生命值。
+ */
+export const CryoCrystalCore02 = status(121036)
+.reserve();
+
+/**
  * @id 2103
  * @name 无相之冰
  * @description

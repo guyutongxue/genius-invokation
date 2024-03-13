@@ -873,3 +873,22 @@ export const SunyataFlower = card(332029)
   .once("deductDiceCard", (c, e) => e.action.card.definition.type === "support")
   .deductCost(DiceType.Omni, 1)
   .done();
+
+/**
+ * @id 332030
+ * @name 可控性去危害化式定向爆破
+ * @description
+ * 对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。
+ */
+export const ControlledDirectionalBlast = card(332030)
+  .costSame(1)
+  .filter((c) => c.$$("opp summons or opp supports").length >= 4)
+  .do((c) => {
+    for (const summon of c.$$("all summons")) {
+      summon.addVariable("usage", -1);
+      if (summon.getVariable("usage") <= 0 && summon.getVariable("disposeWhenUsageIsZero")) {
+        summon.dispose();
+      }
+    }
+  })
+  .done();

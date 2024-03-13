@@ -19,7 +19,7 @@ import { DiceType, card, status } from "@gi-tcg/core/builder";
  * @id 312101
  * @name 破冰踏雪的回音
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个冰元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const BrokenRimesEcho = card(312101)
@@ -34,7 +34,7 @@ export const BrokenRimesEcho = card(312101)
  * @id 312201
  * @name 酒渍船帽
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个水元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const WinestainedTricorne = card(312201)
@@ -49,7 +49,7 @@ export const WinestainedTricorne = card(312201)
  * @id 312301
  * @name 焦灼的魔女帽
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个火元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const WitchsScorchingHat = card(312301)
@@ -64,7 +64,7 @@ export const WitchsScorchingHat = card(312301)
  * @id 312401
  * @name 唤雷的头冠
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个雷元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const ThunderSummonersCrown = card(312401)
@@ -79,7 +79,7 @@ export const ThunderSummonersCrown = card(312401)
  * @id 312501
  * @name 翠绿的猎人之冠
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个风元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const ViridescentVenerersDiadem = card(312501)
@@ -94,7 +94,7 @@ export const ViridescentVenerersDiadem = card(312501)
  * @id 312601
  * @name 不动玄石之相
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个岩元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const MaskOfSolitudeBasalt = card(312601)
@@ -109,7 +109,7 @@ export const MaskOfSolitudeBasalt = card(312601)
  * @id 312701
  * @name 月桂的宝冠
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个草元素。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const LaurelCoronet = card(312701)
@@ -124,7 +124,7 @@ export const LaurelCoronet = card(312701)
  * @id 312102
  * @name 冰风迷途的勇士
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个冰元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个冰元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出冰元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -142,7 +142,7 @@ export const BlizzardStrayer = card(312102)
  * @id 312202
  * @name 沉沦之心
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个水元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个水元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出水元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -160,7 +160,7 @@ export const HeartOfDepth = card(312202)
  * @id 312302
  * @name 炽烈的炎之魔女
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个火元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个火元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出火元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -178,7 +178,7 @@ export const CrimsonWitchOfFlames = card(312302)
  * @id 312402
  * @name 如雷的盛怒
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个雷元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个雷元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出雷元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -196,7 +196,7 @@ export const ThunderingFury = card(312402)
  * @id 312502
  * @name 翠绿之影
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个风元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个风元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出风元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -214,7 +214,7 @@ export const ViridescentVenerer = card(312502)
  * @id 312602
  * @name 悠古的磐岩
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个岩元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个岩元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出岩元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -232,7 +232,7 @@ export const ArchaicPetra = card(312602)
  * @id 312702
  * @name 深林的记忆
  * @description
- * 角色使用技能或装备「天赋」时：少花费1个草元素。（每回合1次）
+ * 对角色打出「天赋」或角色使用技能时：少花费1个草元素。（每回合1次）
  * 投掷阶段：2个元素骰初始总是投出草元素。
  * （角色最多装备1件「圣遗物」）
  */
@@ -421,13 +421,13 @@ export const TenacityOfTheMillelith = card(312010)
  * @id 312011
  * @name 虺雷之姿
  * @description
- * 角色使用「普通攻击」或装备「天赋」时：少花费1个元素骰。（每回合1次）
+ * 对角色打出「天赋」或角色使用「普通攻击」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const ThunderingPoise = card(312011)
   .costVoid(2)
   .artifact()
-  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.isPlayCard() || e.isSkillType("normal"))
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "normal"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .done();
@@ -448,14 +448,14 @@ const VermillionHereafterEffect = status(301203)
  * @id 312012
  * @name 辰砂往生录
  * @description
- * 角色使用「普通攻击」或装备「天赋」时：少花费1个元素骰。（每回合1次）
+ * 对角色打出「天赋」或角色使用「普通攻击」时：少花费1个元素骰。（每回合1次）
  * 角色被切换为「出战角色」后：本回合中，角色「普通攻击」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
 export const VermillionHereafter = card(312012)
   .costVoid(3)
   .artifact()
-  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.isPlayCard() || e.isSkillType("normal"))
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "normal"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("switchActive", (c, e) => c.self.master().id === e.switchInfo.to.id)
@@ -466,13 +466,13 @@ export const VermillionHereafter = card(312012)
  * @id 312013
  * @name 无常之面
  * @description
- * 角色使用「元素战技」或装备「天赋」时：少花费1个元素骰。（每回合1次）
+ * 对角色打出「天赋」或角色使用「元素战技」时：少花费1个元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
 export const CapriciousVisage = card(312013)
   .costVoid(2)
   .artifact()
-  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.isPlayCard() || e.isSkillType("elemental"))
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .done();
@@ -481,14 +481,14 @@ export const CapriciousVisage = card(312013)
  * @id 312014
  * @name 追忆之注连
  * @description
- * 角色使用「元素战技」或装备「天赋」时：少花费1个元素骰。（每回合1次）
+ * 对角色打出「天赋」或角色使用「元素战技」时：少花费1个元素骰。（每回合1次）
  * 如果角色具有至少2点充能，就使角色「普通攻击」和「元素战技」造成的伤害+1。
  * （角色最多装备1件「圣遗物」）
  */
 export const ShimenawasReminiscence = card(312014)
   .costVoid(3)
   .artifact()
-  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.isPlayCard() || e.isSkillType("elemental"))
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("modifySkillDamage", (c, e) =>
@@ -709,6 +709,29 @@ export const VeteransVisage = card(312023)
       c.generateDice(c.self.master().element(), 1);
     } else if (triggered === 2) {
       c.drawCards(1);
+    }
+  })
+  .done();
+
+/**
+ * @id 312025
+ * @name 黄金剧团的奖赏
+ * @description
+ * 结束阶段：如果所附属角色在后台，则此牌累积1点「报酬」。（最多累积2点）
+ * 对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。
+ * （角色最多装备1件「圣遗物」）
+ */
+export const GoldenTroupesReward = card(312025)
+  .artifact()
+  .variable("reward", 0)
+  .on("endPhase")
+  .if((c) => !c.self.master().isActive())
+  .addVariableWithMax("reward", 1, 2)
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
+  .do((c, e) => {
+    if (c.getVariable("reward") > 0) {
+      e.deductCost(DiceType.Omni, 1);
+      c.addVariable("reward", -1);
     }
   })
   .done();

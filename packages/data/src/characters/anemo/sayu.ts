@@ -75,7 +75,7 @@ export const ShuumatsubanNinjaBlade = skill(15071)
  * @id 15072
  * @name 呜呼流·风隐急进
  * @description
- * 造成2点风元素伤害，本角色准备技能：风风轮舞踢。
+ * 造成1点风元素伤害，本角色准备技能：风风轮舞踢。
  * 如果当前技能引发了扩散，则风风轮舞踢将改为造成被扩散元素的伤害。
  */
 export const YoohooArtFuuinDash = skill(15072)
@@ -107,7 +107,7 @@ export const YoohooArtFuuinDash = skill(15072)
         swirled: fuufuuWindType
       }
     });
-    c.damage(DamageType.Anemo, 2);
+    c.damage(DamageType.Anemo, 1);
   })
   .done();
 

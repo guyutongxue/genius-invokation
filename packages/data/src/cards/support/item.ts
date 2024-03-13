@@ -160,3 +160,26 @@ export const MementoLens = card(323006)
     }
   })
   .done();
+
+/**
+ * @id 323007
+ * @name 流明石触媒
+ * @description
+ * 我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素骰。（每回合1次）
+ * 可用次数：3
+ */
+export const LumenstoneAdjuvant = card(323007)
+  .costSame(2)
+  .support("item")
+  .variable("playedCard", 0)
+  .on("playCard")
+  .addVariable("playedCard", 1)
+  .on("playCard", (c) => c.getVariable("playedCard") >= 3)
+  .usagePerRound(1)
+  .drawCards(1)
+  .generateDice(DiceType.Omni, 1)
+  .on("playCard", (c) => c.getVariable("playedCard") >= 3)
+  .usage(3)
+  .on("actionPhase")
+  .setVariable("playedCard", 0)
+  .done();

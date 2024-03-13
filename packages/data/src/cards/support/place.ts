@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, EntityState, card } from "@gi-tcg/core/builder";
+import { DiceType, EntityState, card, combatStatus } from "@gi-tcg/core/builder";
 
 /**
  * @id 321001
@@ -50,7 +50,7 @@ export const KnightsOfFavoniusLibrary = card(321002)
  * @name 群玉阁
  * @description
  * 投掷阶段：2个元素骰初始总是投出我方出战角色类型的元素。
- * 行动阶段开始时：如果我方手牌数量不多于3，则弃置此牌，生成1个万能元素骰。
+ * 行动阶段开始时：如果我方手牌数量不多于3，则弃置此牌，生成1个万能元素。
  */
 export const JadeChamber = card(321003)
   .support("place")
@@ -158,6 +158,8 @@ export const SangonomiyaShrine = card(321009)
  * @id 321010
  * @name 须弥城
  * @description
+ * 我方打出「天赋」牌或我方角色使用技能时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）
+ * @outdated
  * 我方角色使用技能或装备「天赋」时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）
  */
 export const SumeruCity = card(321010)
@@ -317,6 +319,44 @@ export const OperaEpiclese = card(321017)
     c.addVariable("usage", -1);
     if (c.getVariable("usage") <= 0) {
       c.dispose();
+    }
+  })
+  .done();
+
+/**
+ * @id 301018
+ * @name 严格禁令
+ * @description
+ * 本回合中，所在阵营打出的事件牌无效。
+ * 可用次数：1
+ */
+export const StrictProhibited = combatStatus(301018)
+  .tags("disableEvent")
+  .oneDuration()
+  .on("playCard", (c, e) => e.action.card.definition.type === "event")
+  .usage(1)
+  .done();
+
+/**
+ * @id 321018
+ * @name 梅洛彼得堡
+ * @description
+ * 我方出战角色受到伤害或治疗后：此牌累积1点「禁令」。（最多累积到4点）
+ * 行动阶段开始时：如果此牌已有4点「禁令」，则消耗4点，在对方场上生成严格禁令。（本回合中打出的1张事件牌无效）
+ */
+export const FortressOfMeropide = card(321018)
+  .costSame(1)
+  .support("place")
+  .variable("forbidden", 0)
+  .on("damaged", (c, e) => c.of(e.target).isActive())
+  .addVariableWithMax("forbidden", 1, 4)
+  .on("healed", (c, e) => c.of(e.target).isActive())
+  .addVariableWithMax("forbidden", 1, 4)
+  .on("actionPhase")
+  .do((c) => {
+    if (c.getVariable("forbidden") >= 4) {
+      c.combatStatus(StrictProhibited, "opp");
+      c.addVariable("forbidden", -4);
     }
   })
   .done();

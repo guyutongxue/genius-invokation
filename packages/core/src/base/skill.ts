@@ -78,6 +78,7 @@ export interface DamageInfo {
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly fromReaction: Reaction | null;
+  readonly roundNumber: number;
   readonly log?: string;
 }
 
@@ -211,11 +212,11 @@ export class ActionEventArg<
   isDeclareEnd(): this is ActionEventArg<DeclareEndInfo> {
     return this.action.type === "declareEnd";
   }
-  isSkillOrTalentOf(character: CharacterState): boolean {
+  isSkillOrTalentOf(character: CharacterState, skillType?: CommonSkillType): boolean {
     if (this.action.type === "useSkill") {
       const skillDefId = this.action.skill.definition.id;
       return !!character.definition.initiativeSkills.find(
-        (def) => def.id === skillDefId,
+        (def) => def.id === skillDefId && (!skillType || def.skillType === skillType),
       );
     } else if (this.action.type === "playCard") {
       return !!(

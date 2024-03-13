@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@gi-tcg/typings": "workspace:*",
-    "@genshin-db/tcg": "^5.0.9",
+    "@genshin-db/tcg": "^5.1.2",
     "typescript": "^5.1.3"
   }
 }

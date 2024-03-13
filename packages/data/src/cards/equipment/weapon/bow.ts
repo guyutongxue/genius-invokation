@@ -119,7 +119,7 @@ export const ElegyForTheEnd = card(311205)
  * @id 301103
  * @name 王下近侍（生效中）
  * @description
- * 角色在本回合中，下次使用「元素战技」或装备「天赋」时：少花费2个元素骰。
+ * 在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时：少花费2个元素骰。
  */
 export const KingsSquireStatus = status(301103)
   .oneDuration()
@@ -132,7 +132,7 @@ export const KingsSquireStatus = status(301103)
  * @name 王下近侍
  * @description
  * 角色造成的伤害+1。
- * 入场时：所附属角色在本回合中，下次使用「元素战技」或装备「天赋」时少花费2个元素骰。
+ * 入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const KingsSquire = card(311206)
