@@ -1,0 +1,8 @@
+name = "gi-tcg-pvp-worker"
+main = "src/index.ts"
+compatibility_date = "2023-11-21"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gi-tcg-pvp"
+database_id = "1ed22fb1-50c7-467d-95ed-d491784b96be"
