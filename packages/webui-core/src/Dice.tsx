@@ -28,7 +28,7 @@ export interface DiceProps {
 
 export type DiceColor = "normal" | "increased" | "decreased";
 
-export const DICE_COLOR: Record<DiceType, string> = {
+export const DICE_COLOR: Record<number, string> = {
   0 /* DiceType.Void */: "void",
   1 /* DiceType.Cryo */: "cryo",
   2 /* DiceType.Hydro */: "hydro",
@@ -39,6 +39,7 @@ export const DICE_COLOR: Record<DiceType, string> = {
   7 /* DiceType.Dendro */: "dendro",
   8 /* DiceType.Omni */: "omni",
   9 /* DiceType.Energy */: "heal",
+  10: "heal",
 };
 
 function EnergyIcon(props: { size: number }) {
