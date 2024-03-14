@@ -73,7 +73,7 @@ const crystallize: ReactionAction = (c) => {
   c.combatStatus(Crystallize, player);
 };
 
-const swirl = (srcElement: DamageType): ReactionAction => {
+const swirl = (srcElement: DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro): ReactionAction => {
   return (c) => {
     (c as any)[CALLED_FROM_REACTION] = srcElement + 106;
     const who = c.of(c.eventArg.target).who;

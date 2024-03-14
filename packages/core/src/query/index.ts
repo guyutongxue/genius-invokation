@@ -21,7 +21,7 @@ import { allEntities, getEntityArea } from "../util";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
   ActionEventArg,
-  DamageEventArg,
+  DamageOrHealEventArg,
   DamageInfo,
   SwitchActiveEventArg,
   UseSkillInfo,
@@ -62,7 +62,7 @@ export function executeQuery<
       },
       damage: {
         target: () =>
-          (ctx.eventArg as DamageEventArg<DamageInfo>).target.id,
+          (ctx.eventArg as DamageOrHealEventArg<DamageInfo>).target.id,
       },
       targets: Object.fromEntries(
         new Array(targetLength)

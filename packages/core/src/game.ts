@@ -957,7 +957,7 @@ export class Game {
       }
       for (const [eventName, arg] of eventList) {
         // Damages
-        if (eventName === "onDamage" || eventName === "onHeal") {
+        if (eventName === "onDamageOrHeal") {
           notifyEvents.push({
             type: "damage",
             damage: {
@@ -1156,10 +1156,11 @@ export class Game {
             this.mutate({
               type: "pushDamageLog",
               damage: {
-                type: DamageType.Heal,
+                type: DamageType.Revive,
                 source: zeroHealthEventArg._immuneInfo.skill.caller,
                 target: ch,
                 value: zeroHealthEventArg._immuneInfo.newHealth,
+                expectedValue: zeroHealthEventArg._immuneInfo.newHealth,
                 via: zeroHealthEventArg._immuneInfo.skill,
                 roundNumber: this.state.roundNumber,
                 fromReaction: null,

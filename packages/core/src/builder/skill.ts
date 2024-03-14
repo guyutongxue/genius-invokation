@@ -262,20 +262,26 @@ const detailedEventDictionary = {
       checkRelative(c.state, e.switchInfo.to.id, r)
     );
   }),
-  dealDamage: defineDescriptor("onDamage", (c, e, r) => {
-    return checkRelative(c.state, e.source.id, r);
+  dealDamage: defineDescriptor("onDamageOrHeal", (c, e, r) => {
+    return e.isDamageTypeDamage() && checkRelative(c.state, e.source.id, r);
   }),
-  skillDamage: defineDescriptor("onDamage", (c, e, r) => {
+  skillDamage: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return (
+      e.isDamageTypeDamage() &&
       checkRelative(c.state, e.source.id, r) &&
       commonInitiativeSkillCheck(e.damageInfo.via)
     );
   }),
-  damaged: defineDescriptor("onDamage", (c, e, r) => {
-    return checkRelative(c.state, e.target.id, r);
+  damaged: defineDescriptor("onDamageOrHeal", (c, e, r) => {
+    return e.isDamageTypeDamage() && checkRelative(c.state, e.target.id, r);
   }),
-  healed: defineDescriptor("onHeal", (c, e, r) => {
-    return checkRelative(c.state, e.healInfo.target.id, r);
+  healed: defineDescriptor("onDamageOrHeal", (c, e, r) => {
+    return e.isDamageTypeHeal() && checkRelative(c.state, e.target.id, r);
+  }),
+  damagedOrHealed: defineDescriptor("onDamageOrHeal", (c, e, r) => {
+    return (
+      e.type !== DamageType.Revive && checkRelative(c.state, e.target.id, r)
+    );
   }),
   reaction: defineDescriptor("onReaction", (c, e, r) => {
     return checkRelative(c.state, e.reactionInfo.target.id, r);
@@ -516,11 +522,13 @@ export class TriggeredSkillBuilder<
     let name: string;
     if (opt?.name) {
       if (this.parent._constants[opt.name]) {
-        throw new GiTcgDataError(`variable name "${opt.name}" is already used. Try another.`);
+        throw new GiTcgDataError(
+          `variable name "${opt.name}" is already used. Try another.`,
+        );
       }
       name = opt.name;
     } else {
-      const base = (opt?.perRound ? "usagePerRound" : "usage");
+      const base = opt?.perRound ? "usagePerRound" : "usage";
       if (isFinite(this.parent._constants[base])) {
         name = `${base}_${this.id}`;
       } else {

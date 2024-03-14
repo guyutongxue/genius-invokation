@@ -29,6 +29,7 @@ import {
   EventAndRequestConstructorArgs,
   EventAndRequestNames,
   EventArgOf,
+  HealInfo,
   InlineEventNames,
   ModifyDamage0EventArg,
   ModifyDamage1EventArg,
@@ -316,6 +317,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   heal(value: number, target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
+      let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
       const targetState = t.state;
       if (targetState.variables.alive === 0) {
         this.mutate({
@@ -324,6 +326,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           varName: "alive",
           value: 1,
         });
+        damageType = DamageType.Revive;
         this.emitEvent("onRevive", this.state, targetState);
       }
       const targetInjury =
@@ -336,30 +339,26 @@ export class SkillContext<Meta extends ContextMetaBase> {
         varName: "health",
         value: targetState.variables.health + finalValue,
       });
-      this.mutate({
-        type: "pushDamageLog",
-        damage: {
-          type: DamageType.Heal,
-          source: this.skillInfo.caller,
-          target: targetState,
-          value: finalValue,
-          via: this.skillInfo,
-          roundNumber: this.state.roundNumber,
-          fromReaction: this.fromReaction,
-        },
-      });
-      this.emitEvent("onHeal", this.state, {
+      const healInfo: HealInfo = {
+        type: damageType,
         expectedValue: value,
-        finalValue,
+        value: finalValue,
         source: this.callerState,
         via: this.skillInfo,
         target: targetState,
+        roundNumber: this.state.roundNumber,
+        fromReaction: null,
+      };
+      this.mutate({
+        type: "pushDamageLog",
+        damage: healInfo
       });
+      this.emitEvent("onDamageOrHeal", this.state, healInfo);
     }
   }
 
   damage(
-    type: DamageType,
+    type: Exclude<DamageType, DamageType.Revive>,
     value: number,
     target: CharacterTargetArg = "opp active",
   ) {
@@ -385,8 +384,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
 
         if (
           damageInfo.type !== DamageType.Physical &&
-          damageInfo.type !== DamageType.Piercing &&
-          damageInfo.type !== DamageType.Heal
+          damageInfo.type !== DamageType.Piercing
         ) {
           damageInfo = this.doApply(t, damageInfo.type, damageInfo);
         }
@@ -410,7 +408,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type: "pushDamageLog",
         damage: damageInfo,
       });
-      this.emitEvent("onDamage", this.state, damageInfo);
+      this.emitEvent("onDamageOrHeal", this.state, damageInfo);
     }
   }
 
@@ -1112,7 +1110,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   heal(value: number) {
     this.skillContext.heal(value, this.state);
   }
-  damage(type: DamageType, value: number) {
+  damage(type: Exclude<DamageType, DamageType.Revive>, value: number) {
     this.skillContext.damage(type, value, this.state);
   }
   apply(type: AppliableDamageType) {

@@ -31,7 +31,7 @@ import {
   sortDice,
 } from "../util";
 import { EntityArea } from "./entity";
-import { ActionInfo, DamageInfo, SkillDefinition, SkillInfo } from "./skill";
+import { ActionInfo, DamageInfo, HealInfo, SkillDefinition, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 
@@ -74,7 +74,7 @@ export interface PushActionLogM {
 
 export interface PushDamageLogM {
   readonly type: "pushDamageLog";
-  readonly damage: DamageInfo;
+  readonly damage: DamageInfo | HealInfo;
 }
 
 export interface TransferCardM {

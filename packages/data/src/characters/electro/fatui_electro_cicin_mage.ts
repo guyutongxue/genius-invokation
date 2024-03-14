@@ -156,7 +156,7 @@ export const FatuiElectroCicinMage = character(2404)
   .tags("electro", "fatui")
   .health(10)
   .energy(2)
-  .skills(HurtlingBolts, MistyCall, ThunderingShield, SurgingThunder)
+  .skills(HurtlingBolts, MistyCall, ThunderingShield)
   .done();
 
 /**

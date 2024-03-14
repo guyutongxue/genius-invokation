@@ -838,9 +838,7 @@ export const MachineAssemblyLine = card(332028)
   .addTarget("my characters")
   .toStatus("@targets.0", 303228)
   .variable("readiness", 0)
-  .on("damaged")
-  .addVariableWithMax("readiness", 1, 2)
-  .on("healed")
+  .on("damagedOrHealed")
   .addVariableWithMax("readiness", 1, 2)
   .once("deductDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&

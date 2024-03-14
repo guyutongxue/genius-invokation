@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card, status } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311101
@@ -164,25 +164,14 @@ export const AeonWave = status(301108)
 export const TomeOfTheEternalFlow = card(311108)
   .costSame(3)
   .weapon("catalyst")
-  .variable("usagePerRound", 1)
-  .on("actionPhase")
-  .setVariable("usagePerRound", 1)
+  .variable("count", 0)
   .on("modifySkillDamage")
   .increaseDamage(1)
-  .on("damaged")
-  .do((c) => {
-    if (c.getVariable("usagePerRound") > 0 &&
-      c.self.master().state.damageLog.filter((v) => v.roundNumber === c.state.roundNumber).length >= 2) {
-      c.characterStatus(AeonWave, "@master");
-      c.addVariable("usagePerRound", -1);
-    }
-  })
-  .on("healed")
-  .do((c) => {
-    if (c.getVariable("usagePerRound") > 0 &&
-      c.self.master().state.damageLog.filter((v) => v.roundNumber === c.state.roundNumber).length >= 2) {
-      c.characterStatus(AeonWave, "@master");
-      c.addVariable("usagePerRound", -1);
-    }
-  })
+  .on("damagedOrHealed")
+  .addVariable("count", 1)
+  .on("damagedOrHealed", (c) => c.getVariable("count") === 1)
+  .usagePerRound(1)
+  .characterStatus(AeonWave, "@master")
+  .on("actionPhase")
+  .setVariable("count", 0)
   .done();

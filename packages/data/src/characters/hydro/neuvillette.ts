@@ -138,7 +138,7 @@ export const Neuvillette = character(1210)
   .tags("hydro", "catalyst", "fontaine", "ousia")
   .health(10)
   .energy(2)
-  .skills(AsWaterSeeksEquilibrium, OTearsIShallRepay, OTidesIHaveReturned, EquitableJudgment)
+  .skills(AsWaterSeeksEquilibrium, OTearsIShallRepay, OTidesIHaveReturned)
   .done();
 
 /**

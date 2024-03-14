@@ -691,17 +691,7 @@ export const VeteransVisage = card(312023)
   .variable("triggered", 0)
   .on("actionPhase")
   .setVariable("triggered", 0)
-  .on("damaged")
-  .do((c) => {
-    c.addVariable("triggered", 1);
-    const triggered = c.getVariable("triggered");
-    if (triggered === 1) {
-      c.generateDice(c.self.master().element(), 1);
-    } else if (triggered === 2) {
-      c.drawCards(1);
-    }
-  })
-  .on("healed")
+  .on("damagedOrHealed")
   .do((c) => {
     c.addVariable("triggered", 1);
     const triggered = c.getVariable("triggered");

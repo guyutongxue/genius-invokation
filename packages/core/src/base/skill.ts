@@ -72,7 +72,7 @@ export interface SkillInfo {
 }
 
 export interface DamageInfo {
-  readonly type: DamageType;
+  readonly type: Exclude<DamageType, DamageType.Heal | DamageType.Revive>;
   readonly value: number;
   readonly source: CharacterState | EntityState;
   readonly via: SkillInfo;
@@ -83,11 +83,15 @@ export interface DamageInfo {
 }
 
 export interface HealInfo {
+  readonly type: DamageType.Heal | DamageType.Revive;
   readonly expectedValue: number;
-  readonly finalValue: number;
+  readonly value: number;
   readonly source: CharacterState | EntityState;
   readonly via: SkillInfo;
   readonly target: CharacterState;
+  readonly fromReaction: null;
+  readonly roundNumber: number;
+  readonly log?: string;
 }
 
 export interface ReactionInfo {
@@ -374,7 +378,7 @@ export class SwitchActiveEventArg extends EventArg {
   }
 }
 
-export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
+export class DamageOrHealEventArg<InfoT extends DamageInfo | HealInfo> extends EventArg {
   constructor(
     state: GameState,
     private readonly _damageInfo: InfoT,
@@ -383,6 +387,12 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
   }
   get damageInfo() {
     return this._damageInfo;
+  }
+  isDamageTypeDamage() {
+    return this._damageInfo.type !== DamageType.Heal && this._damageInfo.type !== DamageType.Revive;
+  }
+  isDamageTypeHeal() {
+    return this._damageInfo.type === DamageType.Heal;
   }
 
   get source() {
@@ -401,10 +411,16 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
     return this.damageInfo.via;
   }
   getReaction(): Reaction | null {
-    return getReaction(this.damageInfo);
+    if (!this.isDamageTypeDamage()) {
+      return null;
+    }
+    return getReaction(this.damageInfo as DamageInfo);
   }
   isReactionRelatedTo(target: DamageType): boolean {
-    return isReactionRelatedTo(this.damageInfo, target);
+    if (!this.isDamageTypeDamage()) {
+      return false;
+    }
+    return isReactionRelatedTo(this.damageInfo as DamageInfo, target);
   }
   isSwirl():
     | DamageType.Cryo
@@ -412,7 +428,10 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
     | DamageType.Pyro
     | DamageType.Electro
     | null {
-    return isReactionSwirl(this.damageInfo);
+      if (!this.isDamageTypeDamage()) {
+        return null;
+      }
+    return isReactionSwirl(this.damageInfo as DamageInfo);
   }
   viaSkillType(skillType: CommonSkillType): boolean {
     return this.via.definition.skillType === skillType;
@@ -430,7 +449,7 @@ export class DamageEventArg<InfoT extends DamageInfo> extends EventArg {
 
 export class ModifyDamage1EventArg<
   InfoT extends DamageInfo,
-> extends DamageEventArg<InfoT> {
+> extends DamageOrHealEventArg<InfoT> {
   private _increased = 0;
   private _multiplier = 1;
   private _decreased = 0;
@@ -485,26 +504,26 @@ export class ModifyDamage0EventArg<
   }
 }
 
-class HealEventArg extends EventArg {
-  constructor(
-    state: GameState,
-    public readonly healInfo: HealInfo,
-  ) {
-    super(state);
-  }
-  get target() {
-    return this.healInfo.target;
-  }
-  get type(): DamageType.Heal {
-    return DamageType.Heal;
-  }
-  get value() {
-    return this.healInfo.finalValue;
-  }
-  log() {
-    return "";
-  }
-}
+// class HealEventArg extends EventArg {
+//   constructor(
+//     state: GameState,
+//     public readonly healInfo: HealInfo,
+//   ) {
+//     super(state);
+//   }
+//   get target() {
+//     return this.healInfo.target;
+//   }
+//   get type(): DamageType.Heal {
+//     return DamageType.Heal;
+//   }
+//   get value() {
+//     return this.healInfo.finalValue;
+//   }
+//   log() {
+//     return "";
+//   }
+// }
 
 class ReactionEventArg extends EventArg {
   constructor(
@@ -592,8 +611,8 @@ export const EVENT_MAP = {
 
   modifyDamage0: ModifyDamage0EventArg,
   modifyDamage1: ModifyDamage1EventArg,
-  onDamage: DamageEventArg,
-  onHeal: HealEventArg,
+  onDamageOrHeal: DamageOrHealEventArg,
+  // onHeal: HealEventArg,
   onReaction: ReactionEventArg,
 
   onEnter: EnterEventArg,

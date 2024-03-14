@@ -51,6 +51,7 @@ export const ShieldOfSafeTransport = combatStatus(117072)
  */
 export const UrgentNekoParcel = combatStatus(117071)
   .on("switchActive", (c) => c.$("my active")!.state.definition.id === Kirara)
+  .usage(1, { recreateMax: 2 })
   .damage(DamageType.Dendro, 1)
   .drawCards(1)
   .done();

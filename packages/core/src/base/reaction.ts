@@ -16,7 +16,7 @@
 import { Reaction as R, Aura as A, DamageType as D } from "@gi-tcg/typings";
 import { DamageInfo } from "../base/skill";
 
-export type NontrivialDamageType = Exclude<D, D.Physical | D.Piercing | D.Heal>;
+export type NontrivialDamageType = Exclude<D, D.Physical | D.Piercing | D.Heal | D.Revive>;
 
 export type ReactionMap = Record<
   A,
@@ -111,7 +111,6 @@ export const REACTION_RELATIVES: Record<R, readonly [D, D]> = {
 
 export function getReaction(damageInfo: DamageInfo): R | null {
   if (
-    damageInfo.type === D.Heal ||
     damageInfo.type === D.Physical ||
     damageInfo.type === D.Piercing
   ) {
