@@ -80,6 +80,7 @@ export interface PushDamageLogM {
 export interface TransferCardM {
   readonly type: "transferCard";
   readonly path: "pilesToHands" | "handsToPiles";
+  readonly targetIndex?: number;
   readonly who: 0 | 1;
   readonly value: CardState;
 }
@@ -102,6 +103,7 @@ export interface CreateCardM {
   readonly who: 0 | 1;
   readonly value: IdWritable<CardState>;
   readonly target: "hands" | "piles";
+  readonly targetIndex?: number;
 }
 
 export interface CreateCharacterM {
@@ -255,7 +257,11 @@ function doMutation(state: GameState, m: Mutation): GameState {
         }
         const card = src[cardIdx];
         src.splice(cardIdx, 1);
-        dst.push(card);
+        if (typeof m.targetIndex === "number") {
+          dst.splice(m.targetIndex, 0, card);
+        } else {
+          dst.push(card);
+        }
       });
     }
     case "switchActive": {
@@ -279,7 +285,13 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "createCard": {
       return produce(state, (draft) => {
         m.value.id = draft.iterators.id--;
-        draft.players[m.who][m.target].push(m.value as Draft<CardState>);
+        const value = m.value as Draft<CardState>;
+        const target = draft.players[m.who][m.target];
+        if (typeof m.targetIndex === "number") {
+          target.splice(m.targetIndex, 0, value);
+        } else {
+          target.push(value);
+        }
       });
     }
     case "createCharacter": {
