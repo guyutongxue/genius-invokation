@@ -25,7 +25,7 @@ export const CrushingThunder = combatStatus(124044)
   .variable("playedCard", 0)
   .on("playCard")
   .addVariable("playedCard", 1)
-  .on("playCard", (c) => c.getVariable("playedCard") === 3)
+  .on("playCard", (c) => c.getVariable("playedCard") === 2)
   .do((c) => {
     const cicin = c.$(`opp summon with definition id ${ElectroCicin}`);
     if (cicin) {
