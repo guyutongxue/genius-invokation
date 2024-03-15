@@ -17,7 +17,7 @@ import { createPlayer } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
 import { onCleanup, onMount } from "solid-js";
 
-export function Child() {
+export function StandaloneChild() {
   const [uiIo, Chessboard] = createPlayer(0, {
     onGiveUp: () => {
       window.opener?.postMessage({
