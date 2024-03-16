@@ -38,6 +38,14 @@ const enum RoomStatus {
   Active = 2,
 }
 
+const CLEAN_UP = [
+  `WITH outdated AS(
+  SELECT room_id FROM rooms WHERE created_at < datetime('now', '-1 day')
+)
+  DELETE FROM messages WHERE room_id IN (SELECT room_id FROM outdated);`,
+  `UPDATE rooms SET room_status = 0 WHERE created_at < datetime('now', '-1 day');`,
+];
+
 app.get(
   "/ws/request-room",
   upgradeWebSocket((c: Context<Env, any, {}>) => {
@@ -87,6 +95,16 @@ app.get(
           console.log(data);
           switch (data.method) {
             case "initialize": {
+              await c.env.DB.batch(CLEAN_UP.map((sql) => c.env.DB.prepare(sql)));
+              if (roomId !== null) {
+                throw new Error("Room already initialized");
+              }
+              let who: 0 | 1;
+              if (data.who === 0 || data.who === 1) {
+                who = data.who;
+              } else {
+                who = Math.random() < 0.5 ? 0 : 1;
+              }
               const result = await c.env.DB.prepare(
                 `SELECT id FROM rooms WHERE room_status = 0 ORDER BY RANDOM() LIMIT 1`,
               ).first();
@@ -95,28 +113,32 @@ app.get(
               }
               roomId = result.id as number;
               const { success, error } = await c.env.DB.prepare(
-                `UPDATE rooms SET room_status = 1 WHERE id = ?`,
+                `UPDATE rooms SET room_status = 1, host_who = ? WHERE id = ?`,
               )
-                .bind(roomId)
+                .bind(who, roomId)
                 .run();
               if (!success) {
                 throw error;
               }
               ws.send(JSON.stringify({ method: "roomId", roomId }));
+              let guestDeck = "";
               while (true) {
                 const result = await c.env.DB.prepare(
-                  `SELECT room_status FROM rooms WHERE id = ?`,
+                  `SELECT room_status, guest_deck FROM rooms WHERE id = ?`,
                 )
                   .bind(roomId)
                   .first();
                 if (result?.room_status === RoomStatus.Active) {
+                  guestDeck = result.guest_deck as string;
                   break;
                 }
                 await sleep();
               }
               wsSend = (data) => ws.send(data);
               wsClose = () => ws.close();
-              ws.send(JSON.stringify({ method: "reply:initialize" }));
+              ws.send(
+                JSON.stringify({ method: "reply:initialize", who, guestDeck }),
+              );
               break;
             }
             case "notify":
@@ -159,21 +181,10 @@ app.get(
           );
         }
       },
-      async onClose(evt, ws) {
-        ws.close();
+      onClose(evt, ws) {
+        console.log(`host closed room ${roomId}`);
         closed = true;
-        if (roomId !== null) {
-          await c.env.DB.prepare(`UPDATE rooms SET room_status = 0 WHERE id = ?`)
-            .bind(roomId)
-            .run();
-          await c.env.DB.prepare(`DELETE FROM messages WHERE room_id = ?`)
-            .bind(roomId)
-            .run();
-        }
-      },
-      async onError(evt, ws) {
         ws.close();
-        console.error(evt);
       },
     };
   }),
@@ -203,7 +214,6 @@ app.get(
               JSON.stringify({ method: "error", message: "Room is closing" }),
             );
             closed = true;
-            wsClose?.();
             break outer;
           }
           const { success, results } = await c.env.DB.prepare(
@@ -229,6 +239,7 @@ app.get(
           console.log(data);
           switch (data.method) {
             case "initialize": {
+              // await c.env.DB.batch(CLEAN_UP.map((sql) => c.env.DB.prepare(sql)));
               if (isNaN(roomId)) {
                 ws.send(
                   JSON.stringify({
@@ -239,8 +250,21 @@ app.get(
                 ws.close();
                 break;
               }
+              if (initialized) {
+                throw new Error("Room already initialized");
+              }
+              if (typeof data.deck !== "string") {
+                ws.send(
+                  JSON.stringify({
+                    method: "error",
+                    message: "Invalid deck",
+                  }),
+                );
+                ws.close();
+                break;
+              }
               const result = await c.env.DB.prepare(
-                `SELECT room_status FROM rooms WHERE id = ?`,
+                `SELECT room_status, host_who FROM rooms WHERE id = ?`,
               )
                 .bind(roomId)
                 .first();
@@ -254,27 +278,22 @@ app.get(
                 ws.close();
                 break;
               }
+              const who = result?.host_who === 0 ? 1 : 0;
               await c.env.DB.prepare(
-                `UPDATE rooms SET room_status = 2 WHERE id = ?`,
+                `UPDATE rooms SET room_status = 2, guest_deck = ? WHERE id = ?`,
               )
-                .bind(roomId)
+                .bind(data.deck, roomId)
                 .run();
               wsSend = (data) => ws.send(data);
               wsClose = () => ws.close();
-              ws.send(JSON.stringify({ method: "reply:initialize" }));
+              ws.send(JSON.stringify({ method: "reply:initialize", who }));
               initialized = true;
               break;
             }
             case "reply:rpc":
             case "giveUp": {
               if (!initialized) {
-                ws.send(
-                  JSON.stringify({
-                    method: "error",
-                    message: "Room not initialized",
-                  }),
-                );
-                break;
+                throw new Error("Room not initialized");
               }
               const result = await c.env.DB.prepare(
                 `SELECT room_status FROM rooms WHERE id = ?`,
@@ -311,20 +330,9 @@ app.get(
           );
         }
       },
-      async onClose(evt, ws) {
+      onClose(evt, ws) {
+        console.log(`guest closed room ${roomId}`);
         closed = true;
-        if (roomId !== null) {
-          await c.env.DB.prepare(`UPDATE rooms SET room_status = 0 WHERE id = ?`)
-            .bind(roomId)
-            .run();
-          await c.env.DB.prepare(`DELETE FROM messages WHERE room_id = ?`)
-            .bind(roomId)
-            .run();
-        }
-        ws.close();
-      },
-      async onError(evt, ws) {
-        console.error(evt);
         ws.close();
       },
     };
