@@ -12,7 +12,7 @@ html {
 #root {
   margin: 0 auto;
   width: min(100vw, 1280px);
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .title {
@@ -35,7 +35,6 @@ html {
 
 .config-panel {
   width: 100%;
-  padding: 0 4rem;
   display: flex;
   flex-direction: column;
   justify-items: center;
@@ -77,4 +76,35 @@ html {
 
 .hidden {
   display: none;
+}
+
+.tabs {
+  position: relative;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tab {
+
+  --tab-header-height: 2rem;
+
+  .tab__input {
+    display: none;
+  }
+  .tab__content {
+    display: none;
+    position: absolute;
+    top: var(--tab-header-height);
+    left: 0;
+  }
+  .tab__input:checked ~ .tab__content {
+    display: block;
+  }
+  .tab__header {
+    display: inline-block;
+    padding: 0 0.5rem;
+    height: var(--tab-header-height);
+    background-color: #f0f0f0;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
 }

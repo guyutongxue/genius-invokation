@@ -13,20 +13,34 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import {
+  Match,
+  Show,
+  Switch,
+  createSignal,
+  onCleanup,
+  onMount,
+} from "solid-js";
 import data from "@gi-tcg/data";
 import { GameStateLogEntry, deserializeGameStateLog } from "@gi-tcg/core";
 import { StandaloneChild } from "./StandaloneChild";
 import { StandaloneParent } from "./StandaloneParent";
 import { reject } from "core-js/fn/promise";
 
+enum GameMode {
+  NotStarted = 0,
+  Standalone = 1,
+  MultiplayerHost = 2,
+  MultiplayerGuest = 3,
+}
+
 export function App() {
   if (window.opener !== null) {
     // eslint-disable-next-line solid/components-return-once
     return <StandaloneChild />;
   }
-  const [started, setStarted] = createSignal<boolean>(false);
-  const [logs, setLogs] = createSignal<GameStateLogEntry[] | false>(false);
+  const [mode, setMode] = createSignal<GameMode>(GameMode.NotStarted);
+  const [logs, setLogs] = createSignal<GameStateLogEntry[]>();
   const [deck0, setDeck0] = createSignal(
     "AVCg3jUPA0Bw9ZUPCVCw9qMPCoBw+KgPDNEgCMIQDKFgCsYQDLGQC8kQDeEQDtEQDfAA",
   );
@@ -65,49 +79,66 @@ export function App() {
 
   return (
     <div>
-      <div>
-        <Show when={!started()}>
-          <div class="config-panel">
-            <div class="config-panel__title">牌组配置</div>
-            <div class="config-panel__deck">
-              <label>先手牌组</label>
-              <input
-                type="text"
-                value={deck0()}
-                onInput={(e) => setDeck0(e.currentTarget.value)}
-              />
+      <Switch>
+        <Match when={mode() === GameMode.NotStarted}>
+          <div class="tabs">
+            <div class="tab">
+              <input class="tab__input" type="radio" name="gameModeTab" id="standaloneInput" checked />
+              <label class="tab__header" for="standaloneInput">本地模拟</label>
+              <div class="tab__content config-panel">
+                <div class="config-panel__title">牌组配置</div>
+                <div class="config-panel__deck">
+                  <label>先手牌组</label>
+                  <input
+                    type="text"
+                    value={deck0()}
+                    onInput={(e) => setDeck0(e.currentTarget.value)}
+                  />
+                </div>
+                <div class="config-panel__deck">
+                  <label>后手牌组</label>
+                  <input
+                    type="text"
+                    value={deck1()}
+                    onInput={(e) => setDeck1(e.currentTarget.value)}
+                  />
+                </div>
+                <div class="config-panel__description">
+                  点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
+                  <br />
+                  （若弹窗不显示为浏览器阻止，请允许本页面使用弹出式窗口。）
+                </div>
+                <button onClick={() => setMode(1)}>开始对局</button>
+                <button
+                  onClick={async () => {
+                    const logs = await importLog().catch(alert);
+                    if (logs) {
+                      setLogs(logs);
+                      setMode(1);
+                    }
+                  }}
+                >
+                  导入日志
+                </button>
+              </div>
             </div>
-            <div class="config-panel__deck">
-              <label>后手牌组</label>
-              <input
-                type="text"
-                value={deck1()}
-                onInput={(e) => setDeck1(e.currentTarget.value)}
-              />
+            <div class="tab">
+              <input class="tab__input" type="radio" name="gameModeTab" id="multiplayerInput" />
+              <label class="tab__header" for="multiplayerInput">多人对战</label>
+              <div class="tab__content config-panel">
+                <div class="config-panel__title">多人对战</div>
+                <div class="config-panel__description">
+                  本功能尚未实现。
+                </div>
+                <button disabled>开始对局</button>
+              </div>
             </div>
-            <div class="config-panel__description">
-              点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
-              <br />
-              （若弹窗不显示为浏览器阻止，请允许本页面使用弹出式窗口。）
-            </div>
-            <button onClick={() => setStarted(true)}>开始对局</button>
-            <button
-              onClick={async () => {
-                const logs = await importLog().catch(alert);
-                if (logs) {
-                  setLogs(logs);
-                  setStarted(true);
-                }
-              }}
-            >
-              导入日志
-            </button>
           </div>
-        </Show>
-        <Show when={started()}>
+        </Match>
+        <Match when={mode() === GameMode.Standalone}>
           <StandaloneParent logs={logs()} deck0={deck0()} deck1={deck1()} />
-        </Show>
-      </div>
+        </Match>
+      </Switch>
     </div>
   );
 }

@@ -41,7 +41,7 @@ import {
 import { decode as decodeShareCode } from "@gi-tcg/utils";
 
 export interface StandaloneParentProps {
-  logs?: GameStateLogEntry[] | false;
+  logs?: GameStateLogEntry[];
   deck0: string;
   deck1: string;
 }
