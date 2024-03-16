@@ -41,12 +41,13 @@ html {
 
   .config-panel__title {
     font-size: 1.2rem;
-    margin: 1rem 0;
+    margin-bottom: 1rem;
     text-align: center;
     font-weight: bold;
   }
 
   .config-panel__deck {
+    margin-bottom: 1rem;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -58,15 +59,36 @@ html {
       font-family: monospace;
     }
   }
-
-  .config-panel__description {
-    margin: 1rem 0;
+  .config-panel__deck+.config-panel__deck{
+    margin-top: -1rem;
   }
 
-  button {
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding: 0.2rem;
+  .config-panel__description {
+    margin-bottom: 1rem;
+  }
+
+  .config-panel__button-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+
+    button {
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 0.2rem;
+    }
+  }
+
+  .config-panel__room-id {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    input {
+      font-size: 1.2rem;
+    }
   }
 }
 
@@ -78,10 +100,15 @@ html {
   display: none;
 }
 
+.text-danger {
+  color: red;
+}
+
 .tabs {
   position: relative;
   display: flex;
   gap: 0.25rem;
+  padding: 0 0.5rem;
 }
 
 .tab {
@@ -96,15 +123,34 @@ html {
     position: absolute;
     top: var(--tab-header-height);
     left: 0;
+    border: black 1px solid;
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
   }
   .tab__input:checked ~ .tab__content {
     display: block;
   }
   .tab__header {
-    display: inline-block;
+    position: relative;
+    display: flex;
+    align-items: center;
     padding: 0 0.5rem;
     height: var(--tab-header-height);
     background-color: #f0f0f0;
     border-radius: 0.5rem 0.5rem 0 0;
+    transition-property: all;
+    transition-duration: 0.2s;
+  }
+  .tab__input:not(:checked) ~ .tab__header:hover {
+    background-color: #e0e0e0;
+  }
+  .tab__input:checked ~ .tab__header {
+    background-color:white;
+    border: black 1px solid;
+    border-bottom: white;
+    height: calc(var(--tab-header-height) + 1px);
+    padding-bottom: 2px;
+    z-index: 1;
   }
 }

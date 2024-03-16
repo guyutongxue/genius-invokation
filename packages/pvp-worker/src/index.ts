@@ -39,8 +39,9 @@ const enum RoomStatus {
 }
 
 const CLEAN_UP = [
-  `WITH outdated AS(
-  SELECT room_id FROM rooms WHERE created_at < datetime('now', '-1 day')
+  `
+WITH outdated AS (
+  SELECT * FROM rooms WHERE created_at < datetime('now', '-1 day')
 )
   DELETE FROM messages WHERE room_id IN (SELECT room_id FROM outdated);`,
   `UPDATE rooms SET room_status = 0 WHERE created_at < datetime('now', '-1 day');`,
@@ -95,7 +96,9 @@ app.get(
           console.log(data);
           switch (data.method) {
             case "initialize": {
-              await c.env.DB.batch(CLEAN_UP.map((sql) => c.env.DB.prepare(sql)));
+              await c.env.DB.batch(
+                CLEAN_UP.map((sql) => c.env.DB.prepare(sql)),
+              );
               if (roomId !== null) {
                 throw new Error("Room already initialized");
               }
