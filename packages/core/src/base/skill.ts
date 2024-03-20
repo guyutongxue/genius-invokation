@@ -389,10 +389,10 @@ export class DamageOrHealEventArg<InfoT extends DamageInfo | HealInfo> extends E
     return this._damageInfo;
   }
   isDamageTypeDamage() {
-    return this._damageInfo.type !== DamageType.Heal && this._damageInfo.type !== DamageType.Revive;
+    return !this.isDamageTypeHeal();
   }
   isDamageTypeHeal() {
-    return this._damageInfo.type === DamageType.Heal;
+    return this._damageInfo.type === DamageType.Heal || this._damageInfo.type === DamageType.Revive;
   }
 
   get source() {

@@ -279,9 +279,7 @@ const detailedEventDictionary = {
     return e.isDamageTypeHeal() && checkRelative(c.state, e.target.id, r);
   }),
   damagedOrHealed: defineDescriptor("onDamageOrHeal", (c, e, r) => {
-    return (
-      e.type !== DamageType.Revive && checkRelative(c.state, e.target.id, r)
-    );
+    return checkRelative(c.state, e.target.id, r);
   }),
   reaction: defineDescriptor("onReaction", (c, e, r) => {
     return checkRelative(c.state, e.reactionInfo.target.id, r);
