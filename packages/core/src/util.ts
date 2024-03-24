@@ -95,7 +95,7 @@ export function allEntities(
     }
     result.push(...player.combatStatuses);
     for (const ch of standby) {
-      if (!excludeDefeated || active.variables.health > 0) {
+      if (!excludeDefeated || ch.variables.health > 0) {
         result.push(ch, ...ch.entities);
       }
     }
