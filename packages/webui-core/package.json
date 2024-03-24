@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/webui-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Core component of @gi-tcg/webui",
   "type": "module",
   "exports": {

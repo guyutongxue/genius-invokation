@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/utils",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Utility functions for Genius Invokation TCG",
   "type": "module",
   "exports": "./src/index.ts",
