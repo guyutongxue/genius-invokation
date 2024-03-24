@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -41,18 +41,8 @@ export interface EntityDefinition {
   readonly visibleVarName: string | null;
   readonly tags: readonly EntityTag[];
   readonly hintText: string | null;
-  readonly constants: EntityVariables;
+  readonly initialVariables: readonly EntityVariable[];
   readonly skills: readonly TriggeredSkillDefinition[];
-}
-
-export interface EntityVariables {
-  readonly duration: number;
-  readonly usage: number;
-  readonly usagePerRound: number;
-  // usage 到达 0 后是否自动弃置
-  //（用于判断“送你一程”扣除使用次数后是否弃置召唤物）
-  readonly disposeWhenUsageIsZero: number;
-  readonly [key: string]: number;
 }
 
 export type EntityArea =
@@ -65,3 +55,51 @@ export type EntityArea =
       readonly who: 0 | 1;
       readonly characterId: number;
     };
+
+export interface Variable<
+  NameT extends string = string,
+  ValueT extends number = number,
+> {
+  readonly name: NameT;
+  readonly value: ValueT;
+  readonly recreateBehavior: VariableRecreateBehavior<ValueT>;
+}
+
+export type VariableRecreateBehavior<ValueT extends number = number> =
+  | {
+      type: "overwrite";
+    }
+  | {
+      type: "append";
+      readonly appendValue: ValueT;
+      readonly appendLimit: ValueT;
+    };
+
+export const USAGE_PER_ROUND_VARIABLE_NAMES = [
+  "usagePerRound",
+  "usagePerRound1",
+  "usagePerRound2",
+  "usagePerRound3",
+  "usagePerRound4",
+  "usagePerRound5",
+  "usagePerRound6",
+  "usagePerRound7",
+  "usagePerRound8",
+  "usagePerRound9",
+  "usagePerRound10",
+  "usagePerRound11",
+  "usagePerRound12",
+  "usagePerRound13",
+  "usagePerRound14",
+  "usagePerRound15",
+] as const;
+
+export type UsagePerRoundVariableNames =
+  (typeof USAGE_PER_ROUND_VARIABLE_NAMES)[number];
+
+export type EntityVariable =
+  | Variable<"usage">
+  | Variable<"duration">
+  | Variable<UsagePerRoundVariableNames>
+  | Variable<"disposeWhenUsageIsZero", 0 | 1>
+  | Variable;

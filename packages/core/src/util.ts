@@ -1,19 +1,20 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Draft } from "immer";
+import type { U } from "ts-toolbelt";
 import minstd from "@stdlib/random-base-minstd";
 import { DiceType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
@@ -24,8 +25,12 @@ import {
   IteratorState,
   PlayerState,
 } from "./base/state";
-import { EntityArea } from "./base/entity";
-import { CharacterDefinition, ElementTag } from "./base/character";
+import { EntityArea, EntityVariable, Variable } from "./base/entity";
+import {
+  CharacterDefinition,
+  CharacterVariable,
+  ElementTag,
+} from "./base/character";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
 import { SkillDefinition, SkillInfo } from "./base/skill";
@@ -72,6 +77,26 @@ export function getEntityById(
   throw new GiTcgCoreInternalError(`Cannot found entity ${id}`);
 }
 
+type WrapNever<T, Fallback> = T extends never ? Fallback : T;
+type VariableValueT<V extends Variable, N extends string> = WrapNever<
+  U.Select<V, { name: N }>["value"],
+  number
+>;
+
+type A = (readonly EntityVariable[])[number];
+type X = VariableValueT<A, "d">;
+
+export function getVariable<T extends readonly Variable[], Name extends string>(
+  et: { variables: T },
+  name: Name,
+): VariableValueT<T[number], Name> {
+  const variable = et.variables.find((v) => v.name === name);
+  if (typeof variable === "undefined") {
+    throw new GiTcgCoreInternalError(`Cannot found variable ${name}`);
+  }
+  return variable.value as VariableValueT<T[number], Name>;
+}
+
 /**
  * 查找所有实体，按照通常响应顺序排序
  * @param state 游戏状态
@@ -90,12 +115,12 @@ export function allEntities(
     // 召唤物、支援牌
     // （即出战状态区夹在出战角色区和后台角色区之间）
     const [active, ...standby] = player.characters.shiftLeft(activeIdx);
-    if (!excludeDefeated || active.variables.health > 0) {
+    if (!excludeDefeated || getVariable(active, "health") > 0) {
       result.push(active, ...active.entities);
     }
     result.push(...player.combatStatuses);
     for (const ch of standby) {
-      if (!excludeDefeated || active.variables.health > 0) {
+      if (!excludeDefeated || getVariable(ch, "health") > 0) {
         result.push(ch, ...ch.entities);
       }
     }
@@ -174,7 +199,9 @@ export function getActiveCharacterIndex(player: PlayerState): number {
     (ch) => ch.id === player.activeCharacterId,
   );
   if (activeIdx === -1) {
-    throw new GiTcgCoreInternalError(`Invalid active character id ${player.activeCharacterId}`);
+    throw new GiTcgCoreInternalError(
+      `Invalid active character id ${player.activeCharacterId}`,
+    );
   }
   return activeIdx;
 }
@@ -209,7 +236,9 @@ export function findReplaceAction(character: CharacterState): SkillInfo | null {
 }
 
 export function isSkillDisabled(character: CharacterState): boolean {
-  return character.entities.some((st) => st.definition.tags.includes("disableSkill"));
+  return character.entities.some((st) =>
+    st.definition.tags.includes("disableSkill"),
+  );
 }
 
 export function nextRandom(
