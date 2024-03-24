@@ -41,7 +41,7 @@ export interface EntityDefinition {
   readonly visibleVarName: string | null;
   readonly tags: readonly EntityTag[];
   readonly hintText: string | null;
-  readonly initialVariables: EntityVariables;
+  readonly varConfigs: EntityVariableConfigs;
   readonly skills: readonly TriggeredSkillDefinition[];
 }
 
@@ -56,19 +56,19 @@ export type EntityArea =
       readonly characterId: number;
     };
 
-export interface Variable<
+export interface VariableConfig<
   ValueT extends number = number,
 > {
-  readonly value: ValueT;
+  readonly initialValue: ValueT;
   readonly recreateBehavior: VariableRecreateBehavior<ValueT>;
 }
 
 export type VariableRecreateBehavior<ValueT extends number = number> =
   | {
-      type: "overwrite";
+      readonly type: "overwrite";
     }
   | {
-      type: "append";
+      readonly type: "append";
       readonly appendValue: ValueT;
       readonly appendLimit: ValueT;
     };
@@ -95,10 +95,16 @@ export const USAGE_PER_ROUND_VARIABLE_NAMES = [
 export type UsagePerRoundVariableNames =
   (typeof USAGE_PER_ROUND_VARIABLE_NAMES)[number];
 
-export type EntityVariables = {
-  readonly usage?: Variable;
-  readonly duration?: Variable;
-  readonly disposeWhenUsageIsZero?: Variable<1>;
+export type EntityVariableConfigs = {
+  readonly usage?: VariableConfig;
+  readonly duration?: VariableConfig;
+  readonly disposeWhenUsageIsZero?: VariableConfig<1>;
 } & {
-  readonly [x in UsagePerRoundVariableNames]: Variable;
-} & Readonly<Record<string, Variable>>;
+  readonly [x in UsagePerRoundVariableNames]?: VariableConfig;
+} & {
+  readonly [x: string]: VariableConfig;
+};
+
+export type VariableOfConfig<C extends Record<string, VariableConfig>> = {
+  readonly [K in keyof C]: C[K] extends VariableConfig<infer T> ? T : never;
+};

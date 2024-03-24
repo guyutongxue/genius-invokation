@@ -16,8 +16,8 @@
 import { PhaseType, DiceType } from "@gi-tcg/typings";
 
 import { CardDefinition } from "./card";
-import { CharacterDefinition, CharacterVariables } from "./character";
-import { EntityDefinition, EntityVariables } from "./entity";
+import { CharacterDefinition, CharacterVariableConfigs } from "./character";
+import { EntityDefinition, EntityVariableConfigs, VariableOfConfig } from "./entity";
 import { Mutation } from "./mutation";
 import { DamageInfo, HealInfo, SkillInfo } from "./skill";
 import { ReadonlyDataStore } from "../builder/registry";
@@ -96,14 +96,14 @@ export interface CharacterState {
   readonly id: number;
   readonly definition: CharacterDefinition;
   readonly entities: readonly EntityState[];
-  readonly variables: CharacterVariables;
+  readonly variables: VariableOfConfig<CharacterVariableConfigs>;
   readonly damageLog: readonly (DamageInfo | HealInfo)[];
 }
 
 export interface EntityState {
   readonly id: number;
   readonly definition: EntityDefinition;
-  readonly variables: EntityVariables;
+  readonly variables: VariableOfConfig<EntityVariableConfigs>;
 }
 
 export type AnyState = CharacterState | EntityState;

@@ -15,12 +15,7 @@
 
 import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 
-import {
-  EntityArea,
-  EntityType,
-  EntityVariables,
-  ExEntityType,
-} from "../base/entity";
+import { EntityArea, EntityType, ExEntityType } from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
@@ -77,7 +72,6 @@ import {
 } from "./reaction";
 import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
-import { CharacterVariables } from "../base/character";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -302,14 +296,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
       const targetState = t.state;
       const finalValue = Math.min(
         value,
-        targetState.variables.maxEnergy.value -
-          targetState.variables.energy.value,
+        targetState.variables.maxEnergy - targetState.variables.energy,
       );
       this.mutate({
         type: "modifyEntityVar",
         state: targetState,
         varName: "energy",
-        value: targetState.variables.energy.value + finalValue,
+        value: targetState.variables.energy + finalValue,
       });
     }
   }
@@ -320,7 +313,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     for (const t of targets) {
       let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
       const targetState = t.state;
-      if (targetState.variables.alive.value === 0) {
+      if (targetState.variables.alive === 0) {
         this.mutate({
           type: "modifyEntityVar",
           state: targetState,
@@ -331,14 +324,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
         this.emitEvent("onRevive", this.state, targetState);
       }
       const targetInjury =
-        targetState.variables.maxHealth.value -
-        targetState.variables.health.value;
+        targetState.variables.maxHealth - targetState.variables.health;
       const finalValue = Math.min(value, targetInjury);
       this.mutate({
         type: "modifyEntityVar",
         state: targetState,
         varName: "health",
-        value: targetState.variables.health.value + finalValue,
+        value: targetState.variables.health + finalValue,
       });
       const healInfo: HealInfo = {
         type: damageType,
@@ -397,7 +389,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
 
       const finalHealth = Math.max(
         0,
-        targetState.variables.health.value - damageInfo.value,
+        targetState.variables.health - damageInfo.value,
       );
       this.mutate({
         type: "modifyEntityVar",
@@ -434,7 +426,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     type: NontrivialDamageType,
     damage?: DamageInfo,
   ): DamageInfo {
-    const aura = target.state.variables.aura.value;
+    const aura = target.state.variables.aura;
     const [newAura, reaction] = REACTION_MAP[aura][type];
     this.mutate({
       type: "modifyEntityVar",
@@ -489,7 +481,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
-    const constants = { ...def.initialVariables, ...(opt.overrideVariables ?? {}) };
+    const constants = { ...def.varConfigs, ...(opt.overrideVariables ?? {}) };
     if (typeof area === "undefined") {
       switch (type) {
         case "combatStatus":
@@ -531,16 +523,16 @@ export class SkillContext<Meta extends ContextMetaBase> {
     ) {
       return null;
     }
-    const existOverride = entitiesAtArea.find(
+    const oldOne = entitiesAtArea.find(
       (e): e is EntityState =>
         e.definition.type !== "character" &&
         e.definition.type !== "support" &&
         e.definition.id === id2,
     );
-    if (existOverride) {
+    if (oldOne) {
       // refresh exist entity's variable
-      for (const prop in existOverride.variables) {
-        const oldValue = existOverride.variables[prop];
+      for (const prop in oldOne.variables) {
+        const oldValue = oldOne.variables[prop];
         if (typeof constants[prop] === "number") {
           let newValue = constants[prop]!;
           if (`${prop}$max` in constants) {
@@ -557,16 +549,16 @@ export class SkillContext<Meta extends ContextMetaBase> {
           }
           this.mutate({
             type: "modifyEntityVar",
-            state: existOverride,
+            state: oldOne,
             varName: prop,
             value: newValue,
           });
         }
       }
-      const newState = getEntityById(this.state, existOverride.id);
+      const newState = getEntityById(this.state, oldOne.id);
       this.emitEvent("onEnter", this.state, {
         newState,
-        overrided: existOverride,
+        overrided: oldOne,
       });
       return this.of(newState);
     } else {
@@ -724,7 +716,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   addVariable(prop: Meta["callerVars"], value: number): void;
   addVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
-    const finalValue = value + target.variables[prop].value;
+    const finalValue = value + target.variables[prop];
     this.setVariable(prop, finalValue, target);
   }
 
@@ -746,7 +738,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     target?: CharacterState | EntityState,
   ) {
     target ??= this.callerState;
-    const finalValue = Math.min(maxLimit, value + target.variables[prop].value);
+    const finalValue = Math.min(maxLimit, value + target.variables[prop]);
     this.setVariable(prop, finalValue, target);
   }
 
@@ -1015,13 +1007,13 @@ export class CharacterBase {
     let currentIdx = activeIdx;
     do {
       currentIdx = (currentIdx + dx + length) % length;
-    } while (!player.characters[currentIdx].variables.alive.value);
+    } while (!player.characters[currentIdx].variables.alive);
     return player.characters[currentIdx].id === this._id;
   }
 }
 
 interface CreateEntityOptions {
-  overrideVariables?: Partial<EntityVariables>;
+  overrideVariables?: Partial<EntityState["variables"]>;
 }
 
 export class Character<Meta extends ContextMetaBase> extends CharacterBase {
@@ -1156,15 +1148,15 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     return entity;
   }
   loseEnergy(count = 1): number {
-    const originalValue = this.state.variables.energy.value;
+    const originalValue = this.state.variables.energy;
     const finalValue = Math.max(0, originalValue - count);
     this.skillContext.setVariable("energy", finalValue, this.state);
     return originalValue - finalValue;
   }
   getVariable<Name extends string>(
     name: Name,
-  ): CharacterVariables[Name]["value"] {
-    return this.state.variables[name].value;
+  ): CharacterState["variables"][Name] {
+    return this.state.variables[name];
   }
 
   setVariable(prop: string, value: number) {
@@ -1221,8 +1213,8 @@ export class Entity<Meta extends ContextMetaBase> {
   isMine() {
     return this.area.who === this.skillContext.callerArea.who;
   }
-  getVariable<Name extends string>(name: Name): EntityVariables[Name]["value"] {
-    return this.state.variables[name].value;
+  getVariable<Name extends string>(name: Name): EntityState["variables"][Name] {
+    return this.state.variables[name];
   }
 
   master() {

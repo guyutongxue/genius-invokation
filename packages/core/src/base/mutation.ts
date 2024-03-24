@@ -333,7 +333,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const entity = getEntityById(draft, m.state.id, true) as Draft<
           CharacterState | EntityState
         >;
-        entity.variables[m.varName].value = m.value;
+        entity.variables[m.varName] = m.value;
       });
       m.state = getEntityById(newState, m.state.id, true);
       return newState;

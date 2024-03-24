@@ -94,12 +94,12 @@ export function allEntities(
     // 召唤物、支援牌
     // （即出战状态区夹在出战角色区和后台角色区之间）
     const [active, ...standby] = player.characters.shiftLeft(activeIdx);
-    if (!excludeDefeated || active.variables.alive.value) {
+    if (!excludeDefeated || active.variables.alive) {
       result.push(active, ...active.entities);
     }
     result.push(...player.combatStatuses);
     for (const ch of standby) {
-      if (!excludeDefeated || active.variables.alive.value) {
+      if (!excludeDefeated || active.variables.alive) {
         result.push(ch, ...ch.entities);
       }
     }
