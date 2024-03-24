@@ -267,7 +267,7 @@ export const IronTongueTian = card(322011)
 export const LiuSu = card(322012)
   .costSame(1)
   .support("ally")
-  .on("switchActive", (c, e) => e.switchInfo.to.variables.energy === 0)
+  .on("switchActive", (c, e) => c.of(e.switchInfo.to).energy === 0)
   .usage(2)
   .gainEnergy(1, "@event.switchTo")
   .done();

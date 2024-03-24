@@ -333,13 +333,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const entity = getEntityById(draft, m.state.id, true) as Draft<
           CharacterState | EntityState
         >;
-        const variable = entity.variables.find((v) => v.name === m.varName);
-        if (typeof variable === "undefined") {
-          throw new GiTcgCoreInternalError(
-            `Variable ${m.varName} not found in entity ${m.state.id}`,
-          );
-        }
-        variable.value = m.value;
+        entity.variables[m.varName].value = m.value;
       });
       m.state = getEntityById(newState, m.state.id, true);
       return newState;

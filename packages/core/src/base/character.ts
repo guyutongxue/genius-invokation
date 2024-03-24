@@ -56,16 +56,17 @@ export interface CharacterDefinition {
   readonly type: "character";
   readonly id: number;
   readonly tags: readonly CharacterTag[];
-  readonly initialVariables: readonly CharacterVariable[];
+  readonly initialVariables: CharacterVariables;
   readonly initiativeSkills: readonly InitiativeSkillDefinition[];
   readonly skills: readonly TriggeredSkillDefinition[];
 }
 
-export type CharacterVariable =
-  | Variable<"health">
-  | Variable<"maxHealth">
-  | Variable<"energy">
-  | Variable<"maxEnergy">
-  | Variable<"aura", Aura>
-  | Variable<"alive", 0 | 1>
-  | Variable;
+export interface CharacterVariables {
+  readonly health: Variable;
+  readonly energy: Variable;
+  readonly maxHealth: Variable;
+  readonly maxEnergy: Variable;
+  readonly aura: Variable<Aura>;
+  readonly alive: Variable<0 | 1>;
+  readonly [x: string]: Variable;
+}

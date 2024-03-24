@@ -193,12 +193,11 @@ export const Vanarana = card(321011)
   })
   .on("actionPhase")
   .do((c) => {
-    const { state } = c.self;
-    if (state.variables.count === 2) {
-      c.generateDice(state.variables.d1, 1);
-      c.generateDice(state.variables.d2, 1);
-    } else if (state.variables.count === 1) {
-      c.generateDice(state.variables.d1, 1);
+    if (c.getVariable("count") === 2) {
+      c.generateDice(c.getVariable("d1"), 1);
+      c.generateDice(c.getVariable("d2"), 1);
+    } else if (c.getVariable("count") === 1) {
+      c.generateDice(c.getVariable("d1"), 1);
     }
   })
   .setVariable("count", 0)

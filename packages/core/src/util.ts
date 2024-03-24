@@ -25,10 +25,9 @@ import {
   IteratorState,
   PlayerState,
 } from "./base/state";
-import { EntityArea, EntityVariable, Variable } from "./base/entity";
+import { EntityArea } from "./base/entity";
 import {
   CharacterDefinition,
-  CharacterVariable,
   ElementTag,
 } from "./base/character";
 import { CardTag } from "./base/card";
@@ -77,26 +76,6 @@ export function getEntityById(
   throw new GiTcgCoreInternalError(`Cannot found entity ${id}`);
 }
 
-type WrapNever<T, Fallback> = T extends never ? Fallback : T;
-type VariableValueT<V extends Variable, N extends string> = WrapNever<
-  U.Select<V, { name: N }>["value"],
-  number
->;
-
-type A = (readonly EntityVariable[])[number];
-type X = VariableValueT<A, "d">;
-
-export function getVariable<T extends readonly Variable[], Name extends string>(
-  et: { variables: T },
-  name: Name,
-): VariableValueT<T[number], Name> {
-  const variable = et.variables.find((v) => v.name === name);
-  if (typeof variable === "undefined") {
-    throw new GiTcgCoreInternalError(`Cannot found variable ${name}`);
-  }
-  return variable.value as VariableValueT<T[number], Name>;
-}
-
 /**
  * 查找所有实体，按照通常响应顺序排序
  * @param state 游戏状态
@@ -115,12 +94,12 @@ export function allEntities(
     // 召唤物、支援牌
     // （即出战状态区夹在出战角色区和后台角色区之间）
     const [active, ...standby] = player.characters.shiftLeft(activeIdx);
-    if (!excludeDefeated || getVariable(active, "health") > 0) {
+    if (!excludeDefeated || active.variables.alive.value) {
       result.push(active, ...active.entities);
     }
     result.push(...player.combatStatuses);
     for (const ch of standby) {
-      if (!excludeDefeated || getVariable(ch, "health") > 0) {
+      if (!excludeDefeated || active.variables.alive.value) {
         result.push(ch, ...ch.entities);
       }
     }

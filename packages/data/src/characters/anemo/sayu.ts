@@ -38,7 +38,8 @@ export const FuufuuWhirlwindKick = skill(15074)
   .type("elemental")
   .noEnergy()
   .do((c) => {
-    const damageType = c.skillInfo.requestBy?.caller.variables.swirled;
+    const caller = c.skillInfo.requestBy!.caller;
+    const damageType = c.getVariable("swirled", caller);
     if (damageType) {
       c.damage(damageType, 2);
     } else {

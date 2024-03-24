@@ -41,7 +41,7 @@ export interface EntityDefinition {
   readonly visibleVarName: string | null;
   readonly tags: readonly EntityTag[];
   readonly hintText: string | null;
-  readonly initialVariables: readonly EntityVariable[];
+  readonly initialVariables: EntityVariables;
   readonly skills: readonly TriggeredSkillDefinition[];
 }
 
@@ -57,10 +57,8 @@ export type EntityArea =
     };
 
 export interface Variable<
-  NameT extends string = string,
   ValueT extends number = number,
 > {
-  readonly name: NameT;
   readonly value: ValueT;
   readonly recreateBehavior: VariableRecreateBehavior<ValueT>;
 }
@@ -97,9 +95,10 @@ export const USAGE_PER_ROUND_VARIABLE_NAMES = [
 export type UsagePerRoundVariableNames =
   (typeof USAGE_PER_ROUND_VARIABLE_NAMES)[number];
 
-export type EntityVariable =
-  | Variable<"usage">
-  | Variable<"duration">
-  | Variable<UsagePerRoundVariableNames>
-  | Variable<"disposeWhenUsageIsZero", 0 | 1>
-  | Variable;
+export type EntityVariables = {
+  readonly usage?: Variable;
+  readonly duration?: Variable;
+  readonly disposeWhenUsageIsZero?: Variable<1>;
+} & {
+  readonly [x in UsagePerRoundVariableNames]: Variable;
+} & Readonly<Record<string, Variable>>;
