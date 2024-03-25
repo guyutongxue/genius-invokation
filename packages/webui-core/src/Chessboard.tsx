@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,6 +24,7 @@ import {
   For,
   ComponentProps,
   Accessor,
+  onMount,
 } from "solid-js";
 import type {
   DiceType,
@@ -51,6 +52,7 @@ import { RerollView } from "./RerollView";
 import { Dice } from "./Dice";
 import { SwitchHandsView } from "./SwitchHandsView";
 import { SkillButton } from "./SkillButton";
+import { cached } from "./fetch";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -567,6 +569,7 @@ interface ChessboardProps extends ComponentProps<"div"> {
 }
 
 function Chessboard(props: ChessboardProps) {
+  const { assetApiEndpoint } = usePlayerContext();
   const [local, restProps] = splitProps(props, [
     "class",
     "stateData",
@@ -591,6 +594,13 @@ function Chessboard(props: ChessboardProps) {
     }
     setAllDamages(currentDamages);
     setFocusing(currentFocusing);
+  });
+
+  onMount(() => {
+    const prefetchedImages = [1, 2, 3, 4, 5, 6, 7];
+    prefetchedImages.map((id) =>
+      cached(`${assetApiEndpoint()}/images/${id}?thumb=1`),
+    );
   });
 
   return (
