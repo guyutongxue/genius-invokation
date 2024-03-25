@@ -27,7 +27,7 @@ export const BountifulCore = summon(112082)
   .hintIcon(DamageType.Dendro)
   .hintText("2")
   .on("endPhase")
-  .usage(1, { recreateMax: 3 })
+  .usageCanAppend(1, 3)
   .if((c) => c.$(`my equipment with definition id ${TheStarrySkiesTheirFlowersRain}`))
   .damage(DamageType.Dendro, 3)
   .else()
@@ -37,7 +37,7 @@ export const BountifulCore = summon(112082)
   .damage(DamageType.Dendro, 3)
   .else()
   .damage(DamageType.Dendro, 2)
-  .addVariable("usage", -1)
+  .consumeUsage()
   .done();
 
 /**

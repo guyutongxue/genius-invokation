@@ -119,7 +119,7 @@ export const IGotYourBack = card(216021)
   .do((c) => {
     if (c.$(`my combat status with definition id ${FullPlate}`)) {
       c.heal(1, "all my characters");
-      c.addVariable("usagePerRound", -1);
+      c.consumeUsagePerRound();
     }
   })
   .done();

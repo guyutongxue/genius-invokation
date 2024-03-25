@@ -24,7 +24,7 @@ import { character, skill, summon, status, card, DamageType, DiceType } from "@g
  */
 export const ClusterbloomArrow = summon(117022)
   .endPhaseDamage(DamageType.Dendro, 1)
-  .usage(1, { recreateMax: 2 })
+  .usageCanAppend(1, 2)
   .done();
 
 /**

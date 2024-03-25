@@ -38,7 +38,7 @@ export const GeneralsGlory = summon(116062)
  * 持续回合：2（可叠加，最多叠加到3回合）
  */
 export const GeneralsWarBanner = combatStatus(116061)
-  .duration(2, { recreateMax: 3 })
+  .duration(2, { append: { limit: 3 } })
   .on("modifySkillDamage", (c, e) => e.type === DamageType.Geo)
   .increaseDamage(1)
   .done();

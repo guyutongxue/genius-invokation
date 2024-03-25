@@ -29,9 +29,7 @@ export const Oz01 = summon(114012)
   .usage(2)
   .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Fischl && e.isSkillType("normal"))
   .damage(DamageType.Electro, 2)
-  .addVariable("usage", -1)
-  .if((c) => c.getVariable("usage") <= 0)
-  .dispose()
+  .consumeUsage()
   .done();
 
 /**

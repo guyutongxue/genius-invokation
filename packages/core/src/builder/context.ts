@@ -15,7 +15,12 @@
 
 import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 
-import { EntityArea, EntityType, ExEntityType } from "../base/entity";
+import {
+  EntityArea,
+  EntityType,
+  ExEntityType,
+  USAGE_PER_ROUND_VARIABLE_NAMES,
+} from "../base/entity";
 import { Mutation, applyMutation } from "../base/mutation";
 import {
   DamageInfo,
@@ -758,15 +763,19 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const finalValue = Math.min(maxLimit, value + target.variables[prop]);
     this.setVariable(prop, finalValue, target);
   }
-  consumeUsage(target?: EntityState) {
+  consumeUsage(count = 1, target?: EntityState) {
     if (typeof target === "undefined") {
       if (this.callerState.definition.type === "character") {
         throw new GiTcgDataError(`Cannot consume usage of character`);
       }
       target = this.callerState as EntityState;
     }
-    if (this.getVariable("usage", target) > 0) {
-      this.addVariable("usage", -1, target);
+    if (!Reflect.has(target.definition.varConfigs, "usage")) {
+      return;
+    }
+    const current = this.getVariable("usage", this.callerState);
+    if (current > 0) {
+      this.addVariable("usage", -Math.min(count, current), target);
       if (
         Reflect.has(target.definition.varConfigs, "disposeWhenUsageIsZero") &&
         this.getVariable("usage", target) <= 0
@@ -775,7 +784,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       }
     }
   }
-  consumeUsagePerRound() {
+  consumeUsagePerRound(count = 1) {
     if (!("usagePerRoundVariableName" in this.skillInfo.definition)) {
       throw new GiTcgDataError(`This skill do not have usagePerRound`);
     }
@@ -783,8 +792,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (varName === null) {
       throw new GiTcgDataError(`This skill do not have usagePerRound`);
     }
-    if (this.getVariable(varName, this.callerState) > 0) {
-      this.addVariable(varName, -1, this.callerState);
+    const current = this.getVariable(varName, this.callerState);
+    if (current > 0) {
+      this.addVariable(varName, -Math.min(count, current), this.callerState);
     }
   }
 
@@ -976,6 +986,8 @@ type SkillContextMutativeProps =
   | "setVariable"
   | "addVariable"
   | "addVariableWithMax"
+  | "consumeUsage"
+  | "consumeUsagePerRound"
   | "absorbDice"
   | "generateDice"
   | "createHandCard"
@@ -1277,6 +1289,20 @@ export class Entity<Meta extends ContextMetaBase> {
   addVariableWithMax(prop: string, value: number, maxLimit: number) {
     this.skillContext.addVariableWithMax(prop, value, maxLimit, this.state);
   }
+  consumeUsage(count = 1) {
+    this.skillContext.consumeUsage(count, this.state);
+  }
+  resetUsagePerRound() {
+    for (const [name, cfg] of Object.entries(
+      this.state.definition.varConfigs,
+    )) {
+      if (
+        (USAGE_PER_ROUND_VARIABLE_NAMES as readonly string[]).includes(name)
+      ) {
+        this.setVariable(name, cfg.initialValue);
+      }
+    }
+  }
   dispose() {
     this.skillContext.dispose(this.state);
   }
@@ -1286,6 +1312,8 @@ type EntityMutativeProps =
   | "setVariable"
   | "addVariable"
   | "addVariableWithMax"
+  | "consumeUsage"
+  | "resetUsagePerRound"
   | "dispose";
 
 export type TypedEntity<Meta extends ContextMetaBase> =

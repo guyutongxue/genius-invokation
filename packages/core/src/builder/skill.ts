@@ -453,7 +453,8 @@ export function enableShortcut<T extends SkillBuilder<any>>(
   return proxy as any;
 }
 
-interface UsageOptions extends VariableOptions {
+interface UsageOptions<Name extends string> extends VariableOptions {
+  name?: Name;
   /** 是否为“每回合使用次数”。默认值为 `false`。 */
   perRound?: boolean;
   /** 是否在每次技能执行完毕后自动 -1。默认值为 `true`。 */
@@ -489,7 +490,7 @@ export class TriggeredSkillBuilder<
       );
     };
   }
-  private _usageOpt: { autoDecrease: boolean } | null = null;
+  private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
   private _usagePerRoundOpt: {
     name: UsagePerRoundVariableNames;
     autoDecrease: boolean;
@@ -507,7 +508,7 @@ export class TriggeredSkillBuilder<
    */
   usage<VarName extends string = "usage">(
     count: number,
-    opt?: UsageOptions,
+    opt?: UsageOptions<VarName>,
   ): BuilderWithShortcut<
     TriggeredSkillBuilder<
       {
@@ -520,29 +521,37 @@ export class TriggeredSkillBuilder<
   > {
     const perRound = opt?.perRound ?? false;
     const autoDecrease = opt?.autoDecrease ?? true;
-    let name: "usage" | UsagePerRoundVariableNames;
-    if (perRound) {
-      if (
-        this.parent._usagePerRoundIndex >= USAGE_PER_ROUND_VARIABLE_NAMES.length
-      ) {
-        throw new GiTcgCoreInternalError(
-          `Cannot specify more than ${USAGE_PER_ROUND_VARIABLE_NAMES.length} usagePerRound.`,
-        );
+    let name: string;
+    if (opt?.name) {
+      name = opt.name;
+    } else {
+      if (perRound) {
+        if (
+          this.parent._usagePerRoundIndex >=
+          USAGE_PER_ROUND_VARIABLE_NAMES.length
+        ) {
+          throw new GiTcgCoreInternalError(
+            `Cannot specify more than ${USAGE_PER_ROUND_VARIABLE_NAMES.length} usagePerRound.`,
+          );
+        }
+        name = USAGE_PER_ROUND_VARIABLE_NAMES[this.parent._usagePerRoundIndex];
+        this.parent._usagePerRoundIndex++;
+      } else {
+        name = "usage";
       }
-      name = USAGE_PER_ROUND_VARIABLE_NAMES[this.parent._usagePerRoundIndex];
-      this.parent._usagePerRoundIndex++;
+    }
+    if (perRound) {
       if (this._usagePerRoundOpt !== null) {
         throw new GiTcgDataError("Cannot specify usagePerRound twice.");
       }
-      this._usagePerRoundOpt = { name, autoDecrease };
+      this._usagePerRoundOpt = { name: name as any, autoDecrease };
     } else {
-      name = "usage";
       if (this._usageOpt !== null) {
         throw new GiTcgDataError("Cannot specify usage twice.");
       }
-      this._usageOpt = { autoDecrease };
+      this._usageOpt = { name, autoDecrease };
     }
-    const autoDispose = name === "usage" && opt?.autoDispose !== false;
+    const autoDispose = !perRound && opt?.autoDispose !== false;
     this.parent.variable(name, count, opt);
     if (autoDispose) {
       this.parent._varConfigs.disposeWhenUsageIsZero = createVariable(1);
@@ -561,24 +570,24 @@ export class TriggeredSkillBuilder<
    *   .usage(count, { ...opt, perRound: true, visible: false })
    * ```
    */
-  usagePerRound<VarName extends string = "usagePerRound">(
+  usagePerRound<VarName extends UsagePerRoundVariableNames = "usagePerRound">(
     count: number,
-    opt?: Omit<UsageOptions, "perRound">,
-  ): BuilderWithShortcut<
-    TriggeredSkillBuilder<
-      {
-        callerType: Meta["callerType"];
-        callerVars: Meta["callerVars"] | VarName;
-        eventArgType: Meta["eventArgType"];
-      },
-      EventName
-    >
-  > {
-    return this.usage(count, {
+    opt?: Omit<UsageOptions<VarName>, "perRound">,
+  ) {
+    return this.usage<VarName>(count, {
       ...opt,
       perRound: true,
       visible: false,
-    }) as any;
+    });
+  }
+  usageCanAppend<VarName extends string = "usage">(
+    count: number,
+    appendLimit?: number,
+    appendValue?: number,
+  ) {
+    return this.usage<VarName>(count, {
+      append: { limit: appendLimit, value: appendValue },
+    });
   }
 
   private listenToMySelf(): this {

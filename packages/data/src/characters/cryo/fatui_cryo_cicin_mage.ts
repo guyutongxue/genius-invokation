@@ -26,13 +26,11 @@ import { character, skill, summon, combatStatus, card, DamageType, SummonHandle 
  */
 export const CryoCicins: SummonHandle = summon(121011)
   .endPhaseDamage(DamageType.Cryo, 1)
-  .usage(2, { recreateMax: 3 })
+  .usageCanAppend(2, 3)
   .on("useSkill", (c, e) => e.action.skill.caller.definition.id === FatuiCryoCicinMage && e.isSkillType("normal"))
   .addVariable("usage", 1)
   .on("damaged", (c, e) => c.self.master().state.definition.id === FatuiCryoCicinMage && e.getReaction())
-  .addVariable("usage", -1)
-  .if((c) => c.getVariable("usage") <= 0)
-  .dispose()
+  .consumeUsage()
   .done();
 
 /**
@@ -48,7 +46,7 @@ export const FlowingCicinShield = combatStatus(121012)
   .do((c) => {
     const cicins = c.$(`my summons with definition id ${CryoCicins}`);
     if (cicins) {
-      const extraShield = Math.min(cicins.getVariable("usage"), 3);
+      const extraShield = Math.min(cicins.getVariable("usage")!, 3);
       c.addVariable("shield", extraShield);
     }
   })
@@ -134,7 +132,7 @@ export const CicinsColdGlare = card(221011)
   .on("useSkill")
   .do((c) => {
     const cicins = c.$(`my summons with definition id ${CryoCicins}`);
-    if (cicins && cicins?.getVariable("usage") > 3) {
+    if (cicins && cicins?.getVariable("usage")! > 3) {
       c.damage(DamageType.Cryo, 2);
     }
   })

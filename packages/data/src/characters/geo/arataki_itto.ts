@@ -24,7 +24,7 @@ import { character, skill, summon, status, card, DamageType, DiceType } from "@g
  */
 export const SuperlativeSuperstrength = status(116054)
   .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
-  .usage(1, { recreateMax: 3 })
+  .usageCanAppend(1, 3)
   .increaseDamage(1)
   .on("deductDiceSkill", (c, e) =>
     e.isChargedAttack() && 

@@ -131,7 +131,10 @@ export class EntityBuilder<
     event: E,
     filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
   ) {
-    return this.on(event, filter).usage<never>(1, { visible: false });
+    return this.on(event, filter).usage(1, {
+      name: `usage_${event}` as never,
+      visible: false,
+    });
   }
 
   variable<const Name extends string>(
@@ -212,7 +215,14 @@ export class EntityBuilder<
   shield(count: number, max?: number) {
     this.tags("shield");
     return this.variableCanAppend("shield", count, max)
-      .on("beforeDamaged")
+      .on("beforeDamaged", (c, e) => {
+        if (c.self.state.definition.type === "combatStatus") {
+          // 出战状态护盾只对出战角色生效
+          return c.of(e.target).isActive();
+        } else {
+          return true;
+        }
+      })
       .do((c, e) => {
         const shield = c.getVariable("shield");
         const currentValue = e.value;

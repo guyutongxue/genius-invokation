@@ -268,13 +268,9 @@ export const StormterrorsLair = card(321015)
     return e.hasCardTag("talent") ||
       (e.isUseSkill() && e.action.skill.definition.requiredCost.length >= 4);
   })
+  .usage(3)
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
-  .on("deductDice", (c, e) => {
-    return e.hasCardTag("talent") ||
-      (e.isUseSkill() && e.action.skill.definition.requiredCost.length >= 4);
-  })
-  .usage(3) // 重复一遍条件用于扣除总使用次数
   .done();
 
 /**
@@ -302,7 +298,6 @@ export const WeepingWillowOfTheLake = card(321016)
 export const OperaEpiclese = card(321017)
   .costSame(1)
   .support("place")
-  .variable("usage", 3)
   .on("beforeAction", (c) => {
     function costOfEquipment(equipment: EntityState) {
       const cardDef = c.state.data.cards.get(equipment.definition.id)!;
@@ -312,13 +307,10 @@ export const OperaEpiclese = card(321017)
     const oppCost = c.$$(`opp equipments`).map((entity) => costOfEquipment(entity.state)).reduce((a, b) => a + b, 0);
     return myCost >= oppCost;
   })
+  .usage(3)
   .usagePerRound(1)
   .do((c) => {
     c.generateDice(c.$("my active")!.element(), 1);
-    c.addVariable("usage", -1);
-    if (c.getVariable("usage") <= 0) {
-      c.dispose();
-    }
   })
   .done();
 

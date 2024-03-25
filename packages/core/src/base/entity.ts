@@ -109,5 +109,5 @@ export type EntityVariableConfigs = {
 };
 
 export type VariableOfConfig<C extends Record<string, VariableConfig>> = {
-  readonly [K in keyof C]: C[K] extends VariableConfig<infer T> ? T : never;
+  readonly [K in keyof C]: Required<C>[K] extends VariableConfig<infer T> ? T : never;
 };
