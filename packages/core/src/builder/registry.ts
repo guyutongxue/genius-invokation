@@ -16,7 +16,7 @@
 import { Immutable } from "immer";
 import { CardDefinition } from "../base/card";
 import { CharacterDefinition } from "../base/character";
-import { EntityDefinition } from "../base/entity";
+import { EntityDefinition, VariableConfig } from "../base/entity";
 import {
   InitiativeSkillDefinition,
   SkillDefinition,
@@ -42,7 +42,7 @@ export function beginRegistration() {
 interface PassiveSkillDefinition {
   id: number;
   type: "passiveSkill";
-  constants: Record<string, number>;
+  varConfigs: Record<string, VariableConfig>;
   skills: readonly TriggeredSkillDefinition[];
 }
 

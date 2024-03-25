@@ -222,7 +222,12 @@ export class Game {
         value: {
           id: 0,
           definition: def,
-          variables: def.constants,
+          variables: Object.fromEntries(
+            Object.entries(def.varConfigs).map(([name, { initialValue }]) => [
+              name,
+              initialValue,
+            ]),
+          ) as any,
           entities: [],
           damageLog: [],
         },

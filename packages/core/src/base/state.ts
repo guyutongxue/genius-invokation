@@ -96,14 +96,18 @@ export interface CharacterState {
   readonly id: number;
   readonly definition: CharacterDefinition;
   readonly entities: readonly EntityState[];
-  readonly variables: VariableOfConfig<CharacterVariableConfigs>;
+  readonly variables: CharacterVariables;
   readonly damageLog: readonly (DamageInfo | HealInfo)[];
 }
+
+export type CharacterVariables = VariableOfConfig<CharacterVariableConfigs>;
 
 export interface EntityState {
   readonly id: number;
   readonly definition: EntityDefinition;
-  readonly variables: VariableOfConfig<EntityVariableConfigs>;
+  readonly variables: EntityVariables;
 }
+
+export type EntityVariables = VariableOfConfig<EntityVariableConfigs>;
 
 export type AnyState = CharacterState | EntityState;

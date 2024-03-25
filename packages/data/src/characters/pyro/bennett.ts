@@ -28,7 +28,7 @@ export const InspirationField01 = combatStatus(113032)
   .on("modifySkillDamage")
   .increaseDamage(2)
   .on("useSkill")
-  .if((c, e) => c.of(e.action.skill.caller as CharacterState).health <= 6)
+  .if((c, e) => e.action.skill.caller.variables.health <= 6)
   .heal(2, "@event.skillCaller")
   .done();
 
@@ -43,10 +43,10 @@ export const InspirationField = combatStatus(113031)
   .conflictWith(113032)
   .duration(2)
   .on("modifySkillDamage")
-  .if((c, e) => c.of(e.source as CharacterState).health >= 7)
+  .if((c, e) => e.source.variables.health >= 7)
   .increaseDamage(2)
   .on("useSkill")
-  .if((c, e) => c.of(e.action.skill.caller as CharacterState).health <= 6)
+  .if((c, e) => e.action.skill.caller.variables.health <= 6)
   .heal(2, "@event.skillCaller")
   .done();
 

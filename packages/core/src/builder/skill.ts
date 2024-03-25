@@ -31,13 +31,18 @@ import {
   ActionEventArg,
   DamageInfo,
 } from "../base/skill";
-import { GameState } from "../base/state";
+import { EntityVariables, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
 import { SkillHandle } from "./type";
-import { EntityArea } from "../base/entity";
+import {
+  EntityArea,
+  USAGE_PER_ROUND_VARIABLE_NAMES,
+  UsagePerRoundVariableNames,
+} from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea } from "../util";
-import { GiTcgDataError } from "../error";
+import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
+import { createVariable } from "./utils";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -448,10 +453,7 @@ export function enableShortcut<T extends SkillBuilder<any>>(
   return proxy as any;
 }
 
-interface UsageOptions<VarName extends string = string>
-  extends VariableOptions {
-  /** 设置变量名。默认的变量名为 `usage`；如果该变量名已被占用，则会在后面加上 `_${skillId}`。*/
-  name?: VarName;
+interface UsageOptions extends VariableOptions {
   /** 是否为“每回合使用次数”。默认值为 `false`。 */
   perRound?: boolean;
   /** 是否在每次技能执行完毕后自动 -1。默认值为 `true`。 */
@@ -487,8 +489,11 @@ export class TriggeredSkillBuilder<
       );
     };
   }
-  private _usageOpt: Omit<Required<UsageOptions>, `recreate_${string}`> | null =
-    null;
+  private _usageOpt: { autoDecrease: boolean } | null = null;
+  private _usagePerRoundOpt: {
+    name: UsagePerRoundVariableNames;
+    autoDecrease: boolean;
+  } | null = null;
   private _listenTo: ListenTo = ListenTo.SameArea;
 
   /**
@@ -502,7 +507,7 @@ export class TriggeredSkillBuilder<
    */
   usage<VarName extends string = "usage">(
     count: number,
-    opt?: UsageOptions<VarName>,
+    opt?: UsageOptions,
   ): BuilderWithShortcut<
     TriggeredSkillBuilder<
       {
@@ -513,48 +518,34 @@ export class TriggeredSkillBuilder<
       EventName
     >
   > {
-    if (this._usageOpt !== null) {
-      throw new GiTcgDataError(`Usage called twice`);
-    }
     const perRound = opt?.perRound ?? false;
-    let name: string;
-    if (opt?.name) {
-      if (this.parent._constants[opt.name]) {
-        throw new GiTcgDataError(
-          `variable name "${opt.name}" is already used. Try another.`,
+    const autoDecrease = opt?.autoDecrease ?? true;
+    let name: "usage" | UsagePerRoundVariableNames;
+    if (perRound) {
+      if (
+        this.parent._usagePerRoundIndex >= USAGE_PER_ROUND_VARIABLE_NAMES.length
+      ) {
+        throw new GiTcgCoreInternalError(
+          `Cannot specify more than ${USAGE_PER_ROUND_VARIABLE_NAMES.length} usagePerRound.`,
         );
       }
-      name = opt.name;
-    } else {
-      const base = opt?.perRound ? "usagePerRound" : "usage";
-      if (isFinite(this.parent._constants[base])) {
-        name = `${base}_${this.id}`;
-      } else {
-        name = base;
+      name = USAGE_PER_ROUND_VARIABLE_NAMES[this.parent._usagePerRoundIndex];
+      this.parent._usagePerRoundIndex++;
+      if (this._usagePerRoundOpt !== null) {
+        throw new GiTcgDataError("Cannot specify usagePerRound twice.");
       }
+      this._usagePerRoundOpt = { name, autoDecrease };
+    } else {
+      name = "usage";
+      if (this._usageOpt !== null) {
+        throw new GiTcgDataError("Cannot specify usage twice.");
+      }
+      this._usageOpt = { autoDecrease };
     }
-    this.parent.variable(name, count, {
-      ...opt,
-      recreateMax: opt?.recreateMax ?? count,
-    });
-    if (perRound) {
-      this.parent._usagePerRoundVarNames.push(name);
-    }
-    this._usageOpt = {
-      visible: opt?.visible ?? true,
-      autoDecrease: opt?.autoDecrease ?? true,
-      autoDispose: opt?.autoDispose ?? true,
-      name,
-      perRound,
-      recreateAdditional: opt?.recreateAdditional ?? count,
-      recreateMax: opt?.recreateMax ?? count,
-    };
-    if (
-      name === "usage" &&
-      !this._usageOpt.perRound &&
-      this._usageOpt.autoDispose
-    ) {
-      this.parent._constants.disposeWhenUsageIsZero = 1;
+    const autoDispose = name === "usage" && opt?.autoDispose !== false;
+    this.parent.variable(name, count, opt);
+    if (autoDispose) {
+      this.parent._varConfigs.disposeWhenUsageIsZero = createVariable(1);
     }
     // 增加“检查可用次数”的技能触发条件
     const oldFilter = this._triggerFilter;
@@ -572,7 +563,7 @@ export class TriggeredSkillBuilder<
    */
   usagePerRound<VarName extends string = "usagePerRound">(
     count: number,
-    opt?: Omit<UsageOptions<VarName>, "perRound">,
+    opt?: Omit<UsageOptions, "perRound">,
   ): BuilderWithShortcut<
     TriggeredSkillBuilder<
       {
@@ -606,16 +597,14 @@ export class TriggeredSkillBuilder<
   }
 
   private buildSkill() {
-    if (this._usageOpt) {
-      const { name, autoDecrease, autoDispose, perRound } = this._usageOpt;
+    if (this._usageOpt?.autoDecrease) {
       this.do((c) => {
-        if (autoDecrease) {
-          c.addVariable(name, -1);
-        }
-        // 带使用次数（非每回合重置的），次数耗尽时弃置
-        if (autoDispose && !perRound && c.getVariable(name) <= 0) {
-          c.dispose();
-        }
+        c.consumeUsage();
+      });
+    }
+    if (this._usagePerRoundOpt?.autoDecrease) {
+      this.do((c) => {
+        c.consumeUsagePerRound();
       });
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
@@ -635,6 +624,7 @@ export class TriggeredSkillBuilder<
       requiredCost: [],
       filter,
       action,
+      usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
     };
     registerSkill(def);
     this.parent._skillList.push(def);

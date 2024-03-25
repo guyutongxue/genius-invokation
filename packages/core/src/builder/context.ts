@@ -36,7 +36,9 @@ import {
   AnyState,
   CardState,
   CharacterState,
+  CharacterVariables,
   EntityState,
+  EntityVariables,
   GameState,
 } from "../base/state";
 import {
@@ -481,7 +483,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
-    const constants = { ...def.varConfigs, ...(opt.overrideVariables ?? {}) };
     if (typeof area === "undefined") {
       switch (type) {
         case "combatStatus":
@@ -529,29 +530,42 @@ export class SkillContext<Meta extends ContextMetaBase> {
         e.definition.type !== "support" &&
         e.definition.id === id2,
     );
+    const { varConfigs } = def;
+    const overrideVariables = opt.overrideVariables ?? {};
     if (oldOne) {
+      const newValues: Record<string, number> = {};
       // refresh exist entity's variable
-      for (const prop in oldOne.variables) {
-        const oldValue = oldOne.variables[prop];
-        if (typeof constants[prop] === "number") {
-          let newValue = constants[prop]!;
-          if (`${prop}$max` in constants) {
-            // 若存在 `$max` 设定（如 usage）累加状态值
-            const limit = constants[`${prop}$max`]!;
-            const additional = constants[`${prop}$add`] ?? newValue;
-            if (oldValue < limit) {
-              // 如果当前值比上限低，进行累加
-              newValue = Math.min(limit, oldValue + additional);
-            } else {
-              // 如果当前值比上限高，维持原样
-              newValue = oldValue;
-            }
+      for (const name in varConfigs) {
+        let { initialValue, recreateBehavior } = varConfigs[name];
+        if (typeof overrideVariables[name] === "number") {
+          initialValue = overrideVariables[name]!;
+        }
+        const oldValue = oldOne.variables[name] ?? 0;
+        switch (recreateBehavior.type) {
+          case "overwrite": {
+            newValues[name] = initialValue;
+            break;
           }
+          case "takeMax": {
+            newValues[name] = Math.max(initialValue, oldValue ?? 0);
+            break;
+          }
+          case "append": {
+            const appendResult = recreateBehavior.appendValue + oldValue;
+            newValues[name] = Math.min(
+              appendResult,
+              recreateBehavior.appendLimit,
+            );
+          }
+        }
+      }
+      for (const [name, value] of Object.entries(newValues)) {
+        if (Reflect.has(oldOne.variables, name)) {
           this.mutate({
             type: "modifyEntityVar",
             state: oldOne,
-            varName: prop,
-            value: newValue,
+            varName: name,
+            value,
           });
         }
       }
@@ -566,8 +580,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
         id: 0,
         definition: def,
         variables: Object.fromEntries(
-          Object.entries(constants).filter(([k]) => !k.includes("$")),
-        ) as any,
+          Object.entries(varConfigs).map(([name, { initialValue }]) => [
+            name,
+            initialValue,
+          ]),
+        ),
       };
       this.mutate({
         type: "createEntity",
@@ -740,6 +757,35 @@ export class SkillContext<Meta extends ContextMetaBase> {
     target ??= this.callerState;
     const finalValue = Math.min(maxLimit, value + target.variables[prop]);
     this.setVariable(prop, finalValue, target);
+  }
+  consumeUsage(target?: EntityState) {
+    if (typeof target === "undefined") {
+      if (this.callerState.definition.type === "character") {
+        throw new GiTcgDataError(`Cannot consume usage of character`);
+      }
+      target = this.callerState as EntityState;
+    }
+    if (this.getVariable("usage", target) > 0) {
+      this.addVariable("usage", -1, target);
+      if (
+        Reflect.has(target.definition.varConfigs, "disposeWhenUsageIsZero") &&
+        this.getVariable("usage", target) <= 0
+      ) {
+        this.dispose(target);
+      }
+    }
+  }
+  consumeUsagePerRound() {
+    if (!("usagePerRoundVariableName" in this.skillInfo.definition)) {
+      throw new GiTcgDataError(`This skill do not have usagePerRound`);
+    }
+    const varName = this.skillInfo.definition.usagePerRoundVariableName;
+    if (varName === null) {
+      throw new GiTcgDataError(`This skill do not have usagePerRound`);
+    }
+    if (this.getVariable(varName, this.callerState) > 0) {
+      this.addVariable(varName, -1, this.callerState);
+    }
   }
 
   replaceDefinition(target: CharacterTargetArg, newCh: CharacterHandle) {
@@ -1013,7 +1059,7 @@ export class CharacterBase {
 }
 
 interface CreateEntityOptions {
-  overrideVariables?: Partial<EntityState["variables"]>;
+  overrideVariables?: Partial<EntityVariables>;
 }
 
 export class Character<Meta extends ContextMetaBase> extends CharacterBase {
@@ -1153,9 +1199,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     this.skillContext.setVariable("energy", finalValue, this.state);
     return originalValue - finalValue;
   }
-  getVariable<Name extends string>(
-    name: Name,
-  ): CharacterState["variables"][Name] {
+  getVariable<Name extends string>(name: Name): CharacterVariables[Name] {
     return this.state.variables[name];
   }
 
@@ -1213,7 +1257,7 @@ export class Entity<Meta extends ContextMetaBase> {
   isMine() {
     return this.area.who === this.skillContext.callerArea.who;
   }
-  getVariable<Name extends string>(name: Name): EntityState["variables"][Name] {
+  getVariable<Name extends string>(name: Name): EntityVariables[Name] {
     return this.state.variables[name];
   }
 

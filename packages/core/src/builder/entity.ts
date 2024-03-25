@@ -1,20 +1,26 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { DamageType } from "@gi-tcg/typings";
-import { EntityTag, EntityVariables, ExEntityType } from "../base/entity";
+import {
+  EntityTag,
+  EntityVariableConfigs,
+  ExEntityType,
+  USAGE_PER_ROUND_VARIABLE_NAMES,
+  VariableConfig,
+} from "../base/entity";
 import { TriggeredSkillDefinition } from "../base/skill";
 import { registerEntity, registerPassiveSkill } from "./registry";
 import {
@@ -26,15 +32,29 @@ import {
   enableShortcut,
 } from "./skill";
 import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
-import { Draft } from "immer";
 import { GiTcgDataError } from "../error";
+import { Writable, createVariable, createVariableCanAppend } from "./utils";
+
+export interface AppendOptions {
+  /** 重复创建时的累积值上限 */
+  limit?: number;
+  /** 重复创建时累积的值 */
+  value?: number;
+}
 
 export interface VariableOptions {
-  recreateAdditional?: number;
-  recreateMax?: number;
+  /** 该值在重复创建时是否允许叠加。 */
+  append?: AppendOptions | boolean;
+  /**
+   * 该值在重复创建时将强制重置为默认值（而非默认值和当前值的最大值）。
+   * 指定 `append` 时此选项无效。
+   */
+  forceOverwrite?: boolean;
   /** 该值是否在前端可见，默认为 `true`。仅最后一次添加的变量会显示。 */
   visible?: boolean;
 }
+
+export type VariableOptionsWithoutAppend = Omit<VariableOptions, "append">;
 
 // 当 CallerType 是 character 时，正在构建的是被动技能，返回 PassiveSkillHandle
 export type EntityBuilderResultT<CallerType extends ExEntityType> =
@@ -56,14 +76,9 @@ export class EntityBuilder<
 > {
   private _skillNo = 0;
   _skillList: TriggeredSkillDefinition[] = [];
-  _usagePerRoundVarNames: string[] = [];
+  _usagePerRoundIndex = 0;
   private _tags: EntityTag[] = [];
-  _constants: Draft<EntityVariables> = {
-    duration: Infinity,
-    usage: Infinity,
-    usagePerRound: Infinity,
-    disposeWhenUsageIsZero: 0,
-  };
+  _varConfigs: Writable<EntityVariableConfigs> = {};
   private _visibleVarName: string | null = null;
   private _hintText: string | null = null;
   private generateSkillId() {
@@ -124,16 +139,67 @@ export class EntityBuilder<
     value: number,
     opt?: VariableOptions,
   ): EntityBuilder<CallerType, Vars | Name> {
-    this._constants[name] = value;
-    if (typeof opt?.recreateMax === "number") {
-      this._constants[name + "$add"] = opt.recreateAdditional ?? value;
-      this._constants[name + "$max"] = opt.recreateMax;
+    if (Reflect.has(this._varConfigs, name)) {
+      throw new GiTcgDataError(`Variable name ${name} already exists`);
     }
+    let appendOpt: AppendOptions | false;
+    if (opt?.append) {
+      if (opt.append === true) {
+        appendOpt = {};
+      } else {
+        appendOpt = opt.append;
+      }
+    } else {
+      appendOpt = false;
+    }
+    let varConfig: VariableConfig;
+    if (appendOpt) {
+      varConfig = createVariableCanAppend(
+        value,
+        appendOpt.limit,
+        appendOpt.value,
+      );
+    } else {
+      varConfig = createVariable(value, opt?.forceOverwrite);
+    }
+    this._varConfigs[name] = varConfig;
     const visible = opt?.visible ?? true;
     if (visible) {
       this._visibleVarName = name;
     }
     return this as any;
+  }
+  variableCanAppend<const Name extends string>(
+    name: Name,
+    value: number,
+    max?: number,
+    opt?: VariableOptionsWithoutAppend,
+  ): EntityBuilder<CallerType, Vars | Name>;
+  variableCanAppend<const Name extends string>(
+    name: Name,
+    value: number,
+    max: number,
+    appendValue: number,
+    opt?: VariableOptionsWithoutAppend,
+  ): EntityBuilder<CallerType, Vars | Name>;
+  variableCanAppend(
+    name: string,
+    value: number,
+    max: number,
+    appendOrOpt?: number | VariableOptionsWithoutAppend,
+    opt?: VariableOptionsWithoutAppend,
+  ): any {
+    if (typeof appendOrOpt === "number") {
+      return this.variable(name, value, {
+        append: { limit: max, value: appendOrOpt },
+        ...opt,
+      });
+    } else {
+      return this.variable(name, value, {
+        append: { limit: max },
+        ...appendOrOpt,
+      });
+    }
   }
 
   duration(count: number, opt?: VariableOptions) {
@@ -145,7 +211,7 @@ export class EntityBuilder<
 
   shield(count: number, max?: number) {
     this.tags("shield");
-    return this.variable("shield", count, { recreateMax: max })
+    return this.variableCanAppend("shield", count, max)
       .on("beforeDamaged")
       .do((c, e) => {
         const shield = c.getVariable("shield");
@@ -241,20 +307,26 @@ export class EntityBuilder<
   done(): EntityBuilderResultT<CallerType> {
     // on action phase clean up
     if (
-      this._usagePerRoundVarNames.length > 0 ||
-      isFinite(this._constants.duration)
+      this._usagePerRoundIndex > 0 ||
+      Reflect.has(this._varConfigs, "duration")
     ) {
+      const usagePerRoundNames = USAGE_PER_ROUND_VARIABLE_NAMES.slice(
+        0,
+        this._usagePerRoundIndex,
+      );
       this.on("actionPhase")
         .do((c, e) => {
           const self = c.self;
           // 恢复每回合使用次数
-          for (const prop of this._usagePerRoundVarNames) {
-            const newValue = self.state.definition.constants[prop];
-            self.setVariable(prop, newValue);
+          for (const prop of usagePerRoundNames) {
+            const config = self.state.definition.varConfigs[prop];
+            if (config) {
+              self.setVariable(prop, config.initialValue);
+            }
           }
           // 扣除持续回合数
           self.addVariable("duration", -1);
-          if (self.getVariable("duration") <= 0) {
+          if (self.getVariable("duration")! <= 0) {
             self.dispose();
           }
         })
@@ -264,7 +336,7 @@ export class EntityBuilder<
       registerPassiveSkill({
         id: this.id,
         type: "passiveSkill",
-        constants: this._constants,
+        varConfigs: this._varConfigs,
         skills: this._skillList,
       });
     } else {
@@ -272,7 +344,7 @@ export class EntityBuilder<
         __definition: "entities",
         id: this.id,
         visibleVarName: this._visibleVarName,
-        constants: this._constants,
+        varConfigs: this._varConfigs,
         hintText: this._hintText,
         skills: this._skillList,
         tags: this._tags,
