@@ -130,7 +130,7 @@ export const PearlArmor = skill(24034)
 export const SwirlingSchoolOfFishPassive = skill(24037)
   .type("passive")
   .on("useSkill", (c, e) => e.action.skill.definition.id === SwirlingSchoolOfFish && c.self.hasStatus(FontemerPearl))
-  .usagePerRound(1, { name: "addPearlUsageCount" })
+  .usagePerRound(1, { name: "usagePerRound1" })
   .do((c) => {
     const pearl = c.self.hasStatus(FontemerPearl)!;
     c.of(pearl).addVariable("usage", 1);

@@ -298,7 +298,7 @@ const propNameDict: QueryLangActionDict<string> = {
   ExternalPropertyName(arg) {
     return arg.sourceString;
   },
-  PropertyName(idOrLit, _def) {
+  PropertyName(idOrLit) {
     return idOrLit.propName;
   },
   identifier(arg) {
@@ -466,16 +466,9 @@ const evalExprDict: QueryLangActionDict<number> = {
   PrimaryExpression_paren(_l, expr, _r) {
     return expr.evalExpr(this.args.state);
   },
-  PropertyName(idOrLit, defPart) {
+  PropertyName(idOrLit) {
     const name = idOrLit.propName;
-    if (defPart.numChildren === 0) {
-      return (
-        this.args.state.variables[name] ??
-        this.args.state.definition.constants[name]
-      );
-    } else {
-      return this.args.state.definition.constants[name];
-    }
+    return this.args.state.variables[name];
   },
   numericLiteral(_) {
     return Number(this.sourceString);

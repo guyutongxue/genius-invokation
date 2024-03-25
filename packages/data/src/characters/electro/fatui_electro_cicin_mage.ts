@@ -49,9 +49,7 @@ export const ElectroCicin = summon(124041)
   .endPhaseDamage(DamageType.Electro, 1)
   .usage(3)
   .on("damaged", (c, e) => e.target.definition.id === FatuiElectroCicinMage && e.getReaction() !== null)
-  .addVariable("usage", -1)
-  .if((c) => c.getVariable("usage") <= 0)
-  .dispose()
+  .consumeUsage()
   .on("enter")
   .combatStatus(CrushingThunder, "opp")
   .on("selfDispose")
@@ -60,9 +58,7 @@ export const ElectroCicin = summon(124041)
   })
   .on("beforeAction", (c) => c.$(`my equipment with definition id ${ElectroCicinsGleam}`) && c.getVariable("usage") >= 3)
   .damage(DamageType.Electro, 1)
-  .addVariable("usage", -1)
-  // .if((c) => c.getVariable("usage") <= 0)
-  // .dispose()
+  .consumeUsage()
   .done();
 
 /**
@@ -100,7 +96,7 @@ export const ElectroCicinShield = combatStatus(124042)
   .do((c) => {
     const cicin = c.$(`my summon with definition id ${ElectroCicin}`);
     if (cicin) {
-      const usage = cicin.getVariable("usage");
+      const usage = cicin.getVariable("usage")!;
       c.addVariable("shield", Math.min(usage, 3));
     }
   })

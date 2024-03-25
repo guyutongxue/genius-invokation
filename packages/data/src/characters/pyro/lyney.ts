@@ -24,7 +24,7 @@ import { character, skill, summon, status, card, DamageType, Aura } from "@gi-tc
  */
 export const GrinmalkinHat = summon(113101)
   .endPhaseDamage(DamageType.Pyro, 1)
-  .usage(1, { recreateMax: 2 })
+  .usageCanAppend(1, 2)
   .done();
 
 /**

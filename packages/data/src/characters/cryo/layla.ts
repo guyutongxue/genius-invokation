@@ -51,7 +51,7 @@ export const CurtainOfSlumberShield = combatStatus(111091)
  * 重复生成此出战状态时：累积2枚「晚星」。
  */
 export const ShootingStar = combatStatus(111092)
-  .variable("star", 0, { recreateAdditional: 2, recreateMax: Infinity })
+  .variableCanAppend("star", 0, Infinity, 2)
   .on("useSkill")
   .do((c) => {
     c.addVariable("star", 1);

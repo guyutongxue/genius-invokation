@@ -36,7 +36,7 @@ export const LightningRoseSummon = summon(114092)
  * 所附属角色受到苍雷伤害时：移除此状态，每层「引雷」使此伤害+1。
  */
 export const Conductive = status(114091)
-  .variable("conductive", 2, { recreateAdditional: 1, recreateMax: 4 })
+  .variableCanAppend("conductive", 2, 4, 1)
   .on("endPhase")
   .addVariableWithMax("conductive", 1, 4)
   .on("beforeDamaged", (c, e) => e.via.definition.id === VioletArc)

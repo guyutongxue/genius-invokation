@@ -24,7 +24,7 @@ import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/co
  */
 export const ScarletSeal = status(113081)
   .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
-  .usage(1, { recreateMax: 2 })
+  .usageCanAppend(1, 2)
   .increaseDamage(2)
   .done();
 

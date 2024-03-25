@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -29,6 +29,7 @@ import {
 } from "../base/reaction";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
+import { UsagePerRoundVariableNames } from "./entity";
 
 export interface SkillDefinitionBase<Arg> {
   readonly __definition: "skills";
@@ -216,11 +217,15 @@ export class ActionEventArg<
   isDeclareEnd(): this is ActionEventArg<DeclareEndInfo> {
     return this.action.type === "declareEnd";
   }
-  isSkillOrTalentOf(character: CharacterState, skillType?: CommonSkillType): boolean {
+  isSkillOrTalentOf(
+    character: CharacterState,
+    skillType?: CommonSkillType,
+  ): boolean {
     if (this.action.type === "useSkill") {
       const skillDefId = this.action.skill.definition.id;
       return !!character.definition.initiativeSkills.find(
-        (def) => def.id === skillDefId && (!skillType || def.skillType === skillType),
+        (def) =>
+          def.id === skillDefId && (!skillType || def.skillType === skillType),
       );
     } else if (this.action.type === "playCard") {
       return !!(
@@ -304,7 +309,9 @@ export class ModifyActionEventArg<
     // 否则，在骰子需求列表中，先考察有色元素骰，再考虑无色骰子
     const result = [...this._cost];
     // 对于所有减骰效果，优先考虑无色元素，其次是有色元素，最后是任意元素
-    const allDeduction = this._deductedCost.map(([type, count]) => [type, count] as [DiceType, number]).toSorted(([a], [b]) => a - b);
+    const allDeduction = this._deductedCost
+      .map(([type, count]) => [type, count] as [DiceType, number])
+      .toSorted(([a], [b]) => a - b);
     for (const diceType of [
       DiceType.Cryo,
       DiceType.Hydro,
@@ -320,15 +327,13 @@ export class ModifyActionEventArg<
         if (index === -1) {
           break;
         }
-        const deductionIndex = allDeduction.findIndex(
-          ([type]) => {
-            if (diceType === DiceType.Void) {
-              return true;
-            } else {
-              return type === diceType || type === DiceType.Omni;
-            }
-          },
-        );
+        const deductionIndex = allDeduction.findIndex(([type]) => {
+          if (diceType === DiceType.Void) {
+            return true;
+          } else {
+            return type === diceType || type === DiceType.Omni;
+          }
+        });
         if (deductionIndex === -1) {
           break;
         }
@@ -378,7 +383,9 @@ export class SwitchActiveEventArg extends EventArg {
   }
 }
 
-export class DamageOrHealEventArg<InfoT extends DamageInfo | HealInfo> extends EventArg {
+export class DamageOrHealEventArg<
+  InfoT extends DamageInfo | HealInfo,
+> extends EventArg {
   constructor(
     state: GameState,
     private readonly _damageInfo: InfoT,
@@ -392,7 +399,10 @@ export class DamageOrHealEventArg<InfoT extends DamageInfo | HealInfo> extends E
     return !this.isDamageTypeHeal();
   }
   isDamageTypeHeal() {
-    return this._damageInfo.type === DamageType.Heal || this._damageInfo.type === DamageType.Revive;
+    return (
+      this._damageInfo.type === DamageType.Heal ||
+      this._damageInfo.type === DamageType.Revive
+    );
   }
 
   get source() {
@@ -428,9 +438,9 @@ export class DamageOrHealEventArg<InfoT extends DamageInfo | HealInfo> extends E
     | DamageType.Pyro
     | DamageType.Electro
     | null {
-      if (!this.isDamageTypeDamage()) {
-        return null;
-      }
+    if (!this.isDamageTypeDamage()) {
+      return null;
+    }
     return isReactionSwirl(this.damageInfo as DamageInfo);
   }
   viaSkillType(skillType: CommonSkillType): boolean {
@@ -628,7 +638,10 @@ export const EVENT_MAP = {
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
 
-export type InlineEventNames = "modifyDamage0" | "modifyDamage1" | "onBeforeDispose";
+export type InlineEventNames =
+  | "modifyDamage0"
+  | "modifyDamage1"
+  | "onBeforeDispose";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 
@@ -704,13 +717,14 @@ export type TriggeredSkillFilter<E extends EventNames> = (
   arg: EventArgOf<E>,
 ) => boolean;
 
-export type TriggeredSkillDefinition<E extends EventNames = EventNames> =
-  SkillDefinitionBase<EventArgOf<E>> & {
-    readonly skillType: null;
-    readonly triggerOn: E;
-    readonly filter: TriggeredSkillFilter<E>;
-    readonly requiredCost: readonly [];
-  };
+export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
+  extends SkillDefinitionBase<EventArgOf<E>> {
+  readonly skillType: null;
+  readonly triggerOn: E;
+  readonly filter: TriggeredSkillFilter<E>;
+  readonly requiredCost: readonly [];
+  readonly usagePerRoundVariableName: UsagePerRoundVariableNames | null;
+}
 
 export type SkillDefinition =
   | InitiativeSkillDefinition

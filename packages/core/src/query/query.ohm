@@ -18,7 +18,7 @@ QueryLang {
     | kwDefeated | kwWeapon | kwElement | kwNation | kwWith
     | kwTag | kwId | kwDefinition | kwAt | kwHas
     | kwRecentFrom | kwOrderBy | kwLimit | kwNot | kwAnd
-    | kwOr | kwAs | kwOf
+    | kwOr | kwOf
 
   stringLiteral = "\"" doubleStringCharacter* "\""
   doubleStringCharacter = ~("\"" | "\\" | lineTerminator) sourceCharacter -- nonEscape
@@ -65,12 +65,9 @@ QueryLang {
   kwNot = "not" ~identifierPart
   kwAnd = "and" ~identifierPart
   kwOr = "or" ~identifierPart
-  kwAs = "as" ~identifierPart
   kwOf = "of" ~identifierPart
 
-  PropertyName = identifier AsDefinitionPart?
-    | stringLiteral AsDefinitionPart?
-  AsDefinitionPart = kwAs kwDefinition
+  PropertyName = identifier | stringLiteral 
   ExternalPropertyName = identifier | decimalIntegerLiteral
 
   PrimaryExpression = PropertyName

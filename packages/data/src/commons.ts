@@ -49,7 +49,7 @@ export const Crystallize = combatStatus(111)
  */
 export const BurningFlame = summon(115)
   .endPhaseDamage(DamageType.Pyro, 1)
-  .usage(1, { recreateMax: 2 })
+  .usageCanAppend(1, 2)
   .done();
 
 /**

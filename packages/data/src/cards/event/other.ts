@@ -523,11 +523,7 @@ export const MasterOfWeaponry = card(332010)
   .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
   .do((c, e) => {
     const weapon = c.of(c.of(e.targets[0]).hasWeapon()!);
-    for (const prop in weapon.state.definition.constants) {
-      if (prop.startsWith("usagePerRound")) {
-        weapon.setVariable(prop, weapon.state.definition.constants[prop]);
-      }
-    }
+    weapon.resetUsagePerRound();
     const target = c.of(e.targets[1]);
     const area = {
       type: "characters" as const,
@@ -549,11 +545,7 @@ export const BlessingOfTheDivineRelicsInstallation = card(332011)
   .addTarget("my character and not @targets.0")
   .do((c, e) => {
     const artifact = c.of(c.of(e.targets[0]).hasArtifact()!);
-    for (const prop in artifact.state.definition.constants) {
-      if (prop.startsWith("usagePerRound")) {
-        artifact.setVariable(prop, artifact.state.definition.constants[prop]);
-      }
-    }
+    artifact.resetUsagePerRound();
     const target = c.of(e.targets[1]);
     const area = {
       type: "characters" as const,
@@ -588,12 +580,7 @@ export const SendOff = card(332013)
   .costSame(2)
   .addTarget("opp summon")
   .do((c, e) => {
-    const currentUsage = c.getVariable("usage", e.targets[0]);
-    const finalUsage = Math.max(0, currentUsage - 2);
-    c.setVariable("usage", finalUsage, e.targets[0]);
-    if (finalUsage <= 0 && c.getVariable("disposeWhenUsageIsZero", e.targets[0])) {
-      c.dispose(e.targets[0]);
-    }
+    c.of(e.targets[0]).consumeUsage(2);
   })
   .done();
 
@@ -883,10 +870,7 @@ export const ControlledDirectionalBlast = card(332030)
   .filter((c) => c.$$("opp summons or opp supports").length >= 4)
   .do((c) => {
     for (const summon of c.$$("all summons")) {
-      summon.addVariable("usage", -1);
-      if (summon.getVariable("usage") <= 0 && summon.getVariable("disposeWhenUsageIsZero")) {
-        summon.dispose();
-      }
+      summon.consumeUsage();
     }
   })
   .done();

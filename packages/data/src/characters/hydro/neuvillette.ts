@@ -66,7 +66,7 @@ export const PastDraconicGlories = status(112103)
  */
 export const SourcewaterDroplet = combatStatus(112101)
   .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Neuvillette && e.isSkillType("normal"))
-  .usage(1, { recreateMax: 3 })
+  .usageCanAppend(1, 3)
   .do((c, e) => {
     const target = e.action.skill.caller as CharacterState;
     c.heal(2, target);

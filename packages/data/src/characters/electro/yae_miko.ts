@@ -25,10 +25,10 @@ import { character, skill, summon, status, combatStatus, card, DamageType, DiceT
  */
 export const SesshouSakura = summon(114081)
   .endPhaseDamage(DamageType.Electro, 1)
-  .usage(3, { recreateMax: 6 })
+  .usageCanAppend(3, 6)
   .on("declareEnd", (c) => c.getVariable("usage") >= 4)
   .damage(DamageType.Electro, 1)
-  .addVariable("usage", -1)
+  .consumeUsage()
   .done();
 
 /**

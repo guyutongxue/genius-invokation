@@ -24,7 +24,7 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType } fr
  * 所附属角色普通攻击时：如果「破局」已有2层，则消耗2层「破局」，使造成的物理伤害转换为水元素伤害，并抓1张牌。
  */
 export const BreakthroughStatus = status(112091)
-  .variable("break", 1, { recreateMax: 3 })
+  .variableCanAppend("break", 1, 3)
   .on("endPhase")
   .addVariableWithMax("break", 1, 3)
   .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && c.getVariable("break") >= 2)

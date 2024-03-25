@@ -24,7 +24,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 持续回合：2（可叠加，最多叠加到3回合）
  */
 export const ChisellightMirror = status(117061)
-  .duration(2, { recreateMax: 3 })
+  .duration(2, { append: { limit: 3 } })
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Dendro)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
