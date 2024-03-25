@@ -214,7 +214,7 @@ export class EntityBuilder<
 
   shield(count: number, max?: number) {
     this.tags("shield");
-    return this.variableCanAppend("shield", count, max)
+    return this.variableCanAppend("shield", count, max ?? count)
       .on("beforeDamaged", (c, e) => {
         if (c.self.state.definition.type === "combatStatus") {
           // 出战状态护盾只对出战角色生效
