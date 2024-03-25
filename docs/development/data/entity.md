@@ -47,7 +47,7 @@ const Stormzone = combatStatus(115031)
   .done();
 ```
 
-如果不希望可用次数到 0 时自动弃置（但仍然保留“可用次数”这一变量名），则在 `.usage` 的第二参数给出 `{ autoDispose: false }`：
+如果不希望可用次数到 0 时自动弃置，则在 `.usage` 的第二参数给出 `{ autoDispose: false }`：
 
 ```ts
 /** 莫娜：虚影 */

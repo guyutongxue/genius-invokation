@@ -608,9 +608,19 @@ export class TriggeredSkillBuilder<
 
   private buildSkill() {
     if (this._usageOpt?.autoDecrease) {
-      this.do((c) => {
-        c.consumeUsage();
-      });
+      if (this._usageOpt.name === "usage") {
+        // 若变量名为 usage，则消耗可用次数时可能调用 c.dispose
+        // 使用 consumeUsage 方法实现相关操作
+        this.do((c) => {
+          c.consumeUsage();
+        });
+      } else {
+        // 否则手动扣除使用次数
+        const name = this._usageOpt.name;
+        this.do((c) => {
+          c.addVariable(name, -1);
+        });
+      }
     }
     if (this._usagePerRoundOpt?.autoDecrease) {
       this.do((c) => {
