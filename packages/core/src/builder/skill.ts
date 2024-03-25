@@ -262,6 +262,7 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
   }),
   switchActive: defineDescriptor("onSwitchActive", (c, e, r) => {
+    console.log(c, e, r);
     return (
       checkRelative(c.state, e.switchInfo.from.id, r) ||
       checkRelative(c.state, e.switchInfo.to.id, r)
@@ -551,7 +552,7 @@ export class TriggeredSkillBuilder<
       }
       this._usageOpt = { name, autoDecrease };
     }
-    const autoDispose = !perRound && opt?.autoDispose !== false;
+    const autoDispose = name === "usage" && opt?.autoDispose !== false;
     this.parent.variable(name, count, opt);
     if (autoDispose) {
       this.parent._varConfigs.disposeWhenUsageIsZero = createVariable(1);

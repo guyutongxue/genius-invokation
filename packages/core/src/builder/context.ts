@@ -280,19 +280,23 @@ export class SkillContext<Meta extends ContextMetaBase> {
       );
     }
     const switchToTarget = targets[0];
-    const from = this.$("active character")!;
+    const playerWho = switchToTarget.who;
+    const from =
+      this.state.players[playerWho].characters[
+        getActiveCharacterIndex(this.state.players[playerWho])
+      ];
     if (from.id === switchToTarget.id) {
       return;
     }
     this.mutate({
       type: "switchActive",
-      who: switchToTarget.who,
+      who: playerWho,
       value: switchToTarget.state,
     });
     this.emitEvent("onSwitchActive", this.state, {
       type: "switchActive",
-      who: switchToTarget.who,
-      from: from.state,
+      who: playerWho,
+      from: from,
       to: switchToTarget.state,
     });
   }

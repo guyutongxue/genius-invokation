@@ -131,8 +131,7 @@ export class EntityBuilder<
     event: E,
     filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
   ) {
-    return this.on(event, filter).usage(1, {
-      name: `usage_${event}` as never,
+    return this.on(event, filter).usage<never>(1, {
       visible: false,
     });
   }
@@ -292,12 +291,13 @@ export class EntityBuilder<
     if (type === "swirledAnemo") {
       return this.hintIcon(DamageType.Anemo)
         .hintText(`${value}`)
-        .once(
+        .on(
           "dealDamage",
           (c, e) =>
             ["character", "summon"].includes(e.source.definition.type) &&
             e.isSwirl() !== null,
         )
+        .usage(1, { name: "swirledUsage" as never, visible: false })
         .do((c, e) => {
           const swirledType = e.isSwirl()!;
           c.setVariable("hintIcon", swirledType);
