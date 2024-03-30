@@ -2,6 +2,10 @@
 
 **仅记录破坏性改动。**
 
+## 0.4.0
+
+- 修改了 `IteratorState` 的结构（不再依赖于 `@stdlib/minstd*`）
+
 ## 0.3.0
 
 - `DamageType` 增加了 `DamageType.Revive`，复苏时的治疗改用此类型指代
