@@ -34,7 +34,7 @@ export interface GameConfig {
 }
 
 export interface IteratorState {
-  readonly random: number[];
+  readonly random: number;
   readonly id: number;
 }
 

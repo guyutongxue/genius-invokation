@@ -14,15 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Draft } from "immer";
-import type { U } from "ts-toolbelt";
-import minstd from "@stdlib/random-base-minstd";
 import { DiceType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import {
   CharacterState,
   EntityState,
   GameState,
-  IteratorState,
   PlayerState,
 } from "./base/state";
 import { EntityArea } from "./base/entity";
@@ -218,23 +215,6 @@ export function isSkillDisabled(character: CharacterState): boolean {
   return character.entities.some((st) =>
     st.definition.tags.includes("disableSkill"),
   );
-}
-
-export function nextRandom(
-  oldState: IteratorState,
-): readonly [number, IteratorState] {
-  const factory = minstd.factory({
-    state: new Int32Array(oldState.random),
-  });
-  // [1, 2147483646]
-  const randInt = factory();
-  return [
-    randInt,
-    {
-      random: [...factory.state],
-      id: oldState.id,
-    },
-  ];
 }
 
 export function drawCard(

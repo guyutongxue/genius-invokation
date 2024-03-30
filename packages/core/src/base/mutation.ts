@@ -27,13 +27,13 @@ import {
 import {
   disposeEntity,
   getEntityById,
-  nextRandom,
   sortDice,
 } from "../util";
 import { EntityArea } from "./entity";
 import { ActionInfo, DamageInfo, HealInfo, SkillDefinition, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
+import { nextRandom } from "../random";
 
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
@@ -188,8 +188,10 @@ function doMutation(state: GameState, m: Mutation): GameState {
       });
     }
     case "stepRandom": {
+      const next = nextRandom(state.iterators.random);
+      m.value = next;
       return produce(state, (draft) => {
-        [m.value, draft.iterators] = nextRandom(draft.iterators);
+        draft.iterators.random = next;
       });
     }
     case "changePhase": {

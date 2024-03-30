@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import minstd from "@stdlib/random-base-minstd";
 import { checkDice, flip } from "@gi-tcg/utils";
 import {
   Aura,
@@ -75,6 +74,7 @@ import {
 } from "./error";
 import { GameStateLogEntry } from "./log";
 import { EntityArea } from "./base/entity";
+import { randomSeed } from "./random";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -110,14 +110,11 @@ export class Game {
     this.config = mergeGameConfigWithDefault(opt.gameConfig);
     this.playerConfigs = opt.playerConfigs;
     this.io = opt.io;
-    const initRandomState = minstd.factory({
-      seed: this.config.randomSeed,
-    }).state;
     this.state = {
       data: this.data,
       config: this.config,
       iterators: {
-        random: [...initRandomState],
+        random: this.config.randomSeed,
         id: INITIAL_ID,
       },
       phase: "initHands",
@@ -1301,7 +1298,7 @@ export function mergeGameConfigWithDefault(
     maxRounds: 15,
     maxSummons: 4,
     maxSupports: 4,
-    randomSeed: Math.floor(Math.random() * 21474836) + 1,
+    randomSeed: randomSeed(),
     ...config,
   };
 }
