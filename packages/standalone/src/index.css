@@ -104,6 +104,7 @@ html {
   color: red;
 }
 .tabs {
+  padding: 0.5rem;
   position: relative;
   display: grid;
   grid-template-columns: [start] repeat(2, auto) 1fr [end];
