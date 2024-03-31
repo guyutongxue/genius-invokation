@@ -35,7 +35,7 @@ export const GrinmalkinHat = summon(113101)
  * 角色使用眩惑光戏法时：每层隐具余数使伤害+1。技能结算后，耗尽隐具余数，每层治疗角色1点。
  */
 export const PropSurplus = status(113102)
-  .variable("surplus", 0)
+  .variable("surplus", 1)
   .on("modifySkillDamage", (c, e) => e.via.definition.id === BewilderingLights)
   .do((c, e) => {
     e.increaseDamage(c.getVariable("surplus"));
@@ -43,8 +43,8 @@ export const PropSurplus = status(113102)
   .on("useSkill", (c, e) => e.action.skill.definition.id === BewilderingLights)
   .do((c) => {
     const surplus = c.getVariable("surplus");
-    c.setVariable("surplus", 0);
     c.heal(surplus, "@master");
+    c.dispose();
   })
   .done();
 
@@ -75,8 +75,10 @@ export const PropArrow = skill(13102)
     c.damage(DamageType.Pyro, 2);
     c.summon(GrinmalkinHat);
     const surplusSt = c.self.hasStatus(PropSurplus);
-    if (surplusSt){
-      c.addVariable("surplus", 1, surplusSt);
+    if (surplusSt) {
+      c.addVariableWithMax("surplus", 1, 3, surplusSt);
+    } else {
+      c.self.addStatus(PropSurplus);  
     }
     if (c.self.health >= 6) {
       c.damage(DamageType.Piercing, 1, "@self");
@@ -110,10 +112,11 @@ export const WondrousTrickMiracleParade = skill(13104)
     c.damage(DamageType.Pyro, 3);
     c.summon(GrinmalkinHat);
     const surplusSt = c.self.hasStatus(PropSurplus);
-    if (surplusSt){
-      c.addVariable("surplus", 1, surplusSt);
+    if (surplusSt) {
+      c.addVariableWithMax("surplus", 1, 3, surplusSt);
+    } else {
+      c.self.addStatus(PropSurplus);
     }
-  
   })
   .done();
 
