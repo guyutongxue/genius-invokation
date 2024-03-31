@@ -85,106 +85,103 @@ export function App() {
       <Switch>
         <Match when={mode() === GameMode.NotStarted}>
           <div class="tabs">
-            <div class="tab">
-              <input
-                class="tab__input"
-                type="radio"
-                name="gameModeTab"
-                id="standaloneInput"
-                checked
-              />
-              <label class="tab__header" for="standaloneInput">
-                本地模拟
-              </label>
-              <div class="tab__content config-panel">
-                <div class="config-panel__title">牌组配置</div>
-                <div class="config-panel__deck">
-                  <label>先手牌组</label>
-                  <input
-                    type="text"
-                    value={deck0()}
-                    onInput={(e) => setDeck0(e.currentTarget.value)}
-                  />
-                </div>
-                <div class="config-panel__deck">
-                  <label>后手牌组</label>
-                  <input
-                    type="text"
-                    value={deck1()}
-                    onInput={(e) => setDeck1(e.currentTarget.value)}
-                  />
-                </div>
-                <div class="config-panel__description">
-                  点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
-                  <br />
-                  （若弹窗不显示为浏览器阻止，请允许本页面使用弹出式窗口。）
-                </div>
-                <div class="config-panel__button-group">
-                  <button onClick={() => setMode(1)}>开始对局</button>
-                  <button
-                    onClick={async () => {
-                      const logs = await importLog().catch(alert);
-                      if (logs) {
-                        setLogs(logs);
-                        setMode(1);
-                      }
-                    }}
-                  >
-                    导入日志
-                  </button>
-                </div>
+            <input
+              class="tab__input"
+              type="radio"
+              name="gameModeTab"
+              id="standaloneInput"
+              checked
+            />
+            <label class="tab__header" for="standaloneInput">
+              本地模拟
+            </label>
+            <div class="tab__content config-panel">
+              <div class="config-panel__title">牌组配置</div>
+              <div class="config-panel__deck">
+                <label>先手牌组</label>
+                <input
+                  type="text"
+                  value={deck0()}
+                  onInput={(e) => setDeck0(e.currentTarget.value)}
+                />
               </div>
-            </div>
-            <div class="tab">
-              <input
-                class="tab__input"
-                type="radio"
-                name="gameModeTab"
-                id="multiplayerInput"
-              />
-              <label class="tab__header" for="multiplayerInput">
-                多人对战
-              </label>
-              <div class="tab__content config-panel">
-                <div class="config-panel__title">牌组配置</div>
-                <div class="config-panel__deck">
-                  <label>我方牌组</label>
-                  <input
-                    type="text"
-                    value={deck0()}
-                    onInput={(e) => setDeck0(e.currentTarget.value)}
-                  />
-                </div>
-                <div class="config-panel__title">房间号</div>
-                <div class="config-panel__room-id">
-                  <input
-                    type="text"
-                    value={roomId()}
-                    placeholder="创建新房间"
-                    onInput={(e) => setRoomId(e.currentTarget.value)}
-                  />
-                </div>
-                <div class="config-panel__description">
-                  房间号置空则创建新房间，否则加入指定房间。
-                  <span class="text-danger">
-                    多人对战模式是实验性的，可能存在大量 bug。
-                  </span>
-                </div>
-                <div class="config-panel__button-group">
-                  <button
-                    onClick={() =>
-                      setMode(
-                        roomId() === ""
-                          ? GameMode.MultiplayerHost
-                          : GameMode.MultiplayerGuest,
-                      )
+              <div class="config-panel__deck">
+                <label>后手牌组</label>
+                <input
+                  type="text"
+                  value={deck1()}
+                  onInput={(e) => setDeck1(e.currentTarget.value)}
+                />
+              </div>
+              <div class="config-panel__description">
+                点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
+                <br />
+                （若弹窗不显示为浏览器阻止，请允许本页面使用弹出式窗口。）
+              </div>
+              <div class="config-panel__button-group">
+                <button onClick={() => setMode(1)}>开始对局</button>
+                <button
+                  onClick={async () => {
+                    const logs = await importLog().catch(alert);
+                    if (logs) {
+                      setLogs(logs);
+                      setMode(1);
                     }
-                  >
-                    {roomId() === "" ? "创建房间" : "加入房间"}
-                  </button>
-                </div>
+                  }}
+                >
+                  导入日志
+                </button>
               </div>
             </div>
+            <input
+              class="tab__input"
+              type="radio"
+              name="gameModeTab"
+              id="multiplayerInput"
+            />
+            <label class="tab__header" for="multiplayerInput">
+              多人对战
+            </label>
+            <div class="tab__content config-panel">
+              <div class="config-panel__title">牌组配置</div>
+              <div class="config-panel__deck">
+                <label>我方牌组</label>
+                <input
+                  type="text"
+                  value={deck0()}
+                  onInput={(e) => setDeck0(e.currentTarget.value)}
+                />
+              </div>
+              <div class="config-panel__title">房间号</div>
+              <div class="config-panel__room-id">
+                <input
+                  type="text"
+                  value={roomId()}
+                  placeholder="创建新房间"
+                  onInput={(e) => setRoomId(e.currentTarget.value)}
+                />
+              </div>
+              <div class="config-panel__description">
+                房间号置空则创建新房间，否则加入指定房间。
+                <span class="text-danger">
+                  多人对战模式是实验性的，可能存在大量 bug。
+                </span>
+              </div>
+              <div class="config-panel__button-group">
+                <button
+                  onClick={() =>
+                    setMode(
+                      roomId() === ""
+                        ? GameMode.MultiplayerHost
+                        : GameMode.MultiplayerGuest,
+                    )
+                  }
+                >
+                  {roomId() === "" ? "创建房间" : "加入房间"}
+                </button>
+              </div>
+            </div>
+            <div class="tab__spacer" />
           </div>
           <h3>友情链接</h3>
           <ul>

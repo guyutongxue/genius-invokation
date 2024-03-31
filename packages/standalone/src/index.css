@@ -103,54 +103,53 @@ html {
 .text-danger {
   color: red;
 }
-
 .tabs {
   position: relative;
-  display: flex;
-  gap: 0.25rem;
-  padding: 0 0.5rem;
+  display: grid;
+  grid-template-columns: [start] repeat(2, auto) 1fr [end];
+  grid-template-rows: auto [content-start] auto;
 }
 
-.tab {
+.tab__input {
+  display: none;
+}
+.tab__content {
+  display: none;
+  border: black 1px solid;
+  border-top: white 1px solid;
+  background-color: white;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  padding: 1rem;
+  grid-row-start: content-start;
+  grid-column-start: start;
+  grid-column-end: end;
+}
+.tab__input:checked + * + .tab__content {
+  display: block;
+}
+.tab__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  height: 2rem;
+  background-color: #f0f0f0;
+  border-radius: 0.5rem 0.5rem 0 0;
+  transition-property: all;
+  transition-duration: 0.2s;
+  border-bottom: black 1px solid;
+}
+.tab__input:not(:checked) + .tab__header:hover {
+  background-color: #e0e0e0;
+}
+.tab__input:checked + .tab__header {
+  background-color: white;
+  border: black 1px solid;
+  border-bottom: 0;
+  z-index: 1;
+}
 
-  --tab-header-height: 2rem;
-
-  .tab__input {
-    display: none;
-  }
-  .tab__content {
-    display: none;
-    position: absolute;
-    top: var(--tab-header-height);
-    left: 0;
-    border: black 1px solid;
-    background-color: white;
-    border-radius: 0.5rem;
-    padding: 1rem;
-  }
-  .tab__input:checked ~ .tab__content {
-    display: block;
-  }
-  .tab__header {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0 0.5rem;
-    height: var(--tab-header-height);
-    background-color: #f0f0f0;
-    border-radius: 0.5rem 0.5rem 0 0;
-    transition-property: all;
-    transition-duration: 0.2s;
-  }
-  .tab__input:not(:checked) ~ .tab__header:hover {
-    background-color: #e0e0e0;
-  }
-  .tab__input:checked ~ .tab__header {
-    background-color:white;
-    border: black 1px solid;
-    border-bottom: white;
-    height: calc(var(--tab-header-height) + 1px);
-    padding-bottom: 2px;
-    z-index: 1;
-  }
+.tab__spacer {
+  border-bottom: black 1px solid;
 }
