@@ -186,6 +186,15 @@ export function App() {
           <h3>友情链接</h3>
           <ul>
             <li>
+              <a
+                href="https://webstatic.mihoyo.com/ys/event/bbs-lineup-qskp/index.html#/pc/publish"
+                target="_blank"
+              >
+                米游社「七圣召唤」卡牌广场牌组编辑器
+              </a>
+              （可生成牌组码）
+            </li>
+            <li>
               此项目{" "}
               <a
                 href="https://github.com/Guyutongxue/genius-invokation"
