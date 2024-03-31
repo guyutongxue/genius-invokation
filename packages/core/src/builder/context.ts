@@ -777,7 +777,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (!Reflect.has(target.definition.varConfigs, "usage")) {
       return;
     }
-    const current = this.getVariable("usage", this.callerState);
+    const current = this.getVariable("usage", target);
     if (current > 0) {
       this.addVariable("usage", -Math.min(count, current), target);
       if (
