@@ -166,16 +166,80 @@ export function App() {
                 </div>
                 <div class="config-panel__description">
                   房间号置空则创建新房间，否则加入指定房间。
-                  <span class="text-danger">多人对战模式是实验性的，可能存在大量 bug。</span>
+                  <span class="text-danger">
+                    多人对战模式是实验性的，可能存在大量 bug。
+                  </span>
                 </div>
                 <div class="config-panel__button-group">
-                  <button onClick={() => setMode(roomId() === "" ? GameMode.MultiplayerHost : GameMode.MultiplayerGuest)}>
+                  <button
+                    onClick={() =>
+                      setMode(
+                        roomId() === ""
+                          ? GameMode.MultiplayerHost
+                          : GameMode.MultiplayerGuest,
+                      )
+                    }
+                  >
                     {roomId() === "" ? "创建房间" : "加入房间"}
                   </button>
                 </div>
               </div>
             </div>
           </div>
+          <h3>友情链接</h3>
+          <ul>
+            <li>
+              此项目{" "}
+              <a
+                href="https://github.com/Guyutongxue/genius-invokation"
+                target="_blank"
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://jarvis-yu.github.io/Dottore-Genius-Invokation-TCG-PWA/"
+                target="_blank"
+              >
+                Dottore 七圣召唤模拟器
+              </a>
+              （
+              <a
+                href="https://github.com/Jarvis-Yu/Dottore-Genius-Invokation-TCG-Simulator"
+                target="_blank"
+              >
+                GitHub
+              </a>
+              ）
+            </li>
+            <li>
+              <a href="https://7shengzhaohuan.online/lpsim" target="_blank">
+                七圣召唤水皇模拟器 "LPSim"
+              </a>
+              （
+              <a href="https://github.com/LPSim/backend" target="_blank">
+                GitHub
+              </a>
+              ）
+            </li>
+            <li>
+              <a
+                href="https://flick-ai.github.io/Genius-Invokation"
+                target="_blank"
+              >
+                flick-ai 七圣召唤模拟器
+              </a>
+              （
+              <a
+                href="https://github.com/flick-ai/Genius-Invokation"
+                target="_blank"
+              >
+                GitHub
+              </a>
+              ）
+            </li>
+          </ul>
         </Match>
         <Match when={mode() === GameMode.Standalone}>
           <StandaloneParent logs={logs()} deck0={deck0()} deck1={deck1()} />
