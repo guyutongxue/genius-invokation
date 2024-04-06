@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "NODE_ENV=production bunx --bun vite build",
-    "preview": "NODE_ENV=production bunx --bun vite preview"
+    "build": "bunx --bun vite build",
+    "preview": "bunx --bun vite preview"
   },
   "browserslist": "defaults",
   "dependencies": {

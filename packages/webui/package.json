@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "NODE_ENV=production bunx --bun vite build"
+    "build": "bunx --bun vite build"
   },
   "dependencies": {
     "solid-element": "^1.8.0",
