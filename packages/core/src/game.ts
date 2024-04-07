@@ -88,8 +88,8 @@ const INITIAL_ID = -500000;
 const IO_CHECK_GIVEUP_INTERVAL = 500;
 
 type ActionInfoWithNewState = ActionInfo & {
-  newState: GameState;
-  deferredEventList: EventAndRequest[];
+  readonly newState: GameState;
+  readonly deferredEventList: EventAndRequest[];
 };
 
 export class Game {
