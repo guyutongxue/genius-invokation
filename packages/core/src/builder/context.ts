@@ -350,6 +350,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         source: this.callerState,
         via: this.skillInfo,
         target: targetState,
+        causeDefeated: false,
         roundNumber: this.state.roundNumber,
         fromReaction: null,
       };
@@ -378,6 +379,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type,
         value,
         via: this.skillInfo,
+        causeDefeated: targetState.variables.health <= value,
         roundNumber: this.state.roundNumber,
         fromReaction: this.fromReaction,
       };
@@ -457,6 +459,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           via: this.skillInfo,
           target: target.state,
           isDamage: false,
+          causeDefeated: false,
           roundNumber: this.state.roundNumber,
           fromReaction: this.fromReaction,
         };
@@ -687,10 +690,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
-      this.handleInlineEvent(
-        "onBeforeDispose",
-        new EntityEventArg(this.state, entityState),
-      );
       this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
         type: "disposeEntity",

@@ -78,6 +78,7 @@ export interface DamageInfo {
   readonly source: CharacterState | EntityState;
   readonly via: SkillInfo;
   readonly target: CharacterState;
+  readonly causeDefeated: boolean;
   readonly fromReaction: Reaction | null;
   readonly roundNumber: number;
   readonly log?: string;
@@ -91,6 +92,7 @@ export interface HealInfo {
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly fromReaction: null;
+  readonly causeDefeated: false;
   readonly roundNumber: number;
   readonly log?: string;
 }
@@ -479,15 +481,17 @@ export class ModifyDamage1EventArg<
   }
 
   override get damageInfo(): InfoT {
+    const value = Math.max(
+      0,
+      Math.ceil(
+        (super.damageInfo.value + this._increased) * this._multiplier -
+          this._decreased,
+      ),
+    );
     return {
       ...super.damageInfo,
-      value: Math.max(
-        0,
-        Math.ceil(
-          (super.damageInfo.value + this._increased) * this._multiplier -
-            this._decreased,
-        ),
-      ),
+      value,
+      causeDefeated: this.target.variables.health <= value,
       log: this._log,
     };
   }
@@ -618,19 +622,16 @@ export const EVENT_MAP = {
   onAction: ActionEventArg,
 
   onSwitchActive: SwitchActiveEventArg,
+  onReaction: ReactionEventArg,
 
   modifyDamage0: ModifyDamage0EventArg,
   modifyDamage1: ModifyDamage1EventArg,
   onDamageOrHeal: DamageOrHealEventArg,
-  // onHeal: HealEventArg,
-  onReaction: ReactionEventArg,
 
   onEnter: EnterEventArg,
-  onBeforeDispose: EntityEventArg,
   onDispose: EntityEventArg,
 
   modifyZeroHealth: ZeroHealthEventArg,
-  onDefeated: CharacterEventArg,
   onRevive: CharacterEventArg,
   onReplaceCharacterDefinition: ReplaceCharacterDefinitionEventArg,
 } satisfies Record<string, new (...args: any[]) => EventArg>;
@@ -640,8 +641,7 @@ export type EventNames = keyof EventMap;
 
 export type InlineEventNames =
   | "modifyDamage0"
-  | "modifyDamage1"
-  | "onBeforeDispose";
+  | "modifyDamage1";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 

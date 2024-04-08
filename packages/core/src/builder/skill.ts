@@ -296,11 +296,11 @@ const detailedEventDictionary = {
   dispose: defineDescriptor("onDispose", (c, e, r) => {
     return checkRelative(c.state, e.entity.id, r);
   }),
-  selfDispose: defineDescriptor("onBeforeDispose", (c, e, r) => {
+  selfDispose: defineDescriptor("onDispose", (c, e, r) => {
     return e.entity.id === r.callerId;
   }),
-  defeated: defineDescriptor("onDefeated", (c, e, r) => {
-    return checkRelative(c.state, e.character.id, r);
+  defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
+    return checkRelative(c.state, e.target.id, r) && e.damageInfo.causeDefeated;
   }),
   revive: defineDescriptor("onRevive", (c, e, r) => {
     return checkRelative(c.state, e.character.id, r);

@@ -320,6 +320,9 @@ export class EntityBuilder<
       this._usagePerRoundIndex > 0 ||
       Reflect.has(this._varConfigs, "duration")
     ) {
+      if (this.type === "status" || this.type === "equipment") {
+        this.on("defeated").dispose();
+      }
       const usagePerRoundNames = USAGE_PER_ROUND_VARIABLE_NAMES.slice(
         0,
         this._usagePerRoundIndex,

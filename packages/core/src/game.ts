@@ -1137,7 +1137,6 @@ export class Game {
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
     const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
     const defeatEvents: CharacterEventArg[] = [];
-    const disposeEvents: EntityEventArg[] = [];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
@@ -1163,6 +1162,7 @@ export class Game {
                 target: ch,
                 value: zeroHealthEventArg._immuneInfo.newHealth,
                 expectedValue: zeroHealthEventArg._immuneInfo.newHealth,
+                causeDefeated: false,
                 via: zeroHealthEventArg._immuneInfo.skill,
                 roundNumber: this.state.roundNumber,
                 fromReaction: null,
@@ -1178,15 +1178,8 @@ export class Game {
             value: 0,
           };
           this.mutate(mut);
-          // 清空角色装备与状态、元素附着、能量
-          for (const et of ch.entities) {
-            // FIX ME: what about onBeforeDispose event?
-            disposeEvents.push(new EntityEventArg(this.state, et));
-            this.mutate({
-              type: "disposeEntity",
-              oldState: et,
-            });
-          }
+          // 清空元素附着、能量
+          // 装备和状态的清除通过响应 onDefeated 实现
           mut = {
             ...mut,
             varName: "aura",
@@ -1245,9 +1238,6 @@ export class Game {
     }
     for (const defeatEvent of defeatEvents) {
       await this.emitEvent("onDefeated", defeatEvent);
-    }
-    for (const disposeEvent of disposeEvents) {
-      await this.emitEvent("onDispose", disposeEvent);
     }
     return defeatEvents.length > 0;
   }
