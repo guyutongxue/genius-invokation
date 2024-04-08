@@ -642,6 +642,7 @@ export class TriggeredSkillBuilder<
       id: this.id,
       triggerOn: eventName,
       requiredCost: [],
+      gainEnergy: false,
       filter,
       action,
       usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
@@ -758,9 +759,6 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
   reserve(): void {}
 
   done(): SkillHandle {
-    if (this._gainEnergy) {
-      this.do((c) => c.self.gainEnergy(1));
-    }
     const action: SkillDescription<void> = this.getAction();
     registerSkill({
       __definition: "skills",
@@ -769,6 +767,7 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
       id: this.skillId,
       triggerOn: null,
       requiredCost: this._cost,
+      gainEnergy: this._gainEnergy,
       action,
     });
     return this.skillId as SkillHandle;

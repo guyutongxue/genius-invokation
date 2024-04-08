@@ -53,6 +53,7 @@ export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
   readonly skillType: SkillType;
   readonly requiredCost: readonly DiceType[];
+  readonly gainEnergy: boolean;
   readonly triggerOn: null;
 }
 
@@ -723,6 +724,7 @@ export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
   readonly triggerOn: E;
   readonly filter: TriggeredSkillFilter<E>;
   readonly requiredCost: readonly [];
+  readonly gainEnergy: false;
   readonly usagePerRoundVariableName: UsagePerRoundVariableNames | null;
 }
 
