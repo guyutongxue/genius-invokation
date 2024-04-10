@@ -12,4 +12,6 @@
 
 ## [关于开发](./docs/development/README.md)
 
-如果有意图参与本项目开发，可联系我邮箱 guyutongxue@163.com 注明“七圣召唤”。
+上述链接可查看（可能是过时的）开发文档和注记。如果有意图参与本项目开发，我搞了个 QQ 群 693466327，嗯。
+
+![qq_group_qr](./docs/images/qq_group.jpg)
