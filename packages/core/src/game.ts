@@ -50,12 +50,14 @@ import {
   ActionEventArg,
   ActionInfo,
   CharacterEventArg,
+  DamageOrHealEventArg,
   ElementalTuningInfo,
   EntityEventArg,
   EventAndRequest,
   EventArg,
   EventArgOf,
   EventNames,
+  HealInfo,
   ModifyActionEventArg,
   ModifyRollEventArg,
   PlayerEventArg,
@@ -1136,7 +1138,6 @@ export class Game {
     const currentTurn = this.state.currentTurn;
     // 指示双方出战角色是否倒下，若有则 await（等待用户操作）
     const activeDefeated: (Promise<CharacterState> | null)[] = [null, null];
-    const defeatEvents: CharacterEventArg[] = [];
     for (const who of [currentTurn, flip(currentTurn)]) {
       const player = this.state.players[who];
       const activeIdx = getActiveCharacterIndex(player);
@@ -1154,23 +1155,24 @@ export class Game {
               varName: "health",
               value: zeroHealthEventArg._immuneInfo.newHealth,
             });
+            const healInfo: HealInfo = {
+              type: DamageType.Revive,
+              source: zeroHealthEventArg._immuneInfo.skill.caller,
+              target: ch,
+              value: zeroHealthEventArg._immuneInfo.newHealth,
+              expectedValue: zeroHealthEventArg._immuneInfo.newHealth,
+              causeDefeated: false,
+              via: zeroHealthEventArg._immuneInfo.skill,
+              roundNumber: this.state.roundNumber,
+              fromReaction: null,
+            };
             this.mutate({
               type: "pushDamageLog",
-              damage: {
-                type: DamageType.Revive,
-                source: zeroHealthEventArg._immuneInfo.skill.caller,
-                target: ch,
-                value: zeroHealthEventArg._immuneInfo.newHealth,
-                expectedValue: zeroHealthEventArg._immuneInfo.newHealth,
-                causeDefeated: false,
-                via: zeroHealthEventArg._immuneInfo.skill,
-                roundNumber: this.state.roundNumber,
-                fromReaction: null,
-              },
+              damage: healInfo,
             });
+            await this.emitEvent("onDamageOrHeal", new DamageOrHealEventArg(this.state, healInfo));
             continue;
           }
-          defeatEvents.push(new CharacterEventArg(this.state, ch));
           let mut: Mutation = {
             type: "modifyEntityVar",
             state: ch,
@@ -1235,9 +1237,6 @@ export class Game {
     }
     if (secondSwitchActiveTarget !== null) {
       await this.switchActive(flip(currentTurn), secondSwitchActiveTarget);
-    }
-    for (const defeatEvent of defeatEvents) {
-      await this.emitEvent("onDefeated", defeatEvent);
     }
     return defeatEvents.length > 0;
   }

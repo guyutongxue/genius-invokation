@@ -83,23 +83,43 @@ export function allEntities(
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
     const activeIdx = getActiveCharacterIndex(player);
-    // 根据一些测试表明，游戏实际的响应顺序并非规则书所述，而是
+    // 游戏实际的响应顺序并非规则书所述，而是
     // 出战角色、出战角色装备和状态、出战状态、后台角色、后台角色装备和状态
     // 召唤物、支援牌
     // （即出战状态区夹在出战角色区和后台角色区之间）
     const [active, ...standby] = player.characters.shiftLeft(activeIdx);
     if (!excludeDefeated || active.variables.alive) {
-      result.push(active, ...active.entities);
+      result.push(active);
     }
-    result.push(...player.combatStatuses);
+    result.push(...active.entities, ...player.combatStatuses);
     for (const ch of standby) {
       if (!excludeDefeated || ch.variables.alive) {
-        result.push(ch, ...ch.entities);
+        result.push(ch);
       }
+      result.push(...ch.entities);
     }
     result.push(...player.summons, ...player.supports);
   }
   return result;
+}
+
+/**
+ * 列出对局状态中的所有实体，但是将 `priorityCh` 中的角色区实体优先列出。
+ * 
+ * 在响应 defeated，即造成倒下的 damageOrHeal 事件时，倒下角色区的实体会优先响应。
+ * @param state 对局状态
+ * @param priorityCh 优先列出的角色区
+ * @returns 
+ */
+export function allEntitiesWithPriority(state: GameState, { id }: CharacterState) {
+  const all = allEntities(state);
+  const priorityCh = all.find((et): et is CharacterState => et.id === id);
+  if (typeof priorityCh === "undefined") {
+    throw new GiTcgCoreInternalEntityNotFoundError(state, id);
+  }
+  const withPriorities = [priorityCh, ...priorityCh.entities];
+  const rest = all.filter((et) => !withPriorities.includes(et));
+  return [...withPriorities, ...rest];
 }
 
 export function getEntityArea(state: GameState, id: number): EntityArea {
