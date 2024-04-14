@@ -912,13 +912,12 @@ export class Game {
 
   /**
    * 仅在 `useSkill` 或 `doHandleEvents` 中调用。
-   * @returns 此次技能执行所引发的待处理的事件。不要抛弃返回值！
    */
-  private async useSkillImpl(
+  private async useSkill(
     skillInfo: SkillInfo,
-    hasIo: boolean,
     arg: EventArg | CardSkillEventArg | void,
-  ): Promise<EventAndRequest[]> {
+    hasIo = true,
+  ): Promise<void> {
     const callerArea = getEntityArea(this.state, skillInfo.caller.id);
     let filteringState = this.state;
     if (arg instanceof EventArg) {
@@ -932,7 +931,7 @@ export class Game {
       "filter" in skillDef &&
       !(0, skillDef.filter)(filteringState, skillInfo, arg as any)
     ) {
-      return [];
+      return;
     }
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
@@ -1000,7 +999,7 @@ export class Game {
         damageEventArgs.push(arg);
       }
     }
-    
+
 
     return eventList;
   }
@@ -1010,22 +1009,13 @@ export class Game {
     const oldState = this.state;
     let newState = this.state;
     try {
-      const events = await this.useSkillImpl(skillInfo, false, void 0);
-      await this.handleEvents(events, false);
+      await this.useSkill(skillInfo, void 0, false);
       newState = this.state;
     } catch {
     } finally {
       this.state = oldState;
       return newState;
     }
-  }
-
-  async useSkill(
-    skillInfo: SkillInfo,
-    arg: void | CardSkillEventArg | EventArgOf<EventNames>,
-  ): Promise<void> {
-    const events = await this.useSkillImpl(skillInfo, true, arg);
-    await this.handleEvents(events, true);
   }
 
   private async switchCard(who: 0 | 1) {
@@ -1101,65 +1091,7 @@ export class Game {
     actions: EventAndRequest[],
     hasIo: boolean,
   ): AsyncGenerator<EventAndRequest[], void> {
-    for (const [name, arg] of actions) {
-      if (name === "requestReroll") {
-        if (hasIo) {
-          await this.reroll(arg.who, arg.times);
-        }
-      } else if (name === "requestSwitchHands") {
-        if (hasIo) {
-          await this.switchCard(arg.who);
-        }
-      } else if (name === "requestUseSkill") {
-        const def = this.data.skills.get(arg.requestingSkillId);
-        if (typeof def === "undefined") {
-          throw new GiTcgDataError(
-            `Unknown skill id ${arg.requestingSkillId} (requested by ${arg.caller.id} (defId = ${arg.caller.definition.id}))`,
-          );
-        }
-        const skillInfo: SkillInfo = {
-          caller: arg.caller,
-          definition: def,
-          fromCard: null,
-          requestBy: arg.via,
-          charged: false, // Can this be charged?
-          plunging: false,
-        };
-        yield this.useSkillImpl(skillInfo, hasIo, void 0);
-      } else {
-        const onTimeState = arg._state;
-        const entities = allEntities(onTimeState, true);
-        for (const entity of entities) {
-          for (const sk of entity.definition.skills) {
-            if (sk.triggerOn === name) {
-              const currentEntities = allEntities(this.state);
-              let caller: AnyState;
-              if (name === "onDispose" && arg.entity === entity) {
-                const who = getEntityArea(arg._state, arg.entity.id).who;
-                caller = getEntityById(
-                  this.state,
-                  this.state.players[who].activeCharacterId,
-                  true,
-                );
-              } else if (!currentEntities.find((et) => et.id === entity.id)) {
-                continue;
-              } else {
-                caller = entity;
-              }
-              const skillInfo: SkillInfo = {
-                caller,
-                definition: sk,
-                fromCard: null,
-                requestBy: null,
-                charged: false,
-                plunging: false,
-              };
-              yield this.useSkillImpl(skillInfo, hasIo, arg);
-            }
-          }
-        }
-      }
-    }
+    
   }
 
   // 检查倒下角色，若有返回 `true`
@@ -1274,8 +1206,64 @@ export class Game {
   }
 
   private async handleEvents(actions: EventAndRequest[], hasIo: boolean) {
-    for await (const events of this.doHandleEvents(actions, hasIo)) {
-      await this.handleEvents(events, hasIo);
+    for (const [name, arg] of actions) {
+      if (name === "requestReroll") {
+        if (hasIo) {
+          await this.reroll(arg.who, arg.times);
+        }
+      } else if (name === "requestSwitchHands") {
+        if (hasIo) {
+          await this.switchCard(arg.who);
+        }
+      } else if (name === "requestUseSkill") {
+        const def = this.data.skills.get(arg.requestingSkillId);
+        if (typeof def === "undefined") {
+          throw new GiTcgDataError(
+            `Unknown skill id ${arg.requestingSkillId} (requested by ${arg.caller.id} (defId = ${arg.caller.definition.id}))`,
+          );
+        }
+        const skillInfo: SkillInfo = {
+          caller: arg.caller,
+          definition: def,
+          fromCard: null,
+          requestBy: arg.via,
+          charged: false, // Can this be charged?
+          plunging: false,
+        };
+        await this.useSkill(skillInfo, void 0, hasIo);
+      } else {
+        const onTimeState = arg._state;
+        const entities = allEntities(onTimeState, true);
+        for (const entity of entities) {
+          for (const sk of entity.definition.skills) {
+            if (sk.triggerOn === name) {
+              const currentEntities = allEntities(this.state);
+              let caller: AnyState;
+              if (name === "onDispose" && arg.entity === entity) {
+                const who = getEntityArea(arg._state, arg.entity.id).who;
+                caller = getEntityById(
+                  this.state,
+                  this.state.players[who].activeCharacterId,
+                  true,
+                );
+              } else if (!currentEntities.find((et) => et.id === entity.id)) {
+                continue;
+              } else {
+                caller = entity;
+              }
+              const skillInfo: SkillInfo = {
+                caller,
+                definition: sk,
+                fromCard: null,
+                requestBy: null,
+                charged: false,
+                plunging: false,
+              };
+              await this.useSkill(skillInfo, arg, hasIo);
+            }
+          }
+        }
+      }
     }
   }
   private async emitEvent<E extends EventNames>(
