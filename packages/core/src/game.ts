@@ -44,6 +44,7 @@ import {
   shuffle,
   sortDice,
   isSkillDisabled,
+  checkImmune,
 } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 import {
@@ -956,7 +957,7 @@ export class Game {
     }
 
     const damageEvents = eventList.filter(
-      (e): e is ["onDamageOrHeal", EventArgOf<"onDamageOrHeal">] =>
+      (e): e is ["onDamageOrHeal", DamageOrHealEventArg<DamageInfo>] =>
         e[0] === "onDamageOrHeal",
     );
     const nonDamageEvents = eventList.filter((e) => e[0] !== "onDamageOrHeal");
@@ -986,8 +987,20 @@ export class Game {
       await this.notifyAndPause(notifyEvents);
     }
 
-    const safeDamageList: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
-
+    const damageEventArgs: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
+    const zeroHealthEventArgs: ZeroHealthEventArg[] = [];
+    for (const [, arg] of damageEvents) {
+      if (arg.damageInfo.causeDefeated) {
+        const zeroHealthEventArg = new ZeroHealthEventArg(this.state, arg.damageInfo);
+        if (checkImmune(this.state, zeroHealthEventArg)) {
+          zeroHealthEventArgs.push(zeroHealthEventArg);
+        }
+        damageEventArgs.push(zeroHealthEventArg);
+      } else {
+        damageEventArgs.push(arg);
+      }
+    }
+    
 
     return eventList;
   }

@@ -585,7 +585,7 @@ export interface ImmuneInfo {
   newHealth: number;
 }
 
-export class ZeroHealthEventArg extends CharacterEventArg {
+export class ZeroHealthEventArg extends ModifyDamage1EventArg<DamageInfo> {
   _immuneInfo: null | ImmuneInfo = null;
   _log = "";
 
@@ -594,6 +594,13 @@ export class ZeroHealthEventArg extends CharacterEventArg {
     this._immuneInfo = {
       skill: this._currentSkillInfo!,
       newHealth,
+    };
+  }
+
+  override get damageInfo(): DamageInfo {
+    return {
+      ...super.damageInfo,
+      causeDefeated: false,
     };
   }
 }
@@ -640,9 +647,7 @@ export const EVENT_MAP = {
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
 
-export type InlineEventNames =
-  | "modifyDamage0"
-  | "modifyDamage1";
+export type InlineEventNames = "modifyDamage0" | "modifyDamage1";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 

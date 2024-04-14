@@ -26,7 +26,7 @@ import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
-import { SkillDefinition, SkillInfo } from "./base/skill";
+import { SkillDefinition, SkillInfo, ZeroHealthEventArg } from "./base/skill";
 import {
   GiTcgCoreInternalEntityNotFoundError,
   GiTcgCoreInternalError,
@@ -105,13 +105,16 @@ export function allEntities(
 
 /**
  * 列出对局状态中的所有实体，但是将 `priorityCh` 中的角色区实体优先列出。
- * 
+ *
  * 在响应 defeated，即造成倒下的 damageOrHeal 事件时，倒下角色区的实体会优先响应。
  * @param state 对局状态
  * @param priorityCh 优先列出的角色区
- * @returns 
+ * @returns
  */
-export function allEntitiesWithPriority(state: GameState, { id }: CharacterState) {
+export function allEntitiesWithPriority(
+  state: GameState,
+  { id }: CharacterState,
+) {
   const all = allEntities(state);
   const priorityCh = all.find((et): et is CharacterState => et.id === id);
   if (typeof priorityCh === "undefined") {
@@ -164,6 +167,33 @@ export function allEntitiesAtArea(
     result.push(...player[area.type]);
   }
   return result;
+}
+
+export function checkImmune(
+  state: GameState,
+  e: ZeroHealthEventArg,
+) {
+  const entities = allEntities(state);
+  for (const entity of entities) {
+    const skills = entity.definition.skills;
+    for (const skill of skills) {
+      if (skill.triggerOn === "modifyZeroHealth") {
+        const skillInfo: SkillInfo = {
+          caller: entity,
+          definition: skill,
+          charged: false,
+          plunging: false,
+          fromCard: null,
+          requestBy: null,
+        };
+        const filterResult = (0, skill.filter)(state, skillInfo, e);
+        if (filterResult) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 export function disposeEntity(state: Draft<GameState>, id: number) {

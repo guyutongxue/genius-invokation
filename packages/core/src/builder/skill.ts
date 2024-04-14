@@ -205,39 +205,39 @@ const detailedEventDictionary = {
     );
   }),
   modifyDamageType: defineDescriptor("modifyDamage0", (c, e, r) => {
-    return checkRelative(c.state, e.damageInfo.source.id, r);
+    return checkRelative(c.state, e.source.id, r);
   }),
   modifySkillDamageType: defineDescriptor("modifyDamage0", (c, e, r) => {
     return (
-      e.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, e.damageInfo.source.id, r) &&
-      commonInitiativeSkillCheck(e.damageInfo.via) &&
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.source.id, r) &&
+      commonInitiativeSkillCheck(e.via) &&
       e.damageInfo.fromReaction === null
     );
   }),
   modifyDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      e.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, e.damageInfo.source.id, r) &&
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.source.id, r) &&
       !isDebuff(c.state, e.damageInfo)
     );
   }),
   modifySkillDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      e.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, e.damageInfo.source.id, r) &&
-      commonInitiativeSkillCheck(e.damageInfo.via) &&
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.source.id, r) &&
+      commonInitiativeSkillCheck(e.via) &&
       e.damageInfo.fromReaction === null
     );
   }),
   beforeDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      e.damageInfo.type !== DamageType.Piercing &&
-      checkRelative(c.state, e.damageInfo.target.id, r)
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.target.id, r)
     );
   }),
   beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {
-    return checkRelative(c.state, e.character.id, r) && e._immuneInfo === null;
+    return checkRelative(c.state, e.target.id, r) && e._immuneInfo === null;
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),
