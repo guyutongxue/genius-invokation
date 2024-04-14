@@ -957,7 +957,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
     } else {
       skillId = skill;
     }
-    this.emitEvent("requestUseSkill", this.skillInfo, activeCh, skillId);
+    this.emitEvent(
+      "requestUseSkill",
+      this.skillInfo,
+      this.callerArea.who,
+      activeCh,
+      skillId,
+    );
   }
 
   random<T>(...items: T[]): T {
