@@ -50,6 +50,7 @@ import {
   ActionEventArg,
   ActionInfo,
   CharacterEventArg,
+  DamageInfo,
   DamageOrHealEventArg,
   ElementalTuningInfo,
   EntityEventArg,
@@ -917,13 +918,7 @@ export class Game {
     hasIo: boolean,
     arg: EventArg | CardSkillEventArg | void,
   ): Promise<EventAndRequest[]> {
-    // If caller not exists (consumed by previous skills), do nothing
-    let callerArea: EntityArea;
-    try {
-      callerArea = getEntityArea(this.state, skillInfo.caller.id);
-    } catch {
-      return [];
-    }
+    const callerArea = getEntityArea(this.state, skillInfo.caller.id);
     let filteringState = this.state;
     if (arg instanceof EventArg) {
       arg._currentSkillInfo = skillInfo;
@@ -944,49 +939,56 @@ export class Game {
       arg as any,
     );
     this.state = newState;
-    if (hasIo) {
-      const notifyEvents: Event[] = [];
-      if (!skillInfo.fromCard) {
+
+    const notifyEvents: Event[] = [];
+    if (!skillInfo.fromCard) {
+      notifyEvents.push({
+        type: "triggered",
+        id: skillInfo.caller.id,
+      });
+      if (skillDef.triggerOn === null) {
         notifyEvents.push({
-          type: "triggered",
-          id: skillInfo.caller.id,
+          type: "useCommonSkill",
+          who: callerArea.who,
+          skill: skillDef.id,
         });
-        if (skillDef.triggerOn === null) {
-          notifyEvents.push({
-            type: "useCommonSkill",
-            who: callerArea.who,
-            skill: skillDef.id,
-          });
-        }
-      }
-      for (const [eventName, arg] of eventList) {
-        // Damages
-        if (eventName === "onDamageOrHeal") {
-          notifyEvents.push({
-            type: "damage",
-            damage: {
-              type: arg.type,
-              value: arg.value,
-              target: arg.target.id,
-              log: arg.log(),
-            },
-          });
-        }
-        // Element reactions
-        if (eventName === "onReaction") {
-          notifyEvents.push({
-            type: "elementalReaction",
-            on: arg.reactionInfo.target.id,
-            reactionType: arg.reactionInfo.type,
-          });
-        }
-      }
-      await this.notifyAndPause(notifyEvents);
-      const hasDefeated = await this.checkDefeated();
-      if (hasDefeated) {
-        await this.notifyAndPause([]);
       }
     }
+
+    const damageEvents = eventList.filter(
+      (e): e is ["onDamageOrHeal", EventArgOf<"onDamageOrHeal">] =>
+        e[0] === "onDamageOrHeal",
+    );
+    const nonDamageEvents = eventList.filter((e) => e[0] !== "onDamageOrHeal");
+
+    for (const [, arg] of damageEvents) {
+      notifyEvents.push({
+        type: "damage",
+        damage: {
+          type: arg.type,
+          value: arg.value,
+          target: arg.target.id,
+          log: arg.log(),
+        },
+      });
+    }
+    for (const [eventName, arg] of nonDamageEvents) {
+      if (eventName === "onReaction") {
+        notifyEvents.push({
+          type: "elementalReaction",
+          on: arg.reactionInfo.target.id,
+          reactionType: arg.reactionInfo.type,
+        });
+      }
+    }
+
+    if (hasIo) {
+      await this.notifyAndPause(notifyEvents);
+    }
+
+    const safeDamageList: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
+
+
     return eventList;
   }
 
@@ -1117,8 +1119,22 @@ export class Game {
         for (const entity of entities) {
           for (const sk of entity.definition.skills) {
             if (sk.triggerOn === name) {
+              const currentEntities = allEntities(this.state);
+              let caller: AnyState;
+              if (name === "onDispose" && arg.entity === entity) {
+                const who = getEntityArea(arg._state, arg.entity.id).who;
+                caller = getEntityById(
+                  this.state,
+                  this.state.players[who].activeCharacterId,
+                  true,
+                );
+              } else if (!currentEntities.find((et) => et.id === entity.id)) {
+                continue;
+              } else {
+                caller = entity;
+              }
               const skillInfo: SkillInfo = {
-                caller: entity,
+                caller,
                 definition: sk,
                 fromCard: null,
                 requestBy: null,
@@ -1170,7 +1186,10 @@ export class Game {
               type: "pushDamageLog",
               damage: healInfo,
             });
-            await this.emitEvent("onDamageOrHeal", new DamageOrHealEventArg(this.state, healInfo));
+            await this.emitEvent(
+              "onDamageOrHeal",
+              new DamageOrHealEventArg(this.state, healInfo),
+            );
             continue;
           }
           let mut: Mutation = {
