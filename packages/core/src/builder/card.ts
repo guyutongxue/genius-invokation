@@ -337,6 +337,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       id: this.cardId,
       triggerOn: null,
       requiredCost: this._cost,
+      gainEnergy: false,
       action,
     };
     registerSkill(skillDef);

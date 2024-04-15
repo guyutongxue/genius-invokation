@@ -27,7 +27,13 @@ import {
 } from "./base/skill";
 import { AnyState, CharacterState, GameState } from "./base/state";
 import { DamageType, Event } from "@gi-tcg/typings";
-import { allEntities, checkImmune, getActiveCharacterIndex, getEntityArea, getEntityById } from "./util";
+import {
+  allEntities,
+  checkImmune,
+  getActiveCharacterIndex,
+  getEntityArea,
+  getEntityById,
+} from "./util";
 import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
 import { Mutation, applyMutation } from "./base/mutation";
 import { flip } from "@gi-tcg/utils";
@@ -39,11 +45,17 @@ interface IoDuringSkillFinalize {
   chooseActive(who: 0 | 1): Promise<CharacterState>;
 }
 
+interface IoAndState extends IoDuringSkillFinalize {
+  readonly state: GameState;
+}
+
 class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
   constructor() {
     super("IO is not provided. This error should be caught.");
   }
 }
+
+type GeneralSkillArg = EventArg | CardSkillEventArg | void;
 
 export class SkillExecutor {
   constructor(
@@ -70,7 +82,7 @@ export class SkillExecutor {
 
   async finalizeSkill(
     skillInfo: SkillInfo,
-    arg: EventArg | CardSkillEventArg | void,
+    arg: GeneralSkillArg
   ): Promise<void> {
     if (this.state.phase === "gameEnd") {
       return;
@@ -162,16 +174,36 @@ export class SkillExecutor {
               varName: "alive",
               value: 0,
             });
+            this.mutate({
+              type: "modifyEntityVar",
+              state: ch,
+              varName: "energy",
+              value: 0,
+            });
+            this.mutate({
+              type: "modifyEntityVar",
+              state: ch,
+              varName: "aura",
+              value: 0,
+            });
+            this.mutate({
+              type: "setPlayerFlag",
+              who,
+              flagName: "hasDefeated",
+              value: true,
+            });
             const player = this.state.players[who];
-            const aliveCharacters = player.characters.filter((ch) => ch.variables.alive);
+            const aliveCharacters = player.characters.filter(
+              (ch) => ch.variables.alive,
+            );
             if (aliveCharacters.length === 0) {
               this.mutate({
                 type: "setWinner",
-                winner: flip(who)
+                winner: flip(who),
               });
               this.mutate({
                 type: "changePhase",
-                newPhase: "gameEnd"
+                newPhase: "gameEnd",
               });
               return;
             }
@@ -182,11 +214,15 @@ export class SkillExecutor {
         damageEventArgs.push(arg);
       }
     }
-    const safeDamageEvents = damageEventArgs.filter((arg) => !arg.damageInfo.causeDefeated);
-    const criticalDamageEvents = damageEventArgs.filter((arg) => arg.damageInfo.causeDefeated);
+    const safeDamageEvents = damageEventArgs.filter(
+      (arg) => !arg.damageInfo.causeDefeated,
+    );
+    const criticalDamageEvents = damageEventArgs.filter(
+      (arg) => arg.damageInfo.causeDefeated,
+    );
 
     for (const arg of zeroHealthEventArgs) {
-      await this.handleEvents([["modifyZeroHealth", arg]]);
+      await this.handleEvent(["modifyZeroHealth", arg]);
       if (arg._immuneInfo !== null) {
         const healValue = arg._immuneInfo.newHealth;
         const healInfo: HealInfo = {
@@ -212,44 +248,71 @@ export class SkillExecutor {
           },
         ]);
         const healEventArg = new DamageOrHealEventArg(this.state, healInfo);
-        await this.handleEvents([["onDamageOrHeal", healEventArg]]);
+        await this.handleEvent(["onDamageOrHeal", healEventArg]);
       }
     }
 
-    if (skillDef.gainEnergy && skillInfo.caller.definition.type === "character") {
-      const ch = getEntityById(this.state, skillInfo.caller.id, true) as CharacterState;
-      const currentEnergy = ch.variables.energy;
-      const newEnergy = Math.min(currentEnergy + 1, ch.variables.maxEnergy);
-      this.mutate({
-        type: "modifyEntityVar",
-        state: ch,
-        varName: "energy",
-        value: newEnergy
-      });
+    if (
+      skillDef.gainEnergy &&
+      skillInfo.caller.definition.type === "character"
+    ) {
+      const ch = getEntityById(
+        this.state,
+        skillInfo.caller.id,
+        true,
+      ) as CharacterState;
+      if (ch.variables.alive) {
+        const currentEnergy = ch.variables.energy;
+        const newEnergy = Math.min(currentEnergy + 1, ch.variables.maxEnergy);
+        this.mutate({
+          type: "modifyEntityVar",
+          state: ch,
+          varName: "energy",
+          value: newEnergy,
+        });
+      }
     }
 
-    await this.handleEvents(nonDamageEvents);
+    await this.handleEvent(...nonDamageEvents);
     for (const arg of safeDamageEvents) {
-      await this.handleEvents([["onDamageOrHeal", arg]]);
+      await this.handleEvent(["onDamageOrHeal", arg]);
     }
     for (const arg of criticalDamageEvents) {
-      await this.handleEvents([["onDamageOrHeal", arg]]);
+      await this.handleEvent(["onDamageOrHeal", arg]);
     }
-
-    const choosingPromises: Promise<CharacterState>[] = [];
-    const switchEvents: [null | SwitchActiveEventArg, null | SwitchActiveEventArg] = [null, null];
+    const switchEvents: [
+      null | Promise<SwitchActiveEventArg>,
+      null | Promise<SwitchActiveEventArg>,
+    ] = [null, null];
     for (const who of [0, 1] as const) {
       const player = this.state.players[who];
-      const [activeCh] = player.characters.shiftLeft(getActiveCharacterIndex(player));
+      const [activeCh] = player.characters.shiftLeft(
+        getActiveCharacterIndex(player),
+      );
       if (activeCh.variables.alive) {
         continue;
       }
-      choosingPromises.push(this.io.chooseActive(who));
-      // switchEvents[who] = new SwitchActiveEventArg(this.state, )
+      switchEvents[who] = this.io.chooseActive(who).then(
+        (to) =>
+          new SwitchActiveEventArg(this.state, {
+            type: "switchActive",
+            from: activeCh,
+            to,
+            who,
+          }),
+      );
     }
-    const switchTargetCharacters = await Promise.all(choosingPromises);
+    const args = await Promise.all(switchEvents);
+    const currentTurn = this.state.currentTurn;
+    for (const who of [currentTurn, flip(currentTurn)]) {
+      const arg = args[who];
+      if (arg) {
+        await this.handleEvent(["onSwitchActive", arg]);
+      }
+    }
   }
-  async handleEvents(actions: EventAndRequest[]) {
+
+  async handleEvent(...actions: EventAndRequest[]) {
     for (const [name, arg] of actions) {
       if (name === "requestReroll") {
         await this.io.reroll(arg.who, arg.times);
@@ -313,6 +376,41 @@ export class SkillExecutor {
     return this.state;
   }
 
-  static fromEvents() {}
-  static fromSkill() {}
+  static async executeSkill(game: IoAndState, skill: SkillInfo, arg: GeneralSkillArg) {
+    const executor = new SkillExecutor(game.state, game);
+    await executor.finalizeSkill(skill, arg);
+    return executor.state;
+  }
+  static async previewSkill(state: GameState, skill: SkillInfo, arg: GeneralSkillArg) {
+    const executor = new SkillExecutor(state);
+    try {
+      await executor.finalizeSkill(skill, arg);
+    } catch (e) {
+      if (e instanceof GiTcgIoNotProvideError) {
+      } else {
+        throw e;
+      }
+    }
+    return executor.state;
+  }
+  static async handleEvent(game: IoAndState, ...event: EventAndRequest) {
+    return SkillExecutor.handleEvents(game, [event]);
+  }
+  static async previewEvent(state: GameState, ...event: EventAndRequest) {
+    const executor = new SkillExecutor(state);
+    try {
+      await executor.handleEvent(event);
+    } catch (e) {
+      if (e instanceof GiTcgIoNotProvideError) {
+      } else {
+        throw e;
+      }
+    }
+    return executor.state;
+  }
+  static async handleEvents(game: IoAndState, events: EventAndRequest[]) {
+    const executor = new SkillExecutor(game.state, game);
+    await executor.handleEvent(...events);
+    return executor.state;
+  }
 }

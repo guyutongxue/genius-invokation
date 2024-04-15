@@ -373,6 +373,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
+      if (!targetState.variables.alive) {
+        continue;
+      }
       let damageInfo: DamageInfo = {
         source: this.skillInfo.caller,
         target: targetState,
@@ -426,7 +429,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
   apply(type: AppliableDamageType, target: CharacterTargetArg) {
     const characters = this.queryCoerceToCharacters(target);
     for (const ch of characters) {
-      this.doApply(ch, type);
+      if (ch.state.variables.alive) {
+        this.doApply(ch, type);
+      }
     }
   }
 
