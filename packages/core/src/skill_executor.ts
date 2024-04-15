@@ -21,22 +21,27 @@ import {
   EventArg,
   HealInfo,
   SkillInfo,
+  SwitchActiveEventArg,
+  SwitchActiveInfo,
   ZeroHealthEventArg,
 } from "./base/skill";
-import { AnyState, GameState } from "./base/state";
-import { Event } from "@gi-tcg/typings";
-import { allEntities, checkImmune, getEntityArea, getEntityById } from "./util";
+import { AnyState, CharacterState, GameState } from "./base/state";
+import { DamageType, Event } from "@gi-tcg/typings";
+import { allEntities, checkImmune, getActiveCharacterIndex, getEntityArea, getEntityById } from "./util";
 import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
+import { Mutation, applyMutation } from "./base/mutation";
+import { flip } from "@gi-tcg/utils";
 
 interface IoDuringSkillFinalize {
   switchCard(who: 0 | 1): Promise<void>;
   reroll(who: 0 | 1, times: number): Promise<void>;
   notifyAndPause(events: readonly Event[]): Promise<void>;
+  chooseActive(who: 0 | 1): Promise<CharacterState>;
 }
 
 class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
   constructor() {
-    super("IO is not provided. This error should be catched.");
+    super("IO is not provided. This error should be caught.");
   }
 }
 
@@ -53,10 +58,23 @@ export class SkillExecutor {
     return this._io;
   }
 
+  private notify(events: readonly Event[]) {
+    if (this._io) {
+      return this._io.notifyAndPause(events);
+    }
+  }
+
+  private mutate(mut: Mutation) {
+    this.state = applyMutation(this.state, mut);
+  }
+
   async finalizeSkill(
     skillInfo: SkillInfo,
     arg: EventArg | CardSkillEventArg | void,
   ): Promise<void> {
+    if (this.state.phase === "gameEnd") {
+      return;
+    }
     const callerArea = getEntityArea(this.state, skillInfo.caller.id);
     let filteringState = this.state;
     if (arg instanceof EventArg) {
@@ -121,7 +139,7 @@ export class SkillExecutor {
       }
     }
 
-    await this.io.notifyAndPause(notifyEvents);
+    await this.notify(notifyEvents);
 
     const damageEventArgs: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
     const zeroHealthEventArgs: ZeroHealthEventArg[] = [];
@@ -133,12 +151,103 @@ export class SkillExecutor {
         );
         if (checkImmune(this.state, zeroHealthEventArg)) {
           zeroHealthEventArgs.push(zeroHealthEventArg);
+        } else {
+          const { id } = arg.target;
+          const ch = getEntityById(this.state, id, true) as CharacterState;
+          const { who } = getEntityArea(this.state, id);
+          if (ch.variables.alive) {
+            this.mutate({
+              type: "modifyEntityVar",
+              state: ch,
+              varName: "alive",
+              value: 0,
+            });
+            const player = this.state.players[who];
+            const aliveCharacters = player.characters.filter((ch) => ch.variables.alive);
+            if (aliveCharacters.length === 0) {
+              this.mutate({
+                type: "setWinner",
+                winner: flip(who)
+              });
+              this.mutate({
+                type: "changePhase",
+                newPhase: "gameEnd"
+              });
+              return;
+            }
+          }
         }
         damageEventArgs.push(zeroHealthEventArg);
       } else {
         damageEventArgs.push(arg);
       }
     }
+    const safeDamageEvents = damageEventArgs.filter((arg) => !arg.damageInfo.causeDefeated);
+    const criticalDamageEvents = damageEventArgs.filter((arg) => arg.damageInfo.causeDefeated);
+
+    for (const arg of zeroHealthEventArgs) {
+      await this.handleEvents([["modifyZeroHealth", arg]]);
+      if (arg._immuneInfo !== null) {
+        const healValue = arg._immuneInfo.newHealth;
+        const healInfo: HealInfo = {
+          type: DamageType.Revive,
+          source: arg._immuneInfo.skill.caller,
+          via: arg._immuneInfo.skill,
+          target: arg.target,
+          expectedValue: healValue,
+          value: healValue,
+          causeDefeated: false,
+          fromReaction: null,
+          roundNumber: this.state.roundNumber,
+        };
+        await this.notify([
+          {
+            type: "damage",
+            damage: {
+              type: healInfo.type,
+              value: healInfo.value,
+              target: healInfo.target.id,
+              log: "",
+            },
+          },
+        ]);
+        const healEventArg = new DamageOrHealEventArg(this.state, healInfo);
+        await this.handleEvents([["onDamageOrHeal", healEventArg]]);
+      }
+    }
+
+    if (skillDef.gainEnergy && skillInfo.caller.definition.type === "character") {
+      const ch = getEntityById(this.state, skillInfo.caller.id, true) as CharacterState;
+      const currentEnergy = ch.variables.energy;
+      const newEnergy = Math.min(currentEnergy + 1, ch.variables.maxEnergy);
+      this.mutate({
+        type: "modifyEntityVar",
+        state: ch,
+        varName: "energy",
+        value: newEnergy
+      });
+    }
+
+    await this.handleEvents(nonDamageEvents);
+    for (const arg of safeDamageEvents) {
+      await this.handleEvents([["onDamageOrHeal", arg]]);
+    }
+    for (const arg of criticalDamageEvents) {
+      await this.handleEvents([["onDamageOrHeal", arg]]);
+    }
+
+    const choosingPromises: Promise<CharacterState>[] = [];
+    const switchEvents: [null | SwitchActiveEventArg, null | SwitchActiveEventArg] = [null, null];
+    for (const who of [0, 1] as const) {
+      const player = this.state.players[who];
+      const [activeCh] = player.characters.shiftLeft(getActiveCharacterIndex(player));
+      if (activeCh.variables.alive) {
+        continue;
+      }
+      choosingPromises.push(this.io.chooseActive(who));
+      // switchEvents[who] = new SwitchActiveEventArg(this.state, )
+    }
+    const switchTargetCharacters = await Promise.all(choosingPromises);
   }
   async handleEvents(actions: EventAndRequest[]) {
     for (const [name, arg] of actions) {

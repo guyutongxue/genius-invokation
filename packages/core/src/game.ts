@@ -452,20 +452,10 @@ export class Game {
   }
 
   private async initActives() {
-    const [a0, a1] = await Promise.all(
-      ([0, 1] as const).map(async (i) => {
-        const player = this.state.players[i];
-        this.notifyOne(flip(i), [
-          {
-            type: "oppChoosingActive",
-          },
-        ]);
-        const { active } = await this.rpc(i, "chooseActive", {
-          candidates: player.characters.map((c) => c.id),
-        });
-        return getEntityById(this.state, active, true) as CharacterState;
-      }),
-    );
+    const [a0, a1] = await Promise.all([
+      this.chooseActive(0),
+      this.chooseActive(1),
+    ]);
     this.mutate({
       type: "switchActive",
       who: 0,
@@ -483,6 +473,25 @@ export class Game {
     // For debugging
     Reflect.set(globalThis, "$$", (query: string) => this.query(0, query));
     await this.emitEvent("onBattleBegin", new EventArg(this.state));
+  }
+
+  async chooseActive(who: 0 | 1): Promise<CharacterState> {
+    const player = this.state.players[who];
+    this.notifyOne(flip(who), [
+      {
+        type: "oppChoosingActive",
+      },
+    ]);
+    const candidates = player.characters.filter(
+      (ch) => ch.variables.alive && ch.id !== player.activeCharacterId,
+    );
+    if (candidates.length === 0) {
+      throw new GiTcgCoreInternalError(`No available candidate active character for player ${who}.`);
+    }
+    const { active } = await this.rpc(who, "chooseActive", {
+      candidates: candidates.map((c) => c.id),
+    });
+    return getEntityById(this.state, active, true) as CharacterState;
   }
 
   private async rollPhase() {
@@ -996,9 +1005,7 @@ export class Game {
   private async *doHandleEvents(
     actions: EventAndRequest[],
     hasIo: boolean,
-  ): AsyncGenerator<EventAndRequest[], void> {
-    
-  }
+  ): AsyncGenerator<EventAndRequest[], void> {}
 
   // 检查倒下角色，若有返回 `true`
   private async checkDefeated(): Promise<boolean> {
