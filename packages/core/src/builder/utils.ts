@@ -35,7 +35,3 @@ export function createVariableCanAppend(initialValue: number, appendLimit = Infi
     }
   }
 }
-
-export type Writable<T> = {
-  -readonly [P in keyof T]: T[P];
-};

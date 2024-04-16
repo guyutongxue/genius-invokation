@@ -262,7 +262,6 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
   }),
   switchActive: defineDescriptor("onSwitchActive", (c, e, r) => {
-    console.log(c, e, r);
     return (
       checkRelative(c.state, e.switchInfo.from.id, r) ||
       checkRelative(c.state, e.switchInfo.to.id, r)

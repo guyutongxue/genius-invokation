@@ -37,6 +37,7 @@ import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
 import { Mutation, applyMutation } from "./base/mutation";
 import { flip } from "@gi-tcg/utils";
 import { GameStateLogEntry } from "./log";
+import { Writable } from "./util";
 
 interface IoDuringSkillFinalize {
   switchCard(who: 0 | 1): Promise<void>;
@@ -88,20 +89,7 @@ export class SkillExecutor {
       return;
     }
     const callerArea = getEntityArea(this.state, skillInfo.caller.id);
-    let filteringState = this.state;
-    if (arg instanceof EventArg) {
-      arg._currentSkillInfo = skillInfo;
-      // 在 arg.state 上做检查，即引发事件的时刻的全局状态，而非现在时刻的状态
-      filteringState = arg._state;
-    }
-    // If skill has a filter and not passed, do nothing
     const skillDef = skillInfo.definition;
-    if (
-      "filter" in skillDef &&
-      !(0, skillDef.filter)(filteringState, skillInfo, arg as any)
-    ) {
-      return;
-    }
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
       skillInfo,
@@ -340,34 +328,35 @@ export class SkillExecutor {
         };
         await this.finalizeSkill(skillInfo, void 0);
       } else {
+        console.log({ name, arg });
         const onTimeState = arg._state;
         const entities = allEntities(onTimeState, true);
         for (const entity of entities) {
           for (const sk of entity.definition.skills) {
             if (sk.triggerOn === name) {
-              const currentEntities = allEntities(this.state);
-              let caller: AnyState;
-              // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
-              if (name === "onDispose" && arg.entity === entity) {
-                const who = getEntityArea(arg._state, arg.entity.id).who;
-                caller = getEntityById(
-                  this.state,
-                  this.state.players[who].activeCharacterId,
-                  true,
-                );
-              } else if (!currentEntities.find((et) => et.id === entity.id)) {
-                continue;
-              } else {
-                caller = entity;
-              }
-              const skillInfo: SkillInfo = {
-                caller,
+              const skillInfo: Writable<SkillInfo> = {
+                caller: entity,
                 definition: sk,
                 fromCard: null,
                 requestBy: null,
                 charged: false,
                 plunging: false,
               };
+              if (!(0, sk.filter)(onTimeState, skillInfo, arg)) {
+                continue;
+              }
+              const currentEntities = allEntities(this.state);
+              // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
+              if (name === "onDispose" && arg.entity.id === entity.id) {
+                const who = getEntityArea(arg._state, arg.entity.id).who;
+                skillInfo.caller = getEntityById(
+                  this.state,
+                  this.state.players[who].activeCharacterId,
+                  true,
+                );
+              } else if (!currentEntities.find((et) => et.id === entity.id)) {
+                continue;
+              }
               await this.finalizeSkill(skillInfo, arg);
             }
           }

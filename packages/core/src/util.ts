@@ -32,6 +32,10 @@ import {
   GiTcgCoreInternalError,
 } from "./error";
 
+export type Writable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
+
 export function getEntityById(
   state: GameState,
   id: number,
