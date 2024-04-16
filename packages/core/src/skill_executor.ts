@@ -296,6 +296,15 @@ export class SkillExecutor {
     }
     const args = await Promise.all(switchEvents);
     const currentTurn = this.state.currentTurn;
+    for (const arg of args) {
+      if (arg) {
+        this.mutate({
+          type: "switchActive",
+          who: arg.switchInfo.who,
+          value: arg.switchInfo.to,
+        });
+      }
+    }
     for (const who of [currentTurn, flip(currentTurn)]) {
       const arg = args[who];
       if (arg) {
@@ -330,6 +339,12 @@ export class SkillExecutor {
       } else {
         const onTimeState = arg._state;
         const entities = allEntities(onTimeState, true);
+        if (this._io && name === "onDamageOrHeal") {
+          console.log({
+            damageInfo: arg.damageInfo,
+            entities
+          })
+        }
         for (const entity of entities) {
           for (const sk of entity.definition.skills) {
             if (sk.triggerOn === name) {

@@ -24,25 +24,27 @@ import { character, skill, status, combatStatus, card, DamageType, StatusHandle 
  */
 export const SeedOfSkandha: StatusHandle = status(117031)
   .tags("debuff")
-  .on("damaged", (c, e) =>
-    e.getReaction() !== null && 
-    c.of(e.target).hasStatus(SeedOfSkandha)
-  )
-  .listenToPlayer()
-  .usage(2)
-  .do((c, e) => {
+  .variable("usage", 2)
+  .on("damaged", (c, e) => e.getReaction() !== null)
+  .do((c) => {
     if (
       // 由于蕴种印在对方场上，故查找我方信息时使用 opp
       c.$("opp characters has equipment with definition id 217031") && // 装备有心识蕴藏之种
       c.$("opp combat status with definition id 117032") && // 摩耶之殿在场时
-      c.$("opp characters include defeated with tag (pyro)") && // 我方队伍中存在火元素
-      c.self.master().id === e.target.id // 受到元素反应伤害的对象
+      c.$("opp characters include defeated with tag (pyro)") // 我方队伍中存在火元素
     ) {
       c.damage(DamageType.Dendro, 1, "@master")
     } else {
       c.damage(DamageType.Piercing, 1, "@master")
     }
+    c.consumeUsage();
   })
+  .on("damaged", (c, e) =>
+    e.source.definition.id === SeedOfSkandha && 
+    e.via.definition.id !== c.skillInfo.definition.id)
+  .listenToPlayer()
+  .damage(DamageType.Piercing, 1, "@master")
+  .consumeUsage(2)
   .done();
 
 /**
@@ -111,11 +113,11 @@ export const Akara = skill(17031)
 export const AllSchemesToKnow = skill(17032)
   .type("elemental")
   .costDendro(3)
-  .damage(DamageType.Dendro, 2)
   .if((c) => c.$("opp active")?.hasStatus(SeedOfSkandha))
   .characterStatus(SeedOfSkandha, "all opp characters")
   .else()
   .characterStatus(SeedOfSkandha, "opp active")
+  .damage(DamageType.Dendro, 2)
   .done();
 
 /**
@@ -127,8 +129,8 @@ export const AllSchemesToKnow = skill(17032)
 export const AllSchemesToKnowTathata = skill(17033)
   .type("elemental")
   .costDendro(5)
-  .damage(DamageType.Dendro, 3)
   .characterStatus(SeedOfSkandha, "all opp characters")
+  .damage(DamageType.Dendro, 3)
   .done();
 
 /**

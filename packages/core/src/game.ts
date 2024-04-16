@@ -82,7 +82,7 @@ type ActionInfoWithNewState = ActionInfo & {
   readonly newState: GameState;
 };
 
-type NotifyAndPauseOption = Partial<GameStateLogEntry>;
+type NotifyOption = Partial<GameStateLogEntry>;
 
 export class Game {
   private readonly data: ReadonlyDataStore;
@@ -239,22 +239,25 @@ export class Game {
     }
   }
 
-  private notifyOne(who: 0 | 1, events: readonly Event[] = []) {
+  private notifyOne(
+    who: 0 | 1,
+    { state = this.state, events = [] }: NotifyOption = {},
+  ) {
     const player = this.io.players[who];
     player.notify({
       events: [...events],
-      mutations: this.state.mutationLog.flatMap((m) => {
+      mutations: state.mutationLog.flatMap((m) => {
         const ex = exposeMutation(who, m.mutation);
         return ex ? [ex] : [];
       }),
-      newState: exposeState(who, this.state),
+      newState: exposeState(who, state),
     });
   }
   async notifyAndPause({
     events = [],
     canResume = false,
     state = this.state,
-  }: NotifyAndPauseOption = {}) {
+  }: NotifyOption = {}) {
     if (this._terminated) {
       return;
     }
@@ -264,7 +267,7 @@ export class Game {
       events,
     });
     for (const i of [0, 1] as const) {
-      this.notifyOne(i, events);
+      this.notifyOne(i, { state, events });
     }
     await this.io.pause?.(state, [...events]);
     if (this.state.phase !== "gameEnd") {
@@ -473,11 +476,13 @@ export class Game {
 
   async chooseActive(who: 0 | 1): Promise<CharacterState> {
     const player = this.state.players[who];
-    this.notifyOne(flip(who), [
-      {
-        type: "oppChoosingActive",
-      },
-    ]);
+    this.notifyOne(flip(who), {
+      events: [
+        {
+          type: "oppChoosingActive",
+        },
+      ],
+    });
     const candidates = player.characters.filter(
       (ch) => ch.variables.alive && ch.id !== player.activeCharacterId,
     );
@@ -600,11 +605,13 @@ export class Game {
         new PlayerEventArg(this.state, who),
       );
       const actions = await this.availableAction();
-      this.notifyOne(flip(who), [
-        {
-          type: "oppAction",
-        },
-      ]);
+      this.notifyOne(flip(who), {
+        events: [
+          {
+            type: "oppAction",
+          },
+        ],
+      });
       const { chosenIndex, cost } = await this.rpc(who, "action", {
         candidates: actions.map(exposeAction),
       });
@@ -754,7 +761,7 @@ export class Game {
       }
       await this.handleEvent(
         "onAction",
-        new ActionEventArg(actionInfo.newState, actionInfo),
+        new ActionEventArg(this.state, actionInfo),
       );
       this.mutate({
         type: "pushActionLog",
