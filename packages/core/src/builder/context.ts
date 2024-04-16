@@ -402,7 +402,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
               damageInfo = {
                 ...damageInfo,
                 value: damageInfo.value + 2,
-                log: `${damageInfo.log}\nReaction (${reaction}) increase damage 2`,
+                log: `${damageInfo.log}Reaction (${reaction}) increase damage by 2\n`,
               };
               break;
             case Reaction.Superconduct:
@@ -418,7 +418,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
               damageInfo = {
                 ...damageInfo,
                 value: damageInfo.value + 1,
-                log: `${damageInfo.log}\nReaction (${reaction}) increase damage 1`,
+                log: `${damageInfo.log}\nReaction (${reaction}) increase damage by 1`,
               };
               break;
             default:

@@ -553,7 +553,10 @@ export class CharacterEventArg extends EventArg {
 }
 
 export class ReactionEventArg extends CharacterEventArg {
-  constructor(state: GameState, public readonly reactionInfo: ReactionInfo) {
+  constructor(
+    state: GameState,
+    public readonly reactionInfo: ReactionInfo,
+  ) {
     super(state, reactionInfo.target);
   }
 
@@ -590,9 +593,10 @@ export class ZeroHealthEventArg extends ModifyDamage1EventArg<DamageInfo> {
   }
 
   override get damageInfo(): DamageInfo {
+    const damageInfo = super.damageInfo;
     return {
-      ...super.damageInfo,
-      causeDefeated: false,
+      ...damageInfo,
+      causeDefeated: damageInfo.causeDefeated && this._immuneInfo === null,
     };
   }
 }

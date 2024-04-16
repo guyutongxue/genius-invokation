@@ -332,7 +332,7 @@ export class EntityBuilder<
 
   done(): EntityBuilderResultT<CallerType> {
     if (this.type === "status" || this.type === "equipment") {
-      this.on("defeated").dispose();
+      this.on("defeated").dispose().endOn();
     }
     // on action phase clean up
     if (

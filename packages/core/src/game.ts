@@ -474,9 +474,10 @@ export class Game {
     await this.handleEvent("onBattleBegin", new EventArg(this.state));
   }
 
-  async chooseActive(who: 0 | 1): Promise<CharacterState> {
-    const player = this.state.players[who];
+  async chooseActive(who: 0 | 1, state = this.state): Promise<CharacterState> {
+    const player = state.players[who];
     this.notifyOne(flip(who), {
+      state,
       events: [
         {
           type: "oppChoosingActive",
@@ -494,7 +495,7 @@ export class Game {
     const { active } = await this.rpc(who, "chooseActive", {
       candidates: candidates.map((c) => c.id),
     });
-    return getEntityById(this.state, active, true) as CharacterState;
+    return getEntityById(state, active, true) as CharacterState;
   }
 
   private async rollPhase() {

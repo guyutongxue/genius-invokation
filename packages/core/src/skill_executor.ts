@@ -43,7 +43,7 @@ interface IoDuringSkillFinalize {
   switchCard(who: 0 | 1): Promise<void>;
   reroll(who: 0 | 1, times: number): Promise<void>;
   notifyAndPause(opt: Partial<GameStateLogEntry>): Promise<void>;
-  chooseActive(who: 0 | 1): Promise<CharacterState>;
+  chooseActive(who: 0 | 1, state: GameState): Promise<CharacterState>;
 }
 
 interface IoAndState extends IoDuringSkillFinalize {
@@ -133,10 +133,7 @@ export class SkillExecutor {
       }
     }
     for (const [eventName, arg] of nonDamageEvents) {
-      if (
-        eventName === "onReaction" &&
-        arg.target.variables.alive
-      ) {
+      if (eventName === "onReaction" && arg.target.variables.alive) {
         notifyEvents.push({
           type: "elementalReaction",
           on: arg.target.id,
@@ -290,7 +287,7 @@ export class SkillExecutor {
       if (activeCh.variables.alive) {
         continue;
       }
-      switchEvents[who] = this.io.chooseActive(who).then(
+      switchEvents[who] = this.io.chooseActive(who, this.state).then(
         (to) =>
           new SwitchActiveEventArg(this.state, {
             type: "switchActive",
