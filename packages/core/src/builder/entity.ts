@@ -71,6 +71,11 @@ type BuilderMetaOfEntity<
   eventArgType: DetailedEventArgOf<Event>;
 };
 
+interface GlobalUsageOptions extends VariableOptions {
+  /** 是否在 consumeUsage() 且变量到达 0 时时自动弃置实体 */
+  autoDispose?: boolean;
+}
+
 export class EntityBuilder<
   CallerType extends ExEntityType,
   Vars extends string = never,
@@ -315,15 +320,25 @@ export class EntityBuilder<
     }
   }
 
+  usage(
+    count: number,
+    opt: GlobalUsageOptions = {},
+  ): EntityBuilder<CallerType, Vars | "usage"> {
+    if (opt.autoDispose !== false) {
+      this.variable("disposeWhenUsageIsZero", 1);
+    }
+    return this.variable("usage", count);
+  }
+
   done(): EntityBuilderResultT<CallerType> {
+    if (this.type === "status" || this.type === "equipment") {
+      this.on("defeated").dispose();
+    }
     // on action phase clean up
     if (
       this._usagePerRoundIndex > 0 ||
       Reflect.has(this._varConfigs, "duration")
     ) {
-      if (this.type === "status" || this.type === "equipment") {
-        this.on("defeated").dispose();
-      }
       const usagePerRoundNames = USAGE_PER_ROUND_VARIABLE_NAMES.slice(
         0,
         this._usagePerRoundIndex,

@@ -25,7 +25,7 @@ import { character, skill, status, card, DamageType, SkillHandle } from "@gi-tcg
  */
 export const Stealth01 = status(123012)
   .conflictWith(123011)
-  .variable("usage", 3)
+  .usage(3)
   .on("beforeDamaged")
   .decreaseDamage(1)
   .consumeUsage()
@@ -45,7 +45,7 @@ export const Stealth01 = status(123012)
  */
 export const Stealth = status(123011)
   .conflictWith(123012)
-  .variable("usage", 2)
+  .usage(2)
   .on("beforeDamaged")
   .decreaseDamage(1)
   .consumeUsage()

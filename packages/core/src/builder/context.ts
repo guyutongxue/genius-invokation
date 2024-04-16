@@ -373,9 +373,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const targetState = t.state;
-      if (!targetState.variables.alive) {
-        continue;
-      }
       let damageInfo: DamageInfo = {
         source: this.skillInfo.caller,
         target: targetState,

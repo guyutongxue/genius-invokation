@@ -25,7 +25,7 @@ import { character, skill, summon, status, card, DamageType, CharacterState, Ski
  */
 export const LightfallSword = summon(111062)
   .hintText("3+")
-  .variable("usage", 0)
+  .usage(0, { autoDispose: false })
   .on("useSkill", (c, e) => 
     e.action.skill.definition.id === FavoniusBladeworkEdel || 
     e.action.skill.definition.id === IcetideVortex)
@@ -40,7 +40,7 @@ export const LightfallSword = summon(111062)
   .on("endPhase")
   .do((c) => {
     c.damage(DamageType.Physical, 3 + c.getVariable("usage"));
-    c.dispose()
+    c.dispose();
   })
   .done();
 
