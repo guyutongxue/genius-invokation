@@ -2,6 +2,10 @@
 
 **仅记录破坏性改动。**
 
+## 0.5.0
+
+- 暂时移除了 `pushDamageLog` 类型的 mutation
+
 ## 0.4.0
 
 - 修改了 `IteratorState` 的结构（不再依赖于 `@stdlib/minstd*`）
