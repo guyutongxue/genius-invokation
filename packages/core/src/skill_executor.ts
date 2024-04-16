@@ -119,18 +119,24 @@ export class SkillExecutor {
     const nonDamageEvents = eventList.filter((e) => e[0] !== "onDamageOrHeal");
 
     for (const [, arg] of damageEvents) {
-      notifyEvents.push({
-        type: "damage",
-        damage: {
-          type: arg.type,
-          value: arg.value,
-          target: arg.target.id,
-          log: arg.log(),
-        },
-      });
+      const damageInfo = arg.damageInfo;
+      if (damageInfo.target.variables.alive) {
+        notifyEvents.push({
+          type: "damage",
+          damage: {
+            type: damageInfo.type,
+            value: damageInfo.value,
+            target: damageInfo.target.id,
+            log: arg.log(),
+          },
+        });
+      }
     }
     for (const [eventName, arg] of nonDamageEvents) {
-      if (eventName === "onReaction") {
+      if (
+        eventName === "onReaction" &&
+        arg.reactionInfo.target.variables.alive
+      ) {
         notifyEvents.push({
           type: "elementalReaction",
           on: arg.reactionInfo.target.id,
@@ -342,8 +348,8 @@ export class SkillExecutor {
         if (this._io && name === "onDamageOrHeal") {
           console.log({
             damageInfo: arg.damageInfo,
-            entities
-          })
+            entities,
+          });
         }
         for (const entity of entities) {
           for (const sk of entity.definition.skills) {
