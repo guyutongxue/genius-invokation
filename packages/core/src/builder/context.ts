@@ -473,7 +473,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
     return (this as any)[CALLED_FROM_REACTION] ?? null;
   }
 
-  private doApply(target: TypedCharacter<Meta>, type: NontrivialDamageType, fromDamage?: DamageInfo) {
+  private doApply(
+    target: TypedCharacter<Meta>,
+    type: NontrivialDamageType,
+    fromDamage?: DamageInfo,
+  ) {
     const aura = target.state.variables.aura;
     const [newAura, reaction] = REACTION_MAP[aura][type];
     this.mutate({
@@ -488,7 +492,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type: reaction,
         via: this.skillInfo,
         fromDamage,
-      }
+      };
       this.emitEvent("onReaction", this.state, reactionInfo);
       const reactionDescriptionEventArg: ReactionDescriptionEventArg = {
         where: target.who === this.callerArea.who ? "my" : "opp",
@@ -854,19 +858,34 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
 
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
+    const countMap = new Map<DiceType, number>();
+    for (const dice of this.player.dice) {
+      countMap.set(dice, (countMap.get(dice) ?? 0) + 1);
+    }
+    // 万能骰排最后。其余按照数量排序，相等时按照骰子类型排序
+    const sorted = this.player.dice.toSorted((a, b) => {
+      if (a === b) return 0;
+      if (a === DiceType.Omni) return 1;
+      if (b === DiceType.Omni) return -1;
+      const diff = countMap.get(b)! - countMap.get(a)!;
+      if (diff === 0) {
+        return a - b;
+      }
+      return diff;
+    });
     switch (strategy) {
       case "seq": {
-        const newDice = this.player.dice.slice(0, count);
+        const newDice = sorted.slice(0, count);
         this.mutate({
           type: "resetDice",
           who: this.callerArea.who,
-          value: this.player.dice.slice(count),
+          value: sorted.slice(count),
         });
         return newDice;
       }
       case "diff": {
         const collected: DiceType[] = [];
-        const dice = [...this.player.dice];
+        const dice = [...sorted];
         for (let i = 0; i < count; i++) {
           let found = false;
           for (let j = 0; j < dice.length; j++) {
