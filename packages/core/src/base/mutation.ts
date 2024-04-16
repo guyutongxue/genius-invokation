@@ -72,10 +72,10 @@ export interface PushActionLogM {
   readonly action: ActionInfo;
 }
 
-export interface PushDamageLogM {
-  readonly type: "pushDamageLog";
-  readonly damage: DamageInfo | HealInfo;
-}
+// export interface PushDamageLogM {
+//   readonly type: "pushDamageLog";
+//   readonly damage: DamageInfo | HealInfo;
+// }
 
 export interface TransferCardM {
   readonly type: "transferCard";
@@ -166,7 +166,7 @@ export type Mutation =
   | SwitchTurnM
   | SetWinnerM
   | PushActionLogM
-  | PushDamageLogM
+  // | PushDamageLogM
   | TransferCardM
   | SwitchActiveM
   | DisposeCardM
@@ -236,16 +236,16 @@ function doMutation(state: GameState, m: Mutation): GameState {
         }
       });
     }
-    case "pushDamageLog": {
-      return produce(state, (draft) => {
-        const character = getEntityById(
-          draft,
-          m.damage.target.id,
-          true,
-        ) as Draft<CharacterState>;
-        character.damageLog.push(m.damage as Draft<DamageInfo>);
-      });
-    }
+    // case "pushDamageLog": {
+    //   return produce(state, (draft) => {
+    //     const character = getEntityById(
+    //       draft,
+    //       m.damage.target.id,
+    //       true,
+    //     ) as Draft<CharacterState>;
+    //     character.damageLog.push(m.damage as Draft<DamageInfo>);
+    //   });
+    // }
     case "transferCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];

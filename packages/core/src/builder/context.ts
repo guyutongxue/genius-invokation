@@ -325,7 +325,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     for (const t of targets) {
       let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
       const targetState = t.state;
-      if (targetState.variables.alive === 0) {
+      if (!targetState.variables.alive) {
         this.mutate({
           type: "modifyEntityVar",
           state: targetState,
@@ -355,10 +355,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
         roundNumber: this.state.roundNumber,
         fromReaction: null,
       };
-      this.mutate({
-        type: "pushDamageLog",
-        damage: healInfo,
-      });
+      // this.mutate({
+      //   type: "pushDamageLog",
+      //   damage: healInfo,
+      // });
       this.emitEvent("onDamageOrHeal", this.state, healInfo);
     }
   }
@@ -441,10 +441,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
         varName: "health",
         value: finalHealth,
       });
-      this.mutate({
-        type: "pushDamageLog",
-        damage: damageInfo,
-      });
+      // this.mutate({
+      //   type: "pushDamageLog",
+      //   damage: damageInfo,
+      // });
       this.emitEvent("onDamageOrHeal", this.state, damageInfo);
       if (
         damageInfo.type !== DamageType.Physical &&
@@ -463,9 +463,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   apply(type: AppliableDamageType, target: CharacterTargetArg) {
     const characters = this.queryCoerceToCharacters(target);
     for (const ch of characters) {
-      if (ch.state.variables.alive) {
-        this.doApply(ch, type);
-      }
+      this.doApply(ch, type);
     }
   }
 
@@ -478,6 +476,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
     type: NontrivialDamageType,
     fromDamage?: DamageInfo,
   ) {
+    if (!target.state.variables.alive) {
+      return;
+    }
     const aura = target.state.variables.aura;
     const [newAura, reaction] = REACTION_MAP[aura][type];
     this.mutate({

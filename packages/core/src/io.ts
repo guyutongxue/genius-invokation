@@ -57,7 +57,7 @@ export function exposeMutation(
     case "stepRandom":
     case "clearMutationLog":
     case "pushActionLog":
-    case "pushDamageLog":
+    // case "pushDamageLog":
     case "increaseDisposedSupportCount":
       return null;
     case "changePhase":
