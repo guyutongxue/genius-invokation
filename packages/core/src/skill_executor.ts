@@ -328,7 +328,6 @@ export class SkillExecutor {
         };
         await this.finalizeSkill(skillInfo, void 0);
       } else {
-        console.log({ name, arg });
         const onTimeState = arg._state;
         const entities = allEntities(onTimeState, true);
         for (const entity of entities) {
@@ -357,6 +356,7 @@ export class SkillExecutor {
               } else if (!currentEntities.find((et) => et.id === entity.id)) {
                 continue;
               }
+              arg._currentSkillInfo = skillInfo;
               await this.finalizeSkill(skillInfo, arg);
             }
           }

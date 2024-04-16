@@ -35,7 +35,7 @@ export const Guoba = summon(113021)
  * 可用次数：2
  */
 export const PyronadoStatus = combatStatus(113022)
-  .on("useSkill")
+  .on("useSkill", (c, e) => e.action.skill.definition.id !== Pyronado)
   .usage(2)
   .damage(DamageType.Pyro, 2)
   .done();
@@ -73,7 +73,7 @@ export const GuobaAttack: SkillHandle = skill(13022)
  * @description
  * 造成3点火元素伤害，生成旋火轮。
  */
-export const Pyronado = skill(13023)
+export const Pyronado: SkillHandle = skill(13023)
   .type("burst")
   .costPyro(4)
   .costEnergy(2)

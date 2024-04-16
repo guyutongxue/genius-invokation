@@ -38,7 +38,7 @@ export const HeraldOfFrost = summon(111081)
  * 可用次数：3
  */
 export const FortunepreservingTalisman = combatStatus(111082)
-  .on("useSkill")
+  .on("useSkill", (c, e) => e.action.skill.definition.id !== AdeptusArtPreserverOfFortune)
   .usage(3, { autoDecrease: false })
   .do((c, e) => {
     // 在使用技能且结算之后（而非使用技能的时刻）检测生命值
@@ -81,7 +81,7 @@ export const AdeptusArtHeraldOfFrost: SkillHandle = skill(11082)
  * @description
  * 造成3点冰元素伤害，生成度厄真符。
  */
-export const AdeptusArtPreserverOfFortune = skill(11083)
+export const AdeptusArtPreserverOfFortune: SkillHandle = skill(11083)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)

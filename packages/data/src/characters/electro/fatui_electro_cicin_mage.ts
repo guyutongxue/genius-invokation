@@ -140,6 +140,7 @@ export const ThunderingShield = skill(24043)
   .damage(DamageType.Electro, 1)
   .apply(DamageType.Electro, "@self")
   .combatStatus(ElectroCicinShield)
+  .characterStatus(SurgingThunderStatus)
   .done();
 
 /**
