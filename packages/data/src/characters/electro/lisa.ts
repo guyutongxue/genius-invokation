@@ -72,7 +72,7 @@ export const VioletArc: SkillHandle = skill(14092)
   .type("elemental")
   .costElectro(3)
   .damage(DamageType.Electro, 2)
-  .if((c) => !c.$(`status ${Conductive} at opp active`))
+  .if((c) => !c.$(`status with definition id ${Conductive} at opp active`))
   .characterStatus(Conductive, "opp active")
   .done();
 

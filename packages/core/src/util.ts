@@ -23,10 +23,7 @@ import {
   PlayerState,
 } from "./base/state";
 import { EntityArea } from "./base/entity";
-import {
-  CharacterDefinition,
-  ElementTag,
-} from "./base/character";
+import { CharacterDefinition, ElementTag } from "./base/character";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
 import { SkillDefinition, SkillInfo } from "./base/skill";
@@ -224,10 +221,9 @@ export function drawCard(
 ): GameState {
   let candidate;
   if (withTag !== null) {
-    candidate =
-      state.players[who].piles.find((c) =>
-        c.definition.tags.includes(withTag),
-      ) ?? state.players[who].piles[0];
+    candidate = state.players[who].piles.find((c) =>
+      c.definition.tags.includes(withTag),
+    );
   } else {
     candidate = state.players[who].piles[0];
   }
