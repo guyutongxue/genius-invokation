@@ -34,7 +34,7 @@ export type {
   SupportHandle,
   PassiveSkillHandle
 } from "./type";
-export { DiceType, DamageType, Aura } from "@gi-tcg/typings";
+export { DiceType, DamageType, Aura, Reaction } from "@gi-tcg/typings";
 export type { CharacterState, EntityState } from "../base/state";
 
 export { flip } from "@gi-tcg/utils";

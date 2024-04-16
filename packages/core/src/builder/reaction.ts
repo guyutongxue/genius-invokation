@@ -1,24 +1,20 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Reaction, DamageType } from "@gi-tcg/typings";
-import {
-  DamageInfo,
-  ModifyDamage0EventArg,
-  SkillDescription,
-} from "../base/skill";
+import { SkillDescription } from "../base/skill";
 import { SkillBuilder, enableShortcut } from "./skill";
 import { TypedSkillContext } from "./context";
 import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
@@ -31,60 +27,52 @@ const BurningFlame = 115 as SummonHandle;
 const DendroCore = 116 as CombatStatusHandle;
 const CatalyzingField = 117 as CombatStatusHandle;
 
-type OptionalDamageModifyEventArg = ModifyDamage0EventArg<OptionalDamageInfo>;
-
-export interface OptionalDamageInfo extends DamageInfo {
-  isDamage: boolean;
+export interface ReactionDescriptionEventArg {
+  /** 元素反应发生于 */
+  where: "my" | "opp";
+  /** 元素反应发生角色 id */
+  id: number;
+  isActive: boolean;
+  /** 要生成的实体位于  */
+  here: "my" | "opp";
 }
 
-type ReactionDescription = SkillDescription<OptionalDamageModifyEventArg>;
+type ReactionDescription = SkillDescription<ReactionDescriptionEventArg>;
 const REACTION_DESCRIPTION: Record<Reaction, ReactionDescription> = {} as any;
 
 type ReactionContextMeta = {
   readonly: false;
   callerVars: never;
-  eventArgType: OptionalDamageModifyEventArg;
+  eventArgType: ReactionDescriptionEventArg;
   callerType: any;
 };
 
-type ReactionAction = (c: TypedSkillContext<ReactionContextMeta>) => void;
+type ReactionAction = (
+  c: TypedSkillContext<ReactionContextMeta>,
+  e: ReactionDescriptionEventArg,
+) => void;
 
-const pierceToOther =
-  (reaction: Reaction): ReactionAction =>
-  (c) => {
-    if (c.eventArg.damageInfo.isDamage) {
-      c.eventArg.increaseDamage(1);
-      (c as any)[CALLED_FROM_REACTION] = reaction;
-      const who = c.of(c.eventArg.target).who;
-      for (const character of c.state.players[who].characters) {
-        if (
-          character.variables.alive &&
-          character.id !== c.eventArg.target.id
-        ) {
-          c.damage(DamageType.Piercing, 1, character);
-        }
-      }
-    }
-  };
-
-const crystallize: ReactionAction = (c) => {
-  c.eventArg.increaseDamage(1);
-  const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
-  c.combatStatus(Crystallize, player);
+const pierceToOther: ReactionAction = (c, e) => {
+  c.damage(
+    DamageType.Piercing,
+    1,
+    `${e.where} characters and not with id ${e.id}`,
+  );
 };
 
-const swirl = (srcElement: DamageType.Cryo | DamageType.Hydro | DamageType.Pyro | DamageType.Electro): ReactionAction => {
-  return (c) => {
-    (c as any)[CALLED_FROM_REACTION] = srcElement + 106;
-    const who = c.of(c.eventArg.target).who;
-    for (const character of c.state.players[who].characters) {
-      if (
-        character.variables.alive &&
-        character.id !== c.eventArg.target.id
-      ) {
-        c.damage(srcElement, 1, character);
-      }
-    }
+const crystallize: ReactionAction = (c, e) => {
+  c.combatStatus(Crystallize, e.here);
+};
+
+type SwirlableElement =
+  | DamageType.Cryo
+  | DamageType.Hydro
+  | DamageType.Pyro
+  | DamageType.Electro;
+
+const swirl = (srcElement: SwirlableElement): ReactionAction => {
+  return (c, e) => {
+    c.damage(srcElement, 1, `${e.where} characters and not with id ${e.id}`);
   };
 };
 
@@ -101,44 +89,26 @@ function initialize() {
       };
     }
   }
-  
+
   function reaction(reaction: Reaction) {
-    return enableShortcut(new ReactionBuilder(reaction));
+    return enableShortcut(new ReactionBuilder(reaction)).do((c) => {
+      Reflect.set(c, CALLED_FROM_REACTION, reaction);
+    });
   }
 
-  reaction(Reaction.Melt)
-    .if((c, e) => e.damageInfo.isDamage)
-    .increaseDamage(2)
-    .done();
-
-  reaction(Reaction.Vaporize)
-    .if((c, e) => e.damageInfo.isDamage)
-    .increaseDamage(2)
-    .done();
-
   reaction(Reaction.Overloaded)
-    .if((c, e) => e.damageInfo.isDamage)
-    .increaseDamage(2)
-    .if((c, e) => c.of(e.target).isActive())
-    .do((c) => {
-      const player = c.of(c.eventArg.target).isMine() ? "my" : "opp";
-      c.switchActive(`${player} next`);
+    .do((c, e) => {
+      if (e.isActive) {
+        c.switchActive(`${e.where} next`);
+      }
     })
     .done();
 
-  reaction(Reaction.Superconduct)
-    .do(pierceToOther(Reaction.Superconduct))
-    .done();
+  reaction(Reaction.Superconduct).do(pierceToOther).done();
 
-  reaction(Reaction.ElectroCharged)
-    .do(pierceToOther(Reaction.ElectroCharged))
-    .done();
+  reaction(Reaction.ElectroCharged).do(pierceToOther).done();
 
-  reaction(Reaction.Frozen)
-    .if((c, e) => e.damageInfo)
-    .increaseDamage(1)
-    .characterStatus(Frozen, "@damage.target")
-    .done();
+  reaction(Reaction.Frozen).characterStatus(Frozen, "@damage.target").done();
 
   reaction(Reaction.SwirlCryo).do(swirl(DamageType.Cryo)).done();
 
@@ -157,41 +127,34 @@ function initialize() {
   reaction(Reaction.CrystallizeElectro).do(crystallize).done();
 
   reaction(Reaction.Burning)
-    .if((c, e) => e.damageInfo.isDamage)
-    .increaseDamage(1)
-    .do((c) => {
-      const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
-      c.summon(BurningFlame, player);
+    .do((c, e) => {
+      c.summon(BurningFlame, e.here);
     })
     .done();
 
   reaction(Reaction.Bloom)
-    .if((c, e) => e.damageInfo.isDamage)
-    .increaseDamage(1)
-    .do((c) => {
-      const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
-      if (!c.$(`${player} combat status with definition id 112081`)) {
+    .do((c, e) => {
+      if (!c.$(`${e.here} combat status with definition id 112081`)) {
         // 如果没有金杯的丰馈（妮露），就生成草原核
-        c.combatStatus(DendroCore, player);
+        c.combatStatus(DendroCore, e.here);
       }
     })
     .done();
 
   reaction(Reaction.Quicken)
-    .if((c, e) => e.damageInfo.isDamage)
-    .increaseDamage(1)
-    .do((c) => {
-      const player = c.of(c.eventArg.target).isMine() ? "opp" : "my";
-      c.combatStatus(CatalyzingField, player);
+    .do((c, e) => {
+      c.combatStatus(CatalyzingField, e.here);
     })
     .done();
 }
 
 let initialized = false;
-export function getReactionDescription(reaction: Reaction) {
+export function getReactionDescription(
+  reaction: Reaction,
+): ReactionDescription | null {
   if (!initialized) {
     initialized = true;
     initialize();
   }
-  return REACTION_DESCRIPTION[reaction];
+  return REACTION_DESCRIPTION[reaction] ?? null;
 }

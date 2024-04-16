@@ -135,12 +135,12 @@ export class SkillExecutor {
     for (const [eventName, arg] of nonDamageEvents) {
       if (
         eventName === "onReaction" &&
-        arg.reactionInfo.target.variables.alive
+        arg.target.variables.alive
       ) {
         notifyEvents.push({
           type: "elementalReaction",
-          on: arg.reactionInfo.target.id,
-          reactionType: arg.reactionInfo.type,
+          on: arg.target.id,
+          reactionType: arg.type,
         });
       }
     }

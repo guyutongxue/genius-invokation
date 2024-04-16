@@ -23,6 +23,7 @@ import {
 } from "./state";
 import { CardTag, PlayCardSkillDefinition } from "./card";
 import {
+  REACTION_RELATIVES,
   getReaction,
   isReactionRelatedTo,
   isReactionSwirl,
@@ -102,7 +103,7 @@ export interface ReactionInfo {
   readonly type: Reaction;
   readonly via: SkillInfo;
   readonly target: CharacterState;
-  readonly damage?: DamageInfo;
+  readonly fromDamage?: DamageInfo;
 }
 
 export interface UseSkillInfo {
@@ -520,36 +521,6 @@ export class ModifyDamage0EventArg<
   }
 }
 
-// class HealEventArg extends EventArg {
-//   constructor(
-//     state: GameState,
-//     public readonly healInfo: HealInfo,
-//   ) {
-//     super(state);
-//   }
-//   get target() {
-//     return this.healInfo.target;
-//   }
-//   get type(): DamageType.Heal {
-//     return DamageType.Heal;
-//   }
-//   get value() {
-//     return this.healInfo.finalValue;
-//   }
-//   log() {
-//     return "";
-//   }
-// }
-
-class ReactionEventArg extends EventArg {
-  constructor(
-    state: GameState,
-    public readonly reactionInfo: ReactionInfo,
-  ) {
-    super(state);
-  }
-}
-
 export class EntityEventArg extends EventArg {
   constructor(
     state: GameState,
@@ -578,6 +549,26 @@ export class CharacterEventArg extends EventArg {
     public readonly character: CharacterState,
   ) {
     super(state);
+  }
+}
+
+export class ReactionEventArg extends CharacterEventArg {
+  constructor(state: GameState, public readonly reactionInfo: ReactionInfo) {
+    super(state, reactionInfo.target);
+  }
+
+  get caller() {
+    return this.reactionInfo.via.caller;
+  }
+  get target() {
+    return this.reactionInfo.target;
+  }
+  get type() {
+    return this.reactionInfo.type;
+  }
+
+  relatedTo(target: DamageType): boolean {
+    return REACTION_RELATIVES[this.type].includes(target);
   }
 }
 

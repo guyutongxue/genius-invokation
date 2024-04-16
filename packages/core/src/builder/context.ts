@@ -33,6 +33,7 @@ import {
   InlineEventNames,
   ModifyDamage0EventArg,
   ModifyDamage1EventArg,
+  ReactionInfo,
   SkillDescription,
   SkillInfo,
   constructEventAndRequestArg,
@@ -74,7 +75,7 @@ import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
 import {
   CALLED_FROM_REACTION,
-  OptionalDamageInfo,
+  ReactionDescriptionEventArg,
   getReactionDescription,
 } from "./reaction";
 import { flip } from "@gi-tcg/utils";
@@ -383,7 +384,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         roundNumber: this.state.roundNumber,
         fromReaction: this.fromReaction,
       };
-      if (type !== DamageType.Piercing) {
+      if (damageInfo.type !== DamageType.Piercing) {
         const modifier0 = new ModifyDamage0EventArg(this.state, damageInfo);
         this.handleInlineEvent("modifyDamage0", modifier0);
         damageInfo = modifier0.damageInfo;
@@ -392,14 +393,44 @@ export class SkillContext<Meta extends ContextMetaBase> {
           damageInfo.type !== DamageType.Physical &&
           damageInfo.type !== DamageType.Piercing
         ) {
-          damageInfo = this.doApply(t, damageInfo.type, damageInfo);
+          const [, reaction] =
+            REACTION_MAP[targetState.variables.aura][damageInfo.type];
+          switch (reaction) {
+            case Reaction.Melt:
+            case Reaction.Vaporize:
+            case Reaction.Overloaded:
+              damageInfo = {
+                ...damageInfo,
+                value: damageInfo.value + 2,
+                log: `${damageInfo.log}\nReaction (${reaction}) increase damage 2`,
+              };
+              break;
+            case Reaction.Superconduct:
+            case Reaction.ElectroCharged:
+            case Reaction.Frozen:
+            case Reaction.CrystallizeCryo:
+            case Reaction.CrystallizeHydro:
+            case Reaction.CrystallizePyro:
+            case Reaction.CrystallizeElectro:
+            case Reaction.Burning:
+            case Reaction.Bloom:
+            case Reaction.Quicken:
+              damageInfo = {
+                ...damageInfo,
+                value: damageInfo.value + 1,
+                log: `${damageInfo.log}\nReaction (${reaction}) increase damage 1`,
+              };
+              break;
+            default:
+              // do nothing
+              break;
+          }
         }
 
         const modifier1 = new ModifyDamage1EventArg(this.state, damageInfo);
         this.handleInlineEvent("modifyDamage1", modifier1);
         damageInfo = modifier1.damageInfo;
       }
-
       const finalHealth = Math.max(
         0,
         targetState.variables.health - damageInfo.value,
@@ -415,6 +446,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
         damage: damageInfo,
       });
       this.emitEvent("onDamageOrHeal", this.state, damageInfo);
+      if (
+        damageInfo.type !== DamageType.Physical &&
+        damageInfo.type !== DamageType.Piercing
+      ) {
+        this.doApply(t, damageInfo.type);
+      }
     }
   }
 
@@ -436,11 +473,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     return (this as any)[CALLED_FROM_REACTION] ?? null;
   }
 
-  private doApply(
-    target: TypedCharacter<Meta>,
-    type: NontrivialDamageType,
-    damage?: DamageInfo,
-  ): DamageInfo {
+  private doApply(target: TypedCharacter<Meta>, type: NontrivialDamageType, fromDamage?: DamageInfo) {
     const aura = target.state.variables.aura;
     const [newAura, reaction] = REACTION_MAP[aura][type];
     this.mutate({
@@ -449,41 +482,31 @@ export class SkillContext<Meta extends ContextMetaBase> {
       varName: "aura",
       value: newAura,
     });
-    const optDamageInfo: OptionalDamageInfo = damage
-      ? {
-          ...damage,
-          isDamage: true,
-        }
-      : {
-          type,
-          value: 0,
-          source: this.skillInfo.caller,
-          via: this.skillInfo,
-          target: target.state,
-          isDamage: false,
-          causeDefeated: false,
-          roundNumber: this.state.roundNumber,
-          fromReaction: this.fromReaction,
-        };
-    const damageModifier = new ModifyDamage0EventArg(this.state, optDamageInfo);
-    damageModifier._currentSkillInfo = this.skillInfo;
     if (reaction !== null) {
-      this.emitEvent("onReaction", this.state, {
+      const reactionInfo: ReactionInfo = {
+        target: target.state,
         type: reaction,
         via: this.skillInfo,
-        target: target.state,
-        damage,
-      });
+        fromDamage,
+      }
+      this.emitEvent("onReaction", this.state, reactionInfo);
+      const reactionDescriptionEventArg: ReactionDescriptionEventArg = {
+        where: target.who === this.callerArea.who ? "my" : "opp",
+        here: target.who === this.callerArea.who ? "opp" : "my",
+        id: target.state.id,
+        isActive: target.isActive(),
+      };
       const reactionDescription = getReactionDescription(reaction);
-      const [newState, events] = reactionDescription(
-        this._state,
-        this.skillInfo,
-        damageModifier,
-      );
-      this.eventAndRequests.push(...events);
-      this._state = newState;
+      if (reactionDescription) {
+        const [newState, events] = reactionDescription(
+          this._state,
+          this.skillInfo,
+          reactionDescriptionEventArg,
+        );
+        this.eventAndRequests.push(...events);
+        this._state = newState;
+      }
     }
-    return damageModifier.damageInfo;
   }
 
   createEntity<TypeT extends EntityType>(

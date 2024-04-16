@@ -19,7 +19,7 @@ import { character, skill, status, combatStatus, card, DamageType, StatusHandle 
 // 入场时，此牌携带3点可用次数。可用次数耗尽时，弃置此牌。
 // 角色受到元素反应伤害后：对所附属角色造成1点穿透伤害，消耗1点可用次数。（称此伤害为“一类伤害”）
 //     注：若对方装备有心识蕴藏之种，且摩耶之殿在场，且对方有火元素角色，则改为造成1点草元素伤害。
-// 我方阵营角色受到“一类伤害”后：对所附属角色造成1点穿透伤害，消耗1点可用次数。
+// 其它我方阵营角色受到“一类伤害”后：对所附属角色造成1点穿透伤害，消耗1点可用次数。
 
 /**
  * @id 117031
@@ -48,7 +48,8 @@ export const SeedOfSkandha: StatusHandle = status(117031)
   .on("damaged", (c, e) =>
     // 当受到“蕴种印造成的一类伤害”时。“一类伤害”的判断方法：伤害来自蕴种印，且非本技能造成的
     e.source.definition.id === SeedOfSkandha && 
-    e.via.definition.id !== c.skillInfo.definition.id)
+    e.via.definition.id !== c.skillInfo.definition.id &&
+    e.target.id !== c.self.master().id)
   .listenToPlayer()
   .damage(DamageType.Piercing, 1, "@master")
   .consumeUsage()

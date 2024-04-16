@@ -73,7 +73,7 @@ export const FreshWindOfFreedom = card(330004)
   .legend()
   .toCombatStatus(300002)
   .oneDuration()
-  .on("defeated", (c, e) => c.state.phase === "action" && c.isMyTurn() && !c.of(e.character).isMine())
+  .on("defeated", (c, e) => c.state.phase === "action" && c.isMyTurn() && !c.of(e.target).isMine())
   .listenToAll()
   .usage(1)
   .do((c) => {

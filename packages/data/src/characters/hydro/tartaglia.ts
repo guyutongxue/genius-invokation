@@ -145,7 +145,7 @@ export const RangedStanceSkill = skill(12045)
 export const AddRiptideToNextCharacter = skill(12046)
   .type("passive")
   .on("defeated", (c, e) => {
-    const ch = c.of(e.character);
+    const ch = c.of(e.target);
     return !ch.isMine() && ch.hasStatus(Riptide);
   })
   .listenToAll()
