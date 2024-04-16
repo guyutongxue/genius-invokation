@@ -270,7 +270,9 @@ export class Game {
       this.notifyOne(i, { state, events });
     }
     await this.io.pause?.(state, [...events]);
-    if (this.state.phase !== "gameEnd") {
+    if (state.phase === "gameEnd") {
+      this.gotWinner(state.winner);
+    } else {
       this.mutate({ type: "clearMutationLog" });
       await this.checkGiveUp();
     }
@@ -372,17 +374,19 @@ export class Game {
 
   /** 胜负已定，切换到 gameEnd 阶段 */
   private async gotWinner(winner: 0 | 1 | null) {
-    this.mutate({
-      type: "changePhase",
-      newPhase: "gameEnd",
-    });
-    if (winner !== null) {
+    if (this.state.phase !== "gameEnd") {
       this.mutate({
-        type: "setWinner",
-        winner,
+        type: "changePhase",
+        newPhase: "gameEnd",
       });
+      if (winner !== null) {
+        this.mutate({
+          type: "setWinner",
+          winner,
+        });
+      }
+      await this.notifyAndPause();
     }
-    await this.notifyAndPause();
     this.resolveFinishPromise();
     if (!this._terminated) {
       this._terminated = true;

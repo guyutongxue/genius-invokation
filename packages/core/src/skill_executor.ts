@@ -196,6 +196,7 @@ export class SkillExecutor {
                 type: "changePhase",
                 newPhase: "gameEnd",
               });
+              await this.notify([]);
               return;
             }
           }
