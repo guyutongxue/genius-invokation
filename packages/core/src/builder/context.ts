@@ -617,6 +617,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
       });
       return this.of(newState);
     } else {
+      if (
+        area.type === "summons" &&
+        entitiesAtArea.length === this.state.config.maxSummons
+      ) {
+        return null;
+      }
       const initState: EntityState = {
         id: 0,
         definition: def,
