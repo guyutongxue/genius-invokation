@@ -482,17 +482,18 @@ export class ModifyDamage1EventArg<
   }
 
   override get damageInfo(): InfoT {
+    const damageInfo = super.damageInfo;
     const value = Math.max(
       0,
       Math.ceil(
-        (super.damageInfo.value + this._increased) * this._multiplier -
+        (damageInfo.value + this._increased) * this._multiplier -
           this._decreased,
       ),
     );
     return {
-      ...super.damageInfo,
+      ...damageInfo,
       value,
-      causeDefeated: this.target.variables.health <= value,
+      causeDefeated: damageInfo.target.variables.health <= value,
       log: this._log,
     };
   }

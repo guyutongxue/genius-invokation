@@ -22,11 +22,10 @@ import {
   HealInfo,
   SkillInfo,
   SwitchActiveEventArg,
-  SwitchActiveInfo,
   ZeroHealthEventArg,
 } from "./base/skill";
 import { AnyState, CharacterState, GameState } from "./base/state";
-import { DamageType, Event } from "@gi-tcg/typings";
+import { Aura, DamageType, Event } from "@gi-tcg/typings";
 import {
   allEntities,
   checkImmune,
@@ -37,11 +36,12 @@ import {
 import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
 import { Mutation, applyMutation } from "./base/mutation";
 import { flip } from "@gi-tcg/utils";
+import { GameStateLogEntry } from "./log";
 
 interface IoDuringSkillFinalize {
   switchCard(who: 0 | 1): Promise<void>;
   reroll(who: 0 | 1, times: number): Promise<void>;
-  notifyAndPause(events: readonly Event[]): Promise<void>;
+  notifyAndPause(opt: Partial<GameStateLogEntry>): Promise<void>;
   chooseActive(who: 0 | 1): Promise<CharacterState>;
 }
 
@@ -55,10 +55,10 @@ class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
   }
 }
 
-type GeneralSkillArg = EventArg | CardSkillEventArg | void;
+export type GeneralSkillArg = EventArg | CardSkillEventArg | void;
 
 export class SkillExecutor {
-  constructor(
+  private constructor(
     private state: GameState,
     private readonly _io?: IoDuringSkillFinalize,
   ) {}
@@ -72,7 +72,7 @@ export class SkillExecutor {
 
   private notify(events: readonly Event[]) {
     if (this._io) {
-      return this._io.notifyAndPause(events);
+      return this._io.notifyAndPause({ state: this.state, events });
     }
   }
 
@@ -82,7 +82,7 @@ export class SkillExecutor {
 
   async finalizeSkill(
     skillInfo: SkillInfo,
-    arg: GeneralSkillArg
+    arg: GeneralSkillArg,
   ): Promise<void> {
     if (this.state.phase === "gameEnd") {
       return;
@@ -184,7 +184,7 @@ export class SkillExecutor {
               type: "modifyEntityVar",
               state: ch,
               varName: "aura",
-              value: 0,
+              value: Aura.None,
             });
             this.mutate({
               type: "setPlayerFlag",
@@ -220,6 +220,9 @@ export class SkillExecutor {
     const criticalDamageEvents = damageEventArgs.filter(
       (arg) => arg.damageInfo.causeDefeated,
     );
+    if (criticalDamageEvents.length > 0) {
+      await this.notify([]);
+    }
 
     for (const arg of zeroHealthEventArgs) {
       await this.handleEvent(["modifyZeroHealth", arg]);
@@ -270,6 +273,7 @@ export class SkillExecutor {
           varName: "energy",
           value: newEnergy,
         });
+        await this.notify([]);
       }
     }
 
@@ -376,12 +380,20 @@ export class SkillExecutor {
     return this.state;
   }
 
-  static async executeSkill(game: IoAndState, skill: SkillInfo, arg: GeneralSkillArg) {
+  static async executeSkill(
+    game: IoAndState,
+    skill: SkillInfo,
+    arg: GeneralSkillArg,
+  ) {
     const executor = new SkillExecutor(game.state, game);
     await executor.finalizeSkill(skill, arg);
     return executor.state;
   }
-  static async previewSkill(state: GameState, skill: SkillInfo, arg: GeneralSkillArg) {
+  static async previewSkill(
+    state: GameState,
+    skill: SkillInfo,
+    arg: GeneralSkillArg,
+  ) {
     const executor = new SkillExecutor(state);
     try {
       await executor.finalizeSkill(skill, arg);

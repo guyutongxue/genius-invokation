@@ -50,7 +50,7 @@ export const ShieldOfSafeTransport = combatStatus(117072)
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 export const UrgentNekoParcel = combatStatus(117071)
-  .on("switchActive", (c) => c.$("my active")!.state.definition.id === Kirara)
+  .on("switchActive", (c, e) => e.switchInfo.from.definition.id === Kirara)
   .usageCanAppend(1, 2)
   .damage(DamageType.Dendro, 1)
   .drawCards(1)

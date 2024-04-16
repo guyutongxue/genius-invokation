@@ -15,8 +15,6 @@
 
 import { checkDice, flip } from "@gi-tcg/utils";
 import {
-  Aura,
-  DamageType,
   DiceType,
   Event,
   RpcMethod,
@@ -34,39 +32,28 @@ import {
 import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
-  allEntities,
   drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
-  getEntityArea,
   getEntityById,
   findReplaceAction,
   shuffle,
   sortDice,
   isSkillDisabled,
-  checkImmune,
 } from "./util";
 import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionEventArg,
   ActionInfo,
-  CharacterEventArg,
-  DamageInfo,
-  DamageOrHealEventArg,
   ElementalTuningInfo,
-  EntityEventArg,
   EventAndRequest,
   EventArg,
-  EventArgOf,
-  EventNames,
-  HealInfo,
   ModifyActionEventArg,
   ModifyRollEventArg,
   PlayerEventArg,
   SkillInfo,
   SwitchActiveEventArg,
   SwitchActiveInfo,
-  ZeroHealthEventArg,
 } from "./base/skill";
 import { CardDefinition, CardSkillEventArg } from "./base/card";
 import { executeQueryOnState } from "./query";
@@ -77,9 +64,8 @@ import {
   GiTcgIOError,
 } from "./error";
 import { GameStateLogEntry } from "./log";
-import { EntityArea } from "./base/entity";
 import { randomSeed } from "./random";
-import { SkillExecutor } from "./skill_executor";
+import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -95,6 +81,8 @@ const IO_CHECK_GIVEUP_INTERVAL = 500;
 type ActionInfoWithNewState = ActionInfo & {
   readonly newState: GameState;
 };
+
+type NotifyAndPauseOption = Partial<GameStateLogEntry>;
 
 export class Game {
   private readonly data: ReadonlyDataStore;
@@ -262,19 +250,23 @@ export class Game {
       newState: exposeState(who, this.state),
     });
   }
-  async notifyAndPause(events: readonly Event[], canResume = false) {
+  async notifyAndPause({
+    events = [],
+    canResume = false,
+    state = this.state,
+  }: NotifyAndPauseOption = {}) {
     if (this._terminated) {
       return;
     }
     this._stateLog.push({
-      state: this.state,
+      state,
       canResume,
       events,
     });
     for (const i of [0, 1] as const) {
       this.notifyOne(i, events);
     }
-    await this.io.pause?.(this.state, [...events]);
+    await this.io.pause?.(state, [...events]);
     if (this.state.phase !== "gameEnd") {
       this.mutate({ type: "clearMutationLog" });
       await this.checkGiveUp();
@@ -302,7 +294,7 @@ export class Game {
     });
     (async () => {
       try {
-        await this.notifyAndPause([], true);
+        await this.notifyAndPause({ canResume: true });
         while (!this._terminated) {
           switch (this.state.phase) {
             case "initHands":
@@ -323,7 +315,7 @@ export class Game {
             default:
               break;
           }
-          await this.notifyAndPause([], true);
+          await this.notifyAndPause({ canResume: true });
         }
       } catch (e) {
         if (e instanceof GiTcgIOError) {
@@ -387,7 +379,7 @@ export class Game {
         winner,
       });
     }
-    await this.notifyAndPause([], false);
+    await this.notifyAndPause();
     this.resolveFinishPromise();
     if (!this._terminated) {
       this._terminated = true;
@@ -447,7 +439,7 @@ export class Game {
         this._state = drawCard(this.state, who, null);
       }
     }
-    this.notifyAndPause([]);
+    this.notifyAndPause();
     await Promise.all([this.switchCard(0), this.switchCard(1)]);
     this.mutate({
       type: "changePhase",
@@ -476,11 +468,7 @@ export class Game {
     });
     // For debugging
     Reflect.set(globalThis, "$$", (query: string) => this.query(0, query));
-    this._state = await SkillExecutor.handleEvent(
-      this,
-      "onBattleBegin",
-      new EventArg(this.state),
-    );
+    await this.handleEvent("onBattleBegin", new EventArg(this.state));
   }
 
   async chooseActive(who: 0 | 1): Promise<CharacterState> {
@@ -516,11 +504,7 @@ export class Game {
     const rollParams: RollParams[] = [];
     for (const who of [0, 1] as const) {
       const rollModifier = new ModifyRollEventArg(this.state, who);
-      this._state = await SkillExecutor.handleEvent(
-        this,
-        "modifyRoll",
-        rollModifier,
-      );
+      await this.handleEvent("modifyRoll", rollModifier);
       rollParams.push({
         fixed: rollModifier._fixedDice,
         count: 1 + rollModifier._extraRerollCount,
@@ -579,11 +563,7 @@ export class Game {
       flagName: "declaredEnd",
       value: false,
     });
-    this._state = await SkillExecutor.handleEvent(
-      this,
-      "onActionPhase",
-      new EventArg(this.state),
-    );
+    await this.handleEvent("onActionPhase", new EventArg(this.state));
   }
   private async actionPhase() {
     const who = this.state.currentTurn;
@@ -610,17 +590,12 @@ export class Game {
       (replaceAction = findReplaceAction(activeCh())) &&
       !isSkillDisabled(activeCh())
     ) {
-      this._state = await SkillExecutor.executeSkill(
-        this,
-        replaceAction,
-        new EventArg(this.state),
-      );
+      await this.executeSkill(replaceAction, new EventArg(this.state));
       this.mutate({
         type: "switchTurn",
       });
     } else {
-      this._state = await SkillExecutor.handleEvent(
-        this,
+      await this.handleEvent(
         "onBeforeAction",
         new PlayerEventArg(this.state, who),
       );
@@ -641,11 +616,7 @@ export class Game {
         this.state,
         actionInfo,
       );
-      this._state = await SkillExecutor.handleEvent(
-        this,
-        "modifyAction",
-        modifyActionEventArg,
-      );
+      await this.handleEvent("modifyAction", modifyActionEventArg);
 
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {
@@ -702,10 +673,7 @@ export class Game {
 
       switch (actionInfo.type) {
         case "useSkill":
-          this._state = await SkillExecutor.executeSkill(
-            this,
-            actionInfo.skill,
-          );
+          await this.executeSkill(actionInfo.skill);
           break;
         case "playCard":
           if (actionInfo.card.definition.tags.includes("legend")) {
@@ -736,8 +704,7 @@ export class Game {
               oldState: actionInfo.card,
               used: true,
             });
-            this._state = await SkillExecutor.executeSkill(
-              this,
+            await this.executeSkill(
               {
                 caller: activeCh(),
                 definition: actionInfo.card.definition.skillDefinition,
@@ -785,8 +752,7 @@ export class Game {
           type: "switchTurn",
         });
       }
-      this._state = await SkillExecutor.handleEvent(
-        this,
+      await this.handleEvent(
         "onAction",
         new ActionEventArg(actionInfo.newState, actionInfo),
       );
@@ -813,11 +779,7 @@ export class Game {
     }
   }
   private async endPhase() {
-    this._state = await SkillExecutor.handleEvent(
-      this,
-      "onEndPhase",
-      new EventArg(this.state),
-    );
+    await this.handleEvent("onEndPhase", new EventArg(this.state));
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
         this._state = drawCard(this.state, who, null);
@@ -1017,8 +979,7 @@ export class Game {
       who,
       value: to,
     });
-    this._state = await SkillExecutor.handleEvent(
-      this,
+    await this.handleEvent(
       "onSwitchActive",
       new SwitchActiveEventArg(oldState, {
         type: "switchActive",
@@ -1027,6 +988,13 @@ export class Game {
         to,
       }),
     );
+  }
+
+  private async executeSkill(skillInfo: SkillInfo, arg: GeneralSkillArg) {
+    this._state = await SkillExecutor.executeSkill(this, skillInfo, arg);
+  }
+  private async handleEvent(...args: EventAndRequest) {
+    this._state = await SkillExecutor.handleEvent(this, ...args);
   }
 }
 
