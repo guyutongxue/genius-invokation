@@ -170,7 +170,7 @@ export function CharacterArea(props: CharacterAreaProps) {
               }}
               title={damaged().log}
             >
-              {damaged().type === 9 /* heal */ ? "+" : "-"}
+              {damaged().type >= 9 /* heal/revive */ ? "+" : "-"}
               {damaged().value}
             </div>
           )}

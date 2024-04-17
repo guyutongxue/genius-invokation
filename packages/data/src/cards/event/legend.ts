@@ -56,7 +56,9 @@ export const JoyousCelebration = card(330003)
   .filter((c) => [DiceType.Cryo, DiceType.Hydro, DiceType.Pyro, DiceType.Electro, DiceType.Dendro].includes(c.$("my active")!.element()))
   .do((c) => {
     const element = c.$("my active")!.element() as 1 | 2 | 3 | 4 | 7;
-    c.$$("my character with aura != 0").forEach((ch) => ch.apply(element))
+    // 先挂后台再挂前台（避免前台被超载走导致结算错误）
+    c.apply(element, "my standby character with aura != 0");
+    c.apply(element, "my active character with aura != 0");
   })
   .done();
 

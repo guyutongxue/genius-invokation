@@ -231,6 +231,12 @@ export class SkillExecutor {
           fromReaction: null,
           roundNumber: this.state.roundNumber,
         };
+        this.mutate({
+          type: "modifyEntityVar",
+          state: arg.target,
+          varName: "health",
+          value: healValue,
+        });
         await this.notify([
           {
             type: "damage",

@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -85,7 +85,10 @@ type StrictCardSkillFilter<KindTs extends CardTargetKind> = SkillFilter<
   StrictBuilderMetaForCard<KindTs>
 >;
 
-type TargetQuery = `${string}character${string}` | `${string}summon${string}` | `${string}support${string}`;
+type TargetQuery =
+  | `${string}character${string}`
+  | `${string}summon${string}`
+  | `${string}support${string}`;
 type TargetKindOfQuery<Q extends TargetQuery> = GuessedTypeOfQuery<Q>;
 
 const SATIATED_ID = 303300 as StatusHandle;
@@ -198,34 +201,45 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     return this.tags("legend").filter((c) => !c.player.legendUsed);
   }
 
-  private getTalentTarget(
+  /**
+   * 执行通用的天赋牌准备工作。
+   * - 设置 talent 标签
+   * - 若是出战行动，设置 action 标签
+   * - 设置牌组需求
+   * - 若要求该角色出战，则设置 filter
+   * @returns 打出目标需求
+   */
+  private prepareTalent(
     ch: CharacterHandle | CharacterHandle[],
+    requires: TalentRequirement,
   ): `${string}character${string}` {
-    if (Array.isArray(ch)) {
-      return ch.map((c) => `(my characters with definition id ${c})`).join(" or ") as any;
-    } else {
-      return `my characters with definition id ${ch}`;
+    this.tags("talent");
+    if (requires === "action") {
+      this.tags("action");
     }
-  }
-
-  talent(
-    ch: CharacterHandle | CharacterHandle[],
-    requires: TalentRequirement = "action",
-  ) {
     let chs: CharacterHandle[];
     if (Array.isArray(ch)) {
       chs = ch;
     } else {
       chs = [ch];
     }
-    this.eventTalent(chs, requires);
+    this.requireCharacter(chs[0]);
     if (requires !== "none") {
       // 出战角色须为天赋角色
       this.filter((c) =>
         chs.includes(c.$("my active")!.state.definition.id as CharacterHandle),
       );
     }
-    const equipQuery = this.getTalentTarget(ch);
+    return chs
+      .map((c) => `(my characters with definition id ${c})`)
+      .join(" or ") as any;
+  }
+
+  talent(
+    ch: CharacterHandle | CharacterHandle[],
+    requires: TalentRequirement = "action",
+  ) {
+    const equipQuery = this.prepareTalent(ch, requires);
     return this.equipment(equipQuery).tags("talent");
   }
 
@@ -233,16 +247,8 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     ch: CharacterHandle | CharacterHandle[],
     requires: TalentRequirement = "action",
   ) {
-    if (requires === "action") {
-      this.tags("action");
-    }
-    if (Array.isArray(ch)) {
-      this.requireCharacter(ch[0]);
-    } else {
-      this.requireCharacter(ch);
-    }
-    const targetQuery = this.getTalentTarget(ch);
-    return this.tags("talent").addTarget(targetQuery);
+    const targetQuery = this.prepareTalent(ch, requires);
+    return this.addTarget(targetQuery);
   }
 
   requireCharacterTag(tag: CharacterTag): this {
@@ -263,7 +269,8 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   // 增加 food 标签，增加目标（我方非饱腹角色）
   food(opt?: FoodOption) {
     this._satiatedTarget = opt?.satiatedTarget ?? "@targets.0";
-    const defaultTarget = "my characters and not has status with definition id = 303300";
+    const defaultTarget =
+      "my characters and not has status with definition id = 303300";
     let target;
     if (opt?.extraTargetRestraint) {
       target = `(${defaultTarget}) and (${opt.extraTargetRestraint})`;
