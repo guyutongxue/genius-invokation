@@ -72,7 +72,10 @@ type BuilderMetaOfEntity<
 };
 
 interface GlobalUsageOptions extends VariableOptions {
-  /** 是否在 consumeUsage() 且变量到达 0 时时自动弃置实体 */
+  /**
+   * 是否在 consumeUsage() 且变量到达 0 时时自动弃置实体。
+   * 默认为 true
+   */
   autoDispose?: boolean;
 }
 

@@ -32,7 +32,8 @@ export const MeleeStance = status(112042)
   .changeDamageType(DamageType.Hydro)
   .on("modifySkillDamage", (c, e) => c.of(e.target).hasStatus(Riptide))
   .increaseDamage(1)
-  .on("useSkill", (c) => c.$("opp active")!.hasStatus(Riptide))
+  // 此处使用 modifySkillDamage; 因为官方实现中，此穿透伤害是与增伤同时发生的，而非“使用技能后”
+  .on("modifySkillDamage", (c, e) => c.of(e.target).hasStatus(Riptide))
   .usagePerRound(2)
   .damage(DamageType.Piercing, 1, "opp next")
   .done();
@@ -136,6 +137,12 @@ export const RangedStanceSkill = skill(12045)
   .type("passive")
   .reserve();
 
+// 当对方带有断流的角色被击倒时：
+// 若被击倒的角色是出战角色（稍后玩家需选择出战角色）：
+// - 则在下次切换角色后，为新的出战角色附属断流。
+// 否则（被击倒的是后台角色）：
+// - 直接为当前出战角色附属断流。
+
 /**
  * @id 12046
  * @name 遏浪
@@ -144,12 +151,25 @@ export const RangedStanceSkill = skill(12045)
  */
 export const AddRiptideToNextCharacter = skill(12046)
   .type("passive")
+  .variable("addAfterSwitch", 0)
   .on("defeated", (c, e) => {
     const ch = c.of(e.target);
     return !ch.isMine() && ch.hasStatus(Riptide);
   })
   .listenToAll()
+  .do((c, e) => {
+    const ch = c.of(e.target);
+    if (ch.isActive()) {
+      c.setVariable("addAfterSwitch", 1);
+    } else {
+      c.characterStatus(Riptide, "opp active");
+    }
+  })
+  .on("switchActive", (c, e) =>
+    c.getVariable("addAfterSwitch") && 
+    e.switchInfo.who !== c.self.who)
   .characterStatus(Riptide, "opp active")
+  .setVariable("addAfterSwitch", 0)
   .done();
 
 /**

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType, CharacterState, SkillHandle } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, CharacterState, SkillHandle, CharacterHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 12104
@@ -65,13 +65,7 @@ export const PastDraconicGlories = status(112103)
  * 可用次数：1（可叠加，最多叠加到3次）
  */
 export const SourcewaterDroplet = combatStatus(112101)
-  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Neuvillette && e.isSkillType("normal"))
-  .usageCanAppend(1, 3)
-  .do((c, e) => {
-    const target = e.action.skill.caller as CharacterState;
-    c.heal(2, target);
-    c.characterStatus(EquitableJudgmentStatus, target);
-  })
+  .usage(1, { append: { limit: 3 }, autoDispose: true })
   .done();
 
 /**
@@ -126,7 +120,18 @@ export const OTidesIHaveReturned: SkillHandle = skill(12103)
  * 
  */
 export const SourcewaterDropletSkill = skill(12105)
-  .reserve();
+  .type("passive")
+  .on("useSkill", (c, e) => 
+    e.isSkillType("normal") &&
+    c.$(`my combat status with definition id ${SourcewaterDroplet}`)
+  )
+  .do((c) => {
+    const droplet = c.$(`my combat status with definition id ${SourcewaterDroplet}`);
+    droplet?.consumeUsage();
+    c.heal(2, "@self");
+    c.characterStatus(EquitableJudgmentStatus, "@self");
+  })
+  .done();
 
 /**
  * @id 1210
@@ -138,7 +143,7 @@ export const Neuvillette = character(1210)
   .tags("hydro", "catalyst", "fontaine", "ousia")
   .health(10)
   .energy(2)
-  .skills(AsWaterSeeksEquilibrium, OTearsIShallRepay, OTidesIHaveReturned)
+  .skills(AsWaterSeeksEquilibrium, OTearsIShallRepay, OTidesIHaveReturned, SourcewaterDropletSkill)
   .done();
 
 /**
