@@ -1,25 +1,15 @@
 {
   "name": "genius-invokation",
   "private": true,
-  "workspaces": [
-    "packages/typings",
-    "packages/core",
-    "packages/data",
-    "packages/utils",
-    "packages/webui-core",
-    "packages/webui",
-    "packages/standalone",
-    "packages/pvp-worker"
-  ],
-  "//": "Waiting for --recursive flag, see https://github.com/oven-sh/bun/issues/5350",
+  "workspaces": ["packages/*"],
   "scripts": {
-    "build": "bun scripts/build.ts"
+    "build": "bun --filter '@gi-tcg/*' build"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.14.0",
     "@microsoft/api-extractor": "^7.40.4",
     "@types/bun": "^1.0.12",
-    "bun": "^1.1.2",
+    "bun": "^1.1.4",
     "tsup": "^8.0.2",
     "type-fest": "^4.10.2"
   },
