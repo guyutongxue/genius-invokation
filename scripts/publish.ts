@@ -22,6 +22,8 @@ import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
+$.throws(true);
+
 const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
 const VERSION = "0.5.0";
 
