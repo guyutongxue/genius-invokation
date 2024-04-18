@@ -18,6 +18,9 @@ import solid from "vite-plugin-solid";
 import babel from "@rollup/plugin-babel";
 
 export default defineConfig({
+  esbuild: {
+    target: "ES2020"
+  },
   plugins: [
     solid(),
     babel({
