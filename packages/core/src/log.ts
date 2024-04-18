@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -83,7 +83,7 @@ interface SerializedLogEntry {
 interface SerializedLog {
   store: any[];
   log: SerializedLogEntry[];
-};
+}
 
 export function serializeGameStateLog(
   log: readonly GameStateLogEntry[],
@@ -171,7 +171,69 @@ export function deserializeGameStateLog(
       },
       events: entry.e,
       canResume: entry.r,
-    })
+    });
   }
   return result;
+}
+
+export enum DetailLogType {
+  Phase = "phase",
+  Skill = "skill",
+  Event = "event",
+  Primitive = "primitive",
+  Mutation = "mutation",
+  Other = "other",
+}
+
+interface DetailLogEntry {
+  type: DetailLogType;
+  value: string;
+  children?: DetailLogEntry[];
+}
+
+export interface IDetailLogger {
+  log(type: DetailLogType, value: string): void;
+  /**
+   * Enter next level of log until the return value is disposed
+   * @returns A `Disposable` object that will return to the previous level of log when disposed
+   */
+  subLog(type: DetailLogType, value: string): Disposable;
+}
+
+export class DetailLogger implements IDetailLogger {
+  private readonly logs: DetailLogEntry[] = [];
+  _currentLogs: DetailLogEntry[] = this.logs;
+  _parentLogs: DetailLogEntry[][] = [];
+
+  public log(type: DetailLogType, value: string): void {
+    this._currentLogs.push({ type, value });
+  }
+
+  public subLog(type: DetailLogType, value: string): DetailSubLogger {
+    const entry = { type, value, children: [] };
+    this._currentLogs.push(entry);
+    this._parentLogs.push(this._currentLogs);
+    this._currentLogs = entry.children;
+    const subLogger = new DetailSubLogger(this);
+    return subLogger;
+  }
+
+  public getLogs(): DetailLogEntry[] {
+    return this.logs;
+  }
+}
+
+class DetailSubLogger implements IDetailLogger, Disposable {
+  constructor(private readonly parent: DetailLogger) {}
+
+  public log(type: DetailLogType, value: string): void {
+    this.parent.log(type, value);
+  }
+  public subLog(type: DetailLogType, value: string): DetailSubLogger {
+    return this.parent.subLog(type, value);
+  }
+
+  [Symbol.dispose]() {
+    this.parent._currentLogs = this.parent._parentLogs.pop()!;
+  }
 }
