@@ -14,20 +14,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { test, expect } from "bun:test";
-import { nextRandom, randomSeed } from "./random";
+import { DetailLogType, DetailLogger } from "../log";
 
-test("random seed", () => {
-  const x = randomSeed();
-  expect(x).toBeInteger();
-  expect(x).toBeGreaterThanOrEqual(0);
-  expect(x).toBeLessThan(2147483647);
-})
-
-test("random generator", () => {
-  const seed = 3553;
-  let x = seed;
-  for (let i = 0; i < 5; i ++) {
-    x = nextRandom(x);
+test("detail logger", () => {
+  const logger = new DetailLogger();
+  logger.log(DetailLogType.Other, "top level");
+  {
+    using _ = logger.subLog(DetailLogType.Skill, "skill");
+    logger.log(DetailLogType.Other, "in skill");
   }
-  expect(x).toBe(314840640);
-})
+  logger.log(DetailLogType.Other, "top level again");
+
+  const logs = logger.getLogs();
+  expect(logs).toEqual([
+    { type: DetailLogType.Other, value: "top level" },
+    {
+      type: DetailLogType.Skill,
+      value: "skill",
+      children: [{ type: DetailLogType.Other, value: "in skill" }],
+    },
+    { type: DetailLogType.Other, value: "top level again" },
+  ]);
+});
