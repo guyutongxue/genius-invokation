@@ -56,9 +56,7 @@ export type EntityArea =
       readonly characterId: number;
     };
 
-export interface VariableConfig<
-  ValueT extends number = number,
-> {
+export interface VariableConfig<ValueT extends number = number> {
   readonly initialValue: ValueT;
   readonly recreateBehavior: VariableRecreateBehavior<ValueT>;
 }
@@ -68,8 +66,8 @@ export type VariableRecreateBehavior<ValueT extends number = number> =
       readonly type: "overwrite";
     }
   | {
-     readonly type: "takeMax";
-  }
+      readonly type: "takeMax";
+    }
   | {
       readonly type: "append";
       readonly appendValue: ValueT;
@@ -109,5 +107,13 @@ export type EntityVariableConfigs = {
 };
 
 export type VariableOfConfig<C extends Record<string, VariableConfig>> = {
-  readonly [K in keyof C]: Required<C>[K] extends VariableConfig<infer T> ? T : never;
+  readonly [K in keyof C]: Required<C>[K] extends VariableConfig<infer T>
+    ? T
+    : never;
 };
+
+export function stringifyEntityArea(area: EntityArea) {
+  return `${
+    area.type === "characters" ? `character (${area.characterId})` : area.type
+  } of player ${area.who}`;
+}

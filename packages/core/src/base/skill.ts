@@ -20,6 +20,7 @@ import {
   CharacterState,
   EntityState,
   GameState,
+  stringifyState,
 } from "./state";
 import { CardTag, PlayCardSkillDefinition } from "./card";
 import {
@@ -31,6 +32,7 @@ import {
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 import { UsagePerRoundVariableNames } from "./entity";
+import { IDetailLogger } from "../log";
 
 export interface SkillDefinitionBase<Arg> {
   readonly __definition: "skills";
@@ -72,6 +74,8 @@ export interface SkillInfo {
   readonly requestBy: SkillInfo | null;
   readonly charged: boolean;
   readonly plunging: boolean;
+  /** @internal */
+  readonly logger?: IDetailLogger;
 }
 
 export interface DamageInfo {
@@ -169,6 +173,10 @@ export class EventArg {
     }
     return this._currentSkillInfo.caller;
   }
+
+  toString() {
+    return "";
+  }
 }
 
 export class PlayerEventArg extends EventArg {
@@ -178,6 +186,9 @@ export class PlayerEventArg extends EventArg {
   ) {
     super(state);
   }
+  toString() {
+    return `player ${this.who}`
+  }
 }
 
 export class ModifyRollEventArg extends PlayerEventArg {
@@ -185,12 +196,12 @@ export class ModifyRollEventArg extends PlayerEventArg {
   _extraRerollCount = 0;
   _log = "";
   fixDice(type: DiceType, count: number): void {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) fix ${count} dice ${type}.\n`;
+    this._log += `${stringifyState(this.caller)} fix ${count} [dice:${type}].\n`;
     this._fixedDice.push(...Array(count).fill(type));
   }
 
   addRerollCount(count: number): void {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) add reroll count ${count}.\n`;
+    this._log += `${stringifyState(this.caller)} add reroll count ${count}.\n`;
     this._extraRerollCount += count;
   }
 }
@@ -207,6 +218,29 @@ export class ActionEventArg<
 
   get action() {
     return this._action;
+  }
+  toString() {
+    let text: string;
+    switch (this.action.type) {
+      case "useSkill":
+        text = `use skill [skill:${this.action.skill.definition.id}]`;
+        break;
+      case "playCard":
+        text = `play card ${stringifyState(this.action.card)}`;
+        break;
+      case "switchActive":
+        text = `switch active character to ${stringifyState(this.action.to)}`;
+        break;
+      case "elementalTuning":
+        text = `elemental tuning [dice:${this.action.result}]`;
+        break;
+      case "declareEnd":
+        text = "declare end";
+        break;
+      default:
+        text = "unknown action";
+    }
+    return `${this.action.who} ${text}, cost: ${JSON.stringify(this.action.cost)}, fast: ${this.action.fast}`
   }
 
   isSwitchActive(): this is ActionEventArg<SwitchActiveInfo> {
@@ -362,18 +396,18 @@ export class ModifyActionEventArg<
   }
 
   addCost(type: DiceType, count: number) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) add ${count} diceType(${type}) to cost.\n`;
+    this._log += `${stringifyState(this.caller)} add ${count} [dice:${type}] to cost.\n`;
     this._cost.push(...new Array<DiceType>(count).fill(type));
   }
   deductCost(type: DiceType, count: number) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) deduct ${count} diceType(${type}) from cost.\n`;
+    this._log += `${stringifyState(this.caller)} deduct ${count} [dice:${type}] from cost.\n`;
     this._deductedCost.push([type, count]);
   }
   setFastAction(): void {
     if (this._fast) {
       console.warn("Potential error: fast action already set");
     }
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) set fast action.\n`;
+    this._log += `${stringifyState(this.caller)} set fast action.\n`;
     this._fast = true;
   }
 }
@@ -384,6 +418,13 @@ export class SwitchActiveEventArg extends EventArg {
     public readonly switchInfo: SwitchActiveInfo,
   ) {
     super(state);
+  }
+  toString() {
+    let result = `player ${this.switchInfo.who}, switch from ${stringifyState(this.switchInfo.from)} to ${stringifyState(this.switchInfo.to)}`;
+    if (this.switchInfo.via) {
+      result += `, via skill [skill:${this.switchInfo.via.definition.id}]`;
+    }
+    return result;
   }
 }
 
@@ -396,6 +437,10 @@ export class DamageOrHealEventArg<
   ) {
     super(state);
   }
+  toString() {
+    return stringifyDamageInfo(this.damageInfo).split('\n')[0];
+  }
+
   get damageInfo() {
     return this._damageInfo;
   }
@@ -470,15 +515,15 @@ export class ModifyDamage1EventArg<
   protected _log = super.damageInfo.log ?? "";
 
   increaseDamage(value: number) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) increase damage by ${value}.\n`;
+    this._log += `${stringifyState(this.caller)} increase damage by ${value}.\n`;
     this._increased += value;
   }
   multiplyDamage(multiplier: number) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) multiply damage by ${multiplier}.\n`;
+    this._log += `${stringifyState(this.caller)} multiply damage by ${multiplier}.\n`;
     this._multiplier *= multiplier;
   }
   decreaseDamage(value: number) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) decrease damage by ${value}.\n`;
+    this._log += `${stringifyState(this.caller)} decrease damage by ${value}.\n`;
     this._decreased += value;
   }
 
@@ -506,7 +551,7 @@ export class ModifyDamage0EventArg<
   private _newDamageType: DamageType | null = null;
 
   changeDamageType(type: DamageType) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) change damage type from ${super.damageInfo.type} to ${type}.\n`;
+    this._log += `${stringifyState(this.caller)} change damage type from [damage:${super.damageInfo.type}] to [damage:${type}].\n`;
     if (this._newDamageType !== null) {
       console.warn("Potential error: damage type already changed");
     }
@@ -528,6 +573,9 @@ export class EntityEventArg extends EventArg {
   ) {
     super(state);
   }
+  toString(): string {
+    return stringifyState(this.entity);
+  }
 }
 
 class EnterEventArg extends EntityEventArg {
@@ -541,6 +589,9 @@ class EnterEventArg extends EntityEventArg {
   get overrided() {
     return this.enterInfo.overrided;
   }
+  toString(): string {
+    return `${super.toString()}, overrided: ${this.enterInfo.overrided}`
+  }
 }
 
 export class CharacterEventArg extends EventArg {
@@ -549,6 +600,9 @@ export class CharacterEventArg extends EventArg {
     public readonly character: CharacterState,
   ) {
     super(state);
+  }
+  toString() {
+    return stringifyState(this.character);
   }
 }
 
@@ -573,6 +627,9 @@ export class ReactionEventArg extends CharacterEventArg {
   relatedTo(target: DamageType): boolean {
     return REACTION_RELATIVES[this.type].includes(target);
   }
+  toString(): string {
+    return `[reaction:${this.reactionInfo.type}] occurred on ${stringifyState(this.reactionInfo.target)} via skill [skill:${this.reactionInfo.via.definition.id}]`;
+  }
 }
 
 export interface ImmuneInfo {
@@ -585,7 +642,7 @@ export class ZeroHealthEventArg extends ModifyDamage1EventArg<DamageInfo> {
   _log = "";
 
   immune(newHealth: number) {
-    this._log += `${this.caller.definition.type} ${this.caller.id} (defId = ${this.caller.definition.id}) immune to defeated, and heal it to ${newHealth}.\n`;
+    this._log += `${stringifyState(this.caller)} makes the character immune to defeated, and heals him to ${newHealth}.\n`;
     this._immuneInfo = {
       skill: this._currentSkillInfo!,
       newHealth,
@@ -734,3 +791,19 @@ export type SkillDefinition =
   | InitiativeSkillDefinition
   | PlayCardSkillDefinition
   | TriggeredSkillDefinition;
+
+export function stringifyDamageInfo(damage: DamageInfo | HealInfo): string {
+  if (damage.type === DamageType.Heal || damage.type === DamageType.Revive) {
+    let result = `${stringifyState(damage.source)} heal ${damage.value} to ${stringifyState(damage.target)}, via skill [skill:${damage.via.definition.id}]`;
+    if (damage.type === DamageType.Revive) {
+      result += ` (revive)`;
+    }
+    return result;
+  } else {
+    let result = `${stringifyState(damage.source)} deal ${damage.value} [damage:${damage.type}] to ${stringifyState(damage.target)}, via skill [skill:${damage.via.definition.id}`;
+    if ("log" in damage) {
+      result += `, damage modify log:\n${damage.log}`
+    }
+    return result;
+  }
+}

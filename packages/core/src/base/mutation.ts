@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -23,14 +23,17 @@ import {
   EntityState,
   GameState,
   PlayerState,
+  stringifyState,
 } from "./state";
+import { disposeEntity, getEntityById, sortDice } from "../util";
+import { EntityArea, stringifyEntityArea } from "./entity";
 import {
-  disposeEntity,
-  getEntityById,
-  sortDice,
-} from "../util";
-import { EntityArea } from "./entity";
-import { ActionInfo, DamageInfo, HealInfo, SkillDefinition, SkillInfo } from "./skill";
+  ActionInfo,
+  DamageInfo,
+  HealInfo,
+  SkillDefinition,
+  SkillInfo,
+} from "./skill";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 import { nextRandom } from "../random";
@@ -372,6 +375,66 @@ function doMutation(state: GameState, m: Mutation): GameState {
       throw new GiTcgCoreInternalError(
         `Unknown mutation type: ${JSON.stringify(m)}`,
       );
+    }
+  }
+}
+
+export function stringifyMutation(m: Mutation): string {
+  switch (m.type) {
+    case "stepRound": {
+      return `Step round number`;
+    }
+    case "switchTurn": {
+      return `Switch turn`;
+    }
+    case "setWinner": {
+      return `Set winner to ${m.winner}`;
+    }
+    case "transferCard": {
+      return `Transfer card ${stringifyState(m.value)} ${m.path} of player ${
+        m.who
+      }`;
+    }
+    case "switchActive": {
+      return `Switch active of player ${m.who} to ${stringifyState(m.value)}`;
+    }
+    case "disposeCard": {
+      return `Dispose card ${stringifyState(m.oldState)} of player ${m.who} (${
+        m.used ? "used" : "not used"
+      })`;
+    }
+    case "createCard": {
+      return `Create card ${stringifyState(m.value)} for player ${m.who} in ${
+        m.target
+      }`;
+    }
+    case "createCharacter": {
+      return `Create character ${stringifyState(m.value)} for player ${m.who}`;
+    }
+    case "createEntity": {
+      return `Create entity ${stringifyState(m.value)} in ${stringifyEntityArea(m.where)}`;
+    }
+    case "disposeEntity": {
+      return `Dispose entity ${stringifyState(m.oldState)}`;
+    }
+    case "modifyEntityVar": {
+      return `Modify variable ${m.varName} of ${stringifyState(m.state)} to ${
+        m.value
+      }`;
+    }
+    case "replaceCharacterDefinition": {
+      return `Replace character definition of ${stringifyState(
+        m.state,
+      )} to [character:${m.newDefinition.id}]`;
+    }
+    case "resetDice": {
+      return `Reset dice of ${m.who} to ${JSON.stringify(m.value)}`;
+    }
+    case "setPlayerFlag": {
+      return `Set player ${m.who} flag ${m.flagName} to ${m.value}`;
+    }
+    default: {
+      return JSON.stringify(m);
     }
   }
 }

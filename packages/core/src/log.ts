@@ -201,7 +201,7 @@ export interface IDetailLogger {
 }
 
 export class DetailLogger implements IDetailLogger {
-  private readonly logs: DetailLogEntry[] = [];
+  private logs: DetailLogEntry[] = [];
   _currentLogs: DetailLogEntry[] = this.logs;
   _parentLogs: DetailLogEntry[][] = [];
 
@@ -220,6 +220,11 @@ export class DetailLogger implements IDetailLogger {
 
   public getLogs(): DetailLogEntry[] {
     return this.logs;
+  }
+  public clearLogs(): void {
+    this.logs = [];
+    this._currentLogs = this.logs;
+    this._parentLogs = [];
   }
 }
 

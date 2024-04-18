@@ -24,8 +24,8 @@ import {
   SwitchActiveEventArg,
   ZeroHealthEventArg,
 } from "./base/skill";
-import { AnyState, CharacterState, GameState } from "./base/state";
-import { Aura, DamageType, Event } from "@gi-tcg/typings";
+import { CharacterState, GameState, stringifyState } from "./base/state";
+import { Aura, DamageType, ExposedMutation } from "@gi-tcg/typings";
 import {
   allEntities,
   checkImmune,
@@ -34,12 +34,13 @@ import {
   getEntityById,
 } from "./util";
 import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
-import { Mutation, applyMutation } from "./base/mutation";
+import { Mutation, applyMutation, stringifyMutation } from "./base/mutation";
 import { flip } from "@gi-tcg/utils";
-import { GameStateLogEntry } from "./log";
+import { DetailLogType, GameStateLogEntry, IDetailLogger } from "./log";
 import { Writable } from "./util";
 
 interface IoDuringSkillFinalize {
+  logger: IDetailLogger;
   switchCard(who: 0 | 1): Promise<void>;
   reroll(who: 0 | 1, times: number): Promise<void>;
   notifyAndPause(opt: Partial<GameStateLogEntry>): Promise<void>;
@@ -71,13 +72,20 @@ export class SkillExecutor {
     return this._io;
   }
 
-  private notify(events: readonly Event[]) {
+  private notify(em: readonly ExposedMutation[]) {
     if (this._io) {
-      return this._io.notifyAndPause({ state: this.state, events });
+      return this._io.notifyAndPause({ state: this.state, em });
     }
+  }
+  private log(type: DetailLogType, value: string): void {
+    return this._io?.logger.log(type, value);
+  }
+  private subLog(type: DetailLogType, value: string) {
+    return this._io?.logger.subLog(type, value);
   }
 
   private mutate(mut: Mutation) {
+    this.log(DetailLogType.Mutation, stringifyMutation(mut));
     this.state = applyMutation(this.state, mut);
   }
 
@@ -88,23 +96,33 @@ export class SkillExecutor {
     if (this.state.phase === "gameEnd") {
       return;
     }
+    using l = this.subLog(
+      DetailLogType.Skill,
+      `Using skill [skill:${skillInfo.definition.id}]${
+        skillInfo.charged ? " (charged)" : ""
+      }${skillInfo.plunging ? " (plunging)" : ""}`,
+    );
+    this.log(
+      DetailLogType.Other,
+      `skill caller: ${stringifyState(skillInfo.caller)}`,
+    );
     const callerArea = getEntityArea(this.state, skillInfo.caller.id);
     const skillDef = skillInfo.definition;
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
-      skillInfo,
+      { ...skillInfo, logger: this._io?.logger },
       arg as any,
     );
     this.state = newState;
 
-    const notifyEvents: Event[] = [];
+    const notifyEm: ExposedMutation[] = [];
     if (!skillInfo.fromCard) {
-      notifyEvents.push({
+      notifyEm.push({
         type: "triggered",
         id: skillInfo.caller.id,
       });
       if (skillDef.triggerOn === null) {
-        notifyEvents.push({
+        notifyEm.push({
           type: "useCommonSkill",
           who: callerArea.who,
           skill: skillDef.id,
@@ -121,7 +139,7 @@ export class SkillExecutor {
     for (const [, arg] of damageEvents) {
       const damageInfo = arg.damageInfo;
       if (damageInfo.target.variables.alive) {
-        notifyEvents.push({
+        notifyEm.push({
           type: "damage",
           damage: {
             type: damageInfo.type,
@@ -134,7 +152,7 @@ export class SkillExecutor {
     }
     for (const [eventName, arg] of nonDamageEvents) {
       if (eventName === "onReaction" && arg.target.variables.alive) {
-        notifyEvents.push({
+        notifyEm.push({
           type: "elementalReaction",
           on: arg.target.id,
           reactionType: arg.type,
@@ -142,7 +160,7 @@ export class SkillExecutor {
       }
     }
 
-    await this.notify(notifyEvents);
+    await this.notify(notifyEm);
 
     const damageEventArgs: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
     const zeroHealthEventArgs: ZeroHealthEventArg[] = [];
@@ -159,6 +177,10 @@ export class SkillExecutor {
           const ch = getEntityById(this.state, id, true) as CharacterState;
           const { who } = getEntityArea(this.state, id);
           if (ch.variables.alive) {
+            this.log(
+              DetailLogType.Primitive,
+              `${stringifyState(ch)} is defeated (and no immune available)`,
+            );
             this.mutate({
               type: "modifyEntityVar",
               state: ch,
@@ -188,6 +210,12 @@ export class SkillExecutor {
               (ch) => ch.variables.alive,
             );
             if (aliveCharacters.length === 0) {
+              this.log(
+                DetailLogType.Other,
+                `player ${who} has no alive characters, set winner to ${flip(
+                  who,
+                )}`,
+              );
               this.mutate({
                 type: "setWinner",
                 winner: flip(who),
@@ -219,6 +247,12 @@ export class SkillExecutor {
     for (const arg of zeroHealthEventArgs) {
       await this.handleEvent(["modifyZeroHealth", arg]);
       if (arg._immuneInfo !== null) {
+        this.log(
+          DetailLogType.Primitive,
+          `${stringifyState(arg.target)} is immune to defeated. Revive him to ${
+            arg._immuneInfo.newHealth
+          }`,
+        );
         const healValue = arg._immuneInfo.newHealth;
         const healInfo: HealInfo = {
           type: DamageType.Revive,
@@ -263,6 +297,10 @@ export class SkillExecutor {
         true,
       ) as CharacterState;
       if (ch.variables.alive) {
+        this.log(
+          DetailLogType.Other,
+          `using skill gain 1 energy for ${stringifyState(ch)}`,
+        );
         const currentEnergy = ch.variables.energy;
         const newEnergy = Math.min(currentEnergy + 1, ch.variables.maxEnergy);
         this.mutate({
@@ -294,6 +332,10 @@ export class SkillExecutor {
       if (activeCh.variables.alive) {
         continue;
       }
+      this.log(
+        DetailLogType.Other,
+        `Active character of player ${who} is defeated. Waiting user choice`,
+      );
       switchEvents[who] = this.io.chooseActive(who, this.state).then(
         (to) =>
           new SwitchActiveEventArg(this.state, {
@@ -308,6 +350,12 @@ export class SkillExecutor {
     const currentTurn = this.state.currentTurn;
     for (const arg of args) {
       if (arg) {
+        using l = this.subLog(
+          DetailLogType.Primitive,
+          `Player ${arg.switchInfo.who} switch active from ${stringifyState(
+            arg.switchInfo.from,
+          )} to ${stringifyState(arg.switchInfo.to)}`,
+        );
         this.mutate({
           type: "switchActive",
           who: arg.switchInfo.who,
@@ -326,10 +374,22 @@ export class SkillExecutor {
   async handleEvent(...actions: EventAndRequest[]) {
     for (const [name, arg] of actions) {
       if (name === "requestReroll") {
+        using l = this.subLog(
+          DetailLogType.Event,
+          `request player ${arg.who} to reroll`,
+        );
         await this.io.reroll(arg.who, arg.times);
       } else if (name === "requestSwitchHands") {
+        using l = this.subLog(
+          DetailLogType.Event,
+          `request player ${arg.who} to switch hands`,
+        );
         await this.io.switchCard(arg.who);
       } else if (name === "requestUseSkill") {
+        using l = this.subLog(
+          DetailLogType.Event,
+          `another skill [skill:${arg.requestingSkillId}] is requested:`,
+        );
         const def = this.state.data.skills.get(arg.requestingSkillId);
         if (typeof def === "undefined") {
           throw new GiTcgDataError(
@@ -347,14 +407,12 @@ export class SkillExecutor {
         };
         await this.finalizeSkill(skillInfo, void 0);
       } else {
+        using l = this.subLog(
+          DetailLogType.Event,
+          `Handling event ${name} (${arg.toString()}):`,
+        );
         const onTimeState = arg._state;
         const entities = allEntities(onTimeState, true);
-        if (this._io && name === "onDamageOrHeal") {
-          console.log({
-            damageInfo: arg.damageInfo,
-            entities,
-          });
-        }
         for (const entity of entities) {
           for (const sk of entity.definition.skills) {
             if (sk.triggerOn === name) {

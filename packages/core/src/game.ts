@@ -23,7 +23,7 @@ import {
   GameState,
   PlayerState,
 } from "./base/state";
-import { Mutation, StepRandomM, applyMutation } from "./base/mutation";
+import { Mutation, StepRandomM, applyMutation, stringifyMutation } from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   drawCard,
@@ -57,7 +57,7 @@ import {
   GiTcgError,
   GiTcgIOError,
 } from "./error";
-import { GameStateLogEntry } from "./log";
+import { DetailLogType, DetailLogger, GameStateLogEntry } from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 
@@ -83,6 +83,8 @@ export class Game {
   private readonly config: GameConfig;
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   private readonly io: GameIO;
+  /** @internal */
+  public readonly logger = new DetailLogger();
 
   private _state: GameState;
   private _stateLog: GameStateLogEntry[] = [];
@@ -129,8 +131,13 @@ export class Game {
     return this._stateLog;
   }
 
+  get detailLog() {
+    return this.logger.getLogs();
+  }
+
   mutate(mutation: Mutation) {
     if (!this._terminated) {
+      this.logger.log(DetailLogType.Mutation, stringifyMutation(mutation));
       this._state = applyMutation(this.state, mutation);
     }
   }
@@ -293,6 +300,7 @@ export class Game {
       this.resolveFinishPromise = () => resolve(this.state.winner);
       this.rejectFinishPromise = (e) => reject(e);
     });
+    this.logger.clearLogs();
     (async () => {
       try {
         await this.notifyAndPause({ canResume: true });
@@ -437,6 +445,7 @@ export class Game {
   }
 
   private async initHands() {
+    using l = this.logger.subLog(DetailLogType.Phase, `In initHands phase:`)
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHands; i++) {
         this._state = drawCard(this.state, who, null);
@@ -451,6 +460,7 @@ export class Game {
   }
 
   private async initActives() {
+    using l = this.logger.subLog(DetailLogType.Phase, `In initActive phase:`)
     const [a0, a1] = await Promise.all([
       this.chooseActive(0),
       this.chooseActive(1),
@@ -474,6 +484,7 @@ export class Game {
     await this.handleEvent("onBattleBegin", new EventArg(this.state));
   }
 
+  /** @internal */
   async chooseActive(who: 0 | 1, state = this.state): Promise<CharacterState> {
     const player = state.players[who];
     this.notifyOne(flip(who), {
@@ -499,6 +510,7 @@ export class Game {
   }
 
   private async rollPhase() {
+    using l = this.logger.subLog(DetailLogType.Phase, `In roll phase:`)
     this.mutate({
       type: "stepRound",
     });
@@ -572,6 +584,7 @@ export class Game {
     await this.handleEvent("onActionPhase", new EventArg(this.state));
   }
   private async actionPhase() {
+    using l = this.logger.subLog(DetailLogType.Phase, `In action phase:`)
     const who = this.state.currentTurn;
     // 使用 getter 防止状态变化后原有 player 过时的问题
     const player = () => this.state.players[who];
@@ -929,6 +942,7 @@ export class Game {
     return resultWithState;
   }
 
+  /** @internal */
   async switchCard(who: 0 | 1) {
     const { removedHands } = await this.rpc(who, "switchHands", {});
     const cardStates = removedHands.map((id) => {
@@ -953,6 +967,8 @@ export class Game {
     this.notifyOne(who);
     this.notifyOne(flip(who));
   }
+
+  /** @internal */
   async reroll(who: 0 | 1, times: number) {
     for (let i = 0; i < times; i++) {
       const dice = this.state.players[who].dice;

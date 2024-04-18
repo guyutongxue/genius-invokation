@@ -111,3 +111,7 @@ export interface EntityState {
 export type EntityVariables = VariableOfConfig<EntityVariableConfigs>;
 
 export type AnyState = CharacterState | EntityState;
+
+export function stringifyState(st: AnyState | CardState): string {
+  return `[${st.definition.type}:${st.definition.id}](${st.id})`;
+}
