@@ -590,7 +590,7 @@ class EnterEventArg extends EntityEventArg {
     return this.enterInfo.overrided;
   }
   toString(): string {
-    return `${super.toString()}, overrided: ${this.enterInfo.overrided}`
+    return `${super.toString()}, overrided: ${!!this.enterInfo.overrided}`
   }
 }
 

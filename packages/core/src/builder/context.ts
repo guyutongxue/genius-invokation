@@ -274,9 +274,12 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
 
   mutate(...mutations: Mutation[]) {
-    for (const m of mutations) {
-      this.log(DetailLogType.Mutation, stringifyMutation(m));
-      this._state = applyMutation(this._state, m);
+    for (const mut of mutations) {
+      const str = stringifyMutation(mut);
+      if (str) {
+        this.log(DetailLogType.Mutation, str);
+      }
+      this._state = applyMutation(this._state, mut);
     }
   }
 
@@ -409,7 +412,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     for (const t of targets) {
       using l = this.subLog(
         DetailLogType.Primitive,
-        `Deal ${value} ${type} damage to ${stringifyState(t.state)}`,
+        `Deal ${value} [damage:${type}] damage to ${stringifyState(t.state)}`,
       );
       const targetState = t.state;
       let damageInfo: DamageInfo = {
@@ -504,7 +507,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     for (const ch of characters) {
       using l = this.subLog(
         DetailLogType.Primitive,
-        `Apply [aura:${type}] to ${stringifyState(ch.state)}`,
+        `Apply [damage:${type}] to ${stringifyState(ch.state)}`,
       );
       this.doApply(ch, type);
     }

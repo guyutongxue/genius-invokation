@@ -379,7 +379,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
   }
 }
 
-export function stringifyMutation(m: Mutation): string {
+export function stringifyMutation(m: Mutation): string | null {
   switch (m.type) {
     case "stepRound": {
       return `Step round number`;
@@ -428,13 +428,13 @@ export function stringifyMutation(m: Mutation): string {
       )} to [character:${m.newDefinition.id}]`;
     }
     case "resetDice": {
-      return `Reset dice of ${m.who} to ${JSON.stringify(m.value)}`;
+      return `Reset dice of player ${m.who} to ${JSON.stringify(m.value)}`;
     }
     case "setPlayerFlag": {
       return `Set player ${m.who} flag ${m.flagName} to ${m.value}`;
     }
     default: {
-      return JSON.stringify(m);
+      return null;
     }
   }
 }

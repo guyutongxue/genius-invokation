@@ -137,7 +137,10 @@ export class Game {
 
   mutate(mutation: Mutation) {
     if (!this._terminated) {
-      this.logger.log(DetailLogType.Mutation, stringifyMutation(mutation));
+      const str = stringifyMutation(mutation);
+      if (str) {
+        this.logger.log(DetailLogType.Mutation, str);
+      }
       this._state = applyMutation(this.state, mutation);
     }
   }
@@ -584,7 +587,6 @@ export class Game {
     await this.handleEvent("onActionPhase", new EventArg(this.state));
   }
   private async actionPhase() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In action phase:`)
     const who = this.state.currentTurn;
     // 使用 getter 防止状态变化后原有 player 过时的问题
     const player = () => this.state.players[who];
@@ -609,11 +611,13 @@ export class Game {
       (replaceAction = findReplaceAction(activeCh())) &&
       !isSkillDisabled(activeCh())
     ) {
+      using l = this.logger.subLog(DetailLogType.Phase, `In action phase (replaced action):`)
       await this.executeSkill(replaceAction, new EventArg(this.state));
       this.mutate({
         type: "switchTurn",
       });
     } else {
+      using l = this.logger.subLog(DetailLogType.Phase, `In action phase:`)
       await this.handleEvent(
         "onBeforeAction",
         new PlayerEventArg(this.state, who),

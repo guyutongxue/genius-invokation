@@ -14,7 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* @refresh reload */
-import "solid-devtools";
+// import "solid-devtools";
+import "core-js/proposals/explicit-resource-management";
 import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";
@@ -67,6 +68,7 @@ function App() {
     playerConfigs: [playerConfig0, playerConfig1],
   });
   game.start();
+  Reflect.set(window, "game", game);
 
   return (
     <div class="min-w-180 flex flex-col gap-2">

@@ -15,7 +15,7 @@
     "@gi-tcg/utils": "workspace:*",
     "@gi-tcg/webui-core": "workspace:*",
     "@vercel/analytics": "^1.2.0",
-    "core-js": "3.35.1",
+    "core-js": "3.37.0",
     "solid-js": "^1.8.15"
   },
   "devDependencies": {

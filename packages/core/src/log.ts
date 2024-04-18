@@ -185,7 +185,7 @@ export enum DetailLogType {
   Other = "other",
 }
 
-interface DetailLogEntry {
+export interface DetailLogEntry {
   type: DetailLogType;
   value: string;
   children?: DetailLogEntry[];

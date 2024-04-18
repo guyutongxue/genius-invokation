@@ -21,20 +21,23 @@ import nodeExternals from "rollup-plugin-node-externals";
 import dts from "vite-plugin-dts";
 
 export default defineConfig({
+  esbuild: {
+    target: "ES2022"
+  },
   plugins: [
     {
       ...nodeExternals(),
       enforce: "pre",
     },
-    devtools({
-      autoname: true,
-      locator: {
-        targetIDE: "vscode",
-        key: "Ctrl",
-        jsxLocation: true,
-        componentLocation: true,
-      },
-    }),
+    // devtools({
+    //   autoname: true,
+    //   locator: {
+    //     targetIDE: "vscode",
+    //     key: "Ctrl",
+    //     jsxLocation: true,
+    //     componentLocation: true,
+    //   },
+    // }),
     solid(),
     dts({
       bundledPackages: [
