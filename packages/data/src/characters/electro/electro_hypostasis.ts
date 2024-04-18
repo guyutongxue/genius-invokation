@@ -182,7 +182,7 @@ export const ElectroHypostasis = character(2401)
  */
 export const AbsorbingPrism = card(224011)
   .costElectro(2)
-  .eventTalent(ElectroHypostasis, "active")
+  .eventTalent(ElectroHypostasis)
   .heal(3, "my active")
   .characterStatus(ElectroCrystalCore, "my active")
   .done();
