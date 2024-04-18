@@ -13,30 +13,30 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// 与 base 中 mutation 几乎一致，但删去了具体的 state 信息
-
-import type { DiceType } from "../enums";
+import type { DamageType, DiceType, Reaction } from "../enums";
 import type { PhaseType } from "./notification";
 
-interface ChangePhaseM {
+// 以下部分与 base 中 mutation 几乎一致，但删去了具体的 state 信息
+
+interface ChangePhaseEM {
   readonly type: "changePhase";
   readonly newPhase: PhaseType;
 }
 
-interface StepRoundM {
+interface StepRoundEM {
   readonly type: "stepRound";
 }
 
-interface SwitchTurnM {
+interface SwitchTurnEM {
   readonly type: "switchTurn";
 }
 
-interface SetWinnerM {
+interface SetWinnerEM {
   readonly type: "setWinner";
   readonly winner: 0 | 1;
 }
 
-interface TransferCardM {
+interface TransferCardEM {
   readonly type: "transferCard";
   readonly path: "pilesToHands" | "handsToPiles";
   readonly who: 0 | 1;
@@ -44,14 +44,14 @@ interface TransferCardM {
   readonly definitionId: number;
 }
 
-interface SwitchActiveM {
+interface SwitchActiveEM {
   readonly type: "switchActive";
   readonly who: 0 | 1;
   readonly id: number;
   readonly definitionId: number;
 }
 
-interface DisposeCardM {
+interface DisposeCardEM {
   readonly type: "disposeCard";
   readonly who: 0 | 1;
   readonly used: boolean;
@@ -59,7 +59,7 @@ interface DisposeCardM {
   readonly definitionId: number;
 }
 
-interface CreateCardM {
+interface CreateCardEM {
   readonly type: "createCard";
   readonly who: 0 | 1;
   readonly id: number;
@@ -67,26 +67,26 @@ interface CreateCardM {
   readonly target: "hands" | "piles";
 }
 
-interface CreateCharacterM {
+interface CreateCharacterEM {
   readonly type: "createCharacter";
   readonly who: 0 | 1;
   readonly id: number;
   readonly definitionId: number;
 }
 
-interface CreateEntityM {
+interface CreateEntityEM {
   readonly type: "createEntity";
   readonly id: number;
   readonly definitionId: number;
 }
 
-interface DisposeEntityM {
+interface DisposeEntityEM {
   readonly type: "disposeEntity";
   readonly id: number;
   readonly definitionId: number;
 }
 
-interface ModifyEntityVarM {
+interface ModifyEntityVarEM {
   readonly type: "modifyEntityVar";
   readonly id: number;
   readonly definitionId: number;
@@ -94,40 +94,78 @@ interface ModifyEntityVarM {
   readonly value: number;
 }
 
-interface ReplaceCharacterDefinitionM {
+interface ReplaceCharacterDefinitionEM {
   readonly type: "replaceCharacterDefinition";
   readonly id: number;
   readonly newDefinitionId: number;
 }
 
-interface ResetDiceM {
+interface ResetDiceEM {
   readonly type: "resetDice";
   readonly who: 0 | 1;
   readonly value: readonly DiceType[];
 }
 
-type PlayerFlag = "declareEnd" | "legendUsed";
+type PlayerFlagEM = "declareEnd" | "legendUsed";
 
-interface SetPlayerFlagM {
+interface SetPlayerFlagEM {
   readonly type: "setPlayerFlag";
   readonly who: 0 | 1;
-  readonly flagName: PlayerFlag;
+  readonly flagName: PlayerFlagEM;
   readonly value: boolean;
 }
 
+// 以下部分为 base 中 mutations 不包含的，更上层的“primitive”修改
+
+export interface DamageData {
+  type: DamageType;
+  value: number;
+  target: number;
+  log: string;
+}
+export interface DamageEM {
+  type: "damage";
+  damage: DamageData;
+}
+export interface ElementalReactionEM {
+  type: "elementalReaction";
+  on: number;
+  reactionType: Reaction;
+}
+export interface UseCommonSkillEM {
+  type: "useCommonSkill";
+  skill: number;
+  who: 0 | 1;
+}
+export interface TriggeredEM {
+  type: "triggered";
+  id: number;
+}
+export interface OppStatusEM {
+  type: "oppChoosingActive" | "oppAction"
+}
+
 export type ExposedMutation =
-  | ChangePhaseM
-  | StepRoundM
-  | SwitchTurnM
-  | SetWinnerM
-  | TransferCardM
-  | SwitchActiveM
-  | DisposeCardM
-  | CreateCardM
-  | CreateCharacterM
-  | CreateEntityM
-  | DisposeEntityM
-  | ModifyEntityVarM
-  | ReplaceCharacterDefinitionM
-  | ResetDiceM
-  | SetPlayerFlagM;
+  | ChangePhaseEM
+  | StepRoundEM
+  | SwitchTurnEM
+  | SetWinnerEM
+  | TransferCardEM
+  | SwitchActiveEM
+  | DisposeCardEM
+  | CreateCardEM
+  | CreateCharacterEM
+  | CreateEntityEM
+  | DisposeEntityEM
+  | ModifyEntityVarEM
+  | ReplaceCharacterDefinitionEM
+  | ResetDiceEM
+  | SetPlayerFlagEM
+  | DamageEM
+  | ElementalReactionEM
+  | UseCommonSkillEM
+  | TriggeredEM
+  | OppStatusEM;
+
+/** @deprecated use `ExposedMutation` instead. */
+export type Event = ExposedMutation;

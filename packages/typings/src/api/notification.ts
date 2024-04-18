@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { ExposedMutation } from "./mutation";
-import type { DiceType, DamageType, Aura, Reaction } from "../enums";
+import type { DiceType, Aura } from "../enums";
 
 export type PhaseType =
   | "initHands"
@@ -77,42 +77,7 @@ export interface StateData {
   players: [PlayerData, PlayerData];
 }
 
-export interface DamageData {
-  type: DamageType;
-  value: number;
-  target: number;
-  log: string;
-}
-export interface DamageEvent {
-  type: "damage";
-  damage: DamageData;
-}
-export interface ElementalReactionEvent {
-  type: "elementalReaction";
-  on: number;
-  reactionType: Reaction;
-}
-export interface UseCommonSkillEvent {
-  type: "useCommonSkill";
-  skill: number;
-  who: 0 | 1;
-}
-export interface TriggeredEvent {
-  type: "triggered";
-  id: number;
-}
-export interface OtherEvent {
-  type: "oppChoosingActive" | "oppAction"
-}
-export type Event =
-  | DamageEvent
-  | ElementalReactionEvent
-  | UseCommonSkillEvent
-  | TriggeredEvent
-  | OtherEvent;
-
 export type NotificationMessage = {
-  events: Event[];
-  mutations: ExposedMutation[];
   newState: StateData;
+  mutations: ExposedMutation[];
 };

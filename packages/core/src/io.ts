@@ -27,7 +27,6 @@ import {
   RpcResponse,
   SkillData,
   StateData,
-  Event
 } from "@gi-tcg/typings";
 import { CardState, CharacterState, EntityState, GameState } from "./base/state";
 import { Mutation } from "./base/mutation";
@@ -44,7 +43,7 @@ export interface PlayerIO {
 }
 
 export interface GameIO {
-  readonly pause?: (state: GameState, events: Event[]) => Promise<unknown>;
+  readonly pause?: (state: GameState, em: ExposedMutation[]) => Promise<unknown>;
   readonly onIoError?: (e: GiTcgIOError) => void;
   readonly players: readonly [PlayerIO, PlayerIO];
 }

@@ -14,13 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { checkDice, flip } from "@gi-tcg/utils";
-import {
-  DiceType,
-  Event,
-  RpcMethod,
-  RpcRequest,
-  RpcResponse,
-} from "@gi-tcg/typings";
+import { DiceType, RpcMethod, RpcRequest, RpcResponse } from "@gi-tcg/typings";
 import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings/verify";
 import {
   AnyState,
@@ -121,7 +115,7 @@ export class Game {
     this._stateLog.push({
       state: this.state,
       canResume: false,
-      events: [],
+      em: [],
     });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
@@ -241,20 +235,22 @@ export class Game {
 
   private notifyOne(
     who: 0 | 1,
-    { state = this.state, events = [] }: NotifyOption = {},
+    { state = this.state, em = [] }: NotifyOption = {},
   ) {
     const player = this.io.players[who];
     player.notify({
-      events: [...events],
-      mutations: state.mutationLog.flatMap((m) => {
-        const ex = exposeMutation(who, m.mutation);
-        return ex ? [ex] : [];
-      }),
+      mutations: [
+        ...state.mutationLog.flatMap((m) => {
+          const ex = exposeMutation(who, m.mutation);
+          return ex ? [ex] : [];
+        }),
+        ...em,
+      ],
       newState: exposeState(who, state),
     });
   }
   async notifyAndPause({
-    events = [],
+    em = [],
     canResume = false,
     state = this.state,
   }: NotifyOption = {}) {
@@ -264,12 +260,12 @@ export class Game {
     this._stateLog.push({
       state,
       canResume,
-      events,
+      em,
     });
     for (const i of [0, 1] as const) {
-      this.notifyOne(i, { state, events });
+      this.notifyOne(i, { state, em });
     }
-    await this.io.pause?.(state, [...events]);
+    await this.io.pause?.(state, [...em]);
     if (state.phase === "gameEnd") {
       this.gotWinner(state.winner);
     } else {
@@ -482,7 +478,7 @@ export class Game {
     const player = state.players[who];
     this.notifyOne(flip(who), {
       state,
-      events: [
+      em: [
         {
           type: "oppChoosingActive",
         },
@@ -611,7 +607,7 @@ export class Game {
       );
       const actions = await this.availableAction();
       this.notifyOne(flip(who), {
-        events: [
+        em: [
           {
             type: "oppAction",
           },
