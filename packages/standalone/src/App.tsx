@@ -13,19 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  Match,
-  Show,
-  Switch,
-  createSignal,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { Match, Switch, createSignal } from "solid-js";
 import data from "@gi-tcg/data";
 import { GameStateLogEntry, deserializeGameStateLog } from "@gi-tcg/core";
 import { StandaloneChild } from "./StandaloneChild";
 import { StandaloneParent } from "./StandaloneParent";
-import { reject } from "core-js/fn/promise";
 import { MultiplayerHost } from "./MultiplayerHost";
 import { MultiplayerGuest } from "./MultiplayerGuest";
 
