@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* @refresh reload */
+import { App } from "./App";
 import { render } from "solid-js/web";
 import { inject } from "@vercel/analytics";
 
@@ -23,7 +24,6 @@ import "./index.css";
   if (import.meta.env.PROD) {
     await import("core-js");
   }
-  const { App } = await import("./App");
   const root = document.getElementById("root")!;
   root.innerHTML = "";
   render(() => <App />, root);

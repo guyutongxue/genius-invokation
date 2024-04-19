@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build",
-    "preview": "bunx --bun vite preview"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "browserslist": "defaults",
   "dependencies": {

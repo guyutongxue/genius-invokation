@@ -15,7 +15,6 @@
 
 /* @refresh reload */
 // import "solid-devtools";
-import "core-js/proposals/explicit-resource-management";
 import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";

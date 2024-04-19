@@ -17,21 +17,22 @@ import { defineConfig } from "vite";
 import { resolve } from "node:path";
 import dts from "vite-plugin-dts";
 import solid from "vite-plugin-solid";
-import nodeExternals from "rollup-plugin-node-externals";
 
 export default defineConfig({
+  esbuild: {
+    target: "ES2022"
+  },
+  resolve: {
+    conditions: ["bun"]
+  },
   plugins: [
-    {
-      ...nodeExternals(),
-      enforce: "pre",
-    },
     solid(),
-    dts({
-      rollupTypes: true,
-      bundledPackages: [
-        "@gi-tcg/webui-core"
-      ]
-    }),
+    // dts({
+    //   rollupTypes: true,
+    //   bundledPackages: [
+    //     "@gi-tcg/webui-core"
+    //   ]
+    // }),
   ],
   build: {
     sourcemap: true,

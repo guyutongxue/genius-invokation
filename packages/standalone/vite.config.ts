@@ -21,6 +21,9 @@ export default defineConfig({
   esbuild: {
     target: "ES2020"
   },
+  resolve: {
+    conditions: ["bun"]
+  },
   plugins: [
     solid(),
     babel({

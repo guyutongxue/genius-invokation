@@ -56,13 +56,6 @@ for (const pkg of packages) {
   if ("build" in (packageJson.scripts ?? {})) {
     await $`bun run build`.cwd(directory).quiet();
   }
-  if ("build:publish" in (packageJson.scripts ?? {})) {
-    await $`bun run build:publish`.cwd(directory).quiet();
-  }
-  if ("exports:publish" in packageJson) {
-    packageJson.exports = packageJson["exports:publish"] as any;
-    delete packageJson["exports:publish"];
-  }
   if (!packageJson.dependencies) {
     packageJson.dependencies = {};
   }
@@ -94,10 +87,12 @@ for (const { packageJson, directory } of packageInfos) {
   await $`rm -rf ${publishDir}`.quiet();
   await $`mkdir -p ${publishDir}`.quiet();
   await $`cp -r ${directory}/dist ${publishDir}/`.quiet();
+  await $`cp -r ${directory}/src ${publishDir}/`.quiet();
+  await $`cp ${directory}/tsconfig.json ${publishDir}/`.quiet();
   await $`echo ${JSON.stringify(packageJson, void 0, 2)} > ${publishDir}/package.json`.quiet();
   await $`cp ${directory}/README.md ${publishDir}/`.quiet();
   await $`cp ${licensePath} ${publishDir}/`.quiet();
   // Bro attw is so strict
   await $`bunx --bun attw --pack ${publishDir}`.nothrow();
-  await $`npm publish --access public`.cwd(publishDir);
+  // await $`npm publish --access public`.cwd(publishDir);
 }

@@ -3,15 +3,17 @@
   "version": "0.5.0+gi-4-5",
   "description": "Standard card data for Genius Invokation TCG",
   "type": "module",
-  "exports": "./src/index.ts",
-  "exports:publish": {
-    "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    "types": "./src/index.ts",
+    "bun": "./src/index.ts",
     "import": "./dist/index.js"
   },
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",
     "check": "tsc --noEmit",
-    "build:publish": "bunx --bun tsup"
+    "build:ts": "tsup",
+    "build": "bun build:ts"
   },
   "peerDependencies": {
     "@gi-tcg/core": "workspace:*"

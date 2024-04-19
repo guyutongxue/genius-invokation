@@ -4,20 +4,18 @@
   "description": "Web UI for Genius Invokation TCG",
   "type": "module",
   "exports": {
-    "types": "./dist/index.d.ts",
+    "types": "./src/index.tsx",
+    "bun": "./src/index.tsx",
     "import": "./dist/index.js"
   },
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build"
-  },
-  "dependencies": {
-    "solid-element": "^1.8.0",
-    "solid-js": "^1.8.15"
+    "build": "vite build"
   },
   "devDependencies": {
+    "solid-element": "^1.8.0",
+    "solid-js": "^1.8.15",
     "@gi-tcg/webui-core": "workspace:*",
-    "rollup-plugin-node-externals": "^7.0.1",
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.7.0",
     "vite-plugin-solid": "^2.10.1"

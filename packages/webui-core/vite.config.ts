@@ -24,6 +24,9 @@ export default defineConfig({
   esbuild: {
     target: "ES2022"
   },
+  resolve: {
+    conditions: ["bun"]
+  },
   plugins: [
     {
       ...nodeExternals(),
@@ -39,13 +42,13 @@ export default defineConfig({
     //   },
     // }),
     solid(),
-    dts({
-      bundledPackages: [
-        "@gi-tcg/core",
-        "@gi-tcg/typings",
-      ],
-      rollupTypes: true
-    }),
+    // dts({
+    //   bundledPackages: [
+    //     "@gi-tcg/core",
+    //     "@gi-tcg/typings",
+    //   ],
+    //   rollupTypes: true
+    // }),
   ],
   build: {
     sourcemap: true,

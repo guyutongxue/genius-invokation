@@ -3,29 +3,30 @@
   "version": "0.5.0",
   "type": "module",
   "description": "Genius Invokation TCG Simulator core library",
+  "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./builder": "./src/builder/index.ts"
-  },
-  "exports:publish": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./src/index.ts",
+      "bun": "./src/index.ts",
       "import": "./dist/index.js"
     },
     "./builder": {
-      "types": "./dist/builder.d.ts",
+      "types": "./src/builder/index.ts",
+      "bun": "./src/builder/index.ts",
       "import": "./dist/builder.js"
     }
   },
   "scripts": {
-    "generate_parser": "bunx --bun ohm generateBundles -et src/query/query.ohm",
-    "build": "bun run generate_parser",
-    "build:publish": "bunx --bun tsup",
-    "check": "bunx --bun tsc --noEmit"
+    "check": "tsc --noEmit",
+    "build:ohm": "ohm generateBundles -et src/query/query.ohm",
+    "build:ts": "tsup",
+    "build": "bun build:ohm && bun build:ts"
+
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
+    "core-js": "3.37.0",
     "immer": "^10.0.3",
     "ohm-js": "^17.1.0"
   },
