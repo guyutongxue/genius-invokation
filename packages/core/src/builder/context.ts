@@ -1120,44 +1120,30 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
   createPileCards(
-    cardIds: CardHandle[],
-    strategy: "top" | "random" | "spaceAround" = "top",
+    cardId: CardHandle,
+    count: number,
+    strategy: "random" | "spaceAround" = "random",
   ) {
     const who = this.callerArea.who;
     using l = this.subLog(
       DetailLogType.Primitive,
-      `Create pile cards ${cardIds
-        .map((id) => `[card:${id}]`)
-        .join(", ")}, strategy ${strategy}`,
+      `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
     );
+    const cardDef = this._state.data.cards.get(cardId);
+    if (typeof cardDef === "undefined") {
+      throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
+    }
     const player = () => this.player;
-    const cards = cardIds.map((id) => {
-      const def = this._state.data.cards.get(id);
-      if (typeof def === "undefined") {
-        throw new GiTcgDataError(`Unknown card definition id ${id}`);
-      }
-      return {
-        id: 0,
-        definition: def,
-      };
+    const cards = new Array<CardState>(count).fill({
+      id: 0,
+      definition: cardDef,
     });
     switch (strategy) {
-      case "top":
-        for (const card of cards) {
-          this.mutate({
-            type: "createCard",
-            who,
-            target: "piles",
-            targetIndex: 0,
-            value: card,
-          });
-        }
-        break;
       case "random":
         for (const card of cards) {
           const mut: Mutation = {
             type: "stepRandom",
-            value: -1
+            value: -1,
           };
           this.mutate(mut);
           const index = mut.value % (player().piles.length + 1);
@@ -1171,9 +1157,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         }
         break;
       case "spaceAround":
-        const spaces = cardIds.length + 1;
+        const spaces = count + 1;
         const step = Math.floor(player().piles.length / spaces);
-        for (let i = 0, j = step; i < cardIds.length; i++, j += step) {
+        for (let i = 0, j = step; i < count; i++, j += step) {
           this.mutate({
             type: "createCard",
             who,
@@ -1188,6 +1174,34 @@ export class SkillContext<Meta extends ContextMetaBase> {
         throw new GiTcgDataError(`Invalid strategy ${strategy}`);
       }
     }
+  }
+  createPileCardAtTopRange(cardId: CardHandle, range: number) {
+    const who = this.callerArea.who;
+    using l = this.subLog(
+      DetailLogType.Primitive,
+      `Create pile card [card:${cardId}] at top range ${range}`,
+    );
+    const cardDef = this._state.data.cards.get(cardId);
+    if (typeof cardDef === "undefined") {
+      throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
+    }
+    const card = {
+      id: 0,
+      definition: cardDef,
+    };
+    const mut: Mutation = {
+      type: "stepRandom",
+      value: -1,
+    };
+    this.mutate(mut);
+    const index = mut.value % range;
+    this.mutate({
+      type: "createCard",
+      who,
+      target: "piles",
+      value: card,
+      targetIndex: index,
+    });
   }
   switchCards() {
     this.emitEvent("requestSwitchHands", this.skillInfo, this.callerArea.who);
@@ -1255,6 +1269,8 @@ type SkillContextMutativeProps =
   | "generateDice"
   | "createHandCard"
   | "drawCards"
+  | "createPileCards"
+  | "createPileCardAtTopRange"
   | "switchCards"
   | "reroll"
   | "useSkill";
