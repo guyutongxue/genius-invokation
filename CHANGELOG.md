@@ -4,7 +4,8 @@
 
 ## 0.6.0
 
-- 将 `NotificationMessage` 中的 `events` 合并到 `mutations` 中
+- 暂时移除了 `mutationLog` 字段
+- 将 `NotificationMessage` 中的 `events` 改名为`mutations`
 - 修改了包发布流程，类型信息可能有所变化
 
 ## 0.5.0

@@ -93,11 +93,10 @@ export function serializeGameStateLog(
   const logResult: SerializedLogEntry[] = [];
   const store: StoreEntry[] = [];
   for (const entry of log) {
-    const omittedState: MakePropPartial<GameState, "data" | "mutationLog"> = {
+    const omittedState: MakePropPartial<GameState, "data"> = {
       ...entry.state,
     };
     delete omittedState.data;
-    delete omittedState.mutationLog;
     const stateResult = serializeImpl(store, omittedState);
     logResult.push({
       s: stateResult,
@@ -168,7 +167,6 @@ export function deserializeGameStateLog(
     result.push({
       state: {
         data,
-        mutationLog: [],
         ...restoredState,
       },
       mutations: entry.e,

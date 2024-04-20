@@ -38,11 +38,6 @@ export interface IteratorState {
   readonly id: number;
 }
 
-export interface MutationLogEntry {
-  readonly roundNumber: number;
-  readonly mutation: Mutation;
-}
-
 export interface PlayCardLogEntry {
   readonly roundNumber: number;
   readonly who: 0 | 1;
@@ -64,7 +59,6 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly mutationLog: readonly MutationLogEntry[];
   readonly globalPlayCardLog: readonly PlayCardLogEntry[];
   readonly globalUseSkillLog: readonly UseSkillLogEntry[];
 }

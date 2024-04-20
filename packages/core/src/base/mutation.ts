@@ -27,13 +27,7 @@ import {
 } from "./state";
 import { disposeEntity, getEntityById, sortDice } from "../util";
 import { EntityArea, stringifyEntityArea } from "./entity";
-import {
-  ActionInfo,
-  DamageInfo,
-  HealInfo,
-  SkillDefinition,
-  SkillInfo,
-} from "./skill";
+import { ActionInfo, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 import { nextRandom } from "../random";
@@ -41,10 +35,6 @@ import { nextRandom } from "../random";
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
 };
-
-export interface ClearMutationLogM {
-  readonly type: "clearMutationLog";
-}
 
 export interface StepRandomM {
   readonly type: "stepRandom";
@@ -162,7 +152,6 @@ export interface IncreaseDisposedSupportCountM {
 }
 
 export type Mutation =
-  | ClearMutationLogM
   | StepRandomM
   | ChangePhaseM
   | StepRoundM
@@ -185,11 +174,6 @@ export type Mutation =
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
-    case "clearMutationLog": {
-      return produce(state, (draft) => {
-        draft.mutationLog = [];
-      });
-    }
     case "stepRandom": {
       const next = nextRandom(state.iterators.random);
       m.value = next;
@@ -412,7 +396,9 @@ export function stringifyMutation(m: Mutation): string | null {
       return `Create character ${stringifyState(m.value)} for player ${m.who}`;
     }
     case "createEntity": {
-      return `Create entity ${stringifyState(m.value)} in ${stringifyEntityArea(m.where)}`;
+      return `Create entity ${stringifyState(m.value)} in ${stringifyEntityArea(
+        m.where,
+      )}`;
     }
     case "disposeEntity": {
       return `Dispose entity ${stringifyState(m.oldState)}`;
@@ -440,10 +426,5 @@ export function stringifyMutation(m: Mutation): string | null {
 }
 
 export function applyMutation(state: GameState, m: Mutation): GameState {
-  return produce(doMutation(state, m), (draft) => {
-    draft.mutationLog.push({
-      roundNumber: state.roundNumber,
-      mutation: { ...m } as Draft<Mutation>,
-    });
-  });
+  return doMutation(state, m);
 }

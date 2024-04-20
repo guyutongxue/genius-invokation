@@ -54,7 +54,6 @@ export function exposeMutation(
 ): ExposedMutation | null {
   switch (m.type) {
     case "stepRandom":
-    case "clearMutationLog":
     case "pushActionLog":
     // case "pushDamageLog":
     case "increaseDisposedSupportCount":

@@ -108,7 +108,6 @@ export class Game {
       phase: "initHands",
       currentTurn: 0,
       roundNumber: 0,
-      mutationLog: [],
       globalPlayCardLog: [],
       globalUseSkillLog: [],
       winner: null,
@@ -249,13 +248,7 @@ export class Game {
   ) {
     const player = this.io.players[who];
     player.notify({
-      mutations: [
-        ...state.mutationLog.flatMap((m) => {
-          const ex = exposeMutation(who, m.mutation);
-          return ex ? [ex] : [];
-        }),
-        ...mutations,
-      ],
+      mutations: [...mutations],
       newState: exposeState(who, state),
     });
   }
@@ -279,7 +272,6 @@ export class Game {
     if (state.phase === "gameEnd") {
       this.gotWinner(state.winner);
     } else {
-      this.mutate({ type: "clearMutationLog" });
       await this.checkGiveUp();
     }
   }
