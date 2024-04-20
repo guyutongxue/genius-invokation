@@ -21,7 +21,7 @@ export default defineConfig({
   },
   format: "esm",
   clean: true,
-  // experimentalDts: true,
+  dts: true,
   sourcemap: true,
   minify: true,
 });

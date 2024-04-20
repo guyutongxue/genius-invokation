@@ -412,7 +412,7 @@ export function createPlayer(
     giveUp: false,
     notify: (msg) => {
       setStateData(msg.newState);
-      setEvents(msg.events);
+      setEvents(msg.mutations);
       if (action.onNotify) {
         action.onNotify(msg);
       }

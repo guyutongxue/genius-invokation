@@ -20,7 +20,7 @@ import { ReadonlyDataStore } from "./builder";
 export interface GameStateLogEntry {
   readonly state: GameState;
   readonly canResume: boolean;
-  readonly em: readonly ExposedMutation[];
+  readonly mutations: readonly ExposedMutation[];
 }
 
 interface StoreEntry {
@@ -99,7 +99,7 @@ export function serializeGameStateLog(
     const stateResult = serializeImpl(store, omittedState);
     logResult.push({
       s: stateResult,
-      e: entry.em,
+      e: entry.mutations,
       r: entry.canResume,
     });
   }
@@ -169,7 +169,7 @@ export function deserializeGameStateLog(
         mutationLog: [],
         ...restoredState,
       },
-      em: entry.e,
+      mutations: entry.e,
       canResume: entry.r,
     });
   }

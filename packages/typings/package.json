@@ -1,17 +1,17 @@
 {
   "name": "@gi-tcg/typings",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Typings for Genius Invokation TCG",
   "type": "module",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "bun": "./src/index.ts",
-      "types": "./src/index.ts",
       "import": "./dist/index.js"
     },
     "./verify": {
-      "types": "./src/verify.ts",
+      "types": "./dist/verify.d.ts",
       "bun": "./src/verify.ts",
       "import": "./dist/verify.js"
     }

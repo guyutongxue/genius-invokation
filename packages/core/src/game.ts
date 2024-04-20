@@ -117,7 +117,7 @@ export class Game {
     this._stateLog.push({
       state: this.state,
       canResume: false,
-      em: [],
+      mutations: [],
     });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
@@ -245,7 +245,7 @@ export class Game {
 
   private notifyOne(
     who: 0 | 1,
-    { state = this.state, em = [] }: NotifyOption = {},
+    { state = this.state, mutations = [] }: NotifyOption = {},
   ) {
     const player = this.io.players[who];
     player.notify({
@@ -254,13 +254,13 @@ export class Game {
           const ex = exposeMutation(who, m.mutation);
           return ex ? [ex] : [];
         }),
-        ...em,
+        ...mutations,
       ],
       newState: exposeState(who, state),
     });
   }
   async notifyAndPause({
-    em = [],
+    mutations = [],
     canResume = false,
     state = this.state,
   }: NotifyOption = {}) {
@@ -270,12 +270,12 @@ export class Game {
     this._stateLog.push({
       state,
       canResume,
-      em,
+      mutations,
     });
     for (const i of [0, 1] as const) {
-      this.notifyOne(i, { state, em });
+      this.notifyOne(i, { state, mutations });
     }
-    await this.io.pause?.(state, [...em]);
+    await this.io.pause?.(state, [...mutations]);
     if (state.phase === "gameEnd") {
       this.gotWinner(state.winner);
     } else {
@@ -492,7 +492,7 @@ export class Game {
     const player = state.players[who];
     this.notifyOne(flip(who), {
       state,
-      em: [
+      mutations: [
         {
           type: "oppChoosingActive",
         },
@@ -624,7 +624,7 @@ export class Game {
       );
       const actions = await this.availableAction();
       this.notifyOne(flip(who), {
-        em: [
+        mutations: [
           {
             type: "oppAction",
           },

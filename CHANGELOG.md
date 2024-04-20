@@ -2,9 +2,15 @@
 
 **仅记录破坏性改动。**
 
+## 0.6.0
+
+- 将 `NotificationMessage` 中的 `events` 合并到 `mutations` 中
+- 修改了包发布流程，类型信息可能有所变化
+
 ## 0.5.0
 
 - 暂时移除了 `pushDamageLog` 类型的 mutation
+- 重构了结算流程；在技能结算中可能引发更多的暂停点
 
 ## 0.4.0
 

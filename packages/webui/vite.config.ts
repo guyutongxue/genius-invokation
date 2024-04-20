@@ -27,12 +27,12 @@ export default defineConfig({
   },
   plugins: [
     solid(),
-    // dts({
-    //   rollupTypes: true,
-    //   bundledPackages: [
-    //     "@gi-tcg/webui-core"
-    //   ]
-    // }),
+    dts({
+      rollupTypes: true,
+      bundledPackages: [
+        "@gi-tcg/webui-core"
+      ]
+    }),
   ],
   build: {
     sourcemap: true,

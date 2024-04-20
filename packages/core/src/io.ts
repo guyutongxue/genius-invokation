@@ -43,7 +43,7 @@ export interface PlayerIO {
 }
 
 export interface GameIO {
-  readonly pause?: (state: GameState, em: ExposedMutation[]) => Promise<unknown>;
+  readonly pause?: (state: GameState, mutations: ExposedMutation[]) => Promise<unknown>;
   readonly onIoError?: (e: GiTcgIOError) => void;
   readonly players: readonly [PlayerIO, PlayerIO];
 }

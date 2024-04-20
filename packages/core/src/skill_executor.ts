@@ -72,9 +72,9 @@ export class SkillExecutor {
     return this._io;
   }
 
-  private notify(em: readonly ExposedMutation[]) {
+  private notify(mutations: readonly ExposedMutation[]) {
     if (this._io) {
-      return this._io.notifyAndPause({ state: this.state, em });
+      return this._io.notifyAndPause({ state: this.state, mutations });
     }
   }
   private log(type: DetailLogType, value: string): void {

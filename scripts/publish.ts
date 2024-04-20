@@ -22,10 +22,19 @@ import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
-$.throws(true);
-
 const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.5.0";
+const VERSION = "0.6.0";
+
+let doPublish = false;
+if ((await $`which npm`.nothrow().quiet()).exitCode === 0) {
+  if (process.env.PUBLISH) {
+    doPublish = true;
+  } else {
+    console.warn(`This will be a dry-run. set PUBLISH env variable for publish.`);
+  }
+} else {
+  console.warn(`Npm not available, so no package will be published.`);
+}
 
 interface PackageInfo {
   directory: string;
@@ -64,6 +73,7 @@ for (const pkg of packages) {
   if (packageJson.devDependencies) {
     delete packageJson.devDependencies;
   }
+  packageJson.author = "Guyutongxue";
   packageJson.repository = "github:Guyutongxue/genius-invokation";
   packageJson.license = "AGPL-3.0-or-later";
   packageInfos.push({ directory, packageJson });
@@ -87,12 +97,14 @@ for (const { packageJson, directory } of packageInfos) {
   await $`rm -rf ${publishDir}`.quiet();
   await $`mkdir -p ${publishDir}`.quiet();
   await $`cp -r ${directory}/dist ${publishDir}/`.quiet();
-  await $`cp -r ${directory}/src ${publishDir}/`.quiet();
-  await $`cp ${directory}/tsconfig.json ${publishDir}/`.quiet();
+  // await $`cp -r ${directory}/src ${publishDir}/`.quiet();
+  // await $`cp ${directory}/tsconfig.json ${publishDir}/`.quiet();
   await $`echo ${JSON.stringify(packageJson, void 0, 2)} > ${publishDir}/package.json`.quiet();
   await $`cp ${directory}/README.md ${publishDir}/`.quiet();
   await $`cp ${licensePath} ${publishDir}/`.quiet();
   // Bro attw is so strict
   await $`bunx --bun attw --pack ${publishDir}`.nothrow();
-  // await $`npm publish --access public`.cwd(publishDir);
+  if (doPublish) {
+    await $`npm publish --access public`.cwd(publishDir);
+  }
 }
