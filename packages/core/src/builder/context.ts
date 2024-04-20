@@ -188,6 +188,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
       ) {
         continue;
       }
+      using l = this.subLog(
+        DetailLogType.Skill,
+        `Using skill [skill:${info.definition.id}]`,
+      );
       const desc = info.definition.action as SkillDescription<EventArgOf<E>>;
       let newEvents;
       [this._state, newEvents] = desc(this.state, info, arg);
@@ -473,7 +477,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
         this.handleInlineEvent("modifyDamage1", modifier1);
         damageInfo = modifier1.damageInfo;
       }
-      this.log(DetailLogType.Other, `Damage info: ${damageInfo.log || "(no modification)"}`);
+      this.log(
+        DetailLogType.Other,
+        `Damage info: ${damageInfo.log || "(no modification)"}`,
+      );
       const finalHealth = Math.max(
         0,
         targetState.variables.health - damageInfo.value,

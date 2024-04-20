@@ -19,7 +19,7 @@ export function DetailLogViewer(props: DetailLogViewerProps) {
       case DetailLogType.Mutation:
         return "lightblue";
       case DetailLogType.Phase:
-        return "brown";
+        return "rebeccapurple";
       default:
         return "gray";
     }
