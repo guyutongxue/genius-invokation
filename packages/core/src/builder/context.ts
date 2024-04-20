@@ -473,7 +473,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         this.handleInlineEvent("modifyDamage1", modifier1);
         damageInfo = modifier1.damageInfo;
       }
-      this.log(DetailLogType.Other, `Damage info: ${damageInfo.log ?? "(no modification)"}`);
+      this.log(DetailLogType.Other, `Damage info: ${damageInfo.log || "(no modification)"}`);
       const finalHealth = Math.max(
         0,
         targetState.variables.health - damageInfo.value,
