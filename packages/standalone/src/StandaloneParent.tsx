@@ -223,12 +223,13 @@ export function StandaloneParent(props: StandaloneParentProps) {
   let detailDialog: HTMLDialogElement;
   const [detailLog, setDetailLog] = createSignal<readonly DetailLogEntry[]>([]);
   const showDetail = () => {
-    setDetailLog([...(game?.detailLog ?? [])]);
+    setDetailLog(game?.detailLog ?? []);
     detailDialog.showModal();
     detailDialog.scrollIntoView({ block: "end" });
   };
   const closeDetail = () => {
     detailDialog.close();
+    setDetailLog([]);
   };
 
   onMount(() => {
