@@ -85,11 +85,11 @@ export class SkillExecutor {
   }
 
   private mutate(mut: Mutation) {
+    this.state = applyMutation(this.state, mut);
     const str = stringifyMutation(mut);
     if (str) {
       this.log(DetailLogType.Mutation, str);
     }
-    this.state = applyMutation(this.state, mut);
   }
 
   async finalizeSkill(

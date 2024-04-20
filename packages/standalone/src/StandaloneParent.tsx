@@ -15,6 +15,7 @@
 
 import data from "@gi-tcg/data";
 import {
+  DetailLogEntry,
   Game,
   GameIO,
   GameStateLogEntry,
@@ -28,8 +29,9 @@ import {
   PlayerIOWithCancellation,
 } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
-import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import { For, Show, createSignal, onCleanup, onMount } from "solid-js";
 import { decode as decodeShareCode } from "@gi-tcg/utils";
+import { DetailLogViewer } from "./DetailLogViewer";
 
 export interface StandaloneParentProps {
   logs?: GameStateLogEntry[];
@@ -218,6 +220,16 @@ export function StandaloneParent(props: StandaloneParentProps) {
       childIo.giveUp = true;
     }
   };
+  let detailDialog: HTMLDialogElement;
+  const [detailLog, setDetailLog] = createSignal<readonly DetailLogEntry[]>([]);
+  const showDetail = () => {
+    setDetailLog([...(game?.detailLog ?? [])]);
+    detailDialog.showModal();
+    detailDialog.scrollIntoView({ block: "end" });
+  };
+  const closeDetail = () => {
+    detailDialog.close();
+  };
 
   onMount(() => {
     window.addEventListener("beforeunload", () => {
@@ -300,6 +312,13 @@ export function StandaloneParent(props: StandaloneParentProps) {
       <button disabled={stateLog().length === 0} onClick={exportLog}>
         导出日志
       </button>
+      <button onClick={showDetail}>显示细节</button>
+      <dialog ref={detailDialog!}>
+        <For each={detailLog()}>
+          {log => <DetailLogViewer log={log} />}
+        </For>
+        <button onClick={closeDetail}>关闭</button>
+      </dialog>
     </div>
   );
 }

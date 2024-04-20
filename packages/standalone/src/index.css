@@ -154,3 +154,31 @@ html {
 .tab__spacer {
   border-bottom: black 1px solid;
 }
+
+.detail-log__toggle-button {
+  width: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.detail-log__parent {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+}
+.detail-log__text:hover {
+  background-color: #f0f0f0;
+}
+
+.detail-log__children {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.5rem;
+  margin-left: 0.5rem;
+  border-left: gray 1px solid;
+}
+
+.detail-log {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+}

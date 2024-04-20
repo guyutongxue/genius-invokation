@@ -800,8 +800,8 @@ export function stringifyDamageInfo(damage: DamageInfo | HealInfo): string {
     }
     return result;
   } else {
-    let result = `${stringifyState(damage.source)} deal ${damage.value} [damage:${damage.type}] to ${stringifyState(damage.target)}, via skill [skill:${damage.via.definition.id}`;
-    if ("log" in damage) {
+    let result = `${stringifyState(damage.source)} deal ${damage.value} [damage:${damage.type}] to ${stringifyState(damage.target)}, via skill [skill:${damage.via.definition.id}]`;
+    if (damage.log) {
       result += `, damage modify log:\n${damage.log}`
     }
     return result;

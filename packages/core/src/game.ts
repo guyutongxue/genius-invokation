@@ -78,8 +78,8 @@ const INITIAL_ID = -500000;
 
 const IO_CHECK_GIVEUP_INTERVAL = 500;
 
-type ActionInfoWithNewState = ActionInfo & {
-  readonly newState: GameState;
+type ActionInfoWithModification = ActionInfo & {
+  eventArg: ModifyActionEventArg<ActionInfo>;
 };
 
 type NotifyOption = Partial<GameStateLogEntry>;
@@ -142,11 +142,11 @@ export class Game {
 
   mutate(mutation: Mutation) {
     if (!this._terminated) {
+      this._state = applyMutation(this.state, mutation);
       const str = stringifyMutation(mutation);
       if (str) {
         this.logger.log(DetailLogType.Mutation, str);
       }
-      this._state = applyMutation(this.state, mutation);
     }
   }
 
@@ -511,7 +511,7 @@ export class Game {
   }
 
   private async rollPhase() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In roll phase:`);
+    using l = this.logger.subLog(DetailLogType.Phase, `In roll phase (round ${this.state.roundNumber}+1):`);
     this.mutate({
       type: "stepRound",
     });
@@ -611,14 +611,14 @@ export class Game {
     ) {
       using l = this.logger.subLog(
         DetailLogType.Phase,
-        `In action phase (replaced action):`,
+        `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}) (replaced action):`,
       );
       await this.executeSkill(replaceAction, new EventArg(this.state));
       this.mutate({
         type: "switchTurn",
       });
     } else {
-      using l = this.logger.subLog(DetailLogType.Phase, `In action phase:`);
+      using l = this.logger.subLog(DetailLogType.Phase, `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`);
       await this.handleEvent(
         "onBeforeAction",
         new PlayerEventArg(this.state, who),
@@ -638,11 +638,7 @@ export class Game {
         throw new GiTcgIOError(who, `User chosen index out of range`);
       }
       const actionInfo = actions[chosenIndex];
-      const modifyActionEventArg = new ModifyActionEventArg(
-        this.state,
-        actionInfo,
-      );
-      await this.handleEvent("modifyAction", modifyActionEventArg);
+      await this.handleEvent("modifyAction", actionInfo.eventArg);
 
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {
@@ -805,6 +801,7 @@ export class Game {
     }
   }
   private async endPhase() {
+    using l = this.logger.subLog(DetailLogType.Phase, `In end phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`);
     await this.handleEvent("onEndPhase", new EventArg(this.state));
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
@@ -821,7 +818,7 @@ export class Game {
     }
   }
 
-  async availableAction(): Promise<ActionInfoWithNewState[]> {
+  async availableAction(): Promise<ActionInfoWithModification[]> {
     const who = this.state.currentTurn;
     const player = this.state.players[who];
     const activeCh = player.characters[getActiveCharacterIndex(player)];
@@ -931,20 +928,19 @@ export class Game {
       cost: [],
     });
     // Apply beforeUseDice, calculate new state for each action
-    const resultWithState: ActionInfoWithNewState[] = [];
+    const resultAfterModification: ActionInfoWithModification[] = [];
     for (const actionInfo of result) {
-      const eventArg = new ModifyActionEventArg(this.state, actionInfo);
-      const newState = await SkillExecutor.previewEvent(
-        this.state,
-        "modifyAction",
-        eventArg,
-      );
-      resultWithState.push({
-        ...eventArg.action,
-        newState,
+      // eventArg1 为预计算，只应用 ActionInfo 的副作用
+      // eventArg2 行动后使用，然后传入 handleEvent 使其真正发生
+      const eventArg1 = new ModifyActionEventArg(this.state, actionInfo);
+      const eventArg2 = new ModifyActionEventArg(this.state, actionInfo);
+      await SkillExecutor.previewEvent(this.state, "modifyAction", eventArg1);
+      resultAfterModification.push({
+        ...eventArg1.action,
+        eventArg: eventArg2,
       });
     }
-    return resultWithState;
+    return resultAfterModification;
   }
 
   /** @internal */
@@ -982,7 +978,10 @@ export class Game {
     let topIndex = 0;
     for (let i = 0; i < count; i++) {
       let candidate: CardState;
-      while (topIndex < player().piles.length && swapInCardIds.includes(player().piles[topIndex].definition.id)) {
+      while (
+        topIndex < player().piles.length &&
+        swapInCardIds.includes(player().piles[topIndex].definition.id)
+      ) {
         topIndex++;
       }
       if (topIndex >= player().piles.length) {

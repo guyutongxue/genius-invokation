@@ -173,6 +173,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         requestBy: null,
         charged: false,
         plunging: false,
+        logger: this.skillInfo.logger,
       }));
     for (const info of infos) {
       arg._currentSkillInfo = info;
@@ -275,11 +276,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
 
   mutate(...mutations: Mutation[]) {
     for (const mut of mutations) {
+      this._state = applyMutation(this._state, mut);
       const str = stringifyMutation(mut);
       if (str) {
         this.log(DetailLogType.Mutation, str);
       }
-      this._state = applyMutation(this._state, mut);
     }
   }
 
@@ -472,7 +473,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         this.handleInlineEvent("modifyDamage1", modifier1);
         damageInfo = modifier1.damageInfo;
       }
-      this.log(DetailLogType.Other, `Damage info: ${damageInfo.log}`);
+      this.log(DetailLogType.Other, `Damage info: ${damageInfo.log ?? "(no modification)"}`);
       const finalHealth = Math.max(
         0,
         targetState.variables.health - damageInfo.value,
