@@ -34,7 +34,7 @@ import {
 import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
 import { GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
-import { Writable } from "../util";
+import { Writable } from "../utils";
 
 export interface AppendOptions {
   /** 重复创建时的累积值上限 */

@@ -40,7 +40,7 @@ import {
   UsagePerRoundVariableNames,
 } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
-import { getEntityArea } from "../util";
+import { getEntityArea } from "../utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { createVariable } from "./utils";
 

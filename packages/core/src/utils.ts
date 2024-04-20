@@ -254,23 +254,15 @@ export function isSkillDisabled(character: CharacterState): boolean {
   );
 }
 
+/** 从牌堆顶部摸一张牌到手牌。 */
 export function drawCard(
   state: GameState,
   who: 0 | 1,
-  withTag: CardTag | null,
 ): GameState {
-  let candidate;
-  if (withTag !== null) {
-    candidate = state.players[who].piles.find((c) =>
-      c.definition.tags.includes(withTag),
-    );
-  } else {
-    candidate = state.players[who].piles[0];
-  }
+  const candidate = state.players[who].piles[0];
   if (typeof candidate === "undefined") {
     return state;
   }
-
   state = applyMutation(state, {
     type: "transferCard",
     path: "pilesToHands",
@@ -342,7 +334,7 @@ function arrayLast<T>(this: readonly T[]): T {
 Array.prototype.shiftLeft = shiftLeft;
 Array.prototype.last = arrayLast;
 
-// Shuffle an array. No use of state random generator
+/** Shuffle an array. No use of state random generator */
 export function shuffle<T>(arr: readonly T[]): readonly T[] {
   const result = [...arr];
   for (let i = result.length - 1; i > 0; i--) {

@@ -17,7 +17,7 @@ import { ContextMetaBase, SkillContext } from "../builder/context";
 import { TypedExEntity } from "../builder/type";
 import { GuessedTypeOfQuery } from "./types";
 import { QueryArgs, doSemanticQueryAction } from "./semantic";
-import { allEntities, getEntityArea } from "../util";
+import { allEntities, getEntityArea } from "../utils";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
   ActionEventArg,

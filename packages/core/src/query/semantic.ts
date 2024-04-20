@@ -28,7 +28,7 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
-} from "../util";
+} from "../utils";
 import { EntityType } from "../base/entity";
 import { GiTcgQueryError } from "../error";
 

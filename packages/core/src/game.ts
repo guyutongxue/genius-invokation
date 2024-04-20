@@ -18,12 +18,18 @@ import { DiceType, RpcMethod, RpcRequest, RpcResponse } from "@gi-tcg/typings";
 import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings/verify";
 import {
   AnyState,
+  CardState,
   CharacterState,
   GameConfig,
   GameState,
   PlayerState,
 } from "./base/state";
-import { Mutation, StepRandomM, applyMutation, stringifyMutation } from "./base/mutation";
+import {
+  Mutation,
+  StepRandomM,
+  applyMutation,
+  stringifyMutation,
+} from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   drawCard,
@@ -34,7 +40,7 @@ import {
   shuffle,
   sortDice,
   isSkillDisabled,
-} from "./util";
+} from "./utils";
 import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionEventArg,
@@ -440,10 +446,10 @@ export class Game {
   }
 
   private async initHands() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In initHands phase:`)
+    using l = this.logger.subLog(DetailLogType.Phase, `In initHands phase:`);
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHands; i++) {
-        this._state = drawCard(this.state, who, null);
+        this._state = drawCard(this.state, who);
       }
     }
     this.notifyAndPause();
@@ -455,7 +461,7 @@ export class Game {
   }
 
   private async initActives() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In initActive phase:`)
+    using l = this.logger.subLog(DetailLogType.Phase, `In initActive phase:`);
     const [a0, a1] = await Promise.all([
       this.chooseActive(0),
       this.chooseActive(1),
@@ -505,7 +511,7 @@ export class Game {
   }
 
   private async rollPhase() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In roll phase:`)
+    using l = this.logger.subLog(DetailLogType.Phase, `In roll phase:`);
     this.mutate({
       type: "stepRound",
     });
@@ -603,13 +609,16 @@ export class Game {
       (replaceAction = findReplaceAction(activeCh())) &&
       !isSkillDisabled(activeCh())
     ) {
-      using l = this.logger.subLog(DetailLogType.Phase, `In action phase (replaced action):`)
+      using l = this.logger.subLog(
+        DetailLogType.Phase,
+        `In action phase (replaced action):`,
+      );
       await this.executeSkill(replaceAction, new EventArg(this.state));
       this.mutate({
         type: "switchTurn",
       });
     } else {
-      using l = this.logger.subLog(DetailLogType.Phase, `In action phase:`)
+      using l = this.logger.subLog(DetailLogType.Phase, `In action phase:`);
       await this.handleEvent(
         "onBeforeAction",
         new PlayerEventArg(this.state, who),
@@ -799,7 +808,7 @@ export class Game {
     await this.handleEvent("onEndPhase", new EventArg(this.state));
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
-        this._state = drawCard(this.state, who, null);
+        this._state = drawCard(this.state, who);
       }
     }
     if (this.state.roundNumber >= this.config.maxRounds) {
@@ -940,25 +949,54 @@ export class Game {
 
   /** @internal */
   async switchCard(who: 0 | 1) {
+    const player = () => this._state.players[who];
     const { removedHands } = await this.rpc(who, "switchHands", {});
-    const cardStates = removedHands.map((id) => {
-      const card = this.state.players[who].hands.find((c) => c.id === id);
+    // swapIn: 从手牌到牌堆
+    // swapOut: 从牌堆到手牌
+    const count = removedHands.length;
+    const swapInCards = removedHands.map((id) => {
+      const card = player().hands.find((c) => c.id === id);
       if (typeof card === "undefined") {
         throw new GiTcgDataError(`Unknown card id ${id}`);
       }
       return card;
     });
-    for (const st of cardStates) {
+    const swapInCardIds = swapInCards.map((c) => c.definition.id);
+
+    for (const card of swapInCards) {
+      const mutation: Mutation = {
+        type: "stepRandom",
+        value: -1,
+      };
+      this.mutate(mutation);
+      const index = mutation.value % (player().piles.length + 1);
       this.mutate({
         type: "transferCard",
         path: "handsToPiles",
         who,
-        value: st,
+        value: card,
+        targetIndex: index,
       });
     }
-    const count = cardStates.length;
+    // 如果牌堆顶的手牌是刚刚换入的同名牌，那么暂时不选它
+    let topIndex = 0;
     for (let i = 0; i < count; i++) {
-      this._state = drawCard(this.state, who, null);
+      let candidate: CardState;
+      while (topIndex < player().piles.length && swapInCardIds.includes(player().piles[topIndex].definition.id)) {
+        topIndex++;
+      }
+      if (topIndex >= player().piles.length) {
+        // 已经跳过了所有同名牌，只能从头开始
+        candidate = player().piles[0];
+      } else {
+        candidate = player().piles[topIndex];
+      }
+      this.mutate({
+        type: "transferCard",
+        path: "pilesToHands",
+        who,
+        value: candidate,
+      });
     }
     this.notifyOne(who);
     this.notifyOne(flip(who));

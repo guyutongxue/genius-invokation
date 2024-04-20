@@ -25,7 +25,7 @@ import {
   PlayerState,
   stringifyState,
 } from "./state";
-import { disposeEntity, getEntityById, sortDice } from "../util";
+import { disposeEntity, getEntityById, sortDice } from "../utils";
 import { EntityArea, stringifyEntityArea } from "./entity";
 import { ActionInfo, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";

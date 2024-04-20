@@ -58,7 +58,7 @@ import {
   getEntityArea,
   getEntityById,
   sortDice,
-} from "../util";
+} from "../utils";
 import { executeQuery } from "../query";
 import {
   AppliableDamageType,
@@ -1076,8 +1076,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  drawCards(count: number, opt?: DrawCardsOpt) {
-    const { withTag = null, who: myOrOpt = "my" } = (opt ??= {});
+  drawCards(count: number, opt: DrawCardsOpt = {}) {
+    const { withTag = null, who: myOrOpt = "my" } = opt;
     const who =
       myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
     using l = this.subLog(
@@ -1086,8 +1086,107 @@ export class SkillContext<Meta extends ContextMetaBase> {
         withTag ? `(with tag ${withTag})` : ""
       }`,
     );
-    for (let i = 0; i < count; i++) {
-      this._state = drawCard(this._state, who, withTag);
+    if (withTag === null) {
+      // 如果没有限定，则从牌堆顶部摸牌
+      for (let i = 0; i < count; i++) {
+        this._state = drawCard(this._state, who);
+      }
+    } else {
+      // 否则，随机选中一张满足条件的牌
+      const player = () => this._state.players[who];
+      for (let i = 0; i < count; i++) {
+        const candidates = player().piles.filter((card) =>
+          card.definition.tags.includes(withTag),
+        );
+        if (candidates.length === 0) {
+          break;
+        }
+        const chosen = this.random(...candidates);
+        this.mutate({
+          type: "transferCard",
+          path: "pilesToHands",
+          who,
+          value: chosen,
+        });
+        if (player().hands.length > this.state.config.maxHands) {
+          this.mutate({
+            type: "disposeCard",
+            who,
+            oldState: chosen,
+            used: false,
+          });
+        }
+      }
+    }
+  }
+  createPileCards(
+    cardIds: CardHandle[],
+    strategy: "top" | "random" | "spaceAround" = "top",
+  ) {
+    const who = this.callerArea.who;
+    using l = this.subLog(
+      DetailLogType.Primitive,
+      `Create pile cards ${cardIds
+        .map((id) => `[card:${id}]`)
+        .join(", ")}, strategy ${strategy}`,
+    );
+    const player = () => this.player;
+    const cards = cardIds.map((id) => {
+      const def = this._state.data.cards.get(id);
+      if (typeof def === "undefined") {
+        throw new GiTcgDataError(`Unknown card definition id ${id}`);
+      }
+      return {
+        id: 0,
+        definition: def,
+      };
+    });
+    switch (strategy) {
+      case "top":
+        for (const card of cards) {
+          this.mutate({
+            type: "createCard",
+            who,
+            target: "piles",
+            targetIndex: 0,
+            value: card,
+          });
+        }
+        break;
+      case "random":
+        for (const card of cards) {
+          const mut: Mutation = {
+            type: "stepRandom",
+            value: -1
+          };
+          this.mutate(mut);
+          const index = mut.value % (player().piles.length + 1);
+          this.mutate({
+            type: "createCard",
+            who,
+            target: "piles",
+            value: card,
+            targetIndex: index,
+          });
+        }
+        break;
+      case "spaceAround":
+        const spaces = cardIds.length + 1;
+        const step = Math.floor(player().piles.length / spaces);
+        for (let i = 0, j = step; i < cardIds.length; i++, j += step) {
+          this.mutate({
+            type: "createCard",
+            who,
+            target: "piles",
+            value: cards[i],
+            targetIndex: j + i,
+          });
+        }
+        break;
+      default: {
+        const _: never = strategy;
+        throw new GiTcgDataError(`Invalid strategy ${strategy}`);
+      }
     }
   }
   switchCards() {
@@ -1121,7 +1220,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     );
   }
 
-  random<T>(...items: T[]): T {
+  random<T>(...items: readonly T[]): T {
     const mutation: Mutation = {
       type: "stepRandom",
       value: -1,

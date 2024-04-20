@@ -32,12 +32,12 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
-} from "./util";
+} from "./utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
 import { Mutation, applyMutation, stringifyMutation } from "./base/mutation";
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType, GameStateLogEntry, IDetailLogger } from "./log";
-import { Writable } from "./util";
+import { Writable } from "./utils";
 
 interface IoDuringSkillFinalize {
   logger: IDetailLogger;
