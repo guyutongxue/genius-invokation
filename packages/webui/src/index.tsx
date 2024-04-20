@@ -47,7 +47,7 @@ export function createPlayer(
 const defaultProps: StandaloneChessboardProps = {
   stateData: EMPTY_STATE_DATA,
   who: 0,
-  events: [],
+  mutations: [],
   assetApiEndpoint: void 0,
 };
 

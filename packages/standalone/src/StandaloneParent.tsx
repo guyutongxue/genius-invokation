@@ -18,7 +18,6 @@ import {
   Game,
   GameIO,
   GameStateLogEntry,
-  deserializeGameStateLog,
   exposeState,
   serializeGameStateLog,
 } from "@gi-tcg/core";
@@ -29,15 +28,7 @@ import {
   PlayerIOWithCancellation,
 } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
-import {
-  Show,
-  createEffect,
-  createSignal,
-  mergeProps,
-  onCleanup,
-  onMount,
-  untrack,
-} from "solid-js";
+import { Show, createSignal, onCleanup, onMount } from "solid-js";
 import { decode as decodeShareCode } from "@gi-tcg/utils";
 
 export interface StandaloneParentProps {
@@ -301,7 +292,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
               class="grayscale"
               stateData={exposeState(viewingWho(), state().state)}
               who={viewingWho()}
-              events={state().events}
+              mutations={state().mutations}
             />
           </>
         )}

@@ -40,6 +40,7 @@ import type {
   PlayCardAction,
   DamageData,
   Event,
+  ExposedMutation,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -216,7 +217,7 @@ export function createPlayer(
   Chessboard: (props: ComponentProps<"div">) => JSX.Element,
 ] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
-  const [events, setEvents] = createSignal<Event[]>([]);
+  const [mutations, setMutations] = createSignal<ExposedMutation[]>([]);
   const [giveUp, setGiveUp] = createSignal(false);
   const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
   const [handSwitching, waitHandSwitch, notifyHandSwitched] =
@@ -412,7 +413,7 @@ export function createPlayer(
     giveUp: false,
     notify: (msg) => {
       setStateData(msg.newState);
-      setEvents(msg.mutations);
+      setMutations(msg.mutations);
       if (action.onNotify) {
         action.onNotify(msg);
       }
@@ -494,7 +495,7 @@ export function createPlayer(
 
   const ChessboardWithIO = () => (
     <PlayerContext.Provider value={playerContextValue}>
-      <Chessboard stateData={stateData()} who={who} events={events()}>
+      <Chessboard stateData={stateData()} who={who} mutations={mutations()}>
         <Show when={allClickable.includes(DECLARE_END_ID)}>
           <button
             class="absolute left-22 top-[50%] translate-y-[-50%] btn btn-green-500"
@@ -563,7 +564,7 @@ export function createPlayer(
 
 interface ChessboardProps extends ComponentProps<"div"> {
   stateData: StateData;
-  events: readonly Event[];
+  mutations: readonly ExposedMutation[];
   who: 0 | 1;
   children?: JSX.Element;
 }
@@ -573,7 +574,7 @@ function Chessboard(props: ChessboardProps) {
   const [local, restProps] = splitProps(props, [
     "class",
     "stateData",
-    "events",
+    "mutations",
     "who",
     "children",
   ]);
@@ -584,7 +585,7 @@ function Chessboard(props: ChessboardProps) {
   createEffect(() => {
     let currentFocusing: number | null = null;
     const currentDamages: DamageData[] = [];
-    for (const event of local.events ?? []) {
+    for (const event of local.mutations ?? []) {
       if (event.type === "damage") {
         currentDamages.push(event.damage);
       }

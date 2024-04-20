@@ -55,8 +55,7 @@ function App() {
   const [pausing, pause, resume] = createWaitNotify();
 
   const io: GameIO = {
-    pause: (state, events) => {
-      console.log({ state, events });
+    pause: (state, mutations) => {
       return new Promise((r) => setTimeout(r, 500))
     },
     players: [io0, io1],
