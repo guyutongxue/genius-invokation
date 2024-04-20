@@ -17,6 +17,8 @@ import { ExposedMutation } from "@gi-tcg/typings";
 import { GameState } from "./base/state";
 import { ReadonlyDataStore } from "./builder";
 
+import "core-js/proposals/explicit-resource-management";
+
 export interface GameStateLogEntry {
   readonly state: GameState;
   readonly canResume: boolean;
