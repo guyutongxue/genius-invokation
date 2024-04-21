@@ -96,7 +96,7 @@ export function DetailLogViewer(props: DetailLogViewerProps) {
   return (
     <div class="detail-log">
       <div class="detail-log__parent">
-        <Show when={props.log.children?.length}>
+        <Show when={props.log.children?.length} fallback={<div class="detail-log__toggle-placeholder" />}>
           <button class="detail-log__toggle-button" onClick={toggleOpen}>
             {open() ? "-" : "+"}
           </button>
