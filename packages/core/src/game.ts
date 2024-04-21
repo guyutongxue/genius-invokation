@@ -480,8 +480,6 @@ export class Game {
       type: "changePhase",
       newPhase: "roll",
     });
-    // For debugging
-    Reflect.set(globalThis, "$$", (query: string) => this.query(0, query));
     await this.handleEvent("onBattleBegin", new EventArg(this.state));
   }
 
