@@ -135,6 +135,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   protected override async onPause(opt: InternalNotifyOption): Promise<void> {
     // Do nothing, and we won't call it
   }
+  public override mutate(mut: Mutation) {
+    return super.mutate(mut);
+  }
 
   get player() {
     return this._state.players[this.callerArea.who];
