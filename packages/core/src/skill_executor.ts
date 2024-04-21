@@ -34,17 +34,18 @@ import {
   getEntityById,
 } from "./utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
-import { Mutation, applyMutation, stringifyMutation } from "./base/mutation";
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType, GameStateLogEntry, IDetailLogger } from "./log";
 import { Writable } from "./utils";
+import { InternalNotifyOption, StateMutator } from "./mutator";
 
 interface IoDuringSkillFinalize {
   logger: IDetailLogger;
   switchCard(who: 0 | 1): Promise<void>;
   reroll(who: 0 | 1, times: number): Promise<void>;
-  notifyAndPause(opt: Partial<GameStateLogEntry>): Promise<void>;
   chooseActive(who: 0 | 1, state: GameState): Promise<CharacterState>;
+  onNotify(opt: InternalNotifyOption): void;
+  onPause(opt: InternalNotifyOption): Promise<void>;
 }
 
 interface IoAndState extends IoDuringSkillFinalize {
@@ -59,11 +60,13 @@ class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
 
 export type GeneralSkillArg = EventArg | CardSkillEventArg | void;
 
-export class SkillExecutor {
+export class SkillExecutor extends StateMutator {
   private constructor(
-    private state: GameState,
+    state: GameState,
     private readonly _io?: IoDuringSkillFinalize,
-  ) {}
+  ) {
+    super(state, { logger: _io?.logger });
+  }
 
   private get io() {
     if (!this._io) {
@@ -72,24 +75,11 @@ export class SkillExecutor {
     return this._io;
   }
 
-  private notify(mutations: readonly ExposedMutation[]) {
-    if (this._io) {
-      return this._io.notifyAndPause({ state: this.state, mutations });
-    }
+  protected override onNotify(opt: InternalNotifyOption) {
+    this._io?.onNotify(opt);
   }
-  private log(type: DetailLogType, value: string): void {
-    return this._io?.logger.log(type, value);
-  }
-  private subLog(type: DetailLogType, value: string) {
-    return this._io?.logger.subLog(type, value);
-  }
-
-  private mutate(mut: Mutation) {
-    this.state = applyMutation(this.state, mut);
-    const str = stringifyMutation(mut);
-    if (str) {
-      this.log(DetailLogType.Mutation, str);
-    }
+  protected override async onPause(opt: InternalNotifyOption) {
+    await this._io?.onPause(opt);
   }
 
   async finalizeSkill(
@@ -111,59 +101,55 @@ export class SkillExecutor {
     );
     const callerArea = getEntityArea(this.state, skillInfo.caller.id);
     const skillDef = skillInfo.definition;
-    const [newState, eventList] = (0, skillDef.action)(
-      this.state,
-      { ...skillInfo, logger: this._io?.logger },
-      arg as any,
-    );
-    this.state = newState;
 
-    const notifyEm: ExposedMutation[] = [];
+    const preExposedMutations: ExposedMutation[] = [];
+    const postExposedMutations: ExposedMutation[] = [];
     if (!skillInfo.fromCard) {
-      notifyEm.push({
+      preExposedMutations.push({
         type: "triggered",
         id: skillInfo.caller.id,
       });
-      if (skillDef.triggerOn === null) {
-        notifyEm.push({
-          type: "useCommonSkill",
-          who: callerArea.who,
-          skill: skillDef.id,
-        });
-      }
     }
+    if (skillInfo.definition.triggerOn === null) {
+      preExposedMutations.push({
+        type: "useCommonSkill",
+        who: callerArea.who,
+        skill: skillDef.id,
+      });
+    }
+    await this.notifyAndPause({
+      mutations: preExposedMutations
+    });
+
+    const [newState, eventList] = (0, skillDef.action)(
+      this.state,
+      { 
+        ...skillInfo, 
+        logger: this._io?.logger,
+        onNotify: (opt) => {
+          // FIX ME: 我们应当在此处 notify。
+          // 但是 web ui 还没实现在 notify 时“阻塞后续通知”并显示，
+          // 所以我们依赖于 pause 的暂停功能。目前的 workaround：
+          // 将这些需要展示的信息推迟到 postExposedMutations 中，
+          // 随后调用 notifyAndPause 来以暂停的方式展示这些信息。
+          // this.onNotify(opt);
+          postExposedMutations.push(...opt.exposedMutations);
+        },
+      },
+      arg as any,
+    );
+    this._state = newState;
+
+    // FIX ME
+    await this.notifyAndPause({
+      mutations: postExposedMutations
+    });
 
     const damageEvents = eventList.filter(
       (e): e is ["onDamageOrHeal", DamageOrHealEventArg<DamageInfo>] =>
         e[0] === "onDamageOrHeal",
     );
     const nonDamageEvents = eventList.filter((e) => e[0] !== "onDamageOrHeal");
-
-    for (const [, arg] of damageEvents) {
-      const damageInfo = arg.damageInfo;
-      if (damageInfo.target.variables.alive) {
-        notifyEm.push({
-          type: "damage",
-          damage: {
-            type: damageInfo.type,
-            value: damageInfo.value,
-            target: damageInfo.target.id,
-            log: arg.log(),
-          },
-        });
-      }
-    }
-    for (const [eventName, arg] of nonDamageEvents) {
-      if (eventName === "onReaction" && arg.target.variables.alive) {
-        notifyEm.push({
-          type: "elementalReaction",
-          on: arg.target.id,
-          reactionType: arg.type,
-        });
-      }
-    }
-
-    await this.notify(notifyEm);
 
     const damageEventArgs: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
     const zeroHealthEventArgs: ZeroHealthEventArg[] = [];
@@ -227,7 +213,7 @@ export class SkillExecutor {
                 type: "changePhase",
                 newPhase: "gameEnd",
               });
-              await this.notify([]);
+              await this.notifyAndPause();
               return;
             }
           }
@@ -244,7 +230,7 @@ export class SkillExecutor {
       (arg) => arg.damageInfo.causeDefeated,
     );
     if (criticalDamageEvents.length > 0) {
-      await this.notify([]);
+      await this.notifyAndPause();
     }
 
     for (const arg of zeroHealthEventArgs) {
@@ -274,17 +260,18 @@ export class SkillExecutor {
           varName: "health",
           value: healValue,
         });
-        await this.notify([
-          {
-            type: "damage",
-            damage: {
-              type: healInfo.type,
-              value: healInfo.value,
-              target: healInfo.target.id,
-              log: "",
+        await this.notifyAndPause({
+          mutations: [
+            {
+              type: "damage",
+              damage: {
+                type: healInfo.type,
+                value: healInfo.value,
+                target: healInfo.target.id,
+              },
             },
-          },
-        ]);
+          ],
+        });
         const healEventArg = new DamageOrHealEventArg(this.state, healInfo);
         await this.handleEvent(["onDamageOrHeal", healEventArg]);
       }
@@ -312,7 +299,7 @@ export class SkillExecutor {
           varName: "energy",
           value: newEnergy,
         });
-        await this.notify([]);
+        await this.notifyAndPause();
       }
     }
 
@@ -322,6 +309,11 @@ export class SkillExecutor {
     }
     for (const arg of criticalDamageEvents) {
       await this.handleEvent(["onDamageOrHeal", arg]);
+    }
+    // 接下来处理出战角色倒下后的切人
+    // 仅当本次技能的使用造成倒下时才会处理
+    if (criticalDamageEvents.length === 0) {
+      return;
     }
     const switchEvents: [
       null | Promise<SwitchActiveEventArg>,

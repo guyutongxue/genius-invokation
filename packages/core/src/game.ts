@@ -14,7 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { checkDice, flip } from "@gi-tcg/utils";
-import { DiceType, RpcMethod, RpcRequest, RpcResponse } from "@gi-tcg/typings";
+import {
+  DiceType,
+  ExposedMutation,
+  RpcMethod,
+  RpcRequest,
+  RpcResponse,
+} from "@gi-tcg/typings";
 import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings/verify";
 import {
   AnyState,
@@ -32,7 +38,6 @@ import {
 } from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
-  drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
   getEntityById,
@@ -66,6 +71,7 @@ import {
 import { DetailLogType, DetailLogger, GameStateLogEntry } from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
+import { InternalNotifyOption, NotifyOption, StateMutator } from "./mutator";
 
 export interface PlayerConfig {
   readonly cards: number[];
@@ -82,17 +88,58 @@ type ActionInfoWithModification = ActionInfo & {
   eventArg: ModifyActionEventArg<ActionInfo>;
 };
 
-type NotifyOption = Partial<GameStateLogEntry>;
+/** 获取玩家初始状态，主要是初始化“起始牌堆” */
+function initPlayerState(
+  data: ReadonlyDataStore,
+  playerConfigs: readonly [PlayerConfig, PlayerConfig],
+  who: 0 | 1,
+): PlayerState {
+  const config = playerConfigs[who];
+  let initialPiles: readonly CardDefinition[] = config.cards.map((id) => {
+    const def = data.cards.get(id);
+    if (typeof def === "undefined") {
+      throw new GiTcgDataError(`Unknown card id ${id}`);
+    }
+    return def;
+  });
+  if (!config.noShuffle) {
+    initialPiles = shuffle(initialPiles);
+  }
+  // 将秘传牌放在最前面
+  function compFn(def: CardDefinition) {
+    if (def.tags.includes("legend")) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }
+  initialPiles = initialPiles.toSorted((a, b) => compFn(a) - compFn(b));
+  return {
+    activeCharacterId: 0,
+    characters: [],
+    initialPiles,
+    piles: [],
+    hands: [],
+    dice: [],
+    combatStatuses: [],
+    summons: [],
+    supports: [],
+    declaredEnd: false,
+    canPlunging: false,
+    hasDefeated: false,
+    legendUsed: false,
+    skipNextTurn: false,
+    disposedSupportCount: 0,
+  };
+}
 
-export class Game {
-  private readonly data: ReadonlyDataStore;
+export class Game extends StateMutator {
   private readonly config: GameConfig;
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   private readonly io: GameIO;
   /** @internal */
   public readonly logger = new DetailLogger();
 
-  private _state: GameState;
   private _stateLog: GameStateLogEntry[] = [];
   private _terminated = false;
   private finishPromise: Promise<0 | 1 | null> | null = null;
@@ -100,15 +147,12 @@ export class Game {
   private rejectFinishPromise: (e: GiTcgError) => void = () => {};
 
   constructor(opt: GameOption) {
-    this.data = opt.data;
-    this.config = mergeGameConfigWithDefault(opt.gameConfig);
-    this.playerConfigs = opt.playerConfigs;
-    this.io = opt.io;
-    this._state = {
-      data: this.data,
-      config: this.config,
+    const config = mergeGameConfigWithDefault(opt.gameConfig);
+    const initialState: GameState = {
+      data: opt.data,
+      config,
       iterators: {
-        random: this.config.randomSeed,
+        random: config.randomSeed,
         id: INITIAL_ID,
       },
       phase: "initHands",
@@ -117,8 +161,16 @@ export class Game {
       globalPlayCardLog: [],
       globalUseSkillLog: [],
       winner: null,
-      players: [this.initPlayerState(0), this.initPlayerState(1)],
+      players: [
+        initPlayerState(opt.data, opt.playerConfigs, 0),
+        initPlayerState(opt.data, opt.playerConfigs, 1),
+      ],
     };
+    const logger = new DetailLogger();
+    super(initialState, { logger });
+    this.config = mergeGameConfigWithDefault(opt.gameConfig);
+    this.playerConfigs = opt.playerConfigs;
+    this.io = opt.io;
     this._stateLog.push({
       state: this.state,
       canResume: false,
@@ -128,25 +180,16 @@ export class Game {
     this.initPlayerCards(1);
   }
 
-  get state() {
-    return this._state;
-  }
-
   get stateLog() {
     return this._stateLog;
   }
-
   get detailLog() {
     return this.logger.getLogs();
   }
 
-  mutate(mutation: Mutation) {
+  protected mutate(mutation: Mutation) {
     if (!this._terminated) {
-      this._state = applyMutation(this.state, mutation);
-      const str = stringifyMutation(mutation);
-      if (str) {
-        this.logger.log(DetailLogType.Mutation, str);
-      }
+      super.mutate(mutation);
     }
   }
 
@@ -170,51 +213,11 @@ export class Game {
     return result;
   }
 
-  /** 获取玩家初始状态，主要是初始化“起始牌堆” */
-  private initPlayerState(who: 0 | 1): PlayerState {
-    const config = this.playerConfigs[who];
-    let initialPiles: readonly CardDefinition[] = config.cards.map((id) => {
-      const def = this.data.cards.get(id);
-      if (typeof def === "undefined") {
-        throw new GiTcgDataError(`Unknown card id ${id}`);
-      }
-      return def;
-    });
-    if (!config.noShuffle) {
-      initialPiles = shuffle(initialPiles);
-    }
-    // 将秘传牌放在最前面
-    function compFn(def: CardDefinition) {
-      if (def.tags.includes("legend")) {
-        return 0;
-      } else {
-        return 1;
-      }
-    }
-    initialPiles = initialPiles.toSorted((a, b) => compFn(a) - compFn(b));
-    return {
-      activeCharacterId: 0,
-      characters: [],
-      initialPiles,
-      piles: [],
-      hands: [],
-      dice: [],
-      combatStatuses: [],
-      summons: [],
-      supports: [],
-      declaredEnd: false,
-      canPlunging: false,
-      hasDefeated: false,
-      legendUsed: false,
-      skipNextTurn: false,
-      disposedSupportCount: 0,
-    };
-  }
   /** 初始化玩家的角色牌和牌堆 */
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
-      const def = this.data.characters.get(ch);
+      const def = this.state.data.characters.get(ch);
       if (typeof def === "undefined") {
         throw new GiTcgDataError(`Unknown character id ${ch}`);
       }
@@ -248,35 +251,47 @@ export class Game {
     }
   }
 
-  private notifyOne(
-    who: 0 | 1,
-    { state = this.state, mutations = [] }: NotifyOption = {},
-  ) {
+  private notifyOneImpl(who: 0 | 1, opt: InternalNotifyOption) {
     const player = this.io.players[who];
+    const stateMutations = opt.stateMutations
+      .map((m) => exposeMutation(who, m))
+      .filter((em): em is ExposedMutation => !!em);
     player.notify({
-      mutations: [...mutations],
-      newState: exposeState(who, state),
+      mutations: [...stateMutations, ...opt.exposedMutations],
+      newState: exposeState(who, opt.state),
     });
   }
-  async notifyAndPause({
-    mutations = [],
-    canResume = false,
-    state = this.state,
-  }: NotifyOption = {}) {
+  private notifyOne(who: 0 | 1, mutation?: ExposedMutation, state?: GameState) {
+    this.notifyOneImpl(who, {
+      state: state ?? this.state,
+      canResume: false,
+      stateMutations: [],
+      exposedMutations: mutation ? [mutation] : [],
+    });
+  }
+  /** @internal */
+  override async onNotify(opt: InternalNotifyOption) {
     if (this._terminated) {
       return;
     }
+    for (const i of [0, 1] as const) {
+      this.notifyOneImpl(i, opt);
+    }
+  }
+  /** @internal */
+  override async onPause(opt: InternalNotifyOption) {
+    if (this._terminated) {
+      return;
+    }
+    const { state, canResume, exposedMutations: mutations } = opt;
     this._stateLog.push({
       state,
       canResume,
       mutations,
     });
-    for (const i of [0, 1] as const) {
-      this.notifyOne(i, { state, mutations });
-    }
-    await this.io.pause?.(state, [...mutations]);
-    if (state.phase === "gameEnd") {
-      this.gotWinner(state.winner);
+    await this.io.pause?.(this.state, [...mutations]);
+    if (this.state.phase === "gameEnd") {
+      this.gotWinner(this.state.winner);
     } else {
       await this.checkGiveUp();
     }
@@ -446,10 +461,10 @@ export class Game {
   }
 
   private async initHands() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In initHands phase:`);
+    using l = this.subLog(DetailLogType.Phase, `In initHands phase:`);
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHands; i++) {
-        this._state = drawCard(this.state, who);
+        this.drawCard(who);
       }
     }
     this.notifyAndPause();
@@ -461,7 +476,7 @@ export class Game {
   }
 
   private async initActives() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In initActive phase:`);
+    using l = this.subLog(DetailLogType.Phase, `In initActive phase:`);
     const [a0, a1] = await Promise.all([
       this.chooseActive(0),
       this.chooseActive(1),
@@ -486,14 +501,13 @@ export class Game {
   /** @internal */
   async chooseActive(who: 0 | 1, state = this.state): Promise<CharacterState> {
     const player = state.players[who];
-    this.notifyOne(flip(who), {
+    this.notifyOne(
+      flip(who),
+      {
+        type: "oppChoosingActive",
+      },
       state,
-      mutations: [
-        {
-          type: "oppChoosingActive",
-        },
-      ],
-    });
+    );
     const candidates = player.characters.filter(
       (ch) => ch.variables.alive && ch.id !== player.activeCharacterId,
     );
@@ -509,7 +523,10 @@ export class Game {
   }
 
   private async rollPhase() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In roll phase (round ${this.state.roundNumber}+1):`);
+    using l = this.subLog(
+      DetailLogType.Phase,
+      `In roll phase (round ${this.state.roundNumber}+1):`,
+    );
     this.mutate({
       type: "stepRound",
     });
@@ -607,7 +624,7 @@ export class Game {
       (replaceAction = findReplaceAction(activeCh())) &&
       !isSkillDisabled(activeCh())
     ) {
-      using l = this.logger.subLog(
+      using l = this.subLog(
         DetailLogType.Phase,
         `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}) (replaced action):`,
       );
@@ -616,18 +633,17 @@ export class Game {
         type: "switchTurn",
       });
     } else {
-      using l = this.logger.subLog(DetailLogType.Phase, `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`);
+      using l = this.subLog(
+        DetailLogType.Phase,
+        `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
+      );
       await this.handleEvent(
         "onBeforeAction",
         new PlayerEventArg(this.state, who),
       );
       const actions = await this.availableAction();
       this.notifyOne(flip(who), {
-        mutations: [
-          {
-            type: "oppAction",
-          },
-        ],
+        type: "oppAction",
       });
       const { chosenIndex, cost } = await this.rpc(who, "action", {
         candidates: actions.map(exposeAction),
@@ -799,11 +815,14 @@ export class Game {
     }
   }
   private async endPhase() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In end phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`);
+    using l = this.subLog(
+      DetailLogType.Phase,
+      `In end phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
+    );
     await this.handleEvent("onEndPhase", new EventArg(this.state));
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
-        this._state = drawCard(this.state, who);
+        this.drawCard(who);
       }
     }
     if (this.state.roundNumber >= this.config.maxRounds) {
@@ -995,8 +1014,7 @@ export class Game {
         value: candidate,
       });
     }
-    this.notifyOne(who);
-    this.notifyOne(flip(who));
+    this.notify();
   }
 
   /** @internal */

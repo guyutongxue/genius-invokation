@@ -31,6 +31,7 @@ import {
   GiTcgCoreInternalEntityNotFoundError,
   GiTcgCoreInternalError,
 } from "./error";
+import { NotifyOption } from "./mutator";
 
 export type Writable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -252,32 +253,6 @@ export function isSkillDisabled(character: CharacterState): boolean {
   return character.entities.some((st) =>
     st.definition.tags.includes("disableSkill"),
   );
-}
-
-/** 从牌堆顶部摸一张牌到手牌。 */
-export function drawCard(
-  state: GameState,
-  who: 0 | 1,
-): GameState {
-  const candidate = state.players[who].piles[0];
-  if (typeof candidate === "undefined") {
-    return state;
-  }
-  state = applyMutation(state, {
-    type: "transferCard",
-    path: "pilesToHands",
-    who,
-    value: candidate,
-  });
-  if (state.players[who].hands.length > state.config.maxHands) {
-    state = applyMutation(state, {
-      type: "disposeCard",
-      who,
-      oldState: candidate,
-      used: false,
-    });
-  }
-  return state;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

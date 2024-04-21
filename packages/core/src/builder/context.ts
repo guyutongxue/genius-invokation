@@ -52,7 +52,6 @@ import {
 import {
   allEntities,
   allEntitiesAtArea,
-  drawCard,
   elementOfCharacter,
   getActiveCharacterIndex,
   getEntityArea,
@@ -83,6 +82,7 @@ import {
 import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DetailLogType } from "../log";
+import { InternalNotifyOption, StateMutator } from "../mutator";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -103,7 +103,7 @@ export type ContextMetaBase = {
  * 用于描述技能的上下文对象。
  * 它们出现在 `.do()` 形式内，将其作为参数传入。
  */
-export class SkillContext<Meta extends ContextMetaBase> {
+export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   private readonly eventAndRequests: EventAndRequest[] = [];
   public readonly callerArea: EntityArea;
 
@@ -119,18 +119,23 @@ export class SkillContext<Meta extends ContextMetaBase> {
    * @param skillInfo
    */
   constructor(
-    private _state: GameState,
+    state: GameState,
     public readonly skillInfo: SkillInfo,
     public readonly eventArg: Meta["eventArgType"] extends object
       ? Omit<Meta["eventArgType"], `_${string}`>
       : Meta["eventArgType"],
   ) {
-    this.callerArea = getEntityArea(_state, skillInfo.caller.id);
+    super(state, { logger: skillInfo.logger });
+    this.callerArea = getEntityArea(state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
   }
-  get state() {
-    return this._state;
+  protected override onNotify(opt: InternalNotifyOption): void {
+    this.skillInfo.onNotify?.(opt);
   }
+  protected override async onPause(opt: InternalNotifyOption): Promise<void> {
+    // Do nothing, and we won't call it
+  }
+
   get player() {
     return this._state.players[this.callerArea.who];
   }
@@ -142,13 +147,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
   isMyTurn() {
     return this._state.currentTurn === this.callerArea.who;
-  }
-
-  private log(type: DetailLogType, value: string): void {
-    return this.skillInfo.logger?.log(type, value);
-  }
-  private subLog(type: DetailLogType, value: string) {
-    return this.skillInfo.logger?.subLog(type, value);
   }
 
   private handleInlineEvent<E extends InlineEventNames>(
@@ -278,16 +276,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
     return this.eventAndRequests;
   }
 
-  mutate(...mutations: Mutation[]) {
-    for (const mut of mutations) {
-      this._state = applyMutation(this._state, mut);
-      const str = stringifyMutation(mut);
-      if (str) {
-        this.log(DetailLogType.Mutation, str);
-      }
-    }
-  }
-
   emitEvent<E extends EventAndRequestNames>(
     event: E,
     ...args: EventAndRequestConstructorArgs<E>
@@ -397,6 +385,18 @@ export class SkillContext<Meta extends ContextMetaBase> {
         roundNumber: this.state.roundNumber,
         fromReaction: null,
       };
+      this.notify({
+        mutations: [
+          {
+            type: "damage",
+            damage: {
+              type: damageType,
+              value: finalValue,
+              target: targetState.id,
+            },
+          },
+        ],
+      });
       // this.mutate({
       //   type: "pushDamageLog",
       //   damage: healInfo,
@@ -426,7 +426,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         type,
         value,
         via: this.skillInfo,
-        causeDefeated: targetState.variables.health <= value,
+        causeDefeated:
+          !!targetState.variables.alive &&
+          targetState.variables.health <= value,
         roundNumber: this.state.roundNumber,
         fromReaction: this.fromReaction,
       };
@@ -491,6 +493,20 @@ export class SkillContext<Meta extends ContextMetaBase> {
         varName: "health",
         value: finalHealth,
       });
+      if (damageInfo.target.variables.alive) {
+        this.notify({
+          mutations: [
+            {
+              type: "damage",
+              damage: {
+                type: damageInfo.type,
+                value: damageInfo.value,
+                target: damageInfo.target.id,
+              },
+            },
+          ],
+        });
+      }
       // this.mutate({
       //   type: "pushDamageLog",
       //   damage: damageInfo,
@@ -552,6 +568,15 @@ export class SkillContext<Meta extends ContextMetaBase> {
         via: this.skillInfo,
         fromDamage,
       };
+      this.notify({
+        mutations: [
+          {
+            type: "elementalReaction",
+            on: target.state.id,
+            reactionType: reaction,
+          },
+        ],
+      });
       this.emitEvent("onReaction", this.state, reactionInfo);
       const reactionDescriptionEventArg: ReactionDescriptionEventArg = {
         where: target.who === this.callerArea.who ? "my" : "opp",
@@ -1074,7 +1099,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       target: "hands",
       value: cardState,
     });
-    if (this.player.hands.length > this._state.config.maxHands) {
+    if (this.player.hands.length > this.state.config.maxHands) {
       this.mutate({
         type: "disposeCard",
         who,
@@ -1097,7 +1122,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (withTag === null) {
       // 如果没有限定，则从牌堆顶部摸牌
       for (let i = 0; i < count; i++) {
-        this._state = drawCard(this._state, who);
+        this.drawCard(who);
       }
     } else {
       // 否则，随机选中一张满足条件的牌
@@ -1141,7 +1166,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
-    const player = () => this.player;
     const cards = new Array<CardState>(count).fill({
       id: 0,
       definition: cardDef,
@@ -1154,7 +1178,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
             value: -1,
           };
           this.mutate(mut);
-          const index = mut.value % (player().piles.length + 1);
+          const index = mut.value % (this.player.piles.length + 1);
           this.mutate({
             type: "createCard",
             who,
@@ -1166,7 +1190,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         break;
       case "spaceAround":
         const spaces = count + 1;
-        const step = Math.floor(player().piles.length / spaces);
+        const step = Math.floor(this.player.piles.length / spaces);
         for (let i = 0, j = step; i < count; i++, j += step) {
           this.mutate({
             type: "createCard",

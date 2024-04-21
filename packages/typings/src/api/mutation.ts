@@ -121,7 +121,6 @@ export interface DamageData {
   type: DamageType;
   value: number;
   target: number;
-  log: string;
 }
 export interface DamageEM {
   type: "damage";
