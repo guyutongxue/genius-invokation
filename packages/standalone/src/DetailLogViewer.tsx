@@ -70,6 +70,7 @@ export function DetailLogViewer(props: DetailLogViewerProps) {
                   "风",
                   "岩",
                   "草",
+                  "穿透",
                   "治疗",
                   "复活治疗",
                 ][id] ?? origStr
