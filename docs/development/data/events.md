@@ -6,25 +6,20 @@
 
 ### 常规事件列表
 
-| 事件名                         | 含义             |
-| ------------------------------ | ---------------- |
-| `onBattleBegin`                | 战斗开始时       |
-| `onActionPhase`                | 行动阶段开始时   |
-| `onEndPhase`                   | 结束阶段时       |
-| `onBeforeAction`               | 玩家行动前       |
-| `onAction`                     | 玩家行动后       |
-| `onSwitchActive`               | 切换出战角色时   |
-| `onDamage`                     | 造成/受到伤害时  |
-| `onHeal`                       | 造成/受到治疗时  |
-| `onReaction`                   | 发生元素反应时   |
-| `onEnter`                      | 实体入场时       |
-| `onBeforeDispose`              | 实体弃置前\*     |
-| `onDispose`                    | 实体弃置时       |
-| `onDefeated`                   | 角色击倒时       |
-| `onRevive`                     | 角色复苏时       |
-| `onReplaceCharacterDefinition` | 角色定义被转换时 |
-
-> \* 暂时不会在角色倒下时引发
+| 事件名                         | 含义                             |
+| ------------------------------ | -------------------------------- |
+| `onBattleBegin`                | 战斗开始时                       |
+| `onActionPhase`                | 行动阶段开始时                   |
+| `onEndPhase`                   | 结束阶段时                       |
+| `onBeforeAction`               | 玩家行动前                       |
+| `onAction`                     | 玩家行动后                       |
+| `onSwitchActive`               | 切换出战角色时                   |
+| `onDamageOrHeal`               | 造成/受到伤害/治疗时；角色倒下时 |
+| `onReaction`                   | 发生元素反应时                   |
+| `onEnter`                      | 实体入场时                       |
+| `onDispose`                    | 实体弃置时                       |
+| `onRevive`                     | 角色复苏时                       |
+| `onReplaceCharacterDefinition` | 角色定义被替换时                 |
 
 ### 有副作用事件列表
 
@@ -40,7 +35,7 @@
 
 #### 内联技能
 
-监听 `onBeforeDispose` `modifyDamage0` 和 `modifyDamage1` 的技能是**内联技能**，它们是在另一个技能（造成伤害）的计算过程中引发。内联技能在执行过程中所引发的所有事件，都算在“上级”技能的引发事件列表中。内联技能执行完毕后没有暂停点；程序也**不会**暂停“上级技能”的执行转而先去处理内联技能引发的那些事件。
+监听 `modifyDamage0` 和 `modifyDamage1` 的技能是**内联技能**，它们是在另一个技能（造成伤害）的计算过程中引发。内联技能在执行过程中所引发的所有事件，都算在“上级”技能的引发事件列表中。内联技能执行完毕后没有暂停点；程序也**不会**暂停“上级技能”的执行转而先去处理内联技能引发的那些事件。
 
 ### 特殊事件
 
@@ -76,14 +71,14 @@
 | `useSkill`                   | `onAction`                     | 我方/所附着**角色使用主动技能**后         |
 | `declareEnd`                 | `onAction`                     | 我方玩家宣布回合结束后                    |
 | `switchActive`               | `onSwitchActive`               | 我方/所附着角色被切出/切入后              |
-| `dealDamage`                 | `onDamage`                     | 我方/所附着角色造成伤害后                 |
-| `damaged`                    | `onDamage`                     | 我方/所附着角色受到伤害后                 |
-| `healed`                     | `onHeal`                       | 我方/所附着角色受到治疗后                 |
+| `dealDamage`                 | `onDamageOrHeal`               | 我方/所附着角色造成伤害后                 |
+| `damaged`                    | `onDamageOrHeal`               | 我方/所附着角色受到伤害后                 |
+| `damagedOrHealed`            | `onDamageOrHeal`               | 我方/所附着角色受到伤害或治疗后           |
+| `defeated`                   | `onDamageOrHeal`               | 我方/所附着角色倒下时                     |
 | `reaction`                   | `onReaction`                   | 我方/所附着**角色上发生**元素伤害后       |
 | `enter`                      | `onEnter`                      | 实体**自身**入场时                        |
 | `dispose`                    | `onDispose`                    | 我方实体弃置时                            |
-| `selfDispose`                | `onBeforeDispose`              | 实体**自身**弃置时                        |
-| `defeated`                   | `onDefeated`                   | 我方/所附着角色倒下时                     |
+| `selfDispose`                | `onDispose`                    | 实体**自身**弃置时                        |
 | `revive`                     | `onRevive`                     | **我方**角色复苏时                        |
 | `replaceCharacterDefinition` | `onReplaceCharacterDefinition` | 我方/所附着角色定义被转换时               |
 
