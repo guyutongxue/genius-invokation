@@ -14,6 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 declare module "*.html" {
-  const value: string;
-  export default value;
+  const path: string;
+  export default path;
 }

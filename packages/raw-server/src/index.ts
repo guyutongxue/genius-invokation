@@ -24,6 +24,7 @@ import {
 import data from "@gi-tcg/data";
 import { Elysia, t } from "elysia";
 import { parseArgs } from "node:util";
+import { resolve } from "node:path";
 import { AgentType, playerIoFromAgent } from "./agents";
 import {
   CLIENT_MESSAGE_T,
@@ -35,7 +36,7 @@ import {
   validateReadyParam,
 } from "./schema";
 import Stream from "@elysiajs/stream";
-import indexHtml from "../index.html";
+import indexHtml from "./index.html";
 
 interface Callbacks {
   resolve: (data: unknown) => void;
@@ -295,7 +296,9 @@ let game: WsGame | null = null;
 const app = new Elysia()
   .get("/", ({ set }) => {
     set.headers["Content-Type"] = "text/html; charset=utf8";
-    return indexHtml;
+    // use require("node:path").resolve for a workaround of bug:
+    // https://github.com/oven-sh/bun/issues/9852
+    return Bun.file(resolve(indexHtml));
   })
   .get(
     "/api/notify/:id",
