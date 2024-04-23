@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -210,13 +210,18 @@ class WsGame extends WsJsonRpcBase {
         io,
         playerConfigs: [this.players[0], this.players[1]],
       });
-      this.game.start().then(() => {
-        console.log(`Game End!`)
-        this.game = null;
-        this.cleanNotificationSubscriptions();
-        this.close();
-      });
-      console.log(`Game started! You can open http://${hostname}:${port}?who=0 to view the game`)
+      this.game
+        .start()
+        .catch(console.error)
+        .then(() => {
+          console.log(`Game End!`);
+          this.game = null;
+          this.cleanNotificationSubscriptions();
+          this.close();
+        });
+      console.log(
+        `Game started! You can open http://${hostname}:${port}?who=0 to view the game`,
+      );
     }
   }
 
@@ -328,11 +333,15 @@ const app = new Elysia()
     body: CLIENT_MESSAGE_T,
     open(ws) {
       if (game) {
-        console.log(`Game already started with another client; the new incoming connection will be closed.`);
+        console.log(
+          `Game already started with another client; the new incoming connection will be closed.`,
+        );
         ws.close();
         return;
       }
-      console.log(`WebSocket connected; Send ready messages to start the game.`);
+      console.log(
+        `WebSocket connected; Send ready messages to start the game.`,
+      );
       game = new WsGame(
         (data) => ws.send(data),
         () => ws.close(),
@@ -347,5 +356,7 @@ const app = new Elysia()
     },
   })
   .listen({ hostname, port }, ({ hostname, port }) => {
-    console.log(`@gi-tcg/raw-server running at ws://${hostname}:${port}/play .`);
+    console.log(
+      `@gi-tcg/raw-server running at ws://${hostname}:${port}/play .`,
+    );
   });
