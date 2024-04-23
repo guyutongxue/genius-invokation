@@ -1,0 +1,20 @@
+{
+  "name": "@gi-tcg/server",
+  "version": "0.6.0",
+  "type": "module",
+  "dependencies": {
+    "@bogeychan/elysia-logger": "^0.0.21",
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/data": "workspace:*",
+    "elysia": "^1.0.14"
+  },
+  "devDependencies": {
+    "@gi-tcg/typings": "workspace:*",
+    "@gi-tcg/utils": "workspace:*"
+  },
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts",
+    "start": "bun src/index.ts"
+  }
+}
