@@ -107,7 +107,7 @@ def on_message(ws, message):
     if message["method"] == "notify":
         # 更新对局状态
         state = message["params"]["newState"]
-        pass
+        return
     elif message["method"] == "rerollDice":
         # 重投所有不是万能的骰子
         reroll_indexes = [
