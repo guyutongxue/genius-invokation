@@ -7,57 +7,27 @@ import {
   RpcMethod,
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
-import { Elysia, t, Static } from "elysia";
-import { logger } from "@bogeychan/elysia-logger";
+import { Elysia, t } from "elysia";
 import { parseArgs } from "node:util";
 import { AgentType, playerIoFromAgent } from "./agents";
-
-const JSON_RPC_REQUEST_T = t.Object(
-  {
-    jsonrpc: t.Const("2.0" as const),
-    method: t.String(),
-    params: t.Optional(t.Any()),
-    id: t.Optional(t.Union([t.String(), t.Number()])),
-  },
-  { description: "JSON-RPC request" },
-);
-const JSON_RPC_RESPONSE_SUCCESS_T = t.Object(
-  {
-    jsonrpc: t.Const("2.0" as const),
-    result: t.Any(),
-    id: t.Union([t.String(), t.Number()]),
-  },
-  { description: "JSON-RPC response success" },
-);
-const JSON_RPC_RESPONSE_ERROR_T = t.Object(
-  {
-    jsonrpc: t.Const("2.0" as const),
-    error: t.Object({
-      code: t.Number(),
-      message: t.String(),
-      data: t.Optional(t.Any()),
-    }),
-    id: t.Union([t.String(), t.Number()]),
-  },
-  { description: "JSON-RPC response error" },
-);
-const CLIENT_MESSAGE_T = t.Union([
-  JSON_RPC_REQUEST_T,
-  JSON_RPC_RESPONSE_SUCCESS_T,
-  JSON_RPC_RESPONSE_ERROR_T,
-]);
-
-type JsonRpcRequest = Static<typeof JSON_RPC_REQUEST_T>;
-type JsonRpcResponseSuccess = Static<typeof JSON_RPC_RESPONSE_SUCCESS_T>;
-type JsonRpcResponseError = Static<typeof JSON_RPC_RESPONSE_ERROR_T>;
-type ClientMessage = Static<typeof CLIENT_MESSAGE_T>;
+import {
+  CLIENT_MESSAGE_T,
+  ClientMessage,
+  JsonRpcRequest,
+  JsonRpcResponseError,
+  JsonRpcResponseSuccess,
+  validateGiveUpParam,
+  validateReadyParam,
+} from "./schema";
+import Stream from "@elysiajs/stream";
+import indexHtml from "../index.html";
 
 interface Callbacks {
   resolve: (data: unknown) => void;
   reject: (error: unknown) => void;
 }
 
-abstract class WsManager {
+abstract class WsJsonRpcBase {
   private nextId = 1;
   private readonly pending = new Map<string | number, Callbacks>();
 
@@ -68,24 +38,24 @@ abstract class WsManager {
 
   onMessage(message: ClientMessage) {
     if ("method" in message) {
-      this.onRequest(message);
+      this.onRpcRequest(message);
     } else if ("result" in message) {
-      this.onResponse(message);
+      this.onRpcResponse(message);
     } else {
-      this.onError(message);
+      this.onRpcError(message);
     }
   }
 
-  protected abstract onRequest(message: JsonRpcRequest): unknown;
+  protected abstract onRpcRequest(message: JsonRpcRequest): unknown;
 
-  private onResponse(message: JsonRpcResponseSuccess) {
+  private onRpcResponse(message: JsonRpcResponseSuccess) {
     const callback = this.pending.get(message.id);
     if (callback) {
       callback.resolve(message.result);
       this.pending.delete(message.id);
     }
   }
-  private onError(message: JsonRpcResponseError) {
+  private onRpcError(message: JsonRpcResponseError) {
     const callback = this.pending.get(message.id);
     if (callback) {
       callback.reject(message.error);
@@ -93,20 +63,20 @@ abstract class WsManager {
     }
   }
 
-  protected async sendRequest(method: string, params?: unknown) {
+  protected async sendRpcRequest(method: string, params?: unknown) {
     const id = this.nextId++;
     this.send({ jsonrpc: "2.0", method, params, id });
     return new Promise<unknown>((resolve, reject) => {
       this.pending.set(id, { resolve, reject });
     });
   }
-  protected sendNotification(method: string, params?: unknown) {
+  protected sendRpcNotification(method: string, params?: unknown) {
     this.send({ jsonrpc: "2.0", method, params });
   }
-  protected sendResult(id: string | number, result: unknown) {
+  protected sendRpcResult(id: string | number, result: unknown) {
     this.send({ jsonrpc: "2.0", result, id });
   }
-  protected sendError(
+  protected sendRpcError(
     id: string | number,
     error: JsonRpcResponseError["error"],
   ) {
@@ -118,102 +88,173 @@ interface PlayerConfigWithAgent extends PlayerConfig {
   $useAgent?: AgentType | null;
 }
 
-class WsGame extends WsManager {
-  private player0: PlayerConfigWithAgent | null = null;
-  private player1: PlayerConfigWithAgent | null = null;
+interface NotificationSubscription {
+  who: 0 | 1;
+  cb: (n: NotificationMessage | null) => void;
+}
+
+class WsGame extends WsJsonRpcBase {
+  private players: [
+    PlayerConfigWithAgent | null,
+    PlayerConfigWithAgent | null,
+  ] = [null, null];
   private game: Game | null = null;
+
+  private lastNotification: (NotificationMessage | null)[] = [null, null];
+  private notificationSubscriptions: NotificationSubscription[] = [];
+
+  private setNotification(who: 0 | 1, n: NotificationMessage) {
+    this.lastNotification[who] = n;
+    for (const { who: w, cb } of this.notificationSubscriptions) {
+      if (w === who) {
+        cb(n);
+      }
+    }
+  }
+  subscribeNotification(
+    who: 0 | 1,
+    cb: (n: NotificationMessage | null) => void,
+  ) {
+    const n = this.lastNotification[who];
+    if (n) {
+      cb(n);
+    }
+    const sub = { who, cb };
+    this.notificationSubscriptions.push(sub);
+    return {
+      unsubscribe: () => {
+        const index = this.notificationSubscriptions.indexOf(sub);
+        if (index !== -1) {
+          this.notificationSubscriptions.splice(index, 1);
+        }
+      },
+    };
+  }
+  private cleanNotificationSubscriptions() {
+    for (const { cb } of this.notificationSubscriptions) {
+      cb(null);
+    }
+    this.notificationSubscriptions = [];
+  }
 
   private createGameIo(): GameIO {
     return {
       pause: async () => {},
       players: [this.createPlayerIo(0), this.createPlayerIo(1)],
+      onIoError: (e) => {
+        console.error(e);
+        const config = this.players[e.who];
+        if (config && !config.$useAgent) {
+          this.sendRpcNotification("error", {
+            $who: e.who,
+            message: e.message,
+          });
+        }
+      },
     };
   }
   private createPlayerIo(who: 0 | 1): PlayerIO {
-    const config = who === 0 ? this.player0 : this.player1;
+    const config = this.players[who];
     if (!config) throw new Error("Player not found");
     if (config.$useAgent) {
-      return playerIoFromAgent(config.$useAgent);
+      const io = playerIoFromAgent(config.$useAgent);
+      return {
+        ...io,
+        notify: (n) => {
+          this.setNotification(who, n);
+          io.notify(n);
+        },
+      };
     } else {
       return {
-        notify: (n) => this.playerNotify(who, n),
+        notify: (n) => {
+          this.setNotification(who, n);
+          this.playerNotify(who, n);
+        },
         rpc: (m, arg) => this.playerRpc(who, m, arg),
         get giveUp() {
-          return !!config;
+          return !config;
         },
       };
     }
   }
   private playerNotify($who: 0 | 1, n: NotificationMessage) {
-    this.sendNotification("notify", { $who, ...n });
+    this.sendRpcNotification("notify", { $who, ...n });
   }
   private async playerRpc($who: 0 | 1, m: RpcMethod, arg: any): Promise<any> {
-    return await this.sendRequest(m, { $who, ...arg });
+    return await this.sendRpcRequest(m, { $who, ...arg });
   }
 
   private createGame() {
     if (this.game) return;
-    if (this.player0 && this.player1) {
+    if (this.players[0] && this.players[1]) {
       const io = this.createGameIo();
       this.game = new Game({
         data,
         io,
-        playerConfigs: [this.player0, this.player1],
+        playerConfigs: [this.players[0], this.players[1]],
       });
-    }
-  }
-  private stopGame() {
-    if (this.player0 === null && this.player1 === null) {
-      this.game?.terminate();
-      this.game = null;
-      this.close();
+      this.game.start().then(() => {
+        console.log(`Game End!`)
+        this.game = null;
+        this.cleanNotificationSubscriptions();
+        this.close();
+      });
+      console.log(`Game started! You can open http://${hostname}:${port}?who=0 to view the game`)
     }
   }
 
-  protected onRequest(message: JsonRpcRequest) {
-    if (typeof message.id === "undefined") {
+  protected onRpcRequest({ id, method, params }: JsonRpcRequest) {
+    if (typeof id === "undefined") {
       return;
     }
-    if (
-      !(
-        message.params &&
-        "$who" in message.params &&
-        [0, 1].includes(message.params.$who)
-      )
-    ) {
-        this.sendError(message.id, {
-          code: -32602,
-          message: "Invalid params",
-          data: "No $who field",
-        });
-      return;
-    }
-    const who = message.params.$who;
-    switch (message.method) {
-      case "ready":
-        if (who === 0) {
-          this.player0 = { ...message.params };
-        } else {
-          this.player1 = { ...message.params };
-        }
-        this.createGame();
-        this.sendResult(message.id, 0);
-        break;
-      case "giveUp":
-        if (who === 0) {
-          this.player0 = null;
-        } else {
-          this.player1 = null;
-        }
-        this.stopGame();
-        this.sendResult(message.id, 0);
-        break;
-      default:
-          this.sendError(message.id, {
-            code: -32601,
-            message: "Method not found",
+    switch (method) {
+      case "ready": {
+        if (!validateReadyParam.Check(params)) {
+          this.sendRpcError(id, {
+            code: -32602,
+            message: "Invalid params",
           });
+          return;
+        }
+        const { $who, ...rest } = params;
+        if (this.players[$who]) {
+          this.sendRpcError(id, {
+            code: -1,
+            message: `Player ${$who} already ready`,
+          });
+        }
+        this.players[$who] = rest;
+        this.sendRpcResult(id, 0);
+        this.createGame();
         break;
+      }
+      case "giveUp": {
+        if (!validateGiveUpParam.Check(params)) {
+          this.sendRpcError(id, {
+            code: -32602,
+            message: "Invalid params",
+          });
+          return;
+        }
+        const { $who } = params;
+        if (this.players[$who] === null) {
+          this.sendRpcError(id, {
+            code: -2,
+            message: `Player ${$who} not ready`,
+          });
+        }
+        this.players[$who] = null;
+        this.sendRpcResult(id, 0);
+        break;
+      }
+      default: {
+        this.sendRpcError(id, {
+          code: -32601,
+          message: "Method not found",
+        });
+        break;
+      }
     }
   }
 }
@@ -234,28 +275,59 @@ const {
   },
 });
 
+let game: WsGame | null = null;
+
 const app = new Elysia()
-  .use(logger())
-  .decorate("game", null as WsGame | null)
+  .get("/", ({ set }) => {
+    set.headers["Content-Type"] = "text/html; charset=utf8";
+    return indexHtml;
+  })
+  .get(
+    "/api/notify/:id",
+    ({ params, error }) => {
+      if (game === null) {
+        return error(404, "Game not started");
+      }
+      const stream = new Stream();
+      const id = Number(params.id) as 0 | 1;
+      const sub = game.subscribeNotification(id, (n) => {
+        if (n === null) {
+          stream.close();
+          sub.unsubscribe();
+        } else {
+          stream.send(n);
+        }
+      });
+      return stream;
+    },
+    {
+      params: t.Object({
+        id: t.Union([t.Literal("0"), t.Literal("1")]),
+      }),
+    },
+  )
   .ws("/play", {
     body: CLIENT_MESSAGE_T,
     open(ws) {
-      if (ws.data.game) {
+      if (game) {
+        console.log(`Game already started with another client; the new incoming connection will be closed.`);
         ws.close();
         return;
       }
-      ws.data.game = new WsGame(
+      console.log(`WebSocket connected; Send ready messages to start the game.`);
+      game = new WsGame(
         (data) => ws.send(data),
         () => ws.close(),
       );
     },
     close(ws) {
-      ws.data.game = null;
+      console.log(`Game ended. Listening for new connections.`);
+      game = null;
     },
     message(ws, message) {
-      ws.data.game?.onMessage(message);
+      game?.onMessage(message);
     },
   })
   .listen({ hostname, port }, ({ hostname, port }) => {
-    console.log(`@gi-tcg/server running at http://${hostname}:${port}`);
+    console.log(`@gi-tcg/raw-server running at ws://${hostname}:${port}/play .`);
   });

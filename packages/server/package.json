@@ -1,11 +1,14 @@
 {
-  "name": "@gi-tcg/server",
-  "version": "0.6.0",
+  "name": "@gi-tcg/raw-server",
+  "private": true,
+  "version": "0.6.3",
   "type": "module",
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.0.21",
+    "@elysiajs/stream": "^1.0.2",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
+    "@sinclair/typebox": "^0.32.22",
     "elysia": "^1.0.14"
   },
   "devDependencies": {
@@ -14,7 +17,7 @@
   },
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "bun build src/index.ts",
+    "build": "bun build src/index.ts --compile --minify --outfile=gi-tcg-raw-server",
     "start": "bun src/index.ts"
   }
 }

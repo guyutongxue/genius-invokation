@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <title>@gi-tcg/raw-server State Viewer</title>
+  </head>
+  <h3 id="title"></h3>
+  <script type="module" src="https://esm.run/@gi-tcg/webui"></script>
+  <script type="module">
+    const who = Number(new URLSearchParams(window.location.search).get("who") ?? 0);
+    if (who !== 0 && who !== 1) {
+      document.body.append("Invalid player parameter (set URL ?who=0 or ?who=1)");
+      throw new Error();
+    }
+    document.querySelector("#title").textContent = `Viewing State from Player ${who}`;
+    const source = new EventSource(`/api/notify/${who}`, {
+      withCredentials: true
+    });
+    const chessboard = document.createElement("gi-tcg-standalone-chessboard");
+    chessboard.who = who;
+    let mounted = false;
+    const handler = (event) => {
+      const data = JSON.parse(event.data);
+      chessboard.stateData = data.newState;
+      chessboard.mutations = data.mutations;
+      if (!mounted) {
+        document.body.appendChild(chessboard);
+        mounted = true;
+      }
+    }
+    source.addEventListener("message", handler);
+    source.addEventListener("error", (event) => {
+      document.body.append(`Connection error, see devtools for more information.`);
+      console.error(event);
+    });
+  </script>
+</html>

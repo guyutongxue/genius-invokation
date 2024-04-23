@@ -206,12 +206,12 @@ export class SkillExecutor extends StateMutator {
                 )}`,
               );
               this.mutate({
-                type: "setWinner",
-                winner: flip(who),
-              });
-              this.mutate({
                 type: "changePhase",
                 newPhase: "gameEnd",
+              });
+              this.mutate({
+                type: "setWinner",
+                winner: flip(who),
               });
               await this.notifyAndPause();
               return;
