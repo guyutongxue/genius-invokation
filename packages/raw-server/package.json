@@ -18,6 +18,6 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "build": "bun build src/index.ts --compile --minify --outfile=gi-tcg-raw-server",
-    "start": "bun src/index.ts"
+    "start": "NODE_ENV=production bun src/index.ts"
   }
 }
