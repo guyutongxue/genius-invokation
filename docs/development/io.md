@@ -93,12 +93,8 @@ export interface ActionResponse {
 
 具体字段参考 [源码](/packages/typings/src/api/notification.ts)。
 
-### `events`
-
-提供无法在对局状态变化中体现的事件，如伤害等。
-
-目前设置了五种 `Event`，包括伤害事件、元素反应事件、使用角色技能事件、实体被响应事件和对手 IO 事件。
-
 ### `mutations`
 
-到上个暂停点为止的详细 mutations 情况，但隐藏了不应向玩家暴露的细节。
+自上次 `notification` 起的详细 mutations 情况，但隐藏了不应向玩家暴露的细节。此外，还提供如伤害、元素反应等信息。
+
+具体字段参考 [源码](packages/typings/src/api/mutation.ts)。
