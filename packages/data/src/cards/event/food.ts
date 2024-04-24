@@ -255,5 +255,10 @@ export const MatsutakeMeatRolls = card(333014)
 export const RainbowMacarons = card(333015)
   .costVoid(2)
   .tags("food")
-  // TODO
+  .food()
+  .heal(1, "@targets.0")
+  .toStatus("@targets.0", 303313)
+  .on("damaged")
+  .usage(3)
+  .heal(1, "@master")
   .done();

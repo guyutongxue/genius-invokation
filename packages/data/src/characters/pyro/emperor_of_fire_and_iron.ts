@@ -13,7 +13,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, CardHandle } from "@gi-tcg/core/builder";
+
+/**
+ * @id 23046
+ * @name 炽烈轰破
+ * @description
+ * （需准备1个行动轮）
+ * 造成1点火元素伤害，对敌方所有后台角色造成2点穿透伤害。本角色每附属有2层重甲蟹壳，就使此技能造成的火元素伤害+1。
+ */
+export const SearingBlast = skill(23046)
+  .type("burst")
+  .damage(DamageType.Piercing, 2, "opp standby")
+  .do((c) => {
+    const value = c.$(`status with definition id ${ArmoredCrabCarapace} at @self`)?.getVariable("shield") ?? 0;
+    c.damage(DamageType.Pyro, 1 + Math.floor(value / 2));
+  })
+  .done();
 
 /**
  * @id 123043
@@ -22,7 +38,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 本角色将在下次行动时，直接使用技能：炽烈轰破。
  */
 export const AccruingPower = status(123043)
-  // TODO
+  .prepare(SearingBlast)
   .done();
 
 /**
@@ -32,7 +48,7 @@ export const AccruingPower = status(123043)
  * 每层提供1点护盾，保护所附属角色。
  */
 export const ArmoredCrabCarapace = status(123041)
-  // TODO
+  .shield(0, Infinity)
   .done();
 
 /**
@@ -42,8 +58,7 @@ export const ArmoredCrabCarapace = status(123041)
  * 行动阶段开始时：如果所附属角色未附属重甲蟹壳，则附属3层重甲蟹壳。
  */
 export const HeavyClampdown = status(123044)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 23041
@@ -55,7 +70,7 @@ export const ShatterclampStrike = skill(23041)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -68,7 +83,19 @@ export const ShatterclampStrike = skill(23041)
 export const BusterBlaze = skill(23042)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .do((c) => {
+    const value = c.$(`status with definition id ${ArmoredCrabCarapace} at @self`)?.getVariable("shield") ?? 0;
+    if (value >= 7) {
+      c.damage(DamageType.Pyro, 2);
+    } else {
+      c.damage(DamageType.Pyro, 1);
+    }
+  })
+  .characterStatus(ArmoredCrabCarapace, "@self", {
+    overrideVariables: {
+      shield: 2
+    }
+  })
   .done();
 
 /**
@@ -81,7 +108,7 @@ export const BattlelineDetonation = skill(23043)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .characterStatus(AccruingPower, "@self")
   .done();
 
 /**
@@ -93,19 +120,26 @@ export const BattlelineDetonation = skill(23043)
  */
 export const ImperialPanoply = skill(23044)
   .type("passive")
-  // TODO
-  .done();
-
-/**
- * @id 23046
- * @name 炽烈轰破
- * @description
- * （需准备1个行动轮）
- * 造成1点火元素伤害，对敌方所有后台角色造成2点穿透伤害。本角色每附属有2层重甲蟹壳，就使此技能造成的火元素伤害+1。
- */
-export const SearingBlast = skill(23046)
-  .type("burst")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(ArmoredCrabCarapace, "@master", {
+    overrideVariables: {
+      shield: 5
+    }
+  })
+  .on("action")
+  .do((c) => {
+    const shields = c.$$(`(my statuses with tag (shield) or my combat statuses with tag (shield)) and not with definition id ${ArmoredCrabCarapace}`);
+    let shieldValue = 0;
+    for (const shield of shields) {
+      shieldValue += 2;
+      shield.dispose();
+    }
+    c.characterStatus(ArmoredCrabCarapace, "@master", {
+      overrideVariables: {
+        shield: shieldValue
+      }
+    });
+  })
   .done();
 
 /**
@@ -116,7 +150,6 @@ export const SearingBlast = skill(23046)
  */
 export const ImperialPanoply01 = skill(23047)
   .type("passive")
-  // TODO
   .reserve();
 
 /**
@@ -129,7 +162,7 @@ export const EmperorOfFireAndIron = character(2304)
   .tags("pyro", "monster")
   .health(6)
   .energy(2)
-  .skills(ShatterclampStrike, BusterBlaze, BattlelineDetonation, ImperialPanoply, SearingBlast)
+  .skills(ShatterclampStrike, BusterBlaze, BattlelineDetonation, ImperialPanoply)
   .done();
 
 /**
@@ -142,6 +175,19 @@ export const EmperorOfFireAndIron = character(2304)
  */
 export const MoltenMail = card(223041)
   .costPyro(1)
-  .talent(EmperorOfFireAndIron)
-  // TODO
+  .talent(EmperorOfFireAndIron, "none")
+  .on("enter")
+  .apply(DamageType.Pyro, "@master")
+  .on("dispose", (c, e) => {
+    return (e.entity.definition.type === "combatStatus" || e.entity.definition.type === "status") &&
+      e.entity.definition.id !== ArmoredCrabCarapace &&
+      e.entity.definition.tags.includes("shield");
+  })
+  .listenToPlayer()
+  .usagePerRound(1)
+  .characterStatus(ArmoredCrabCarapace, "@master", {
+    overrideVariables: {
+      shield: 2
+    }
+  })
   .done();

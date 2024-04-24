@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SupportHandle, card, flip, status } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SupportHandle, card, flip, status, summon } from "@gi-tcg/core/builder";
+import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
 
 /**
  * @id 322001
@@ -518,6 +519,18 @@ export const SilverAndMelus = card(322023)
   .done();
 
 /**
+ * @id 302201
+ * @name 愤怒的太郎丸
+ * @description
+ * 结束阶段：造成2点物理伤害。
+ * 可用次数：2
+ */
+export const TaromaruEnraged = summon(302201)
+  .endPhaseDamage(DamageType.Physical, 2)
+  .usage(2)
+  .done();
+
+/**
  * @id 322024
  * @name 太郎丸
  * @description
@@ -527,7 +540,17 @@ export const SilverAndMelus = card(322023)
 export const Taroumaru = card(322024)
   .costVoid(2)
   .support("ally")
-  // TODO
+  .variable("count", 0)
+  .on("enter")
+  .createPileCards(TaroumarusSavings, 4, "spaceAround")
+  .on("playCard", (c, e) => e.action.card.definition.id === TaroumarusSavings)
+  .do((c) => {
+    c.addVariable("count", 1);
+    if (c.getVariable("count") >= 2) {
+      c.summon(TaromaruEnraged);
+      c.dispose();
+    }
+  })
   .done();
 
 /**
@@ -539,5 +562,9 @@ export const Taroumaru = card(322024)
  */
 export const TheWhiteGloveAndTheFisherman = card(322025)
   .support("ally")
-  // TODO
+  .on("endPhase")
+  .usage(2)
+  .createPileCardAtTopRange(CalledInForCleanup, 5)
+  .if((c) => c.getVariable("usage") === 1)
+  .drawCards(1)
   .done();

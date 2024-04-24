@@ -23,7 +23,11 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 可用次数：3
  */
 export const GrassRingOfSanctification = combatStatus(114111)
-  // TODO
+  .on("switchActive")
+  .usage(3)
+  .usagePerRound(1)
+  .damage(DamageType.Electro, 1)
+  .heal(1, "my characters order by health - maxHealth limit 1")
   .done();
 
 /**
@@ -36,7 +40,7 @@ export const ShinobusShadowsword = skill(14111)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -48,7 +52,9 @@ export const ShinobusShadowsword = skill(14111)
 export const SanctifyingRing = skill(14112)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .combatStatus(GrassRingOfSanctification)
+  .if((c) => c.self.health >= 6)
+  .damage(DamageType.Piercing, 2)
   .done();
 
 /**
@@ -61,7 +67,8 @@ export const GyoeiNarukamiKariyamaRite = skill(14113)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 4)
+  .heal(2, "@self")
   .done();
 
 /**
@@ -91,5 +98,11 @@ export const ToWardWeakness = card(214111)
   .costElectro(3)
   .costEnergy(2)
   .talent(KukiShinobu)
-  // TODO
+  .on("enter")
+  .useSkill(GyoeiNarukamiKariyamaRite)
+  .on("beforeDefeated")
+  .usagePerRound(1)
+  .immune(1)
+  .on("modifySkillDamage", (c, e) => e.source.variables.health <= 5)
+  .increaseDamage(1)
   .done();

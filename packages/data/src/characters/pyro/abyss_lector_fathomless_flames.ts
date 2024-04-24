@@ -187,5 +187,4 @@ export const EmbersRekindled = card(223021)
  */
 export const FieryRebirth01 = skill(23028)
   .type("passive")
-  // TODO
   .reserve();

@@ -119,6 +119,17 @@ export class EntityBuilder<
       })
       .endOn();
   }
+  unique(...otherIds: number[]) {
+    if (this.type !== "status") {
+      throw new GiTcgDataError("Only character status can be unique");
+    }
+    const ids = [this.id, ...otherIds];
+    const targetQuery = ids.map((id) => `(status with definition id ${id})`)
+      .join(" or ");
+    return this.on("enter")
+      .dispose(`(${targetQuery}) and not @self`)
+      .endOn();
+  }
 
   on<E extends DetailedEventNames>(
     event: E,

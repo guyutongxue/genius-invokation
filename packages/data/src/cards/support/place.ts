@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, EntityState, card, combatStatus } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, EntityState, card, combatStatus, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 321001
@@ -349,6 +349,19 @@ export const FortressOfMeropide = card(321018)
   .done();
 
 /**
+ * @id 301019
+ * @name 悠远雷暴
+ * @description
+ * 结束阶段：对所附属角色造成2点穿透伤害。
+ * 可用次数：1
+ */
+export const DistantStorm = status(301019)
+  .on("endPhase")
+  .usage(1)
+  .damage(DamageType.Piercing, 2, "@master")
+  .done();
+
+/**
  * @id 321019
  * @name 清籁岛
  * @description
@@ -358,5 +371,10 @@ export const FortressOfMeropide = card(321018)
 export const SeiraiIsland = card(321019)
   .costSame(1)
   .support("place")
-  // TODO
+  .duration(2)
+  .on("healed")
+  .listenToAll()
+  .do((c, e) => {
+    c.characterStatus(DistantStorm, e.target);
+  })
   .done();

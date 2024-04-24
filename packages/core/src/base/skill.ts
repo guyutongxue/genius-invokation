@@ -30,7 +30,7 @@ import {
   isReactionSwirl,
 } from "../base/reaction";
 import { CharacterDefinition } from "./character";
-import { GiTcgCoreInternalError } from "../error";
+import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
@@ -406,7 +406,24 @@ export class ModifyActionEventArg<
     this._log += `${stringifyState(
       this.caller,
     )} add ${count} [dice:${type}] to cost.\n`;
-    this._cost.push(...new Array<DiceType>(count).fill(type));
+    if (type === DiceType.Omni) {
+      // 增加 Omni 类型：假设原本要求为单色*n，增加该类型的元素骰
+      let originalCost: readonly DiceType[];
+      if (this.isUseSkill()) {
+        originalCost = this.action.skill.definition.requiredCost;
+      } else if (this.isPlayCard()) {
+        originalCost = this.action.card.definition.skillDefinition.requiredCost;
+      } else {
+        throw new GiTcgDataError(`Cannot addCost "omni" to action type ${this.action.type}`)
+      }
+      const targetType = originalCost[0] ?? DiceType.Same;
+      if (originalCost.find((type) => type !== targetType)) {
+        throw new GiTcgDataError("Cannot addCost omni to action whose original cost have multiple dice requirement");
+      }
+      this._cost.push(...new Array<DiceType>(count).fill(targetType));
+    } else {
+      this._cost.push(...new Array<DiceType>(count).fill(type));
+    }
   }
   deductCost(type: DiceType, count: number) {
     this._log += `${stringifyState(

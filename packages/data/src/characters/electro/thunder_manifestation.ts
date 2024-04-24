@@ -23,10 +23,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Comba
  * （同一方场上最多存在一个此状态。雷音权现的部分技能，会以所附属角色为目标。）
  */
 export const LightningRod = status(124022)
-  .on("enter")
-  .do((c) => {
-    c.$$("my status with definition id 124022 and not @self").forEach((s) => s.dispose());
-  })
+  .unique()
   .on("beforeDamaged", (c, e) => [
       ThunderManifestation as number, 
       ThunderingShacklesSummon as number

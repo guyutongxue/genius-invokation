@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 122036
@@ -23,7 +23,18 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 结束阶段：对所附属角色造成6点穿透伤害，然后移除此效果。
  */
 export const AbyssalTides = status(122036)
-  // TODO
+  .reserve();
+
+/**
+ * @id 22035
+ * @name 涟锋旋刃
+ * @description
+ * 造成1点水元素伤害。
+ */
+export const RipplingBlades = skill(22035)
+  .type("elemental")
+  .costHydro(3)
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -33,7 +44,7 @@ export const AbyssalTides = status(122036)
  * 本角色将在下次行动时，直接使用技能：涟锋旋刃。
  */
 export const RipplingBladesStatus = status(122032)
-  // TODO
+  .prepare(RipplingBlades)
   .done();
 
 /**
@@ -44,7 +55,19 @@ export const RipplingBladesStatus = status(122032)
  * 此状态提供2次水元素附着（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色无法使用技能且在结束阶段受到6点穿透伤害。
  */
 export const SurgingShield = status(122035)
-  // TODO
+  .reserve();
+
+/**
+ * @id 122037
+ * @name 水之新生·锐势
+ * @description
+ * 角色造成的物理伤害变为水元素伤害，且水元素伤害+1。
+ */
+export const WateryRebirthHoned = status(122037)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Hydro)
+  .on("modifySkillDamage", (c, e) => e.type === DamageType.Hydro)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -54,17 +77,16 @@ export const SurgingShield = status(122035)
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到4点生命值。此效果触发后，角色造成的物理伤害变为水元素伤害，且水元素伤害+1。
  */
 export const WateryRebirthStatus = status(122031)
-  // TODO
-  .done();
-
-/**
- * @id 122037
- * @name 水之新生·锐势
- * @description
- * 角色造成的物理伤害变为水元素伤害，且水元素伤害+1。
- */
-export const WateryRebirthHoned = status(122037)
-  // TODO
+  .on("beforeDefeated")
+  .immune(4)
+  .do((c) => {
+    const talent = c.self.master().hasEquipment(SurgingUndercurrent);
+    if (talent) {
+      c.combatStatus(CurseOfTheUndercurrent, "opp");
+    }
+  })
+  .characterStatus(WateryRebirthHoned, "@master")
+  .dispose()
   .done();
 
 /**
@@ -75,7 +97,12 @@ export const WateryRebirthHoned = status(122037)
  * 可用次数：2
  */
 export const CurseOfTheUndercurrent = combatStatus(122033)
-  // TODO
+  .on("modifyAction", (c, e) => {
+    return e.action.type === "useSkill" &&
+      (e.action.skill.definition.skillType === "elemental" || e.action.skill.definition.skillType === "burst");
+  })
+  .usage(2)
+  .addCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -88,7 +115,7 @@ export const RipplingSlash = skill(22031)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -100,7 +127,8 @@ export const RipplingSlash = skill(22031)
 export const VortexEdge = skill(22032)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .characterStatus(RipplingBladesStatus, "@self")
   .done();
 
 /**
@@ -113,7 +141,8 @@ export const TorrentialShock = skill(22033)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 3)
+  .combatStatus(CurseOfTheUndercurrent, "opp")
   .done();
 
 /**
@@ -124,20 +153,10 @@ export const TorrentialShock = skill(22033)
  */
 export const WateryRebirth = skill(22034)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(WateryRebirthStatus)
   .done();
 
-/**
- * @id 22035
- * @name 涟锋旋刃
- * @description
- * 造成1点水元素伤害。
- */
-export const RipplingBlades = skill(22035)
-  .type("elemental")
-  .costHydro(3)
-  // TODO
-  .done();
 
 /**
  * @id 22037
@@ -147,8 +166,7 @@ export const RipplingBlades = skill(22035)
  */
 export const BrokenShield = skill(22037)
   .type("passive")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 22038
@@ -158,7 +176,6 @@ export const BrokenShield = skill(22037)
  */
 export const WateryRebirth01 = skill(22038)
   .type("passive")
-  // TODO
   .reserve();
 
 /**
@@ -171,7 +188,7 @@ export const AbyssHeraldWickedTorrents = character(2203)
   .tags("hydro", "monster")
   .health(6)
   .energy(2)
-  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades, BrokenShield)
+  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth)
   .done();
 
 /**
@@ -184,6 +201,11 @@ export const AbyssHeraldWickedTorrents = character(2203)
  */
 export const SurgingUndercurrent = card(222031)
   .costHydro(1)
-  .talent(AbyssHeraldWickedTorrents)
-  // TODO
+  .talent(AbyssHeraldWickedTorrents, "none")
+  .on("enter")
+  .do((c) => {
+    if (!c.self.master().hasStatus(WateryRebirthStatus)) {
+      c.combatStatus(CurseOfTheUndercurrent, "opp");
+    }
+  })
   .done();

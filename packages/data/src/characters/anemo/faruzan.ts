@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, DiceType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115093
@@ -24,7 +24,23 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 此召唤物在场时：敌方角色受到的风元素伤害+1。
  */
 export const DazzlingPolyhedron = summon(115093)
-  // TODO
+  .conflictWith(115096)
+  .endPhaseDamage(DamageType.Anemo, 1)
+  .usage(3)
+  .on("beforeDamaged", (c, e) => !c.of(e.target).isMine() && e.type === DamageType.Anemo)
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 115095
+ * @name 妙道合真（生效中）
+ * @description
+ * 行动阶段开始时：移除此效果，生成1个风元素。
+ */
+export const TheWondrousPathOfTruthActive = combatStatus(115095)
+  .on("actionPhase")
+  .generateDice(DiceType.Anemo, 1)
+  .dispose()
   .done();
 
 /**
@@ -37,7 +53,13 @@ export const DazzlingPolyhedron = summon(115093)
  * 入场时和行动阶段开始时：生成1个风元素。
  */
 export const DazzlingPolyhedron01 = summon(115096)
-  // TODO
+  .conflictWith(115093)
+  .endPhaseDamage(DamageType.Anemo, 1)
+  .usage(3)
+  .on("beforeDamaged", (c, e) => !c.of(e.target).isMine() && e.type === DamageType.Anemo)
+  .on("enter")
+  .generateDice(DiceType.Anemo, 1)
+  .combatStatus(TheWondrousPathOfTruthActive)
   .done();
 
 /**
@@ -48,7 +70,13 @@ export const DazzlingPolyhedron01 = summon(115096)
  * 可用次数：1
  */
 export const ManifestGale = status(115091)
-  // TODO
+  .on("deductDiceSkill", (c, e) => e.canDeductCostOfType(DiceType.Void) && e.isChargedAttack())
+  .deductCost(DiceType.Void, 1)
+  .on("modifySkillDamageType", (c, e) => e.viaChargedAttack())
+  .changeDamageType(DamageType.Anemo)
+  .do((c, e) => {
+    c.characterStatus(PressurizedCollapse, e.target);
+  })
   .done();
 
 /**
@@ -60,17 +88,10 @@ export const ManifestGale = status(115091)
  * （同一方场上最多存在一个此状态）
  */
 export const PressurizedCollapse = status(115092)
-  // TODO
-  .done();
-
-/**
- * @id 115095
- * @name 妙道合真（生效中）
- * @description
- * 行动阶段开始时：移除此效果，生成1个风元素。
- */
-export const TheWondrousPathOfTruthActive = combatStatus(115095)
-  // TODO
+  .unique()
+  .on("endPhase")
+  .usage(1)
+  .switchActive("@master")
   .done();
 
 /**
@@ -83,7 +104,7 @@ export const ParthianShot = skill(15091)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -95,7 +116,8 @@ export const ParthianShot = skill(15091)
 export const WindRealmOfNasamjnin = skill(15092)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 3)
+  .characterStatus(ManifestGale, "@self")
   .done();
 
 /**
@@ -104,11 +126,15 @@ export const WindRealmOfNasamjnin = skill(15092)
  * @description
  * 造成1点风元素伤害，召唤赫耀多方面体。
  */
-export const TheWindsSecretWays = skill(15093)
+export const TheWindsSecretWays: SkillHandle = skill(15093)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 1)
+  .if((c) => c.self.hasEquipment(TheWondrousPathOfTruth))
+  .summon(DazzlingPolyhedron01)
+  .else()
+  .summon(DazzlingPolyhedron)
   .done();
 
 /**
@@ -137,5 +163,6 @@ export const TheWondrousPathOfTruth = card(215091)
   .costAnemo(3)
   .costEnergy(2)
   .talent(Faruzan)
-  // TODO
+  .on("enter")
+  .useSkill(TheWindsSecretWays)
   .done();

@@ -192,5 +192,16 @@ export const PrimordialJadeWingedspear = card(311407)
 export const RightfulReward = card(311408)
   .costSame(2)
   .weapon("pole")
-  // TODO
+  .variable("justice", 0)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
+  .increaseDamage(2)
+  .on("damagedOrHealed", (c, e) => c.of(e.target).isActive())
+  .listenToPlayer()
+  .do((c) => {
+    c.addVariable("justice", 1);
+    if (c.getVariable("justice") >= 3) {
+      c.addVariable("justice", -3);
+      c.gainEnergy(1, "@master");
+    }
+  })
   .done();

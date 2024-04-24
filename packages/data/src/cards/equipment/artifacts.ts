@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card, status } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 312101
@@ -737,5 +737,22 @@ export const GoldenTroupesReward = card(312025)
 export const AmethystCrown = card(312027)
   .costSame(1)
   .artifact()
-  // TODO
+  .variable("generatedCount", 0, { visible: false })
+  .variable("crystal", 0)
+  .on("actionPhase")
+  .setVariable("generatedCount", 0)
+  .on("damaged", (c, e) =>
+    !c.of(e.target).isMine() &&
+    e.type === DamageType.Dendro &&  
+    c.self.master().isActive())
+  .listenToAll()
+  .do((c) => {
+    c.addVariable("crystal", 1);
+    const crystal = c.getVariable("crystal");
+    const hands = c.player.hands.length;
+    if (crystal >= hands && c.getVariable("generatedCount") < 2) {
+      c.generateDice("randomElement", 1);
+      c.addVariable("generatedCount", 1);
+    }
+  })
   .done();

@@ -25,12 +25,9 @@ import { character, skill, status, card, DamageType, DiceType, SkillHandle } fro
  * （同一方场上最多存在一个此状态）
  */
 export const Refraction01 = status(122022)
+  .conflictWith(122021)
+  .unique(122021)
   .duration(3)
-  .on("enter")
-  .do((c) => {
-    c.$$(`(status with definition id ${Refraction01} or status with definition id ${Refraction}) and not @self`)
-      .forEach((e) => e.dispose());
-  })
   .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
   .on("modifyAction", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
@@ -46,12 +43,9 @@ export const Refraction01 = status(122022)
  * （同一方场上最多存在一个此状态）
  */
 export const Refraction = status(122021)
+  .conflictWith(122022)
+  .unique(122022)
   .duration(2)
-  .on("enter")
-  .do((c) => {
-    c.$$(`(status with definition id ${Refraction01} or status with definition id ${Refraction}) and not @self`)
-      .forEach((e) => e.dispose());
-  })
   .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
   .done();
