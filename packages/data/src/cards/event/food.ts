@@ -244,3 +244,16 @@ export const MatsutakeMeatRolls = card(333014)
   .usage(3)
   .heal(1, "@master")
   .done();
+
+/**
+ * @id 333015
+ * @name 缤纷马卡龙
+ * @description
+ * 治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+export const RainbowMacarons = card(333015)
+  .costVoid(2)
+  .tags("food")
+  // TODO
+  .done();

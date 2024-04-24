@@ -399,6 +399,8 @@ export const Setaria = card(322019)
  * @id 322020
  * @name 弥生七月
  * @description
+ * 我方打出「圣遗物」手牌时：少花费1个元素骰；如果我方场上已有2个已装备「圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）
+ * @outdated
  * 我方打出「圣遗物」手牌时：少花费1个元素骰；我方场上每有一个已装备「圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）
  */
 export const YayoiNanatsuki = card(322020)
@@ -443,6 +445,9 @@ export const Mamere: SupportHandle = card(322021)
  * @id 322022
  * @name 婕德
  * @description
+ * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）
+ * 我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。
+ * @outdated
  * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）
  * 我方角色使用「元素爆发」后：如果「阅历」至少为5，则弃置此牌，生成「阅历」-2数量的万能元素。
  */
@@ -498,4 +503,29 @@ export const SilverAndMelus = card(322023)
       c.dispose();
     }
   })
+  .done();
+
+/**
+ * @id 322024
+ * @name 太郎丸
+ * @description
+ * 入场时：生成4张太郎丸的存款，均匀地置入我方牌库中。
+ * 我方打出2张太郎丸的存款后：弃置此牌，召唤愤怒的太郎丸。
+ */
+export const Taroumaru = card(322024)
+  .costVoid(2)
+  .support("ally")
+  // TODO
+  .done();
+
+/**
+ * @id 322025
+ * @name 白手套和渔夫
+ * @description
+ * 结束阶段：生成1张「清洁工作」，随机将其置入我方牌库顶部5张牌之中。如果此牌的可用次数仅剩余1，则抓1张牌。
+ * 可用次数：2
+ */
+export const TheWhiteGloveAndTheFisherman = card(322025)
+  .support("ally")
+  // TODO
   .done();

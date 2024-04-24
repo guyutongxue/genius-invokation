@@ -349,3 +349,16 @@ export const FortressOfMeropide = card(321018)
     }
   })
   .done();
+
+/**
+ * @id 321019
+ * @name 清籁岛
+ * @description
+ * 任意阵营的角色受到治疗后：使该角色附属悠远雷暴。（结束阶段受到2点穿透伤害，可用1次）
+ * 持续回合：2
+ */
+export const SeiraiIsland = card(321019)
+  .costSame(1)
+  .support("place")
+  // TODO
+  .done();

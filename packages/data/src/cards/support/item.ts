@@ -121,6 +121,9 @@ export const TreasureseekingSeelie = card(323004)
  * @id 323005
  * @name 化种匣
  * @description
+ * 我方打出原本元素骰费用至少为2的支援牌时：少花费1个元素骰。（每回合1次）
+ * 可用次数：2
+ * @outdated
  * 我方打出原本元素骰费用为1的装备或支援牌时：少花费1个元素骰。（每回合1次）
  * 可用次数：2
  */

@@ -35,6 +35,9 @@ export const DarkfireFurnace = summon(123021)
  * @id 123024
  * @name 渊火加护
  * @description
+ * 为所附属角色提供2点护盾。
+ * 此护盾耗尽后：对所有敌方角色造成1点穿透伤害。
+ * @outdated
  * 为所附属角色提供3点护盾。
  * 此护盾耗尽前：所附属角色造成的火元素伤害+1。
  */
@@ -48,6 +51,8 @@ export const AegisOfAbyssalFlame = status(123024)
  * @id 123022
  * @name 火之新生
  * @description
+ * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到4点生命值。此效果触发后，角色造成的火元素伤害+1。
+ * @outdated
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到3点生命值。
  */
 export const FieryRebirthStatus = status(123022)
@@ -77,6 +82,9 @@ export const QuenchedEmbers = status(123025)
  * @id 123023
  * @name 涌火护罩
  * @description
+ * 所附属角色免疫所有伤害。
+ * 此状态提供2次火元素附着（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色无法使用技能且在结束阶段受到6点穿透伤害。
+ * @outdated
  * 所附属角色免疫所有伤害。
  * 此状态提供2次火元素附着（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色无法使用技能且在结束阶段受到6点穿透伤害。
  * 此效果存在期间：角色造成的火元素伤害+1。
@@ -166,4 +174,25 @@ export const EmbersRekindled = card(223021)
       c.dispose();
     }
   })
+  .done();
+
+/**
+ * @id 123026
+ * @name 火之新生·锐势
+ * @description
+ * 角色造成的火元素伤害+1。
+ */
+export const FieryRebirthHoned = status(123026)
+  // TODO
+  .done();
+
+/**
+ * @id 23028
+ * @name 火之新生
+ * @description
+ * 
+ */
+export const FieryRebirth = skill(23028)
+  .type("passive")
+  // TODO
   .done();

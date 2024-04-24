@@ -32,6 +32,7 @@ export const WhiteTassel = card(311401)
 /**
  * @id 301101
  * @name 千岩之护
+ * @description
  * 根据「璃月」角色的数量提供护盾，保护所附属的角色。
  */
 export const LithicGuard = status(301101)
@@ -178,4 +179,18 @@ export const PrimordialJadeWingedspear = card(311407)
   })
   .on("useSkill")
   .addVariableWithMax("extraDamage", 1, 3)
+  .done();
+
+/**
+ * @id 311408
+ * @name 公义的酬报
+ * @description
+ * 角色使用「元素爆发」造成的伤害+2。
+ * 我方出战角色受到伤害或治疗后：累积1点「公义之理」。如果此牌已累积3点「公义之理」，则消耗3点「公义之理」，使角色获得1点充能。
+ * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
+ */
+export const RightfulReward = card(311408)
+  .costSame(2)
+  .weapon("pole")
+  // TODO
   .done();

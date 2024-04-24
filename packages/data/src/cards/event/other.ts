@@ -874,3 +874,44 @@ export const ControlledDirectionalBlast = card(332030)
     }
   })
   .done();
+
+/**
+ * @id 302202
+ * @name 太郎丸的存款
+ * @description
+ * 生成1个万能元素。
+ */
+export const TaroumarusSavings = card(302202)
+  // TODO
+  .done();
+
+/**
+ * @id 302203
+ * @name 「清洁工作」
+ * @description
+ * 我方出战角色下次造成的伤害+1。（可叠加，最多叠加到+2）
+ */
+export const CalledInForCleanup = card(302203)
+  // TODO
+  .done();
+
+/**
+ * @id 303230
+ * @name 海底宝藏
+ * @description
+ * 治疗我方出战角色1点，生成1个随机基础元素骰。
+ */
+export const UnderseaTreasure = card(303230)
+  // TODO
+  .done();
+
+/**
+ * @id 332031
+ * @name 海中寻宝
+ * @description
+ * 生成6张海底宝藏，随机地置入我方牌库中。
+ */
+export const UnderwaterTreasureHunt = card(332031)
+  .costSame(1)
+  // TODO
+  .done();

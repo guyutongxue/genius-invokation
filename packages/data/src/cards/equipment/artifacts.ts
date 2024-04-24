@@ -725,3 +725,17 @@ export const GoldenTroupesReward = card(312025)
     }
   })
   .done();
+
+/**
+ * @id 312027
+ * @name 紫晶的花冠
+ * @description
+ * 所附属角色为出战角色，敌方受到草元素伤害后：累积1枚「花冠水晶」。如果「花冠水晶」大于等于我方手牌数，则生成1个随机基础元素骰。
+ * （每回合至多生成2个）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const AmethystCrown = card(312027)
+  .costSame(1)
+  .artifact()
+  // TODO
+  .done();

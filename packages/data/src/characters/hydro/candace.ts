@@ -32,6 +32,8 @@ export const HeronStrike = skill(12074)
  * @id 112071
  * @name 苍鹭护盾
  * @description
+ * 准备技能期间：提供2点护盾，保护所附属的角色。
+ * @outdated
  * 本角色将在下次行动时，直接使用技能：苍鹭震击。
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
@@ -166,4 +168,14 @@ export const TheOverflow = card(212071)
   .talent(Candace)
   .on("enter")
   .useSkill(SacredRiteWagtailsTide)
+  .done();
+
+/**
+ * @id 112074
+ * @name 苍鹭震击
+ * @description
+ * 本角色将在下次行动时，直接使用技能：苍鹭震击。
+ */
+export const HeronStrike = status(112074)
+  // TODO
   .done();

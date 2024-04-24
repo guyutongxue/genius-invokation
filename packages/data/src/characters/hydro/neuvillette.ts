@@ -20,6 +20,9 @@ import { character, skill, status, combatStatus, card, DamageType, CharacterStat
  * @name 衡平推裁
  * @description
  * （需准备1个行动轮）
+ * 造成2点水元素伤害，如果本角色生命值至少为6，则此伤害+1并对自身造成1点穿透伤害。
+ * @outdated
+ * （需准备1个行动轮）
  * 造成2点水元素伤害，如果生命值至少为6，则对自身造成1点穿透伤害使伤害+1。
  */
 export const EquitableJudgment = skill(12104)

@@ -45,6 +45,8 @@ export const Wavestrider = skill(14054)
  * @id 114051
  * @name 捉浪·涛拥之守
  * @description
+ * 准备技能期间：提供2点护盾，保护所附属的角色。
+ * @outdated
  * 本角色将在下次行动时，直接使用技能：踏潮。
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
@@ -138,4 +140,14 @@ export const LightningStorm = card(214051)
   .on("useSkill", (c, e) => e.action.skill.definition.id === Wavestrider)
   .usagePerRound(2)
   .characterStatus(SummonerOfLightning, "@master")
+  .done();
+
+/**
+ * @id 114055
+ * @name 踏潮
+ * @description
+ * 本角色将在下次行动时，直接使用技能：踏潮。
+ */
+export const Wavestrider = status(114055)
+  // TODO
   .done();

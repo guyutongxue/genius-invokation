@@ -22,10 +22,10 @@ const TARGET = path.join(BASE_PATH, "index.ts");
 const GLOB = path.join(BASE_PATH, "**/*.ts");
 
 export async function generateImports() {
-  const files = await glob(GLOB, {
-    ignore: path.join(BASE_PATH, "*.ts"),
+  const files = (await glob(GLOB, {
+    ignore: `${BASE_PATH}/*.ts`,
     windowsPathsNoEscape: true,
-  }).then((files) => files.sort());
+  })).toSorted();
 
   function pathToImport(path: string) {
     return path

@@ -16,10 +16,10 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const BASE_PATH = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
+export const BASE_PATH = path.resolve(
+  import.meta.dirname,
   "../../src",
-);
+).replace(/\\/g, "/");
 
 export const LICENSE = `// Copyright (C) 2024 Guyutongxue
 // 
