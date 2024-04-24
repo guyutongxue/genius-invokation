@@ -32,7 +32,7 @@ export const AbyssalTides = status(122036)
  * @description
  * 本角色将在下次行动时，直接使用技能：涟锋旋刃。
  */
-export const RipplingBlades = status(122032)
+export const RipplingBladesStatus = status(122032)
   // TODO
   .done();
 
@@ -53,7 +53,7 @@ export const SurgingShield = status(122035)
  * @description
  * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到4点生命值。此效果触发后，角色造成的物理伤害变为水元素伤害，且水元素伤害+1。
  */
-export const WateryRebirth = status(122031)
+export const WateryRebirthStatus = status(122031)
   // TODO
   .done();
 
@@ -156,10 +156,10 @@ export const BrokenShield = skill(22037)
  * @description
  * 
  */
-export const WateryRebirth = skill(22038)
+export const WateryRebirth01 = skill(22038)
   .type("passive")
   // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 2203
@@ -171,7 +171,7 @@ export const AbyssHeraldWickedTorrents = character(2203)
   .tags("hydro", "monster")
   .health(6)
   .energy(2)
-  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades, BrokenShield, WateryRebirth)
+  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades, BrokenShield)
   .done();
 
 /**

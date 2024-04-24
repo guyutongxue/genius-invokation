@@ -43,6 +43,16 @@ export const HeronShield = status(112071)
   .done();
 
 /**
+ * @id 112074
+ * @name 苍鹭震击
+ * @description
+ * 本角色将在下次行动时，直接使用技能：苍鹭震击。
+ */
+export const HeronStrikeStatus = status(112074)
+  // TODO
+  .done();
+
+/**
  * @id 112073
  * @name 赤冕祝祷
  * @description
@@ -121,6 +131,7 @@ export const SacredRiteHeronsSanctum = skill(12072)
   .type("elemental")
   .costHydro(3)
   .characterStatus(HeronShield)
+  .characterStatus(HeronStrikeStatus)
   .done();
 
 /**
@@ -168,14 +179,4 @@ export const TheOverflow = card(212071)
   .talent(Candace)
   .on("enter")
   .useSkill(SacredRiteWagtailsTide)
-  .done();
-
-/**
- * @id 112074
- * @name 苍鹭震击
- * @description
- * 本角色将在下次行动时，直接使用技能：苍鹭震击。
- */
-export const HeronStrike = status(112074)
-  // TODO
   .done();

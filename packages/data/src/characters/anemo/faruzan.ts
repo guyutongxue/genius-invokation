@@ -36,7 +36,7 @@ export const DazzlingPolyhedron = summon(115093)
  * 此召唤物在场时：敌方角色受到的风元素伤害+1。
  * 入场时和行动阶段开始时：生成1个风元素。
  */
-export const DazzlingPolyhedron = summon(115096)
+export const DazzlingPolyhedron01 = summon(115096)
   // TODO
   .done();
 

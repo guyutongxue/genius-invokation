@@ -192,7 +192,7 @@ export const FieryRebirthHoned = status(123026)
  * @description
  * 
  */
-export const FieryRebirth = skill(23028)
+export const FieryRebirth01 = skill(23028)
   .type("passive")
   // TODO
-  .done();
+  .reserve();

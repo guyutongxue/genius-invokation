@@ -114,10 +114,10 @@ export const SearingBlast = skill(23046)
  * @description
  * 
  */
-export const ImperialPanoply = skill(23047)
+export const ImperialPanoply01 = skill(23047)
   .type("passive")
   // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 2304
@@ -129,7 +129,7 @@ export const EmperorOfFireAndIron = character(2304)
   .tags("pyro", "monster")
   .health(6)
   .energy(2)
-  .skills(ShatterclampStrike, BusterBlaze, BattlelineDetonation, ImperialPanoply, SearingBlast, ImperialPanoply)
+  .skills(ShatterclampStrike, BusterBlaze, BattlelineDetonation, ImperialPanoply, SearingBlast)
   .done();
 
 /**

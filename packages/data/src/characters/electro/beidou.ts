@@ -56,6 +56,17 @@ export const TidecallerSurfEmbrace = status(114051)
   .done();
 
 /**
+ * @id 114055
+ * @name 踏潮
+ * @description
+ * 本角色将在下次行动时，直接使用技能：踏潮。
+ */
+export const WavestriderStatus = status(114055)
+  // TODO
+  .done();
+
+
+/**
  * @id 114053
  * @name 雷兽之盾
  * @description
@@ -94,6 +105,7 @@ export const Tidecaller = skill(14052)
   .type("elemental")
   .costElectro(3)
   .characterStatus(TidecallerSurfEmbrace)
+  .characterStatus(WavestriderStatus)
   .done();
 
 /**
@@ -140,14 +152,4 @@ export const LightningStorm = card(214051)
   .on("useSkill", (c, e) => e.action.skill.definition.id === Wavestrider)
   .usagePerRound(2)
   .characterStatus(SummonerOfLightning, "@master")
-  .done();
-
-/**
- * @id 114055
- * @name 踏潮
- * @description
- * 本角色将在下次行动时，直接使用技能：踏潮。
- */
-export const Wavestrider = status(114055)
-  // TODO
   .done();
