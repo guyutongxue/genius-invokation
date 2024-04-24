@@ -33,13 +33,9 @@ export const HeronStrike = skill(12074)
  * @name 苍鹭护盾
  * @description
  * 准备技能期间：提供2点护盾，保护所附属的角色。
- * @outdated
- * 本角色将在下次行动时，直接使用技能：苍鹭震击。
- * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
 export const HeronShield = status(112071)
   .shield(2)
-  .prepare(HeronStrike)
   .done();
 
 /**
@@ -49,7 +45,11 @@ export const HeronShield = status(112071)
  * 本角色将在下次行动时，直接使用技能：苍鹭震击。
  */
 export const HeronStrikeStatus = status(112074)
-  // TODO
+  .prepare(HeronStrike)
+  .on("selfDispose")
+  .do((c) => {
+    c.$(`status with definition id ${HeronShield} at @self`)?.dispose();
+  })
   .done();
 
 /**

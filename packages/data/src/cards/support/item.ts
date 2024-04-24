@@ -123,16 +123,13 @@ export const TreasureseekingSeelie = card(323004)
  * @description
  * 我方打出原本元素骰费用至少为2的支援牌时：少花费1个元素骰。（每回合1次）
  * 可用次数：2
- * @outdated
- * 我方打出原本元素骰费用为1的装备或支援牌时：少花费1个元素骰。（每回合1次）
- * 可用次数：2
  */
 export const SeedDispensary = card(323005)
   .support("item")
-  .on("deductDiceCard", (c, e) => e.action.card.definition.skillDefinition.requiredCost.length === 1 &&
-    ["equipment", "support"].includes(e.action.card.definition.type))
-  .deductCost(DiceType.Omni, 1)
+  .on("deductDiceCard", (c, e) => e.action.card.definition.skillDefinition.requiredCost.length >= 2 && e.action.card.definition.type === "support")
+  .usagePerRound(1)
   .usage(2)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**

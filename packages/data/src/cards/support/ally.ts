@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SupportHandle, card, flip } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SupportHandle, card, flip, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 322001
@@ -400,8 +400,6 @@ export const Setaria = card(322019)
  * @name 弥生七月
  * @description
  * 我方打出「圣遗物」手牌时：少花费1个元素骰；如果我方场上已有2个已装备「圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）
- * @outdated
- * 我方打出「圣遗物」手牌时：少花费1个元素骰；我方场上每有一个已装备「圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）
  */
 export const YayoiNanatsuki = card(322020)
   .costSame(1)
@@ -409,8 +407,12 @@ export const YayoiNanatsuki = card(322020)
   .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
   .usagePerRound(1)
   .do((c, e) => {
-    const artifactedCh = c.$$("my characters has equipment with tag (artifact)").length;
-    e.deductCost(DiceType.Omni, 1 + artifactedCh);
+    const artifactedCh = c.$$("my characters has equipment with tag (artifact)");
+    if (artifactedCh.length >= 2) {
+      e.deductCost(DiceType.Omni, 2);
+    } else {
+      e.deductCost(DiceType.Omni, 1);
+    }
   })
   .done();
 
@@ -442,14 +444,24 @@ export const Mamere: SupportHandle = card(322021)
   .done();
 
 /**
+ * @id 302205
+ * @name 沙与梦
+ * @description
+ * 对角色打出「天赋」或角色使用技能时：少花费3个元素骰。
+ * 可用次数：1
+ */
+export const SandsAndDream = status(302205)
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .usage(1)
+  .deductCost(DiceType.Omni, 3)
+  .done();
+
+/**
  * @id 322022
  * @name 婕德
  * @description
  * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）
  * 我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。
- * @outdated
- * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）
- * 我方角色使用「元素爆发」后：如果「阅历」至少为5，则弃置此牌，生成「阅历」-2数量的万能元素。
  */
 export const Jeht = card(322022)
   .costVoid(2)
@@ -464,8 +476,8 @@ export const Jeht = card(322022)
   .on("useSkill", (c, e) => e.isSkillType("burst"))
   .do((c) => {
     const exp = c.getVariable("experience");
-    if (exp >= 5) {
-      c.generateDice(DiceType.Omni, exp - 2);
+    if (exp >= 6) {
+      c.characterStatus(SandsAndDream, "my active");
       c.dispose();
     }
   })

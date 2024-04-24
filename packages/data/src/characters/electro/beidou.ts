@@ -46,12 +46,8 @@ export const Wavestrider = skill(14054)
  * @name 捉浪·涛拥之守
  * @description
  * 准备技能期间：提供2点护盾，保护所附属的角色。
- * @outdated
- * 本角色将在下次行动时，直接使用技能：踏潮。
- * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
 export const TidecallerSurfEmbrace = status(114051)
-  .prepare(Wavestrider)
   .shield(2)
   .done();
 
@@ -62,7 +58,11 @@ export const TidecallerSurfEmbrace = status(114051)
  * 本角色将在下次行动时，直接使用技能：踏潮。
  */
 export const WavestriderStatus = status(114055)
-  // TODO
+  .prepare(Wavestrider)
+  .on("selfDispose")
+  .do((c) => {
+    c.$(`status with definition id ${TidecallerSurfEmbrace} at @self`)?.dispose();
+  })
   .done();
 
 

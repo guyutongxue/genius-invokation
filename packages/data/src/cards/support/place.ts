@@ -159,8 +159,6 @@ export const SangonomiyaShrine = card(321009)
  * @name 须弥城
  * @description
  * 我方打出「天赋」牌或我方角色使用技能时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）
- * @outdated
- * 我方角色使用技能或装备「天赋」时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）
  */
 export const SumeruCity = card(321010)
   .costSame(2)
