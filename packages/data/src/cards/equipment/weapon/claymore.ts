@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { card, status } from "@gi-tcg/core/builder";
+import { card, combatStatus, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311301
@@ -94,7 +94,7 @@ export const SkywardPride = card(311304)
  * @description
  * 提供1点护盾，保护我方出战角色。（可叠加，最多叠加到2点）
  */
-const RebelliousShield = status(121013)
+const RebelliousShield = combatStatus(121013)
   .shield(1, 2)
   .done();
 
@@ -112,7 +112,7 @@ export const TheBell = card(311305)
   .on("modifySkillDamage")
   .increaseDamage(1)
   .on("useSkill")
-  .characterStatus(RebelliousShield, "my active")
+  .combatStatus(RebelliousShield)
   .done();
 
 /**
