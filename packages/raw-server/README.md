@@ -40,6 +40,8 @@
 - 参数：`NotificationMessage`；附加属性 `{ $who: 0 | 1 }`。
 - 含义：通知玩家 `$who` 发生对局变化。
 
+-----
+
 - **方法：`rerollDice` / `switchHands` / `chooseActive` / `action`**
 - 参数：`RpcRequest[M]`，`M` 为方法名；附加属性 `{ $who: 0 | 1 }`。
 - 含义：获取玩家 `$who` 的行动。
