@@ -110,7 +110,7 @@ export abstract class StateMutator {
     });
     if (this.state.players[who].hands.length > this.state.config.maxHands) {
       this.mutate({
-        type: "disposeCard",
+        type: "removeCard",
         who,
         oldState: candidate,
         used: false,

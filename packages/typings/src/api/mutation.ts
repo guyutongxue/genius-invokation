@@ -51,8 +51,8 @@ interface SwitchActiveEM {
   readonly definitionId: number;
 }
 
-interface DisposeCardEM {
-  readonly type: "disposeCard";
+interface RemoveCardEM {
+  readonly type: "removeCard";
   readonly who: 0 | 1;
   readonly used: boolean;
   readonly id: number;
@@ -80,8 +80,8 @@ interface CreateEntityEM {
   readonly definitionId: number;
 }
 
-interface DisposeEntityEM {
-  readonly type: "disposeEntity";
+interface RemoveEntityEM {
+  readonly type: "removeEntity";
   readonly id: number;
   readonly definitionId: number;
 }
@@ -151,11 +151,11 @@ export type ExposedMutation =
   | SetWinnerEM
   | TransferCardEM
   | SwitchActiveEM
-  | DisposeCardEM
+  | RemoveCardEM
   | CreateCardEM
   | CreateCharacterEM
   | CreateEntityEM
-  | DisposeEntityEM
+  | RemoveEntityEM
   | ModifyEntityVarEM
   | ReplaceCharacterDefinitionEM
   | ResetDiceEM

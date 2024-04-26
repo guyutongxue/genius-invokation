@@ -83,9 +83,9 @@ export function exposeMutation(
         definitionId: Math.floor(m.value.definition.id),
       };
     }
-    case "disposeCard": {
+    case "removeCard": {
       return {
-        type: "disposeCard",
+        type: "removeCard",
         who: m.who,
         used: m.used,
         id: m.oldState.id,
@@ -119,9 +119,9 @@ export function exposeMutation(
         definitionId: Math.floor(m.value.definition.id),
       };
     }
-    case "disposeEntity": {
+    case "removeEntity": {
       return {
-        type: "disposeEntity",
+        type: "removeEntity",
         id: m.oldState.id,
         definitionId: Math.floor(m.oldState.definition.id),
       };

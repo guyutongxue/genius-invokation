@@ -728,14 +728,14 @@ export class Game extends StateMutator {
             actionInfo.card.definition.type === "event"
           ) {
             this.mutate({
-              type: "disposeCard",
+              type: "removeCard",
               who,
               oldState: actionInfo.card,
               used: false,
             });
           } else {
             this.mutate({
-              type: "disposeCard",
+              type: "removeCard",
               who,
               oldState: actionInfo.card,
               used: true,
@@ -760,7 +760,7 @@ export class Game extends StateMutator {
           break;
         case "elementalTuning":
           this.mutate({
-            type: "disposeCard",
+            type: "removeCard",
             who,
             oldState: actionInfo.card,
             used: false,

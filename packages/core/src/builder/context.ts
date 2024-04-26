@@ -810,7 +810,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       );
       const state = target.state as EntityState;
       this.mutate({
-        type: "disposeEntity",
+        type: "removeEntity",
         oldState: state,
       });
       const newState = { ...state };
@@ -838,7 +838,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       );
       this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
-        type: "disposeEntity",
+        type: "removeEntity",
         oldState: entityState,
       });
       if (entityState.definition.type === "support") {
@@ -1104,7 +1104,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     });
     if (this.player.hands.length > this.state.config.maxHands) {
       this.mutate({
-        type: "disposeCard",
+        type: "removeCard",
         who,
         oldState: cardState,
         used: false,
@@ -1146,7 +1146,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         });
         if (player().hands.length > this.state.config.maxHands) {
           this.mutate({
-            type: "disposeCard",
+            type: "removeCard",
             who,
             oldState: chosen,
             used: false,

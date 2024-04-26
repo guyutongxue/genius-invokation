@@ -187,7 +187,7 @@ export function checkImmune(
   return false;
 }
 
-export function disposeEntity(state: Draft<GameState>, id: number) {
+export function removeEntity(state: Draft<GameState>, id: number) {
   for (const player of state.players) {
     for (const ch of player.characters) {
       const idx = ch.entities.findIndex((e) => e.id === id);

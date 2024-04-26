@@ -25,7 +25,7 @@ import {
   PlayerState,
   stringifyState,
 } from "./state";
-import { disposeEntity, getEntityById, sortDice } from "../utils";
+import { removeEntity, getEntityById, sortDice } from "../utils";
 import { EntityArea, stringifyEntityArea } from "./entity";
 import { ActionInfo, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
@@ -84,8 +84,8 @@ export interface SwitchActiveM {
   readonly value: CharacterState;
 }
 
-export interface DisposeCardM {
-  readonly type: "disposeCard";
+export interface RemoveCardM {
+  readonly type: "removeCard";
   readonly who: 0 | 1;
   readonly used: boolean;
   readonly oldState: CardState;
@@ -111,8 +111,8 @@ export interface CreateEntityM {
   readonly value: IdWritable<EntityState>;
 }
 
-export interface DisposeEntityM {
-  readonly type: "disposeEntity";
+export interface RemoveEntityM {
+  readonly type: "removeEntity";
   readonly oldState: EntityState | CharacterState;
 }
 
@@ -161,11 +161,11 @@ export type Mutation =
   // | PushDamageLogM
   | TransferCardM
   | SwitchActiveM
-  | DisposeCardM
+  | RemoveCardM
   | CreateCardM
   | CreateCharacterM
   | CreateEntityM
-  | DisposeEntityM
+  | RemoveEntityM
   | ModifyEntityVarM
   | ReplaceCharacterDefinitionM
   | ResetDiceM
@@ -259,7 +259,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
         player.activeCharacterId = m.value.id;
       });
     }
-    case "disposeCard": {
+    case "removeCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
         const cardIdx = player.hands.findIndex((c) => c.id === m.oldState.id);
@@ -312,9 +312,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
         });
       }
     }
-    case "disposeEntity": {
+    case "removeEntity": {
       return produce(state, (draft) => {
-        disposeEntity(draft, m.oldState.id);
+        removeEntity(draft, m.oldState.id);
       });
     }
     case "modifyEntityVar": {
@@ -382,7 +382,7 @@ export function stringifyMutation(m: Mutation): string | null {
     case "switchActive": {
       return `Switch active of player ${m.who} to ${stringifyState(m.value)}`;
     }
-    case "disposeCard": {
+    case "removeCard": {
       return `Dispose card ${stringifyState(m.oldState)} of player ${m.who} (${
         m.used ? "used" : "not used"
       })`;
@@ -400,8 +400,8 @@ export function stringifyMutation(m: Mutation): string | null {
         m.where,
       )}`;
     }
-    case "disposeEntity": {
-      return `Dispose entity ${stringifyState(m.oldState)}`;
+    case "removeEntity": {
+      return `Removed entity ${stringifyState(m.oldState)}`;
     }
     case "modifyEntityVar": {
       return `Modify variable ${m.varName} of ${stringifyState(m.state)} to ${
