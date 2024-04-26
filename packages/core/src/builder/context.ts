@@ -1238,6 +1238,20 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       targetIndex: index,
     });
   }
+  /** 弃置一张行动牌，并触发其“弃置时”效果。 */
+  disposeCard(card: CardState, where: "my" | "opp" = "my") {
+    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    using l = this.subLog(
+      DetailLogType.Primitive,
+      `Dispose card ${stringifyState(card)} from player ${who}`,
+    );
+    this.mutate({
+      type: "removeCard",
+      who,
+      oldState: card,
+      used: false,
+    });
+  }
   switchCards() {
     this.emitEvent("requestSwitchHands", this.skillInfo, this.callerArea.who);
   }
@@ -1306,6 +1320,7 @@ type SkillContextMutativeProps =
   | "drawCards"
   | "createPileCards"
   | "createPileCardAtTopRange"
+  | "disposeCard"
   | "switchCards"
   | "reroll"
   | "useSkill";

@@ -30,6 +30,7 @@ import {
   SupportTag,
   WeaponCardTag,
   PlayCardSkillDefinition,
+  CardDefinition,
 } from "../base/card";
 import { CharacterTag } from "../base/character";
 import { ExEntityType } from "../base/entity";
@@ -112,7 +113,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
    * `null` 表明不添加（不是料理牌或者手动指定）
    */
   private _satiatedTarget: string | null = null;
-
+  private _doSameWhenDisposed = false;
   private _targetQueries: string[] = [];
 
   constructor(private readonly cardId: number) {
@@ -305,6 +306,11 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     );
   }
 
+  doSameWhenDisposed() {
+    this._doSameWhenDisposed = true;
+    return this;
+  }
+
   done(): CardHandle {
     if (this._satiatedTarget !== null) {
       const target = this._satiatedTarget;
@@ -348,7 +354,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       action,
     };
     registerSkill(skillDef);
-    registerCard({
+    const cardDef: CardDefinition = {
       __definition: "cards",
       id: this.cardId,
       type: this._type,
@@ -357,7 +363,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       getTarget: targetGetter,
       filter: filterFn,
       onPlay: skillDef,
-    });
+      onDispose: this._doSameWhenDisposed ? skillDef : undefined,
+    };
+    registerCard(cardDef);
     return this.cardId as CardHandle;
   }
 }

@@ -784,10 +784,22 @@ class UseSkillRequestArg extends RequestArg {
   }
 }
 
+class TriggerCardOnDisposeRequestArg extends RequestArg {
+  constructor(
+    via: SkillInfo,
+    public readonly who: 0 | 1,
+    public readonly card: CardState,
+  ) {
+    super(via);
+  }
+
+}
+
 const REQUEST_MAP = {
   requestSwitchHands: SwitchHandsRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
+  requestTriggerCardOnDispose: TriggerCardOnDisposeRequestArg,
 } satisfies Record<string, new (...args: any[]) => RequestArg>;
 type RequestMap = typeof REQUEST_MAP;
 type RequestNames = keyof RequestMap;

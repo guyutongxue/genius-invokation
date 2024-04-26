@@ -70,20 +70,15 @@ export const StellarRestoration = skill(14032)
   .do((c) => {
     c.damage(DamageType.Electro, 3);
     const requestByCard = c.skillInfo.requestBy?.fromCard?.definition.id === LightningStiletto;
-    const hasLightningStiletto = c.player.hands.find((card) => card.definition.id === LightningStiletto);
-    if (requestByCard || hasLightningStiletto) {
+    const lightningStilettoCard = c.player.hands.find((card) => card.definition.id === LightningStiletto);
+    if (requestByCard || lightningStilettoCard) {
       if (c.self.hasEquipment(ThunderingPenance)) {
         c.characterStatus(ElectroElementalInfusion01);
       } else {
         c.characterStatus(ElectroElementalInfusion);
       }
-      if (hasLightningStiletto) {
-        c.mutate({
-          type: "removeCard",
-          who: c.self.who,
-          oldState: hasLightningStiletto,
-          used: false,
-        });
+      if (lightningStilettoCard) {
+        c.disposeCard(lightningStilettoCard);
       }
     } else {
       c.createHandCard(LightningStiletto);
