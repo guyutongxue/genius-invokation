@@ -564,7 +564,7 @@ export const TheWhiteGloveAndTheFisherman = card(322025)
   .support("ally")
   .on("endPhase")
   .usage(2)
-  .createPileCardAtTopRange(CalledInForCleanup, 5)
+  .createPileCards(CalledInForCleanup, 1, `topRange5`)
   .if((c) => c.getVariable("usage") === 1)
   .drawCards(1)
   .done();

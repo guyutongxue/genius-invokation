@@ -1158,7 +1158,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   createPileCards(
     cardId: CardHandle,
     count: number,
-    strategy: "random" | "spaceAround" = "random",
+    strategy: "top" | "random" | "spaceAround" | `topRange${number}`,
   ) {
     const who = this.callerArea.who;
     using l = this.subLog(
@@ -1174,6 +1174,17 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       definition: cardDef,
     });
     switch (strategy) {
+      case "top":
+        for (const card of cards) {
+          this.mutate({
+            type: "createCard",
+            who,
+            target: "piles",
+            value: card,
+            targetIndex: 0
+          });
+        }
+        break;
       case "random":
         for (const card of cards) {
           const mut: Mutation = {
@@ -1205,38 +1216,31 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         }
         break;
       default: {
-        const _: never = strategy;
-        throw new GiTcgDataError(`Invalid strategy ${strategy}`);
+        if (strategy.startsWith("topRange")) {
+          const range = Number(strategy.slice(8));
+          if (isNaN(range)) {
+            throw new GiTcgDataError(`Invalid strategy ${strategy}`);
+          }
+          for (const card of cards) {
+            const mut: Mutation = {
+              type: "stepRandom",
+              value: -1,
+            };
+            this.mutate(mut);
+            const index = mut.value % range;
+            this.mutate({
+              type: "createCard",
+              who,
+              target: "piles",
+              value: card,
+              targetIndex: index,
+            });
+          }
+        } else {
+          throw new GiTcgDataError(`Invalid strategy ${strategy}`);
+        }
       }
     }
-  }
-  createPileCardAtTopRange(cardId: CardHandle, range: number) {
-    const who = this.callerArea.who;
-    using l = this.subLog(
-      DetailLogType.Primitive,
-      `Create pile card [card:${cardId}] at top range ${range}`,
-    );
-    const cardDef = this._state.data.cards.get(cardId);
-    if (typeof cardDef === "undefined") {
-      throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
-    }
-    const card = {
-      id: 0,
-      definition: cardDef,
-    };
-    const mut: Mutation = {
-      type: "stepRandom",
-      value: -1,
-    };
-    this.mutate(mut);
-    const index = mut.value % range;
-    this.mutate({
-      type: "createCard",
-      who,
-      target: "piles",
-      value: card,
-      targetIndex: index,
-    });
   }
   /** 弃置一张行动牌，并触发其“弃置时”效果。 */
   disposeCard(card: CardState, where: "my" | "opp" = "my") {
@@ -1319,7 +1323,6 @@ type SkillContextMutativeProps =
   | "createHandCard"
   | "drawCards"
   | "createPileCards"
-  | "createPileCardAtTopRange"
   | "disposeCard"
   | "switchCards"
   | "reroll"
