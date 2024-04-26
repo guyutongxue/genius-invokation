@@ -63,5 +63,5 @@ export interface CardDefinition {
   readonly deckRequirement: DeckRequirement;
   readonly getTarget: PlayCardTargetGetter;
   readonly filter: PlayCardFilter;
-  readonly skillDefinition: PlayCardSkillDefinition;
+  readonly onPlay: PlayCardSkillDefinition;
 }

@@ -40,7 +40,7 @@ import {
   UsagePerRoundVariableNames,
 } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
-import { getEntityArea } from "../utils";
+import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { createVariable } from "./utils";
 
@@ -138,10 +138,7 @@ function defineDescriptor<E extends EventNames>(
  */
 function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
   // 主动技能且并非卡牌描述
-  if (
-    skillInfo.definition.triggerOn === null &&
-    skillInfo.definition.skillType !== "card"
-  ) {
+  if (isCharacterInitiativeSkill(skillInfo.definition)) {
     // 准备技能不触发
     if (skillInfo.requestBy?.definition.triggerOn === "replaceAction") {
       return false;
@@ -232,8 +229,7 @@ const detailedEventDictionary = {
   }),
   beforeDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      e.type !== DamageType.Piercing &&
-      checkRelative(c.state, e.target.id, r)
+      e.type !== DamageType.Piercing && checkRelative(c.state, e.target.id, r)
     );
   }),
   beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {

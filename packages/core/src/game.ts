@@ -743,7 +743,7 @@ export class Game extends StateMutator {
             await this.executeSkill(
               {
                 caller: activeCh(),
-                definition: actionInfo.card.definition.skillDefinition,
+                definition: actionInfo.card.definition.onPlay,
                 fromCard: actionInfo.card,
                 requestBy: null,
                 charged: false,
@@ -874,7 +874,7 @@ export class Game extends StateMutator {
       let allTargets: CardSkillEventArg[];
       const skillInfo: SkillInfo = {
         caller: activeCh,
-        definition: card.definition.skillDefinition,
+        definition: card.definition.onPlay,
         fromCard: card,
         requestBy: null,
         charged: false,
@@ -896,7 +896,7 @@ export class Game extends StateMutator {
             who,
             card,
             targets: arg.targets,
-            cost: [...card.definition.skillDefinition.requiredCost],
+            cost: [...card.definition.onPlay.requiredCost],
             fast: !card.definition.tags.includes("action"),
           });
         }

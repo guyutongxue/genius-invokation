@@ -26,7 +26,7 @@ import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
-import { SkillDefinition, SkillInfo, ZeroHealthEventArg } from "./base/skill";
+import { InitiativeSkillDefinition, SkillDefinition, SkillInfo, SkillType, ZeroHealthEventArg } from "./base/skill";
 import {
   GiTcgCoreInternalEntityNotFoundError,
   GiTcgCoreInternalError,
@@ -206,6 +206,11 @@ export function removeEntity(state: Draft<GameState>, id: number) {
     }
   }
   throw new GiTcgCoreInternalEntityNotFoundError(state, id);
+}
+
+export function isCharacterInitiativeSkill(skillDef: SkillDefinition): skillDef is InitiativeSkillDefinition {
+  const commonSkillType: SkillType[] = ["normal", "elemental", "burst"];
+  return skillDef.triggerOn === null && commonSkillType.includes(skillDef.skillType);
 }
 
 export function getActiveCharacterIndex(player: PlayerState): number {

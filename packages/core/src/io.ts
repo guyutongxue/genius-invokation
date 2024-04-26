@@ -197,7 +197,7 @@ function exposeCard(c: CardState, hide: boolean): CardData {
   return {
     id: c.id,
     definitionId: hide ? 0 : Math.floor(c.definition.id),
-    definitionCost: hide ? [] : [...c.definition.skillDefinition.requiredCost],
+    definitionCost: hide ? [] : [...c.definition.onPlay.requiredCost],
   };
 }
 

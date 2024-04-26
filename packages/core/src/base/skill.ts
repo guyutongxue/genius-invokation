@@ -51,7 +51,7 @@ export type SkillDescription<Arg> = (
 ) => SkillResult;
 
 export type CommonSkillType = "normal" | "elemental" | "burst";
-export type SkillType = CommonSkillType | "card";
+export type SkillType = CommonSkillType | "playCard" | "disposeCard";
 
 export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
@@ -412,7 +412,7 @@ export class ModifyActionEventArg<
       if (this.isUseSkill()) {
         originalCost = this.action.skill.definition.requiredCost;
       } else if (this.isPlayCard()) {
-        originalCost = this.action.card.definition.skillDefinition.requiredCost;
+        originalCost = this.action.card.definition.onPlay.requiredCost;
       } else {
         throw new GiTcgDataError(`Cannot addCost "omni" to action type ${this.action.type}`)
       }

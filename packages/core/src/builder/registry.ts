@@ -23,6 +23,7 @@ import {
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { GiTcgDataError } from "../error";
+import { isCharacterInitiativeSkill } from "../utils";
 
 let currentStore: DataStore | null = null;
 
@@ -123,7 +124,7 @@ export function getCharacterSkillDefinition(
 ): InitiativeSkillDefinition<any> | PassiveSkillDefinition {
   try {
     const def = getSkillDefinition(id);
-    if (def.triggerOn !== null || def.skillType === "card") {
+    if (!isCharacterInitiativeSkill(def)) {
       throw new GiTcgDataError("Skill found but not a character skill");
     }
     return def;

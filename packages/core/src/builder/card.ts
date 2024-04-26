@@ -340,7 +340,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     const skillDef: PlayCardSkillDefinition = {
       __definition: "skills",
       type: "skill",
-      skillType: "card",
+      skillType: "playCard",
       id: this.cardId,
       triggerOn: null,
       requiredCost: this._cost,
@@ -356,7 +356,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       deckRequirement: this._deckRequirement,
       getTarget: targetGetter,
       filter: filterFn,
-      skillDefinition: skillDef,
+      onPlay: skillDef,
     });
     return this.cardId as CardHandle;
   }
