@@ -126,7 +126,7 @@ export const TreasureseekingSeelie = card(323004)
  */
 export const SeedDispensary = card(323005)
   .support("item")
-  .on("deductDiceCard", (c, e) => e.action.card.definition.skillDefinition.requiredCost.length >= 2 && e.action.card.definition.type === "support")
+  .on("deductDiceCard", (c, e) => e.action.card.definition.onPlay.requiredCost.length >= 2 && e.action.card.definition.type === "support")
   .usagePerRound(1)
   .usage(2)
   .deductCost(DiceType.Omni, 1)

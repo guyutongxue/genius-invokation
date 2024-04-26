@@ -79,7 +79,7 @@ export const StellarRestoration = skill(14032)
       }
       if (hasLightningStiletto) {
         c.mutate({
-          type: "disposeCard",
+          type: "removeCard",
           who: c.self.who,
           oldState: hasLightningStiletto,
           used: false,

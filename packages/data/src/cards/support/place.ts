@@ -229,7 +229,7 @@ export const GoldenHouse = card(321013)
   .support("place")
   .on("deductDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
-    e.action.card.definition.skillDefinition.requiredCost.length >= 3)
+    e.action.card.definition.onPlay.requiredCost.length >= 3)
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .done();
@@ -299,7 +299,7 @@ export const OperaEpiclese = card(321017)
   .on("beforeAction", (c) => {
     function costOfEquipment(equipment: EntityState) {
       const cardDef = c.state.data.cards.get(equipment.definition.id)!;
-      return cardDef.skillDefinition.requiredCost.length;
+      return cardDef.onPlay.requiredCost.length;
     }
     const myCost = c.$$(`my equipments`).map((entity) => costOfEquipment(entity.state)).reduce((a, b) => a + b, 0);
     const oppCost = c.$$(`opp equipments`).map((entity) => costOfEquipment(entity.state)).reduce((a, b) => a + b, 0);
