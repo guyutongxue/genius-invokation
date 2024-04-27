@@ -55,6 +55,7 @@ import {
 } from "./type";
 import { combatStatus, status, equipment, support } from "./entity";
 import { GuessedTypeOfQuery } from "../query/types";
+import { GiTcgDataError } from "../error";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -313,6 +314,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
   }
 
   done(): CardHandle {
+    if (this._targetQueries.length > 0 && this._doSameWhenDisposed) {
+      throw new GiTcgDataError(`Cannot specify targets when using .doSameWhenDisposed().`);
+    }
     if (this._satiatedTarget !== null) {
       const target = this._satiatedTarget;
       this.operations.push((c) => c.characterStatus(SATIATED_ID, target));
