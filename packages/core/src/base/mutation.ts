@@ -87,6 +87,7 @@ export interface SwitchActiveM {
 export interface RemoveCardM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
+  readonly where : "hands" | "piles";
   readonly used: boolean;
   readonly oldState: CardState;
 }
@@ -262,10 +263,10 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "removeCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
-        const cardIdx = player.hands.findIndex((c) => c.id === m.oldState.id);
+        const cardIdx = player[m.where].findIndex((c) => c.id === m.oldState.id);
         if (cardIdx === -1) {
           throw new GiTcgCoreInternalError(
-            `Card ${m.oldState.id} not found in hands`,
+            `Card ${m.oldState.id} not found in ${m.where} of ${m.who}`,
           );
         }
         player.hands.splice(cardIdx, 1);
@@ -383,7 +384,7 @@ export function stringifyMutation(m: Mutation): string | null {
       return `Switch active of player ${m.who} to ${stringifyState(m.value)}`;
     }
     case "removeCard": {
-      return `Dispose card ${stringifyState(m.oldState)} of player ${m.who} (${
+      return `Dispose card ${stringifyState(m.oldState)} of player ${m.who}'s ${m.where} (${
         m.used ? "used" : "not used"
       })`;
     }

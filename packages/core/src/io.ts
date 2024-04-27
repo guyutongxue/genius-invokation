@@ -72,7 +72,7 @@ export function exposeMutation(
         path: m.path,
         who: m.who,
         id: m.value.id,
-        definitionId: m.who === who ? Math.floor(m.value.definition.id) : 0,
+        definitionId: m.who === who ? m.value.definition.id : 0,
       };
     }
     case "switchActive": {
@@ -80,16 +80,17 @@ export function exposeMutation(
         type: "switchActive",
         who: m.who,
         id: m.value.id,
-        definitionId: Math.floor(m.value.definition.id),
+        definitionId: m.value.definition.id,
       };
     }
     case "removeCard": {
       return {
         type: "removeCard",
         who: m.who,
+        where: m.where,
         used: m.used,
         id: m.oldState.id,
-        definitionId: Math.floor(m.oldState.definition.id),
+        definitionId: m.oldState.definition.id,
       };
     }
     case "createCard": {
@@ -99,7 +100,7 @@ export function exposeMutation(
         id: m.value.id,
         definitionId:
           m.who === who && m.target === "hands"
-            ? Math.floor(m.value.definition.id)
+            ? m.value.definition.id
             : 0,
         target: m.target,
       };
@@ -109,28 +110,28 @@ export function exposeMutation(
         type: "createCharacter",
         who: m.who,
         id: m.value.id,
-        definitionId: Math.floor(m.value.definition.id),
+        definitionId: m.value.definition.id,
       };
     }
     case "createEntity": {
       return {
         type: "createEntity",
         id: m.value.id,
-        definitionId: Math.floor(m.value.definition.id),
+        definitionId: m.value.definition.id,
       };
     }
     case "removeEntity": {
       return {
         type: "removeEntity",
         id: m.oldState.id,
-        definitionId: Math.floor(m.oldState.definition.id),
+        definitionId: m.oldState.definition.id,
       };
     }
     case "modifyEntityVar": {
       return {
         type: "modifyEntityVar",
         id: m.state.id,
-        definitionId: Math.floor(m.state.definition.id),
+        definitionId: m.state.definition.id,
         varName: m.varName,
         value: m.value,
       };
@@ -139,7 +140,7 @@ export function exposeMutation(
       return {
         type: "replaceCharacterDefinition",
         id: m.state.id,
-        newDefinitionId: Math.floor(m.newDefinition.id),
+        newDefinitionId: m.newDefinition.id,
       };
     }
     case "resetDice": {
@@ -183,7 +184,7 @@ function exposeEntity(e: EntityState): EntityData {
   }
   return {
     id: e.id,
-    definitionId: Math.floor(e.definition.id),
+    definitionId: e.definition.id,
     variable: e.definition.visibleVarName
       ? e.variables[e.definition.visibleVarName] ?? null
       : null,
@@ -196,7 +197,7 @@ function exposeEntity(e: EntityState): EntityData {
 function exposeCard(c: CardState, hide: boolean): CardData {
   return {
     id: c.id,
-    definitionId: hide ? 0 : Math.floor(c.definition.id),
+    definitionId: hide ? 0 : c.definition.id,
     definitionCost: hide ? [] : [...c.definition.onPlay.requiredCost],
   };
 }
@@ -204,7 +205,7 @@ function exposeCard(c: CardState, hide: boolean): CardData {
 function exposeCharacter(ch: CharacterState): CharacterData {
   return {
     id: ch.id,
-    definitionId: Math.floor(ch.definition.id),
+    definitionId: ch.definition.id,
     defeated: !ch.variables.alive,
     entities: ch.entities.map(exposeEntity),
     health: ch.variables.health,
@@ -216,7 +217,7 @@ function exposeCharacter(ch: CharacterState): CharacterData {
 
 function exposeInitiativeSkill(skill: InitiativeSkillDefinition): SkillData {
   return {
-    definitionId: Math.floor(skill.id),
+    definitionId: skill.id,
     definitionCost: [...skill.requiredCost],
   };
 }
@@ -253,7 +254,7 @@ export function exposeAction(action: ActionInfo): Action {
     case "useSkill": {
       return {
         type: "useSkill",
-        skill: Math.floor(action.skill.definition.id),
+        skill: action.skill.definition.id,
         cost: action.cost,
         preview: exposeState(action.who, action.preview),
       };

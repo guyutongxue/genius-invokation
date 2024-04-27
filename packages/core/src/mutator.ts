@@ -112,6 +112,7 @@ export abstract class StateMutator {
       this.mutate({
         type: "removeCard",
         who,
+        where: "hands",
         oldState: candidate,
         used: false,
       });

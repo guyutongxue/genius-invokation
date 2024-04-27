@@ -31,6 +31,7 @@ import {
   WeaponCardTag,
   PlayCardSkillDefinition,
   CardDefinition,
+  DisposeCardSkillDefinition,
 } from "../base/card";
 import { CharacterTag } from "../base/character";
 import { ExEntityType } from "../base/entity";
@@ -354,6 +355,21 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       action,
     };
     registerSkill(skillDef);
+    let onDispose: DisposeCardSkillDefinition | undefined = void 0;
+    if (this._doSameWhenDisposed) {
+      const disposeDef: DisposeCardSkillDefinition = {
+        __definition: "skills",
+        type: "skill",
+        skillType: "disposeCard",
+        id: this.cardId + 0.01,
+        triggerOn: null,
+        requiredCost: [],
+        gainEnergy: false,
+        action: action as any, // FIX ME maybe
+      };
+      registerSkill(disposeDef);
+      onDispose = disposeDef;
+    }
     const cardDef: CardDefinition = {
       __definition: "cards",
       id: this.cardId,
@@ -363,7 +379,7 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
       getTarget: targetGetter,
       filter: filterFn,
       onPlay: skillDef,
-      onDispose: this._doSameWhenDisposed ? skillDef : undefined,
+      onDispose: onDispose,
     };
     registerCard(cardDef);
     return this.cardId as CardHandle;

@@ -54,6 +54,7 @@ interface SwitchActiveEM {
 interface RemoveCardEM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
+  readonly where: "hands" | "piles";
   readonly used: boolean;
   readonly id: number;
   readonly definitionId: number;
