@@ -45,7 +45,7 @@ export interface CardSkillEventArg {
 }
 
 export type PlayCardSkillDefinition = InitiativeSkillDefinition<CardSkillEventArg>;
-export type DisposeCardSkillDefinition = InitiativeSkillDefinition<CardSkillEventArg>;
+export type DisposeCardSkillDefinition = InitiativeSkillDefinition<void>;
 export type PlayCardFilter = (
   state: GameState,
   skillInfo: SkillInfo,

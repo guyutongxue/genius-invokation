@@ -730,6 +730,7 @@ export class Game extends StateMutator {
             this.mutate({
               type: "removeCard",
               who,
+              where: "hands",
               oldState: actionInfo.card,
               used: false,
             });
@@ -737,6 +738,7 @@ export class Game extends StateMutator {
             this.mutate({
               type: "removeCard",
               who,
+              where: "hands",
               oldState: actionInfo.card,
               used: true,
             });
@@ -762,6 +764,7 @@ export class Game extends StateMutator {
           this.mutate({
             type: "removeCard",
             who,
+            where: "hands",
             oldState: actionInfo.card,
             used: false,
           });

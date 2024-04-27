@@ -715,6 +715,17 @@ export class ReplaceCharacterDefinitionEventArg extends CharacterEventArg {
   }
 }
 
+class DisposeCardEventArg extends PlayerEventArg {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    public readonly card: CardState,
+    public readonly fromHands: boolean,
+  ) {
+    super(state, who);
+  }
+}
+
 export const EVENT_MAP = {
   onBattleBegin: EventArg,
 
@@ -737,6 +748,7 @@ export const EVENT_MAP = {
 
   onEnter: EnterEventArg,
   onDispose: EntityEventArg,
+  onDisposeCard: DisposeCardEventArg,
 
   modifyZeroHealth: ZeroHealthEventArg,
   onRevive: CharacterEventArg,
@@ -784,22 +796,10 @@ class UseSkillRequestArg extends RequestArg {
   }
 }
 
-class TriggerCardOnDisposeRequestArg extends RequestArg {
-  constructor(
-    via: SkillInfo,
-    public readonly who: 0 | 1,
-    public readonly card: CardState,
-  ) {
-    super(via);
-  }
-
-}
-
 const REQUEST_MAP = {
   requestSwitchHands: SwitchHandsRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
-  requestTriggerCardOnDispose: TriggerCardOnDisposeRequestArg,
 } satisfies Record<string, new (...args: any[]) => RequestArg>;
 type RequestMap = typeof REQUEST_MAP;
 type RequestNames = keyof RequestMap;

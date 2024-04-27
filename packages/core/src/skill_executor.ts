@@ -380,23 +380,6 @@ export class SkillExecutor extends StateMutator {
           `request player ${arg.who} to switch hands`,
         );
         await this.io.switchCard(arg.who);
-      } else if (name === "requestTriggerCardOnDispose") {
-        using l = this.subLog(
-          DetailLogType.Event,
-          `request player ${arg.who} to trigger card on dispose`,
-        );
-        const skillDef = arg.card.definition.onDispose;
-        if (skillDef) {
-          const skillInfo: SkillInfo = {
-            caller: arg.via.caller,
-            definition: skillDef,
-            fromCard: arg.card,
-            requestBy: arg.via,
-            charged: false,
-            plunging: false,
-          };
-          await this.finalizeSkill(skillInfo, void 0);
-        }
       } else if (name === "requestUseSkill") {
         using l = this.subLog(
           DetailLogType.Event,
