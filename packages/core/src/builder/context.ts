@@ -694,7 +694,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             break;
           }
           case "append": {
-            const appendResult = recreateBehavior.appendValue + oldValue;
+            const appendValue = overrideVariables[name] ?? recreateBehavior.appendValue;
+            const appendResult = appendValue + oldValue;
             newValues[name] = Math.min(
               appendResult,
               recreateBehavior.appendLimit,
@@ -731,7 +732,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         variables: Object.fromEntries(
           Object.entries(varConfigs).map(([name, { initialValue }]) => [
             name,
-            initialValue,
+            overrideVariables[name] ?? initialValue,
           ]),
         ),
       };
