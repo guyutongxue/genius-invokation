@@ -927,6 +927,7 @@ export class Game extends StateMutator {
     const resultDiceType = elementOfCharacter(activeCh.definition);
     result.push(
       ...player.hands
+        .filter((c) => !c.definition.tags.includes("noTuning"))
         .map<ElementalTuningInfo>((c) => ({
           type: "elementalTuning",
           card: c,
