@@ -927,6 +927,6 @@ export const UnderseaTreasure = card(303230)
  * 生成6张海底宝藏，随机地置入我方牌库中。
  */
 export const UnderwaterTreasureHunt = card(332031)
-  .costSame(1)
+  .costSame(2)
   .createPileCards(UnderseaTreasure, 6, "random")
   .done();
