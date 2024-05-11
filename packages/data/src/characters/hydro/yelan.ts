@@ -43,7 +43,7 @@ export const BreakthroughStatus = status(112091)
 export const ExquisiteThrow = combatStatus(112092)
   .duration(2)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
-  .damage(DamageType.Hydro, 2)
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -85,7 +85,7 @@ export const DepthclarionDice = skill(12093)
   .type("burst")
   .costHydro(3)
   .costEnergy(3)
-  .damage(DamageType.Hydro, 1)
+  .damage(DamageType.Hydro, 3)
   .combatStatus(ExquisiteThrow)
   .done();
 
