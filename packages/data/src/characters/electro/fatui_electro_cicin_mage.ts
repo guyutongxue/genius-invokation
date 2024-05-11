@@ -70,6 +70,7 @@ export const ElectroCicin = summon(124041)
  */
 export const SurgingThunder = skill(24044)
   .type("burst")
+  .noEnergy()
   .damage(DamageType.Electro, 2)
   .done();
 

@@ -414,8 +414,9 @@ export class ModifyActionEventArg<
       } else if (this.isPlayCard()) {
         originalCost = this.action.card.definition.onPlay.requiredCost;
       } else {
-        throw new GiTcgDataError(`Cannot addCost "omni" to action type ${this.action.type}`)
+        return;
       }
+      originalCost = originalCost.filter((type) => type !== DiceType.Energy);
       const targetType = originalCost[0] ?? DiceType.Same;
       if (originalCost.find((type) => type !== targetType)) {
         throw new GiTcgDataError("Cannot addCost omni to action whose original cost have multiple dice requirement");

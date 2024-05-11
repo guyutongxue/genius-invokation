@@ -108,7 +108,11 @@ function initialize() {
 
   reaction(Reaction.ElectroCharged).do(pierceToOther).done();
 
-  reaction(Reaction.Frozen).characterStatus(Frozen, "@damage.target").done();
+  reaction(Reaction.Frozen)
+    .do((c, e) => {
+      c.characterStatus(Frozen, `character with id ${e.id}`);
+    })
+    .done();
 
   reaction(Reaction.SwirlCryo).do(swirl(DamageType.Cryo)).done();
 

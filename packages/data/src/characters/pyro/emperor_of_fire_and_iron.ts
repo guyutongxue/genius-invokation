@@ -24,6 +24,7 @@ import { character, skill, status, card, DamageType, CardHandle } from "@gi-tcg/
  */
 export const SearingBlast = skill(23046)
   .type("burst")
+  .noEnergy()
   .damage(DamageType.Piercing, 2, "opp standby")
   .do((c) => {
     const value = c.$(`status with definition id ${ArmoredCrabCarapace} at @self`)?.getVariable("shield") ?? 0;

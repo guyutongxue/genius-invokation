@@ -33,6 +33,7 @@ export const AbyssalTides = status(122036)
  */
 export const RipplingBlades = skill(22035)
   .type("elemental")
+  .noEnergy()
   .costHydro(3)
   .damage(DamageType.Hydro, 1)
   .done();

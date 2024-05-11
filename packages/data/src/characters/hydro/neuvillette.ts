@@ -24,6 +24,7 @@ import { character, skill, status, combatStatus, card, DamageType, CharacterStat
  */
 export const EquitableJudgment = skill(12104)
   .type("normal")
+  .noEnergy()
   .do((c) => {
     if (c.self.health >= 6) {
       c.damage(DamageType.Hydro, 3);
