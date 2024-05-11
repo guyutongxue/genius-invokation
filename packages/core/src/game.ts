@@ -73,6 +73,8 @@ import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 import { InternalNotifyOption, NotifyOption, StateMutator } from "./mutator";
 
+type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
+
 export interface PlayerConfig {
   readonly cards: number[];
   readonly characters: number[];
@@ -142,9 +144,7 @@ export class Game extends StateMutator {
 
   private _stateLog: GameStateLogEntry[] = [];
   private _terminated = false;
-  private finishPromise: Promise<0 | 1 | null> | null = null;
-  private resolveFinishPromise: () => void = () => {};
-  private rejectFinishPromise: (e: GiTcgError) => void = () => {};
+  private finishResolvers: Resolvers<0 | 1 | null> | null = null;
 
   constructor(opt: GameOption) {
     const config = mergeGameConfigWithDefault(opt.gameConfig);
@@ -307,15 +307,12 @@ export class Game extends StateMutator {
   }
 
   async start(): Promise<0 | 1 | null> {
-    if (this.finishPromise !== null) {
+    if (this.finishResolvers !== null) {
       throw new GiTcgCoreInternalError(
         `Game already started. Please use a new Game instance instead of start multiple time.`,
       );
     }
-    this.finishPromise = new Promise((resolve, reject) => {
-      this.resolveFinishPromise = () => resolve(this.state.winner);
-      this.rejectFinishPromise = (e) => reject(e);
-    });
+    this.finishResolvers = Promise.withResolvers();
     this.logger.clearLogs();
     (async () => {
       try {
@@ -347,7 +344,7 @@ export class Game extends StateMutator {
           this.io.onIoError?.(e);
           await this.gotWinner(flip(e.who));
         } else if (e instanceof GiTcgError) {
-          this.rejectFinishPromise(e);
+          this.finishResolvers?.reject(e);
         } else {
           let message = String(e);
           if (e instanceof Error) {
@@ -356,17 +353,17 @@ export class Game extends StateMutator {
               message += "\n" + e.stack;
             }
           }
-          this.rejectFinishPromise(
+          this.finishResolvers?.reject(
             new GiTcgCoreInternalError(`Unexpected error: ` + message),
           );
         }
       }
     })();
-    return this.finishPromise;
+    return this.finishResolvers.promise;
   }
 
   async startFromState(state: GameState) {
-    if (this.finishPromise !== null) {
+    if (this.finishResolvers !== null) {
       throw new GiTcgCoreInternalError(
         `Game already started. Please use a new Game instance instead of start multiple time.`,
       );
@@ -376,7 +373,7 @@ export class Game extends StateMutator {
   }
 
   async startWithStateLog(log: readonly GameStateLogEntry[]) {
-    if (this.finishPromise !== null) {
+    if (this.finishResolvers !== null) {
       throw new GiTcgCoreInternalError(
         `Game already started. Please use a new Game instance instead of start multiple time.`,
       );
@@ -407,7 +404,7 @@ export class Game extends StateMutator {
       }
       await this.notifyAndPause();
     }
-    this.resolveFinishPromise();
+    this.finishResolvers?.resolve(winner);
     if (!this._terminated) {
       this._terminated = true;
       Object.freeze(this);
@@ -415,7 +412,7 @@ export class Game extends StateMutator {
   }
   /** 强制终止游戏，不再进行额外改动 */
   terminate() {
-    this.rejectFinishPromise(
+    this.finishResolvers?.reject(
       new GiTcgCoreInternalError("User call terminate."),
     );
     if (!this._terminated) {
