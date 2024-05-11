@@ -1209,13 +1209,15 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       case "spaceAround":
         const spaces = count + 1;
         const step = Math.floor(this.player.piles.length / spaces);
+        const rest = this.player.piles.length % spaces;
         for (let i = 0, j = step; i < count; i++, j += step) {
+          const offset = i + (j < rest ? 1 : 0);
           this.mutate({
             type: "createCard",
             who,
             target: "piles",
             value: cards[i],
-            targetIndex: j + i,
+            targetIndex: j + offset,
           });
         }
         break;
