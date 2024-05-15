@@ -1,19 +1,27 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, card, combatStatus, summon } from "@gi-tcg/core/builder";
+import {
+  CardHandle,
+  DamageType,
+  DiceType,
+  SkillHandle,
+  card,
+  combatStatus,
+  summon,
+} from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -38,7 +46,6 @@ export const HydroSamachurl = summon(303212)
   .endPhaseDamage(DamageType.Hydro, 1)
   .usage(2)
   .done();
-
 
 /**
  * @id 303213
@@ -211,9 +218,15 @@ export const ElementalResonanceEnduringRock = card(331602)
   .requireCharacterTag("geo")
   .toCombatStatus(303162)
   .oneDuration()
-  .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
+  .once(
+    "dealDamage",
+    (c, e) =>
+      e.source.definition.type === "character" && e.type === DamageType.Geo,
+  )
   .do((c) => {
-    c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
+    c
+      .$("my combat statuses with tag (shield) limit 1")
+      ?.addVariable("shield", 3);
     return true;
   })
   .done();
@@ -420,9 +433,7 @@ export const ChangingShifts = card(332002)
  * @description
  * 选择任意元素骰重投，可重投2次。
  */
-export const TossUp = card(332003)
-  .reroll(2)
-  .done();
+export const TossUp = card(332003).reroll(2).done();
 
 /**
  * @id 332004
@@ -430,10 +441,7 @@ export const TossUp = card(332003)
  * @description
  * 抓2张牌。
  */
-export const Strategize = card(332004)
-  .costSame(1)
-  .drawCards(2)
-  .done();
+export const Strategize = card(332004).costSame(1).drawCards(2).done();
 
 /**
  * @id 303205
@@ -441,9 +449,7 @@ export const Strategize = card(332004)
  * @description
  * 本回合无法再打出「本大爷还没有输！」。
  */
-export const IHaventLostYetCooldown = combatStatus(303205)
-  .oneDuration()
-  .done()
+export const IHaventLostYetCooldown = combatStatus(303205).oneDuration().done();
 
 /**
  * @id 332005
@@ -452,7 +458,11 @@ export const IHaventLostYetCooldown = combatStatus(303205)
  * 本回合有我方角色被击倒，才能打出：生成1个万能元素，我方当前出战角色获得1点充能。（每回合中，最多只能打出1张「本大爷还没有输！」。）
  */
 export const IHaventLostYet = card(332005)
-  .filter((c) => c.player.hasDefeated && !c.$(`my combat status with definition id ${IHaventLostYetCooldown}`))
+  .filter(
+    (c) =>
+      c.player.hasDefeated &&
+      !c.$(`my combat status with definition id ${IHaventLostYetCooldown}`),
+  )
   .generateDice(DiceType.Omni, 1)
   .gainEnergy(1, "my active")
   .combatStatus(IHaventLostYetCooldown)
@@ -608,11 +618,11 @@ export const AbyssalSummons = card(332015)
   .do((c) => {
     c.summon(
       c.random(
-        CryoHilichurlShooter, 
-        HydroSamachurl, 
-        HilichurlBerserker, 
-        ElectroHilichurlShooter
-      )
+        CryoHilichurlShooter,
+        HydroSamachurl,
+        HilichurlBerserker,
+        ElectroHilichurlShooter,
+      ),
     );
   })
   .done();
@@ -633,9 +643,9 @@ export const FatuiConspiracy = card(332016)
         FatuiAmbusherCryoCicinMage,
         FatuiAmbusherMirrorMaiden,
         FatuiAmbusherPyroslingerBracer,
-        FatuiAmbusherElectrohammerVanguard
+        FatuiAmbusherElectrohammerVanguard,
       ),
-      "opp"
+      "opp",
     );
   })
   .done();
@@ -650,8 +660,15 @@ export const PlungingStrike = card(332017)
   .costSame(3)
   .tags("action")
   .addTarget("my characters")
-  .switchActive("@targets.0")
-  .useSkill("normal")
+  .do((c, e) => {
+    const target = e.targets[0];
+    const skills = c.of(target).state.definition.skills;
+    const normalSkill = skills.find((sk) => sk.skillType === "normal");
+    c.switchActive(target);
+    if (normalSkill) {
+      c.useSkill(normalSkill.id as SkillHandle);
+    }
+  })
   .done();
 
 /**
@@ -827,9 +844,13 @@ export const MachineAssemblyLine = card(332028)
   .variable("readiness", 0)
   .on("damagedOrHealed")
   .addVariableWithMax("readiness", 1, 2)
-  .once("deductDiceCard", (c, e) =>
-    e.hasOneOfCardTag("weapon", "artifact") &&
-    e.action.card.definition.onPlay.requiredCost.length <= c.getVariable("readiness"))
+  .once(
+    "deductDiceCard",
+    (c, e) =>
+      e.hasOneOfCardTag("weapon", "artifact") &&
+      e.action.card.definition.onPlay.requiredCost.length <=
+        c.getVariable("readiness"),
+  )
   .do((c, e) => {
     e.deductCost(DiceType.Omni, e.cost.length);
     c.setVariable("readiness", 0);
@@ -847,7 +868,9 @@ export const SunyataFlower = card(332029)
   .addTarget("my supports")
   .dispose("@targets.0")
   .do((c) => {
-    const candidates = [...c.state.data.cards.values()].filter((card) => card.type === "support");
+    const candidates = [...c.state.data.cards.values()].filter(
+      (card) => card.type === "support",
+    );
     const card0 = c.random(...candidates);
     const card1 = c.random(...candidates);
     c.createHandCard(card0.id as CardHandle);

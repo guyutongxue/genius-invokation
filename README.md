@@ -34,12 +34,12 @@
 <tr>
 <td>
 
-如果有意图参与本项目开发，欢迎加 QQ 群 693466327 讨论。
+如果有意图参与本项目开发，欢迎加 QQ 群 [693466327](https://qm.qq.com/q/X7XpZg4rW8) 讨论。
 
 </td>
 <td>
 
-![qq_group_qr](./docs/images/qq_group.jpg)
+[![qq_group_qr](./docs/images/qq_group.jpg)](https://qm.qq.com/q/X7XpZg4rW8)
 
 </td>
 <tr>

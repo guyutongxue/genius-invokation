@@ -790,7 +790,6 @@ class UseSkillRequestArg extends RequestArg {
   constructor(
     requestBy: SkillInfo,
     public readonly who: 0 | 1,
-    public readonly caller: CharacterState,
     public readonly requestingSkillId: number,
   ) {
     super(requestBy);
