@@ -527,6 +527,10 @@ export class Game extends StateMutator {
     this.mutate({
       type: "stepRound",
     });
+    await this.handleEvent("onRoundBegin", new EventArg(this.state));
+    if (this.state.roundNumber >= this.config.maxRounds) {
+      this.gotWinner(null);
+    }
     // onRoll event
     interface RollParams {
       fixed: readonly DiceType[];
@@ -569,30 +573,6 @@ export class Game extends StateMutator {
     this.mutate({
       type: "changePhase",
       newPhase: "action",
-    });
-    this.mutate({
-      type: "setPlayerFlag",
-      who: 0,
-      flagName: "hasDefeated",
-      value: false,
-    });
-    this.mutate({
-      type: "setPlayerFlag",
-      who: 1,
-      flagName: "hasDefeated",
-      value: false,
-    });
-    this.mutate({
-      type: "setPlayerFlag",
-      who: 0,
-      flagName: "declaredEnd",
-      value: false,
-    });
-    this.mutate({
-      type: "setPlayerFlag",
-      who: 1,
-      flagName: "declaredEnd",
-      value: false,
     });
     await this.handleEvent("onActionPhase", new EventArg(this.state));
   }
@@ -824,15 +804,35 @@ export class Game extends StateMutator {
       for (let i = 0; i < 2; i++) {
         this.drawCard(who);
       }
-    }
-    if (this.state.roundNumber >= this.config.maxRounds) {
-      this.gotWinner(null);
-    } else {
-      this.mutate({
-        type: "changePhase",
-        newPhase: "roll",
-      });
-    }
+    } 
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 0,
+      flagName: "hasDefeated",
+      value: false,
+    });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 1,
+      flagName: "hasDefeated",
+      value: false,
+    });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 0,
+      flagName: "declaredEnd",
+      value: false,
+    });
+    this.mutate({
+      type: "setPlayerFlag",
+      who: 1,
+      flagName: "declaredEnd",
+      value: false,
+    });
+    this.mutate({
+      type: "changePhase",
+      newPhase: "roll",
+    });
   }
 
   async availableAction(): Promise<ActionInfoWithModification[]> {

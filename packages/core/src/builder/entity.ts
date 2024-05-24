@@ -357,7 +357,7 @@ export class EntityBuilder<
         0,
         this._usagePerRoundIndex,
       );
-      this.on("actionPhase")
+      this.on("roundBegin")
         .do((c, e) => {
           const self = c.self;
           // 恢复每回合使用次数

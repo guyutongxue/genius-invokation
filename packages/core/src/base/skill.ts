@@ -729,6 +729,7 @@ class DisposeCardEventArg extends PlayerEventArg {
 
 export const EVENT_MAP = {
   onBattleBegin: EventArg,
+  onRoundBegin: EventArg,
 
   modifyRoll: ModifyRollEventArg,
   onActionPhase: EventArg,
