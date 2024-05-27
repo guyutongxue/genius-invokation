@@ -124,11 +124,10 @@ export class EntityBuilder<
       throw new GiTcgDataError("Only character status can be unique");
     }
     const ids = [this.id, ...otherIds];
-    const targetQuery = ids.map((id) => `(status with definition id ${id})`)
+    const targetQuery = ids
+      .map((id) => `(status with definition id ${id})`)
       .join(" or ");
-    return this.on("enter")
-      .dispose(`(${targetQuery}) and not @self`)
-      .endOn();
+    return this.on("enter").dispose(`(${targetQuery}) and not @self`).endOn();
   }
 
   on<E extends DetailedEventNames>(
@@ -348,15 +347,12 @@ export class EntityBuilder<
     if (this.type === "status" || this.type === "equipment") {
       this.on("defeated").dispose().endOn();
     }
-    // on action phase clean up
-    if (
-      this._usagePerRoundIndex > 0 ||
-      Reflect.has(this._varConfigs, "duration")
-    ) {
-      const usagePerRoundNames = USAGE_PER_ROUND_VARIABLE_NAMES.slice(
-        0,
-        this._usagePerRoundIndex,
-      );
+    // on each round begin clean up
+    const usagePerRoundNames = USAGE_PER_ROUND_VARIABLE_NAMES.filter((name) =>
+      Reflect.has(this._varConfigs, name),
+    );
+    const hasDuration = Reflect.has(this._varConfigs, "duration");
+    if (usagePerRoundNames.length > 0 || hasDuration) {
       this.on("roundBegin")
         .do((c, e) => {
           const self = c.self;
@@ -368,9 +364,11 @@ export class EntityBuilder<
             }
           }
           // 扣除持续回合数
-          self.addVariable("duration", -1);
-          if (self.getVariable("duration")! <= 0) {
-            self.dispose();
+          if (hasDuration) {
+            self.addVariable("duration", -1);
+            if (self.getVariable("duration")! <= 0) {
+              self.dispose();
+            }
           }
         })
         .endOn();
