@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/webui",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Web UI for Genius Invokation TCG",
   "type": "module",
   "exports": {
