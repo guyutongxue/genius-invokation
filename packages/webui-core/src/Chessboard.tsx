@@ -178,6 +178,7 @@ export interface PlayerContextValue {
   readonly onClick: (id: number) => void;
   readonly setPrepareTuning: (value: boolean) => void;
   readonly assetApiEndpoint: Accessor<string>;
+  readonly assetAltText: (id: number) => string | undefined;
 }
 
 export interface EventContextValue {
@@ -198,6 +199,7 @@ export interface WebUiOption {
   onGiveUp?: () => void;
   alternativeAction?: AgentActions;
   assetApiEndpoint?: string;
+  assetAltText?: (id: number) => string;
 }
 
 export interface PlayerIOWithCancellation extends PlayerIO {
@@ -492,6 +494,7 @@ export function createPlayer(
     onClick: notifyElementClicked,
     setPrepareTuning,
     assetApiEndpoint,
+    assetAltText: (id) => opt.assetAltText?.(id),
   };
 
   const ChessboardWithIO = () => (
@@ -659,10 +662,11 @@ function Chessboard(props: ChessboardProps) {
 
 export interface StandaloneChessboardProps extends ChessboardProps {
   assetApiEndpoint?: string;
+  assetAltText?: (id: number) => string;
 }
 
 export function StandaloneChessboard(props: StandaloneChessboardProps) {
-  const [local, restProps] = splitProps(props, ["assetApiEndpoint"]);
+  const [local, restProps] = splitProps(props, ["assetApiEndpoint", "assetAltText"]);
 
   const contextValue = (): PlayerContextValue => ({
     allClickable: [],
@@ -670,6 +674,7 @@ export function StandaloneChessboard(props: StandaloneChessboardProps) {
     allSelected: [],
     assetApiEndpoint: () =>
       local.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
+    assetAltText: (id) => local.assetAltText?.(id),
     onClick: () => {},
     setPrepareTuning: () => {},
   });

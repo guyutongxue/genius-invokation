@@ -168,7 +168,6 @@ export function CharacterArea(props: CharacterAreaProps) {
                 "border-color": `var(--c-${DICE_COLOR[damaged().type]})`,
                 color: `var(--c-${DICE_COLOR[damaged().type]})`,
               }}
-              title={damaged().log}
             >
               {damaged().type >= 9 /* heal/revive */ ? "+" : "-"}
               {damaged().value}

@@ -17,6 +17,7 @@ import {
 import tcgData from "@gi-tcg/data";
 import { createPlayer } from "@gi-tcg/webui-core";
 import { decode as decodeShareCode } from "@gi-tcg/utils";
+import { getName } from "./names";
 
 export interface MultiplayerHostProps {
   deck: string;
@@ -55,7 +56,9 @@ export function MultiplayerHost(props: MultiplayerHostProps) {
         setWho(data.who);
         const hostConfig = decodeShareCode(props.deck);
         const guestConfig = decodeShareCode(data.guestDeck);
-        const [hostIo, Chessboard] = createPlayer(data.who);
+        const [hostIo, Chessboard] = createPlayer(data.who, {
+          assetAltText: getName,
+        });
         guestIo = {
           notify: (...params) => {
             socket?.send(JSON.stringify({ method: "notify", params }));
