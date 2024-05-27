@@ -68,7 +68,7 @@ import {
   GiTcgError,
   GiTcgIOError,
 } from "./error";
-import { DetailLogType, DetailLogger, GameStateLogEntry } from "./log";
+import { DetailLogType, DetailLogger, GameStateLogEntry, IDetailLogger } from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 import { InternalNotifyOption, NotifyOption, StateMutator } from "./mutator";
@@ -140,7 +140,7 @@ export class Game extends StateMutator {
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   private readonly io: GameIO;
   /** @internal */
-  public readonly logger = new DetailLogger();
+  public readonly logger: DetailLogger;
 
   private _stateLog: GameStateLogEntry[] = [];
   private _terminated = false;
@@ -168,6 +168,7 @@ export class Game extends StateMutator {
     };
     const logger = new DetailLogger();
     super(initialState, { logger });
+    this.logger = logger;
     this.config = mergeGameConfigWithDefault(opt.gameConfig);
     this.playerConfigs = opt.playerConfigs;
     this.io = opt.io;
