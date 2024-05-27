@@ -9,6 +9,7 @@
 | 事件名                         | 含义                             |
 | ------------------------------ | -------------------------------- |
 | `onBattleBegin`                | 战斗开始时                       |
+| `onRoundBegin`                 | 每回合开始时                     |
 | `onActionPhase`                | 行动阶段开始时                   |
 | `onEndPhase`                   | 结束阶段时                       |
 | `onBeforeAction`               | 玩家行动前                       |
@@ -62,6 +63,7 @@
 | `beforeDamaged`              | `modifyDamage1`                | 我方/所附着角色受到伤害（第二次修改）     |
 | `beforeDefeated`             | `modifyZeroHealth`             | 我方/所附着角色免于被击倒                 |
 | `battleBegin`                | `onBattleBegin`                | 等价                                      |
+| `roundBegin`                 | `onRoundBegin`                 | 等价                                      |
 | `actionPhase`                | `onActionPhase`                | 等价                                      |
 | `endPhase`                   | `onEndPhase`                   | 等价                                      |
 | `beforeAction`               | `onBeforeAction`               | **我方**玩家行动前                        |

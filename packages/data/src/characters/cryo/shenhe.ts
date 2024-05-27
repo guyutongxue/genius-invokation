@@ -42,7 +42,7 @@ export const TalismanSpirit = summon(111073)
 export const IcyQuill01 = combatStatus(111072)
   .conflictWith(111071)
   .variable("noUsageEffect", 1, { visible: false }) // 每回合一次不消耗可用次数
-  .on("actionPhase")
+  .on("roundBegin")
   .setVariable("noUsageEffect", 1)
   .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
   .usage(2, { autoDecrease: false })

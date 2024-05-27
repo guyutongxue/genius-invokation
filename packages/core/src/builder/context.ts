@@ -1302,27 +1302,11 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   reroll(times: number) {
     this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
-  useSkill(skill: SkillHandle | "normal") {
-    const activeCh = this.$("active character")!.state;
-    let skillId;
-    if (skill === "normal") {
-      const normalSkills = activeCh.definition.initiativeSkills.filter(
-        (sk) => sk.skillType === "normal",
-      );
-      if (normalSkills.length === 0) {
-        throw new GiTcgDataError(
-          "Expected one normal skill on active character",
-        );
-      }
-      skillId = normalSkills[0].id;
-    } else {
-      skillId = skill;
-    }
+  useSkill(skillId: SkillHandle) {
     this.emitEvent(
       "requestUseSkill",
       this.skillInfo,
       this.callerArea.who,
-      activeCh,
       skillId,
     );
   }

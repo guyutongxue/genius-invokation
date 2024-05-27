@@ -729,6 +729,7 @@ class DisposeCardEventArg extends PlayerEventArg {
 
 export const EVENT_MAP = {
   onBattleBegin: EventArg,
+  onRoundBegin: EventArg,
 
   modifyRoll: ModifyRollEventArg,
   onActionPhase: EventArg,
@@ -790,7 +791,6 @@ class UseSkillRequestArg extends RequestArg {
   constructor(
     requestBy: SkillInfo,
     public readonly who: 0 | 1,
-    public readonly caller: CharacterState,
     public readonly requestingSkillId: number,
   ) {
     super(requestBy);

@@ -118,13 +118,13 @@ export class SkillExecutor extends StateMutator {
       });
     }
     await this.notifyAndPause({
-      mutations: preExposedMutations
+      mutations: preExposedMutations,
     });
 
     const [newState, eventList] = (0, skillDef.action)(
       this.state,
-      { 
-        ...skillInfo, 
+      {
+        ...skillInfo,
         logger: this._io?.logger,
         onNotify: (opt) => {
           // FIX ME: 我们应当在此处 notify。
@@ -142,7 +142,7 @@ export class SkillExecutor extends StateMutator {
 
     // FIX ME
     await this.notifyAndPause({
-      mutations: postExposedMutations
+      mutations: postExposedMutations,
     });
 
     const damageEvents = eventList.filter(
@@ -385,15 +385,43 @@ export class SkillExecutor extends StateMutator {
           DetailLogType.Event,
           `another skill [skill:${arg.requestingSkillId}] is requested:`,
         );
-        const def = this.state.data.skills.get(arg.requestingSkillId);
-        if (typeof def === "undefined") {
-          throw new GiTcgDataError(
-            `Unknown skill id ${arg.requestingSkillId} (requested by ${arg.caller.id} (defId = ${arg.caller.definition.id}))`,
-          );
-        }
         const player = this.state.players[arg.who];
+        const activeCh = player.characters[getActiveCharacterIndex(player)];
+        if (
+          activeCh.entities.find((et) =>
+            et.definition.tags.includes("disableSkill"),
+          )
+        ) {
+          this.log(
+            DetailLogType.Other,
+            `Skill [skill:${
+              arg.requestingSkillId
+            }] (requested by ${stringifyState(
+              arg.via.caller,
+            )}) is requested, but current active character ${stringifyState(
+              activeCh,
+            )} is marked as skill-disabled`,
+          );
+          continue;
+        }
+        const def = activeCh.definition.initiativeSkills.find(
+          (sk) => sk.id === arg.requestingSkillId,
+        );
+        if (typeof def === "undefined") {
+          this.log(
+            DetailLogType.Other,
+            `Skill [skill:${
+              arg.requestingSkillId
+            }] (requested by ${stringifyState(
+              arg.via.caller,
+            )}) is not available on current active character ${stringifyState(
+              activeCh,
+            )}`,
+          );
+          continue;
+        }
         const skillInfo: SkillInfo = {
-          caller: arg.caller,
+          caller: activeCh,
           definition: def,
           fromCard: null,
           requestBy: arg.via,
