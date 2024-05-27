@@ -522,6 +522,11 @@ export class TriggeredSkillBuilder<
     if (opt?.name) {
       name = opt.name;
     } else {
+      if (this.parent._type === "character") {
+        throw new GiTcgDataError(
+          `You must explicitly set the name of usage when defining passive skill. Be careful that different passive skill should have distinct usage name.`,
+        );
+      }
       if (perRound) {
         if (
           this.parent._usagePerRoundIndex >=
