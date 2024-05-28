@@ -32,6 +32,7 @@ import "@gi-tcg/webui-core/style.css";
 import { For, Show, createSignal, onCleanup, onMount } from "solid-js";
 import { decode as decodeShareCode } from "@gi-tcg/utils";
 import { DetailLogViewer } from "./DetailLogViewer";
+import { getName } from "./names";
 
 export interface StandaloneParentProps {
   logs?: GameStateLogEntry[];
@@ -40,7 +41,9 @@ export interface StandaloneParentProps {
 }
 
 export function StandaloneParent(props: StandaloneParentProps) {
-  const [uiIo, Chessboard] = createPlayer(1);
+  const [uiIo, Chessboard] = createPlayer(1, {
+    assetAltText: getName
+  });
 
   const [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
 

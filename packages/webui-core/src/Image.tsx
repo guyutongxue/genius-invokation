@@ -23,14 +23,14 @@ export interface ImageProps extends ComponentProps<"img"> {
 
 export function Image(props: ImageProps) {
   const [local, rest] = splitProps(props, ["imageId", "width", "height"]);
-  const { assetApiEndpoint } = usePlayerContext();
+  const { assetApiEndpoint, assetAltText } = usePlayerContext();
   const [url] = createResource(() => cached(`${assetApiEndpoint()}/images/${local.imageId}?thumb=1`));
   const classNames = "flex items-center justify-center object-cover";
   const innerProps = (): ComponentProps<"img"> => ({
     ...rest,
     class: `${rest.class ?? ""} ${classNames}`,
     src: url(),
-    alt: `id = ${local.imageId}`,
+    alt: assetAltText(local.imageId) ?? `${local.imageId}`,
     draggable: "false",
     style: {
       background: url.state === "ready" ? void 0 : "#e5e7eb",
@@ -42,7 +42,7 @@ export function Image(props: ImageProps) {
     <Show
       when={url.state === "ready"}
       fallback={
-        <div {...(innerProps() as ComponentProps<"div">)}>{local.imageId}</div>
+        <div {...(innerProps() as ComponentProps<"div">)}>{innerProps().alt}</div>
       }
     >
       <img {...innerProps()} />

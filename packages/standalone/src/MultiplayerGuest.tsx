@@ -2,6 +2,7 @@ import { JSX, Match, Switch, createSignal, onCleanup, onMount } from "solid-js";
 import { PVP_ENDPOINT } from "./config";
 import { PlayerIO } from "@gi-tcg/core";
 import { createPlayer } from "@gi-tcg/webui-core";
+import { getName } from "./names";
 
 export interface MultiplayerGuestProps {
   deck: string;
@@ -26,6 +27,7 @@ export function MultiplayerGuest(props: MultiplayerGuestProps) {
             socket?.send(JSON.stringify({ method: "giveUp" }));
             io.giveUp = true;
           },
+          assetAltText: getName
         });
         guestIo = io;
         setChessboard(<Chessboard />);

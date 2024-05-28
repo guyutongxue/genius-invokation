@@ -1,5 +1,6 @@
 import { DetailLogEntry, DetailLogType } from "@gi-tcg/core";
 import { For, Show, createResource, createSignal, onMount } from "solid-js";
+import { names } from "./names";
 
 export interface DetailLogViewerProps {
   log: DetailLogEntry;
@@ -24,9 +25,7 @@ export function DetailLogViewer(props: DetailLogViewerProps) {
         return "gray";
     }
   };
-  const [names] = createResource(
-    () => import("./names.json") as Promise<{ default: Record<number, string> }>,
-  );
+  
   const text = () => {
     if (names.loading) {
       return props.log.value;
@@ -77,8 +76,7 @@ export function DetailLogViewer(props: DetailLogViewerProps) {
               );
             default: {
               const rid = Math.floor(id);
-              console.log(names(), rid);
-              let result = names()!.default[rid];
+              let result = names()![rid];
               if (result) {
                 if (rid !== id) {
                   result += "的响应技能";

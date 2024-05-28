@@ -96,7 +96,7 @@ export class EntityBuilder<
   }
 
   constructor(
-    private type: CallerType,
+    public _type: CallerType,
     private id: number,
   ) {}
 
@@ -120,7 +120,7 @@ export class EntityBuilder<
       .endOn();
   }
   unique(...otherIds: number[]) {
-    if (this.type !== "status") {
+    if (this._type !== "status") {
       throw new GiTcgDataError("Only character status can be unique");
     }
     const ids = [this.id, ...otherIds];
@@ -255,7 +255,7 @@ export class EntityBuilder<
   }
 
   prepare(skill: SkillHandle, hintCount?: number) {
-    if (this.type !== "status") {
+    if (this._type !== "status") {
       throw new GiTcgDataError("Only status can have prepare skill");
     }
     if (hintCount) {
@@ -344,7 +344,7 @@ export class EntityBuilder<
   }
 
   done(): EntityBuilderResultT<CallerType> {
-    if (this.type === "status" || this.type === "equipment") {
+    if (this._type === "status" || this._type === "equipment") {
       this.on("defeated").dispose().endOn();
     }
     // on each round begin clean up
@@ -373,7 +373,7 @@ export class EntityBuilder<
         })
         .endOn();
     }
-    if (this.type === "character") {
+    if (this._type === "character") {
       registerPassiveSkill({
         id: this.id,
         type: "passiveSkill",
@@ -389,7 +389,7 @@ export class EntityBuilder<
         hintText: this._hintText,
         skills: this._skillList,
         tags: this._tags,
-        type: this.type,
+        type: this._type,
       });
     }
     return this.id as EntityBuilderResultT<CallerType>;

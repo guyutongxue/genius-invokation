@@ -1,10 +1,9 @@
 import path from "node:path";
-// @ts-expect-error no type
 import allData from "@genshin-db/tcg/src/min/data.min.json";
 
 const {
   data: { ChineseSimplified },
-} = allData;
+} = allData as any;
 
 const keys = [
   "tcgcharactercards",
@@ -16,7 +15,7 @@ const keys = [
 const result: Record<string, string> = {};
 
 for (const key of keys) {
-  for (const value of Object.values(ChineseSimplified[key])) {
+  for (const value of <any>Object.values(ChineseSimplified[key])) {
     const { id, name } = value;
     if ("skills" in value) {
       for (const { id, name } of value.skills) {
