@@ -16,9 +16,8 @@
 import type { CharacterData } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Status } from "./Entity";
-// import { usePlayerContext } from "./chessboard";
 import { For, Index, Show } from "solid-js";
-import { useEventContext, usePlayerContext } from "./Chessboard";
+import { useEventContext } from "./Chessboard";
 import { DICE_COLOR } from "./Dice";
 import { Interactive } from "./Interactive";
 

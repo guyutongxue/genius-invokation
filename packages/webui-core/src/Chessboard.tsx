@@ -39,7 +39,6 @@ import type {
   SwitchHandsResponse,
   PlayCardAction,
   DamageData,
-  Event,
   ExposedMutation,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";

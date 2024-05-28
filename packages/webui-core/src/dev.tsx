@@ -21,7 +21,6 @@ import data from "@gi-tcg/data";
 import { Game, GameIO, PlayerConfig } from "@gi-tcg/core";
 
 import { createPlayer } from "./index";
-import { createWaitNotify } from "./utils";
 
 const playerConfig0: PlayerConfig = {
   characters: [1203, 1703, 2404],
@@ -53,11 +52,10 @@ function App() {
   const [io0, Chessboard0] = createPlayer(0);
   const [io1, Chessboard1] = createPlayer(1);
 
-  const [pausing, pause, resume] = createWaitNotify();
-
   const io: GameIO = {
     pause: (state, mutations) => {
-      return new Promise((r) => setTimeout(r, 500))
+      console.log({ state, mutations });
+      return new Promise((r) => setTimeout(r, 500));
     },
     players: [io0, io1],
   };
@@ -71,11 +69,6 @@ function App() {
 
   return (
     <div class="min-w-180 flex flex-col gap-2">
-      <div>
-        <button disabled={!pausing()} onClick={resume}>
-          Step
-        </button>
-      </div>
       <Chessboard0 />
       <Chessboard1 />
     </div>

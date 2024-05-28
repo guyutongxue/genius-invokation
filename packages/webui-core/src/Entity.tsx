@@ -16,7 +16,6 @@
 import type { EntityData } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Show } from "solid-js";
-import { usePlayerContext } from "./Chessboard";
 import { Interactive } from "./Interactive";
 
 export interface EntityProps {

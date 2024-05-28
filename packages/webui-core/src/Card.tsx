@@ -17,7 +17,7 @@ import type { CardData, DiceType } from "@gi-tcg/typings";
 
 import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
-import { ELEMENTAL_TUNING_OFFSET, usePlayerContext } from "./Chessboard";
+import { usePlayerContext } from "./Chessboard";
 import { Show } from "solid-js";
 import { Interactive } from "./Interactive";
 
