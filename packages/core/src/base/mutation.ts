@@ -269,7 +269,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
             `Card ${m.oldState.id} not found in ${m.where} of ${m.who}`,
           );
         }
-        player.hands.splice(cardIdx, 1);
+        player[m.where].splice(cardIdx, 1);
       });
     }
     case "createCard": {
