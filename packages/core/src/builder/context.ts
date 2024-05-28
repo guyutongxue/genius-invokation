@@ -47,6 +47,7 @@ import {
   EntityState,
   EntityVariables,
   GameState,
+  UseSkillLogEntry,
   stringifyState,
 } from "../base/state";
 import {
@@ -261,16 +262,35 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   /** 本回合已经使用了几次此技能 */
   countOfThisSkill(): number {
     return this.countOfSkill(
-      this.skillInfo.caller.id,
       this.skillInfo.definition.id as SkillHandle,
+      this.skillInfo.caller.id,
     );
   }
-  countOfSkill(callerId: number, handle: SkillHandle): number {
+  /**
+   * 本回合已经使用了几次技能。
+   * @param handle 技能定义 id
+   * @param callerSpec 可传入：① 技能使用者 id，只计入该使用者使用的技能；② 传入 `"my"`，计入我方使用的技能；③ 传入 `{ who: 0 | 1 }`，计入指定玩家使用的技能。
+   */
+  countOfSkill(
+    handle: SkillHandle,
+    callerSpec: number | "my" | { who: 0 | 1 },
+  ): number {
+    const checkSpec = (entry: UseSkillLogEntry) => {
+      if (typeof callerSpec === "number") {
+        return entry.skill.caller.id === callerSpec;
+      } else if (callerSpec === "my") {
+        return entry.who === this.callerArea.who;
+      } else if ("who" in callerSpec) {
+        return entry.who === callerSpec.who;
+      } else {
+        throw new GiTcgDataError("Invalid callerSpec");
+      }
+    };
     return this.state.globalUseSkillLog.filter(
-      ({ roundNumber, skill }) =>
-        roundNumber === this.state.roundNumber &&
-        skill.caller.id === callerId &&
-        skill.definition.id === handle,
+      (entry) =>
+        entry.roundNumber === this.state.roundNumber &&
+        checkSpec(entry) &&
+        entry.skill.definition.id === handle,
     ).length;
   }
 
@@ -694,7 +714,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             break;
           }
           case "append": {
-            const appendValue = overrideVariables[name] ?? recreateBehavior.appendValue;
+            const appendValue =
+              overrideVariables[name] ?? recreateBehavior.appendValue;
             const appendResult = appendValue + oldValue;
             newValues[name] = Math.min(
               appendResult,
@@ -1185,7 +1206,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             who,
             target: "piles",
             value: card,
-            targetIndex: 0
+            targetIndex: 0,
           });
         }
         break;
@@ -1259,7 +1280,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       where = "piles";
     } else {
       throw new GiTcgDataError(
-        `Cannot dispose card ${stringifyState(card)} from player ${who}, not found in either hands or piles`,
+        `Cannot dispose card ${stringifyState(
+          card,
+        )} from player ${who}, not found in either hands or piles`,
       );
     }
     using l = this.subLog(
@@ -1290,7 +1313,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         plunging: false,
         logger: this.skillInfo.logger,
         onNotify: this.skillInfo.onNotify,
-      }
+      };
       let newEvents;
       [this._state, newEvents] = disposeDef.action(this.state, skillInfo);
     }

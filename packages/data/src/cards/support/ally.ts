@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SupportHandle, card, flip, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, flip, status, summon } from "@gi-tcg/core/builder";
 import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
 
 /**
@@ -233,11 +233,7 @@ export const Ellin = card(322010)
   .costSame(2)
   .support("ally")
   .on("deductDiceSkill", (c, e) => {
-    const used = c.state.globalUseSkillLog.find(
-      (log) =>
-        log.roundNumber === c.state.roundNumber &&
-        log.who === e.who &&
-        log.skill.definition.id === e.action.skill.definition.id);
+    const used = c.countOfSkill(e.action.skill.definition.id as SkillHandle, "my");
     return !!used;
   })
   .usagePerRound(1)
