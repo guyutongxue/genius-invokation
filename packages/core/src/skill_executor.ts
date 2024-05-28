@@ -103,7 +103,6 @@ export class SkillExecutor extends StateMutator {
     const skillDef = skillInfo.definition;
 
     const preExposedMutations: ExposedMutation[] = [];
-    const postExposedMutations: ExposedMutation[] = [];
     if (!skillInfo.fromCard) {
       preExposedMutations.push({
         type: "triggered",
@@ -117,7 +116,7 @@ export class SkillExecutor extends StateMutator {
         skill: skillDef.id,
       });
     }
-    await this.notifyAndPause({
+    this.notify({
       mutations: preExposedMutations,
     });
 
@@ -126,24 +125,13 @@ export class SkillExecutor extends StateMutator {
       {
         ...skillInfo,
         logger: this._io?.logger,
-        onNotify: (opt) => {
-          // FIX ME: 我们应当在此处 notify。
-          // 但是 web ui 还没实现在 notify 时“阻塞后续通知”并显示，
-          // 所以我们依赖于 pause 的暂停功能。目前的 workaround：
-          // 将这些需要展示的信息推迟到 postExposedMutations 中，
-          // 随后调用 notifyAndPause 来以暂停的方式展示这些信息。
-          // this.onNotify(opt);
-          postExposedMutations.push(...opt.exposedMutations);
-        },
+        onNotify: (opt) => this.onNotify(opt),
       },
       arg as any,
     );
     this._state = newState;
 
-    // FIX ME
-    await this.notifyAndPause({
-      mutations: postExposedMutations,
-    });
+    await this.notifyAndPause();
 
     const damageEvents = eventList.filter(
       (e): e is ["onDamageOrHeal", DamageOrHealEventArg<DamageInfo>] =>

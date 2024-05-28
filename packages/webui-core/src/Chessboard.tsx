@@ -53,6 +53,7 @@ import { Dice } from "./Dice";
 import { SwitchHandsView } from "./SwitchHandsView";
 import { SkillButton } from "./SkillButton";
 import { cached } from "./fetch";
+import { AsyncQueue } from "./async_queue";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -410,48 +411,65 @@ export function createPlayer(
       return result;
     },
   };
+  const renderQueue = new AsyncQueue();
   const io: PlayerIOWithCancellation = {
     giveUp: false,
     notify: (msg) => {
-      setStateData(msg.newState);
-      console.log(msg.mutations);
-      setMutations(msg.mutations);
-      if (action.onNotify) {
-        action.onNotify(msg);
-      }
+      renderQueue.push(async () => {
+        setStateData(msg.newState);
+        console.log(msg.mutations);
+        setMutations(msg.mutations);
+        if (action.onNotify) {
+          action.onNotify(msg);
+        }
+        if (msg.mutations.length > 0) {
+          await new Promise<void>((resolve) => setTimeout(resolve, 500));
+        }
+      });
     },
     rpc: (method, req) => {
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      return new Promise<any>((resolve, reject) => {
-        rejectRpc = (e) => {
-          reject(e);
-          clearIo();
-        };
-        switch (method) {
-          case "switchHands":
-            action.onSwitchHands().then(sanitize).then(resolve).catch(reject);
-            break;
-          case "chooseActive":
-            action
-              .onChooseActive(req as ChooseActiveRequest)
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
-            break;
-          case "rerollDice":
-            action.onRerollDice().then(sanitize).then(resolve).catch(reject);
-            break;
-          case "action":
-            action
-              .onAction(req as ActionRequest)
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
-            break;
-          default:
-            reject("Unknown method");
-        }
-      });
+      return renderQueue.push(
+        () =>
+          new Promise<any>((resolve, reject) => {
+            rejectRpc = (e) => {
+              reject(e);
+              clearIo();
+            };
+            switch (method) {
+              case "switchHands":
+                action
+                  .onSwitchHands()
+                  .then(sanitize)
+                  .then(resolve)
+                  .catch(reject);
+                break;
+              case "chooseActive":
+                action
+                  .onChooseActive(req as ChooseActiveRequest)
+                  .then(sanitize)
+                  .then(resolve)
+                  .catch(reject);
+                break;
+              case "rerollDice":
+                action
+                  .onRerollDice()
+                  .then(sanitize)
+                  .then(resolve)
+                  .catch(reject);
+                break;
+              case "action":
+                action
+                  .onAction(req as ActionRequest)
+                  .then(sanitize)
+                  .then(resolve)
+                  .catch(reject);
+                break;
+              default:
+                reject("Unknown method");
+            }
+          }),
+      );
     },
     cancelRpc: () => {
       rejectRpc(new Error("User canceled the request"));
@@ -665,7 +683,10 @@ export interface StandaloneChessboardProps extends ChessboardProps {
 }
 
 export function StandaloneChessboard(props: StandaloneChessboardProps) {
-  const [local, restProps] = splitProps(props, ["assetApiEndpoint", "assetAltText"]);
+  const [local, restProps] = splitProps(props, [
+    "assetApiEndpoint",
+    "assetAltText",
+  ]);
 
   const contextValue = (): PlayerContextValue => ({
     allClickable: [],

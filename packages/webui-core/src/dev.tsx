@@ -53,10 +53,7 @@ function App() {
   const [io1, Chessboard1] = createPlayer(1);
 
   const io: GameIO = {
-    pause: (state, mutations) => {
-      console.log({ state, mutations });
-      return new Promise((r) => setTimeout(r, 500));
-    },
+    pause: async () => {},
     players: [io0, io1],
   };
   const game = new Game({
