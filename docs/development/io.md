@@ -97,4 +97,4 @@ export interface ActionResponse {
 
 自上次 `notification` 起的详细 mutations 情况，但隐藏了不应向玩家暴露的细节。此外，还提供如伤害、元素反应等信息。
 
-具体字段参考 [源码](packages/typings/src/api/mutation.ts)。
+具体字段参考 [源码](/packages/typings/src/api/mutation.ts)。
