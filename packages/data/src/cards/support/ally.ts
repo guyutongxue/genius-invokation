@@ -466,10 +466,12 @@ export const Jeht = card(322022)
   .variable("experience", 0)
   .on("enter")
   .do((c) => {
-    c.setVariable("experience", c.player.disposedSupportCount);
+    c.setVariable("experience", Math.min(c.player.disposedSupportCount, 6));
   })
   .on("dispose", (c, e) => e.entity.definition.type === "support")
-  .addVariableWithMax("experience", 1, 6)
+  .do((c) => {
+    c.setVariable("experience", Math.min(c.player.disposedSupportCount, 6));
+  })
   .on("useSkill", (c, e) => e.isSkillType("burst"))
   .do((c) => {
     const exp = c.getVariable("experience");
@@ -479,6 +481,12 @@ export const Jeht = card(322022)
     }
   })
   .done();
+
+function popCount32(n: number) {
+  n = n - ((n >> 1) & 0x55555555)
+  n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
+  return ((n + (n >> 4) & 0xF0F0F0F) * 0x1010101) >> 24
+}
 
 /**
  * @id 322023
@@ -491,18 +499,16 @@ export const SilverAndMelus = card(322023)
   .costSame(1)
   .support("ally")
   .variable("count", 0)
-  .variable("bitset", 0, { visible: false })
-  .on("damaged", (c, e) => !c.of(e.target).isMine() && 
-    e.type !== DamageType.Physical && 
-    e.type !== DamageType.Piercing)
+  .on("enter")
+  .do((c) => {
+    const elementalDamageBitset = c.oppPlayer.damagedTypeBitset & 0b11_111_110;
+    c.setVariable("count", Math.min(popCount32(elementalDamageBitset), 4));
+  })
+  .on("damaged", (c, e) => !c.of(e.target).isMine())
   .listenToAll()
-  .do((c, e) => {
-    const bit = 1 << e.type;
-    const current = c.getVariable("bitset");
-    if ((current & bit) === 0) {
-      c.setVariable("bitset", current | bit);
-      c.addVariableWithMax("count", 1, 4);
-    }
+  .do((c) => {
+    const elementalDamageBitset = c.oppPlayer.damagedTypeBitset & 0b11_111_110;
+    c.setVariable("count", Math.min(popCount32(elementalDamageBitset), 4));
   })
   .on("endPhase")
   .do((c) => {

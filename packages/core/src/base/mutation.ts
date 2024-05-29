@@ -147,9 +147,12 @@ export interface SetPlayerFlagM {
   readonly value: boolean;
 }
 
-export interface IncreaseDisposedSupportCountM {
-  readonly type: "increaseDisposedSupportCount";
+export type ExtraValueName = "disposedSupportCount" | "damagedTypeBitset" | "azhdahaAbsorbedBitset";
+export interface SetPlayerExtraValueM {
+  readonly type: "setPlayerExtraValue";
   readonly who: 0 | 1;
+  readonly name: ExtraValueName;
+  readonly value: number;
 }
 
 export type Mutation =
@@ -171,7 +174,7 @@ export type Mutation =
   | ReplaceCharacterDefinitionM
   | ResetDiceM
   | SetPlayerFlagM
-  | IncreaseDisposedSupportCountM;
+  | SetPlayerExtraValueM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -350,9 +353,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
         draft.players[m.who][m.flagName] = m.value;
       });
     }
-    case "increaseDisposedSupportCount": {
+    case "setPlayerExtraValue": {
       return produce(state, (draft) => {
-        draft.players[m.who].disposedSupportCount++;
+        draft.players[m.who][m.name] = m.value;
       });
     }
     default: {

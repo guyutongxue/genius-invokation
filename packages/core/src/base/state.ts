@@ -79,6 +79,8 @@ export interface PlayerState {
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
   readonly disposedSupportCount: number;
+  readonly damagedTypeBitset: number;
+  readonly azhdahaAbsorbedBitset: number;
 }
 
 export interface CardState {

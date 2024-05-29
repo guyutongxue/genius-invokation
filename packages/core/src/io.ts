@@ -56,7 +56,7 @@ export function exposeMutation(
     case "stepRandom":
     case "pushActionLog":
     // case "pushDamageLog":
-    case "increaseDisposedSupportCount":
+    case "setPlayerExtraValue":
       return null;
     case "changePhase":
       return m;

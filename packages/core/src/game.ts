@@ -132,6 +132,8 @@ function initPlayerState(
     legendUsed: false,
     skipNextTurn: false,
     disposedSupportCount: 0,
+    damagedTypeBitset: 0,
+    azhdahaAbsorbedBitset: 0,
   };
 }
 

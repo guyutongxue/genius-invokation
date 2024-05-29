@@ -23,7 +23,6 @@ import { character, skill, status, card, DamageType, DiceType, CharacterHandle, 
  * 角色汲取了一种和当前不同的元素后：生成1个所汲取元素类型的元素骰。
  */
 export const StoneFacetsElementalAbsorption = status(126021)
-  .variable("bitset", 1 << 6, { visible: false })
   .on("replaceCharacterDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
   .do((c) => {
     let diceType = DiceType.Geo;
@@ -33,7 +32,13 @@ export const StoneFacetsElementalAbsorption = status(126021)
       case AzhdahaPyro: diceType = DiceType.Pyro; break;
       case AzhdahaElectro: diceType = DiceType.Electro; break;
     };
-    c.setVariable("bitset", c.getVariable("bitset") & (1 << diceType));
+    const oldAzhdahaBitset = c.player.azhdahaAbsorbedBitset;
+    c.mutate({
+      type: "setPlayerExtraValue",
+      who: c.self.who,
+      name: "azhdahaAbsorbedBitset",
+      value: oldAzhdahaBitset | (1 << diceType),
+    })
     c.generateDice(diceType, 1);
   })
   .done();
@@ -131,8 +136,7 @@ export const DecimatingRockfall = skill(26024)
   .costGeo(3)
   .costEnergy(2)
   .do((c) => {
-    const absortionSt = c.self.hasStatus(StoneFacetsElementalAbsorption)!;
-    const bitset = c.of(absortionSt).getVariable("bitset");
+    const bitset = c.player.azhdahaAbsorbedBitset;
     let bonus = 0;
     if (bitset & (1 << DiceType.Cryo)) bonus++;
     if (bitset & (1 << DiceType.Hydro)) bonus++;

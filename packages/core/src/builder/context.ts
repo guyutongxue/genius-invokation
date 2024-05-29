@@ -536,10 +536,13 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           ],
         });
       }
-      // this.mutate({
-      //   type: "pushDamageLog",
-      //   damage: damageInfo,
-      // });
+      const targetPlayer = this.state.players[t.who];
+      this.mutate({
+        type: "setPlayerExtraValue",
+        who: t.who,
+        name: "damagedTypeBitset",
+        value: targetPlayer.damagedTypeBitset | (1 << damageInfo.type),
+      });
       this.emitEvent("onDamageOrHeal", this.state, damageInfo);
       if (
         damageInfo.type !== DamageType.Physical &&
@@ -864,17 +867,19 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         DetailLogType.Primitive,
         `Dispose ${stringifyState(entityState)}`,
       );
+      if (entityState.definition.type === "support") {
+        this.mutate({
+          type: "setPlayerExtraValue",
+          who,
+          name: "disposedSupportCount",
+          value: this.player.disposedSupportCount + 1,
+        });
+      }
       this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
         type: "removeEntity",
         oldState: entityState,
       });
-      if (entityState.definition.type === "support") {
-        this.mutate({
-          type: "increaseDisposedSupportCount",
-          who,
-        });
-      }
     }
   }
 
