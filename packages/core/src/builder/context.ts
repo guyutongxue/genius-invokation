@@ -17,6 +17,7 @@ import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
 
 import {
   EntityArea,
+  EntityDefinition,
   EntityType,
   ExEntityType,
   USAGE_PER_ROUND_VARIABLE_NAMES,
@@ -84,13 +85,17 @@ import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DetailLogType } from "../log";
 import { InternalNotifyOption, StateMutator } from "../mutator";
+import { CharacterDefinition } from "../base/character";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
 
 interface DrawCardsOpt {
   who?: "my" | "opp";
+  /** 抽取带有特定标签的牌 */
   withTag?: CardTag | null;
+  /** 抽取选定定义的牌。设置此选项会忽略 withTag */
+  withDefinition?: CardHandle | null;
 }
 
 export type ContextMetaBase = {
@@ -1137,7 +1142,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   drawCards(count: number, opt: DrawCardsOpt = {}) {
-    const { withTag = null, who: myOrOpt = "my" } = opt;
+    const { withTag = null, withDefinition = null, who: myOrOpt = "my" } = opt;
     const who =
       myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
     using l = this.subLog(
@@ -1146,18 +1151,25 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         withTag ? `(with tag ${withTag})` : ""
       }`,
     );
-    if (withTag === null) {
+    if (withTag === null && withDefinition === null) {
       // 如果没有限定，则从牌堆顶部摸牌
       for (let i = 0; i < count; i++) {
         this.drawCard(who);
       }
     } else {
+      const check = (card: CardState) => {
+        if (withDefinition !== null) {
+          return card.definition.id === withDefinition;
+        }
+        if (withTag !== null) {
+          return card.definition.tags.includes(withTag);
+        }
+        return false;
+      }
       // 否则，随机选中一张满足条件的牌
       const player = () => this._state.players[who];
       for (let i = 0; i < count; i++) {
-        const candidates = player().piles.filter((card) =>
-          card.definition.tags.includes(withTag),
-        );
+        const candidates = player().piles.filter(check);
         if (candidates.length === 0) {
           break;
         }
@@ -1468,6 +1480,9 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     }
     return entity as CharacterState;
   }
+  get definition(): CharacterDefinition {
+    return this.state.definition;
+  }
 
   get health() {
     return this.getVariable("health");
@@ -1638,6 +1653,9 @@ export class Entity<Meta extends ContextMetaBase> {
 
   get state(): EntityState {
     return getEntityById(this.skillContext.state, this.id);
+  }
+  get definition(): EntityDefinition {
+    return this.state.definition;
   }
   get area(): EntityArea {
     return this._area;

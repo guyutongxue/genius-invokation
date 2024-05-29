@@ -189,7 +189,7 @@ export const PainForPain = card(221021)
   .usagePerRound(1)
   .decreaseDamage(1)
   .do((c) => {
-    if (c.self.master().state.definition.id === LaSignora) {
+    if (c.self.master().definition.id === LaSignora) {
       c.characterStatus(SheerCold, "opp active");
     } else {
       c.characterStatus(BlazingHeat, "opp active");

@@ -129,10 +129,14 @@ export const ImperialPanoply = skill(23044)
   })
   .on("action")
   .do((c) => {
-    const shields = c.$$(`(my statuses with tag (shield) or my combat statuses with tag (shield)) and not with definition id ${ArmoredCrabCarapace}`);
+    const shields = c.$$(`my statuses with tag (shield) or my combat statuses with tag (shield)`);
     let shieldValue = 0;
     for (const shield of shields) {
-      shieldValue += 2;
+      if (shield.definition.id === ArmoredCrabCarapace) {
+        shieldValue += shield.getVariable("shield");
+      } else {
+        shieldValue += 2;
+      }
       shield.dispose();
     }
     c.characterStatus(ArmoredCrabCarapace, "@master", {

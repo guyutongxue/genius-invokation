@@ -653,7 +653,7 @@ export const PlungingStrike = card(332017)
   .switchActive("@targets.0")
   .do((c, e) => {
     const target = e.targets[0];
-    const skills = c.of(target).state.definition.skills;
+    const skills = c.of(target).definition.skills;
     const normalSkill = skills.find((sk) => sk.skillType === "normal");
     c.switchActive(target);
     if (normalSkill) {
