@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ExposedMutation } from "@gi-tcg/typings";
 import { GameState } from "./base/state";
 import { ReadonlyDataStore } from "./builder";
 
@@ -22,7 +21,6 @@ import "core-js/proposals/explicit-resource-management";
 export interface GameStateLogEntry {
   readonly state: GameState;
   readonly canResume: boolean;
-  readonly mutations: readonly ExposedMutation[];
 }
 
 interface StoreEntry {
@@ -78,7 +76,7 @@ type MakePropPartial<T, K extends PropertyKey> = Omit<T, K> & {
 
 interface SerializedLogEntry {
   s: unknown;
-  e: readonly ExposedMutation[];
+  e: readonly []; // reserved
   r: boolean;
 }
 
@@ -100,7 +98,7 @@ export function serializeGameStateLog(
     const stateResult = serializeImpl(store, omittedState);
     logResult.push({
       s: stateResult,
-      e: entry.mutations,
+      e: [],
       r: entry.canResume,
     });
   }
@@ -169,7 +167,6 @@ export function deserializeGameStateLog(
         data,
         ...restoredState,
       },
-      mutations: entry.e,
       canResume: entry.r,
     });
   }

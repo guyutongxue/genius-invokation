@@ -585,7 +585,7 @@ export function createPlayer(
 
 interface ChessboardProps extends ComponentProps<"div"> {
   stateData: StateData;
-  mutations: readonly ExposedMutation[];
+  mutations?: readonly ExposedMutation[];
   who: 0 | 1;
   children?: JSX.Element;
 }

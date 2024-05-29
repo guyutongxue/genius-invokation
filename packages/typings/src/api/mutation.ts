@@ -47,6 +47,7 @@ interface TransferCardEM {
 interface SwitchActiveEM {
   readonly type: "switchActive";
   readonly who: 0 | 1;
+  readonly via: number | null;
   readonly id: number;
   readonly definitionId: number;
 }

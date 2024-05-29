@@ -2,18 +2,19 @@ import { ExposedMutation } from "@gi-tcg/typings";
 import { GameState } from "./base/state";
 import { DetailLogType, IDetailLogger } from "./log";
 import { Mutation, applyMutation, stringifyMutation } from "./base/mutation";
-import { exposeMutation } from "./io";
 
 export interface NotifyOption {
   canResume?: boolean;
   mutations?: readonly ExposedMutation[];
 }
 
-export interface InternalNotifyOption {
+export interface InternalPauseOption {
   state: GameState;
   canResume: boolean;
   /** 自上次通知后，对局状态发生的所有变化 */
   stateMutations: readonly Mutation[];
+}
+export interface InternalNotifyOption extends InternalPauseOption {
   /** 上层传入的其他变化（可直接输出前端） */
   exposedMutations: readonly ExposedMutation[];
 }
@@ -33,8 +34,8 @@ export interface MutateOption {
  */
 export abstract class StateMutator {
   protected _state: GameState;
-  private _lastNotifiedState: GameState | null = null;
-  private _mutations: Mutation[] = [];
+  private _mutationsToBeNotified: Mutation[] = [];
+  private _mutationsToBePause: Mutation[] = [];
   get state() {
     return this._state;
   }
@@ -56,22 +57,32 @@ export abstract class StateMutator {
     if (str) {
       this.log(DetailLogType.Mutation, str);
     }
-    this._mutations.push(mutation);
+    this._mutationsToBeNotified.push(mutation);
+    this._mutationsToBePause.push(mutation);
   }
-  private createInternalOption(opt: NotifyOption): InternalNotifyOption {
+  private createNotifyInternalOption(opt: NotifyOption): InternalNotifyOption {
     const result = {
       state: this.state,
       canResume: opt.canResume ?? false,
-      stateMutations: this._mutations,
+      stateMutations: this._mutationsToBeNotified,
       exposedMutations: opt.mutations ?? [],
     };
-    this._mutations = [];
+    this._mutationsToBeNotified = [];
+    return result;
+  }
+  private createPauseInternalOption(opt: NotifyOption): InternalPauseOption {
+    const result = {
+      state: this.state,
+      canResume: opt.canResume ?? false,
+      stateMutations: this._mutationsToBePause,
+      exposedMutations: opt.mutations ?? [],
+    };
+    this._mutationsToBePause = [];
     return result;
   }
   protected notify(opt: NotifyOption = {}) {
-    const internalOpt = this.createInternalOption(opt);
+    const internalOpt = this.createNotifyInternalOption(opt);
     if (
-      internalOpt.state !== this._lastNotifiedState ||
       internalOpt.stateMutations.length > 0 ||
       internalOpt.exposedMutations.length > 0
     ) {
@@ -79,15 +90,9 @@ export abstract class StateMutator {
     }
   }
   protected async notifyAndPause(opt: NotifyOption = {}) {
-    const internalOpt = this.createInternalOption(opt);
-    if (
-      internalOpt.state !== this._lastNotifiedState ||
-      internalOpt.stateMutations.length > 0 ||
-      internalOpt.exposedMutations.length > 0
-    ) {
-      this.onNotify(internalOpt);
-    }
-    await this.onPause(internalOpt);
+    this.notify(opt);
+    const internalPauseOpt = this.createPauseInternalOption(opt);
+    await this.onPause(internalPauseOpt);
   }
 
   /**
@@ -95,7 +100,7 @@ export abstract class StateMutator {
    * 子类重写此接口以实现提示功能
    */
   protected abstract onNotify(opt: InternalNotifyOption): void;
-  protected abstract onPause(opt: InternalNotifyOption): Promise<void>;
+  protected abstract onPause(opt: InternalPauseOption): Promise<void>;
 
   protected drawCard(who: 0 | 1) {
     const candidate = this.state.players[who].piles[0];

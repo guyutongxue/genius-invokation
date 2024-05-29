@@ -68,10 +68,15 @@ import {
   GiTcgError,
   GiTcgIOError,
 } from "./error";
-import { DetailLogType, DetailLogger, GameStateLogEntry, IDetailLogger } from "./log";
+import {
+  DetailLogType,
+  DetailLogger,
+  GameStateLogEntry,
+  IDetailLogger,
+} from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
-import { InternalNotifyOption, NotifyOption, StateMutator } from "./mutator";
+import { InternalNotifyOption, InternalPauseOption, NotifyOption, StateMutator } from "./mutator";
 
 type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
@@ -177,7 +182,6 @@ export class Game extends StateMutator {
     this._stateLog.push({
       state: this.state,
       canResume: false,
-      mutations: [],
     });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
@@ -282,17 +286,16 @@ export class Game extends StateMutator {
     }
   }
   /** @internal */
-  override async onPause(opt: InternalNotifyOption) {
+  override async onPause(opt: InternalPauseOption) {
     if (this._terminated) {
       return;
     }
-    const { state, canResume, exposedMutations: mutations } = opt;
+    const { state, canResume, stateMutations } = opt;
     this._stateLog.push({
       state,
       canResume,
-      mutations,
     });
-    await this.io.pause?.(this.state, [...mutations]);
+    await this.io.pause?.(this.state, [...stateMutations]);
     if (this.state.phase === "gameEnd") {
       this.gotWinner(this.state.winner);
     } else {
@@ -807,7 +810,7 @@ export class Game extends StateMutator {
       for (let i = 0; i < 2; i++) {
         this.drawCard(who);
       }
-    } 
+    }
     this.mutate({
       type: "setPlayerFlag",
       who: 0,
@@ -912,9 +915,10 @@ export class Game extends StateMutator {
         .filter((ch) => ch.variables.alive && ch.id !== activeCh.id)
         .map<SwitchActiveInfo>((ch) => ({
           type: "switchActive",
+          who,
           from: activeCh,
           to: ch,
-          who,
+          fromReaction: false,
         }))
         .map((s) => ({
           ...s,
@@ -1056,6 +1060,17 @@ export class Game extends StateMutator {
       who,
       value: to,
     });
+    this.notify({
+      mutations: [
+        {
+          type: "switchActive",
+          who,
+          id: to.id,
+          definitionId: to.definition.id,
+          via: null,
+        },
+      ],
+    });
     await this.handleEvent(
       "onSwitchActive",
       new SwitchActiveEventArg(oldState, {
@@ -1063,6 +1078,7 @@ export class Game extends StateMutator {
         who,
         from,
         to,
+        fromReaction: false,
       }),
     );
   }

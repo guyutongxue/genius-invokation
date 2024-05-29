@@ -25,7 +25,7 @@ import {
   ZeroHealthEventArg,
 } from "./base/skill";
 import { CharacterState, GameState, stringifyState } from "./base/state";
-import { Aura, DamageType, ExposedMutation } from "@gi-tcg/typings";
+import { Aura, DamageType, ExposedMutation, Reaction } from "@gi-tcg/typings";
 import {
   allEntities,
   checkImmune,
@@ -33,11 +33,11 @@ import {
   getEntityArea,
   getEntityById,
 } from "./utils";
-import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
+import { GiTcgCoreInternalError } from "./error";
 import { flip } from "@gi-tcg/utils";
-import { DetailLogType, GameStateLogEntry, IDetailLogger } from "./log";
+import { DetailLogType, IDetailLogger } from "./log";
 import { Writable } from "./utils";
-import { InternalNotifyOption, StateMutator } from "./mutator";
+import { InternalNotifyOption, InternalPauseOption, StateMutator } from "./mutator";
 
 interface IoDuringSkillFinalize {
   logger: IDetailLogger;
@@ -45,7 +45,7 @@ interface IoDuringSkillFinalize {
   reroll(who: 0 | 1, times: number): Promise<void>;
   chooseActive(who: 0 | 1, state: GameState): Promise<CharacterState>;
   onNotify(opt: InternalNotifyOption): void;
-  onPause(opt: InternalNotifyOption): Promise<void>;
+  onPause(opt: InternalPauseOption): Promise<void>;
 }
 
 interface IoAndState extends IoDuringSkillFinalize {
@@ -323,9 +323,10 @@ export class SkillExecutor extends StateMutator {
         (to) =>
           new SwitchActiveEventArg(this.state, {
             type: "switchActive",
+            who,
             from: activeCh,
             to,
-            who,
+            fromReaction: false,
           }),
       );
     }
@@ -343,6 +344,17 @@ export class SkillExecutor extends StateMutator {
           type: "switchActive",
           who: arg.switchInfo.who,
           value: arg.switchInfo.to,
+        });
+        this.notify({
+          mutations: [
+            {
+              type: "switchActive",
+              who: arg.switchInfo.who,
+              id: arg.switchInfo.to.id,
+              definitionId: arg.switchInfo.to.definition.id,
+              via: null,
+            },
+          ],
         });
       }
     }

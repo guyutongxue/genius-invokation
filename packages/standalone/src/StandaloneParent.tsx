@@ -308,7 +308,6 @@ export function StandaloneParent(props: StandaloneParentProps) {
               class="grayscale"
               stateData={exposeState(viewingWho(), state().state)}
               who={viewingWho()}
-              mutations={state().mutations}
             />
           </>
         )}

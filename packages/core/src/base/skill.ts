@@ -132,6 +132,7 @@ export interface SwitchActiveInfo {
   readonly who: 0 | 1;
   readonly from: CharacterState;
   readonly via?: SkillInfo;
+  readonly fromReaction: boolean;
   readonly to: CharacterState;
 }
 

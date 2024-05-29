@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "check": "tsc --noEmit",
     "dev": "bunx --bun vite",
     "build": "vite build",
     "preview": "vite preview"

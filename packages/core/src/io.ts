@@ -43,7 +43,7 @@ export interface PlayerIO {
 }
 
 export interface GameIO {
-  readonly pause?: (state: GameState, mutations: ExposedMutation[]) => Promise<unknown>;
+  readonly pause?: (state: GameState, mutations: Mutation[]) => Promise<unknown>;
   readonly onIoError?: (e: GiTcgIOError) => void;
   readonly players: readonly [PlayerIO, PlayerIO];
 }
@@ -55,8 +55,8 @@ export function exposeMutation(
   switch (m.type) {
     case "stepRandom":
     case "pushActionLog":
-    // case "pushDamageLog":
     case "setPlayerExtraValue":
+    case "switchActive": // We will manually handle this
       return null;
     case "changePhase":
       return m;
@@ -73,14 +73,6 @@ export function exposeMutation(
         who: m.who,
         id: m.value.id,
         definitionId: m.who === who ? m.value.definition.id : 0,
-      };
-    }
-    case "switchActive": {
-      return {
-        type: "switchActive",
-        who: m.who,
-        id: m.value.id,
-        definitionId: m.value.definition.id,
       };
     }
     case "removeCard": {

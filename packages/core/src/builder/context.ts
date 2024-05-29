@@ -84,7 +84,7 @@ import {
 import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DetailLogType } from "../log";
-import { InternalNotifyOption, StateMutator } from "../mutator";
+import { InternalNotifyOption, InternalPauseOption, StateMutator } from "../mutator";
 import { CharacterDefinition } from "../base/character";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
@@ -138,7 +138,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   protected override onNotify(opt: InternalNotifyOption): void {
     this.skillInfo.onNotify?.(opt);
   }
-  protected override async onPause(opt: InternalNotifyOption): Promise<void> {
+  protected override async onPause(opt: InternalPauseOption): Promise<void> {
     // Do nothing, and we won't call it
   }
   public override mutate(mut: Mutation) {
@@ -341,10 +341,25 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       who: playerWho,
       value: switchToTarget.state,
     });
+    this.notify({
+      mutations: [
+        {
+          type: "switchActive",
+          who: playerWho,
+          id: switchToTarget.id,
+          definitionId: switchToTarget.definition.id,
+          via: this.fromReaction
+            ? Reaction.Overloaded
+            : this.skillInfo.definition.id ?? null,
+        },
+      ],
+    });
     this.emitEvent("onSwitchActive", this.state, {
       type: "switchActive",
       who: playerWho,
       from: from,
+      via: this.skillInfo,
+      fromReaction: this.fromReaction !== null,
       to: switchToTarget.state,
     });
   }
@@ -1170,7 +1185,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           return card.definition.tags.includes(withTag);
         }
         return false;
-      }
+      };
       // 否则，随机选中一张满足条件的牌
       const player = () => this._state.players[who];
       for (let i = 0; i < count; i++) {
