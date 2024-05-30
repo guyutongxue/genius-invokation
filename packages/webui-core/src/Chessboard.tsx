@@ -417,12 +417,12 @@ export function createPlayer(
     notify: (msg) => {
       renderQueue.push(async () => {
         setStateData(msg.newState);
-        console.log(msg.mutations);
         setMutations(msg.mutations);
         if (action.onNotify) {
           action.onNotify(msg);
         }
         if (msg.mutations.filter((mut) => ["damage", "triggered"].includes(mut.type)).length > 0) {
+          console.log(msg.mutations);
           await new Promise<void>((resolve) => setTimeout(resolve, 500));
         }
       });
