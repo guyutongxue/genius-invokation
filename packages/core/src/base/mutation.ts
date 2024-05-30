@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Draft, produce } from "immer";
+import { type Draft, produce, enableMapSet } from "immer";
 
 import { DiceType, PhaseType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
@@ -27,10 +27,11 @@ import {
 } from "./state";
 import { removeEntity, getEntityById, sortDice } from "../utils";
 import { EntityArea, stringifyEntityArea } from "./entity";
-import { ActionInfo, SkillInfo } from "./skill";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 import { nextRandom } from "../random";
+
+enableMapSet();
 
 type IdWritable<T extends { readonly id: number }> = Omit<T, "id"> & {
   id: number;
@@ -58,17 +59,6 @@ export interface SetWinnerM {
   readonly type: "setWinner";
   readonly winner: 0 | 1;
 }
-
-export interface PushActionLogM {
-  readonly type: "pushActionLog";
-  readonly who: 0 | 1;
-  readonly action: ActionInfo;
-}
-
-// export interface PushDamageLogM {
-//   readonly type: "pushDamageLog";
-//   readonly damage: DamageInfo | HealInfo;
-// }
 
 export interface TransferCardM {
   readonly type: "transferCard";
@@ -154,6 +144,12 @@ export interface SetPlayerExtraValueM {
   readonly name: ExtraValueName;
   readonly value: number;
 }
+export interface MutateExtensionStateM {
+  readonly type: "mutateExtensionState";
+  readonly who: 0 | 1;
+  readonly extensionId: number;
+  readonly newState: unknown;
+}
 
 export type Mutation =
   | StepRandomM
@@ -161,8 +157,6 @@ export type Mutation =
   | StepRoundM
   | SwitchTurnM
   | SetWinnerM
-  | PushActionLogM
-  // | PushDamageLogM
   | TransferCardM
   | SwitchActiveM
   | RemoveCardM
@@ -174,7 +168,7 @@ export type Mutation =
   | ReplaceCharacterDefinitionM
   | ResetDiceM
   | SetPlayerFlagM
-  | SetPlayerExtraValueM;
+  | MutateExtensionStateM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -205,38 +199,6 @@ function doMutation(state: GameState, m: Mutation): GameState {
         draft.winner = m.winner;
       });
     }
-    case "pushActionLog": {
-      return produce(state, (draft) => {
-        switch (m.action.type) {
-          case "playCard": {
-            draft.globalPlayCardLog.push({
-              roundNumber: draft.roundNumber,
-              who: m.who,
-              card: m.action.card as Draft<CardState>,
-            });
-            break;
-          }
-          case "useSkill": {
-            draft.globalUseSkillLog.push({
-              roundNumber: draft.roundNumber,
-              who: m.who,
-              skill: m.action.skill as Draft<SkillInfo>,
-            });
-            break;
-          }
-        }
-      });
-    }
-    // case "pushDamageLog": {
-    //   return produce(state, (draft) => {
-    //     const character = getEntityById(
-    //       draft,
-    //       m.damage.target.id,
-    //       true,
-    //     ) as Draft<CharacterState>;
-    //     character.damageLog.push(m.damage as Draft<DamageInfo>);
-    //   });
-    // }
     case "transferCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
@@ -353,9 +315,16 @@ function doMutation(state: GameState, m: Mutation): GameState {
         draft.players[m.who][m.flagName] = m.value;
       });
     }
-    case "setPlayerExtraValue": {
+    case "mutateExtensionState": {
       return produce(state, (draft) => {
-        draft.players[m.who][m.name] = m.value;
+        const player = draft.players[m.who];
+        const extension = player.extensions.find((e) => e.definition.id === m.extensionId);
+        if (!extension) {
+          throw new GiTcgCoreInternalError(
+            `Extension ${m.extensionId} not found in player ${m.who}`,
+          );
+        }
+        extension.state = m.newState;
       });
     }
     default: {

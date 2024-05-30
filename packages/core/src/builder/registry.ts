@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Immutable } from "immer";
+import type { Immutable } from "immer";
 import { CardDefinition } from "../base/card";
 import { CharacterDefinition } from "../base/character";
 import { EntityDefinition, VariableConfig } from "../base/entity";
+import { ExtensionDefinition } from "../base/extension";
 import {
   InitiativeSkillDefinition,
   SkillDefinition,
@@ -37,6 +38,7 @@ export function beginRegistration() {
     skills: new Map(),
     cards: new Map(),
     passiveSkills: new Map(),
+    extensions: new Map(),
   };
 }
 
@@ -53,6 +55,7 @@ type DefinitionMap = {
   skills: SkillDefinition;
   cards: CardDefinition;
   passiveSkills: PassiveSkillDefinition;
+  extensions: ExtensionDefinition;
 };
 
 type RegisterCategory = keyof DefinitionMap;

@@ -21,6 +21,7 @@ import { EntityDefinition, EntityVariableConfigs, VariableOfConfig } from "./ent
 import { Mutation } from "./mutation";
 import { DamageInfo, HealInfo, SkillInfo } from "./skill";
 import { ReadonlyDataStore } from "../builder/registry";
+import { ExtensionDefinition } from "./extension";
 
 export interface GameConfig {
   readonly randomSeed: number;
@@ -59,8 +60,6 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
-  readonly globalPlayCardLog: readonly PlayCardLogEntry[];
-  readonly globalUseSkillLog: readonly UseSkillLogEntry[];
 }
 
 export interface PlayerState {
@@ -78,9 +77,7 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
-  readonly disposedSupportCount: number;
-  readonly damagedTypeBitset: number;
-  readonly azhdahaAbsorbedBitset: number;
+  readonly extensions: readonly ExtensionState[];
 }
 
 export interface CardState {
@@ -107,6 +104,11 @@ export interface EntityState {
 export type EntityVariables = VariableOfConfig<EntityVariableConfigs>;
 
 export type AnyState = CharacterState | EntityState;
+
+export interface ExtensionState {
+  readonly definition: ExtensionDefinition
+  readonly state: unknown;
+}
 
 export function stringifyState(st: AnyState | CardState): string {
   let type: string;

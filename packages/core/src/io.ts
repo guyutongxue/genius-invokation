@@ -54,8 +54,7 @@ export function exposeMutation(
 ): ExposedMutation | null {
   switch (m.type) {
     case "stepRandom":
-    case "pushActionLog":
-    case "setPlayerExtraValue":
+    case "mutateExtensionState":
     case "switchActive": // We will manually handle this
       return null;
     case "changePhase":

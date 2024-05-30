@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Draft } from "immer";
+import type { Draft } from "immer";
 import { DiceType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import {
+  AnyState,
   CharacterState,
   EntityState,
   GameState,
@@ -26,7 +27,15 @@ import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
 import { CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
-import { InitiativeSkillDefinition, SkillDefinition, SkillInfo, SkillType, ZeroHealthEventArg } from "./base/skill";
+import {
+  EventNames,
+  InitiativeSkillDefinition,
+  SkillDefinition,
+  SkillInfo,
+  SkillType,
+  TriggeredSkillDefinition,
+  ZeroHealthEventArg,
+} from "./base/skill";
 import {
   GiTcgCoreInternalEntityNotFoundError,
   GiTcgCoreInternalError,
@@ -80,11 +89,8 @@ export function getEntityById(
  * @param state 游戏状态
  * @returns 实体状态列表
  */
-export function allEntities(
-  state: GameState,
-  aliveOnly = false,
-): (CharacterState | EntityState)[] {
-  const result: (CharacterState | EntityState)[] = [];
+export function allEntities(state: GameState, aliveOnly = false): AnyState[] {
+  const result: AnyState[] = [];
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
     const activeIdx = getActiveCharacterIndex(player);
@@ -116,6 +122,47 @@ export function allEntities(
   return result;
 }
 
+interface CallerAndSkill {
+  caller: EntityState | CharacterState;
+  skill: TriggeredSkillDefinition;
+}
+
+/**
+ * 检索 `state` 中所有响应 `triggerOn` 的技能。包括玩家扩展点。
+ * @param state 
+ * @param triggerOn 
+ * @returns 
+ */
+export function allSkills(
+  state: GameState,
+  triggerOn: EventNames,
+): CallerAndSkill[] {
+  const result: CallerAndSkill[] = [];
+  for (const who of [state.currentTurn, flip(state.currentTurn)]) {
+    const player = state.players[who];
+    const caller = getEntityById(
+      state,
+      player.activeCharacterId,
+      true,
+    ) as CharacterState;
+    for (const ext of player.extensions) {
+      for (const skill of ext.definition.skills) {
+        if (skill.triggerOn === triggerOn) {
+          result.push({ caller, skill });
+        }
+      }
+    }
+  }
+  for (const entity of allEntities(state)) {
+    for (const skill of entity.definition.skills) {
+      if (skill.triggerOn === triggerOn) {
+        result.push({ caller: entity, skill });
+      }
+    }
+  }
+  return result;
+}
+
 export function getEntityArea(state: GameState, id: number): EntityArea {
   for (const who of [0, 1] as const) {
     const player = state.players[who];
@@ -143,8 +190,8 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
 export function allEntitiesAtArea(
   state: GameState,
   area: EntityArea,
-): (CharacterState | EntityState)[] {
-  const result: (CharacterState | EntityState)[] = [];
+): AnyState[] {
+  const result: AnyState[] = [];
   const player = state.players[area.who];
   if (area.type === "characters") {
     const characters = player.characters;
@@ -160,28 +207,19 @@ export function allEntitiesAtArea(
   return result;
 }
 
-export function checkImmune(
-  state: GameState,
-  e: ZeroHealthEventArg,
-) {
-  const entities = allEntities(state);
-  for (const entity of entities) {
-    const skills = entity.definition.skills;
-    for (const skill of skills) {
-      if (skill.triggerOn === "modifyZeroHealth") {
-        const skillInfo: SkillInfo = {
-          caller: entity,
-          definition: skill,
-          charged: false,
-          plunging: false,
-          fromCard: null,
-          requestBy: null,
-        };
-        const filterResult = (0, skill.filter)(state, skillInfo, e);
-        if (filterResult) {
-          return true;
-        }
-      }
+export function checkImmune(state: GameState, e: ZeroHealthEventArg) {
+  for (const { caller, skill } of allSkills(state, "modifyZeroHealth")) {
+    const skillInfo: SkillInfo = {
+      caller,
+      definition: skill,
+      charged: false,
+      plunging: false,
+      fromCard: null,
+      requestBy: null,
+    };
+    const filterResult = (0, skill.filter)(state, skillInfo, e);
+    if (filterResult) {
+      return true;
     }
   }
   return false;
@@ -208,9 +246,13 @@ export function removeEntity(state: Draft<GameState>, id: number) {
   throw new GiTcgCoreInternalEntityNotFoundError(state, id);
 }
 
-export function isCharacterInitiativeSkill(skillDef: SkillDefinition): skillDef is InitiativeSkillDefinition {
+export function isCharacterInitiativeSkill(
+  skillDef: SkillDefinition,
+): skillDef is InitiativeSkillDefinition {
   const commonSkillType: SkillType[] = ["normal", "elemental", "burst"];
-  return skillDef.triggerOn === null && commonSkillType.includes(skillDef.skillType);
+  return (
+    skillDef.triggerOn === null && commonSkillType.includes(skillDef.skillType)
+  );
 }
 
 export function getActiveCharacterIndex(player: PlayerState): number {

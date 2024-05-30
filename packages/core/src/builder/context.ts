@@ -54,6 +54,7 @@ import {
 import {
   allEntities,
   allEntitiesAtArea,
+  allSkills,
   elementOfCharacter,
   getActiveCharacterIndex,
   getEntityArea,
@@ -84,7 +85,11 @@ import {
 import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DetailLogType } from "../log";
-import { InternalNotifyOption, InternalPauseOption, StateMutator } from "../mutator";
+import {
+  InternalNotifyOption,
+  InternalPauseOption,
+  StateMutator,
+} from "../mutator";
 import { CharacterDefinition } from "../base/character";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
@@ -166,23 +171,18 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       DetailLogType.Event,
       `Handling inline event ${event} (${arg.toString()}):`,
     );
-    const entities = allEntities(this.state, true);
-    const infos = entities
-      .flatMap((e) =>
-        e.definition.skills
-          .filter((s) => s.triggerOn === event)
-          .map((s) => [e, s] as const),
-      )
-      .map<SkillInfo>(([e, s]) => ({
-        caller: e,
-        definition: s,
+    const infos = allSkills(this.state, event).map<SkillInfo>(
+      ({ caller, skill }) => ({
+        caller,
+        definition: skill,
         fromCard: null,
         requestBy: null,
         charged: false,
         plunging: false,
         logger: this.skillInfo.logger,
         onNotify: this.skillInfo.onNotify,
-      }));
+      }),
+    );
     for (const info of infos) {
       arg._currentSkillInfo = info;
       try {
@@ -552,12 +552,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         });
       }
       const targetPlayer = this.state.players[t.who];
-      this.mutate({
-        type: "setPlayerExtraValue",
-        who: t.who,
-        name: "damagedTypeBitset",
-        value: targetPlayer.damagedTypeBitset | (1 << damageInfo.type),
-      });
       this.emitEvent("onDamageOrHeal", this.state, damageInfo);
       if (
         damageInfo.type !== DamageType.Physical &&
@@ -882,14 +876,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         DetailLogType.Primitive,
         `Dispose ${stringifyState(entityState)}`,
       );
-      if (entityState.definition.type === "support") {
-        this.mutate({
-          type: "setPlayerExtraValue",
-          who,
-          name: "disposedSupportCount",
-          value: this.player.disposedSupportCount + 1,
-        });
-      }
       this.emitEvent("onDispose", this.state, entityState);
       this.mutate({
         type: "removeEntity",

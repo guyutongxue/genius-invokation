@@ -26,6 +26,7 @@ import {
   AnyState,
   CardState,
   CharacterState,
+  ExtensionState,
   GameConfig,
   GameState,
   PlayerState,
@@ -76,7 +77,12 @@ import {
 } from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
-import { InternalNotifyOption, InternalPauseOption, NotifyOption, StateMutator } from "./mutator";
+import {
+  InternalNotifyOption,
+  InternalPauseOption,
+  NotifyOption,
+  StateMutator,
+} from "./mutator";
 
 type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
@@ -98,18 +104,17 @@ type ActionInfoWithModification = ActionInfo & {
 /** 获取玩家初始状态，主要是初始化“起始牌堆” */
 function initPlayerState(
   data: ReadonlyDataStore,
-  playerConfigs: readonly [PlayerConfig, PlayerConfig],
-  who: 0 | 1,
+  playerConfig: PlayerConfig,
+  extensions: readonly ExtensionState[],
 ): PlayerState {
-  const config = playerConfigs[who];
-  let initialPiles: readonly CardDefinition[] = config.cards.map((id) => {
+  let initialPiles: readonly CardDefinition[] = playerConfig.cards.map((id) => {
     const def = data.cards.get(id);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown card id ${id}`);
     }
     return def;
   });
-  if (!config.noShuffle) {
+  if (!playerConfig.noShuffle) {
     initialPiles = shuffle(initialPiles);
   }
   // 将秘传牌放在最前面
@@ -136,9 +141,7 @@ function initPlayerState(
     hasDefeated: false,
     legendUsed: false,
     skipNextTurn: false,
-    disposedSupportCount: 0,
-    damagedTypeBitset: 0,
-    azhdahaAbsorbedBitset: 0,
+    extensions,
   };
 }
 
@@ -155,6 +158,12 @@ export class Game extends StateMutator {
 
   constructor(opt: GameOption) {
     const config = mergeGameConfigWithDefault(opt.gameConfig);
+    const initialExtensions = [
+      ...opt.data.extensions.values(),
+    ].map<ExtensionState>((v) => ({
+      definition: v,
+      state: v.initialState,
+    }));
     const initialState: GameState = {
       data: opt.data,
       config,
@@ -165,12 +174,10 @@ export class Game extends StateMutator {
       phase: "initHands",
       currentTurn: 0,
       roundNumber: 0,
-      globalPlayCardLog: [],
-      globalUseSkillLog: [],
       winner: null,
       players: [
-        initPlayerState(opt.data, opt.playerConfigs, 0),
-        initPlayerState(opt.data, opt.playerConfigs, 1),
+        initPlayerState(opt.data, opt.playerConfigs[0], initialExtensions),
+        initPlayerState(opt.data, opt.playerConfigs[1], initialExtensions),
       ],
     };
     const logger = new DetailLogger();
@@ -778,11 +785,6 @@ export class Game extends StateMutator {
         "onAction",
         new ActionEventArg(this.state, actionInfo),
       );
-      this.mutate({
-        type: "pushActionLog",
-        who,
-        action: actionInfo,
-      });
       this.mutate({
         type: "setPlayerFlag",
         who,
