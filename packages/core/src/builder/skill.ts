@@ -617,6 +617,11 @@ export class TriggeredSkillBuilder<
   }
 
   private buildSkill() {
+    if (this._usagePerRoundOpt?.autoDecrease) {
+      this.do((c) => {
+        c.consumeUsagePerRound();
+      });
+    }
     if (this._usageOpt?.autoDecrease) {
       if (this._usageOpt.name === "usage") {
         // 若变量名为 usage，则消耗可用次数时可能调用 c.dispose
@@ -631,11 +636,6 @@ export class TriggeredSkillBuilder<
           c.addVariable(name, -1);
         });
       }
-    }
-    if (this._usagePerRoundOpt?.autoDecrease) {
-      this.do((c) => {
-        c.consumeUsagePerRound();
-      });
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
     const filter: TriggeredSkillFilter<any> = (state, skillInfo, arg) => {

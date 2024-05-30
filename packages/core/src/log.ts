@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { GameState } from "./base/state";
+import { ExtensionState, GameState } from "./base/state";
 import { ReadonlyDataStore } from "./builder";
 
 import "core-js/proposals/explicit-resource-management";
@@ -48,6 +48,21 @@ function serializeImpl(store: StoreEntry[], v: unknown): any {
       return { $: store.length - 1 };
     } else {
       return result;
+    }
+  }
+  if (v instanceof Map) {
+    return {
+      "__type": "map",
+      entries: Array.from(v.entries()).map(([key, value]) => [
+        serializeImpl(store, key),
+        serializeImpl(store, value),
+      ]),
+    }
+  }
+  if (v instanceof Set) {
+    return {
+      "__type": "set",
+      values: Array.from(v).map((value) => serializeImpl(store, value)),
     }
   }
   if (typeof v === "object") {
@@ -138,6 +153,23 @@ function deserializeImpl(
     }
     if ("$$" in v && "id" in v && isValidDefKey(v.$$)) {
       return data[v.$$].get(v.id as number);
+    }
+    if ("__type" in v) {
+      if (v.__type === "map" && "entries" in v && Array.isArray(v.entries)) {
+        return new Map(
+          v.entries.map(([key, value]: [any, any]) => [
+            deserializeImpl(data, store, restoredStore, key),
+            deserializeImpl(data, store, restoredStore, value),
+          ]),
+        );
+      }
+      if (v.__type === "set" && "values" in v && Array.isArray(v.values)) {
+        return new Set(
+          v.values.map((value: any) =>
+            deserializeImpl(data, store, restoredStore, value),
+          ),
+        );
+      }
     }
     const result: any = {};
     for (const key in v) {
