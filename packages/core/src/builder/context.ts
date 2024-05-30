@@ -68,6 +68,7 @@ import {
   CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
+  ExtensionHandle,
   HandleT,
   SkillHandle,
   StatusHandle,
@@ -91,6 +92,7 @@ import {
   StateMutator,
 } from "../mutator";
 import { CharacterDefinition } from "../base/character";
+import { Draft, produce } from "immer";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -103,11 +105,14 @@ interface DrawCardsOpt {
   withDefinition?: CardHandle | null;
 }
 
+type Setter<T> = (draft: Draft<T>) => void;
+
 export type ContextMetaBase = {
   readonly: boolean;
   eventArgType: unknown;
   callerVars: string;
   callerType: ExEntityType;
+  associatedExtension: ExtensionHandle;
 };
 
 /**
@@ -264,39 +269,18 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
     return result as TypedCharacter<Meta>[];
   }
-  /** 本回合已经使用了几次此技能 */
-  countOfThisSkill(): number {
-    return this.countOfSkill(
-      this.skillInfo.definition.id as SkillHandle,
-      this.skillInfo.caller.id,
+
+  getExtensionState(): Meta["associatedExtension"]["type"] {
+    if (typeof this.skillInfo.associatedExtensionId === "undefined") {
+      throw new GiTcgDataError("No associated extension registered");
+    }
+    const ext = this.state.extensions.find(
+      (ext) => ext.definition.id === this.skillInfo.associatedExtensionId,
     );
-  }
-  /**
-   * 本回合已经使用了几次技能。
-   * @param handle 技能定义 id
-   * @param callerSpec 可传入：① 技能使用者 id，只计入该使用者使用的技能；② 传入 `"my"`，计入我方使用的技能；③ 传入 `{ who: 0 | 1 }`，计入指定玩家使用的技能。
-   */
-  countOfSkill(
-    handle: SkillHandle,
-    callerSpec: number | "my" | { who: 0 | 1 },
-  ): number {
-    const checkSpec = (entry: UseSkillLogEntry) => {
-      if (typeof callerSpec === "number") {
-        return entry.skill.caller.id === callerSpec;
-      } else if (callerSpec === "my") {
-        return entry.who === this.callerArea.who;
-      } else if ("who" in callerSpec) {
-        return entry.who === callerSpec.who;
-      } else {
-        throw new GiTcgDataError("Invalid callerSpec");
-      }
-    };
-    return this.state.globalUseSkillLog.filter(
-      (entry) =>
-        entry.roundNumber === this.state.roundNumber &&
-        checkSpec(entry) &&
-        entry.skill.definition.id === handle,
-    ).length;
+    if (!ext) {
+      throw new GiTcgDataError("Associated extension not found");
+    }
+    return ext.state;
   }
 
   // MUTATIONS
@@ -1337,6 +1321,19 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
     this.emitEvent("onDisposeCard", this.state, who, card, where === "hands");
   }
+
+  setExtensionState(setter: Setter<Meta["associatedExtension"]["type"]>) {
+    const oldState = this.getExtensionState();
+    const newState = produce(oldState, (d) => {
+      setter(d);
+    });
+    this.mutate({
+      type: "mutateExtensionState",
+      extensionId: this.skillInfo.associatedExtensionId!,
+      newState,
+    });
+  }
+
   switchCards() {
     this.emitEvent("requestSwitchHands", this.skillInfo, this.callerArea.who);
   }
@@ -1389,6 +1386,7 @@ type SkillContextMutativeProps =
   | "drawCards"
   | "createPileCards"
   | "disposeCard"
+  | "setExtensionState"
   | "switchCards"
   | "reroll"
   | "useSkill";

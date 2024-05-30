@@ -105,7 +105,6 @@ type ActionInfoWithModification = ActionInfo & {
 function initPlayerState(
   data: ReadonlyDataStore,
   playerConfig: PlayerConfig,
-  extensions: readonly ExtensionState[],
 ): PlayerState {
   let initialPiles: readonly CardDefinition[] = playerConfig.cards.map((id) => {
     const def = data.cards.get(id);
@@ -141,7 +140,6 @@ function initPlayerState(
     hasDefeated: false,
     legendUsed: false,
     skipNextTurn: false,
-    extensions,
   };
 }
 
@@ -158,7 +156,7 @@ export class Game extends StateMutator {
 
   constructor(opt: GameOption) {
     const config = mergeGameConfigWithDefault(opt.gameConfig);
-    const initialExtensions = [
+    const extensions = [
       ...opt.data.extensions.values(),
     ].map<ExtensionState>((v) => ({
       definition: v,
@@ -176,9 +174,10 @@ export class Game extends StateMutator {
       roundNumber: 0,
       winner: null,
       players: [
-        initPlayerState(opt.data, opt.playerConfigs[0], initialExtensions),
-        initPlayerState(opt.data, opt.playerConfigs[1], initialExtensions),
+        initPlayerState(opt.data, opt.playerConfigs[0]),
+        initPlayerState(opt.data, opt.playerConfigs[1]),
       ],
+      extensions,
     };
     const logger = new DetailLogger();
     super(initialState, { logger });

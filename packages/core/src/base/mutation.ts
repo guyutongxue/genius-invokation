@@ -77,7 +77,7 @@ export interface SwitchActiveM {
 export interface RemoveCardM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
-  readonly where : "hands" | "piles";
+  readonly where: "hands" | "piles";
   readonly used: boolean;
   readonly oldState: CardState;
 }
@@ -137,7 +137,10 @@ export interface SetPlayerFlagM {
   readonly value: boolean;
 }
 
-export type ExtraValueName = "disposedSupportCount" | "damagedTypeBitset" | "azhdahaAbsorbedBitset";
+export type ExtraValueName =
+  | "disposedSupportCount"
+  | "damagedTypeBitset"
+  | "azhdahaAbsorbedBitset";
 export interface SetPlayerExtraValueM {
   readonly type: "setPlayerExtraValue";
   readonly who: 0 | 1;
@@ -146,7 +149,6 @@ export interface SetPlayerExtraValueM {
 }
 export interface MutateExtensionStateM {
   readonly type: "mutateExtensionState";
-  readonly who: 0 | 1;
   readonly extensionId: number;
   readonly newState: unknown;
 }
@@ -228,7 +230,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "removeCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
-        const cardIdx = player[m.where].findIndex((c) => c.id === m.oldState.id);
+        const cardIdx = player[m.where].findIndex(
+          (c) => c.id === m.oldState.id,
+        );
         if (cardIdx === -1) {
           throw new GiTcgCoreInternalError(
             `Card ${m.oldState.id} not found in ${m.where} of ${m.who}`,
@@ -317,11 +321,12 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "mutateExtensionState": {
       return produce(state, (draft) => {
-        const player = draft.players[m.who];
-        const extension = player.extensions.find((e) => e.definition.id === m.extensionId);
+        const extension = draft.extensions.find(
+          (e) => e.definition.id === m.extensionId,
+        );
         if (!extension) {
           throw new GiTcgCoreInternalError(
-            `Extension ${m.extensionId} not found in player ${m.who}`,
+            `Extension ${m.extensionId} not found in state`,
           );
         }
         extension.state = m.newState;
@@ -356,9 +361,9 @@ export function stringifyMutation(m: Mutation): string | null {
       return `Switch active of player ${m.who} to ${stringifyState(m.value)}`;
     }
     case "removeCard": {
-      return `Dispose card ${stringifyState(m.oldState)} of player ${m.who}'s ${m.where} (${
-        m.used ? "used" : "not used"
-      })`;
+      return `Dispose card ${stringifyState(m.oldState)} of player ${m.who}'s ${
+        m.where
+      } (${m.used ? "used" : "not used"})`;
     }
     case "createCard": {
       return `Create card ${stringifyState(m.value)} for player ${m.who} in ${

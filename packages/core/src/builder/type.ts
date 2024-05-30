@@ -36,6 +36,11 @@ export type SupportHandle = EntityHandle &
 export type EquipmentHandle = EntityHandle &
   CardHandle & { readonly _equip: unique symbol };
 
+export type ExtensionHandle<T = unknown> = number & {
+  readonly _extSym: unique symbol;
+  readonly type: T;
+};
+
 export type ExEntityState<TypeT extends ExEntityType> =
   TypeT extends "character" ? CharacterState : EntityState & { type: TypeT };
 

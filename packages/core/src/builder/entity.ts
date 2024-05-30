@@ -31,7 +31,12 @@ import {
   TriggeredSkillBuilder,
   enableShortcut,
 } from "./skill";
-import { HandleT, PassiveSkillHandle, SkillHandle } from "./type";
+import {
+  ExtensionHandle,
+  HandleT,
+  PassiveSkillHandle,
+  SkillHandle,
+} from "./type";
 import { GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
 import { Writable } from "../utils";
@@ -65,10 +70,12 @@ type BuilderMetaOfEntity<
   Event extends DetailedEventNames,
   CallerType extends ExEntityType,
   Vars extends string,
+  AssociatedExt extends ExtensionHandle,
 > = {
   callerType: CallerType;
   callerVars: Vars;
   eventArgType: DetailedEventArgOf<Event>;
+  associatedExtension: AssociatedExt;
 };
 
 interface GlobalUsageOptions extends VariableOptions {
@@ -82,6 +89,7 @@ interface GlobalUsageOptions extends VariableOptions {
 export class EntityBuilder<
   CallerType extends ExEntityType,
   Vars extends string = never,
+  AssociatedExt extends ExtensionHandle = never,
 > {
   private _skillNo = 0;
   _skillList: TriggeredSkillDefinition[] = [];
@@ -89,6 +97,7 @@ export class EntityBuilder<
   private _tags: EntityTag[] = [];
   _varConfigs: Writable<EntityVariableConfigs> = {};
   private _visibleVarName: string | null = null;
+  _associatedExtensionId: number | undefined = void 0;
   private _hintText: string | null = null;
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
@@ -99,6 +108,20 @@ export class EntityBuilder<
     public _type: CallerType,
     private id: number,
   ) {}
+
+  associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
+    if (typeof this._associatedExtensionId !== "undefined") {
+      throw new GiTcgDataError(
+        `This entity has already associated with extension ${this.id}`,
+      );
+    }
+    this._associatedExtensionId = ext;
+    return this as unknown as EntityBuilder<
+      CallerType,
+      Vars,
+      ExtensionHandle<NewExtT>
+    >;
+  }
 
   conflictWith(id: number) {
     return this.on("enter", (c) => c.$(`my any with definition id ${id}`))
@@ -132,23 +155,25 @@ export class EntityBuilder<
 
   on<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
+    filter?: SkillFilter<
+      BuilderMetaOfEntity<E, CallerType, Vars, AssociatedExt>
+    >,
   ) {
     // BuilderWithShortcut<
     //   TriggeredSkillBuilder<BuilderMetaOfEntity<E, CallerType, Vars>, E>
     // >
     return enableShortcut(
-      new TriggeredSkillBuilder<BuilderMetaOfEntity<E, CallerType, Vars>, E>(
-        this.generateSkillId(),
-        event,
-        this,
-        filter,
-      ),
+      new TriggeredSkillBuilder<
+        BuilderMetaOfEntity<E, CallerType, Vars, AssociatedExt>,
+        E
+      >(this.generateSkillId(), event, this, filter),
     );
   }
   once<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<BuilderMetaOfEntity<E, CallerType, Vars>>,
+    filter?: SkillFilter<
+      BuilderMetaOfEntity<E, CallerType, Vars, AssociatedExt>
+    >,
   ) {
     return this.on(event, filter).usage<never>(1, {
       visible: false,
@@ -159,7 +184,7 @@ export class EntityBuilder<
     name: Name,
     value: number,
     opt?: VariableOptions,
-  ): EntityBuilder<CallerType, Vars | Name> {
+  ): EntityBuilder<CallerType, Vars | Name, AssociatedExt> {
     if (Reflect.has(this._varConfigs, name)) {
       throw new GiTcgDataError(`Variable name ${name} already exists`);
     }
@@ -195,14 +220,14 @@ export class EntityBuilder<
     value: number,
     max?: number,
     opt?: VariableOptionsWithoutAppend,
-  ): EntityBuilder<CallerType, Vars | Name>;
+  ): EntityBuilder<CallerType, Vars | Name, AssociatedExt>;
   variableCanAppend<const Name extends string>(
     name: Name,
     value: number,
     max: number,
     appendValue: number,
     opt?: VariableOptionsWithoutAppend,
-  ): EntityBuilder<CallerType, Vars | Name>;
+  ): EntityBuilder<CallerType, Vars | Name, AssociatedExt>;
   variableCanAppend(
     name: string,
     value: number,
@@ -261,7 +286,7 @@ export class EntityBuilder<
     if (hintCount) {
       this.variable("preparingSkillHintCount", hintCount);
     }
-    return (this as unknown as EntityBuilder<"status", Vars>)
+    return (this as unknown as EntityBuilder<"status", Vars, AssociatedExt>)
       .on("replaceAction")
       .useSkill(skill)
       .dispose()
@@ -303,7 +328,12 @@ export class EntityBuilder<
     target?: string,
   ): BuilderWithShortcut<
     TriggeredSkillBuilder<
-      BuilderMetaOfEntity<"endPhase", CallerType, Vars | "hintIcon">,
+      BuilderMetaOfEntity<
+        "endPhase",
+        CallerType,
+        Vars | "hintIcon",
+        AssociatedExt
+      >,
       "endPhase"
     >
   > {
@@ -336,7 +366,7 @@ export class EntityBuilder<
   usage(
     count: number,
     opt: GlobalUsageOptions = {},
-  ): EntityBuilder<CallerType, Vars | "usage"> {
+  ): EntityBuilder<CallerType, Vars | "usage", AssociatedExt> {
     if (opt.autoDispose !== false) {
       this.variable("disposeWhenUsageIsZero", 1);
     }

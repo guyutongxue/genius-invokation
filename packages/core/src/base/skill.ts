@@ -34,6 +34,7 @@ import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
+import { getEntityArea } from "../utils";
 
 export interface SkillDefinitionBase<Arg> {
   readonly __definition: "skills";
@@ -42,7 +43,7 @@ export interface SkillDefinitionBase<Arg> {
   readonly action: SkillDescription<Arg>;
 }
 
-type SkillResult = readonly [GameState, EventAndRequest[]];
+export type SkillResult = readonly [GameState, EventAndRequest[]];
 
 export type SkillDescription<Arg> = (
   state: GameState,
@@ -75,10 +76,12 @@ export interface SkillInfo {
   readonly requestBy: SkillInfo | null;
   readonly charged: boolean;
   readonly plunging: boolean;
-  /** @internal */
+  /** @internal 技能执行时的日志管理 */
   readonly logger?: IDetailLogger;
-  /** @internal */
+  /** @internal 技能执行时发生 notify 的回调 */
   readonly onNotify?: (opt: InternalNotifyOption) => void;
+  /** @internal 当访问 setExtensionState 时操作的扩展 id */
+  readonly associatedExtensionId?: number;
 }
 
 export interface DamageInfo {
@@ -176,6 +179,10 @@ export class EventArg {
       throw new GiTcgCoreInternalError("EventArg caller not set");
     }
     return this._currentSkillInfo.caller;
+  }
+
+  get onTimeState() {
+    return this._state;
   }
 
   toString() {
@@ -463,11 +470,15 @@ export class SwitchActiveEventArg extends EventArg {
 export class DamageOrHealEventArg<
   InfoT extends DamageInfo | HealInfo,
 > extends EventArg {
+  public readonly sourceWho: 0 | 1;
+  public readonly targetWho: 0 | 1;
   constructor(
     state: GameState,
     private readonly _damageInfo: InfoT,
   ) {
     super(state);
+    this.sourceWho = getEntityArea(state, this.damageInfo.source.id).who;
+    this.targetWho = getEntityArea(state, this.damageInfo.target.id).who;
   }
   toString() {
     return stringifyDamageInfo(this.damageInfo).split("\n")[0];
@@ -611,11 +622,13 @@ export class ModifyDamage0EventArg<
 }
 
 export class EntityEventArg extends EventArg {
+  public readonly who: 0 | 1;
   constructor(
     state: GameState,
     public readonly entity: CharacterState | EntityState,
   ) {
     super(state);
+    this.who = getEntityArea(state, entity.id).who;
   }
   toString(): string {
     return stringifyState(this.entity);
@@ -639,11 +652,13 @@ class EnterEventArg extends EntityEventArg {
 }
 
 export class CharacterEventArg extends EventArg {
+  public readonly who: 0 | 1;
   constructor(
     state: GameState,
     public readonly character: CharacterState,
   ) {
     super(state);
+    this.who = getEntityArea(state, character.id).who;
   }
   toString() {
     return stringifyState(this.character);

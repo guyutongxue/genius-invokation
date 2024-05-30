@@ -50,6 +50,7 @@ import {
   CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
+  ExtensionHandle,
   StatusHandle,
   SupportHandle,
 } from "./type";
@@ -76,12 +77,14 @@ type LooseBuilderMetaForCard = {
   callerType: "character";
   callerVars: never;
   eventArgType: CardSkillEventArg;
+  associatedExtension: never;
 };
 
 type StrictBuilderMetaForCard<KindTs extends CardTargetKind> = {
   callerType: "character";
   callerVars: never;
   eventArgType: StrictCardSkillEventArg<KindTs>;
+  associatedExtension: never;
 };
 
 type StrictCardSkillFilter<KindTs extends CardTargetKind> = SkillFilter<
@@ -103,9 +106,10 @@ interface FoodOption {
   extraTargetRestraint?: string;
 }
 
-class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
-  StrictCardSkillEventArg<KindTs>
-> {
+class CardBuilder<
+  KindTs extends CardTargetKind,
+  AssociatedExt extends ExtensionHandle = never,
+> extends SkillBuilderWithCost<StrictCardSkillEventArg<KindTs>, AssociatedExt> {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
   private _filters: StrictCardSkillFilter<KindTs>[] = [];
@@ -120,6 +124,16 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
   constructor(private readonly cardId: number) {
     super(cardId);
+  }
+
+  associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
+    if (typeof this.associatedExtensionId !== "undefined") {
+      throw new GiTcgDataError(
+        `This card has already associated with extension ${this.id}`,
+      );
+    }
+    this.associatedExtensionId = ext;
+    return this as unknown as CardBuilder<KindTs, ExtensionHandle<NewExtT>>;
   }
 
   tags(...tags: CardTag[]): this {
@@ -315,7 +329,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
 
   done(): CardHandle {
     if (this._targetQueries.length > 0 && this._doSameWhenDisposed) {
-      throw new GiTcgDataError(`Cannot specify targets when using .doSameWhenDisposed().`);
+      throw new GiTcgDataError(
+        `Cannot specify targets when using .doSameWhenDisposed().`,
+      );
     }
     if (this._satiatedTarget !== null) {
       const target = this._satiatedTarget;
@@ -324,9 +340,9 @@ class CardBuilder<KindTs extends CardTargetKind> extends SkillBuilderWithCost<
     const action: SkillDescription<CardSkillEventArg> = (
       state,
       skillInfo,
-      args,
+      arg,
     ) => {
-      return this.getAction(args as any)(state, skillInfo);
+      return this.applyActions(state, skillInfo, arg as any);
     };
     const filterFn: PlayCardFilter = (state, skillInfo, args) => {
       const ctx = new SkillContext<

@@ -17,6 +17,7 @@ export { character } from "./character";
 export { skill } from "./skill";
 export { card } from "./card";
 export { summon, status, combatStatus } from "./entity";
+export { extension, skillCountOfRoundExtension } from "./extension";
 export {
   beginRegistration,
   endRegistration,
@@ -32,7 +33,8 @@ export type {
   StatusHandle,
   SummonHandle,
   SupportHandle,
-  PassiveSkillHandle
+  PassiveSkillHandle,
+  ExtensionHandle,
 } from "./type";
 export { DiceType, DamageType, Aura, Reaction } from "@gi-tcg/typings";
 export type { CharacterState, EntityState } from "../base/state";

@@ -97,6 +97,9 @@ export function registerPassiveSkill(value: PassiveSkillDefinition) {
 export function registerCard(value: CardDefinition) {
   register("cards", value);
 }
+export function registerExtension(value: ExtensionDefinition) {
+  register("extensions", value);
+}
 
 function getDefinition<C extends RegisterCategory>(
   type: C,

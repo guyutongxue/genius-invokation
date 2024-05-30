@@ -45,6 +45,7 @@ type ReactionContextMeta = {
   callerVars: never;
   eventArgType: ReactionDescriptionEventArg;
   callerType: any;
+  associatedExtension: never;
 };
 
 type ReactionAction = (
@@ -85,7 +86,7 @@ function initialize() {
     }
     done() {
       REACTION_DESCRIPTION[this.reaction] = (st, id, d) => {
-        return this.getAction(d)(st, id);
+        return this.applyActions(st, id, d);
       };
     }
   }

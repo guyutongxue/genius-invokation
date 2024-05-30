@@ -30,10 +30,11 @@ import {
   ModifyActionEventArg,
   ActionEventArg,
   DamageInfo,
+  SkillResult,
 } from "../base/skill";
 import { EntityVariables, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
-import { SkillHandle } from "./type";
+import { ExtensionHandle, SkillHandle } from "./type";
 import {
   EntityArea,
   USAGE_PER_ROUND_VARIABLE_NAMES,
@@ -52,7 +53,7 @@ export type WritableMetaOf<BM extends BuilderMetaBase> = {
   [K in keyof BuilderMetaBase]: BM[K];
 } & { readonly: false };
 
-type SkillOperation<Meta extends BuilderMetaBase> = (
+export type SkillOperation<Meta extends BuilderMetaBase> = (
   c: TypedSkillContext<WritableMetaOf<Meta>>,
   e: Omit<Meta["eventArgType"], `_${string}`>,
 ) => void;
@@ -332,6 +333,7 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   declare [BUILDER_META_TYPE]: Meta;
 
   protected operations: SkillOperation<Meta>[] = [];
+  protected associatedExtensionId: number | undefined = void 0;
   constructor(protected readonly id: number) {}
   protected applyFilter = false;
   protected _filter: SkillFilter<Meta> = () => true;
@@ -364,20 +366,24 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   }
 
   /**
-   * 生成内部技能描述函数。
-   * 给定两个参数：它们接受 `SkillContext` 然后转换到对应扩展点。
-   * 这些参数将传递给用户。
-   * @param extGenerator 生成扩展点的函数
-   * @returns 内部技能描述函数
+   * 在 `state` 上，以 `skillInfo` `arg` 应用技能描述
+   *
+   * @returns 即 `SkillDescription` 的返回值
    */
-  protected getAction(arg: Meta["eventArgType"]): SkillDescription<void> {
-    return (state, skillInfo) => {
-      const ctx = new SkillContext<WritableMetaOf<Meta>>(state, skillInfo, arg);
-      for (const op of this.operations) {
-        op(ctx, ctx.eventArg);
-      }
-      return [ctx.state, ctx.events] as const;
-    };
+  protected applyActions(
+    state: GameState,
+    skillInfo: SkillInfo,
+    arg: Meta["eventArgType"],
+  ): SkillResult {
+    const ctx = new SkillContext<WritableMetaOf<Meta>>(
+      state,
+      { ...skillInfo, associatedExtensionId: this.associatedExtensionId },
+      arg,
+    );
+    for (const op of this.operations) {
+      op(ctx, ctx.eventArg);
+    }
+    return [ctx.state, ctx.events] as const;
   }
 }
 
@@ -470,7 +476,8 @@ export class TriggeredSkillBuilder<
     private readonly triggerOn: EventName,
     private readonly parent: EntityBuilder<
       Meta["callerType"],
-      Meta["callerVars"]
+      Meta["callerVars"],
+      Meta["associatedExtension"]
     >,
     triggerFilter: SkillFilter<Meta> = () => true,
   ) {
@@ -512,6 +519,7 @@ export class TriggeredSkillBuilder<
         callerType: Meta["callerType"];
         callerVars: Meta["callerVars"] | VarName;
         eventArgType: Meta["eventArgType"];
+        associatedExtension: Meta["associatedExtension"];
       },
       EventName
     >
@@ -629,12 +637,12 @@ export class TriggeredSkillBuilder<
       });
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
-    const filter: TriggeredSkillFilter<any> = (state, caller, arg) => {
-      const ctx = new SkillContext(state, caller, arg);
+    const filter: TriggeredSkillFilter<any> = (state, skillInfo, arg) => {
+      const ctx = new SkillContext(state, skillInfo, arg);
       return !!this._triggerFilter(ctx as any, arg);
     };
     const action: SkillDescription<any> = (state, skillInfo, arg) => {
-      return this.getAction(arg)(state, skillInfo);
+      return this.applyActions(state, skillInfo, arg as any);
     };
     const def: TriggeredSkillDefinition = {
       __definition: "skills",
@@ -662,6 +670,7 @@ export class TriggeredSkillBuilder<
       eventArgType: DetailedEventArgOf<E>;
       callerType: Meta["callerType"];
       callerVars: Meta["callerVars"];
+      associatedExtension: Meta["associatedExtension"];
     }>,
   ) {
     this.buildSkill();
@@ -673,6 +682,7 @@ export class TriggeredSkillBuilder<
       eventArgType: DetailedEventArgOf<E>;
       callerType: Meta["callerType"];
       callerVars: Meta["callerVars"];
+      associatedExtension: Meta["associatedExtension"];
     }>,
   ) {
     this.buildSkill();
@@ -685,10 +695,14 @@ export class TriggeredSkillBuilder<
   }
 }
 
-export abstract class SkillBuilderWithCost<EventArg> extends SkillBuilder<{
+export abstract class SkillBuilderWithCost<
+  EventArg,
+  AssociatedExt extends ExtensionHandle,
+> extends SkillBuilder<{
   callerType: "character";
   callerVars: never;
   eventArgType: EventArg;
+  associatedExtension: AssociatedExt;
 }> {
   constructor(skillId: number) {
     super(skillId);
@@ -730,12 +744,23 @@ export abstract class SkillBuilderWithCost<EventArg> extends SkillBuilder<{
   }
 }
 
-class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
+class InitiativeSkillBuilder<
+  AssociatedExt extends ExtensionHandle,
+> extends SkillBuilderWithCost<void, AssociatedExt> {
   private _skillType: SkillType = "normal";
   private _gainEnergy = true;
   protected _cost: DiceType[] = [];
   constructor(private readonly skillId: number) {
     super(skillId);
+  }
+  associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
+    if (typeof this.associatedExtensionId !== "undefined") {
+      throw new GiTcgDataError(
+        `This skill has already associated with extension ${this.id}`,
+      );
+    }
+    this.associatedExtensionId = ext;
+    return this as unknown as InitiativeSkillBuilder<ExtensionHandle<NewExtT>>;
   }
 
   noEnergy(): this {
@@ -760,7 +785,9 @@ class InitiativeSkillBuilder extends SkillBuilderWithCost<void> {
   reserve(): void {}
 
   done(): SkillHandle {
-    const action: SkillDescription<void> = this.getAction();
+    const action: SkillDescription<void> = (state, skillInfo) => {
+      return this.applyActions(state, skillInfo, void 0);
+    };
     registerSkill({
       __definition: "skills",
       type: "skill",

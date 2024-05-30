@@ -60,6 +60,7 @@ export interface GameState {
   readonly currentTurn: 0 | 1;
   readonly winner: 0 | 1 | null;
   readonly players: readonly [PlayerState, PlayerState];
+  readonly extensions: readonly ExtensionState[];
 }
 
 export interface PlayerState {
@@ -77,7 +78,6 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
-  readonly extensions: readonly ExtensionState[];
 }
 
 export interface CardState {

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, flip, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, extension, flip, skillCountOfRoundExtension, status, summon } from "@gi-tcg/core/builder";
 import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
 
 /**
@@ -223,6 +223,23 @@ export const ChangTheNinth = card(322009)
   })
   .done();
 
+const SkillUsedThisRound = extension({
+  used: [new Set<number>(), new Set<number>()] as const
+})
+  .addTrigger("onAction", (c, e) => {
+    if (e.isUseSkill()) {
+      c.setExtensionState((st) => {
+        st.used[e.who].add(e.action.skill.definition.id);
+      });
+    }
+  })
+  .addTrigger("onRoundBegin", (c, e) => {
+    c.setExtensionState((st) => {
+      st.used = [new Set(), new Set()];
+    });
+  })
+  .done()
+
 /**
  * @id 322010
  * @name 艾琳
@@ -232,9 +249,9 @@ export const ChangTheNinth = card(322009)
 export const Ellin = card(322010)
   .costSame(2)
   .support("ally")
+  .associateExtension(SkillUsedThisRound)
   .on("deductDiceSkill", (c, e) => {
-    const used = c.countOfSkill(e.action.skill.definition.id as SkillHandle, "my");
-    return !!used;
+    return c.getExtensionState().used[c.self.who].has(e.action.skill.definition.id);
   })
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
@@ -453,6 +470,18 @@ export const SandsAndDream = status(302205)
   .deductCost(DiceType.Omni, 3)
   .done();
 
+const DisposedSupportCountExtension = extension({
+  disposedSupportCount: [0, 0] as [number, number]
+})
+  .addTrigger("onDispose", (c, e) => {
+    if (e.entity.definition.type === "support") {
+      c.setExtensionState((st) => {
+        st.disposedSupportCount[e.who]++;
+      })
+    }
+  })
+  .done();
+
 /**
  * @id 322022
  * @name 婕德
@@ -463,14 +492,15 @@ export const SandsAndDream = status(302205)
 export const Jeht = card(322022)
   .costVoid(2)
   .support("ally")
+  .associateExtension(DisposedSupportCountExtension)
   .variable("experience", 0)
   .on("enter")
   .do((c) => {
-    c.setVariable("experience", Math.min(c.player.disposedSupportCount, 6));
+    c.setVariable("experience", Math.min(c.getExtensionState().disposedSupportCount[c.self.who], 6));
   })
   .on("dispose", (c, e) => e.entity.definition.type === "support")
   .do((c) => {
-    c.setVariable("experience", Math.min(c.player.disposedSupportCount, 6));
+    c.setVariable("experience", Math.min(c.getExtensionState().disposedSupportCount[c.self.who], 6));
   })
   .on("useSkill", (c, e) => e.isSkillType("burst"))
   .do((c) => {
@@ -482,11 +512,16 @@ export const Jeht = card(322022)
   })
   .done();
 
-function popCount32(n: number) {
-  n = n - ((n >> 1) & 0x55555555)
-  n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
-  return ((n + (n >> 4) & 0xF0F0F0F) * 0x1010101) >> 24
-}
+const DamageTypeCountExtension = extension({
+  damages: [new Set<DamageType>(), new Set<DamageType>()]
+})
+  .addTrigger("onDamageOrHeal", (c, e) => {
+    if (e.isDamageTypeDamage()) {
+      c.setExtensionState((st) => {
+        st.damages[e.targetWho].add(e.type);
+      });
+    } 
+  })
 
 /**
  * @id 322023
