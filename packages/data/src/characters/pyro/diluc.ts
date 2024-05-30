@@ -50,7 +50,7 @@ export const TemperedSword = skill(13011)
 export const SearingOnslaught = skill(13012)
   .type("elemental")
   .costPyro(3)
-  .if((c) => c.countOfThisSkill() === 2)
+  .if((c) => c.countOfSkill() === 2)
   .damage(DamageType.Pyro, 5)
   .else()
   .damage(DamageType.Pyro, 3)
@@ -99,7 +99,7 @@ export const FlowingFlame = card(213011)
   .useSkill(SearingOnslaught)
   .on("deductDiceSkill", (c, e) =>
     e.action.skill.definition.id === SearingOnslaught && 
-    c.countOfSkill(SearingOnslaught, e.action.skill.caller.id) === 1 &&
+    c.countOfSkill(SearingOnslaught) === 1 &&
     e.canDeductCostOfType(DiceType.Pyro))
   .deductCost(DiceType.Pyro, 1)
   .done();

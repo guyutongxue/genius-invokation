@@ -78,6 +78,7 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
+  readonly roundSkillLog: readonly number[];
 }
 
 export interface CardState {

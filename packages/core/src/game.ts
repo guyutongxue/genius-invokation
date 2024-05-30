@@ -140,6 +140,7 @@ function initPlayerState(
     hasDefeated: false,
     legendUsed: false,
     skipNextTurn: false,
+    roundSkillLog: [],
   };
 }
 
@@ -699,6 +700,11 @@ export class Game extends StateMutator {
       switch (actionInfo.type) {
         case "useSkill":
           await this.executeSkill(actionInfo.skill);
+          this.mutate({
+            type: "mutateRoundSkillLog",
+            who,
+            skillIdOrZero: actionInfo.skill.definition.id
+          });
           break;
         case "playCard":
           if (actionInfo.card.definition.tags.includes("legend")) {
@@ -835,6 +841,16 @@ export class Game extends StateMutator {
       who: 1,
       flagName: "declaredEnd",
       value: false,
+    });
+    this.mutate({
+      type: "mutateRoundSkillLog",
+      who: 0,
+      skillIdOrZero: 0,
+    });
+    this.mutate({
+      type: "mutateRoundSkillLog",
+      who: 1,
+      skillIdOrZero: 0,
     });
     this.mutate({
       type: "changePhase",

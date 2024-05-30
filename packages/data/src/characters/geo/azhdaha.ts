@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, card, DamageType, DiceType, CharacterHandle, Aura } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, DiceType, CharacterHandle, Aura, extension, pair } from "@gi-tcg/core/builder";
+
+const AbsorbedCountExtension = extension({ absorbed: pair(new Set<DiceType>() )})
+  .done();
 
 /**
  * @id 126021
@@ -23,6 +26,7 @@ import { character, skill, status, card, DamageType, DiceType, CharacterHandle, 
  * 角色汲取了一种和当前不同的元素后：生成1个所汲取元素类型的元素骰。
  */
 export const StoneFacetsElementalAbsorption = status(126021)
+  .associateExtension(AbsorbedCountExtension)
   .on("replaceCharacterDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
   .do((c) => {
     let diceType = DiceType.Geo;
@@ -32,13 +36,7 @@ export const StoneFacetsElementalAbsorption = status(126021)
       case AzhdahaPyro: diceType = DiceType.Pyro; break;
       case AzhdahaElectro: diceType = DiceType.Electro; break;
     };
-    const oldAzhdahaBitset = c.player.azhdahaAbsorbedBitset;
-    c.mutate({
-      type: "setPlayerExtraValue",
-      who: c.self.who,
-      name: "azhdahaAbsorbedBitset",
-      value: oldAzhdahaBitset | (1 << diceType),
-    })
+    c.setExtensionState((st) => st.absorbed[c.self.who].add(diceType));
     c.generateDice(diceType, 1);
   })
   .done();
@@ -135,13 +133,9 @@ export const DecimatingRockfall = skill(26024)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
+  .associateExtension(AbsorbedCountExtension)
   .do((c) => {
-    const bitset = c.player.azhdahaAbsorbedBitset;
-    let bonus = 0;
-    if (bitset & (1 << DiceType.Cryo)) bonus++;
-    if (bitset & (1 << DiceType.Hydro)) bonus++;
-    if (bitset & (1 << DiceType.Pyro)) bonus++;
-    if (bitset & (1 << DiceType.Electro)) bonus++;
+    const bonus = c.getExtensionState().absorbed[c.self.who].size;
     c.damage(DamageType.Geo, 4 + bonus);
   })
   .done();

@@ -282,6 +282,10 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
     return ext.state;
   }
+  /** 本回合我方已经使用了几次某技能 */
+  countOfSkill(skillId: SkillHandle = this.skillInfo.definition.id as SkillHandle): number {
+    return this.player.roundSkillLog.filter((entry) => entry === skillId).length;
+  }
 
   // MUTATIONS
 

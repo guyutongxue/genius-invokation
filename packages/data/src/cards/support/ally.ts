@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SupportHandle, card, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
 import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
 
 /**
@@ -223,17 +223,6 @@ export const ChangTheNinth = card(322009)
   })
   .done();
 
-const SkillUsedThisRound = extension({ used: pair(new Set<number>()) })
-  .mutateWhen("onAction", (st, e) => {
-    if (e.isUseSkill()) {
-      st.used[e.who].add(e.action.skill.definition.id);
-    }
-  })
-  .mutateWhen("onRoundBegin", (st) => {
-    st.used = pair(new Set());
-  })
-  .done()
-
 /**
  * @id 322010
  * @name 艾琳
@@ -243,9 +232,8 @@ const SkillUsedThisRound = extension({ used: pair(new Set<number>()) })
 export const Ellin = card(322010)
   .costSame(2)
   .support("ally")
-  .associateExtension(SkillUsedThisRound)
   .on("deductDiceSkill", (c, e) => {
-    return c.getExtensionState().used[c.self.who].has(e.action.skill.definition.id);
+    return c.countOfSkill(e.action.skill.definition.id as SkillHandle) > 0;
   })
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)

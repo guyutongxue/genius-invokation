@@ -55,6 +55,7 @@ export function exposeMutation(
   switch (m.type) {
     case "stepRandom":
     case "mutateExtensionState":
+    case "mutateRoundSkillLog":
     case "switchActive": // We will manually handle this
       return null;
     case "changePhase":

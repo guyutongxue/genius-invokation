@@ -76,7 +76,7 @@ export const FrostflakeArrow = skill(11013)
   .type("normal")
   .costCryo(5)
   .do((c) => {
-    if (c.self.hasEquipment(UndividedHeart) && c.countOfThisSkill() > 0) {
+    if (c.self.hasEquipment(UndividedHeart) && c.countOfSkill() > 0) {
       c.damage(DamageType.Piercing, 3, "opp standby");
     } else {
       c.damage(DamageType.Piercing, 2, "opp standby");

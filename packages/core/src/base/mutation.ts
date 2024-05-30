@@ -152,6 +152,11 @@ export interface MutateExtensionStateM {
   readonly extensionId: number;
   readonly newState: unknown;
 }
+export interface MutateRoundSkillLogM {
+  readonly type: "mutateRoundSkillLog";
+  readonly who: 0 | 1;
+  readonly skillIdOrZero: number;
+}
 
 export type Mutation =
   | StepRandomM
@@ -170,7 +175,8 @@ export type Mutation =
   | ReplaceCharacterDefinitionM
   | ResetDiceM
   | SetPlayerFlagM
-  | MutateExtensionStateM;
+  | MutateExtensionStateM
+  | MutateRoundSkillLogM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -331,6 +337,15 @@ function doMutation(state: GameState, m: Mutation): GameState {
         }
         extension.state = m.newState;
       });
+    }
+    case "mutateRoundSkillLog": {
+      return produce(state, (draft) => {
+        if (m.skillIdOrZero) {
+          draft.players[m.who].roundSkillLog.push(m.skillIdOrZero);
+        } else {
+          draft.players[m.who].roundSkillLog = [];
+        }
+      })
     }
     default: {
       const _: never = m;

@@ -17,7 +17,7 @@ export { character } from "./character";
 export { skill } from "./skill";
 export { card } from "./card";
 export { summon, status, combatStatus } from "./entity";
-export { extension, skillCountOfRoundExtension } from "./extension";
+export { extension } from "./extension";
 export {
   beginRegistration,
   endRegistration,
