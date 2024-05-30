@@ -22,6 +22,7 @@ import {
   HealInfo,
   SkillInfo,
   SwitchActiveEventArg,
+  TriggeredSkillDefinition,
   ZeroHealthEventArg,
 } from "./base/skill";
 import { CharacterState, GameState, stringifyState } from "./base/state";
@@ -108,7 +109,7 @@ export class SkillExecutor extends StateMutator {
     const skillDef = skillInfo.definition;
 
     const preExposedMutations: ExposedMutation[] = [];
-    if (!skillInfo.fromCard) {
+    if (skillInfo.caller.definition.skills.find((sk) => sk.id === skillDef.id)) {
       preExposedMutations.push({
         type: "triggered",
         id: skillInfo.caller.id,
