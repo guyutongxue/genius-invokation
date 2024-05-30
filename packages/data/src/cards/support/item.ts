@@ -132,7 +132,7 @@ export const SeedDispensary = card(323005)
   .deductCost(DiceType.Omni, 1)
   .done();
 
-const CardPlayedExtension = extension({ played: pair(new Set<number>()) })
+const CardPlayedExtension = extension(323006, { played: pair(new Set<number>()) })
   .mutateWhen("onAction", (st, e) => {
     if (e.isPlayCard()) {
       st.played[e.who].add(e.action.card.definition.id);

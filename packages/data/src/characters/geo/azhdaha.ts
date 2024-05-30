@@ -15,7 +15,7 @@
 
 import { character, skill, status, card, DamageType, DiceType, CharacterHandle, Aura, extension, pair } from "@gi-tcg/core/builder";
 
-const AbsorbedCountExtension = extension({ absorbed: pair(new Set<DiceType>() )})
+const AbsorbedCountExtension = extension(2602, { absorbed: pair(new Set<DiceType>() )})
   .done();
 
 /**

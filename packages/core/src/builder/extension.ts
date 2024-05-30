@@ -29,12 +29,13 @@ type BuilderMetaOfExtension<
 };
 
 export class ExtensionBuilder<ExtStateType extends object> {
-  private static nextId = 5000001;
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
-  public readonly id = ExtensionBuilder.nextId++;
+  public readonly id;
 
-  constructor(private readonly initialState: ExtStateType) {}
+  constructor(idHint: number, private readonly initialState: ExtStateType) {
+    this.id = idHint + 5_000_000;
+  }
 
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
@@ -93,7 +94,8 @@ export class ExtensionBuilder<ExtStateType extends object> {
 }
 
 export function extension<ExtStateType extends object>(
+  idHint: number,
   initialState: ExtStateType,
 ) {
-  return new ExtensionBuilder(initialState);
+  return new ExtensionBuilder(idHint, initialState);
 }

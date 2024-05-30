@@ -250,6 +250,7 @@ export const IronTongueTian = card(322011)
   .costVoid(2)
   .support("ally")
   .on("endPhase")
+  .usage(2)
   .gainEnergy(1, "my characters with energy < maxEnergy limit 1")
   .done();
 
@@ -452,7 +453,7 @@ export const SandsAndDream = status(302205)
   .deductCost(DiceType.Omni, 3)
   .done();
 
-const DisposedSupportCountExtension = extension({ disposedSupportCount: pair(0) })
+const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: pair(0) })
   .mutateWhen("onDispose", (st, e) => {
     if (e.entity.definition.type === "support") {
       st.disposedSupportCount[e.who]++;
@@ -490,7 +491,7 @@ export const Jeht = card(322022)
   })
   .done();
 
-const DamageTypeCountExtension = extension({ damages: pair(new Set<DamageType>()) })
+const DamageTypeCountExtension = extension(322023, { damages: pair(new Set<DamageType>()) })
   .mutateWhen("onDamageOrHeal", (st, e) => {
     if (e.isDamageTypeDamage() && e.type !== DamageType.Physical && e.type !== DamageType.Piercing) {
       st.damages[e.targetWho].add(e.type);

@@ -109,7 +109,7 @@ export function serializeGameStateLog(
 }
 
 function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
-  return ["characters", "entities", "skills", "cards"].includes(
+  return ["characters", "entities", "skills", "cards", "extensions"].includes(
     defKey as string,
   );
 }

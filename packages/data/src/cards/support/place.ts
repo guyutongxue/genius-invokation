@@ -231,6 +231,7 @@ export const GoldenHouse = card(321013)
     e.hasOneOfCardTag("weapon", "artifact") &&
     e.action.card.definition.onPlay.requiredCost.length >= 3)
   .usagePerRound(1)
+  .usage(2)
   .deductCost(DiceType.Omni, 1)
   .done();
 

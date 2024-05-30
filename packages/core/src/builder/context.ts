@@ -1200,24 +1200,24 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
-    const cards = new Array<CardState>(count).fill({
+    const cardTemplate = {
       id: 0,
       definition: cardDef,
-    });
+    };
     switch (strategy) {
       case "top":
-        for (const card of cards) {
+        for (let i = 0; i < count; i++) {
           this.mutate({
             type: "createCard",
             who,
             target: "piles",
-            value: card,
+            value: { ...cardTemplate },
             targetIndex: 0,
           });
         }
         break;
       case "random":
-        for (const card of cards) {
+        for (let i = 0; i < count; i++) {
           const mut: Mutation = {
             type: "stepRandom",
             value: -1,
@@ -1228,7 +1228,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             type: "createCard",
             who,
             target: "piles",
-            value: card,
+            value: { ...cardTemplate },
             targetIndex: index,
           });
         }
@@ -1243,7 +1243,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             type: "createCard",
             who,
             target: "piles",
-            value: cards[i],
+            value: { ...cardTemplate },
             targetIndex: j + offset,
           });
         }
@@ -1254,7 +1254,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           if (isNaN(range)) {
             throw new GiTcgDataError(`Invalid strategy ${strategy}`);
           }
-          for (const card of cards) {
+          for (let i = 0; i < count; i++) {
             const mut: Mutation = {
               type: "stepRandom",
               value: -1,
@@ -1265,7 +1265,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
               type: "createCard",
               who,
               target: "piles",
-              value: card,
+              value: { ...cardTemplate },
               targetIndex: index,
             });
           }
