@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, card, DamageType, DiceType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, DiceType, skillCountOfRoundExtension } from "@gi-tcg/core/builder";
 
 /**
  * @id 116054
@@ -72,6 +72,8 @@ export const RagingOniKing = status(116053)
   .characterStatus(SuperlativeSuperstrength, "@master")
   .done();
 
+export const FightClubLegendCount = skillCountOfRoundExtension(16051);
+
 /**
  * @id 16051
  * @name 喧哗屋传说
@@ -82,11 +84,12 @@ export const FightClubLegend = skill(16051)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
+  .associateExtension(FightClubLegendCount)
   .do((c) => {
     if (
-        c.self.hasEquipment(AratakiIchiban) && // 带有装备
-        c.countOfThisSkill() > 0 &&            // 本回合使用过
-        c.skillInfo.charged                    // 触发乱神之怪力（重击）
+        c.self.hasEquipment(AratakiIchiban) &&         // 带有装备
+        c.getExtensionState().count[c.self.who] > 0 && // 本回合使用过
+        c.skillInfo.charged                            // 触发乱神之怪力（重击）
       ) {
       c.damage(DamageType.Physical, 3);
     } else {

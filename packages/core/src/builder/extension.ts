@@ -1,3 +1,4 @@
+import { Draft } from "immer";
 import { GameState } from "..";
 import {
   EventArgOf,
@@ -15,6 +16,7 @@ import {
   enableShortcut,
 } from "./skill";
 import { ExtensionHandle } from "./type";
+import { pair } from "@gi-tcg/utils";
 
 type BuilderMetaOfExtension<
   ExtStateType extends object,
@@ -39,9 +41,13 @@ export class ExtensionBuilder<ExtStateType extends object> {
     return this.id + thisSkillNo / 100;
   }
 
-  addTrigger<E extends EventNames>(
+  mutateWhen<E extends EventNames>(
     event: E,
-    operation: SkillOperation<BuilderMetaOfExtension<ExtStateType, E>>,
+    operation: (
+      extensionState: Draft<ExtStateType>,
+      eventArg: EventArgOf<E>,
+      currentGameState: GameState,
+    ) => void,
   ) {
     const action: SkillDescription<any> = (state, skillInfo, arg) => {
       const ctx = new SkillContext<
@@ -54,7 +60,7 @@ export class ExtensionBuilder<ExtStateType extends object> {
         },
         arg,
       );
-      operation(ctx, ctx.eventArg);
+      ctx.setExtensionState((st) => operation(st, arg, state));
       return [ctx.state, ctx.events] as const;
     };
     const def: TriggeredSkillDefinition = {
@@ -91,21 +97,3 @@ export function extension<ExtStateType extends object>(
 ) {
   return new ExtensionBuilder(initialState);
 }
-
-export const skillCountOfRoundExtension = (skillId?: number) => {
-  return extension({ count: [0, 0] as [number, number] })
-    .addTrigger("onAction", (c, e) => {
-      if (e.isUseSkill()) {
-        if (
-          typeof skillId === "undefined" ||
-          e.action.skill.definition.id === skillId
-        ) {
-          c.setExtensionState((st) => st.count[e.who]++);
-        }
-      }
-    })
-    .addTrigger("onRoundBegin", (c, e) => {
-      c.setExtensionState((st) => (st.count = [0, 0]));
-    })
-    .done();
-};

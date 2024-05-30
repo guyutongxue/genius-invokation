@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, SkillHandle, skillCountOfRoundExtension } from "@gi-tcg/core/builder";
 
 /**
  * @id 115082
@@ -67,6 +67,8 @@ export const RapidRitesword = skill(15081)
   .damage(DamageType.Physical, 2)
   .done();
 
+const EnigmaticFeintCountExtension = skillCountOfRoundExtension(15082);
+
 /**
  * @id 15082
  * @name 谜影障身法
@@ -76,10 +78,10 @@ export const RapidRitesword = skill(15081)
 export const EnigmaticFeint = skill(15082)
   .type("elemental")
   .costAnemo(3)
+  .associateExtension(EnigmaticFeintCountExtension)
   .do((c) => {
-    const count = c.countOfThisSkill();
-    if (count === 0 &&
-      c.self.health <= 8) {
+    const count = c.getExtensionState().count[c.self.who];
+    if (count === 0 && c.self.health <= 8) {
       c.heal(2, "@self")
       c.characterStatus(OverawingAssault, "@self")
     }

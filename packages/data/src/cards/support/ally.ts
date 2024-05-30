@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, extension, flip, skillCountOfRoundExtension, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SupportHandle, card, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
 import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
 
 /**
@@ -223,20 +223,14 @@ export const ChangTheNinth = card(322009)
   })
   .done();
 
-const SkillUsedThisRound = extension({
-  used: [new Set<number>(), new Set<number>()] as const
-})
-  .addTrigger("onAction", (c, e) => {
+const SkillUsedThisRound = extension({ used: pair(new Set<number>()) })
+  .mutateWhen("onAction", (st, e) => {
     if (e.isUseSkill()) {
-      c.setExtensionState((st) => {
-        st.used[e.who].add(e.action.skill.definition.id);
-      });
+      st.used[e.who].add(e.action.skill.definition.id);
     }
   })
-  .addTrigger("onRoundBegin", (c, e) => {
-    c.setExtensionState((st) => {
-      st.used = [new Set(), new Set()];
-    });
+  .mutateWhen("onRoundBegin", (st) => {
+    st.used = pair(new Set());
   })
   .done()
 
@@ -470,14 +464,10 @@ export const SandsAndDream = status(302205)
   .deductCost(DiceType.Omni, 3)
   .done();
 
-const DisposedSupportCountExtension = extension({
-  disposedSupportCount: [0, 0] as [number, number]
-})
-  .addTrigger("onDispose", (c, e) => {
+const DisposedSupportCountExtension = extension({ disposedSupportCount: pair(0) })
+  .mutateWhen("onDispose", (st, e) => {
     if (e.entity.definition.type === "support") {
-      c.setExtensionState((st) => {
-        st.disposedSupportCount[e.who]++;
-      })
+      st.disposedSupportCount[e.who]++;
     }
   })
   .done();
@@ -512,16 +502,13 @@ export const Jeht = card(322022)
   })
   .done();
 
-const DamageTypeCountExtension = extension({
-  damages: [new Set<DamageType>(), new Set<DamageType>()]
-})
-  .addTrigger("onDamageOrHeal", (c, e) => {
-    if (e.isDamageTypeDamage()) {
-      c.setExtensionState((st) => {
-        st.damages[e.targetWho].add(e.type);
-      });
-    } 
+const DamageTypeCountExtension = extension({ damages: pair(new Set<DamageType>()) })
+  .mutateWhen("onDamageOrHeal", (st, e) => {
+    if (e.isDamageTypeDamage() && e.type !== DamageType.Physical && e.type !== DamageType.Piercing) {
+      st.damages[e.targetWho].add(e.type);
+    }
   })
+  .done();
 
 /**
  * @id 322023
@@ -533,17 +520,18 @@ const DamageTypeCountExtension = extension({
 export const SilverAndMelus = card(322023)
   .costSame(1)
   .support("ally")
+  .associateExtension(DamageTypeCountExtension)
   .variable("count", 0)
   .on("enter")
   .do((c) => {
-    const elementalDamageBitset = c.oppPlayer.damagedTypeBitset & 0b11_111_110;
-    c.setVariable("count", Math.min(popCount32(elementalDamageBitset), 4));
+    const count = c.getExtensionState().damages[flip(c.self.who)].size;
+    c.setVariable("count", Math.min(count, 4));
   })
   .on("damaged", (c, e) => !c.of(e.target).isMine())
   .listenToAll()
   .do((c) => {
-    const elementalDamageBitset = c.oppPlayer.damagedTypeBitset & 0b11_111_110;
-    c.setVariable("count", Math.min(popCount32(elementalDamageBitset), 4));
+    const count = c.getExtensionState().damages[flip(c.self.who)].size;
+    c.setVariable("count", Math.min(count, 4));
   })
   .on("endPhase")
   .do((c) => {

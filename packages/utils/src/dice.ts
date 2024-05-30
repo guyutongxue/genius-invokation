@@ -15,10 +15,6 @@
 
 import type { DiceType } from "@gi-tcg/typings";
 
-export function flip(who: 0 | 1): 0 | 1 {
-  return (1 - who) as 0 | 1;
-}
-
 const VOID = 0;
 const OMNI = 8;
 const ENERGY = 9;

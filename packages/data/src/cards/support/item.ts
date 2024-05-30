@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, card, combatStatus } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, combatStatus, extension, pair } from "@gi-tcg/core/builder";
 
 /**
  * @id 323001
@@ -132,6 +132,14 @@ export const SeedDispensary = card(323005)
   .deductCost(DiceType.Omni, 1)
   .done();
 
+const CardPlayedExtension = extension({ played: pair(new Set<number>()) })
+  .mutateWhen("onAction", (st, e) => {
+    if (e.isPlayCard()) {
+      st.played[e.who].add(e.action.card.definition.id);
+    }
+  })
+  .done();
+
 /**
  * @id 323006
  * @name 留念镜
@@ -142,14 +150,13 @@ export const SeedDispensary = card(323005)
 export const MementoLens = card(323006)
   .costSame(1)
   .support("item")
+  .associateExtension(CardPlayedExtension)
   .variable("totalUsage", 2)
   .on("deductDiceCard", (c, e) => {
     if (!e.hasOneOfCardTag("weapon", "artifact", "place", "ally")) {
       return false;
     }
-    const played = c.state.globalPlayCardLog.filter(
-      (log) => log.who === e.who && log.card.definition.id === e.action.card.definition.id);
-    return played.length > 0;
+    return c.getExtensionState().played[c.self.who].has(e.action.card.definition.id);
   })
   .usagePerRound(1)
   .do((c, e) => {
