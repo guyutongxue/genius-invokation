@@ -2,6 +2,9 @@
 
 **仅记录破坏性改动。**
 
+## 0.8.0
+- 重构：`GameState` 中部分全局状态值改为由数据提供的可自定义 `extensions`
+
 ## 0.7.0
 - 恢复了 0.4.x 版本的暂停点密度（通知密度无变化）
 - `pause` 现在返回自上次 `pause` 起的所有裸 `Mutation`s，不再包含 `ExposedMutation`s，

@@ -80,7 +80,7 @@ export interface SkillInfo {
   readonly logger?: IDetailLogger;
   /** @internal 技能执行时发生 notify 的回调 */
   readonly onNotify?: (opt: InternalNotifyOption) => void;
-  /** @internal 当访问 setExtensionState 时操作的扩展 id */
+  /** @internal 当访问 setExtensionState 时操作的扩展点 id */
   readonly associatedExtensionId?: number;
 }
 

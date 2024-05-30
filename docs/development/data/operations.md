@@ -86,6 +86,9 @@ interface SkillContext {
 
   // 累加 target 的变量值，但是不超过上限 maxLimit
   addVariableWithMax(prop: string, value: number, maxLimit: number, target = "@self"): void;
+  
+  // 修改关联的扩展点的状态
+  setExtensionState(setter: (draft: Draft<...>) => void): void;
 
   // 替换 target 的角色定义
   replaceDefinition(target, newCh: CharacterHandle): void;
@@ -96,6 +99,13 @@ interface SkillContext {
 
   // 为我方生成手牌（不是从牌堆抽取）
   createHandCard(card: CardHandle): void;
+
+  // 在我方牌堆生成 count 张定义为 card 的行动牌
+  // strategy 指示插入位置
+  createPileCards(card: CardHandle, count: number, strategy: "top" | "random" | "spaceAround" | `topRange${number}`): void;
+
+  // 弃置我方或对方的行动牌（从手牌或牌堆）
+  disposeCard(card: CardState, who: "my" | "opp"): void;
 
   // 从牌堆抽取手牌
   // opt.who 决定哪一方抽牌
@@ -224,6 +234,9 @@ interface CharacterContext {
 
   // 获取角色的状态变量
   getVariable(prop: string): number;
+
+  // 获取关联的扩展点的状态
+  getExtensionState(): <...>;
 }
 ```
 

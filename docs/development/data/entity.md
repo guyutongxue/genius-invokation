@@ -163,3 +163,7 @@ const ShrineOfMaya = combatStatus(117032)
 事实上，`.useSkill(Skill).dispose()` 被挂在 `onReplaceAction` 事件上，该事件不会被“引发”，而是在玩家行动前检查，如果存在监听它的技能则直接执行。
 
 > 由于被触发的“准备中”技能使用 `useSkill` 执行，故可以通过 `skillInfo.requestBy.caller` 来获取触发该“准备中”技能的实体状态。
+
+## 关联到扩展点
+
+使用 `.associateExtension` 链方法以允许此实体读写扩展点状态。参见[扩展点](./extensions.md)。

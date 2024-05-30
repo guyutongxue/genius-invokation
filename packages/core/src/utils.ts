@@ -128,7 +128,7 @@ interface CallerAndSkill {
 }
 
 /**
- * 检索 `state` 中所有响应 `triggerOn` 的技能。包括玩家扩展点。
+ * 检索 `state` 中所有响应 `triggerOn` 的技能。包括扩展点。
  * @param state 
  * @param triggerOn 
  * @returns 
