@@ -703,7 +703,7 @@ export class Game extends StateMutator {
               value: true,
             });
           }
-          // 裁定之时：禁用效果
+          // 应用“禁用事件牌”效果
           if (
             player().combatStatuses.find((st) =>
               st.definition.tags.includes("disableEvent"),
