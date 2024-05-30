@@ -422,7 +422,7 @@ export function createPlayer(
         if (action.onNotify) {
           action.onNotify(msg);
         }
-        if (msg.mutations.length > 0) {
+        if (msg.mutations.filter((mut) => ["damage", "triggered"].includes(mut.type)).length > 0) {
           await new Promise<void>((resolve) => setTimeout(resolve, 500));
         }
       });

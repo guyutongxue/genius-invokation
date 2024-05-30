@@ -482,6 +482,7 @@ export class TriggeredSkillBuilder<
     triggerFilter: SkillFilter<Meta> = () => true,
   ) {
     super(id);
+    this.associatedExtensionId = this.parent._associatedExtensionId;
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
     this._triggerFilter = (c, e) => {
       const { area, state } = c.self;
