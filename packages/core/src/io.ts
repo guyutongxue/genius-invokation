@@ -202,6 +202,7 @@ function exposeCharacter(ch: CharacterState): CharacterData {
     entities: ch.entities.map(exposeEntity),
     health: ch.variables.health,
     energy: ch.variables.energy,
+    maxHealth: ch.variables.maxHealth,
     maxEnergy: ch.variables.maxEnergy,
     aura: ch.variables.aura,
   };
