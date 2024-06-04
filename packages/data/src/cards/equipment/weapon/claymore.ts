@@ -158,3 +158,17 @@ export const BeaconOfTheReedSea = card(311306)
   .on("damaged")
   .characterStatus(DesertWatchOffensiveDefense, "@master")
   .done();
+
+/**
+ * @id 311307
+ * @name 森林王器
+ * @description
+ * 角色造成的伤害+1。
+ * 入场时：所附属角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+export const ForestRegalia = card(311307)
+  .costVoid(3)
+  .weapon("claymore")
+  // TODO
+  .done();

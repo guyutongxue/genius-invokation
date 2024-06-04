@@ -43,7 +43,8 @@ export type NationTag =
   | "fatui"
   | "eremite"
   | "monster"
-  | "hilichurl";
+  | "hilichurl"
+  | "sacread";
 
 export type ArkheTag =
   | "pneuma" // 芒

@@ -681,6 +681,11 @@ export const VourukashasGlow = card(312022)
  * @name 老兵的容颜
  * @description
  * 角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。
+ * 第1次触发：生成1个此角色类型的元素骰。
+ * 第2次触发：抓1张牌。
+ * （角色最多装备1件「圣遗物」）
+ * @outdated
+ * 角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。
  * 第一次触发：生成1个此角色类型的元素骰。
  * 第二次触发：抓1张牌。
  * （角色最多装备1件「圣遗物」）
@@ -755,4 +760,48 @@ export const AmethystCrown = card(312027)
       c.addVariable("generatedCount", 1);
     }
   })
+  .done();
+
+/**
+ * @id 312024
+ * @name 逐影猎人
+ * @description
+ * 角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。
+ * 第1次触发：生成1个此角色类型的元素骰。
+ * 第2次触发：抓1张牌。
+ * 第4次触发：生成1个此角色类型的元素骰。
+ * （角色最多装备1件「圣遗物」）
+ */
+export const MarechausseeHunter = card(312024)
+  .costVoid(3)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312026
+ * @name 黄金剧团
+ * @description
+ * 结束阶段：如果所附属角色在后台，则此牌累积2点「报酬」。（最多累积4点）
+ * 对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。
+ * （角色最多装备1件「圣遗物」）
+ */
+export const GoldenTroupe = card(312026)
+  .costSame(2)
+  .artifact()
+  // TODO
+  .done();
+
+/**
+ * @id 312028
+ * @name 乐园遗落之花
+ * @description
+ * 所附属角色为出战角色，敌方受到伤害后：如果此伤害是草元素伤害或发生了草元素相关反应，则累积2枚「花冠水晶」。如果「花冠水晶」大于等于我方手牌数，则生成1个万能元素。
+ * （每回合至多生成2个）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const FlowerOfParadiseLost = card(312028)
+  .costSame(2)
+  .artifact()
+  // TODO
   .done();

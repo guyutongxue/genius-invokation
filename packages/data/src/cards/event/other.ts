@@ -938,3 +938,104 @@ export const UnderwaterTreasureHunt = card(332031)
   .costSame(2)
   .createPileCards(UnderseaTreasure, 6, "random")
   .done();
+
+/**
+ * @id 112113
+ * @name 圣俗杂座
+ * @description
+ * 在「始基力：荒性」和「始基力：芒性」之中，切换芙宁娜的形态。
+ * 如果我方场上存在沙龙成员或众水的歌者，也切换其形态。
+ */
+export const SeatsSacredAndSecular = card(112113)
+  // TODO
+  .done();
+
+/**
+ * @id 124051
+ * @name 噬骸能量块
+ * @description
+ * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）
+ */
+export const BonecrunchersEnergyBlock = card(124051)
+  // TODO
+  .done();
+
+/**
+ * @id 127021
+ * @name 唤醒眷属
+ * @description
+ * 打出此牌或舍弃此牌时：召唤一个独立的增殖生命体。
+ */
+export const AwakenMyKindred = card(127021)
+  .costDendro(2)
+  // TODO
+  .done();
+
+/**
+ * @id 301020
+ * @name 禁忌知识
+ * @description
+ * 无法使用此牌进行元素调和，且每回合最多只能打出1张「禁忌知识」。
+ * 对我方出战角色造成1点穿透伤害，抓1张牌。
+ */
+export const ForbiddenKnowledge = card(301020)
+  // TODO
+  .done();
+
+/**
+ * @id 331805
+ * @name 水与正义
+ * @description
+ * 平均分配我方未被击倒的角色的生命值，然后治疗所有我方角色1点。
+ * （牌组包含至少2个「枫丹」角色，才能加入牌组）
+ */
+export const WaterAndJustice = card(331805)
+  .costVoid(2)
+  // TODO
+  .done();
+
+/**
+ * @id 332032
+ * @name 幻戏倒计时：3
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。
+ */
+export const CountdownToTheShow3 = card(332032)
+  .costSame(3)
+  // TODO
+  .done();
+
+/**
+ * @id 332033
+ * @name 幻戏倒计时：2
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。
+ */
+export const CountdownToTheShow2 = card(332033)
+  .costSame(2)
+  // TODO
+  .done();
+
+/**
+ * @id 332034
+ * @name 幻戏倒计时：1
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用为0的「幻戏开始！」放置到你的牌库顶。
+ */
+export const CountdownToTheShow1 = card(332034)
+  .costSame(1)
+  // TODO
+  .done();
+
+/**
+ * @id 332035
+ * @name 幻戏开始！
+ * @description
+ * 将我方所有元素骰转换为万能元素，抓4张牌。
+ */
+export const TheShowBegins = card(332035)
+  // TODO
+  .done();

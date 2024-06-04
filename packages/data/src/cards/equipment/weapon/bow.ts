@@ -143,3 +143,17 @@ export const KingsSquire = card(311206)
   .on("enter")
   .characterStatus(KingsSquireStatus, "@master")
   .done();
+
+/**
+ * @id 311207
+ * @name 竭泽
+ * @description
+ * 我方打出名称不存在于初始牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点，每回合最多累积2点）
+ * 角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。
+ * （「弓」角色才能装备。角色最多装备1件「武器」）
+ */
+export const EndOfTheLine = card(311207)
+  .costSame(2)
+  .weapon("bow")
+  // TODO
+  .done();

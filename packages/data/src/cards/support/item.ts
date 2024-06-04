@@ -172,6 +172,9 @@ export const MementoLens = card(323006)
  * @id 323007
  * @name 流明石触媒
  * @description
+ * 我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）
+ * 可用次数：3
+ * @outdated
  * 我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素骰。（每回合1次）
  * 可用次数：3
  */
@@ -189,4 +192,16 @@ export const LumenstoneAdjuvant = card(323007)
   .usage(3)
   .on("actionPhase")
   .setVariable("playedCard", 0)
+  .done();
+
+/**
+ * @id 323008
+ * @name 苦舍桓
+ * @description
+ * 行动阶段开始时：舍弃最多2张元素骰费用最高的手牌，每舍弃1张，此牌就累积1点「记忆和梦」。（最多2点）
+ * 我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。
+ */
+export const Kusava = card(323008)
+  .support("item")
+  // TODO
   .done();

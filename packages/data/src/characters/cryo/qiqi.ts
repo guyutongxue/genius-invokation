@@ -21,6 +21,10 @@ import { character, skill, summon, combatStatus, card, DamageType, SkillHandle }
  * @description
  * 结束阶段：造成1点冰元素伤害。
  * 可用次数：3
+ * 此召唤物在场时，七七使用「普通攻击」后：治疗受伤最多的我方角色1点；每回合1次：再治疗我方出战角色1点。
+ * @outdated
+ * 结束阶段：造成1点冰元素伤害。
+ * 可用次数：3
  * 此召唤物在场时，七七使用「普通攻击」后：治疗受伤最多的我方角色1点。
  */
 export const HeraldOfFrost = summon(111081)
@@ -112,7 +116,7 @@ export const Qiqi = character(1108)
  * （牌组中包含七七，才能加入牌组）
  */
 export const RiteOfResurrection = card(211081)
-  .costCryo(5)
+  .costCryo(4)
   .costEnergy(3)
   .talent(Qiqi)
   .on("enter")

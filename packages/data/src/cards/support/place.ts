@@ -379,3 +379,27 @@ export const SeiraiIsland = card(321019)
     c.characterStatus(DistantStorm, e.target);
   })
   .done();
+
+/**
+ * @id 321020
+ * @name 赤王陵
+ * @description
+ * 对方累积抓4张牌后：弃置此牌，在对方牌库顶生成2张禁忌知识。然后直到本回合结束前，对方每抓1张牌，就立刻生成1张禁忌知识，随机地置入对方牌库中。
+ */
+export const TheMausoleumOfKingDeshret = card(321020)
+  .costSame(1)
+  .support("place")
+  // TODO
+  .done();
+
+/**
+ * @id 321021
+ * @name 中央实验室遗址
+ * @description
+ * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。
+ */
+export const CentralLaboratoryRuins = card(321021)
+  .costSame(1)
+  .support("place")
+  // TODO
+  .done();

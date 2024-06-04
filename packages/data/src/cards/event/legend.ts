@@ -92,6 +92,10 @@ export const FreshWindOfFreedom = card(330004)
  * @id 330005
  * @name 万家灶火
  * @description
+ * 第1回合打出此牌时：如果我方牌组中初始包含至少2张不同的「天赋」牌，则抓1张「天赋」牌。
+ * 第2回合及以后打出此牌时：我方抓当前的回合数-1数量的牌。（最多抓4张）
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ * @outdated
  * 我方抓当前的回合数-1数量的牌。（最多抓4张）
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
@@ -135,4 +139,16 @@ export const DayOfResistanceMomentOfShatteredDreams = card(330007)
   .on("beforeDamaged")
   .usage(4)
   .decreaseDamage(1)
+  .done();
+
+/**
+ * @id 330008
+ * @name 旧日鏖战
+ * @description
+ * 敌方出战角色失去1点充能。
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ */
+export const ViciousAncientBattle = card(330008)
+  .legend()
+  // TODO
   .done();

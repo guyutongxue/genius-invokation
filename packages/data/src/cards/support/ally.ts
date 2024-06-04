@@ -377,6 +377,9 @@ export const MasterZhang = card(322018)
  * @id 322019
  * @name 塞塔蕾
  * @description
+ * 双方执行任意行动后，我方手牌数量为0时：抓1张牌。
+ * 可用次数：3
+ * @outdated
  * 我方执行任意行动后，手牌数量为0时：抓1张牌。
  * 可用次数：3
  */
@@ -581,4 +584,16 @@ export const TheWhiteGloveAndTheFisherman = card(322025)
   .createPileCards(CalledInForCleanup, 1, `topRange5`)
   .if((c) => c.getVariable("usage") === 1)
   .drawCards(1)
+  .done();
+
+/**
+ * @id 322026
+ * @name 亚瑟先生
+ * @description
+ * 我方舍弃或调和1张牌后：此牌累积1点「新闻线索」。（最多累积到2点）
+ * 结束阶段：如果此牌已累积2点「新闻线索」，则扣除2点，复制对方牌库顶的1张牌加入我方手牌。
+ */
+export const SirArthur = card(322026)
+  .support("ally")
+  // TODO
   .done();

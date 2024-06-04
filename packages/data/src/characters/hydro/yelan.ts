@@ -37,6 +37,9 @@ export const BreakthroughStatus = status(112091)
  * @id 112092
  * @name 玄掷玲珑
  * @description
+ * 我方角色普通攻击后：造成1点水元素伤害。
+ * 持续回合：2
+ * @outdated
  * 我方角色普通攻击后：造成2点水元素伤害。
  * 持续回合：2
  */
@@ -79,6 +82,8 @@ export const LingeringLifeline = skill(12092)
  * @id 12093
  * @name 渊图玲珑骰
  * @description
+ * 造成3点水元素伤害，生成玄掷玲珑。
+ * @outdated
  * 造成1点水元素伤害，生成玄掷玲珑。
  */
 export const DepthclarionDice = skill(12093)

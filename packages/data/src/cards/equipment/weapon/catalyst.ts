@@ -175,3 +175,16 @@ export const TomeOfTheEternalFlow = card(311108)
   .on("roundBegin")
   .setVariable("count", 0)
   .done();
+
+/**
+ * @id 311109
+ * @name 金流监督
+ * @description
+ * 角色受到伤害或治疗后：使角色本回合中下一次「普通攻击」少花费1个无色元素，且造成的伤害+1。（每回合至多2次）
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+export const CashflowSupervision = card(311109)
+  .costSame(2)
+  .weapon("catalyst")
+  // TODO
+  .done();

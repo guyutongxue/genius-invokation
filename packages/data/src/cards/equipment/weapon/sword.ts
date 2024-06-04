@@ -153,3 +153,17 @@ export const SapwoodBlade = card(311507)
   .on("enter")
   .characterStatus(SapwoodBladeStatus, "@master")
   .done();
+
+/**
+ * @id 311508
+ * @name 静水流涌之辉
+ * @description
+ * 我方角色受到伤害或治疗后：此牌累积1点「湖光」。
+ * 角色进行普通攻击时：如果已有12点「湖光」，则消耗12点，使此技能少花费2个无色元素且造成的伤害+1，并且治疗所附属角色1点（每回合1次）。
+ * （「单手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+export const SplendorOfTranquilWaters = card(311508)
+  .costSame(2)
+  .weapon("sword")
+  // TODO
+  .done();
