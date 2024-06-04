@@ -392,6 +392,19 @@ export const NatureAndWisdom = card(331804)
   .done();
 
 /**
+ * @id 331805
+ * @name 水与正义
+ * @description
+ * 平均分配我方未被击倒的角色的生命值，然后治疗所有我方角色1点。
+ * （牌组包含至少2个「枫丹」角色，才能加入牌组）
+ */
+export const WaterAndJustice = card(331805)
+  .costVoid(2)
+  .requireCharacterTag("fontaine")
+  // TODO
+  .done();
+
+/**
  * @id 332001
  * @name 最好的伙伴！
  * @description
@@ -979,18 +992,6 @@ export const AwakenMyKindred = card(127021)
  * 对我方出战角色造成1点穿透伤害，抓1张牌。
  */
 export const ForbiddenKnowledge = card(301020)
-  // TODO
-  .done();
-
-/**
- * @id 331805
- * @name 水与正义
- * @description
- * 平均分配我方未被击倒的角色的生命值，然后治疗所有我方角色1点。
- * （牌组包含至少2个「枫丹」角色，才能加入牌组）
- */
-export const WaterAndJustice = card(331805)
-  .costVoid(2)
   // TODO
   .done();
 

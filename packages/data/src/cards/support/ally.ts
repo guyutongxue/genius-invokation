@@ -383,10 +383,15 @@ export const MasterZhang = card(322018)
 export const Setaria = card(322019)
   .costSame(1)
   .support("ally")
-  .on("action", (c) => c.player.hands.length === 0)
+  .on("action")
   .listenToAll()
-  .usage(3)
-  .drawCards(1)
+  .usage(3, { autoDecrease: false })
+  .do((c) => {
+    if (c.player.hands.length === 0) {
+      c.drawCards(1);
+      c.consumeUsage();
+    }
+  })
   .done();
 
 /**
