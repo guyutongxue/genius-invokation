@@ -44,6 +44,8 @@ import {
   BuilderWithShortcut,
   SkillFilter,
   ReadonlyMetaOf,
+  SkillOperation,
+  WritableMetaOf,
 } from "./skill";
 import {
   CardHandle,
@@ -80,16 +82,27 @@ type LooseBuilderMetaForCard = {
   associatedExtension: never;
 };
 
-type StrictBuilderMetaForCard<KindTs extends CardTargetKind> = {
+type StrictBuilderMetaForCard<
+  KindTs extends CardTargetKind,
+  AssociatedExt extends ExtensionHandle,
+> = {
   callerType: "character";
   callerVars: never;
   eventArgType: StrictCardSkillEventArg<KindTs>;
-  associatedExtension: never;
+  associatedExtension: AssociatedExt;
 };
 
-type StrictCardSkillFilter<KindTs extends CardTargetKind> = SkillFilter<
-  StrictBuilderMetaForCard<KindTs>
->;
+type BuilderMetaForCardDispose<AssociatedExt extends ExtensionHandle> = {
+  callerType: "character";
+  callerVars: never;
+  eventArgType: void;
+  associatedExtension: AssociatedExt;
+};
+
+type StrictCardSkillFilter<
+  KindTs extends CardTargetKind,
+  AssociatedExt extends ExtensionHandle,
+> = SkillFilter<StrictBuilderMetaForCard<KindTs, AssociatedExt>>;
 
 type TargetQuery =
   | `${string}character${string}`
@@ -112,7 +125,7 @@ class CardBuilder<
 > extends SkillBuilderWithCost<StrictCardSkillEventArg<KindTs>, AssociatedExt> {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
-  private _filters: StrictCardSkillFilter<KindTs>[] = [];
+  private _filters: StrictCardSkillFilter<KindTs, AssociatedExt>[] = [];
   private _deckRequirement: DeckRequirement = {};
   /**
    * 在料理卡牌的行动结尾添加“设置饱腹状态”操作的目标；
@@ -120,6 +133,9 @@ class CardBuilder<
    */
   private _satiatedTarget: string | null = null;
   private _doSameWhenDisposed = false;
+  private _disposeOperation: SkillOperation<
+    BuilderMetaForCardDispose<AssociatedExt>
+  > | null = null;
   private _targetQueries: string[] = [];
 
   constructor(private readonly cardId: number) {
@@ -278,7 +294,7 @@ class CardBuilder<
     return this;
   }
 
-  filter(pred: StrictCardSkillFilter<KindTs>): this {
+  filter(pred: StrictCardSkillFilter<KindTs, AssociatedExt>): this {
     this._filters.push(pred);
     return this;
   }
@@ -323,7 +339,26 @@ class CardBuilder<
   }
 
   doSameWhenDisposed() {
+    if (this._disposeOperation !== null) {
+      throw new GiTcgDataError(
+        `Cannot specify dispose action when using .doSameWhenDisposed().`,
+      );
+    }
+    if (this._targetQueries.length > 0) {
+      throw new GiTcgDataError(
+        `Cannot specify targets when using .doSameWhenDisposed().`,
+      );
+    }
     this._doSameWhenDisposed = true;
+    return this;
+  }
+  onDispose(op: SkillOperation<BuilderMetaForCardDispose<AssociatedExt>>) {
+    if (this._doSameWhenDisposed) {
+      throw new GiTcgDataError(
+        `Cannot specify dispose action when using .doSameWhenDisposed().`,
+      );
+    }
+    this._disposeOperation = op;
     return this;
   }
 
@@ -346,7 +381,7 @@ class CardBuilder<
     };
     const filterFn: PlayCardFilter = (state, skillInfo, args) => {
       const ctx = new SkillContext<
-        ReadonlyMetaOf<StrictBuilderMetaForCard<KindTs>>
+        ReadonlyMetaOf<StrictBuilderMetaForCard<KindTs, AssociatedExt>>
       >(state, skillInfo, args as any);
       for (const filter of this._filters) {
         if (!filter(ctx, ctx.eventArg)) {
@@ -376,7 +411,18 @@ class CardBuilder<
     };
     registerSkill(skillDef);
     let onDispose: DisposeCardSkillDefinition | undefined = void 0;
-    if (this._doSameWhenDisposed) {
+    if (this._doSameWhenDisposed || this._disposeOperation !== null) {
+      const disposeOp = this._disposeOperation;
+      const disposeAction = disposeOp ? <SkillDescription<void>>((
+            state,
+            skillInfo,
+            arg,
+          ) => {
+            const ctx = new SkillContext<
+              WritableMetaOf<BuilderMetaForCardDispose<AssociatedExt>>
+            >(state, skillInfo, arg);
+            disposeOp(ctx, {});
+          }) : (action as unknown as SkillDescription<void>);
       const disposeDef: DisposeCardSkillDefinition = {
         __definition: "skills",
         type: "skill",
@@ -385,7 +431,7 @@ class CardBuilder<
         triggerOn: null,
         requiredCost: [],
         gainEnergy: false,
-        action: action as any, // FIX ME maybe
+        action: disposeAction, // FIX ME maybe
       };
       registerSkill(disposeDef);
       onDispose = disposeDef;
