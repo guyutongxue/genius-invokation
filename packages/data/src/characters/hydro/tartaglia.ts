@@ -93,10 +93,6 @@ export const FoulLegacyRagingTide = skill(12042)
  * @description
  * 依据达达利亚当前所处的状态，进行不同的攻击：
  * 远程状态·魔弹一闪：造成5点水元素伤害，返还2点充能，目标角色附属断流。
- * 近战状态·尽灭水光：造成5点水元素伤害。
- * @outdated
- * 依据达达利亚当前所处的状态，进行不同的攻击：
- * 远程状态·魔弹一闪：造成5点水元素伤害，返还2点充能，目标角色附属断流。
  * 近战状态·尽灭水光：造成7点水元素伤害。
  */
 export const HavocObliteration = skill(12043)

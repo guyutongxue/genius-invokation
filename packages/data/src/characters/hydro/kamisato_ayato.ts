@@ -44,7 +44,7 @@ export const TakimeguriKanka: StatusHandle = status(112061)
   .usage(3)
   .increaseDamage(1)
   .if((c, e) => c.self.master().hasEquipment(KyoukaFuushi) && c.of(e.target).health <= 6)
-  .increaseDamage(1)
+  .increaseDamage(2)
   .done();
 
 /**
@@ -107,11 +107,6 @@ export const KamisatoAyato = character(1206)
  * 战斗行动：我方出战角色为神里绫人时，装备此牌。
  * 神里绫人装备此牌后，立刻使用一次神里流·镜花。
  * 装备有此牌的神里绫人触发泷廻鉴花的效果时：对于生命值不多于6的敌人伤害额外+2。
- * （牌组中包含神里绫人，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为神里绫人时，装备此牌。
- * 神里绫人装备此牌后，立刻使用一次神里流·镜花。
- * 装备有此牌的神里绫人触发泷廻鉴花的效果时：对于生命值不多于6的敌人伤害额外+1。
  * （牌组中包含神里绫人，才能加入牌组）
  */
 export const KyoukaFuushi = card(212061)

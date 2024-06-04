@@ -379,20 +379,14 @@ export const MasterZhang = card(322018)
  * @description
  * 双方执行任意行动后，我方手牌数量为0时：抓1张牌。
  * 可用次数：3
- * @outdated
- * 我方执行任意行动后，手牌数量为0时：抓1张牌。
- * 可用次数：3
  */
 export const Setaria = card(322019)
   .costSame(1)
   .support("ally")
-  .on("action")
+  .on("action", (c) => c.player.hands.length === 0)
+  .listenToAll()
   .usage(3)
-  .do((c) => {
-    if (c.player.hands.length === 0) {
-      c.drawCards(1);
-    }
-  })
+  .drawCards(1)
   .done();
 
 /**

@@ -22,16 +22,15 @@ import { character, skill, summon, combatStatus, card, DamageType, SkillHandle }
  * 结束阶段：造成1点冰元素伤害。
  * 可用次数：3
  * 此召唤物在场时，七七使用「普通攻击」后：治疗受伤最多的我方角色1点；每回合1次：再治疗我方出战角色1点。
- * @outdated
- * 结束阶段：造成1点冰元素伤害。
- * 可用次数：3
- * 此召唤物在场时，七七使用「普通攻击」后：治疗受伤最多的我方角色1点。
  */
 export const HeraldOfFrost = summon(111081)
   .endPhaseDamage(DamageType.Cryo, 1)
   .usage(3)
   .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
   .heal(1, "my characters order by health - maxHealth limit 1")
+  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
+  .usagePerRound(1)
+  .heal(1, "my active")
   .done();
 
 /**

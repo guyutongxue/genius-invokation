@@ -95,15 +95,21 @@ export const FreshWindOfFreedom = card(330004)
  * 第1回合打出此牌时：如果我方牌组中初始包含至少2张不同的「天赋」牌，则抓1张「天赋」牌。
  * 第2回合及以后打出此牌时：我方抓当前的回合数-1数量的牌。（最多抓4张）
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
- * @outdated
- * 我方抓当前的回合数-1数量的牌。（最多抓4张）
- * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const InEveryHouseAStove = card(330005)
   .legend()
   .do((c) => {
-    const count = c.state.roundNumber - 1;
-    c.drawCards(count);
+    if (c.state.roundNumber === 1) {
+      const initTalentDefIds = c.player.initialPiles
+        .filter((card) => card.tags.includes("talent"))
+        .map((card) => card.id)
+      if (new Set(initTalentDefIds).size >= 2) {
+        c.drawCards(1, { withTag: "talent" });
+      }
+    } else {
+      const count = c.state.roundNumber - 1;
+      c.drawCards(count);
+    }
   })
   .done();
 

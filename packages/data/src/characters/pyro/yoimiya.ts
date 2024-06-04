@@ -40,16 +40,13 @@ export const NiwabiEnshou01 = status(113053)
  * @description
  * 所附属角色普通攻击伤害+1，造成的物理伤害变为火元素伤害。
  * 可用次数：3
- * @outdated
- * 所附属角色普通攻击伤害+1，造成的物理伤害变为火元素伤害。
- * 可用次数：2
  */
 export const NiwabiEnshou = status(113051)
   .conflictWith(113053)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Pyro)
   .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
-  .usage(2)
+  .usage(3)
   .increaseDamage(1)
   .done();
 
@@ -129,11 +126,6 @@ export const Yoimiya = character(1305)
  * 战斗行动：我方出战角色为宵宫时，装备此牌。
  * 宵宫装备此牌后，立刻使用一次焰硝庭火舞。
  * 装备有此牌的宵宫所生成的庭火焰硝触发后额外造成1点火元素伤害。
- * （牌组中包含宵宫，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为宵宫时，装备此牌。
- * 宵宫装备此牌后，立刻使用一次焰硝庭火舞。
- * 装备有此牌的宵宫所生成的庭火焰硝初始可用次数+1，并且触发后额外造成1点火元素伤害。
  * （牌组中包含宵宫，才能加入牌组）
  */
 export const NaganoharaMeteorSwarm = card(213051)

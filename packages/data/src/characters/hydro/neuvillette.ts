@@ -64,9 +64,6 @@ export const PastDraconicGlories = status(112103)
  * @description
  * 那维莱特进行普通攻击后：治疗那维莱特2点。如果那维莱特是我方「出战角色」，则准备技能：衡平推裁。
  * 可用次数：1（可叠加，最多叠加到3次）
- * @outdated
- * 那维莱特进行普通攻击后：治疗角色2点，然后角色准备技能：衡平推裁。
- * 可用次数：1（可叠加，最多叠加到3次）
  */
 export const SourcewaterDroplet = combatStatus(112101)
   .usage(1, { append: { limit: 3 }, autoDispose: true })
@@ -133,7 +130,9 @@ export const SourcewaterDropletSkill = skill(12105)
     const droplet = c.$(`my combat status with definition id ${SourcewaterDroplet}`);
     droplet?.consumeUsage();
     c.heal(2, "@self");
-    c.characterStatus(EquitableJudgmentStatus, "@self");
+    if (c.self.isActive()) {
+      c.characterStatus(EquitableJudgmentStatus, "@self");
+    }
   })
   .done();
 

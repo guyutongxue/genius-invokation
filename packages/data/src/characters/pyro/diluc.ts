@@ -91,11 +91,6 @@ export const Diluc = character(1301)
  * 迪卢克装备此牌后，立刻使用一次逆焰之刃。
  * 装备有此牌的迪卢克每回合第2次与第3次使用逆焰之刃时：少花费1个火元素。
  * （牌组中包含迪卢克，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为迪卢克时，装备此牌。
- * 迪卢克装备此牌后，立刻使用一次逆焰之刃。
- * 装备有此牌的迪卢克每回合第2次使用逆焰之刃时：少花费1个火元素。
- * （牌组中包含迪卢克，才能加入牌组）
  */
 export const FlowingFlame = card(213011)
   .costPyro(3)
@@ -104,7 +99,7 @@ export const FlowingFlame = card(213011)
   .useSkill(SearingOnslaught)
   .on("deductDiceSkill", (c, e) =>
     e.action.skill.definition.id === SearingOnslaught && 
-    c.countOfSkill(SearingOnslaught) === 1 &&
+    [1, 2].includes(c.countOfSkill(SearingOnslaught)) &&
     e.canDeductCostOfType(DiceType.Pyro))
   .deductCost(DiceType.Pyro, 1)
   .done();
