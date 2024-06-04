@@ -4,7 +4,7 @@
 
 </center>
 
-# 七圣召唤模拟器（更新至 4.6）
+# 七圣召唤模拟器（更新至 4.6；已应用 4.7 平衡性调整，新卡正在施工中）
 
 可访问 https://gi-tcg.vercel.app 或 https://gi-tcg.guyutongxue.site 试用。
 
