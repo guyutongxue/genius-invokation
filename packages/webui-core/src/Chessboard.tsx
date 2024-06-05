@@ -421,10 +421,13 @@ export function createPlayer(
         if (action.onNotify) {
           action.onNotify(msg);
         }
-        if (who === 0 && msg.mutations.length > 0) {
+        if (import.meta.env.DEV && who === 0 && msg.mutations.length > 0) {
           console.log(msg);
         }
         if (msg.mutations.filter((mut) => ["damage", "triggered"].includes(mut.type)).length > 0) {
+          if (!import.meta.env.DEV) {
+            console.log(msg.mutations);
+          }
           await new Promise<void>((resolve) => setTimeout(resolve, 500));
         }
       });
