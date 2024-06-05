@@ -453,6 +453,7 @@ class CardBuilder<
               WritableMetaOf<BuilderMetaForCardDispose<AssociatedExt>>
             >(state, skillInfo, arg);
             disposeOp(ctx, {});
+            ctx._terminate();
           }) : (action as unknown as SkillDescription<void>);
       const disposeDef: DisposeCardSkillDefinition = {
         __definition: "skills",

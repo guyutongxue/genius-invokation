@@ -383,7 +383,7 @@ export class Game extends StateMutator {
         `Game already started. Please use a new Game instance instead of start multiple time.`,
       );
     }
-    this._state = state;
+    this.resetState(state);
     return this.start();
   }
 
@@ -399,7 +399,7 @@ export class Game extends StateMutator {
       );
     }
     const allLogs = [...log];
-    this._state = allLogs.pop()!.state;
+    this.resetState(allLogs.pop()!.state);
     this._stateLog = allLogs;
     return this.start();
   }
@@ -999,7 +999,7 @@ export class Game extends StateMutator {
 
   /** @internal */
   async switchCard(who: 0 | 1) {
-    const player = () => this._state.players[who];
+    const player = () => this.state.players[who];
     const { removedHands } = await this.rpc(who, "switchHands", {});
     // swapIn: 从手牌到牌堆
     // swapOut: 从牌堆到手牌
@@ -1113,10 +1113,12 @@ export class Game extends StateMutator {
   }
 
   private async executeSkill(skillInfo: SkillInfo, arg: GeneralSkillArg) {
-    this._state = await SkillExecutor.executeSkill(this, skillInfo, arg);
+    this.notify();
+    this.resetState(await SkillExecutor.executeSkill(this, skillInfo, arg));
   }
   private async handleEvent(...args: EventAndRequest) {
-    this._state = await SkillExecutor.handleEvent(this, ...args);
+    this.notify();
+    this.resetState(await SkillExecutor.handleEvent(this, ...args));
   }
 }
 

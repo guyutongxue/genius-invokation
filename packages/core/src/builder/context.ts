@@ -133,7 +133,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
 
   /**
    *
-   * @param _state 触发此技能之前的游戏状态
+   * @param state 触发此技能之前的游戏状态
    * @param skillInfo
    */
   constructor(
@@ -147,6 +147,14 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     this.callerArea = getEntityArea(state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
   }
+  /**
+   * 技能执行完毕，发出通知，禁止后续改动。
+   * @internal
+   */
+  _terminate() {
+    this.notify();
+    Object.freeze(this);
+  }
   protected override onNotify(opt: InternalNotifyOption): void {
     this.skillInfo.onNotify?.(opt);
   }
@@ -158,16 +166,16 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   get player() {
-    return this._state.players[this.callerArea.who];
+    return this.state.players[this.callerArea.who];
   }
   get oppPlayer() {
-    return this._state.players[flip(this.callerArea.who)];
+    return this.state.players[flip(this.callerArea.who)];
   }
   private get callerState(): CharacterState | EntityState {
-    return getEntityById(this._state, this.skillInfo.caller.id, true);
+    return getEntityById(this.state, this.skillInfo.caller.id, true);
   }
   isMyTurn() {
-    return this._state.currentTurn === this.callerArea.who;
+    return this.state.currentTurn === this.callerArea.who;
   }
 
   private handleInlineEvent<E extends InlineEventNames>(
@@ -208,8 +216,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         `Using skill [skill:${info.definition.id}]`,
       );
       const desc = info.definition.action as SkillDescription<EventArgOf<E>>;
-      let newEvents;
-      [this._state, newEvents] = desc(this.state, info, arg);
+      const [newState, newEvents] = desc(this.state, info, arg);
+      this.resetState(newState);
       this.eventAndRequests.push(...newEvents);
     }
   }
@@ -235,7 +243,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   ): TypedExEntity<Meta, T>;
   of(entityState: EntityState | CharacterState | number): unknown {
     if (typeof entityState === "number") {
-      entityState = getEntityById(this._state, entityState, true);
+      entityState = getEntityById(this.state, entityState, true);
     }
     if (entityState.definition.type === "character") {
       return new Character(this, entityState.id);
@@ -630,12 +638,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       const reactionDescription = getReactionDescription(reaction);
       if (reactionDescription) {
         const [newState, events] = reactionDescription(
-          this._state,
+          this.state,
           this.skillInfo,
           reactionDescriptionEventArg,
         );
         this.eventAndRequests.push(...events);
-        this._state = newState;
+        this.resetState(newState);
       }
     }
   }
@@ -647,7 +655,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     opt: CreateEntityOptions = {},
   ): Entity<Meta> | null {
     const id2 = id as number;
-    const def = this._state.data.entities.get(id2);
+    const def = this.state.data.entities.get(id2);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
@@ -681,7 +689,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       DetailLogType.Primitive,
       `Create entity [${def.type}:${def.id}] at ${stringifyEntityArea(area)}`,
     );
-    const entitiesAtArea = allEntitiesAtArea(this._state, area);
+    const entitiesAtArea = allEntitiesAtArea(this.state, area);
     // handle immuneControl vs disableSkill;
     // do not generate Frozen etc. on those characters
     const immuneControl = entitiesAtArea.find(
@@ -781,7 +789,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         where: area,
         value: initState,
       });
-      const newState = getEntityById(this._state, initState.id);
+      const newState = getEntityById(this.state, initState.id);
       this.emitEvent("onEnter", this.state, {
         newState,
         overrided: null,
@@ -996,7 +1004,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
     const ch = characters[0];
     const oldDef = ch.state.definition;
-    const def = this._state.data.characters.get(newCh);
+    const def = this.state.data.characters.get(newCh);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown character definition id ${newCh}`);
     }
@@ -1119,7 +1127,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   createHandCard(cardId: CardHandle) {
-    const cardDef = this._state.data.cards.get(cardId);
+    const cardDef = this.state.data.cards.get(cardId);
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
@@ -1178,7 +1186,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         return false;
       };
       // 否则，随机选中一张满足条件的牌
-      const player = () => this._state.players[who];
+      const player = () => this.state.players[who];
       for (let i = 0; i < count; i++) {
         const candidates = player().piles.filter(check);
         if (candidates.length === 0) {
@@ -1214,7 +1222,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
     );
-    const cardDef = this._state.data.cards.get(cardId);
+    const cardDef = this.state.data.cards.get(cardId);
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
@@ -1296,7 +1304,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   /** 弃置一张行动牌，并触发其“弃置时”效果。 */
   disposeCard(card: CardState, _who: "my" | "opp" = "my") {
     const who = _who === "my" ? this.callerArea.who : flip(this.callerArea.who);
-    const player = this._state.players[who];
+    const player = this.state.players[who];
     let where: "hands" | "piles";
     if (player.hands.find((c) => c.id === card.id)) {
       where = "hands";
@@ -1338,8 +1346,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         logger: this.skillInfo.logger,
         onNotify: this.skillInfo.onNotify,
       };
-      let newEvents;
-      [this._state, newEvents] = disposeDef.action(this.state, skillInfo);
+      const [newState, newEvents] = disposeDef.action(this.state, skillInfo);
+      this.eventAndRequests.push(...newEvents);
+      this.resetState(newState);
     }
     const method: DisposeOrTuneMethod = where === "hands" ? "disposeFromHands" : "disposeFromPiles";
     this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);

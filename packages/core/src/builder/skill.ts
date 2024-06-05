@@ -397,6 +397,7 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
     for (const op of this.operations) {
       op(ctx, ctx.eventArg);
     }
+    ctx._terminate();
     return [ctx.state, ctx.events] as const;
   }
 }

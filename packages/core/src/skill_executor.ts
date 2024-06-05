@@ -135,7 +135,7 @@ export class SkillExecutor extends StateMutator {
       },
       arg as any,
     );
-    this._state = newState;
+    this.resetState(newState);
 
     await this.notifyAndPause();
 

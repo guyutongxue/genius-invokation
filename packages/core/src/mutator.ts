@@ -33,11 +33,20 @@ export interface MutateOption {
  * - `notify` 方法会附加所有的修改信息。
  */
 export abstract class StateMutator {
-  protected _state: GameState;
+  private _state: GameState;
   private _mutationsToBeNotified: Mutation[] = [];
   private _mutationsToBePause: Mutation[] = [];
   get state() {
     return this._state;
+  }
+  protected resetState(newState: GameState) {
+    if (this._mutationsToBeNotified.length > 0) {
+      console.warn("Resetting state with pending mutations not notified");
+      console.warn(this._mutationsToBeNotified);
+    }
+    this._state = newState;
+    this._mutationsToBeNotified = [];
+    this._mutationsToBePause = [];
   }
   constructor(
     initialState: GameState,
