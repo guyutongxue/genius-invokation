@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, SummonHandle, CardHandle, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 127022
@@ -23,7 +23,8 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 可用次数：1
  */
 export const ProliferatedOrganism01 = summon(127022)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(1)
   .done();
 
 /**
@@ -34,7 +35,8 @@ export const ProliferatedOrganism01 = summon(127022)
  * 可用次数：1
  */
 export const ProliferatedOrganism02 = summon(127023)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(1)
   .done();
 
 /**
@@ -45,7 +47,8 @@ export const ProliferatedOrganism02 = summon(127023)
  * 可用次数：1
  */
 export const ProliferatedOrganism03 = summon(127024)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(1)
   .done();
 
 /**
@@ -56,7 +59,8 @@ export const ProliferatedOrganism03 = summon(127024)
  * 可用次数：1
  */
 export const ProliferatedOrganism04 = summon(127025)
-  // TODO
+  .endPhaseDamage(DamageType.Dendro, 1)
+  .usage(1)
   .done();
 
 /**
@@ -67,7 +71,18 @@ export const ProliferatedOrganism04 = summon(127025)
  */
 export const AwakenMyKindred = card(127021)
   .costDendro(2)
-  // TODO
+  .do((c) => {
+    if (!c.$(`my summon with definition id ${ProliferatedOrganism01}`)) {
+      c.summon(ProliferatedOrganism01);
+    } else if (!c.$(`my summon with definition id ${ProliferatedOrganism02}`)) {
+      c.summon(ProliferatedOrganism02);
+    } else if (!c.$(`my summon with definition id ${ProliferatedOrganism03}`)) {
+      c.summon(ProliferatedOrganism03);
+    } else {
+      c.summon(ProliferatedOrganism04);
+    }
+  })
+  .doSameWhenDisposed()
   .done();
 
 /**
@@ -77,7 +92,7 @@ export const AwakenMyKindred = card(127021)
  * 提供2点护盾，保护所附属角色。
  */
 export const OasissAegis = status(127028)
-  // TODO
+  .shield(2)
   .done();
 
 /**
@@ -88,7 +103,17 @@ export const OasissAegis = status(127028)
  * 所附属角色使用技能后：移除我方场上的绿洲之滋养，每移除1层就治疗所附属角色1点。
  */
 export const ReignitedHeartOfOasis = status(127027)
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(3)
+  .on("useSkill")
+  .do((c) => {
+    const nourishment = c.$(`my combat status with definition id ${OasisNourishment}`);
+    if (nourishment) {
+      const usage = nourishment.getVariable("usage")!;
+      nourishment.dispose();
+      c.heal(usage, "@master");
+    }
+  })
   .done();
 
 /**
@@ -98,7 +123,23 @@ export const ReignitedHeartOfOasis = status(127027)
  * 我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得2点护盾。
  */
 export const HeartOfOasis = combatStatus(127029)
-  // TODO
+  .variable("organismCount", 0)
+  .on("enterRelative", (c, e) =>
+    [
+      ProliferatedOrganism01,
+      ProliferatedOrganism02,
+      ProliferatedOrganism03,
+      ProliferatedOrganism04,
+    ].includes(e.entity.definition.id as SummonHandle))
+  .listenToPlayer()
+  .do((c) => {
+    c.addVariable("organismCount", 1);
+    if (c.getVariable("organismCount") === 4) {
+      c.characterStatus(ReignitedHeartOfOasis, "@self");
+      c.characterStatus(OasissAegis, "@self");
+      c.dispose();
+    }
+  })
   .done();
 
 /**
@@ -109,7 +150,9 @@ export const HeartOfOasis = combatStatus(127029)
  * 可用次数：1（可叠加到3）
  */
 export const OasisNourishment = combatStatus(127026)
-  // TODO
+  .on("deductDiceCard", (c, e) => e.action.card.definition.id === AwakenMyKindred)
+  .usageCanAppend(1, 3)
+  .deductCost(DiceType.Omni, 1)
   .done();
 
 /**
@@ -122,7 +165,7 @@ export const StrikeOfTheDispossessed = skill(27021)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -134,7 +177,9 @@ export const StrikeOfTheDispossessed = skill(27021)
 export const LifeStream = skill(27022)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .drawCards(1, { withDefinition: AwakenMyKindred })
+  .combatStatus(OasisNourishment, "my")
   .done();
 
 /**
@@ -147,7 +192,11 @@ export const TheEndFalls = skill(27023)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .drawCards(1, { withDefinition: AwakenMyKindred })
+  .combatStatus(OasisNourishment, "my", {
+    overrideVariables: { usage: 2 }
+  })
   .done();
 
 /**
@@ -158,7 +207,10 @@ export const TheEndFalls = skill(27023)
  */
 export const InvokationOfPropagation = skill(27024)
   .type("passive")
-  // TODO
+  .variable("organismCount", 0)
+  .on("battleBegin")
+  .createPileCards(AwakenMyKindred, 6, "random")
+  .combatStatus(HeartOfOasis)
   .done();
 
 /**
@@ -186,6 +238,14 @@ export const GuardianOfApepsOasis = character(2702)
  */
 export const AThousandYoung = card(227021)
   .costDendro(2)
-  .talent(GuardianOfApepsOasis)
-  // TODO
+  .talent(GuardianOfApepsOasis, "none")
+  .on("modifyDamage", (c, e) => 
+    [
+      ProliferatedOrganism01,
+      ProliferatedOrganism02,
+      ProliferatedOrganism03,
+      ProliferatedOrganism04,
+    ].includes(e.source.definition.id as SummonHandle))
+  .listenToPlayer()
+  .increaseDamage(1)
   .done();

@@ -13,7 +13,41 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, diceCostOfCard, CardHandle, DiceType } from "@gi-tcg/core/builder";
+import { BountifulCore } from "../hydro/nilou";
+import { DendroCore } from "../../commons";
+
+/**
+ * @id 117082
+ * @name 迸发扫描
+ * @description
+ * 双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌原本元素骰费用+1的草元素伤害。
+ * 可用次数：1（可叠加，最多叠加到3次）
+ */
+export const BurstScan = combatStatus(117082)
+  .on("beforeAction")
+  .usage(1, { append: { limit: 3 }, autoDecrease: false })
+  .usagePerRound(1, { autoDecrease: false })
+  .listenToAll()
+  .do((c) => {
+    const core = c.$(`my combat status with definition id ${DendroCore} or my summon with definition id ${BountifulCore}`);
+    if (core) {
+      core.addVariable("usage", -1);
+      const pileTop = c.player.piles[0];
+      const cost = diceCostOfCard(pileTop.definition);
+      c.disposeCard(pileTop);
+      c.damage(DamageType.Dendro, cost + 1);
+      if (c.$(`my equipment with definition id ${TheArtOfBudgeting}`)) {
+        c.createHandCard(pileTop.definition.id as CardHandle);
+        if (pileTop.definition.tags.includes("place")) {
+          c.combatStatus(TheArtOfBudgetingInEffect);
+        }
+        c.consumeUsagePerRound();
+      }
+      c.consumeUsage();
+    }
+  })
+  .done();
 
 /**
  * @id 117081
@@ -24,18 +58,13 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 持续回合：2
  */
 export const MehraksAssistance = status(117081)
-  // TODO
-  .done();
-
-/**
- * @id 117082
- * @name 迸发扫描
- * @description
- * 双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌原本元素骰费用+1的草元素伤害。
- * 可用次数：1（可叠加，最多叠加到3次）
- */
-export const BurstScan = combatStatus(117082)
-  // TODO
+  .duration(2)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Dendro)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .combatStatus(BurstScan)
   .done();
 
 /**
@@ -45,7 +74,8 @@ export const BurstScan = combatStatus(117082)
  * 我方下次打出「场地」支援牌时：少花费2个元素骰。
  */
 export const TheArtOfBudgetingInEffect = combatStatus(117083)
-  // TODO
+  .once("deductDiceCard", (c, e) => e.action.card.definition.tags.includes("place"))
+  .deductCost(DiceType.Omni, 2)
   .done();
 
 /**
@@ -58,7 +88,7 @@ export const SchematicSetup = skill(17081)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -70,7 +100,8 @@ export const SchematicSetup = skill(17081)
 export const ArtisticIngenuity = skill(17082)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 2)
+  .combatStatus(BurstScan)
   .done();
 
 /**
@@ -83,7 +114,11 @@ export const PaintedDome = skill(17083)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Dendro, 3)
+  .characterStatus(MehraksAssistance, "@self")
+  .combatStatus(BurstScan, "my", {
+    overrideVariables: { usage: 2 }
+  })
   .done();
 
 /**
@@ -111,5 +146,6 @@ export const Kaveh = character(1708)
 export const TheArtOfBudgeting = card(217081)
   .costDendro(3)
   .talent(Kaveh)
-  // TODO
+  .on("enter")
+  .useSkill(ArtisticIngenuity)
   .done();

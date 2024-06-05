@@ -23,7 +23,11 @@ import { BonecrunchersEnergyBlock } from "../../cards/event/other";
  * 每层使得错落风涡伤害翻倍1次。
  */
 export const BonecrunchersEnergyBlockAccumulated = status(125031)
-  // TODO
+  .variable("stack", 0)
+  .once("modifySkillDamage")
+  .do((c, e) => {
+    e.multiplyDamage(2 ** c.getVariable("stack"));
+  })
   .done();
 
 /**
@@ -33,7 +37,11 @@ export const BonecrunchersEnergyBlockAccumulated = status(125031)
  * 本回合我方下次切换角色后：生成1个出战角色类型的元素骰。
  */
 export const DeathlyCycloneInEffect = combatStatus(125032)
-  // TODO
+  .oneDuration()
+  .once("switchActive")
+  .do((c) => {
+    c.generateDice(c.$("my active")!.element(), 1);
+  })
   .done();
 
 /**
@@ -46,7 +54,7 @@ export const WhirlingTail = skill(25031)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -58,7 +66,15 @@ export const WhirlingTail = skill(25031)
 export const SwirlingSquall = skill(25032)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Anemo, 2);
+    c.drawCards(1, { withDefinition: BonecrunchersEnergyBlock });
+    const cards = c.player.hands.filter((card) => card.definition.id === BonecrunchersEnergyBlock);
+    const drawn = c.self.getVariable("elementalSkillDrawCardsCount");
+    const count = Math.min(cards.length, 2 - drawn);
+    c.drawCards(count);
+    c.self.addVariable("elementalSkillDrawCardsCount", count);
+  })
   .done();
 
 /**
@@ -71,7 +87,17 @@ export const ScattershotVortex = skill(25033)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    const cards = c.player.hands.filter((card) => card.definition.id === BonecrunchersEnergyBlock);
+    const stack = Math.floor(cards.length / 2);
+    c.characterStatus(BonecrunchersEnergyBlockAccumulated, "@self", {
+      overrideVariables: { stack }
+    });
+    c.damage(DamageType.Anemo, 2);
+    for (const card of cards) {
+      c.disposeCard(card);
+    }
+  })
   .done();
 
 /**
@@ -92,9 +118,11 @@ export const ImmortalRemnantsAnemo = skill(25034)
  * @description
  * 【被动】战斗开始时，生成6张噬骸能量块，均匀放入牌库。
  */
-export const ImmortalRemnantsAnemo01 = skill(25035)
+export const SquallDrawCardsCounter = skill(25035)
   .type("passive")
-  // TODO
+  .variable("elementalSkillDrawCardsCount", 0)
+  .on("roundBegin")
+  .setVariable("elementalSkillDrawCardsCount", 0)
   .done();
 
 /**
@@ -107,7 +135,7 @@ export const ConsecratedFlyingSerpent = character(2503)
   .tags("anemo", "monster", "sacread")
   .health(10)
   .energy(2)
-  .skills(WhirlingTail, SwirlingSquall, ScattershotVortex, ImmortalRemnantsAnemo, ImmortalRemnantsAnemo01)
+  .skills(WhirlingTail, SwirlingSquall, ScattershotVortex, ImmortalRemnantsAnemo, SquallDrawCardsCounter)
   .done();
 
 /**

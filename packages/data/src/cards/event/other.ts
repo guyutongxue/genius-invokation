@@ -1044,7 +1044,15 @@ export const ForbiddenKnowledge = card(301020)
  */
 export const CountdownToTheShow3 = card(332032)
   .costSame(3)
-  // TODO
+  .do((c) => {
+    const count = c.player.dice.length;
+    c.absorbDice("seq", count);
+    c.generateDice(DiceType.Omni, count);
+    c.drawCards(4);
+  })
+  .onDispose((c) => {
+    c.createPileCards(CountdownToTheShow2, 1, "top");
+  })
   .done();
 
 /**
@@ -1056,7 +1064,15 @@ export const CountdownToTheShow3 = card(332032)
  */
 export const CountdownToTheShow2 = card(332033)
   .costSame(2)
-  // TODO
+  .do((c) => {
+    const count = c.player.dice.length;
+    c.absorbDice("seq", count);
+    c.generateDice(DiceType.Omni, count);
+    c.drawCards(4);
+  })
+  .onDispose((c) => {
+    c.createPileCards(CountdownToTheShow1, 1, "top");
+  })
   .done();
 
 /**
@@ -1068,7 +1084,15 @@ export const CountdownToTheShow2 = card(332033)
  */
 export const CountdownToTheShow1 = card(332034)
   .costSame(1)
-  // TODO
+  .do((c) => {
+    const count = c.player.dice.length;
+    c.absorbDice("seq", count);
+    c.generateDice(DiceType.Omni, count);
+    c.drawCards(4);
+  })
+  .onDispose((c) => {
+    c.createPileCards(TheShowBegins, 1, "top");
+  })
   .done();
 
 /**
@@ -1078,5 +1102,10 @@ export const CountdownToTheShow1 = card(332034)
  * 将我方所有元素骰转换为万能元素，抓4张牌。
  */
 export const TheShowBegins = card(332035)
-  // TODO
+  .do((c) => {
+    const count = c.player.dice.length;
+    c.absorbDice("seq", count);
+    c.generateDice(DiceType.Omni, count);
+    c.drawCards(4);
+  })
   .done();

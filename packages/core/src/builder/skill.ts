@@ -291,6 +291,9 @@ const detailedEventDictionary = {
   enter: defineDescriptor("onEnter", (c, e, r) => {
     return e.entity.id === r.callerId;
   }),
+  enterRelative: defineDescriptor("onEnter", (c, e, r) => {
+    return checkRelative(c.state, e.entity.id, r);
+  }),
   dispose: defineDescriptor("onDispose", (c, e, r) => {
     return checkRelative(c.state, e.entity.id, r);
   }),

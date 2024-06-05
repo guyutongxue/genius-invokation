@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { BonecrunchersEnergyBlock } from "../../cards/event/other";
 
 /**
  * @id 124052
@@ -23,7 +24,9 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 可用次数：初始为创建时所弃置的噬骸能量块张数。（最多叠加到3）
  */
 export const ThunderboreTrap = combatStatus(124052)
-  // TODO
+  .usage(0)
+  .on("useSkill")
+  .damage(DamageType.Electro, 2, "my active")
   .done();
 
 /**
@@ -36,7 +39,7 @@ export const ScorpionStrike = skill(24051)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -49,7 +52,8 @@ export const ScorpionStrike = skill(24051)
 export const StingingSpine = skill(24052)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .damage(DamageType.Electro, 3)
+  .createPileCards(BonecrunchersEnergyBlock, 1, "topRange2")
   .done();
 
 /**
@@ -62,7 +66,18 @@ export const ThunderboreBlast = skill(24053)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .do((c) => {
+    c.damage(DamageType.Electro, 3);
+    const cards = c.player.hands
+      .filter((card) => card.definition.id === BonecrunchersEnergyBlock)
+      .slice(0, 3);
+    for (const card of cards) {
+      c.disposeCard(card);
+    }
+    c.combatStatus(ThunderboreTrap, "opp", {
+      overrideVariables: { usage: cards.length }
+    });
+  })
   .done();
 
 /**
@@ -73,7 +88,8 @@ export const ThunderboreBlast = skill(24053)
  */
 export const ImmortalRemnantsElectro = skill(24054)
   .type("passive")
-  // TODO
+  .on("endPhase")
+  .createPileCards(BonecrunchersEnergyBlock, 2, "topRange10")
   .done();
 
 /**
@@ -99,6 +115,10 @@ export const ConsecratedScorpion = character(2405)
  */
 export const FatalFulmination = card(224051)
   .costElectro(1)
-  .talent(ConsecratedScorpion)
-  // TODO
+  .talent(ConsecratedScorpion, "none")
+  .on("enter")
+  .createHandCard(BonecrunchersEnergyBlock)
+  .on("playCard", (c, e) => e.action.card.definition.id === BonecrunchersEnergyBlock)
+  .drawCards(1)
+  .createPileCards(BonecrunchersEnergyBlock, 1, "random")
   .done();
