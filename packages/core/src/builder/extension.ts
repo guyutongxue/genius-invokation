@@ -1,5 +1,5 @@
 import { Draft } from "immer";
-import { GameState } from "..";
+import { GameState } from "../base/state";
 import {
   EventArgOf,
   EventNames,
@@ -8,15 +8,8 @@ import {
 } from "../base/skill";
 import { SkillContext } from "./context";
 import { registerExtension, registerSkill } from "./registry";
-import {
-  SkillFilter,
-  SkillOperation,
-  TriggeredSkillBuilder,
-  WritableMetaOf,
-  enableShortcut,
-} from "./skill";
+import { WritableMetaOf } from "./skill";
 import { ExtensionHandle } from "./type";
-import { pair } from "@gi-tcg/utils";
 
 type BuilderMetaOfExtension<
   ExtStateType extends object,
@@ -33,7 +26,10 @@ export class ExtensionBuilder<ExtStateType extends object> {
   private _skillList: TriggeredSkillDefinition[] = [];
   public readonly id;
 
-  constructor(idHint: number, private readonly initialState: ExtStateType) {
+  constructor(
+    idHint: number,
+    private readonly initialState: ExtStateType,
+  ) {
     this.id = idHint + 5_000_000;
   }
 

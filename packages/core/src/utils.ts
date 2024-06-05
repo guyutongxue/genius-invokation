@@ -89,7 +89,7 @@ export function getEntityById(
  * @param state 游戏状态
  * @returns 实体状态列表
  */
-export function allEntities(state: GameState, aliveOnly = false): AnyState[] {
+export function allEntities(state: GameState): AnyState[] {
   const result: AnyState[] = [];
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
@@ -101,12 +101,10 @@ export function allEntities(state: GameState, aliveOnly = false): AnyState[] {
     // 召唤物、支援牌
     // （即出战状态区夹在出战角色区和后台角色区之间）
 
-    // 若包含倒下角色，则先列出此角色区上实体
-    if (!aliveOnly) {
-      for (const ch of standby) {
-        if (ch.variables.alive === 0) {
-          result.push(ch, ...ch.entities);
-        }
+    // 先列出倒下角色区上实体
+    for (const ch of standby) {
+      if (ch.variables.alive === 0) {
+        result.push(ch, ...ch.entities);
       }
     }
 

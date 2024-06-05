@@ -51,6 +51,7 @@ import { ReadonlyDataStore } from "./builder/registry";
 import {
   ActionEventArg,
   ActionInfo,
+  DisposeOrTuneCardEventArg,
   ElementalTuningInfo,
   EventAndRequest,
   EventArg,
@@ -157,12 +158,12 @@ export class Game extends StateMutator {
 
   constructor(opt: GameOption) {
     const config = mergeGameConfigWithDefault(opt.gameConfig);
-    const extensions = [
-      ...opt.data.extensions.values(),
-    ].map<ExtensionState>((v) => ({
-      definition: v,
-      state: v.initialState,
-    }));
+    const extensions = [...opt.data.extensions.values()].map<ExtensionState>(
+      (v) => ({
+        definition: v,
+        state: v.initialState,
+      }),
+    );
     const initialState: GameState = {
       data: opt.data,
       config,
@@ -703,7 +704,7 @@ export class Game extends StateMutator {
           this.mutate({
             type: "mutateRoundSkillLog",
             who,
-            skillIdOrZero: actionInfo.skill.definition.id
+            skillIdOrZero: actionInfo.skill.definition.id,
           });
           break;
         case "playCard":
@@ -771,6 +772,13 @@ export class Game extends StateMutator {
               elementOfCharacter(activeCh().definition),
             ]),
           });
+          const tuneCardEventArg = new DisposeOrTuneCardEventArg(
+            this.state,
+            who,
+            actionInfo.card,
+            "elementalTuning",
+          );
+          await this.handleEvent("onDisposeOrTuneCard", tuneCardEventArg);
           break;
         case "declareEnd":
           this.mutate({

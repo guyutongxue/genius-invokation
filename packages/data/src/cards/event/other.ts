@@ -1012,14 +1012,13 @@ export const BonecrunchersEnergyBlock = card(124051)
   .done();
 
 /**
- * @id 127021
- * @name 唤醒眷属
+ * @id 301021
+ * @name 禁忌知识（冷却中）
  * @description
- * 打出此牌或舍弃此牌时：召唤一个独立的增殖生命体。
+ * 本回合无法再打出「禁忌知识」。
  */
-export const AwakenMyKindred = card(127021)
-  .costDendro(2)
-  // TODO
+export const ForbiddenKnowledgeCoolDown = combatStatus(301021)
+  .oneDuration()
   .done();
 
 /**
@@ -1031,7 +1030,9 @@ export const AwakenMyKindred = card(127021)
  */
 export const ForbiddenKnowledge = card(301020)
   .tags("noTuning")
-  // TODO
+  .damage(DamageType.Piercing, 1, "my active")
+  .drawCards(1)
+  .combatStatus(ForbiddenKnowledgeCoolDown)
   .done();
 
 /**

@@ -26,6 +26,7 @@ import {
 import { Mutation, applyMutation, stringifyMutation } from "../base/mutation";
 import {
   DamageInfo,
+  DisposeOrTuneMethod,
   EntityEventArg,
   EventAndRequest,
   EventAndRequestConstructorArgs,
@@ -1336,7 +1337,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       let newEvents;
       [this._state, newEvents] = disposeDef.action(this.state, skillInfo);
     }
-    this.emitEvent("onDisposeCard", this.state, who, card, where === "hands");
+    const method: DisposeOrTuneMethod = where === "hands" ? "disposeFromHands" : "disposeFromPiles";
+    this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);
   }
 
   setExtensionState(setter: Setter<Meta["associatedExtension"]["type"]>) {

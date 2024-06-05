@@ -401,5 +401,16 @@ export const TheMausoleumOfKingDeshret = card(321020)
 export const CentralLaboratoryRuins = card(321021)
   .costSame(1)
   .support("place")
-  // TODO
+  .variable("progress", 0)
+  .on("disposeOrTuneCard")
+  .do((c) => {
+    c.addVariable("progress", 1);
+    const progress = c.getVariable("progress");
+    if (progress % 3 === 0) {
+      c.generateDice(DiceType.Omni, 1);
+    }
+    if (progress >= 9) {
+      c.dispose();
+    }
+  })
   .done();

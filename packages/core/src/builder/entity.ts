@@ -45,6 +45,7 @@ import { GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
 import { Writable, getEntityArea, getEntityById } from "../utils";
 import { EntityState, GameState } from "..";
+import { SkillContext } from "./context";
 
 export interface AppendOptions {
   /** 重复创建时的累积值上限 */

@@ -60,6 +60,17 @@ export const ProliferatedOrganism04 = summon(127025)
   .done();
 
 /**
+ * @id 127021
+ * @name 唤醒眷属
+ * @description
+ * 打出此牌或舍弃此牌时：召唤一个独立的增殖生命体。
+ */
+export const AwakenMyKindred = card(127021)
+  .costDendro(2)
+  // TODO
+  .done();
+
+/**
  * @id 127028
  * @name 绿洲之庇护
  * @description

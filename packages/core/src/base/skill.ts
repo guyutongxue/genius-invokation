@@ -34,7 +34,7 @@ import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
-import { getEntityArea } from "../utils";
+import { diceCostOfCard, getEntityArea } from "../utils";
 
 export interface SkillDefinitionBase<Arg> {
   readonly __definition: "skills";
@@ -266,9 +266,6 @@ export class ActionEventArg<
   }
   isUseSkill(): this is ActionEventArg<UseSkillInfo> {
     return this.action.type === "useSkill";
-  }
-  isElementalTuning(): this is ActionEventArg<ElementalTuningInfo> {
-    return this.action.type === "elementalTuning";
   }
   isDeclareEnd(): this is ActionEventArg<DeclareEndInfo> {
     return this.action.type === "declareEnd";
@@ -735,14 +732,20 @@ export class ReplaceCharacterDefinitionEventArg extends CharacterEventArg {
   }
 }
 
-class DisposeCardEventArg extends PlayerEventArg {
+export type DisposeOrTuneMethod = "disposeFromHands" | "disposeFromPiles" | "elementalTuning"
+
+export class DisposeOrTuneCardEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     who: 0 | 1,
     public readonly card: CardState,
-    public readonly fromHands: boolean,
+    public readonly method: DisposeOrTuneMethod
   ) {
     super(state, who);
+  }
+
+  diceCost() {
+    return diceCostOfCard(this.card.definition);
   }
 }
 
@@ -769,7 +772,7 @@ export const EVENT_MAP = {
 
   onEnter: EnterEventArg,
   onDispose: EntityEventArg,
-  onDisposeCard: DisposeCardEventArg,
+  onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   modifyZeroHealth: ZeroHealthEventArg,
   onRevive: CharacterEventArg,

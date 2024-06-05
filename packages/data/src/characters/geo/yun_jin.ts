@@ -93,7 +93,10 @@ export const CliffbreakersBanner = skill(16073)
  */
 export const SpearFlourish = skill(16074)
   .type("elemental")
-  // TODO
+  .if((c) => c.self.getVariable("disposeOrTuneCardCount") > 0)
+  .damage(DamageType.Geo, 3)
+  .else()
+  .damage(DamageType.Geo, 2)
   .done();
 
 /**
@@ -102,9 +105,13 @@ export const SpearFlourish = skill(16074)
  * @description
  * 
  */
-export const Skill16075 = skill(16075)
+export const CountDisposeOrTune = skill(16075)
   .type("passive")
-  // TODO
+  .variable("disposeOrTuneCardCount", 0)
+  .on("disposeOrTuneCard")
+  .addVariable("disposeOrTuneCardCount", 1)
+  .on("roundBegin")
+  .setVariable("disposeOrTuneCardCount", 0)
   .done();
 
 /**
@@ -117,7 +124,7 @@ export const YunJin = character(1607)
   .tags("geo", "pole", "liyue")
   .health(10)
   .energy(2)
-  .skills(CloudgrazingStrike, OpeningFlourish, CliffbreakersBanner, Skill16075)
+  .skills(CloudgrazingStrike, OpeningFlourish, CliffbreakersBanner, CountDisposeOrTune)
   .done();
 
 /**

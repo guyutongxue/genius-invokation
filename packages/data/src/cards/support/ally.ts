@@ -598,5 +598,15 @@ export const TheWhiteGloveAndTheFisherman = card(322025)
  */
 export const SirArthur = card(322026)
   .support("ally")
-  // TODO
+  .variable("clue", 0)
+  .on("disposeOrTuneCard")
+  .addVariableWithMax("clue", 1, 2)
+  .on("endPhase")
+  .do((c) => {
+    if (c.getVariable("clue") >= 2) {
+      c.addVariable("clue", -2);
+      const top = c.oppPlayer.piles[0];
+      c.createPileCards(top.definition.id as CardHandle, 1, "top");
+    }
+  })
   .done();

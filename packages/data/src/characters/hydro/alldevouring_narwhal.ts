@@ -87,8 +87,7 @@ export const AnomalousAnatomy = status(122042)
  * 回合开始时：舍弃原本元素骰费用最高的2张手牌，治疗该角色1点生命值，并抓1张牌。
  */
 export const DevourersImpulse = status(122045)
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 122044
@@ -97,44 +96,7 @@ export const DevourersImpulse = status(122045)
  * 回合开始时：舍弃原本元素骰费用最高的1张手牌。
  */
 export const DevourersInstinct = status(122044)
-  // TODO
-  .done();
-
-function doEat(c: any, cost: number) {
-  c.addVariable("cardCount", 1);
-  switch (c.getVariable("cardCount")) {
-    case 1: {
-      c.setVariable("card0Cost", cost);
-      break;
-    }
-    case 2: {
-      c.setVariable("card1Cost", cost);
-      break;
-    }
-    case 3: {
-      const card0Cost = c.getVariable("card0Cost");
-      const card1Cost = c.getVariable("card1Cost");
-      const card2Cost = cost;
-      const distinctCostCount = new Set([card0Cost, card1Cost, card2Cost]).size;
-      const extraMaxHealth = 4 - distinctCostCount;
-      const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
-      if (narwhal) {
-        narwhal.addStatus(AnomalousAnatomy, {
-          overrideVariables: { extraMaxHealth }
-        });
-      }
-      c.setVariable("cardCount", 0);
-      break;
-    }
-  }
-  const previousTotalMaxCost = c.getVariable("totalMaxCost");
-  if (cost === previousTotalMaxCost) {
-    c.addVariable("totalMaxCostCount", 1);
-  } else if (cost > previousTotalMaxCost) {
-    c.setVariable("totalMaxCost", cost);
-    c.setVariable("totalMaxCostCount", 1);
-  }
-}
+  .reserve();
 
 /**
  * @id 122041
@@ -149,15 +111,42 @@ export const DeepDevourersDomain = combatStatus(122041)
   .variable("totalMaxCostCount", 0)
   .variable("card0Cost", 0)
   .variable("card1Cost", 0)
-  .on("disposeCard")
+  .on("disposeOrTuneCard")
   .do((c, e) => {
-    const cost = diceCostOfCard(e.card.definition);
-    doEat(c, cost);
-  })
-  .on("elementalTuning")
-  .do((c, e) => {
-    const cost = diceCostOfCard(e.action.card.definition);
-    doEat(c, cost);
+    const cost = e.diceCost();
+    c.addVariable("cardCount", 1);
+    switch (c.getVariable("cardCount")) {
+      case 1: {
+        c.setVariable("card0Cost", cost);
+        break;
+      }
+      case 2: {
+        c.setVariable("card1Cost", cost);
+        break;
+      }
+      case 3: {
+        const card0Cost = c.getVariable("card0Cost");
+        const card1Cost = c.getVariable("card1Cost");
+        const card2Cost = cost;
+        const distinctCostCount = new Set([card0Cost, card1Cost, card2Cost]).size;
+        const extraMaxHealth = 4 - distinctCostCount;
+        const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
+        if (narwhal) {
+          narwhal.addStatus(AnomalousAnatomy, {
+            overrideVariables: { extraMaxHealth }
+          });
+        }
+        c.setVariable("cardCount", 0);
+        break;
+      }
+    }
+    const previousTotalMaxCost = c.getVariable("totalMaxCost");
+    if (cost === previousTotalMaxCost) {
+      c.addVariable("totalMaxCostCount", 1);
+    } else if (cost > previousTotalMaxCost) {
+      c.setVariable("totalMaxCost", cost);
+      c.setVariable("totalMaxCostCount", 1);
+    }
   })
   .done();
 
@@ -188,7 +177,11 @@ export const StarfallShower = skill(22042)
     const extraDmg = st ? Math.floor(c.of(st).getVariable("extraMaxHealth") / 3) : 0;
     c.damage(DamageType.Hydro, 2 + extraDmg);
     const cards = c.getMaxCostHands();
-    c.disposeCard(c.random(...cards));
+    const card = c.random(...cards);
+    c.disposeCard(card);
+    if (c.self.hasEquipment(LightlessFeeding)) {
+      c.heal(diceCostOfCard(card.definition), "@self");
+    }
   })
   .done();
 
@@ -202,7 +195,9 @@ export const RavagingDevourer = skill(22043)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Piercing, 1, "opp standby")
+  .damage(DamageType.Hydro, 1)
+  .summon(DarkShadow)
   .done();
 
 /**

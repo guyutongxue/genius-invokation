@@ -257,11 +257,6 @@ const detailedEventDictionary = {
       e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
     );
   }),
-  elementalTuning: defineDescriptor("onAction", (c, e, r) => {
-    return (
-      e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
-    );
-  }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
   }),
@@ -302,7 +297,10 @@ const detailedEventDictionary = {
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
     return e.entity.id === r.callerId;
   }),
-  disposeCard: defineDescriptor("onDisposeCard", (c, e, r) => {
+  disposeCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
+    return e.method !== "elementalTuning" && checkRelative(c.state, { who: e.who }, r);
+  }),
+  disposeOrTuneCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r);
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
