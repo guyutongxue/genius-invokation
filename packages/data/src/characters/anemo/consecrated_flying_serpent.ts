@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { BonecrunchersEnergyBlock } from "../../cards/event/other";
 
 /**
  * @id 125031
@@ -81,7 +82,8 @@ export const ScattershotVortex = skill(25033)
  */
 export const ImmortalRemnantsAnemo = skill(25034)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .createPileCards(BonecrunchersEnergyBlock, 6, "spaceAround")
   .done();
 
 /**
@@ -118,6 +120,9 @@ export const ConsecratedFlyingSerpent = character(2503)
  */
 export const DeathlyCyclone = card(225031)
   .costAnemo(1)
-  .talent(ConsecratedFlyingSerpent)
-  // TODO
+  .talent(ConsecratedFlyingSerpent, "none")
+  .on("enter")
+  .createHandCard(BonecrunchersEnergyBlock)
+  .on("playCard", (c, e) => e.action.card.definition.id === BonecrunchersEnergyBlock)
+  .combatStatus(DeathlyCycloneInEffect)
   .done();

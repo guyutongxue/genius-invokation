@@ -427,7 +427,9 @@ export class ModifyActionEventArg<
       originalCost = originalCost.filter((type) => type !== DiceType.Energy);
       const targetType = originalCost[0] ?? DiceType.Same;
       if (originalCost.find((type) => type !== targetType)) {
-        throw new GiTcgDataError("Cannot addCost omni to action whose original cost have multiple dice requirement");
+        throw new GiTcgDataError(
+          "Cannot addCost omni to action whose original cost have multiple dice requirement",
+        );
       }
       this._cost.push(...new Array<DiceType>(count).fill(targetType));
     } else {
@@ -553,7 +555,7 @@ export class ModifyDamage1EventArg<
   InfoT extends DamageInfo,
 > extends DamageOrHealEventArg<InfoT> {
   private _increased = 0;
-  private _multiplier = 1;
+  private _multiplied: number | null = null;
   private _decreased = 0;
   protected _log = super.damageInfo.log ?? "";
 
@@ -567,7 +569,7 @@ export class ModifyDamage1EventArg<
     this._log += `${stringifyState(
       this.caller,
     )} multiply damage by ${multiplier}.\n`;
-    this._multiplier *= multiplier;
+    this._multiplied = (this._multiplied ?? 0) + multiplier;
   }
   decreaseDamage(value: number) {
     this._log += `${stringifyState(
@@ -578,11 +580,11 @@ export class ModifyDamage1EventArg<
 
   override get damageInfo(): InfoT {
     const damageInfo = super.damageInfo;
+    const multiplier = this._multiplied ?? 1;
     const value = Math.max(
       0,
       Math.ceil(
-        (damageInfo.value + this._increased) * this._multiplier -
-          this._decreased,
+        (damageInfo.value + this._increased) * multiplier - this._decreased,
       ),
     );
     return {
@@ -732,14 +734,17 @@ export class ReplaceCharacterDefinitionEventArg extends CharacterEventArg {
   }
 }
 
-export type DisposeOrTuneMethod = "disposeFromHands" | "disposeFromPiles" | "elementalTuning"
+export type DisposeOrTuneMethod =
+  | "disposeFromHands"
+  | "disposeFromPiles"
+  | "elementalTuning";
 
 export class DisposeOrTuneCardEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     who: 0 | 1,
     public readonly card: CardState,
-    public readonly method: DisposeOrTuneMethod
+    public readonly method: DisposeOrTuneMethod,
   ) {
     super(state, who);
   }
