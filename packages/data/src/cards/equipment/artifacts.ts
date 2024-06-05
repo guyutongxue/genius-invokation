@@ -510,6 +510,7 @@ export const CrownOfWatatsumi = card(312015)
   .artifact()
   .variable("healedPts", 0, { visible: false })
   .variable("bubble", 0)
+  .replaceDescription("[GCG_TOKEN_SHIELD]", (_, self) => self.variables.healedPts)
   .on("healed")
   .do((c, e) => {
     c.addVariable("healedPts", e.value);

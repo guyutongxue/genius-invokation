@@ -44,10 +44,7 @@ export interface EntityDefinition {
   readonly hintText: string | null;
   readonly varConfigs: EntityVariableConfigs;
   readonly skills: readonly TriggeredSkillDefinition[];
-  readonly descriptionDictionary: Record<
-    DescriptionDictionaryKey,
-    DescriptionDictionaryEntry
-  >;
+  readonly descriptionDictionary: DescriptionDictionary;
 }
 
 export type EntityArea =
@@ -118,7 +115,10 @@ export type VariableOfConfig<C extends Record<string, VariableConfig>> = {
 };
 
 export type DescriptionDictionaryKey = `[${string}]`;
-export type DescriptionDictionaryEntry = (st: GameState) => string;
+export type DescriptionDictionaryEntry = (st: GameState, id: number) => string;
+export type DescriptionDictionary = Readonly<
+  Record<DescriptionDictionaryKey, DescriptionDictionaryEntry>
+>;
 
 export function stringifyEntityArea(area: EntityArea) {
   return `${

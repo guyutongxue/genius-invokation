@@ -472,6 +472,8 @@ const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: 
  */
 export const Jeht = card(322022)
   .costVoid(2)
+  .associateExtension(DisposedSupportCountExtension)
+  .replaceDescription("[GCG_TOKEN_COUNTER]", (_, { area }, ext) => ext.disposedSupportCount[area.who])
   .support("ally")
   .associateExtension(DisposedSupportCountExtension)
   .variable("experience", 0)
@@ -510,6 +512,8 @@ const DamageTypeCountExtension = extension(322023, { damages: pair(new Set<Damag
  */
 export const SilverAndMelus = card(322023)
   .costSame(1)
+  .associateExtension(DamageTypeCountExtension)
+  .replaceDescription("[GCG_TOKEN_COUNTER]", (_, { area }, ext) => ext.damages[flip(area.who)].size)
   .support("ally")
   .associateExtension(DamageTypeCountExtension)
   .variable("count", 0)

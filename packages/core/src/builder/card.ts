@@ -34,7 +34,12 @@ import {
   DisposeCardSkillDefinition,
 } from "../base/card";
 import { CharacterTag } from "../base/character";
-import { ExEntityType } from "../base/entity";
+import {
+  DescriptionDictionary,
+  DescriptionDictionaryEntry,
+  DescriptionDictionaryKey,
+  ExEntityType,
+} from "../base/entity";
 import { SkillDescription, SkillInfo } from "../base/skill";
 import { registerCard, registerSkill } from "./registry";
 import { SkillContext } from "./context";
@@ -59,6 +64,7 @@ import {
 import { combatStatus, status, equipment, support } from "./entity";
 import { GuessedTypeOfQuery } from "../query/types";
 import { GiTcgDataError } from "../error";
+import { Writable } from "../utils";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -118,6 +124,12 @@ interface FoodOption {
   satiatedTarget?: string;
   extraTargetRestraint?: string;
 }
+type CardArea = { readonly who: 0 | 1 };
+type CardDescriptionDictionaryGetter<AssociatedExt extends ExtensionHandle> = (
+  st: GameState,
+  self: { readonly area: CardArea },
+  ext: AssociatedExt["type"],
+) => string | number;
 
 class CardBuilder<
   KindTs extends CardTargetKind,
@@ -137,9 +149,28 @@ class CardBuilder<
     BuilderMetaForCardDispose<AssociatedExt>
   > | null = null;
   private _targetQueries: string[] = [];
+  private _descriptionDictionary: Writable<DescriptionDictionary> = {};
 
   constructor(private readonly cardId: number) {
     super(cardId);
+  }
+
+  replaceDescription(
+    key: DescriptionDictionaryKey,
+    getter: CardDescriptionDictionaryGetter<AssociatedExt>,
+  ) {
+    if (Reflect.has(this._descriptionDictionary, key)) {
+      throw new GiTcgDataError(`Description key ${key} already exists`);
+    }
+    const entry: DescriptionDictionaryEntry = (st, id) => {
+      const ext = st.extensions.find(
+        (ext) => ext.definition.id === this.associatedExtensionId,
+      );
+      const who = st.players[0].hands.find((c) => c.id === id) ? 0 : 1;
+      return String(getter(st, { area: { who } }, ext?.state));
+    };
+    this._descriptionDictionary[key] = entry;
+    return this;
   }
 
   associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
@@ -446,7 +477,7 @@ class CardBuilder<
       filter: filterFn,
       onPlay: skillDef,
       onDispose: onDispose,
-      descriptionDictionary: {} // TODO
+      descriptionDictionary: {}, // TODO
     };
     registerCard(cardDef);
     return this.cardId as CardHandle;

@@ -183,7 +183,7 @@ function exposeEntity(state: GameState, e: EntityState): EntityData {
   const descriptionDictionary = Object.fromEntries(
     Object.entries(e.definition.descriptionDictionary).map(([k, v]) => [
       k,
-      v(state),
+      v(state, e.id),
     ]),
   );
   return {
@@ -205,7 +205,7 @@ function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
     : Object.fromEntries(
         Object.entries(c.definition.descriptionDictionary).map(([k, v]) => [
           k,
-          v(state),
+          v(state, c.id),
         ]),
       );
   return {

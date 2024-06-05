@@ -98,6 +98,7 @@ export const FreshWindOfFreedom = card(330004)
  */
 export const InEveryHouseAStove = card(330005)
   .legend()
+  .replaceDescription("[T]", (st) => st.roundNumber)
   .do((c) => {
     if (c.state.roundNumber === 1) {
       const initTalentDefIds = c.player.initialPiles

@@ -15,8 +15,10 @@
 
 import { DamageType } from "@gi-tcg/typings";
 import {
+  DescriptionDictionary,
   DescriptionDictionaryEntry,
   DescriptionDictionaryKey,
+  EntityArea,
   EntityTag,
   EntityVariableConfigs,
   ExEntityType,
@@ -41,7 +43,8 @@ import {
 } from "./type";
 import { GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
-import { Writable } from "../utils";
+import { Writable, getEntityArea, getEntityById } from "../utils";
+import { EntityState, GameState } from "..";
 
 export interface AppendOptions {
   /** 重复创建时的累积值上限 */
@@ -88,6 +91,15 @@ interface GlobalUsageOptions extends VariableOptions {
   autoDispose?: boolean;
 }
 
+type EntityStateWithArea = EntityState & { readonly area: EntityArea };
+
+type EntityDescriptionDictionaryGetter<AssociatedExt extends ExtensionHandle> =
+  (
+    st: GameState,
+    self: EntityStateWithArea,
+    ext: AssociatedExt["type"],
+  ) => string | number;
+
 export class EntityBuilder<
   CallerType extends ExEntityType,
   Vars extends string = never,
@@ -101,7 +113,7 @@ export class EntityBuilder<
   private _visibleVarName: string | null = null;
   _associatedExtensionId: number | undefined = void 0;
   private _hintText: string | null = null;
-  private _descriptionDictionary: Record<DescriptionDictionaryKey, DescriptionDictionaryEntry> = {};
+  private _descriptionDictionary: Writable<DescriptionDictionary> = {};
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -111,6 +123,25 @@ export class EntityBuilder<
     public _type: CallerType,
     private id: number,
   ) {}
+
+  replaceDescription(
+    key: DescriptionDictionaryKey,
+    getter: EntityDescriptionDictionaryGetter<AssociatedExt>,
+  ) {
+    if (Reflect.has(this._descriptionDictionary, key)) {
+      throw new GiTcgDataError(`Description key ${key} already exists`);
+    }
+    const entry: DescriptionDictionaryEntry = (st, id) => {
+      const self = getEntityById(st, id);
+      const area = getEntityArea(st, id);
+      const ext = st.extensions.find(
+        (ext) => ext.definition.id === this._associatedExtensionId,
+      );
+      return String(getter(st, { ...self, area }, ext?.state));
+    };
+    this._descriptionDictionary[key] = entry;
+    return this;
+  }
 
   associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
     if (typeof this._associatedExtensionId !== "undefined") {
@@ -423,7 +454,7 @@ export class EntityBuilder<
         skills: this._skillList,
         tags: this._tags,
         type: this._type,
-        descriptionDictionary: this._descriptionDictionary // TODO
+        descriptionDictionary: this._descriptionDictionary, // TODO
       });
     }
     return this.id as EntityBuilderResultT<CallerType>;
