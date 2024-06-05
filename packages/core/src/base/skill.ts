@@ -556,6 +556,7 @@ export class ModifyDamage1EventArg<
 > extends DamageOrHealEventArg<InfoT> {
   private _increased = 0;
   private _multiplied: number | null = null;
+  private _divider = 1;
   private _decreased = 0;
   protected _log = super.damageInfo.log ?? "";
 
@@ -569,7 +570,14 @@ export class ModifyDamage1EventArg<
     this._log += `${stringifyState(
       this.caller,
     )} multiply damage by ${multiplier}.\n`;
+    // WTF are u kidding me, mhy?
     this._multiplied = (this._multiplied ?? 0) + multiplier;
+  }
+  divideDamage(divider: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} divide damage by ${divider}.\n`;
+    this._divider *= divider;
   }
   decreaseDamage(value: number) {
     this._log += `${stringifyState(
@@ -580,7 +588,7 @@ export class ModifyDamage1EventArg<
 
   override get damageInfo(): InfoT {
     const damageInfo = super.damageInfo;
-    const multiplier = this._multiplied ?? 1;
+    const multiplier = (this._multiplied ?? 1) * this._divider;
     const value = Math.max(
       0,
       Math.ceil(

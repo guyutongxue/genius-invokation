@@ -44,7 +44,7 @@ export const SweepingTimeStatus = status(116022)
 export const FullPlate = combatStatus(116021)
   .shield(2)
   .on("beforeDamaged", (c, e) => e.type === DamageType.Physical)
-  .multiplyDamage(0.5)
+  .divideDamage(2)
   .done();
 
 /**
