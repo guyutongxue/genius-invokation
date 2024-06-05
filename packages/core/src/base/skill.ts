@@ -742,6 +742,20 @@ export class ReplaceCharacterDefinitionEventArg extends CharacterEventArg {
   }
 }
 
+export class DrawCardEventArg extends PlayerEventArg {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    public readonly card: CardState,
+  ) {
+    super(state, who);
+  }
+
+  override toString(): string {
+    return `player ${this.who} draw card ${stringifyState(this.card)}`;  
+  }
+}
+
 export type DisposeOrTuneMethod =
   | "disposeFromHands"
   | "disposeFromPiles"
@@ -760,6 +774,9 @@ export class DisposeOrTuneCardEventArg extends PlayerEventArg {
   diceCost() {
     return diceCostOfCard(this.card.definition);
   }
+  override toString(): string {
+    return `player ${this.who} ${this.method} card ${stringifyState(this.card)}`; 
+  }
 }
 
 export const EVENT_MAP = {
@@ -777,6 +794,8 @@ export const EVENT_MAP = {
   onAction: ActionEventArg,
 
   onSwitchActive: SwitchActiveEventArg,
+  onDrawCard: DrawCardEventArg,
+  onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
   onReaction: ReactionEventArg,
 
   modifyDamage0: ModifyDamage0EventArg,
@@ -785,7 +804,6 @@ export const EVENT_MAP = {
 
   onEnter: EnterEventArg,
   onDispose: EntityEventArg,
-  onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   modifyZeroHealth: ZeroHealthEventArg,
   onRevive: CharacterEventArg,

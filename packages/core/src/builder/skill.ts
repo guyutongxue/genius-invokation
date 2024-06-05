@@ -266,6 +266,15 @@ const detailedEventDictionary = {
       checkRelative(c.state, e.switchInfo.to.id, r)
     );
   }),
+  drawCard: defineDescriptor("onDrawCard", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r);
+  }),
+  disposeCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
+    return e.method !== "elementalTuning" && checkRelative(c.state, { who: e.who }, r);
+  }),
+  disposeOrTuneCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r);
+  }),
   dealDamage: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return e.isDamageTypeDamage() && checkRelative(c.state, e.source.id, r);
   }),
@@ -299,12 +308,6 @@ const detailedEventDictionary = {
   }),
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
     return e.entity.id === r.callerId;
-  }),
-  disposeCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
-    return e.method !== "elementalTuning" && checkRelative(c.state, { who: e.who }, r);
-  }),
-  disposeOrTuneCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
-    return checkRelative(c.state, { who: e.who }, r);
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return checkRelative(c.state, e.target.id, r) && e.damageInfo.causeDefeated;

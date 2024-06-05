@@ -1162,7 +1162,10 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (withTag === null && withDefinition === null) {
       // 如果没有限定，则从牌堆顶部摸牌
       for (let i = 0; i < count; i++) {
-        this.drawCard(who);
+        const card = this.drawCard(who);
+        if (card) {
+          this.emitEvent("onDrawCard", this.state, who, card);
+        }
       }
     } else {
       const check = (card: CardState) => {
@@ -1188,6 +1191,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           who,
           value: chosen,
         });
+        this.emitEvent("onDrawCard", this.state, who, chosen);
         if (player().hands.length > this.state.config.maxHands) {
           this.mutate({
             type: "removeCard",

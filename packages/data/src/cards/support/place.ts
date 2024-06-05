@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { DamageType, DiceType, EntityState, card, combatStatus, status } from "@gi-tcg/core/builder";
+import { ForbiddenKnowledge } from "../event/other";
 
 /**
  * @id 321001
@@ -381,6 +382,20 @@ export const SeiraiIsland = card(321019)
   .done();
 
 /**
+ * @id 301022
+ * @name 赤王陵（生效中）
+ * @description
+ * 直到本回合结束前，所在阵营每抓1张牌，就立刻生成1张禁忌知识，随机地置入牌库中。
+ */
+export const TheMausoleumOfKingDeshretInEffect = combatStatus(301022)
+  .oneDuration()
+  .on("enter")
+  .createPileCards(ForbiddenKnowledge, 2, "top")
+  .on("drawCard")
+  .createPileCards(ForbiddenKnowledge, 1, "random")
+  .done();
+
+/**
  * @id 321020
  * @name 赤王陵
  * @description
@@ -389,7 +404,16 @@ export const SeiraiIsland = card(321019)
 export const TheMausoleumOfKingDeshret = card(321020)
   .costSame(1)
   .support("place")
-  // TODO
+  .variable("drawnCardCount", 0)
+  .on("drawCard", (c, e) => e.who !== c.self.who)
+  .listenToAll()
+  .do((c) => {
+    c.addVariable("drawnCardCount", 1);
+    if (c.getVariable("drawnCardCount") === 4) {
+      c.combatStatus(TheMausoleumOfKingDeshretInEffect, "opp");
+      c.dispose();
+    }
+  })
   .done();
 
 /**

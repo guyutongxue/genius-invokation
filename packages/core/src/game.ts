@@ -52,6 +52,7 @@ import {
   ActionEventArg,
   ActionInfo,
   DisposeOrTuneCardEventArg,
+  DrawCardEventArg,
   ElementalTuningInfo,
   EventAndRequest,
   EventArg,
@@ -823,7 +824,10 @@ export class Game extends StateMutator {
     await this.handleEvent("onEndPhase", new EventArg(this.state));
     for (const who of [0, 1] as const) {
       for (let i = 0; i < 2; i++) {
-        this.drawCard(who);
+        const card = this.drawCard(who);
+        if (card) {
+          await this.handleEvent("onDrawCard", new DrawCardEventArg(this.state, who, card));
+        }
       }
     }
     this.mutate({

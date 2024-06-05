@@ -1,5 +1,5 @@
 import { ExposedMutation } from "@gi-tcg/typings";
-import { GameState } from "./base/state";
+import { CardState, GameState } from "./base/state";
 import { DetailLogType, IDetailLogger } from "./log";
 import { Mutation, applyMutation, stringifyMutation } from "./base/mutation";
 
@@ -102,10 +102,10 @@ export abstract class StateMutator {
   protected abstract onNotify(opt: InternalNotifyOption): void;
   protected abstract onPause(opt: InternalPauseOption): Promise<void>;
 
-  protected drawCard(who: 0 | 1) {
+  protected drawCard(who: 0 | 1): CardState | null {
     const candidate = this.state.players[who].piles[0];
     if (typeof candidate === "undefined") {
-      return;
+      return null;
     }
     this.mutate({
       type: "transferCard",
@@ -122,5 +122,6 @@ export abstract class StateMutator {
         used: false,
       });
     }
+    return candidate;
   }
 }
