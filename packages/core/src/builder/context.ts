@@ -633,6 +633,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         where: target.who === this.callerArea.who ? "my" : "opp",
         here: target.who === this.callerArea.who ? "opp" : "my",
         id: target.state.id,
+        isDamage: !!fromDamage,
         isActive: target.isActive(),
       };
       const reactionDescription = getReactionDescription(reaction);

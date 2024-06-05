@@ -30,8 +30,11 @@ const CatalyzingField = 117 as CombatStatusHandle;
 export interface ReactionDescriptionEventArg {
   /** 元素反应发生于 */
   where: "my" | "opp";
+  /** 是元素伤害（而非元素附着） */
+  isDamage: boolean;
   /** 元素反应发生角色 id */
   id: number;
+  /** 元素反应发生角色是否出战 */
   isActive: boolean;
   /** 要生成的实体位于  */
   here: "my" | "opp";
@@ -54,11 +57,13 @@ type ReactionAction = (
 ) => void;
 
 const pierceToOther: ReactionAction = (c, e) => {
-  c.damage(
-    DamageType.Piercing,
-    1,
-    `${e.where} characters and not with id ${e.id}`,
-  );
+  if (e.isDamage) {
+    c.damage(
+      DamageType.Piercing,
+      1,
+      `${e.where} characters and not with id ${e.id}`,
+    );
+  }
 };
 
 const crystallize: ReactionAction = (c, e) => {
