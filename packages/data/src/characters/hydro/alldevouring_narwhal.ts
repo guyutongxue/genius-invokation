@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, diceCostOfCard } from "@gi-tcg/core/builder";
 
 /**
  * @id 122043
@@ -24,7 +24,32 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 我方出战角色受到伤害时：抵消1点伤害，然后此牌可用次数-2。
  */
 export const DarkShadow = summon(122043)
-  // TODO
+  .usage(0)
+  .variable("atk", 0)
+  .hintIcon(DamageType.Electro)
+  .hintText("[GCG_TOKEN_USR1]")
+  .replaceDescription("[GCG_TOKEN_USR1]", (c, e) => e.variables.atk)
+  .on("enter")
+  .do((c) => {
+    const domain = c.$(`my combat status with definition id ${DeepDevourersDomain}`)!;
+    const maxCost = domain.getVariable("totalMaxCost");
+    const count = domain.getVariable("totalMaxCostCount");
+    c.setVariable("atk", maxCost);
+    c.setVariable("usage", count);
+  })
+  .on("endPhase")
+  .do((c) => {
+    c.damage(DamageType.Electro, c.getVariable("atk"));
+    c.consumeUsage();
+  })
+  .on("declareEnd")
+  .do((c) => {
+    c.damage(DamageType.Electro, c.getVariable("atk"));
+    c.consumeUsage();
+  })
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
+  .decreaseDamage(1)
+  .consumeUsage(2)
   .done();
 
 /**
@@ -34,7 +59,25 @@ export const DarkShadow = summon(122043)
  * 每层为吞星之鲸提供1点最大生命。
  */
 export const AnomalousAnatomy = status(122042)
-  // TODO
+  .variableCanAppend("extraMaxHealth", 1, Infinity)
+  .on("enter")
+  .do((c) => {
+    c.mutate({
+      type: "modifyEntityVar",
+      state: c.self.master().state,
+      varName: "maxHealth",
+      value: 5 + c.getVariable("extraMaxHealth"),
+    });
+  })
+  .on("dispose")
+  .do((c) => {
+    c.mutate({
+      type: "modifyEntityVar",
+      state: c.self.master().state,
+      varName: "maxHealth",
+      value: 5,
+    });
+  })
   .done();
 
 /**
@@ -57,6 +100,42 @@ export const DevourersInstinct = status(122044)
   // TODO
   .done();
 
+function doEat(c: any, cost: number) {
+  c.addVariable("cardCount", 1);
+  switch (c.getVariable("cardCount")) {
+    case 1: {
+      c.setVariable("card0Cost", cost);
+      break;
+    }
+    case 2: {
+      c.setVariable("card1Cost", cost);
+      break;
+    }
+    case 3: {
+      const card0Cost = c.getVariable("card0Cost");
+      const card1Cost = c.getVariable("card1Cost");
+      const card2Cost = cost;
+      const distinctCostCount = new Set([card0Cost, card1Cost, card2Cost]).size;
+      const extraMaxHealth = 4 - distinctCostCount;
+      const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
+      if (narwhal) {
+        narwhal.addStatus(AnomalousAnatomy, {
+          overrideVariables: { extraMaxHealth }
+        });
+      }
+      c.setVariable("cardCount", 0);
+      break;
+    }
+  }
+  const previousTotalMaxCost = c.getVariable("totalMaxCost");
+  if (cost === previousTotalMaxCost) {
+    c.addVariable("totalMaxCostCount", 1);
+  } else if (cost > previousTotalMaxCost) {
+    c.setVariable("totalMaxCost", cost);
+    c.setVariable("totalMaxCostCount", 1);
+  }
+}
+
 /**
  * @id 122041
  * @name 深噬之域
@@ -65,7 +144,21 @@ export const DevourersInstinct = status(122044)
  * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
  */
 export const DeepDevourersDomain = combatStatus(122041)
-  // TODO
+  .variable("cardCount", 0)
+  .variable("totalMaxCost", 0)
+  .variable("totalMaxCostCount", 0)
+  .variable("card0Cost", 0)
+  .variable("card1Cost", 0)
+  .on("disposeCard")
+  .do((c, e) => {
+    const cost = diceCostOfCard(e.card.definition);
+    doEat(c, cost);
+  })
+  .on("elementalTuning")
+  .do((c, e) => {
+    const cost = diceCostOfCard(e.action.card.definition);
+    doEat(c, cost);
+  })
   .done();
 
 /**
@@ -78,7 +171,7 @@ export const ShatteringWaves = skill(22041)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -90,7 +183,13 @@ export const ShatteringWaves = skill(22041)
 export const StarfallShower = skill(22042)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .do((c) => {
+    const st = c.self.hasStatus(AnomalousAnatomy);
+    const extraDmg = st ? Math.floor(c.of(st).getVariable("extraMaxHealth") / 3) : 0;
+    c.damage(DamageType.Hydro, 2 + extraDmg);
+    const cards = c.getMaxCostHands();
+    c.disposeCard(c.random(...cards));
+  })
   .done();
 
 /**
@@ -114,7 +213,8 @@ export const RavagingDevourer = skill(22043)
  */
 export const InsatiableAppetite = skill(22044)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .combatStatus(DeepDevourersDomain)
   .done();
 
 /**
@@ -143,5 +243,6 @@ export const AlldevouringNarwhal = character(2204)
 export const LightlessFeeding = card(222041)
   .costHydro(4)
   .talent(AlldevouringNarwhal)
-  // TODO
+  .on("enter")
+  .useSkill(StarfallShower)
   .done();

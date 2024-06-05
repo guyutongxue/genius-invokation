@@ -1030,6 +1030,7 @@ export const AwakenMyKindred = card(127021)
  * 对我方出战角色造成1点穿透伤害，抓1张牌。
  */
 export const ForbiddenKnowledge = card(301020)
+  .tags("noTuning")
   // TODO
   .done();
 

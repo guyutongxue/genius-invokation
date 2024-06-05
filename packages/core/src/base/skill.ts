@@ -267,6 +267,9 @@ export class ActionEventArg<
   isUseSkill(): this is ActionEventArg<UseSkillInfo> {
     return this.action.type === "useSkill";
   }
+  isElementalTuning(): this is ActionEventArg<ElementalTuningInfo> {
+    return this.action.type === "elementalTuning";
+  }
   isDeclareEnd(): this is ActionEventArg<DeclareEndInfo> {
     return this.action.type === "declareEnd";
   }

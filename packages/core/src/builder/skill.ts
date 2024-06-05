@@ -31,6 +31,7 @@ import {
   ActionEventArg,
   DamageInfo,
   SkillResult,
+  ElementalTuningInfo,
 } from "../base/skill";
 import { EntityVariables, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
@@ -256,6 +257,11 @@ const detailedEventDictionary = {
       e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
     );
   }),
+  elementalTuning: defineDescriptor("onAction", (c, e, r) => {
+    return (
+      e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
+    );
+  }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
   }),
@@ -296,6 +302,9 @@ const detailedEventDictionary = {
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
     return e.entity.id === r.callerId;
   }),
+  disposeCard: defineDescriptor("onDisposeCard", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r);
+  }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return checkRelative(c.state, e.target.id, r) && e.damageInfo.causeDefeated;
   }),
@@ -316,6 +325,7 @@ type OverrideEventArgType = {
   deductDiceSkill: ModifyActionEventArg<UseSkillInfo>;
   playCard: ActionEventArg<PlayCardInfo>;
   useSkill: ActionEventArg<UseSkillInfo>;
+  elementalTuning: ActionEventArg<ElementalTuningInfo>;
 };
 
 type DetailedEventDictionary = typeof detailedEventDictionary;
