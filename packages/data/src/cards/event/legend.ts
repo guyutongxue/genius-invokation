@@ -157,5 +157,7 @@ export const DayOfResistanceMomentOfShatteredDreams = card(330007)
  */
 export const ViciousAncientBattle = card(330008)
   .legend()
-  // TODO
+  .do((c) => {
+    c.$("opp active")!.loseEnergy(1);
+  })
   .done();

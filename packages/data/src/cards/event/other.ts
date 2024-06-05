@@ -401,7 +401,23 @@ export const NatureAndWisdom = card(331804)
 export const WaterAndJustice = card(331805)
   .costVoid(2)
   .requireCharacterTag("fontaine")
-  // TODO
+  .do((c) => {
+    const chs = c.$$("all my characters");
+    const chCount = chs.length;
+    const totalHealth = chs.reduce((acc, ch) => acc + ch.health, 0);
+    const avgHealth = Math.floor(totalHealth / chCount);
+    const remainder = totalHealth % chCount;
+    for (let i = 0; i < chCount; i++) {
+      const currentHealth = chs[i].health;
+      const expectHealth = avgHealth + (i < remainder ? 1 : 0);
+      if (currentHealth > expectHealth) {
+        c.damage(DamageType.Piercing, currentHealth - expectHealth, chs[i].state);
+      } else if (currentHealth < expectHealth) {
+        c.heal(expectHealth - currentHealth, chs[i].state);
+      }
+    }
+    c.heal(1, "all my characters");
+  })
   .done();
 
 /**
@@ -963,6 +979,17 @@ export const SeatsSacredAndSecular = card(112113)
   // TODO
   .done();
 
+
+/**
+ * @id 124053
+ * @name 噬骸能量块
+ * @description
+ * 本回合无法再打出噬骸能量块。
+ */
+export const BonecrunchersEnergyBlockCombatStatus = combatStatus(124053)
+  .oneDuration()
+  .done();
+
 /**
  * @id 124051
  * @name 噬骸能量块
@@ -970,7 +997,18 @@ export const SeatsSacredAndSecular = card(112113)
  * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）
  */
 export const BonecrunchersEnergyBlock = card(124051)
-  // TODO
+  .filter((c) => !c.$(`my combat status with definition id ${BonecrunchersEnergyBlockCombatStatus}`))
+  .do((c) => {
+    const hands = c.getMaxCostHands();
+    const selected = c.random(...hands);
+    c.disposeCard(selected);
+    const activeCh = c.$("my active")!;
+    c.generateDice(activeCh.element(), 1);
+    if (activeCh.definition.tags.includes("sacread")) {
+      c.gainEnergy(1, activeCh.state);
+    }
+    c.combatStatus(BonecrunchersEnergyBlockCombatStatus)
+  })
   .done();
 
 /**

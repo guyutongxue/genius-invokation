@@ -25,7 +25,7 @@ import {
 } from "./base/state";
 import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
-import { CardTag } from "./base/card";
+import { CardDefinition, CardTag } from "./base/card";
 import { applyMutation } from "./base/mutation";
 import {
   EventNames,
@@ -297,6 +297,10 @@ export function isSkillDisabled(character: CharacterState): boolean {
   return character.entities.some((st) =>
     st.definition.tags.includes("disableSkill"),
   );
+}
+
+export function diceCostOfCard(card: CardDefinition): number {
+  return card.onPlay.requiredCost.filter((c) => c !== DiceType.Energy).length;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

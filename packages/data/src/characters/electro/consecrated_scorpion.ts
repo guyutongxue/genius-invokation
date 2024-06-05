@@ -16,16 +16,6 @@
 import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
 
 /**
- * @id 124053
- * @name 噬骸能量块
- * @description
- * 本回合无法再打出噬骸能量块。
- */
-export const BonecrunchersEnergyBlock = combatStatus(124053)
-  // TODO
-  .done();
-
-/**
  * @id 124052
  * @name 雷锥陷阱
  * @description
