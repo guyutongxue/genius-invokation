@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -28,7 +28,12 @@ import {
   SkillData,
   StateData,
 } from "@gi-tcg/typings";
-import { CardState, CharacterState, EntityState, GameState } from "./base/state";
+import {
+  CardState,
+  CharacterState,
+  EntityState,
+  GameState,
+} from "./base/state";
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
@@ -43,7 +48,10 @@ export interface PlayerIO {
 }
 
 export interface GameIO {
-  readonly pause?: (state: GameState, mutations: Mutation[]) => Promise<unknown>;
+  readonly pause?: (
+    state: GameState,
+    mutations: Mutation[],
+  ) => Promise<unknown>;
   readonly onIoError?: (e: GiTcgIOError) => void;
   readonly players: readonly [PlayerIO, PlayerIO];
 }
@@ -91,9 +99,7 @@ export function exposeMutation(
         who: m.who,
         id: m.value.id,
         definitionId:
-          m.who === who && m.target === "hands"
-            ? m.value.definition.id
-            : 0,
+          m.who === who && m.target === "hands" ? m.value.definition.id : 0,
         target: m.target,
       };
     }
@@ -161,7 +167,7 @@ export function exposeMutation(
   }
 }
 
-function exposeEntity(e: EntityState): EntityData {
+function exposeEntity(state: GameState, e: EntityState): EntityData {
   let equipment: boolean | "weapon" | "artifact";
   if (e.definition.type === "equipment") {
     if (e.definition.tags.includes("artifact")) {
@@ -174,6 +180,12 @@ function exposeEntity(e: EntityState): EntityData {
   } else {
     equipment = false;
   }
+  const descriptionDictionary = Object.fromEntries(
+    Object.entries(e.definition.descriptionDictionary).map(([k, v]) => [
+      k,
+      v(state),
+    ]),
+  );
   return {
     id: e.id,
     definitionId: e.definition.id,
@@ -183,23 +195,33 @@ function exposeEntity(e: EntityState): EntityData {
     hintIcon: e.variables.hintIcon ?? null,
     hintText: e.definition.hintText,
     equipment,
+    descriptionDictionary,
   };
 }
 
-function exposeCard(c: CardState, hide: boolean): CardData {
+function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
+  const descriptionDictionary = hide
+    ? {}
+    : Object.fromEntries(
+        Object.entries(c.definition.descriptionDictionary).map(([k, v]) => [
+          k,
+          v(state),
+        ]),
+      );
   return {
     id: c.id,
+    descriptionDictionary,
     definitionId: hide ? 0 : c.definition.id,
     definitionCost: hide ? [] : [...c.definition.onPlay.requiredCost],
   };
 }
 
-function exposeCharacter(ch: CharacterState): CharacterData {
+function exposeCharacter(state: GameState, ch: CharacterState): CharacterData {
   return {
     id: ch.id,
     definitionId: ch.definition.id,
     defeated: !ch.variables.alive,
-    entities: ch.entities.map(exposeEntity),
+    entities: ch.entities.map((e) => exposeEntity(state, e)),
     health: ch.variables.health,
     energy: ch.variables.energy,
     maxHealth: ch.variables.maxHealth,
@@ -227,13 +249,13 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
           .initiativeSkills ?? [];
       return {
         activeCharacterId: p.activeCharacterId,
-        piles: p.piles.map((c) => exposeCard(c, true)),
-        hands: p.hands.map((c) => exposeCard(c, i !== who)),
-        characters: p.characters.map(exposeCharacter),
+        piles: p.piles.map((c) => exposeCard(state, c, true)),
+        hands: p.hands.map((c) => exposeCard(state, c, i !== who)),
+        characters: p.characters.map((ch) => exposeCharacter(state, ch)),
         dice: i === who ? [...p.dice] : [...p.dice].fill(0),
-        combatStatuses: p.combatStatuses.map(exposeEntity),
-        supports: p.supports.map(exposeEntity),
-        summons: p.summons.map(exposeEntity),
+        combatStatuses: p.combatStatuses.map((e) => exposeEntity(state, e)),
+        supports: p.supports.map((e) => exposeEntity(state, e)),
+        summons: p.summons.map((e) => exposeEntity(state, e)),
         skills: i === who ? skills.map(exposeInitiativeSkill) : [],
         declaredEnd: p.declaredEnd,
         legendUsed: p.legendUsed,

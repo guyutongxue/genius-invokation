@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { CharacterTag, WeaponTag } from "./character";
+import { DescriptionDictionaryEntry, DescriptionDictionaryKey } from "./entity";
 import { InitiativeSkillDefinition, SkillInfo } from "./skill";
 import { AnyState, GameState } from "./state";
 
@@ -68,4 +69,8 @@ export interface CardDefinition {
   readonly filter: PlayCardFilter;
   readonly onPlay: PlayCardSkillDefinition;
   readonly onDispose?: DisposeCardSkillDefinition;
+  readonly descriptionDictionary: Record<
+    DescriptionDictionaryKey,
+    DescriptionDictionaryEntry
+  >;
 }

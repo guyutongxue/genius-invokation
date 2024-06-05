@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { GameState, EntityState } from "./state";
 import { EquipmentTag, SupportTag } from "./card";
 import { TriggeredSkillDefinition } from "./skill";
 
@@ -43,6 +44,10 @@ export interface EntityDefinition {
   readonly hintText: string | null;
   readonly varConfigs: EntityVariableConfigs;
   readonly skills: readonly TriggeredSkillDefinition[];
+  readonly descriptionDictionary: Record<
+    DescriptionDictionaryKey,
+    DescriptionDictionaryEntry
+  >;
 }
 
 export type EntityArea =
@@ -111,6 +116,9 @@ export type VariableOfConfig<C extends Record<string, VariableConfig>> = {
     ? T
     : never;
 };
+
+export type DescriptionDictionaryKey = `[${string}]`;
+export type DescriptionDictionaryEntry = (st: GameState) => string;
 
 export function stringifyEntityArea(area: EntityArea) {
   return `${

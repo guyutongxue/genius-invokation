@@ -446,6 +446,7 @@ class CardBuilder<
       filter: filterFn,
       onPlay: skillDef,
       onDispose: onDispose,
+      descriptionDictionary: {} // TODO
     };
     registerCard(cardDef);
     return this.cardId as CardHandle;

@@ -66,7 +66,7 @@ export const PastDraconicGlories = status(112103)
  * 可用次数：1（可叠加，最多叠加到3次）
  */
 export const SourcewaterDroplet = combatStatus(112101)
-  .usage(1, { append: { limit: 3 }, autoDispose: true })
+  .usage(1, { append: { limit: 3 } })
   .done();
 
 /**

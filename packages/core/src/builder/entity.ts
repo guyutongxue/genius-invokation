@@ -15,6 +15,8 @@
 
 import { DamageType } from "@gi-tcg/typings";
 import {
+  DescriptionDictionaryEntry,
+  DescriptionDictionaryKey,
   EntityTag,
   EntityVariableConfigs,
   ExEntityType,
@@ -99,6 +101,7 @@ export class EntityBuilder<
   private _visibleVarName: string | null = null;
   _associatedExtensionId: number | undefined = void 0;
   private _hintText: string | null = null;
+  private _descriptionDictionary: Record<DescriptionDictionaryKey, DescriptionDictionaryEntry> = {};
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -420,6 +423,7 @@ export class EntityBuilder<
         skills: this._skillList,
         tags: this._tags,
         type: this._type,
+        descriptionDictionary: this._descriptionDictionary // TODO
       });
     }
     return this.id as EntityBuilderResultT<CallerType>;

@@ -88,6 +88,11 @@ export interface EntityData {
   variable: number | null;
 
   /**
+   * 描述中动态替换掉的变量值
+   */
+  descriptionDictionary: Record<`[${string}]`, string>;
+
+  /**
    * 实体提示图标（召唤物伤害图标/支援牌治疗图标）
    */
   hintIcon: number | null;
@@ -108,6 +113,11 @@ export interface CardData {
    * 全局唯一实体 id
    */
   id: number;
+
+  /**
+   * 描述中动态替换掉的变量值
+   */
+  descriptionDictionary: Record<`[${string}]`, string>;
 
   /**
    * 行动牌定义 id
