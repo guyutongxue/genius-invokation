@@ -201,7 +201,7 @@ export const LumenstoneAdjuvant = card(323007)
 export const Kusava = card(323008)
   .support("item")
   .variable("memory", 0)
-  .variable("cardPlayed", 0)
+  .variable("cardPlayed", 0, { visible: false })
   .on("roundBegin")
   .do((c) => {
     const cards = c.getMaxCostHands().slice(0, 2);

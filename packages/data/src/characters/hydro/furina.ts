@@ -56,7 +56,7 @@ export const SalonMembers = summon(112111)
   .usageCanAppend(2, 4)
   .do((c) => {
     if (c.$(`my character with health >= 6`)) {
-      c.damage(DamageType.Piercing, 1, "my characters sort by maxHealth - health limit 1");
+      c.damage(DamageType.Piercing, 1, "my characters order by maxHealth - health limit 1");
       c.damage(DamageType.Hydro, 1);
     }
   })
@@ -74,7 +74,7 @@ export const SingerOfManyWaters = summon(112112)
   .usageCanAppend(2, 4)
   .do((c) => {
     if (c.$(`my character with health <= 6`)) {
-      c.damage(DamageType.Hydro, 1, "my characters sort by health - maxHealth limit 1");
+      c.damage(DamageType.Hydro, 1, "my characters order by health - maxHealth limit 1");
     }
   })
   .done();
@@ -95,7 +95,7 @@ export const CenterOfAttention = status(112116)
       c.heal(1, "my standby characters");
     } else {
       e.increaseDamage(2);
-      c.damage(DamageType.Piercing, 1, "my characters sort by maxHealth - health limit 1");
+      c.damage(DamageType.Piercing, 1, "my characters order by maxHealth - health limit 1");
     }
   })
   .done();

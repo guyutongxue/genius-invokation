@@ -36,9 +36,11 @@ export function App() {
   const [mode, setMode] = createSignal<GameMode>(GameMode.NotStarted);
   const [logs, setLogs] = createSignal<GameStateLogEntry[]>();
   const [deck0, setDeck0] = createSignal(
+    // "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA"
     "EZGQOBoTA4AQ25cPCVBx9jAPE2EBCDMQE4ExOzQTE7FgCsYQDLFgC9UQDdFQEdkRDTAA",
   );
   const [deck1, setDeck1] = createSignal(
+    // "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA"
     "AFBA1QoUAZGwSZcNE5AB2TATE4ERODETE6Ax9DMPDECQ9ckQDIGgCMoTDbEQTNEUDcAA",
   );
   const [roomId, setRoomId] = createSignal<string>("");

@@ -454,6 +454,7 @@ class CardBuilder<
             >(state, skillInfo, arg);
             disposeOp(ctx, {});
             ctx._terminate();
+            return [ctx.state, ctx.events];
           }) : (action as unknown as SkillDescription<void>);
       const disposeDef: DisposeCardSkillDefinition = {
         __definition: "skills",
