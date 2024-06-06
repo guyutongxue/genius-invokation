@@ -204,7 +204,7 @@ export const Kusava = card(323008)
   .variable("cardPlayed", 0, { visible: false })
   .on("roundBegin")
   .do((c) => {
-    const cards = c.getMaxCostHands().slice(0, 2);
+    const cards = c.randomN(c.getMaxCostHands(), 2);
     const count = cards.length;
     c.disposeCard(...cards);
     c.addVariableWithMax("memory", count, 2);

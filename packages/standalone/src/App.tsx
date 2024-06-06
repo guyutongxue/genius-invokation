@@ -28,6 +28,15 @@ enum GameMode {
   MultiplayerGuest = 3,
 }
 
+let INIT_DECK0 = "EZGQOBoTA4AQ25cPCVBx9jAPE2EBCDMQE4ExOzQTE7FgCsYQDLFgC9UQDdFQEdkRDTAA";
+let INIT_DECK1 = "AFBA1QoUAZGwSZcNE5AB2TATE4ERODETE6Ax9DMPDECQ9ckQDIGgCMoTDbEQTNEUDcAA";
+
+if (import.meta.env.DEV) {
+  // Debug here!
+  INIT_DECK0 = "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA";
+  INIT_DECK1 = "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA";
+}
+
 export function App() {
   if (window.opener !== null) {
     // eslint-disable-next-line solid/components-return-once
@@ -35,14 +44,8 @@ export function App() {
   }
   const [mode, setMode] = createSignal<GameMode>(GameMode.NotStarted);
   const [logs, setLogs] = createSignal<GameStateLogEntry[]>();
-  const [deck0, setDeck0] = createSignal(
-    // "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA"
-    "EZGQOBoTA4AQ25cPCVBx9jAPE2EBCDMQE4ExOzQTE7FgCsYQDLFgC9UQDdFQEdkRDTAA",
-  );
-  const [deck1, setDeck1] = createSignal(
-    // "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA"
-    "AFBA1QoUAZGwSZcNE5AB2TATE4ERODETE6Ax9DMPDECQ9ckQDIGgCMoTDbEQTNEUDcAA",
-  );
+  const [deck0, setDeck0] = createSignal(INIT_DECK0);
+  const [deck1, setDeck1] = createSignal(INIT_DECK1);
   const [roomId, setRoomId] = createSignal<string>("");
   const importLog = async () => {
     return new Promise<GameStateLogEntry[]>((resolve, reject) => {

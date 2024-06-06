@@ -1115,7 +1115,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         DiceType.Pyro,
       ];
       for (let i = 0; i < count; i++) {
-        const generated = this.random(...diceTypes);
+        const generated = this.random(diceTypes);
         insertedDice.push(generated);
         diceTypes.splice(diceTypes.indexOf(generated), 1);
       }
@@ -1201,7 +1201,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         if (candidates.length === 0) {
           break;
         }
-        const chosen = this.random(...candidates);
+        const chosen = this.random(candidates);
         this.mutate({
           type: "transferCard",
           path: "pilesToHands",
@@ -1394,13 +1394,26 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     );
   }
 
-  random<T>(...items: readonly T[]): T {
+  random<T>(items: readonly T[]): T {
     const mutation: Mutation = {
       type: "stepRandom",
       value: -1,
     };
     this.mutate(mutation);
     return items[mutation.value % items.length];
+  }
+
+  shuffle<T>(array: readonly T[]): T[] {
+    const result = [...array];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = this.random(Array.from({ length: i }, (_, i) => i));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  randomN<T>(items: readonly T[], n: number): T[] {
+    return this.shuffle(items).slice(0, n);
   }
 }
 

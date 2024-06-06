@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, combatStatus, card, DamageType, diceCostOfCard } from "@gi-tcg/core/builder";
 
 /**
  * @id 113123
@@ -63,7 +63,7 @@ export const SweepingFervor = skill(13122)
   .damage(DamageType.Pyro, 2)
   .do((c) => {
     const cards = c.getMaxCostHands();
-    c.disposeCard(c.random(...cards));
+    c.disposeCard(c.random(cards));
   })
   .combatStatus(ShieldOfPassion)
   .done();
@@ -81,7 +81,8 @@ export const RiffRevolution = skill(13123)
   .damage(DamageType.Piercing, 2, "opp standby")
   .damage(DamageType.Physical, 3)
   .do((c) => {
-    c.disposeCard(...c.player.hands);
+    const cards = c.player.hands.toSorted((a, b) => diceCostOfCard(b.definition) - diceCostOfCard(a.definition));
+    c.disposeCard(...cards);
   })
   .combatStatus(FestiveFires)
   .done();

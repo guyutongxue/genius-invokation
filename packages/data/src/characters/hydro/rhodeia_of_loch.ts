@@ -85,10 +85,10 @@ export const OceanidMimicSummoning = skill(22012)
     const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
     let target;
     if (exists.length >= 2) {
-      target = c.random(...exists);
+      target = c.random(exists);
     } else {
       const rest = mimics.filter((id) => !exists.includes(id));
-      target = c.random(...rest);
+      target = c.random(rest);
     }
     c.summon(target as SummonHandle);
   })
@@ -109,10 +109,10 @@ export const TheMyriadWilds = skill(22013)
     for (let i = 0; i < 2; i++) {
       let target;
       if (exists.length >= 2) {
-        target = c.random(...exists);
+        target = c.random(exists);
       } else {
         const rest = mimics.filter((id) => !exists.includes(id));
-        target = c.random(...rest);
+        target = c.random(rest);
       }
       c.summon(target as SummonHandle);
       exists.push(target);

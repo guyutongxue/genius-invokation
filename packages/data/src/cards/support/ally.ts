@@ -432,7 +432,7 @@ export const Mamere: SupportHandle = card(322021)
   .do((c) => {
     const tags = ["food", "place", "ally", "item"] as const;
     const candidates = [...c.state.data.cards.values()].filter((c) => c.id !== Mamere && tags.some((tag) => c.tags.includes(tag)));
-    const card = c.random(...candidates);
+    const card = c.random(candidates);
     c.createHandCard(card.id as CardHandle);
   })
   .on("playCard", (c, e) => 

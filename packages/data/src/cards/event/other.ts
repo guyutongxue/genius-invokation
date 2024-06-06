@@ -636,12 +636,12 @@ export const AbyssalSummons = card(332015)
   .requireCharacterTag("monster")
   .do((c) => {
     c.summon(
-      c.random(
+      c.random([
         CryoHilichurlShooter, 
         HydroSamachurl, 
         HilichurlBerserker, 
         ElectroHilichurlShooter
-      )
+      ])
     );
   })
   .done();
@@ -658,12 +658,12 @@ export const FatuiConspiracy = card(332016)
   .requireCharacterTag("fatui")
   .do((c) => {
     c.combatStatus(
-      c.random(
+      c.random([
         FatuiAmbusherCryoCicinMage,
         FatuiAmbusherMirrorMaiden,
         FatuiAmbusherPyroslingerBracer,
         FatuiAmbusherElectrohammerVanguard
-      ),
+      ]),
       "opp"
     );
   })
@@ -885,8 +885,8 @@ export const SunyataFlower = card(332029)
   .dispose("@targets.0")
   .do((c) => {
     const candidates = [...c.state.data.cards.values()].filter((card) => card.type === "support");
-    const card0 = c.random(...candidates);
-    const card1 = c.random(...candidates);
+    const card0 = c.random(candidates);
+    const card1 = c.random(candidates);
     c.createHandCard(card0.id as CardHandle);
     c.createHandCard(card1.id as CardHandle);
   })
@@ -988,7 +988,7 @@ export const BonecrunchersEnergyBlock = card(124051)
   .filter((c) => !c.$(`my combat status with definition id ${BonecrunchersEnergyBlockCombatStatus}`))
   .do((c) => {
     const hands = c.getMaxCostHands();
-    const selected = c.random(...hands);
+    const selected = c.random(hands);
     c.disposeCard(selected);
     const activeCh = c.$("my active")!;
     c.generateDice(activeCh.element(), 1);
