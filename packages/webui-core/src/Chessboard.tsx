@@ -219,6 +219,8 @@ export function createPlayer(
   Chessboard: (props: ComponentProps<"div">) => JSX.Element,
 ] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
+  const [previewStateData, setPreviewStateData] = createSignal<StateData>();
+  const [previewing, setPreviewing] = createSignal(false);
   const [mutations, setMutations] = createSignal<ExposedMutation[]>([]);
   const [giveUp, setGiveUp] = createSignal(false);
   const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
@@ -375,6 +377,7 @@ export function createPlayer(
         setClickable([...(state.clickable?.keys() ?? [])]);
         setSelected([...state.selected]);
         const chosenIndex = state.actionIndex!;
+        setPreviewStateData(candidates[chosenIndex].preview);
 
         if (candidates[chosenIndex].type === "declareEnd") {
           setClickable([]);
@@ -408,6 +411,7 @@ export function createPlayer(
       setClickable([]);
       setSelected([]);
       setAllCosts({});
+      setPreviewStateData();
       return result;
     },
   };
@@ -424,7 +428,11 @@ export function createPlayer(
         if (import.meta.env.DEV && who === 0 && msg.mutations.length > 0) {
           console.log(msg);
         }
-        if (msg.mutations.filter((mut) => ["damage", "triggered"].includes(mut.type)).length > 0) {
+        if (
+          msg.mutations.filter((mut) =>
+            ["damage", "triggered"].includes(mut.type),
+          ).length > 0
+        ) {
           if (!import.meta.env.DEV) {
             console.log(msg.mutations);
           }
@@ -521,7 +529,12 @@ export function createPlayer(
 
   const ChessboardWithIO = () => (
     <PlayerContext.Provider value={playerContextValue}>
-      <Chessboard stateData={stateData()} who={who} mutations={mutations()}>
+      <Chessboard
+        stateData={(previewing() && previewStateData()) || stateData()}
+        who={who}
+        mutations={mutations()}
+        previewing={previewing()}
+      >
         <Show when={allClickable.includes(DECLARE_END_ID)}>
           <button
             class="absolute left-22 top-[50%] translate-y-[-50%] btn btn-green-500"
@@ -543,6 +556,8 @@ export function createPlayer(
               value={myPlayer().dice}
               onConfirm={notifyDiceSelected}
               onCancel={() => notifyDiceSelected(void 0)}
+              onEnterPreview={() => previewStateData() && setPreviewing(true)}
+              onLeavePreview={() => setPreviewing(false)}
             />
           </Show>
         </div>
@@ -593,6 +608,7 @@ interface ChessboardProps extends ComponentProps<"div"> {
   mutations?: readonly ExposedMutation[];
   who: 0 | 1;
   children?: JSX.Element;
+  previewing?: boolean;
 }
 
 function Chessboard(props: ChessboardProps) {
@@ -638,7 +654,10 @@ function Chessboard(props: ChessboardProps) {
         } select-none`}
         {...restProps}
       >
-        <div class="w-full b-solid b-black b-2 relative">
+        <div
+          data-previewing={props.previewing}
+          class="w-full b-solid b-black b-2 relative data-[previewing=true]:grayscale-50"
+        >
           <PlayerArea
             data={local.stateData.players[1 - local.who]}
             opp={true}

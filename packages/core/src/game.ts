@@ -894,17 +894,25 @@ export class Game extends StateMutator {
           charged: skill.skillType === "normal" && player.dice.length % 2 === 0,
           plunging: skill.skillType === "normal" && player.canPlunging,
         };
-        const previewState = await SkillExecutor.previewSkill(
-          this.state,
-          skillInfo,
-        );
-        result.push({
+        const actionInfo: ActionInfo = {
           type: "useSkill",
           who,
           skill: skillInfo,
           fast: false,
           cost: [...skill.requiredCost],
-          preview: previewState,
+        };
+        const preview0 = await SkillExecutor.previewSkill(
+          this.state,
+          skillInfo,
+        );
+        const preview1 = await SkillExecutor.previewEvent(
+          preview0,
+          "onAction",
+          new ActionEventArg(preview0, actionInfo),
+        );
+        result.push({
+          ...actionInfo,
+          preview: this.checkPreviewState(preview1),
         });
       }
     }
@@ -931,13 +939,27 @@ export class Game extends StateMutator {
       }
       for (const arg of allTargets) {
         if ((0, card.definition.filter)(this.state, skillInfo, arg)) {
-          result.push({
+          const actionInfo: ActionInfo = {
             type: "playCard",
             who,
             card,
             targets: arg.targets,
             cost: [...card.definition.onPlay.requiredCost],
             fast: !card.definition.tags.includes("action"),
+          };
+          const preview0 = await SkillExecutor.previewSkill(
+            this.state,
+            skillInfo,
+            arg,
+          );
+          const preview1 = await SkillExecutor.previewEvent(
+            preview0,
+            "onAction",
+            new ActionEventArg(preview0, actionInfo),
+          );
+          result.push({
+            ...actionInfo,
+            preview: this.checkPreviewState(preview1),
           });
         }
       }
@@ -1000,6 +1022,21 @@ export class Game extends StateMutator {
       });
     }
     return resultAfterModification;
+  }
+
+  /** 检查预览的游戏对局是否存在泄露牌堆信息的情况 */
+  private checkPreviewState(previewState: GameState): GameState | undefined {
+    for (const who of [0, 1] as const) {
+      const previewPlayer = previewState.players[who];
+      const currentPlayer = this.state.players[who];
+      const currentPileCards = currentPlayer.piles.map((c) => c.id);
+      if (
+        previewPlayer.hands.some((card) => currentPileCards.includes(card.id))
+      ) {
+        return;
+      }
+    }
+    return previewState;
   }
 
   /** @internal */

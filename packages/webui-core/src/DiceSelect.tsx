@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { DiceType } from "@gi-tcg/typings";
-import { Index, Show, createEffect, mergeProps } from "solid-js";
+import { Index, Show, createEffect, mergeProps, onCleanup } from "solid-js";
 import { checkDice, chooseDice } from "@gi-tcg/utils";
 
 import { Dice } from "./Dice";
@@ -28,6 +28,8 @@ export interface DiceSelectProps {
   disableConfirm?: boolean;
   onConfirm?: (dice: DiceType[]) => void;
   onCancel?: () => void;
+  onEnterPreview?: () => void;
+  onLeavePreview?: () => void;
 }
 
 export function DiceSelect(props: DiceSelectProps) {
@@ -61,6 +63,10 @@ export function DiceSelect(props: DiceSelectProps) {
     setChosen(produce((p) => void (p[index] = !p[index])));
   };
   const isValid = () => checkDice(merged.required, chosenDice());
+
+  onCleanup(() => {
+    merged.onLeavePreview?.();
+  });
   return (
     <div class="h-full w-full p-3 flex flex-col justify-between items-center">
       <ul
@@ -85,8 +91,11 @@ export function DiceSelect(props: DiceSelectProps) {
       <div class="flex flex-col gap-1">
         <button
           class="btn btn-yellow text-black"
+          title="悬浮时显示预览界面"
           disabled={merged.disableConfirm || !isValid()}
           onClick={() => merged.onConfirm?.(chosenDice())}
+          onMouseEnter={() => merged.confirmOnly || merged.onEnterPreview?.()}
+          onMouseLeave={() => merged.confirmOnly || merged.onLeavePreview?.()}
         >
           确认
         </button>

@@ -120,7 +120,7 @@ export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
   readonly skill: SkillInfo;
-  readonly preview: GameState;
+  readonly preview?: GameState;
 }
 
 export interface PlayCardInfo {
@@ -128,6 +128,7 @@ export interface PlayCardInfo {
   readonly who: 0 | 1;
   readonly card: CardState;
   readonly targets: AnyState[];
+  readonly preview?: GameState;
 }
 
 export interface SwitchActiveInfo {

@@ -270,7 +270,7 @@ export function exposeAction(action: ActionInfo): Action {
         type: "useSkill",
         skill: action.skill.definition.id,
         cost: action.cost,
-        preview: exposeState(action.who, action.preview),
+        preview: action.preview ? exposeState(action.who, action.preview) : void 0,
       };
     }
     case "playCard": {
@@ -281,6 +281,7 @@ export function exposeAction(action: ActionInfo): Action {
         // We can provide more detail hint here
         hints: [PlayCardHint.GeneralTarget, PlayCardHint.GeneralTarget2],
         targets: action.targets.map((t) => t.id),
+        preview: action.preview ? exposeState(action.who, action.preview) : void 0,
       };
     }
     case "switchActive":

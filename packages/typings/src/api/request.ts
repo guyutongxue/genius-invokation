@@ -38,6 +38,7 @@ export interface SwitchActiveAction {
   type: "switchActive";
   active: number;
   cost: readonly DiceType[];
+  preview?: StateData;
 }
 export interface PlayCardAction {
   type: "playCard";
@@ -45,6 +46,7 @@ export interface PlayCardAction {
   cost: readonly DiceType[];
   hints: readonly PlayCardHint[];
   targets: readonly number[];
+  preview?: StateData;
 }
 
 export interface UseSkillAction {
@@ -58,10 +60,12 @@ export interface ElementalTuningAction {
   type: "elementalTuning";
   discardedCard: number;
   target: DiceType;
+  preview?: StateData;
 }
 
 export interface DeclareEndAction {
   type: "declareEnd";
+  preview?: StateData;
 }
 
 export type Action = SwitchActiveAction | PlayCardAction | UseSkillAction | ElementalTuningAction | DeclareEndAction;
