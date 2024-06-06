@@ -90,8 +90,8 @@ interface SkillContext {
   // 修改关联的扩展点的状态
   setExtensionState(setter: (draft: Draft<...>) => void): void;
 
-  // 替换 target 的角色定义
-  replaceDefinition(target, newCh: CharacterHandle): void;
+  // 替换 target 的定义
+  transformDefinition(target, newDef: number): void;
 
   // 为我方生成 count 个 type 类型骰子。
   // randomElemnt 用以生成不同的基础类型元素骰子
@@ -181,7 +181,10 @@ interface SkillContext {
   countOfThisSkill(): number;
 
   // 步进游戏状态的随机数发生器，随机选择 items 中的一个值
-  random<T>(...items: T[]): T;
+  random<T>(items: T[]): T;
+
+  // 步进游戏状态的随机数发生器，随机选择 items 中的 n 个值
+  randomN<T>(items: T[], n: number): T;
 }
 ```
 

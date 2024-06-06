@@ -617,6 +617,7 @@ export const GildedDreams = card(312018)
 export const FlowingRings = card(312019)
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usagePerRound(1)
   .drawCards(1)
   .done();
 

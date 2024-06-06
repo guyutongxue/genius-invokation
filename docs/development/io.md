@@ -50,12 +50,14 @@ interface PlayCardAction {
   card: number;                  // 卡牌 id
   cost: DiceType[];
   targets: number[];             // 该卡牌的作用目标实体 id
+  preview?: StateData;           // 可提供效果预览
 }
 // 使用角色技能行动
 interface UseSkillAction {
   type: "useSkill";
   skill: number;                 // 技能 id
   cost: DiceType[];
+  preview?: StateData;           // 可提供效果预览
 }
 // 元素调和行动
 interface ElementalTuningAction {
