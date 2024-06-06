@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, CharacterHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112113
@@ -23,7 +23,25 @@ import { character, skill, summon, status, combatStatus, card, DamageType } from
  * 如果我方场上存在沙龙成员或众水的歌者，也切换其形态。
  */
 export const SeatsSacredAndSecular = card(112113)
-  // TODO
+  .do((c) => {
+    const furina = c.player.characters.find((char) => [FurinaPneuma, FurinaOusia].includes(char.definition.id as CharacterHandle));
+    if (!furina) {
+      return;
+    }
+    if (furina.definition.id === FurinaPneuma) {
+      c.transformDefinition(furina, FurinaOusia);
+      const summon = c.$(`my summon with definition id ${SalonMembers}`);
+      if (summon) {
+        c.transformDefinition<"summon">(summon.state, SingerOfManyWaters)
+      }
+    } else {
+      c.transformDefinition(furina, FurinaPneuma);
+      const summon = c.$(`my summon with definition id ${SingerOfManyWaters}`);
+      if (summon) {
+        c.transformDefinition<"summon">(summon.state, SalonMembers)
+      }
+    }
+  })
   .done();
 
 /**
@@ -34,7 +52,14 @@ export const SeatsSacredAndSecular = card(112113)
  * 可用次数：2（可叠加，最多叠加到4次）
  */
 export const SalonMembers = summon(112111)
-  // TODO
+  .endPhaseDamage(DamageType.Hydro, 1)
+  .usageCanAppend(2, 4)
+  .do((c) => {
+    if (c.$(`my character with health >= 6`)) {
+      c.damage(DamageType.Piercing, 1, "my characters sort by maxHealth - health limit 1");
+      c.damage(DamageType.Hydro, 1);
+    }
+  })
   .done();
 
 /**
@@ -45,7 +70,13 @@ export const SalonMembers = summon(112111)
  * 可用次数：2（可叠加，最多叠加到4次）
  */
 export const SingerOfManyWaters = summon(112112)
-  // TODO
+  .endPhaseDamage(DamageType.Heal, 1, "all my characters")
+  .usageCanAppend(2, 4)
+  .do((c) => {
+    if (c.$(`my character with health <= 6`)) {
+      c.damage(DamageType.Hydro, 1, "my characters sort by health - maxHealth limit 1");
+    }
+  })
   .done();
 
 /**
@@ -56,7 +87,17 @@ export const SingerOfManyWaters = summon(112112)
  * 可用次数：1
  */
 export const CenterOfAttention = status(112116)
-  // TODO
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .usage(1)
+  .changeDamageType(DamageType.Hydro)
+  .do((c, e) => {
+    if (c.self.master().definition.id === FurinaPneuma) {
+      c.heal(1, "my standby characters");
+    } else {
+      e.increaseDamage(2);
+      c.damage(DamageType.Piercing, 1, "my characters sort by maxHealth - health limit 1");
+    }
+  })
   .done();
 
 /**
@@ -67,7 +108,9 @@ export const CenterOfAttention = status(112116)
  * 可用次数：1（可叠加，没有上限）
  */
 export const Revelry = combatStatus(112115)
-  // TODO
+  .on("modifyDamage")
+  .usageCanAppend(1, Infinity)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -78,7 +121,9 @@ export const Revelry = combatStatus(112115)
  * 持续回合：2
  */
 export const UniversalRevelry = combatStatus(112114)
-  // TODO
+  .duration(2)
+  .on("damagedOrHealed", (c, e) => c.of(e.target).isActive())
+  .combatStatus(Revelry)
   .done();
 
 /**
@@ -102,10 +147,10 @@ export const SoloistsSolicitation = skill(12111)
  * 芙宁娜当前处于「始基力：荒性」形态：召唤沙龙成员。
  * （芙宁娜处于「始基力：芒性」形态时，会改为召唤众水的歌者）
  */
-export const SalonSolitaire = skill(12112)
+export const SalonSolitairePneuma = skill(12112)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .summon(SalonMembers)
   .done();
 
 /**
@@ -118,7 +163,8 @@ export const LetThePeopleRejoice = skill(12113)
   .type("burst")
   .costHydro(4)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .combatStatus(UniversalRevelry)
   .done();
 
 /**
@@ -129,7 +175,9 @@ export const LetThePeopleRejoice = skill(12113)
  */
 export const Skill12114 = skill(12114)
   .type("passive")
-  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .on("useSkill", (c, e) => e.isSkillType("normal") &&
+    !c.player.hands.find((card) => card.definition.id === SeatsSacredAndSecular))
+  .usagePerRound(1, { name: "usagePerRound1" })
   .createHandCard(SeatsSacredAndSecular)
   .done();
 
@@ -155,7 +203,7 @@ export const FurinaPneuma = character(1211)
   .tags("hydro", "sword", "fontaine", "pneuma")
   .health(10)
   .energy(2)
-  .skills(SoloistsSolicitation, SalonSolitaire, LetThePeopleRejoice, Skill12114, ArkheSeatsSacredAndSecular)
+  .skills(SoloistsSolicitation, SalonSolitairePneuma, LetThePeopleRejoice, Skill12114, ArkheSeatsSacredAndSecular)
   .done();
 
 
@@ -170,7 +218,7 @@ export const SoloistsSolicitationOusia = skill(12121)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -183,7 +231,7 @@ export const SoloistsSolicitationOusia = skill(12121)
 export const SalonSolitaireOusia = skill(12122)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .summon(SingerOfManyWaters)
   .done();
 
 /**
@@ -211,5 +259,14 @@ export const FurinaOusia = character(1212)
 export const HearMeLetUsRaiseTheChaliceOfLove = card(212111)
   .costHydro(3)
   .talent([FurinaPneuma, FurinaOusia])
-  // TODO
+  .on("enter")
+  .do((c) => {
+    if (c.self.master().definition.id === FurinaPneuma) {
+      c.useSkill(SalonSolitairePneuma);
+    } else {
+      c.useSkill(SalonSolitaireOusia);
+    }
+  })
+  .on("useSkill", (c, e) => e.isSkillType("elemental"))
+  .characterStatus(CenterOfAttention, "@self")
   .done();

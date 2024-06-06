@@ -70,6 +70,7 @@ import {
   CharacterHandle,
   CombatStatusHandle,
   EquipmentHandle,
+  ExEntityState,
   ExtensionHandle,
   HandleT,
   SkillHandle,
@@ -996,7 +997,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
 
-  transformDefinition(target: string | EntityState | CharacterState, newCh: CharacterHandle) {
+  transformDefinition(target: string, newDefId: number): void;
+  transformDefinition<DefT extends ExEntityType>(target: ExEntityState<DefT>, newDefId: HandleT<DefT>): void;
+  transformDefinition(target: string | EntityState | CharacterState, newDefId: number) {
     if (typeof target === "string") {
       const entity = this.$(target);
       if (entity) {
@@ -1006,9 +1009,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       }
     }
     const oldDef = target.definition;
-    const def = this.state.data[oldDef.__definition].get(newCh);
+    const def = this.state.data[oldDef.__definition].get(newDefId);
     if (typeof def === "undefined") {
-      throw new GiTcgDataError(`Unknown definition id ${newCh}`);
+      throw new GiTcgDataError(`Unknown definition id ${newDefId}`);
     }
     using l = this.subLog(
       DetailLogType.Primitive,
@@ -1413,6 +1416,7 @@ type SkillContextMutativeProps =
   | "addVariableWithMax"
   | "consumeUsage"
   | "consumeUsagePerRound"
+  | "transformDefinition"
   | "absorbDice"
   | "generateDice"
   | "createHandCard"
