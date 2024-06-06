@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { card, status } from "@gi-tcg/core/builder";
+import { DiceType, card, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311501
@@ -165,5 +165,15 @@ export const SapwoodBlade = card(311507)
 export const SplendorOfTranquilWaters = card(311508)
   .costSame(2)
   .weapon("sword")
-  // TODO
+  .variable("lake", 0)
+  .on("damagedOrHealed")
+  .addVariable("lake", 1)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.getVariable("lake") >= 12)
+  .usagePerRound(1)
+  .deductCost(DiceType.Void, 2)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal") && c.getVariable("lake") >= 12)
+  .usagePerRound(1)
+  .addVariable("lake", -12)
+  .increaseDamage(1)
+  .heal(1, "@master")
   .done();

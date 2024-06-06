@@ -997,15 +997,23 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
 
+  transformDefinition<DefT extends ExEntityType>(
+    target: ExEntityState<DefT>,
+    newDefId: HandleT<DefT>,
+  ): void;
   transformDefinition(target: string, newDefId: number): void;
-  transformDefinition<DefT extends ExEntityType>(target: ExEntityState<DefT>, newDefId: HandleT<DefT>): void;
-  transformDefinition(target: string | EntityState | CharacterState, newDefId: number) {
+  transformDefinition(
+    target: string | EntityState | CharacterState,
+    newDefId: number,
+  ) {
     if (typeof target === "string") {
       const entity = this.$(target);
       if (entity) {
         target = entity.state;
       } else {
-        throw new GiTcgDataError(`Query ${target} doesn't find 1 character or entity`);
+        throw new GiTcgDataError(
+          `Query ${target} doesn't find 1 character or entity`,
+        );
       }
     }
     const oldDef = target.definition;
@@ -1024,12 +1032,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       state: target,
       newDefinition: def,
     });
-    this.emitEvent(
-      "onTransformDefinition",
-      this.state,
-      target,
-      def,
-    );
+    this.emitEvent("onTransformDefinition", this.state, target, def);
   }
 
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
@@ -1171,14 +1174,16 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         withTag ? `(with tag ${withTag})` : ""
       }`,
     );
+    const cards: CardState[] = [];
     if (withTag === null && withDefinition === null) {
       // 如果没有限定，则从牌堆顶部摸牌
       for (let i = 0; i < count; i++) {
         const card = this.drawCard(who);
         if (card) {
-          this.emitEvent("onDrawCard", this.state, who, card);
+          cards.push(card);
         }
       }
+      this.emitEvent("onDrawCards", this.state, who, cards);
     } else {
       const check = (card: CardState) => {
         if (withDefinition !== null) {
@@ -1203,7 +1208,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           who,
           value: chosen,
         });
-        this.emitEvent("onDrawCard", this.state, who, chosen);
+        cards.push(chosen);
         if (player().hands.length > this.state.config.maxHands) {
           this.mutate({
             type: "removeCard",
@@ -1215,6 +1220,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         }
       }
     }
+    this.emitEvent("onDrawCards", this.state, who, cards);
   }
   createPileCards(
     cardId: CardHandle,
@@ -1306,56 +1312,59 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
   /** 弃置一张行动牌，并触发其“弃置时”效果。 */
-  disposeCard(card: CardState, _who: "my" | "opp" = "my") {
-    const who = _who === "my" ? this.callerArea.who : flip(this.callerArea.who);
-    const player = this.state.players[who];
-    let where: "hands" | "piles";
-    if (player.hands.find((c) => c.id === card.id)) {
-      where = "hands";
-    } else if (player.piles.find((c) => c.id === card.id)) {
-      where = "piles";
-    } else {
-      throw new GiTcgDataError(
-        `Cannot dispose card ${stringifyState(
-          card,
-        )} from player ${who}, not found in either hands or piles`,
-      );
-    }
-    using l = this.subLog(
-      DetailLogType.Primitive,
-      `Dispose card ${stringifyState(card)} from player ${who}`,
-    );
-    this.mutate({
-      type: "removeCard",
-      who,
-      where,
-      oldState: card,
-      used: false,
-    });
-    // Execute card's onDispose handler
-    const cardDef = card.definition;
-    const disposeDef = cardDef.onDispose;
-    if (disposeDef) {
+  disposeCard(...cards: CardState[]) {
+    const player = this.player;
+    const who = this.callerArea.who;
+    for (const card of cards) {
+      let where: "hands" | "piles";
+      if (player.hands.find((c) => c.id === card.id)) {
+        where = "hands";
+      } else if (player.piles.find((c) => c.id === card.id)) {
+        where = "piles";
+      } else {
+        throw new GiTcgDataError(
+          `Cannot dispose card ${stringifyState(
+            card,
+          )} from player ${who}, not found in either hands or piles`,
+        );
+      }
       using l = this.subLog(
-        DetailLogType.Skill,
-        `Execute onDispose of [card:${cardDef.id}]`,
+        DetailLogType.Primitive,
+        `Dispose card ${stringifyState(card)} from player ${who}`,
       );
-      const skillInfo: SkillInfo = {
-        caller: this.callerState,
-        definition: disposeDef,
-        fromCard: card,
-        requestBy: null,
-        charged: false,
-        plunging: false,
-        logger: this.skillInfo.logger,
-        onNotify: this.skillInfo.onNotify,
-      };
-      const [newState, newEvents] = disposeDef.action(this.state, skillInfo);
-      this.eventAndRequests.push(...newEvents);
-      this.resetState(newState);
+      this.mutate({
+        type: "removeCard",
+        who,
+        where,
+        oldState: card,
+        used: false,
+      });
+      // Execute card's onDispose handler
+      const cardDef = card.definition;
+      const disposeDef = cardDef.onDispose;
+      if (disposeDef) {
+        using l = this.subLog(
+          DetailLogType.Skill,
+          `Execute onDispose of [card:${cardDef.id}]`,
+        );
+        const skillInfo: SkillInfo = {
+          caller: this.callerState,
+          definition: disposeDef,
+          fromCard: card,
+          requestBy: null,
+          charged: false,
+          plunging: false,
+          logger: this.skillInfo.logger,
+          onNotify: this.skillInfo.onNotify,
+        };
+        const [newState, newEvents] = disposeDef.action(this.state, skillInfo);
+        this.eventAndRequests.push(...newEvents);
+        this.resetState(newState);
+      }
+      const method: DisposeOrTuneMethod =
+        where === "hands" ? "disposeFromHands" : "disposeFromPiles";
+      this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);
     }
-    const method: DisposeOrTuneMethod = where === "hands" ? "disposeFromHands" : "disposeFromPiles";
-    this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);
   }
 
   setExtensionState(setter: Setter<Meta["associatedExtension"]["type"]>) {
@@ -1411,6 +1420,7 @@ type SkillContextMutativeProps =
   | "combatStatus"
   | "characterStatus"
   | "dispose"
+  | "transferEntity"
   | "setVariable"
   | "addVariable"
   | "addVariableWithMax"

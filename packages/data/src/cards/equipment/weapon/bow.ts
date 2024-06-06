@@ -155,5 +155,24 @@ export const KingsSquire = card(311206)
 export const EndOfTheLine = card(311207)
   .costSame(2)
   .weapon("bow")
-  // TODO
+  .variable("fishing", 0)
+  .variable("additivePerRound", 0, { visible: false })
+  .on("roundBegin")
+  .setVariable("additivePerRound", 0)
+  .on("playCard", (c, e) => !c.player.initialPiles.find((def) => e.action.card.definition.id === def.id))
+  .do((c) => {
+    if (c.getVariable("additivePerRound") < 2) {
+      c.addVariableWithMax("fishing", 1, 2);
+      c.addVariable("additivePerRound", 1);
+    }
+  })
+  .on("modifySkillDamage")
+  .do((c, e) => {
+    const fishing = c.getVariable("fishing");
+    if (fishing > 0) {
+      e.increaseDamage(1)
+      c.drawCards(fishing);
+      c.setVariable("fishing", 0);
+    }
+  })
   .done();

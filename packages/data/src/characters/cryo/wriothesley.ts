@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 111111
@@ -24,7 +24,25 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 可用次数：2
  */
 export const ChillingPenalty = status(111111)
-  // TODO
+  .variable("healAfterUseSkill", 0, { visible: false })
+  .on("deductDiceSkill", (c, e) => c.self.master().health >= 6 &&
+    e.isSkillType("normal") && 
+    e.canDeductCostOfType(DiceType.Cryo))
+  .deductCost(DiceType.Cryo, 1)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .usage(2)
+  .do((c, e) => {
+    if (c.self.master().health >= 6) {
+      e.increaseDamage(1);
+      c.damage(DamageType.Piercing, 1, "@master");
+    } else /* if (c.self.master().health <= 5) */ {
+      e.increaseDamage(1);
+      c.setVariable("healAfterUseSkill", 1);
+    }
+  })
+  .on("useSkill", (c) => c.getVariable("healAfterUseSkill"))
+  .heal(2, "@master")
+  .setVariable("healAfterUseSkill", 0)
   .done();
 
 /**
@@ -35,7 +53,9 @@ export const ChillingPenalty = status(111111)
  * 可用次数：1
  */
 export const LingeringIcicles = combatStatus(111112)
-  // TODO
+  .on("beforeAction")
+  .usage(1)
+  .damage(DamageType.Cryo, 2)
   .done();
 
 /**
@@ -48,7 +68,7 @@ export const ForcefulFistsOfFrost = skill(11111)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Cryo, 1)
   .done();
 
 /**
@@ -60,7 +80,8 @@ export const ForcefulFistsOfFrost = skill(11111)
 export const IcefangRush = skill(11112)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .characterStatus(ChillingPenalty)
   .done();
 
 /**
@@ -74,7 +95,8 @@ export const DarkgoldWolfbite = skill(11113)
   .type("burst")
   .costCryo(3)
   .costEnergy(3)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .combatStatus(LingeringIcicles)
   .done();
 
 /**
@@ -85,8 +107,7 @@ export const DarkgoldWolfbite = skill(11113)
  */
 export const Skill11114 = skill(11114)
   .type("passive")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 11115
@@ -96,8 +117,7 @@ export const Skill11114 = skill(11114)
  */
 export const Skill11115 = skill(11115)
   .type("passive")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 11116
@@ -107,7 +127,17 @@ export const Skill11115 = skill(11115)
  */
 export const DarkgoldWolfbite01 = skill(11116)
   .type("passive")
-  // TODO
+  .variable("damageOrHealCount", 0)
+  .on("roundBegin")
+  .setVariable("damageOrHealCount", 0)
+  .on("damagedOrHealed")
+  .addVariable("damageOrHealCount", 1)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("burst"))
+  .do((c, e) => {
+    const cnt = c.getVariable("damageOrHealCount");
+    const deducted = Math.min(Math.floor(cnt / 2), 2);
+    e.deductCost(DiceType.Omni, deducted);
+  })
   .done();
 
 /**
@@ -120,7 +150,7 @@ export const Wriothesley = character(1111)
   .tags("cryo", "catalyst", "fontaine", "pneuma")
   .health(10)
   .energy(3)
-  .skills(ForcefulFistsOfFrost, IcefangRush, DarkgoldWolfbite, Skill11114, Skill11115, DarkgoldWolfbite01)
+  .skills(ForcefulFistsOfFrost, IcefangRush, DarkgoldWolfbite, DarkgoldWolfbite01)
   .done();
 
 /**
@@ -137,5 +167,12 @@ export const TerrorForTheEvildoers = card(211111)
   .costCryo(1)
   .costVoid(2)
   .talent(Wriothesley)
-  // TODO
+  .variable("count", 0)
+  .on("enter")
+  .useSkill(ForcefulFistsOfFrost)
+  .on("damagedOrHealed")
+  .addVariable("count", 1)
+  .on("modifySkillDamage", (c) => c.getVariable("count") >= 3)
+  .addVariable("count", -3)
+  .increaseDamage(1)
   .done();

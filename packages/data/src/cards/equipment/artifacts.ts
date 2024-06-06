@@ -720,10 +720,11 @@ export const GoldenTroupesReward = card(312025)
   .addVariableWithMax("reward", 1, 2)
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .do((c, e) => {
-    if (c.getVariable("reward") > 0) {
-      e.deductCost(DiceType.Omni, 1);
-      c.addVariable("reward", -1);
-    }
+    const reward = c.getVariable("reward");
+    const currentCost = e.cost.filter((dice) => dice !== DiceType.Energy).length;
+    const deduced = Math.min(reward, currentCost);
+    e.deductCost(DiceType.Omni, deduced);
+    c.addVariable("reward", -deduced);
   })
   .done();
 
@@ -771,7 +772,17 @@ export const AmethystCrown = card(312027)
 export const MarechausseeHunter = card(312024)
   .costVoid(3)
   .artifact()
-  // TODO
+  .variable("count", 0)
+  .on("damagedOrHealed")
+  .do((c) => {
+    c.addVariable("count", 1);
+    const v = c.getVariable("count");
+    if (v === 1 || v === 4) {
+      c.generateDice(c.self.master().element(), 1);
+    } else if (v === 2) {
+      c.drawCards(1)
+    }
+  })
   .done();
 
 /**
@@ -785,7 +796,17 @@ export const MarechausseeHunter = card(312024)
 export const GoldenTroupe = card(312026)
   .costSame(2)
   .artifact()
-  // TODO
+  .variable("reward", 0)
+  .on("endPhase", (c) => !c.self.master().isActive())
+  .addVariableWithMax("reward", 2, 4)
+  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
+  .do((c, e) => {
+    const reward = c.getVariable("reward");
+    const currentCost = e.cost.filter((dice) => dice !== DiceType.Energy).length;
+    const deduced = Math.min(reward, currentCost);
+    e.deductCost(DiceType.Omni, deduced);
+    c.addVariable("reward", -deduced);
+  })
   .done();
 
 /**
@@ -799,5 +820,22 @@ export const GoldenTroupe = card(312026)
 export const FlowerOfParadiseLost = card(312028)
   .costSame(2)
   .artifact()
-  // TODO
+  .variable("crystal", 0)
+  .variable("generatedCount", 0, { visible: false })
+  .on("roundBegin")
+  .setVariable("generatedCount", 0)
+  .on("damaged", (c, e) =>
+    c.self.master().isActive() && 
+    !c.of(e.target).isMine() && 
+    (e.type === DamageType.Dendro || e.isReactionRelatedTo(DamageType.Dendro)))
+  .listenToAll()
+  .do((c) => {
+    c.addVariable("crystal", 2);
+    const crystal = c.getVariable("crystal");
+    const hands = c.player.hands.length;
+    if (crystal >= hands && c.getVariable("generatedCount") < 2) {
+      c.generateDice(DiceType.Omni, 1);
+      c.addVariable("generatedCount", 1);
+    }
+  })
   .done();

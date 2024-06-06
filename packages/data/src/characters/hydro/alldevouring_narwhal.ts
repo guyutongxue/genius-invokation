@@ -113,10 +113,10 @@ export const DevourersInstinct = status(122044)
  */
 export const DeepDevourersDomain = combatStatus(122041)
   .variable("cardCount", 0)
-  .variable("totalMaxCost", 0)
-  .variable("totalMaxCostCount", 0)
-  .variable("card0Cost", 0)
-  .variable("card1Cost", 0)
+  .variable("totalMaxCost", 0, { visible: false })
+  .variable("totalMaxCostCount", 0, { visible: false })
+  .variable("card0Cost", 0, { visible: false })
+  .variable("card1Cost", 0, { visible: false })
   .on("disposeOrTuneCard")
   .do((c, e) => {
     const cost = e.diceCost();

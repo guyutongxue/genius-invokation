@@ -160,6 +160,20 @@ export const BeaconOfTheReedSea = card(311306)
   .done();
 
 /**
+ * @id 301109
+ * @name 森林王器（生效中）
+ * @description
+ * 角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。
+ */
+export const ForestRegaliaInEffect = status(301109)
+  .oneDuration()
+  .once("useSkill", (c, e) => e.isSkillType("normal"))
+  .do((c) => {
+    c.generateDice(c.self.master().element(), 2);
+  })
+  .done();
+
+/**
  * @id 311307
  * @name 森林王器
  * @description
@@ -170,5 +184,8 @@ export const BeaconOfTheReedSea = card(311306)
 export const ForestRegalia = card(311307)
   .costVoid(3)
   .weapon("claymore")
-  // TODO
+  .on("modifySkillDamage")
+  .increaseDamage(1)
+  .on("enter")
+  .characterStatus(ForestRegaliaInEffect, "@master")
   .done();

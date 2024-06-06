@@ -200,5 +200,19 @@ export const LumenstoneAdjuvant = card(323007)
  */
 export const Kusava = card(323008)
   .support("item")
-  // TODO
+  .variable("memory", 0)
+  .variable("cardPlayed", 0)
+  .on("roundBegin")
+  .do((c) => {
+    const cards = c.getMaxCostHands().slice(0, 2);
+    const count = cards.length;
+    c.disposeCard(...cards);
+    c.addVariableWithMax("memory", count, 2);
+    c.setVariable("cardPlayed", 0)
+  })
+  .on("playCard")
+  .setVariable("cardPlayed", 1)
+  .on("deductDiceSkill", (c, e) => !c.getVariable("cardPlayed") && c.getVariable("memory") > 0)
+  .deductCost(DiceType.Omni, 1)
+  .addVariable("memory", -1)
   .done();

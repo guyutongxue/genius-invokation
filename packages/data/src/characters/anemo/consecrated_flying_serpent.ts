@@ -94,9 +94,7 @@ export const ScattershotVortex = skill(25033)
       overrideVariables: { stack }
     });
     c.damage(DamageType.Anemo, 2);
-    for (const card of cards) {
-      c.disposeCard(card);
-    }
+    c.disposeCard(...cards);
   })
   .done();
 

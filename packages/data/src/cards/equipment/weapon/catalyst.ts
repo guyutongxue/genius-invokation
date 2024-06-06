@@ -177,6 +177,20 @@ export const TomeOfTheEternalFlow = card(311108)
   .done();
 
 /**
+ * @id 301111
+ * @name 金流监督（生效中）
+ * @description
+ * 本回合中，角色下一次「普通攻击」少花费1个无色元素，且造成的伤害+1。
+ */
+export const CashflowSupervisionInEffect = status(301111)
+  .oneDuration()
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
+  .deductCost(DiceType.Void, 1)
+  .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
+  .done();
+
+/**
  * @id 311109
  * @name 金流监督
  * @description
@@ -186,5 +200,7 @@ export const TomeOfTheEternalFlow = card(311108)
 export const CashflowSupervision = card(311109)
   .costSame(2)
   .weapon("catalyst")
-  // TODO
+  .on("damagedOrHealed")
+  .usagePerRound(2)
+  .characterStatus(CashflowSupervisionInEffect, "@master")
   .done();

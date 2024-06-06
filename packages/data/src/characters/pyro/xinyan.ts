@@ -23,7 +23,9 @@ import { character, skill, combatStatus, card, DamageType } from "@gi-tcg/core/b
  * 可用次数：2
  */
 export const FestiveFires = combatStatus(113123)
-  // TODO
+  .on("declareEnd", (c) => c.player.hands.length <= 1)
+  .usage(2)
+  .damage(DamageType.Pyro, 1)
   .done();
 
 /**
@@ -33,7 +35,7 @@ export const FestiveFires = combatStatus(113123)
  * 为我方出战角色提供2点护盾。
  */
 export const ShieldOfPassion = combatStatus(113121)
-  // TODO
+  .shield(2)
   .done();
 
 /**
@@ -46,7 +48,7 @@ export const DanceOnFire = skill(13121)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -58,7 +60,12 @@ export const DanceOnFire = skill(13121)
 export const SweepingFervor = skill(13122)
   .type("elemental")
   .costPyro(3)
-  // TODO
+  .damage(DamageType.Pyro, 2)
+  .do((c) => {
+    const cards = c.getMaxCostHands();
+    c.disposeCard(c.random(...cards));
+  })
+  .combatStatus(ShieldOfPassion)
   .done();
 
 /**
@@ -71,7 +78,12 @@ export const RiffRevolution = skill(13123)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Piercing, 2, "opp standby")
+  .damage(DamageType.Physical, 3)
+  .do((c) => {
+    c.disposeCard(...c.player.hands);
+  })
+  .combatStatus(FestiveFires)
   .done();
 
 /**
@@ -100,5 +112,8 @@ export const RockinInAFlamingWorld = card(213121)
   .costPyro(1)
   .costVoid(2)
   .talent(Xinyan)
-  // TODO
+  .on("enter")
+  .useSkill(DanceOnFire)
+  .on("modifySkillDamage", (c) => c.player.hands.length <= 1)
+  .increaseDamage(2)
   .done();
