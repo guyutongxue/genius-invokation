@@ -27,7 +27,7 @@ const AbsorbedCountExtension = extension(2602, { absorbed: pair(new Set<DiceType
  */
 export const StoneFacetsElementalAbsorption = status(126021)
   .associateExtension(AbsorbedCountExtension)
-  .on("replaceCharacterDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
+  .on("transformDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
   .do((c) => {
     let diceType = DiceType.Geo;
     switch (c.self.master().definition.id) {
@@ -59,7 +59,7 @@ export const StoneFacetsElementalCrystallization = status(126022)
       default: return;
     }
     if (c.self.master().definition.id !== targetDef) {
-      c.replaceDefinition("@master", targetDef);
+      c.transformDefinition("@master", targetDef);
       c.dispose();
     }
   })
@@ -79,10 +79,10 @@ export const StoneFacetsElementalSummoning = status(126023)
   .on("endPhase")
   .do((c) => {
     switch (c.self.master().definition.id) {
-      default: c.replaceDefinition("@master", AzhdahaHydro); break;
-      case AzhdahaHydro: c.replaceDefinition("@master", AzhdahaCryo); break;
-      case AzhdahaCryo: c.replaceDefinition("@master", AzhdahaPyro); break;
-      case AzhdahaPyro: c.replaceDefinition("@master", AzhdahaElectro); break;
+      default: c.transformDefinition("@master", AzhdahaHydro); break;
+      case AzhdahaHydro: c.transformDefinition("@master", AzhdahaCryo); break;
+      case AzhdahaCryo: c.transformDefinition("@master", AzhdahaPyro); break;
+      case AzhdahaPyro: c.transformDefinition("@master", AzhdahaElectro); break;
     }
   })
   .done();
@@ -114,10 +114,10 @@ export const AuraOfMajesty = skill(26022)
     const targetAura = c.$("opp active")!.aura;
     c.damage(DamageType.Geo, 3);
     switch (targetAura) {
-      case Aura.Cryo: c.replaceDefinition("@master", AzhdahaCryo); break;
-      case Aura.Hydro: c.replaceDefinition("@master", AzhdahaHydro); break;
-      case Aura.Pyro: c.replaceDefinition("@master", AzhdahaPyro); break;
-      case Aura.Electro: c.replaceDefinition("@master", AzhdahaElectro); break;
+      case Aura.Cryo: c.transformDefinition("@master", AzhdahaCryo); break;
+      case Aura.Hydro: c.transformDefinition("@master", AzhdahaHydro); break;
+      case Aura.Pyro: c.transformDefinition("@master", AzhdahaPyro); break;
+      case Aura.Electro: c.transformDefinition("@master", AzhdahaElectro); break;
       default: c.characterStatus(StoneFacetsElementalCrystallization); break;
     }
   })

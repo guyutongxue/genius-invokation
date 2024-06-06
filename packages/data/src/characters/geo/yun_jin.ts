@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 116071
@@ -22,67 +22,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * 准备技能期间：提供2点护盾，保护所附属的角色。
  */
 export const ShieldOfSwirlingClouds = status(116071)
-  // TODO
-  .done();
-
-/**
- * @id 116072
- * @name 长枪开相
- * @description
- * 本角色将在下次行动时，直接使用技能：长枪开相。
- */
-export const SpearFlourishStatus = status(116072)
-  // TODO
-  .done();
-
-/**
- * @id 116073
- * @name 飞云旗阵
- * @description
- * 我方角色进行普通攻击时：造成的伤害+1。
- * 如果我方手牌数量不多于1，则此技能少花费1个元素骰。
- * 可用次数：1（可叠加，最多叠加到4次）
- */
-export const FlyingCloudFlagFormation = combatStatus(116073)
-  // TODO
-  .done();
-
-/**
- * @id 16071
- * @name 拂云出手
- * @description
- * 造成2点物理伤害。
- */
-export const CloudgrazingStrike = skill(16071)
-  .type("normal")
-  .costGeo(1)
-  .costVoid(2)
-  // TODO
-  .done();
-
-/**
- * @id 16072
- * @name 旋云开相
- * @description
- * 生成飞云旗阵，本角色附属旋云护盾并准备技能：长枪开相。
- */
-export const OpeningFlourish = skill(16072)
-  .type("elemental")
-  .costGeo(3)
-  // TODO
-  .done();
-
-/**
- * @id 16073
- * @name 破嶂见旌仪
- * @description
- * 造成2点岩元素伤害，生成3层飞云旗阵。
- */
-export const CliffbreakersBanner = skill(16073)
-  .type("burst")
-  .costGeo(3)
-  .costEnergy(2)
-  // TODO
+  .shield(2)
   .done();
 
 /**
@@ -97,6 +37,85 @@ export const SpearFlourish = skill(16074)
   .damage(DamageType.Geo, 3)
   .else()
   .damage(DamageType.Geo, 2)
+  .done();
+
+/**
+ * @id 116072
+ * @name 长枪开相
+ * @description
+ * 本角色将在下次行动时，直接使用技能：长枪开相。
+ */
+export const SpearFlourishStatus = status(116072)
+  .prepare(SpearFlourish)
+  .on("selfDispose")
+  .do((c) => {
+    c.$(`status with definition id ${ShieldOfSwirlingClouds} at @self`)?.dispose();
+  })
+  .done();
+
+/**
+ * @id 116073
+ * @name 飞云旗阵
+ * @description
+ * 我方角色进行普通攻击时：造成的伤害+1。
+ * 如果我方手牌数量不多于1，则此技能少花费1个元素骰。
+ * 可用次数：1（可叠加，最多叠加到4次）
+ */
+export const FlyingCloudFlagFormation = combatStatus(116073)
+  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.hands.length <= 1)
+  .deductCost(DiceType.Omni, 1)
+  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .usageCanAppend(1, 4)
+  .do((c, e) => {
+    if (c.$(`my equipment with definition id ${DecorousHarmony}`) && c.player.hands.length === 0) {
+      e.increaseDamage(3);
+    } else {
+      e.increaseDamage(1);
+    }
+  })
+  .done();
+
+/**
+ * @id 16071
+ * @name 拂云出手
+ * @description
+ * 造成2点物理伤害。
+ */
+export const CloudgrazingStrike = skill(16071)
+  .type("normal")
+  .costGeo(1)
+  .costVoid(2)
+  .damage(DamageType.Physical, 2)
+  .done();
+
+/**
+ * @id 16072
+ * @name 旋云开相
+ * @description
+ * 生成飞云旗阵，本角色附属旋云护盾并准备技能：长枪开相。
+ */
+export const OpeningFlourish = skill(16072)
+  .type("elemental")
+  .costGeo(3)
+  .combatStatus(FlyingCloudFlagFormation)
+  .characterStatus(SpearFlourishStatus)
+  .characterStatus(ShieldOfSwirlingClouds)
+  .done();
+
+/**
+ * @id 16073
+ * @name 破嶂见旌仪
+ * @description
+ * 造成2点岩元素伤害，生成3层飞云旗阵。
+ */
+export const CliffbreakersBanner = skill(16073)
+  .type("burst")
+  .costGeo(3)
+  .costEnergy(2)
+  .damage(DamageType.Geo, 2)
+  .combatStatus(FlyingCloudFlagFormation, "my", {
+    overrideVariables: { usage: 3 }
+  })
   .done();
 
 /**
@@ -140,5 +159,6 @@ export const DecorousHarmony = card(216071)
   .costGeo(3)
   .costEnergy(2)
   .talent(YunJin)
-  // TODO
+  .on("enter")
+  .useSkill(CliffbreakersBanner)
   .done();

@@ -26,7 +26,7 @@ import {
   stringifyState,
 } from "./state";
 import { removeEntity, getEntityById, sortDice } from "../utils";
-import { EntityArea, stringifyEntityArea } from "./entity";
+import { EntityArea, EntityDefinition, stringifyEntityArea } from "./entity";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
 import { nextRandom } from "../random";
@@ -114,10 +114,10 @@ export interface ModifyEntityVarM {
   readonly value: number;
 }
 
-export interface ReplaceCharacterDefinitionM {
-  readonly type: "replaceCharacterDefinition";
-  state: CharacterState;
-  readonly newDefinition: CharacterDefinition;
+export interface TransformDefinitionM {
+  readonly type: "transformDefinition";
+  state: CharacterState | EntityState;
+  readonly newDefinition: CharacterDefinition | EntityDefinition;
 }
 
 export interface ResetDiceM {
@@ -172,7 +172,7 @@ export type Mutation =
   | CreateEntityM
   | RemoveEntityM
   | ModifyEntityVarM
-  | ReplaceCharacterDefinitionM
+  | TransformDefinitionM
   | ResetDiceM
   | SetPlayerFlagM
   | MutateExtensionStateM
@@ -303,7 +303,12 @@ function doMutation(state: GameState, m: Mutation): GameState {
       m.state = getEntityById(newState, m.state.id, true);
       return newState;
     }
-    case "replaceCharacterDefinition": {
+    case "transformDefinition": {
+      if (m.state.definition.type !== m.newDefinition.type) {
+        throw new GiTcgCoreInternalError(
+          `Cannot transform definition from different types: ${m.state.definition.type} -> ${m.newDefinition.type}`,
+        );
+      }
       const newState = produce(state, (draft) => {
         const character = getEntityById(
           draft,
@@ -401,10 +406,10 @@ export function stringifyMutation(m: Mutation): string | null {
         m.value
       }`;
     }
-    case "replaceCharacterDefinition": {
-      return `Replace character definition of ${stringifyState(
+    case "transformDefinition": {
+      return `Transform definition of ${stringifyState(
         m.state,
-      )} to [character:${m.newDefinition.id}]`;
+      )} to [${m.newDefinition.type}:${m.newDefinition.id}]`;
     }
     case "resetDice": {
       return `Reset dice of player ${m.who} to ${JSON.stringify(m.value)}`;

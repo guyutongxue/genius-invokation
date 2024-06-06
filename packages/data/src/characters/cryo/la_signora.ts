@@ -152,7 +152,7 @@ export const MightOfDelusion = skill(21024)
 export const InfernosAwakening = skill(21025) // 定义为：当移除冰封的炽炎魔女时，转换角色形态
   .type("passive")
   .on("dispose", (c, e) => e.entity.definition.id === IcesealedCrimsonWitchOfEmbers)
-  .replaceDefinition("@master", CrimsonWitchOfEmbers)
+  .transformDefinition("@master", CrimsonWitchOfEmbers)
   .done();
 
 /**

@@ -16,6 +16,17 @@
 import { character, skill, summon, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
 
 /**
+ * @id 112113
+ * @name 圣俗杂座
+ * @description
+ * 在「始基力：荒性」和「始基力：芒性」之中，切换芙宁娜的形态。
+ * 如果我方场上存在沙龙成员或众水的歌者，也切换其形态。
+ */
+export const SeatsSacredAndSecular = card(112113)
+  // TODO
+  .done();
+
+/**
  * @id 112111
  * @name 沙龙成员
  * @description
@@ -81,7 +92,7 @@ export const SoloistsSolicitation = skill(12111)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -118,7 +129,8 @@ export const LetThePeopleRejoice = skill(12113)
  */
 export const Skill12114 = skill(12114)
   .type("passive")
-  // TODO
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .createHandCard(SeatsSacredAndSecular)
   .done();
 
 /**
@@ -129,7 +141,8 @@ export const Skill12114 = skill(12114)
  */
 export const ArkheSeatsSacredAndSecular = skill(12115)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .createHandCard(SeatsSacredAndSecular)
   .done();
 
 /**

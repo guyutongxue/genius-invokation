@@ -52,6 +52,10 @@ export const DarkShadow = summon(122043)
   .consumeUsage(2)
   .done();
 
+// 目前实现：
+// 每吞噬三张卡牌，向吞星之鲸附着1次/2次/3次奇异之躯
+// 奇异之躯每次入场时，增加1点最大生命值，治疗角色1点。
+
 /**
  * @id 122042
  * @name 奇异之躯
@@ -62,12 +66,14 @@ export const AnomalousAnatomy = status(122042)
   .variableCanAppend("extraMaxHealth", 1, Infinity)
   .on("enter")
   .do((c) => {
+    const master = c.self.master().state;
     c.mutate({
       type: "modifyEntityVar",
-      state: c.self.master().state,
+      state: master,
       varName: "maxHealth",
-      value: 5 + c.getVariable("extraMaxHealth"),
+      value: master.variables.maxHealth + 1,
     });
+    c.heal(1, master);
   })
   .on("dispose")
   .do((c) => {
@@ -132,9 +138,9 @@ export const DeepDevourersDomain = combatStatus(122041)
         const extraMaxHealth = 4 - distinctCostCount;
         const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
         if (narwhal) {
-          narwhal.addStatus(AnomalousAnatomy, {
-            overrideVariables: { extraMaxHealth }
-          });
+          for (let i = 0; i < extraMaxHealth; i++) {
+            narwhal.addStatus(AnomalousAnatomy);
+          }
         }
         c.setVariable("cardCount", 0);
         break;

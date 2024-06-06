@@ -133,9 +133,9 @@ export function exposeMutation(
         value: m.value,
       };
     }
-    case "replaceCharacterDefinition": {
+    case "transformDefinition": {
       return {
-        type: "replaceCharacterDefinition",
+        type: "transformDefinition",
         id: m.state.id,
         newDefinitionId: m.newDefinition.id,
       };

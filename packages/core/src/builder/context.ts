@@ -996,35 +996,35 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
 
-  replaceDefinition(target: CharacterTargetArg, newCh: CharacterHandle) {
-    const characters = this.queryCoerceToCharacters(target);
-    if (characters.length !== 1) {
-      throw new GiTcgDataError(
-        `Replace definition must apply on exact one character`,
-      );
+  transformDefinition(target: string | EntityState | CharacterState, newCh: CharacterHandle) {
+    if (typeof target === "string") {
+      const entity = this.$(target);
+      if (entity) {
+        target = entity.state;
+      } else {
+        throw new GiTcgDataError(`Query ${target} doesn't find 1 character or entity`);
+      }
     }
-    const ch = characters[0];
-    const oldDef = ch.state.definition;
-    const def = this.state.data.characters.get(newCh);
+    const oldDef = target.definition;
+    const def = this.state.data[oldDef.__definition].get(newCh);
     if (typeof def === "undefined") {
-      throw new GiTcgDataError(`Unknown character definition id ${newCh}`);
+      throw new GiTcgDataError(`Unknown definition id ${newCh}`);
     }
     using l = this.subLog(
       DetailLogType.Primitive,
-      `Replace ${stringifyState(ch.state)}'s definition to [character:${
+      `Transform ${stringifyState(target)}'s definition to [${def.type}:${
         def.id
       }]`,
     );
     this.mutate({
-      type: "replaceCharacterDefinition",
-      state: characters[0].state,
+      type: "transformDefinition",
+      state: target,
       newDefinition: def,
     });
     this.emitEvent(
-      "onReplaceCharacterDefinition",
+      "onTransformDefinition",
       this.state,
-      ch.state,
-      oldDef,
+      target,
       def,
     );
   }

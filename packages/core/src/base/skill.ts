@@ -31,7 +31,7 @@ import {
 } from "../base/reaction";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
-import { UsagePerRoundVariableNames } from "./entity";
+import { EntityDefinition, UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
 import { diceCostOfCard, getEntityArea } from "../utils";
@@ -731,14 +731,18 @@ export class ZeroHealthEventArg extends ModifyDamage1EventArg<DamageInfo> {
   }
 }
 
-export class ReplaceCharacterDefinitionEventArg extends CharacterEventArg {
+export class TransformDefinitionEventArg extends EventArg {
+  public readonly who: 0 | 1;
+  public readonly oldDefinition: CharacterDefinition | EntityDefinition;
   constructor(
     state: GameState,
-    character: CharacterState,
-    public readonly oldDefinition: CharacterDefinition,
-    public readonly newDefinition: CharacterDefinition,
+    public readonly entity: CharacterState | EntityState,
+    public readonly newDefinition: CharacterDefinition | EntityDefinition,
   ) {
-    super(state, character);
+    super(state);
+    const area = getEntityArea(state, entity.id);
+    this.who = area.who;
+    this.oldDefinition = entity.definition;
   }
 }
 
@@ -797,6 +801,7 @@ export const EVENT_MAP = {
   onDrawCard: DrawCardEventArg,
   onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
   onReaction: ReactionEventArg,
+  onTransformDefinition: TransformDefinitionEventArg,
 
   modifyDamage0: ModifyDamage0EventArg,
   modifyDamage1: ModifyDamage1EventArg,
@@ -807,7 +812,6 @@ export const EVENT_MAP = {
 
   modifyZeroHealth: ZeroHealthEventArg,
   onRevive: CharacterEventArg,
-  onReplaceCharacterDefinition: ReplaceCharacterDefinitionEventArg,
 } satisfies Record<string, new (...args: any[]) => EventArg>;
 
 export type EventMap = typeof EVENT_MAP;

@@ -96,8 +96,8 @@ interface ModifyEntityVarEM {
   readonly value: number;
 }
 
-interface ReplaceCharacterDefinitionEM {
-  readonly type: "replaceCharacterDefinition";
+interface TransformDefinitionEM {
+  readonly type: "transformDefinition";
   readonly id: number;
   readonly newDefinitionId: number;
 }
@@ -159,7 +159,7 @@ export type ExposedMutation =
   | CreateEntityEM
   | RemoveEntityEM
   | ModifyEntityVarEM
-  | ReplaceCharacterDefinitionEM
+  | TransformDefinitionEM
   | ResetDiceEM
   | SetPlayerFlagEM
   | DamageEM

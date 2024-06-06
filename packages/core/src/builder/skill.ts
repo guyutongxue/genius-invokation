@@ -270,7 +270,10 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who: e.who }, r);
   }),
   disposeCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
-    return e.method !== "elementalTuning" && checkRelative(c.state, { who: e.who }, r);
+    return (
+      e.method !== "elementalTuning" &&
+      checkRelative(c.state, { who: e.who }, r)
+    );
   }),
   disposeOrTuneCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r);
@@ -315,12 +318,9 @@ const detailedEventDictionary = {
   revive: defineDescriptor("onRevive", (c, e, r) => {
     return checkRelative(c.state, e.character.id, r);
   }),
-  replaceCharacterDefinition: defineDescriptor(
-    "onReplaceCharacterDefinition",
-    (c, e, r) => {
-      return checkRelative(c.state, e.character.id, r);
-    },
-  ),
+  transformDefinition: defineDescriptor("onTransformDefinition", (c, e, r) => {
+    return checkRelative(c.state, e.entity.id, r);
+  }),
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideEventArgType = {

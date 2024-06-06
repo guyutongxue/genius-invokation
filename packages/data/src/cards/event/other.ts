@@ -969,18 +969,6 @@ export const UnderwaterTreasureHunt = card(332031)
   .done();
 
 /**
- * @id 112113
- * @name 圣俗杂座
- * @description
- * 在「始基力：荒性」和「始基力：芒性」之中，切换芙宁娜的形态。
- * 如果我方场上存在沙龙成员或众水的歌者，也切换其形态。
- */
-export const SeatsSacredAndSecular = card(112113)
-  // TODO
-  .done();
-
-
-/**
  * @id 124053
  * @name 噬骸能量块
  * @description
