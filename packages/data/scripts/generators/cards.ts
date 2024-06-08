@@ -19,7 +19,7 @@ import { getCostCode, isLegend } from "./cost";
 import { SourceInfo, writeSourceCode } from "./source";
 import { ActionCardRawData, actionCards } from "@gi-tcg/static-data";
 
-export function getCardTypeAndTags(card: any) {
+export function getCardTypeAndTags(card: ActionCardRawData) {
   const TAG_MAP: Record<string, string> = {
     // GCG_TAG_TALENT: "talent", // use talent
     GCG_TAG_SLOWLY: "action",
@@ -42,7 +42,7 @@ export function getCardTypeAndTags(card: any) {
     GCG_CARD_EVENT: "event",
     GCG_CARD_MODIFY: "equipment",
   };
-  const type = TYPE_MAP[card.cardtype];
+  const type = TYPE_MAP[card.type];
   return { type, tags };
 }
 
@@ -96,6 +96,10 @@ export async function generateCards() {
   let others: SourceInfo[] = [];
 
   for (const card of actionCards) {
+    if (card.id < 100) {
+      // 莫名其妙的元素附魔系列？
+      continue;
+    }
     if (card.tags.includes("GCG_TAG_TALENT")) {
       continue;
     }
@@ -122,7 +126,7 @@ export async function generateCards() {
     target.push({
       id: card.id,
       name: card.name,
-      description: card.description,
+      description: card.playingDescription ?? card.description,
       code: getCardCode(card),
     });
   }

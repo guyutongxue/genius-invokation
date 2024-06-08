@@ -17,7 +17,7 @@ import path from "node:path";
 
 export const BASE_PATH = path.resolve(
   import.meta.dirname,
-  "../../temp/src",
+  "../../src",
 ).replace(/\\/g, "/");
 
 export const LICENSE = `// Copyright (C) 2024 Guyutongxue

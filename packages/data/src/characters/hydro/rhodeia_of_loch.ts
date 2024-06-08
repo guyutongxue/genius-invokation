@@ -59,6 +59,30 @@ export const OceanicMimicSquirrel = summon(122011)
   .done();
 
 /**
+ * @id 122010
+ * @name 纯水幻形
+ * @description
+ * 「纯水幻形」共有3种，最多同时存在2种：
+ * 花鼠：结束阶段造成2点水元素伤害，可用2次。
+ * 飞鸢：结束阶段造成1点水元素伤害，可用3次。
+ * 蛙：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点水元素伤害。
+ */
+export const OceanidMimic00 = summon(122010)
+  .reserve();
+
+/**
+ * @id 122014
+ * @name 纯水幻形
+ * @description
+ * 「纯水幻形」共有3种，最多同时存在2种：
+ * 花鼠：结束阶段造成2点水元素伤害，可用2次。
+ * 飞鸢：结束阶段造成1点水元素伤害，可用3次。
+ * 蛙：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点水元素伤害。
+ */
+export const OceanidMimic04 = summon(122014)
+  .reserve();
+
+/**
  * @id 22011
  * @name 翻涌
  * @description

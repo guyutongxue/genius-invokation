@@ -166,7 +166,7 @@ function replaceBetween(
 }
 
 function descriptionToLines(description: string): string[] {
-  return description.split("\n").map((l) => l.replace(/\{/g, "").trim()).filter((l) => !!l);
+  return description.split("\n").map((l) => l.replace(/\{|\}/g, "").trim()).filter((l) => !!l);
 }
 
 function writeDescriptionAsComment(description: string) {

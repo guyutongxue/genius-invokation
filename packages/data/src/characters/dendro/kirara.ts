@@ -19,8 +19,7 @@ import { character, skill, combatStatus, card, DamageType, DiceType, SkillHandle
  * @id 117073
  * @name 猫草豆蔻
  * @description
- * 所在阵营打出2张行动牌后：对所在阵营的出战角色造成1点草元素伤害。
- * 可用次数：2
+ * 所在阵营打出2张行动牌后：对所在阵营的出战角色造成1点草元素伤害。（当前已打出$[GCG_TOKEN_COUNTER]张）
  */
 export const CatGrassCardamom = combatStatus(117073)
   .variable("playedCard", 0, { visible: false })

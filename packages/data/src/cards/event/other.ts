@@ -1097,3 +1097,25 @@ export const TheShowBegins = card(332035)
     c.drawCards(4);
   })
   .done();
+
+/**
+ * @id 112113
+ * @name 圣俗杂座
+ * @description
+ * 在「始基力：荒性」和「始基力：芒性」之中，切换芙宁娜的形态。
+ * 如果我方场上存在沙龙成员或众水的歌者，也切换其形态。
+ */
+export const SeatsSacredAndSecular = card(112113)
+  // TODO
+  .done();
+
+/**
+ * @id 127021
+ * @name 唤醒眷属
+ * @description
+ * 打出此牌或舍弃此牌时：召唤一个独立的增殖生命体。
+ */
+export const AwakenMyKindred = card(127021)
+  .costDendro(2)
+  // TODO
+  .done();

@@ -1,15 +1,15 @@
 // Copyright (C) 2024 theBowja, Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -34,6 +34,8 @@ export interface EntityRawData {
   tags: string[];
   rawDescription: string;
   description: string;
+  rawPlayingDescription?: string;
+  playingDescription?: string;
 
   hidden: boolean;
   buffType?: string;
@@ -88,10 +90,20 @@ export function collateEntities(langCode: string) {
 
     const tags = obj.tagList.filter((e: any) => e !== "GCG_TAG_NONE");
 
-    const rawDescription =
-      locale[obj.descOnTableTextMapHash] ?? locale[obj.descTextMapHash] ?? "";
+    const rawDescription = locale[obj.descTextMapHash] ?? "";
     const descriptionReplaced = getDescriptionReplaced(rawDescription, locale);
     const description = sanitizeDescription(descriptionReplaced, true);
+
+    const rawPlayingDescription: string | undefined =
+      locale[obj.descOnTableTextMapHash];
+    let playingDescription: string | undefined = void 0;
+    if (rawPlayingDescription) {
+      const playingDescriptionReplaced = getDescriptionReplaced(
+        rawPlayingDescription,
+        locale,
+      );
+      playingDescription = sanitizeDescription(playingDescriptionReplaced);
+    }
 
     const buffType = obj.stateBuffType;
     const hintType = obj.hintType;
@@ -112,6 +124,8 @@ export function collateEntities(langCode: string) {
       tags,
       rawDescription,
       description,
+      rawPlayingDescription,
+      playingDescription,
       buffType,
       hintType,
       shownToken,

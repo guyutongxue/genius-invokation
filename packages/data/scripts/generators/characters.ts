@@ -40,6 +40,9 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
   const myStatuses: (EntityRawData & { kind: string })[] = [];
   const myCombatStatuses: (EntityRawData & { kind: string })[] = [];
   for (const obj of candidates) {
+    if (obj.hidden) {
+      continue;
+    }
     switch (obj.type) {
       case "GCG_CARD_SUMMON":
         mySummons.push({ ...obj, kind: "summon" });
@@ -60,7 +63,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
     return {
       id: obj.id,
       name: obj.name,
-      description: obj.description,
+      description: obj.playingDescription ?? obj.description,
       code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${obj.id})
   // TODO
   .done();`,
@@ -88,7 +91,7 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
     {
       id: card.id,
       name: card.name,
-      description: card.description,
+      description: card.playingDescription ?? card.description,
       code: getCardCode(
         card,
         `\n  .${methodName}(${pascalCase(name)})`,

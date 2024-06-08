@@ -119,3 +119,11 @@ export const FatalFulmination = card(224051)
   .drawCards(1)
   .createPileCards(BonecrunchersEnergyBlock, 1, "random")
   .done();
+
+/**
+ * @id 124053
+ * @name 噬骸能量块
+ * @description
+ * 本回合无法再打出噬骸能量块。
+ */
+const _ = void 0; // moved to cards

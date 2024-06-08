@@ -15,11 +15,12 @@
 
 import { character, skill, summon, status, combatStatus, card, DamageType, diceCostOfCard } from "@gi-tcg/core/builder";
 
+// 入场时：获得我方已吞噬卡牌中最高元素骰费用值的「攻击力」，获得该费用的已吞噬卡牌数量的可用次数。
+
 /**
  * @id 122043
  * @name 黑色幻影
  * @description
- * 入场时：获得我方已吞噬卡牌中最高元素骰费用值的「攻击力」，获得该费用的已吞噬卡牌数量的可用次数。
  * 结束阶段和我方宣布结束时：造成此牌「攻击力」值的雷元素伤害。
  * 我方出战角色受到伤害时：抵消1点伤害，然后此牌可用次数-2。
  */
