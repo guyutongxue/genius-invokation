@@ -85,6 +85,7 @@ import {
   NotifyOption,
   StateMutator,
 } from "./mutator";
+import { ActionInfoWithModification, ActionPreviewer } from "./preview";
 
 type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
@@ -98,10 +99,6 @@ export interface PlayerConfig {
 const INITIAL_ID = -500000;
 
 const IO_CHECK_GIVEUP_INTERVAL = 500;
-
-type ActionInfoWithModification = ActionInfo & {
-  eventArg: ModifyActionEventArg<ActionInfo>;
-};
 
 /** 获取玩家初始状态，主要是初始化“起始牌堆” */
 function initPlayerState(
@@ -633,7 +630,7 @@ export class Game extends StateMutator {
         "onBeforeAction",
         new PlayerEventArg(this.state, who),
       );
-      const actions = await this.availableAction();
+      const actions = await this.availableActions();
       this.notifyOne(flip(who), {
         type: "oppAction",
       });
@@ -875,7 +872,7 @@ export class Game extends StateMutator {
     });
   }
 
-  async availableAction(): Promise<ActionInfoWithModification[]> {
+  async availableActions(): Promise<ActionInfoWithModification[]> {
     const who = this.state.currentTurn;
     const player = this.state.players[who];
     const activeCh = player.characters[getActiveCharacterIndex(player)];
@@ -901,19 +898,7 @@ export class Game extends StateMutator {
           fast: false,
           cost: [...skill.requiredCost],
         };
-        const preview0 = await SkillExecutor.previewSkill(
-          this.state,
-          skillInfo,
-        );
-        const preview1 = await SkillExecutor.previewEvent(
-          preview0,
-          "onAction",
-          new ActionEventArg(preview0, actionInfo),
-        );
-        result.push({
-          ...actionInfo,
-          preview: this.checkPreviewState(preview1),
-        });
+        result.push(actionInfo);
       }
     }
 
@@ -947,20 +932,7 @@ export class Game extends StateMutator {
             cost: [...card.definition.onPlay.requiredCost],
             fast: !card.definition.tags.includes("action"),
           };
-          const preview0 = await SkillExecutor.previewSkill(
-            this.state,
-            skillInfo,
-            arg,
-          );
-          const preview1 = await SkillExecutor.previewEvent(
-            preview0,
-            "onAction",
-            new ActionEventArg(preview0, actionInfo),
-          );
-          result.push({
-            ...actionInfo,
-            preview: this.checkPreviewState(preview1),
-          });
+          result.push(actionInfo);
         }
       }
     }
@@ -1008,35 +980,9 @@ export class Game extends StateMutator {
       fast: false,
       cost: [],
     });
-    // Apply beforeUseDice, calculate new state for each action
-    const resultAfterModification: ActionInfoWithModification[] = [];
-    for (const actionInfo of result) {
-      // eventArg1 为预计算，只应用 ActionInfo 的副作用
-      // eventArg2 行动后使用，然后传入 handleEvent 使其真正发生
-      const eventArg1 = new ModifyActionEventArg(this.state, actionInfo);
-      const eventArg2 = new ModifyActionEventArg(this.state, actionInfo);
-      await SkillExecutor.previewEvent(this.state, "modifyAction", eventArg1);
-      resultAfterModification.push({
-        ...eventArg1.action,
-        eventArg: eventArg2,
-      });
-    }
-    return resultAfterModification;
-  }
-
-  /** 检查预览的游戏对局是否存在泄露牌堆信息的情况 */
-  private checkPreviewState(previewState: GameState): GameState | undefined {
-    for (const who of [0, 1] as const) {
-      const previewPlayer = previewState.players[who];
-      const currentPlayer = this.state.players[who];
-      const currentPileCards = currentPlayer.piles.map((c) => c.id);
-      if (
-        previewPlayer.hands.some((card) => currentPileCards.includes(card.id))
-      ) {
-        return;
-      }
-    }
-    return previewState;
+    // Add preview and apply modifyAction
+    const previewer = new ActionPreviewer(this.state, who);
+    return await Promise.all(result.map((a) => previewer.modifyAndPreview(a)));
   }
 
   /** @internal */

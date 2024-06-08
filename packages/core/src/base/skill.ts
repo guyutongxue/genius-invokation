@@ -120,7 +120,6 @@ export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
   readonly skill: SkillInfo;
-  readonly preview?: GameState;
 }
 
 export interface PlayCardInfo {
@@ -128,7 +127,6 @@ export interface PlayCardInfo {
   readonly who: 0 | 1;
   readonly card: CardState;
   readonly targets: AnyState[];
-  readonly preview?: GameState;
 }
 
 export interface SwitchActiveInfo {
@@ -163,6 +161,7 @@ export type WithActionDetail<T extends ActionInfoBase> = T & {
   readonly cost: readonly DiceType[];
   readonly fast: boolean;
   readonly log?: string;
+  readonly preview?: GameState;
 };
 export type ActionInfo = WithActionDetail<ActionInfoBase>;
 

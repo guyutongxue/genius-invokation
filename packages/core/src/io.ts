@@ -187,7 +187,7 @@ function exposeEntity(state: GameState, e: EntityState): EntityData {
   );
   return {
     id: e.id,
-    definitionId: e.definition.id,
+    definitionId: e.id === 0 ? 0 : e.definition.id,
     variable: e.definition.visibleVarName
       ? e.variables[e.definition.visibleVarName] ?? null
       : null,
@@ -199,6 +199,9 @@ function exposeEntity(state: GameState, e: EntityState): EntityData {
 }
 
 function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
+  if (c.id === 0) {
+    hide = true;
+  }
   const descriptionDictionary = hide
     ? {}
     : Object.fromEntries(

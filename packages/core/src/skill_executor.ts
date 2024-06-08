@@ -66,6 +66,8 @@ class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
 
 export type GeneralSkillArg = EventArg | CardSkillEventArg | void;
 
+export type PreviewResult = readonly [newState: GameState, completed: boolean];
+
 export class SkillExecutor extends StateMutator {
   private constructor(
     state: GameState,
@@ -489,32 +491,34 @@ export class SkillExecutor extends StateMutator {
     state: GameState,
     skill: SkillInfo,
     arg: GeneralSkillArg,
-  ) {
+  ): Promise<PreviewResult> {
     const executor = new SkillExecutor(state);
     try {
       await executor.finalizeSkill(skill, arg);
     } catch (e) {
       if (e instanceof GiTcgIoNotProvideError) {
+        return [executor.state, false];
       } else {
         throw e;
       }
     }
-    return executor.state;
+    return [executor.state, true];
   }
   static async handleEvent(game: IoAndState, ...event: EventAndRequest) {
     return SkillExecutor.handleEvents(game, [event]);
   }
-  static async previewEvent(state: GameState, ...event: EventAndRequest) {
+  static async previewEvent(state: GameState, ...event: EventAndRequest): Promise<PreviewResult> {
     const executor = new SkillExecutor(state);
     try {
       await executor.handleEvent(event);
     } catch (e) {
       if (e instanceof GiTcgIoNotProvideError) {
+        return [executor.state, false];
       } else {
         throw e;
       }
     }
-    return executor.state;
+    return [executor.state, true];
   }
   static async handleEvents(game: IoAndState, events: EventAndRequest[]) {
     const executor = new SkillExecutor(game.state, game);
