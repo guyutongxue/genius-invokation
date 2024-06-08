@@ -13,21 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import data from "@genshin-db/tcg/src/min/data.min.json";
-
-const {
-  data: {
-    English: { tcgcharactercards, tcgactioncards },
-  },
-} = data as any;
+import { characters, actionCards } from "@gi-tcg/static-data";
 
 const map = Object.fromEntries(
-  [...Object.values(tcgactioncards), ...Object.values(tcgcharactercards)].map((card: any) => [
-    card.shareid,
+  [...characters, ...actionCards].map((card) => [
+    card.shareId,
     card.id,
   ]),
 );
 
-const path = new URL("../src/share_id.json", import.meta.url);
-
-Bun.write(path, JSON.stringify(map));
+Bun.write(`${import.meta.dirname}/../src/share_id.json`, JSON.stringify(map));

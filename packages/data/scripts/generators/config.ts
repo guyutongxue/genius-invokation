@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 export const BASE_PATH = path.resolve(
   import.meta.dirname,

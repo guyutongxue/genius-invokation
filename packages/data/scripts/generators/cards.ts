@@ -17,7 +17,7 @@ import { pascalCase } from "case-anything";
 
 import { getCostCode, isLegend } from "./cost";
 import { SourceInfo, writeSourceCode } from "./source";
-import { cards } from "../prescan";
+import { ActionCardRawData, actionCards } from "@gi-tcg/static-data";
 
 export function getCardTypeAndTags(card: any) {
   const TAG_MAP: Record<string, string> = {
@@ -46,7 +46,7 @@ export function getCardTypeAndTags(card: any) {
   return { type, tags };
 }
 
-export function getCardCode(card: any, extra = ""): string {
+export function getCardCode(card: ActionCardRawData, extra = ""): string {
   const { type, tags } = getCardTypeAndTags(card);
   let typeCode = "";
   if (type === "equipment") {
@@ -69,8 +69,8 @@ export function getCardCode(card: any, extra = ""): string {
   }
   const tagCode =
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
-  const cost = getCostCode(card.playcost);
-  return `export const ${pascalCase(card.name)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
+  const cost = getCostCode(card.playCost);
+  return `export const ${pascalCase(card.englishName)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
   // TODO
   .done();`;
 }
@@ -95,19 +95,19 @@ export async function generateCards() {
   let legends: SourceInfo[] = [];
   let others: SourceInfo[] = [];
 
-  for (const card of cards) {
+  for (const card of actionCards) {
     if (card.tags.includes("GCG_TAG_TALENT")) {
       continue;
     }
     const { type, tags } = getCardTypeAndTags(card);
     let target: SourceInfo[];
-    if (isLegend(card.playcost)) {
+    if (isLegend(card.playCost)) {
       target = legends;
     } else if (tags.includes("food")) {
       target = foods;
     } else if (type === "equipment") {
       if (typeof equipsCode[tags[0]] === "undefined") {
-        throw new Error(`${card.id} ${card.zhName} has unsupported equip type`);
+        throw new Error(`${card.id} ${card.name} has unsupported equip type`);
       }
       target = equipsCode[tags[0]];
     } else if (type === "support") {
@@ -121,8 +121,8 @@ export async function generateCards() {
     }
     target.push({
       id: card.id,
-      name: card.zhName,
-      description: card.zhDescription,
+      name: card.name,
+      description: card.description,
       code: getCardCode(card),
     });
   }

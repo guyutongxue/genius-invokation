@@ -1,31 +1,15 @@
-import path from "node:path";
-import allData from "@genshin-db/tcg/src/min/data.min.json";
+import { characters, actionCards, entities } from "@gi-tcg/static-data";
 
-const {
-  data: { ChineseSimplified },
-} = allData as any;
+const skills = characters.flatMap((character) => character.skills);
 
-const keys = [
-  "tcgcharactercards",
-  "tcgactioncards",
-  "tcgstatuseffects",
-  "tcgsummons",
-];
+const result = Object.fromEntries(
+  [...characters, ...skills, ...actionCards, ...entities].map((e) => [
+    e.id,
+    e.name,
+  ]),
+);
 
-const result: Record<string, string> = {};
-
-for (const key of keys) {
-  for (const value of <any>Object.values(ChineseSimplified[key])) {
-    const { id, name } = value;
-    if ("skills" in value) {
-      for (const { id, name } of value.skills) {
-        result[id] = name;
-      }
-    }
-    result[id] = name;
-  }
-}
-
-const RESULT_PATH = path.join(import.meta.dirname, "../src/names.json");
-
-await Bun.write(RESULT_PATH, JSON.stringify(result, null, 2));
+await Bun.write(
+  `${import.meta.dirname}/../src/names.json`,
+  JSON.stringify(result, null, 2),
+);
