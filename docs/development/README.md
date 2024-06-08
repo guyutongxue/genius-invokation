@@ -11,6 +11,7 @@
   - `@gi-tcg/webui-core` 基于 Solid 的 Web 用户界面组件
   - `@gi-tcg/standalone` 用于调试的集成 Web 用户界面
 - **其它**
+  - `@gi-tcg/static-data` 官方静态数据源
   - `@gi-tcg/typings` 定义基本数据类型前后端通信格式
   - `@gi-tcg/utils` 实用工具集合
 
