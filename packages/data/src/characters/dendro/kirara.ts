@@ -23,7 +23,8 @@ import { character, skill, combatStatus, card, DamageType, DiceType, SkillHandle
  * 可用次数：2
  */
 export const CatGrassCardamom = combatStatus(117073)
-  .variable("playedCard", 0)
+  .variable("playedCard", 0, { visible: false })
+  .replaceDescription("[GCG_TOKEN_COUNTER]", (st, self) => self.variables.playedCard)
   .on("playCard")
   .addVariable("playedCard", 1)
   .on("playCard", (c) => c.getVariable("playedCard") === 1)

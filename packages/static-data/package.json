@@ -1,0 +1,25 @@
+{
+  "name": "@gi-tcg/static-data",
+  "version": "0.7.1+gi-4-7-0",
+  "description": "Standard card data for Genius Invokation TCG",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
+    "./buffIconMapping": {
+      "import": "./dist/buffIconMapping.js"
+    }
+  },
+  "scripts": {
+    "generate": "bun scripts/index.ts -i $GENSHIN_DATA -o src/data",
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "lossless-json": "^4.0.1",
+    "typescript": "^5.3.2"
+  }
+}
