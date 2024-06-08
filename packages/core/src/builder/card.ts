@@ -278,8 +278,11 @@ class CardBuilder<
     requires: TalentRequirement,
   ): `${string}character${string}` {
     this.tags("talent");
+    let extraCond = "";
     if (requires === "action") {
       this.tags("action");
+      // 出战行动的天赋牌，要求目标未被控制
+      extraCond = "and not has status with tag (disableSkill)";
     }
     let chs: CharacterHandle[];
     if (Array.isArray(ch)) {
@@ -294,8 +297,9 @@ class CardBuilder<
         chs.includes(c.$("my active")!.state.definition.id as CharacterHandle),
       );
     }
+
     return chs
-      .map((c) => `(my characters with definition id ${c})`)
+      .map((c) => `(my characters with definition id ${c} ${extraCond})`)
       .join(" or ") as any;
   }
 
