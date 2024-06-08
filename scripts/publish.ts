@@ -22,7 +22,7 @@ import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
-const packages = ["typings", "utils", "core", "data", "webui-core", "webui"];
+const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "webui"];
 const VERSION = "0.7.1";
 
 let doPublish = false;
