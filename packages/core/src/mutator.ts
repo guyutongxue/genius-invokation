@@ -36,6 +36,7 @@ export abstract class StateMutator {
   private _state: GameState;
   private _mutationsToBeNotified: Mutation[] = [];
   private _mutationsToBePause: Mutation[] = [];
+  private _first = true;
   get state() {
     return this._state;
   }
@@ -91,7 +92,10 @@ export abstract class StateMutator {
   }
   protected notify(opt: NotifyOption = {}) {
     const internalOpt = this.createNotifyInternalOption(opt);
-    if (
+    if (this._first) {
+      this.onNotify(internalOpt);
+      this._first = false;
+    } else if (
       internalOpt.stateMutations.length > 0 ||
       internalOpt.exposedMutations.length > 0
     ) {

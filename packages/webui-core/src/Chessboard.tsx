@@ -425,7 +425,7 @@ export function createPlayer(
         if (action.onNotify) {
           action.onNotify(msg);
         }
-        if (import.meta.env.DEV && who === 0 && msg.mutations.length > 0) {
+        if (import.meta.env.DEV && who === 0) {
           console.log(msg);
         }
         if (
@@ -440,49 +440,39 @@ export function createPlayer(
         }
       });
     },
-    rpc: (method, req) => {
+    rpc: async (method, req) => {
+      await renderQueue.push(async () => {});
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      return renderQueue.push(
-        () =>
-          new Promise<any>((resolve, reject) => {
-            rejectRpc = (e) => {
-              reject(e);
-              clearIo();
-            };
-            switch (method) {
-              case "switchHands":
-                action
-                  .onSwitchHands()
-                  .then(sanitize)
-                  .then(resolve)
-                  .catch(reject);
-                break;
-              case "chooseActive":
-                action
-                  .onChooseActive(req as ChooseActiveRequest)
-                  .then(sanitize)
-                  .then(resolve)
-                  .catch(reject);
-                break;
-              case "rerollDice":
-                action
-                  .onRerollDice()
-                  .then(sanitize)
-                  .then(resolve)
-                  .catch(reject);
-                break;
-              case "action":
-                action
-                  .onAction(req as ActionRequest)
-                  .then(sanitize)
-                  .then(resolve)
-                  .catch(reject);
-                break;
-              default:
-                reject("Unknown method");
-            }
-          }),
-      );
+      return new Promise<any>((resolve, reject) => {
+        rejectRpc = (e) => {
+          reject(e);
+          clearIo();
+        };
+        switch (method) {
+          case "switchHands":
+            action.onSwitchHands().then(sanitize).then(resolve).catch(reject);
+            break;
+          case "chooseActive":
+            action
+              .onChooseActive(req as ChooseActiveRequest)
+              .then(sanitize)
+              .then(resolve)
+              .catch(reject);
+            break;
+          case "rerollDice":
+            action.onRerollDice().then(sanitize).then(resolve).catch(reject);
+            break;
+          case "action":
+            action
+              .onAction(req as ActionRequest)
+              .then(sanitize)
+              .then(resolve)
+              .catch(reject);
+            break;
+          default:
+            reject("Unknown method");
+        }
+      });
     },
     cancelRpc: () => {
       rejectRpc(new Error("User canceled the request"));

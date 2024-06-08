@@ -18,6 +18,7 @@ import {
   DetailLogEntry,
   Game,
   GameIO,
+  GameState,
   GameStateLogEntry,
   exposeState,
   serializeGameStateLog,
@@ -161,9 +162,9 @@ export function StandaloneParent(props: StandaloneParentProps) {
   };
 
   let game: Game | null = null;
-  const pause = async () => {
+  const pause = async (state: GameState, mutations: unknown, canResume: boolean) => {
     if (game !== null) {
-      setStateLog(game.stateLog);
+      setStateLog((logs) => [...logs, { state, canResume }]);
     }
     // await new Promise((resolve) => setTimeout(resolve, 500));
   };
@@ -203,7 +204,9 @@ export function StandaloneParent(props: StandaloneParentProps) {
     game?.terminate();
     const newGame = new Game(getGameOption());
     game = newGame;
-    newGame.startWithStateLog(logs).catch((e) => onGameError(e, newGame));
+    const latestState = logs[logs.length - 1];
+    newGame.startFromState(latestState.state).catch((e) => onGameError(e, newGame));
+    setStateLog(logs);
     setViewingLogIndex(-1);
     setFromImport(false);
   };
@@ -308,6 +311,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
               class="grayscale"
               stateData={exposeState(viewingWho(), state().state)}
               who={viewingWho()}
+              assetAltText={getName}
             />
           </>
         )}

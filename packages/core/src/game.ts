@@ -150,7 +150,6 @@ export class Game extends StateMutator {
   /** @internal */
   public readonly logger: DetailLogger;
 
-  private _stateLog: GameStateLogEntry[] = [];
   private _terminated = false;
   private finishResolvers: Resolvers<0 | 1 | null> | null = null;
 
@@ -185,17 +184,10 @@ export class Game extends StateMutator {
     this.config = mergeGameConfigWithDefault(opt.gameConfig);
     this.playerConfigs = opt.playerConfigs;
     this.io = opt.io;
-    this._stateLog.push({
-      state: this.state,
-      canResume: false,
-    });
     this.initPlayerCards(0);
     this.initPlayerCards(1);
   }
 
-  get stateLog() {
-    return this._stateLog;
-  }
   get detailLog() {
     return this.logger.getLogs();
   }
@@ -297,11 +289,7 @@ export class Game extends StateMutator {
       return;
     }
     const { state, canResume, stateMutations } = opt;
-    this._stateLog.push({
-      state,
-      canResume,
-    });
-    await this.io.pause?.(this.state, [...stateMutations]);
+    await this.io.pause?.(this.state, [...stateMutations], canResume);
     if (this.state.phase === "gameEnd") {
       this.gotWinner(this.state.winner);
     } else {
@@ -381,23 +369,6 @@ export class Game extends StateMutator {
       );
     }
     this.resetState(state);
-    return this.start();
-  }
-
-  async startWithStateLog(log: readonly GameStateLogEntry[]) {
-    if (this.finishResolvers !== null) {
-      throw new GiTcgCoreInternalError(
-        `Game already started. Please use a new Game instance instead of start multiple time.`,
-      );
-    }
-    if (log.length === 0) {
-      throw new GiTcgCoreInternalError(
-        "Provided state log should at least contains 1 log entry",
-      );
-    }
-    const allLogs = [...log];
-    this.resetState(allLogs.pop()!.state);
-    this._stateLog = allLogs;
     return this.start();
   }
 

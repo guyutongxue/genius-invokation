@@ -4,6 +4,7 @@
 
 ## 0.9.0
 - Mutation `replaceCharacterDefinition` 重命名为 `transformDefinition`
+- 移除了 `GameLog` 相关接口；在 `pause` 中增加了 `canResume` 第三参数
 
 ## 0.8.0
 - 重构：`GameState` 中部分全局状态值改为由数据提供的可自定义 `extensions`
