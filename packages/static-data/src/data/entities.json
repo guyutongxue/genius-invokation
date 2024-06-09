@@ -694,6 +694,7 @@
     "buffType": "GCG_STATE_BUFF_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Wriothesley_E",
     "buffIconHash": "2944956060000690524"
   },
   {
@@ -708,6 +709,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Wriothesley_S",
     "buffIconHash": "12398234916231916691"
   },
   {
@@ -739,6 +741,7 @@
     "hintType": "GCG_HINT_HEAL",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Element_Heal",
     "buffIconHash": "1740465556921293923",
     "cardFace": "UI_Gcg_CardFace_Summon_ShiningMiracle"
   },
@@ -1298,6 +1301,7 @@
     "buffType": "GCG_STATE_BUFF_HYDRO",
     "shownToken": "GCG_TOKEN_ROUND_COUNT",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Furina_E_01",
     "buffIconHash": "17614116235506402706"
   },
   {
@@ -1311,6 +1315,7 @@
     "buffType": "GCG_STATE_BUFF_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Furina_E_02",
     "buffIconHash": "7783892255259251264"
   },
   {
@@ -1902,6 +1907,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Xinyan_E",
     "buffIconHash": "7359759295113426951"
   },
   {
@@ -2430,6 +2436,7 @@
     "buffType": "GCG_STATE_BUFF_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Shinobu_E",
     "buffIconHash": "1169012384017136282"
   },
   {
@@ -2942,6 +2949,7 @@
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Faruzan_E",
     "buffIconHash": "16040592587013004153"
   },
   {
@@ -3330,6 +3338,7 @@
     "buffType": "GCG_STATE_BUFF_GEO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Yunjin_E",
     "buffIconHash": "5677291162531548780"
   },
   {
@@ -3789,6 +3798,7 @@
     "buffType": "GCG_STATE_BUFF_DENDRO",
     "shownToken": "GCG_TOKEN_ROUND_COUNT",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Kaveh_E",
     "buffIconHash": "12754001729882385791"
   },
   {
@@ -3803,6 +3813,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Kaveh_S",
     "buffIconHash": "14648493234405161933"
   },
   {
@@ -4256,6 +4267,7 @@
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Common_CostSkill",
     "buffIconHash": "9335790256231655128"
   },
   {
@@ -4338,6 +4350,7 @@
     "buffType": "GCG_STATE_BUFF_HYDRO",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Ptahur_S",
     "buffIconHash": "6389285405029040262"
   },
   {
@@ -4351,6 +4364,7 @@
     "buffType": "GCG_STATE_BUFF_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Ptahur_S",
     "buffIconHash": "6389285405029040262"
   },
   {
@@ -4990,6 +5004,7 @@
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_ScorpionSacred_E",
     "buffIconHash": "3179858621115832643"
   },
   {
@@ -5371,6 +5386,7 @@
     "buffType": "GCG_STATE_BUFF_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Apep_S",
     "buffIconHash": "11465097474501765096"
   },
   {
@@ -5383,6 +5399,7 @@
     "description": "所附属角色造成的伤害+3。\n所附属角色使用技能后：移除我方场上的绿洲之滋养，每移除1层就治疗所附属角色1点。",
     "buffType": "GCG_STATE_BUFF_DENDRO",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Apep_E",
     "buffIconHash": "3640633566381250509"
   },
   {
@@ -5410,6 +5427,7 @@
     "description": "我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得2点护盾。",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Apep_E",
     "buffIconHash": "3640633566381250509"
   },
   {
@@ -5489,6 +5507,7 @@
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Common_Element_Physics",
     "buffIconHash": "3162112013737036324"
   },
   {
@@ -6154,6 +6173,7 @@
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_ShamanElectric_S",
     "buffIconHash": "11064614577840991254"
   },
   {
@@ -9113,7 +9133,7 @@
     "description": "本回合中，双方牌手进行「切换角色」行动时：需要额外花费1个元素骰。",
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "hidden": false,
-    "buffIcon": "UI_Gcg_Buff_Common_Debuff",
+    "buffIcon": "UI_Gcg_Debuff_Common_CostSwitch",
     "buffIconHash": "266994363800013152"
   },
   {
@@ -11447,6 +11467,7 @@
     "rawDescription": "<color=#FFFFFFFF>打出任意手牌时：</color>少花费2个元素骰。（每回合1次）",
     "description": "打出任意手牌时：少花费2个元素骰。（每回合1次）",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Rule_02_1",
     "buffIconHash": "3332999734166380352"
   },
   {
@@ -11458,6 +11479,7 @@
     "rawDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个元素骰。（每回合1次）",
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个元素骰。（每回合1次）",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Rule_02_2",
     "buffIconHash": "9634594989106385659"
   },
   {
@@ -11469,6 +11491,7 @@
     "rawDescription": "",
     "description": "",
     "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Rule_02_1",
     "buffIconHash": "3332999734166380352"
   },
   {
@@ -11480,6 +11503,7 @@
     "rawDescription": "<color=#FFFFFFFF>切换角色</color>总是被视为「$[K2]」，而非「$[K1]」;\\n<color=#FFFFFFFF>我方通过「$[K1]」击倒敌方角色后：</color>我方获得1次额外的行动机会，继续轮到我方执行行动。",
     "description": "切换角色总是被视为「快速行动」，而非「战斗行动」;\n我方通过「战斗行动」击倒敌方角色后：我方获得1次额外的行动机会，继续轮到我方执行行动。",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Rule_03_1",
     "buffIconHash": "13379464512044052852"
   },
   {
@@ -11491,6 +11515,7 @@
     "rawDescription": "",
     "description": "",
     "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Rule_03_1",
     "buffIconHash": "13379464512044052852"
   },
   {
@@ -11502,6 +11527,7 @@
     "rawDescription": "",
     "description": "",
     "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Rule_03_1",
     "buffIconHash": "13379464512044052852"
   }
 ]
