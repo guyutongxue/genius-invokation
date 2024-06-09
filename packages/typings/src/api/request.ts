@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { StateData } from "./notification";
-import type { DiceType, PlayCardHint } from "../enums";
+import type { DiceType } from "../enums";
 
 export interface RerollDiceRequest {}
 
@@ -44,7 +44,6 @@ export interface PlayCardAction {
   type: "playCard";
   card: number;
   cost: readonly DiceType[];
-  hints: readonly PlayCardHint[];
   targets: readonly number[];
   preview?: StateData;
 }

@@ -20,7 +20,6 @@ import {
   EntityData,
   ExposedMutation,
   NotificationMessage,
-  PlayCardHint,
   PlayerData,
   RpcMethod,
   RpcRequest,
@@ -282,8 +281,6 @@ export function exposeAction(action: ActionInfo): Action {
         type: "playCard",
         card: action.card.id,
         cost: action.cost,
-        // We can provide more detail hint here
-        hints: [PlayCardHint.GeneralTarget, PlayCardHint.GeneralTarget2],
         targets: action.targets.map((t) => t.id),
         preview: action.preview ? exposeState(action.who, action.preview) : void 0,
       };
