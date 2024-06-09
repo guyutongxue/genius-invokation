@@ -562,13 +562,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           ],
         });
       }
-      const targetPlayer = this.state.players[t.who];
       this.emitEvent("onDamageOrHeal", this.state, damageInfo);
       if (
         damageInfo.type !== DamageType.Physical &&
         damageInfo.type !== DamageType.Piercing
       ) {
-        this.doApply(t, damageInfo.type);
+        this.doApply(t, damageInfo.type, damageInfo);
       }
     }
   }
