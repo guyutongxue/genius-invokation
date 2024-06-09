@@ -141,7 +141,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Ranshaolieyan"
+    "cardFace": "UI_Gcg_CardFace_Summon_Ranshaolieyan"
   },
   {
     "id": 116,
@@ -199,7 +199,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_IceBall"
+    "cardFace": "UI_Gcg_CardFace_Summon_IceBall"
   },
   {
     "id": 111012,
@@ -273,7 +273,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Diona"
+    "cardFace": "UI_Gcg_CardFace_Summon_Diona"
   },
   {
     "id": 211021,
@@ -378,7 +378,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_KamisatoRyu"
+    "cardFace": "UI_Gcg_CardFace_Summon_KamisatoRyu"
   },
   {
     "id": 111052,
@@ -445,7 +445,7 @@
     "hintType": "GCG_HINT_VOID",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Eula"
+    "cardFace": "UI_Gcg_CardFace_Summon_Eula"
   },
   {
     "id": 211061,
@@ -501,7 +501,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Shenhe"
+    "cardFace": "UI_Gcg_CardFace_Summon_Shenhe"
   },
   {
     "id": 111074,
@@ -543,7 +543,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Qiqi"
+    "cardFace": "UI_Gcg_CardFace_Summon_Qiqi"
   },
   {
     "id": 111082,
@@ -619,7 +619,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Layla"
+    "cardFace": "UI_Gcg_CardFace_Summon_Layla"
   },
   {
     "id": 211091,
@@ -664,7 +664,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Charlotte"
+    "cardFace": "UI_Gcg_CardFace_Summon_Charlotte"
   },
   {
     "id": 211101,
@@ -740,7 +740,7 @@
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
     "buffIconHash": "1740465556921293923",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_ShiningMiracle"
+    "cardFace": "UI_Gcg_CardFace_Summon_ShiningMiracle"
   },
   {
     "id": 212011,
@@ -830,7 +830,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Barrier",
     "buffIconHash": "3200411659709162179",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Mona"
+    "cardFace": "UI_Gcg_CardFace_Summon_Mona"
   },
   {
     "id": 112032,
@@ -955,7 +955,7 @@
     "hintType": "GCG_HINT_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Kokomi"
+    "cardFace": "UI_Gcg_CardFace_Summon_Kokomi"
   },
   {
     "id": 112052,
@@ -1012,7 +1012,7 @@
     "hintType": "GCG_HINT_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Ayato"
+    "cardFace": "UI_Gcg_CardFace_Summon_Ayato"
   },
   {
     "id": 212061,
@@ -1127,7 +1127,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Nilou"
+    "cardFace": "UI_Gcg_CardFace_Summon_Nilou"
   },
   {
     "id": 112083,
@@ -1272,7 +1272,7 @@
     "hintType": "GCG_HINT_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Furina"
+    "cardFace": "UI_Gcg_CardFace_Summon_Furina"
   },
   {
     "id": 112112,
@@ -1285,7 +1285,7 @@
     "hintType": "GCG_HINT_HEAL",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_FurinaOusia"
+    "cardFace": "UI_Gcg_CardFace_Summon_FurinaOusia"
   },
   {
     "id": 112114,
@@ -1385,7 +1385,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Guoba"
+    "cardFace": "UI_Gcg_CardFace_Summon_Guoba"
   },
   {
     "id": 113022,
@@ -1477,7 +1477,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Barrier",
     "buffIconHash": "3200411659709162179",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Dummy"
+    "cardFace": "UI_Gcg_CardFace_Summon_Dummy"
   },
   {
     "id": 213041,
@@ -1738,7 +1738,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Dehya"
+    "cardFace": "UI_Gcg_CardFace_Summon_Dehya"
   },
   {
     "id": 113094,
@@ -1781,7 +1781,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Liney"
+    "cardFace": "UI_Gcg_CardFace_Summon_Liney"
   },
   {
     "id": 113102,
@@ -1932,7 +1932,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Crow"
+    "cardFace": "UI_Gcg_CardFace_Summon_Crow"
   },
   {
     "id": 114012,
@@ -1945,7 +1945,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Crow"
+    "cardFace": "UI_Gcg_CardFace_Summon_Crow"
   },
   {
     "id": 214011,
@@ -2178,7 +2178,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_SaraA"
+    "cardFace": "UI_Gcg_CardFace_Summon_SaraA"
   },
   {
     "id": 114062,
@@ -2191,7 +2191,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_SaraB"
+    "cardFace": "UI_Gcg_CardFace_Summon_SaraB"
   },
   {
     "id": 114063,
@@ -2234,7 +2234,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Shougun"
+    "cardFace": "UI_Gcg_CardFace_Summon_Shougun"
   },
   {
     "id": 114072,
@@ -2277,7 +2277,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Yae"
+    "cardFace": "UI_Gcg_CardFace_Summon_Yae"
   },
   {
     "id": 114082,
@@ -2345,7 +2345,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Lisa"
+    "cardFace": "UI_Gcg_CardFace_Summon_Lisa"
   },
   {
     "id": 214091,
@@ -2374,7 +2374,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_DoriE"
+    "cardFace": "UI_Gcg_CardFace_Summon_DoriE"
   },
   {
     "id": 114102,
@@ -2387,7 +2387,7 @@
     "hintType": "GCG_HINT_HEAL",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_DoriQ"
+    "cardFace": "UI_Gcg_CardFace_Summon_DoriQ"
   },
   {
     "id": 114103,
@@ -2400,7 +2400,7 @@
     "hintType": "GCG_HINT_HEAL",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_DoriQ"
+    "cardFace": "UI_Gcg_CardFace_Summon_DoriQ"
   },
   {
     "id": 214101,
@@ -2460,7 +2460,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_LargeWindSpirit"
+    "cardFace": "UI_Gcg_CardFace_Summon_LargeWindSpirit"
   },
   {
     "id": 115012,
@@ -2473,7 +2473,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_LargeWindSpirit"
+    "cardFace": "UI_Gcg_CardFace_Summon_LargeWindSpirit"
   },
   {
     "id": 215011,
@@ -2503,7 +2503,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_DandelionBreeze"
+    "cardFace": "UI_Gcg_CardFace_Summon_DandelionBreeze"
   },
   {
     "id": 215021,
@@ -2571,7 +2571,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Venti"
+    "cardFace": "UI_Gcg_CardFace_Summon_Venti"
   },
   {
     "id": 215031,
@@ -2656,7 +2656,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Kazuha"
+    "cardFace": "UI_Gcg_CardFace_Summon_Kazuha"
   },
   {
     "id": 115053,
@@ -2842,7 +2842,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Sayu"
+    "cardFace": "UI_Gcg_CardFace_Summon_Sayu"
   },
   {
     "id": 215071,
@@ -2886,7 +2886,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Linette"
+    "cardFace": "UI_Gcg_CardFace_Summon_Linette"
   },
   {
     "id": 115083,
@@ -2955,7 +2955,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Faruzan"
+    "cardFace": "UI_Gcg_CardFace_Summon_Faruzan"
   },
   {
     "id": 115094,
@@ -2992,7 +2992,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Faruzan"
+    "cardFace": "UI_Gcg_CardFace_Summon_Faruzan"
   },
   {
     "id": 215091,
@@ -3098,7 +3098,7 @@
     "hintType": "GCG_HINT_GEO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Zhongli"
+    "cardFace": "UI_Gcg_CardFace_Summon_Zhongli"
   },
   {
     "id": 116032,
@@ -3158,7 +3158,7 @@
     "hintType": "GCG_HINT_GEO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Albedo"
+    "cardFace": "UI_Gcg_CardFace_Summon_Albedo"
   },
   {
     "id": 216041,
@@ -3190,7 +3190,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Barrier",
     "buffIconHash": "3200411659709162179",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Itto"
+    "cardFace": "UI_Gcg_CardFace_Summon_Itto"
   },
   {
     "id": 116052,
@@ -3273,7 +3273,7 @@
     "hintType": "GCG_HINT_GEO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Gorou"
+    "cardFace": "UI_Gcg_CardFace_Summon_Gorou"
   },
   {
     "id": 216061,
@@ -3360,7 +3360,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Collei"
+    "cardFace": "UI_Gcg_CardFace_Summon_Collei"
   },
   {
     "id": 117012,
@@ -3431,7 +3431,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Tighnari"
+    "cardFace": "UI_Gcg_CardFace_Summon_Tighnari"
   },
   {
     "id": 217021,
@@ -3554,7 +3554,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Yaoyao"
+    "cardFace": "UI_Gcg_CardFace_Summon_Yaoyao"
   },
   {
     "id": 117042,
@@ -3567,7 +3567,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Yaoyao"
+    "cardFace": "UI_Gcg_CardFace_Summon_Yaoyao"
   },
   {
     "id": 117043,
@@ -3611,7 +3611,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Baizhuer"
+    "cardFace": "UI_Gcg_CardFace_Summon_Baizhuer"
   },
   {
     "id": 117052,
@@ -3845,7 +3845,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_MageIce"
+    "cardFace": "UI_Gcg_CardFace_Summon_MageIce"
   },
   {
     "id": 121012,
@@ -4018,7 +4018,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Special",
     "buffIconHash": "13225239691945994096",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_EffigyIce"
+    "cardFace": "UI_Gcg_CardFace_Summon_EffigyIce"
   },
   {
     "id": 121034,
@@ -4105,7 +4105,7 @@
     "rawDescription": "「纯水幻形」共有3种，最多同时存在2种：\\n<color=#FFFFFFFF>花鼠</color>：结束阶段造成2点$[K102]，可用2次。\\n<color=#FFFFFFFF>飞鸢</color>：结束阶段造成1点$[K102]，可用3次。\\n<color=#FFFFFFFF>蛙</color>：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点$[K102]。",
     "description": "「纯水幻形」共有3种，最多同时存在2种：\n花鼠：结束阶段造成2点水元素伤害，可用2次。\n飞鸢：结束阶段造成1点水元素伤害，可用3次。\n蛙：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点水元素伤害。",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Ferret"
+    "cardFace": "UI_Gcg_CardFace_Summon_Ferret"
   },
   {
     "id": 122011,
@@ -4118,7 +4118,7 @@
     "hintType": "GCG_HINT_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Ferret"
+    "cardFace": "UI_Gcg_CardFace_Summon_Ferret"
   },
   {
     "id": 122012,
@@ -4131,7 +4131,7 @@
     "hintType": "GCG_HINT_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Raptor"
+    "cardFace": "UI_Gcg_CardFace_Summon_Raptor"
   },
   {
     "id": 122013,
@@ -4146,7 +4146,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Barrier",
     "buffIconHash": "3200411659709162179",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Frog"
+    "cardFace": "UI_Gcg_CardFace_Summon_Frog"
   },
   {
     "id": 122014,
@@ -4157,7 +4157,7 @@
     "rawDescription": "「纯水幻形」共有3种，最多同时存在2种：\\n<color=#FFFFFFFF>花鼠</color>：结束阶段造成2点$[K102]，可用2次。\\n<color=#FFFFFFFF>飞鸢</color>：结束阶段造成1点$[K102]，可用3次。\\n<color=#FFFFFFFF>蛙</color>：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点$[K102]。",
     "description": "「纯水幻形」共有3种，最多同时存在2种：\n花鼠：结束阶段造成2点水元素伤害，可用2次。\n飞鸢：结束阶段造成1点水元素伤害，可用3次。\n蛙：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点水元素伤害。",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Ferret"
+    "cardFace": "UI_Gcg_CardFace_Summon_Ferret"
   },
   {
     "id": 222011,
@@ -4368,7 +4368,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Barrier",
     "buffIconHash": "3200411659709162179",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Ptahur"
+    "cardFace": "UI_Gcg_CardFace_Summon_Ptahur"
   },
   {
     "id": 122044,
@@ -4465,7 +4465,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_DeaconFire"
+    "cardFace": "UI_Gcg_CardFace_Summon_DeaconFire"
   },
   {
     "id": 123022,
@@ -4574,7 +4574,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Muscleman"
+    "cardFace": "UI_Gcg_CardFace_Summon_Muscleman"
   },
   {
     "id": 123032,
@@ -4587,7 +4587,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Muscleman"
+    "cardFace": "UI_Gcg_CardFace_Summon_Muscleman"
   },
   {
     "id": 123033,
@@ -4724,7 +4724,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Special",
     "buffIconHash": "13225239691945994096",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Effigyelectric"
+    "cardFace": "UI_Gcg_CardFace_Summon_Effigyelectric"
   },
   {
     "id": 124014,
@@ -4823,7 +4823,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Raijin"
+    "cardFace": "UI_Gcg_CardFace_Summon_Raijin"
   },
   {
     "id": 124024,
@@ -4865,7 +4865,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_SeaHorsePrimo"
+    "cardFace": "UI_Gcg_CardFace_Summon_SeaHorsePrimo"
   },
   {
     "id": 124032,
@@ -4920,7 +4920,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_FatuusSummoner"
+    "cardFace": "UI_Gcg_CardFace_Summon_FatuusSummoner"
   },
   {
     "id": 124042,
@@ -5031,7 +5031,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Jifengcanying"
+    "cardFace": "UI_Gcg_CardFace_Summon_Jifengcanying"
   },
   {
     "id": 125012,
@@ -5044,7 +5044,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Bingshuangcanying"
+    "cardFace": "UI_Gcg_CardFace_Summon_Bingshuangcanying"
   },
   {
     "id": 125013,
@@ -5319,7 +5319,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Apep"
+    "cardFace": "UI_Gcg_CardFace_Summon_Apep"
   },
   {
     "id": 127023,
@@ -5332,7 +5332,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Apep"
+    "cardFace": "UI_Gcg_CardFace_Summon_Apep"
   },
   {
     "id": 127024,
@@ -5345,7 +5345,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Apep"
+    "cardFace": "UI_Gcg_CardFace_Summon_Apep"
   },
   {
     "id": 127025,
@@ -5358,7 +5358,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Apep"
+    "cardFace": "UI_Gcg_CardFace_Summon_Apep"
   },
   {
     "id": 127026,
@@ -5762,7 +5762,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Heal",
     "buffIconHash": "10356428210303428719",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Rain"
+    "cardFace": "UI_Gcg_CardFace_Summon_Rain"
   },
   {
     "id": 132031,
@@ -6074,7 +6074,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_AbyssEle"
+    "cardFace": "UI_Gcg_CardFace_Summon_AbyssEle"
   },
   {
     "id": 134042,
@@ -6181,7 +6181,7 @@
     "hintType": "GCG_HINT_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Wind"
+    "cardFace": "UI_Gcg_CardFace_Summon_Wind"
   },
   {
     "id": 135021,
@@ -6288,7 +6288,7 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Buff",
     "buffIconHash": "10756566743744805222",
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Jue"
+    "cardFace": "UI_Gcg_CardFace_Summon_Jue"
   },
   {
     "id": 136052,
@@ -6389,7 +6389,7 @@
     "hintType": "GCG_HINT_DENDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_Pojidan"
+    "cardFace": "UI_Gcg_CardFace_Summon_Pojidan"
   },
   {
     "id": 311101,
@@ -8567,7 +8567,7 @@
     "hintType": "GCG_HINT_VOID",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Assist_NPC_Taroumaru"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Taroumaru"
   },
   {
     "id": 322025,
@@ -8906,7 +8906,7 @@
     "rawDescription": "可能出现的「丘丘人」召唤物共有4种：\\n<color=#FFFFFFFF>冰箭丘丘人</color>：结束阶段造成1点$[K101]，可用2次。\\n<color=#FFFFFFFF>水丘丘萨满</color>：结束阶段造成1点$[K102]，可用2次。\\n<color=#FFFFFFFF>冲锋丘丘人</color>：结束阶段造成1点$[K103]，可用2次。\\n<color=#FFFFFFFF>雷箭丘丘人</color>：结束阶段造成1点$[K104]，可用2次。",
     "description": "可能出现的「丘丘人」召唤物共有4种：\n冰箭丘丘人：结束阶段造成1点冰元素伤害，可用2次。\n水丘丘萨满：结束阶段造成1点水元素伤害，可用2次。\n冲锋丘丘人：结束阶段造成1点火元素伤害，可用2次。\n雷箭丘丘人：结束阶段造成1点雷元素伤害，可用2次。",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_HiliClub"
+    "cardFace": "UI_Gcg_CardFace_Summon_HiliClub"
   },
   {
     "id": 303211,
@@ -8919,7 +8919,7 @@
     "hintType": "GCG_HINT_CRYO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_HiliIce"
+    "cardFace": "UI_Gcg_CardFace_Summon_HiliIce"
   },
   {
     "id": 303212,
@@ -8932,7 +8932,7 @@
     "hintType": "GCG_HINT_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_ShamanWater"
+    "cardFace": "UI_Gcg_CardFace_Summon_ShamanWater"
   },
   {
     "id": 303213,
@@ -8945,7 +8945,7 @@
     "hintType": "GCG_HINT_PYRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_HiliClub"
+    "cardFace": "UI_Gcg_CardFace_Summon_HiliClub"
   },
   {
     "id": 303214,
@@ -8958,7 +8958,7 @@
     "hintType": "GCG_HINT_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFaceFileName": "UI_Gcg_CardFace_Summon_HiliElectric"
+    "cardFace": "UI_Gcg_CardFace_Summon_HiliElectric"
   },
   {
     "id": 303215,

@@ -23,7 +23,7 @@ import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
 const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.8.0";
+const VERSION = "0.8.2";
 
 let doPublish = false;
 if ((await $`which npm`.nothrow().quiet()).exitCode === 0) {
@@ -55,6 +55,26 @@ function transferWorkspaceDeps(deps: Partial<Record<string, string>> = {}) {
   }
 }
 
+function removeBunFromExport(exports: PackageJson["exports"]): PackageJson["exports"] {
+  if (!exports) {
+    return exports;
+  }
+  if (typeof exports === "string") {
+    return exports;
+  }
+  if (Array.isArray(exports)) {
+    return exports.flatMap(removeBunFromExport) as PackageJson["exports"];
+  }
+  const cond: typeof exports = {};
+  for (const key in exports) {
+    if (key === "bun") {
+      continue;
+    }
+    cond[key] = removeBunFromExport(exports[key])!;
+  }
+  return cond;
+}
+
 for (const pkg of packages) {
   console.log(`Building and verifying package: ${pkg}`);
   const directory = `packages/${pkg}`;
@@ -73,6 +93,7 @@ for (const pkg of packages) {
   if (packageJson.devDependencies) {
     delete packageJson.devDependencies;
   }
+  packageJson.exports = removeBunFromExport(packageJson.exports);
   packageJson.author = "Guyutongxue";
   packageJson.repository = "github:Guyutongxue/genius-invokation";
   packageJson.license = "AGPL-3.0-or-later";

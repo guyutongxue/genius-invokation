@@ -15,9 +15,7 @@
 
 import { collateSkill, type SkillRawData } from "./skills";
 import {
-  getExcel,
   getLanguage,
-  getPropNameWithMatch,
   sanitizeDescription,
   sanitizeName,
   propShareId,
@@ -26,12 +24,6 @@ import {
   xchar,
   xdeckcard,
 } from "./utils";
-
-// const propHp = "hp";
-// const propMaxEnergy = "maxEnergy";
-// const propObtainable = "isCanObtain";
-// const propEnemy = "isRemoveAfterDie";
-// const propTags = "tagList";
 
 export interface CharacterRawData {
   id: number;
@@ -45,7 +37,7 @@ export interface CharacterRawData {
   skills: SkillRawData[];
   hp: number;
   maxEnergy: number;
-  cardFaceFileName: string;
+  cardFace: string;
 }
 
 export async function collateCharacters(langCode: string): Promise<CharacterRawData[]> {
@@ -94,8 +86,8 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
       skills.push(await collateSkill(langCode, skillId));
     }
 
-    const cardFace = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
-    const cardFaceFileName = `UI_${cardFace}`;
+    const cardPrefabName = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
+    const cardFace = `UI_${cardPrefabName}`;
 
     result.push({
       id,
@@ -109,7 +101,7 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
       skills,
       hp,
       maxEnergy,
-      cardFaceFileName,
+      cardFace,
     });
   }
   return result;

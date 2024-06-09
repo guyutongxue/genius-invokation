@@ -44,7 +44,7 @@ export interface EntityRawData {
   shownToken?: string;
 
   /** summons only */
-  cardFaceFileName?: string;
+  cardFace?: string;
 
   /** status / combat status only */
   buffIcon?: string;
@@ -137,8 +137,8 @@ export function collateEntities(langCode: string) {
     };
 
     if (type === "GCG_CARD_SUMMON") {
-      const cardFace = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
-      data.cardFaceFileName = `UI_${cardFace}`;
+      const cardPrefabName = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
+      data.cardFace = `UI_${cardPrefabName}`;
     }
     result.push(data);
   }

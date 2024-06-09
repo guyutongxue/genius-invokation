@@ -46,7 +46,7 @@ export interface ActionCardRawData {
   rawPlayingDescription?: string;
   playingDescription?: string;
   playCost: PlayCost[];
-  cardFaceFileName: string;
+  cardFace: string;
 }
 
 export interface ChooseTarget {
@@ -115,8 +115,8 @@ export function collateActionCards(langCode: string) {
         count: e.count,
       }));
 
-    const cardFace = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
-    const cardFaceFileName = `UI_${cardFace}`;
+    const cardPrefabName = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
+    const cardFace = `UI_${cardPrefabName}`;
 
     const targetList: ChooseTarget[] = [];
     for (const target of obj.chooseTargetList ?? []) {
@@ -152,7 +152,7 @@ export function collateActionCards(langCode: string) {
       description,
       rawPlayingDescription,
       playingDescription,
-      cardFaceFileName,
+      cardFace,
     });
   }
   return result;
