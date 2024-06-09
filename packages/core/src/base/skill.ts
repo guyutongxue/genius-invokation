@@ -479,8 +479,8 @@ export class DamageOrHealEventArg<
     private readonly _damageInfo: InfoT,
   ) {
     super(state);
-    this.sourceWho = getEntityArea(state, this.damageInfo.source.id).who;
-    this.targetWho = getEntityArea(state, this.damageInfo.target.id).who;
+    this.sourceWho = getEntityArea(state, _damageInfo.source.id).who;
+    this.targetWho = getEntityArea(state, _damageInfo.target.id).who;
   }
   toString() {
     return stringifyDamageInfo(this.damageInfo).split("\n")[0];

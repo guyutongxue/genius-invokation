@@ -151,8 +151,9 @@ export class SkillExecutor extends StateMutator {
     const zeroHealthEventArgs: ZeroHealthEventArg[] = [];
     for (const [, arg] of damageEvents) {
       if (arg.damageInfo.causeDefeated) {
+        // Wrap original EventArg to ZeroHealthEventArg
         const zeroHealthEventArg = new ZeroHealthEventArg(
-          this.state,
+          arg._state,
           arg.damageInfo,
         );
         if (checkImmune(this.state, zeroHealthEventArg)) {
