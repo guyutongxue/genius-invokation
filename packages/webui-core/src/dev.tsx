@@ -23,7 +23,7 @@ import { Game, GameIO, PlayerConfig } from "@gi-tcg/core";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
-  characters: [1203, 1703, 2404],
+  characters: [1111, 1408, 2404],
   cards: [
     // 323007, 323007, 321018, 321018, 331702, 
     321017, 322022, 322024, 322011, 322011,

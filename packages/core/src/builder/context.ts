@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
+import { DamageType, DiceType, ExposedMutation, Reaction } from "@gi-tcg/typings";
 
 import {
   EntityArea,
@@ -153,11 +153,20 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
    * @internal
    */
   _terminate() {
-    this.notify();
+    this.skillInfo.onNotify?.({
+      canResume: false,
+      state: this.state,
+      stateMutations: this._stateMutations,
+      exposedMutations: this._exposedMutations,
+    });
     Object.freeze(this);
   }
+  private _stateMutations: Mutation[] = [];
+  private _exposedMutations: ExposedMutation[] = [];
+  // 将技能中引发的通知保存下来，最后调用 _terminate 时再整体通知
   protected override onNotify(opt: InternalNotifyOption): void {
-    this.skillInfo.onNotify?.(opt);
+    this._stateMutations.push(...opt.stateMutations);
+    this._exposedMutations.push(...opt.exposedMutations);
   }
   protected override async onPause(opt: InternalPauseOption): Promise<void> {
     // Do nothing, and we won't call it
@@ -196,7 +205,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         charged: false,
         plunging: false,
         logger: this.skillInfo.logger,
-        onNotify: this.skillInfo.onNotify,
+        onNotify: (opt) => this.onNotify(opt),
       }),
     );
     for (const info of infos) {
@@ -640,7 +649,10 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       if (reactionDescription) {
         const [newState, events] = reactionDescription(
           this.state,
-          this.skillInfo,
+          {
+            ...this.skillInfo,
+            onNotify: (opt) => this.onNotify(opt)
+          },
           reactionDescriptionEventArg,
         );
         this.eventAndRequests.push(...events);
