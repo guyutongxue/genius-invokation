@@ -506,7 +506,7 @@ export function createPlayer(
     setPrepareTuning(false);
   };
   const assetApiEndpoint = () =>
-    opt.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api";
+    opt.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api/v2";
   const playerContextValue: PlayerContextValue = {
     allClickable,
     allSelected,
