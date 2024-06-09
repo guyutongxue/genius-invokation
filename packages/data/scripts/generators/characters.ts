@@ -60,10 +60,14 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
     ...myStatuses,
     ...myCombatStatuses,
   ].map<SourceInfo>((obj) => {
+    let description = obj.description;
+    if (obj.playingDescription && obj.playingDescription.includes("$")) {
+      description += "\n【此卡含描述变量】"
+    }
     return {
       id: obj.id,
       name: obj.name,
-      description: obj.playingDescription ?? obj.description,
+      description: description,
       code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${obj.id})
   // TODO
   .done();`,
@@ -91,7 +95,7 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
     {
       id: card.id,
       name: card.name,
-      description: card.playingDescription ?? card.description,
+      description: card.description,
       code: getCardCode(
         card,
         `\n  .${methodName}(${pascalCase(name)})`,

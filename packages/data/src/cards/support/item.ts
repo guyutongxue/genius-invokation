@@ -174,6 +174,7 @@ export const MementoLens = card(323006)
  * @description
  * 我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）
  * 可用次数：3
+ * 【此卡含描述变量】
  */
 export const LumenstoneAdjuvant = card(323007)
   .costSame(2)

@@ -467,8 +467,9 @@ const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: 
  * @id 322022
  * @name 婕德
  * @description
- * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点，当前为$[GCG_TOKEN_COUNTER]点）
+ * 此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）
  * 我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。
+ * 【此卡含描述变量】
  */
 export const Jeht = card(322022)
   .costVoid(2)
@@ -507,6 +508,10 @@ const DamageTypeCountExtension = extension(322023, { damages: pair(new Set<Damag
  * @id 322023
  * @name 西尔弗和迈勒斯
  * @description
+ * 此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点）
+ * 结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。
+ * 【此卡含描述变量】
+ * @outdated
  * 此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点，当前为$[GCG_TOKEN_COUNTER]点）
  * 结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。
  */

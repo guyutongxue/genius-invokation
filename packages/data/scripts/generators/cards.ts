@@ -123,7 +123,10 @@ export async function generateCards() {
     } else {
       target = others;
     }
-    const description = type === "support" ? (card.playingDescription ?? card.description) : card.description;
+    let description = card.description;
+    if (card.playingDescription && card.playingDescription.includes("$")) {
+      description += "\n【此卡含描述变量】"
+    }
     target.push({
       id: card.id,
       name: card.name,
