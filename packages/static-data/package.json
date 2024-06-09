@@ -11,6 +11,8 @@
       "import": "./dist/index.js"
     },
     "./buffIconMapping": {
+      "types": "./dist/buffIconMapping.d.ts",
+      "bun": "./src/buffIconMapping.ts",
       "import": "./dist/buffIconMapping.js"
     }
   },

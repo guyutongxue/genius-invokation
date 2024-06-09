@@ -19,6 +19,7 @@ export default defineConfig([
   {
     entry: {
       index: "./src/index.ts",
+      buffIconMapping: "./src/buffIconMapping.ts"
     },
     format: "esm",
     clean: true,
@@ -26,11 +27,4 @@ export default defineConfig([
     sourcemap: true,
     minify: true,
   },
-  {
-    entry: {
-      buffIconMapping: "./scripts/mappings/buff_icons.json"
-    },
-    format: "esm",
-    // minify: true,
-  }
 ]);
