@@ -22,6 +22,7 @@ import {
   getDescriptionReplaced,
   sanitizeName,
   xcardview,
+  propPlayingDescription2,
 } from "./utils";
 
 const xcard = getExcel("GCGCardExcelConfigData");
@@ -95,7 +96,8 @@ export function collateEntities(langCode: string) {
     const description = sanitizeDescription(descriptionReplaced, true);
 
     const rawPlayingDescription: string | undefined =
-      locale[obj.descOnTableTextMapHash];
+      locale[obj.descOnTableTextMapHash] ??
+      locale[obj[propPlayingDescription2]];
     let playingDescription: string | undefined = void 0;
     if (rawPlayingDescription) {
       const playingDescriptionReplaced = getDescriptionReplaced(

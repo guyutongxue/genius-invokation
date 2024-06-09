@@ -1,15 +1,15 @@
 // Copyright (C) 2024 theBowja, Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,14 +24,11 @@ import {
   xcard,
   getPropNameWithMatch,
   propShareId,
+  getExcel,
+  propPlayingDescription2,
 } from "./utils";
 
-const propPlayingDescription = getPropNameWithMatch(
-  xcard,
-  "id",
-  330005,
-  3076893924,
-);
+const xchoose = getExcel("GCGChooseExcelConfigData");
 
 export interface ActionCardRawData {
   id: number;
@@ -41,6 +38,7 @@ export interface ActionCardRawData {
   name: string;
   englishName: string;
   tags: string[];
+  targetList: ChooseTarget[];
   storyTitle?: string;
   storyText?: string;
   rawDescription: string;
@@ -49,6 +47,15 @@ export interface ActionCardRawData {
   playingDescription?: string;
   playCost: PlayCost[];
   cardFaceFileName: string;
+}
+
+export interface ChooseTarget {
+  id: number;
+  type: string;
+  camp: string;
+  tags: string[];
+  rawHintText: string;
+  hintText: string;
 }
 
 export function collateActionCards(langCode: string) {
@@ -90,7 +97,8 @@ export function collateActionCards(langCode: string) {
     const description = sanitizeDescription(descriptionReplaced, true);
 
     const rawPlayingDescription: string | undefined =
-      locale[obj[propPlayingDescription]];
+      locale[obj.descOnTableTextMapHash] ??
+      locale[obj[propPlayingDescription2]];
     let playingDescription: string | undefined = void 0;
     if (rawPlayingDescription) {
       const playingDescriptionReplaced = getDescriptionReplaced(
@@ -110,6 +118,24 @@ export function collateActionCards(langCode: string) {
     const cardFace = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
     const cardFaceFileName = `UI_${cardFace}`;
 
+    const targetList: ChooseTarget[] = [];
+    for (const target of obj.chooseTargetList ?? []) {
+      const chooseObj = xchoose.find((c) => c.id === target);
+      if (!chooseObj) {
+        continue;
+      }
+      const rawHintText = locale[chooseObj.targetHintTextMapHash] ?? "";
+      const hintText = sanitizeDescription(rawHintText, true);
+      targetList.push({
+        id: chooseObj.id,
+        type: chooseObj.cardType,
+        camp: chooseObj.targetCamp,
+        tags: chooseObj.tagList.filter((e: string) => e !== "GCG_TAG_NONE"),
+        rawHintText,
+        hintText,
+      });
+    }
+
     result.push({
       id,
       shareId,
@@ -118,6 +144,7 @@ export function collateActionCards(langCode: string) {
       name,
       englishName,
       tags,
+      targetList,
       storyTitle,
       storyText,
       playCost,

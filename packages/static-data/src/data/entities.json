@@ -8510,6 +8510,8 @@
     ],
     "rawDescription": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为<color=#FFFFFFFF>「阅历」</color>。（最多6点）\\n<color=#FFFFFFFF>我方角色使用「元素爆发」后：</color>如果<color=#FFFFFFFF>「阅历」</color>至少为6，则弃置此牌，对我方出战角色附属$[K1028]。",
     "description": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）\n我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。",
+    "rawPlayingDescription": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为<color=#FFFFFFFF>「阅历」</color>。（最多6点，<color=#D3BC8EFF>当前为${[GCG_TOKEN_COUNTER]}点</color>）\\n<color=#FFFFFFFF>我方角色使用「元素爆发」后：</color>如果<color=#FFFFFFFF>「阅历」</color>至少为6，则弃置此牌，对我方出战角色附属$[K1028]。",
+    "playingDescription": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点，当前为${[GCG_TOKEN_COUNTER]}点）\n我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false
   },
@@ -8536,6 +8538,8 @@
     ],
     "rawDescription": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为<color=#FFFFFFFF>「侍从的周到」</color>。（最多4点）\\n<color=#FFFFFFFF>结束阶段：</color>如果<color=#FFFFFFFF>「侍从的周到」</color>至少为3，则弃置此牌，然后抓<color=#FFFFFFFF>「侍从的周到」</color>点数的牌。",
     "description": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点）\n结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。",
+    "rawPlayingDescription": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为<color=#FFFFFFFF>「侍从的周到」</color>。（最多4点，<color=#D3BC8EFF>当前为${[GCG_TOKEN_COUNTER]}点</color>）\\n<color=#FFFFFFFF>结束阶段：</color>如果<color=#FFFFFFFF>「侍从的周到」</color>至少为3，则弃置此牌，然后抓<color=#FFFFFFFF>「侍从的周到」</color>点数的牌。",
+    "playingDescription": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点，当前为${[GCG_TOKEN_COUNTER]}点）\n结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false
   },

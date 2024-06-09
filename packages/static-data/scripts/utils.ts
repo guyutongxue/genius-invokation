@@ -94,6 +94,14 @@ export const wandererNameTextMapHash = xavatar.find((ele) => ele.id === 10000075
 // GCGDeckCardExcelConfigData
 export const propShareId = getPropNameWithMatch(xdeckcard, "id", 1101, 1);
 
+// GCGCardExcelConfigData
+export const propPlayingDescription2 = getPropNameWithMatch(
+  xcard,
+  "id",
+  330005,
+  3076893924,
+);
+
 interface ReplacementDictionary {
 	baseElement?: string;
 	baseDamage?: number;

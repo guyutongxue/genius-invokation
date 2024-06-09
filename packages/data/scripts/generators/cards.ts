@@ -123,10 +123,11 @@ export async function generateCards() {
     } else {
       target = others;
     }
+    const description = type === "support" ? (card.playingDescription ?? card.description) : card.description;
     target.push({
       id: card.id,
       name: card.name,
-      description: card.playingDescription ?? card.description,
+      description: description,
       code: getCardCode(card),
     });
   }
