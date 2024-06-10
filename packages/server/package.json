@@ -2,10 +2,11 @@
   "name": "@gi-tcg/server",
   "private": true,
   "version": "0.8.4",
+  "type": "module",
   "scripts": {
     "dev": "bun --watch ./src/main.ts",
     "debug": "nest start --debug --watch",
-    "start": "pm2 start pm2.config.mjs"
+    "start": "pm2 start pm2.config.cjs"
   },
   "dependencies": {
     "@gi-tcg/core": "workspace:*",

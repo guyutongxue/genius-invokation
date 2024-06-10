@@ -1,7 +1,7 @@
 // @ts-check
 
 /** @type {import('pm2').StartOptions} */
-export default {
+module.exports = {
   name: "@gi-tcg/server",
   script: "src/main.ts",
   interpreter: "bun"
