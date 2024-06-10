@@ -1,0 +1,21 @@
+{
+  "name": "@gi-tcg/server",
+  "private": true,
+  "version": "0.8.4",
+  "scripts": {
+    "dev": "bun --watch ./src/main.ts",
+    "debug": "nest start --debug --watch",
+    "start": "pm2 start pm2.config.mjs"
+  },
+  "dependencies": {
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/data": "workspace:*",
+    "@nestjs/common": "^10.3.9",
+    "@nestjs/core": "^10.3.9",
+    "@nestjs/platform-fastify": "^10.3.9"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.2",
+    "pm2": "^5.4.0"
+  }
+}
