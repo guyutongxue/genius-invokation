@@ -11,17 +11,41 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  password        Bytes
+  salt            Bytes
+  rank            Int              @default(10)
+  name            String?
+  games           PlayerOnGames[]
+  createdAt       DateTime         @default(now())
+  invitationCodes InvitationCode[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model Game {
+  id        Int             @id @default(autoincrement())
+  players   PlayerOnGames[]
+  version   String
+  data      String // JSON log
+  winnerId  Int
+  createdAt DateTime        @default(now())
+}
+
+model PlayerOnGames {
+  player   User @relation(fields: [playerId], references: [id])
+  playerId Int
+  game     Game @relation(fields: [gameId], references: [id])
+  gameId   Int
+  who      Int
+
+  @@id([playerId, gameId])
+}
+
+model InvitationCode {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique
+  createdAt       DateTime @default(now())
+  used            Boolean  @default(false)
+  createdBy       User     @relation(fields: [createdByUserId], references: [id])
+  createdByUserId Int
 }
