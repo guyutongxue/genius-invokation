@@ -457,7 +457,7 @@ export class SwitchActiveEventArg extends EventArg {
   ) {
     super(state);
   }
-  toString() {
+  override toString() {
     let result = `player ${this.switchInfo.who}, switch from ${stringifyState(
       this.switchInfo.from,
     )} to ${stringifyState(this.switchInfo.to)}`;
@@ -465,6 +465,69 @@ export class SwitchActiveEventArg extends EventArg {
       result += `, via skill [skill:${this.switchInfo.via.definition.id}]`;
     }
     return result;
+  }
+}
+
+export class UseSkillEventArg extends PlayerEventArg {
+  constructor(
+    state: GameState,
+    public readonly who: 0 | 1,
+    public readonly skill: SkillInfo,
+  ) {
+    super(state, who);
+  }
+  override toString(): string {
+    return `use skill [skill:${this.skill.definition.id}]`;
+  }
+  isSkillType(skillType: CommonSkillType): boolean {
+    return this.skill.definition.skillType === skillType;
+  }
+  isChargedAttack(): this is ActionEventArg<UseSkillInfo> {
+    return this.skill.charged;
+  }
+  isPlungingAttack(): this is ActionEventArg<UseSkillInfo> {
+    return this.skill.plunging;
+  }
+}
+
+export class PlayCardEventArg extends PlayerEventArg {
+  constructor(
+    state: GameState,
+    public readonly playCardInfo: PlayCardInfo,
+  ) {
+    super(state, playCardInfo.who);
+  }
+  get card() {
+    return this.playCardInfo.card;
+  }
+  override toString() {
+    return `play card ${stringifyState(this.playCardInfo.card)}`;
+  }
+  hasCardTag(tag: CardTag) {
+    return this.card.definition.tags.includes(tag);
+  }
+  hasOneOfCardTag(...tags: CardTag[]) {
+    return tags.some((tag) => this.card.definition.tags.includes(tag));
+  }
+}
+
+export class DisposeOrTuneCardEventArg extends PlayerEventArg {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    public readonly card: CardState,
+    public readonly method: DisposeOrTuneMethod,
+  ) {
+    super(state, who);
+  }
+
+  diceCost() {
+    return diceCostOfCard(this.card.definition);
+  }
+  override toString(): string {
+    return `player ${this.who} ${this.method} card ${stringifyState(
+      this.card,
+    )}`;
   }
 }
 
@@ -555,15 +618,11 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
   private _decreased = 0;
   private _log = super.damageInfo.log ?? "";
   increaseHeal(value: number) {
-    this._log += `${stringifyState(
-      this.caller,
-    )} increase heal by ${value}.\n`;
+    this._log += `${stringifyState(this.caller)} increase heal by ${value}.\n`;
     this._increased += value;
   }
   decreaseHeal(value: number) {
-    this._log += `${stringifyState(
-      this.caller,
-    )} decrease heal by ${value}.\n`;
+    this._log += `${stringifyState(this.caller)} decrease heal by ${value}.\n`;
     this._decreased += value;
   }
   override get damageInfo(): HealInfo {
@@ -572,7 +631,8 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
       0,
       Math.ceil(healInfo.expectedValue + this._increased - this._decreased),
     );
-    const targetLoss = healInfo.target.variables.maxHealth - healInfo.target.variables.health;
+    const targetLoss =
+      healInfo.target.variables.maxHealth - healInfo.target.variables.health;
     const value = Math.min(expectedValue, targetLoss);
     return {
       ...healInfo,
@@ -788,7 +848,9 @@ export class DrawCardsEventArg extends PlayerEventArg {
   }
 
   override toString(): string {
-    return `player ${this.who} draw card ${this.cards.map(stringifyState).join(", ")}`;  
+    return `player ${this.who} draw card ${this.cards
+      .map(stringifyState)
+      .join(", ")}`;
   }
 }
 
@@ -796,24 +858,6 @@ export type DisposeOrTuneMethod =
   | "disposeFromHands"
   | "disposeFromPiles"
   | "elementalTuning";
-
-export class DisposeOrTuneCardEventArg extends PlayerEventArg {
-  constructor(
-    state: GameState,
-    who: 0 | 1,
-    public readonly card: CardState,
-    public readonly method: DisposeOrTuneMethod,
-  ) {
-    super(state, who);
-  }
-
-  diceCost() {
-    return diceCostOfCard(this.card.definition);
-  }
-  override toString(): string {
-    return `player ${this.who} ${this.method} card ${stringifyState(this.card)}`; 
-  }
-}
 
 export class GenerateDiceEventArg extends PlayerEventArg {
   constructor(
@@ -825,7 +869,7 @@ export class GenerateDiceEventArg extends PlayerEventArg {
   }
 
   override toString(): string {
-    return `player ${this.who} generate dice ${this.dice.join(", ")}`; 
+    return `player ${this.who} generate dice ${this.dice.join(", ")}`;
   }
 }
 
@@ -842,10 +886,12 @@ export const EVENT_MAP = {
   onBeforeAction: PlayerEventArg,
   modifyAction: ModifyActionEventArg,
   onAction: ActionEventArg,
+  onUseSkill: UseSkillEventArg,
+  onPlayCard: PlayCardEventArg,
+  onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   onSwitchActive: SwitchActiveEventArg,
   onDrawCards: DrawCardsEventArg,
-  onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
   onReaction: ReactionEventArg,
   onTransformDefinition: TransformDefinitionEventArg,
   onGenerateDice: GenerateDiceEventArg,

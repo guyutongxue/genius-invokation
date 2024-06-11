@@ -34,8 +34,7 @@ export const RadicalVitalityStatus = status(127011)
     const max = c.self.master().hasEquipment(ProliferatingSpores) ? 4 : 3;
     c.addVariableWithMax("vitality", 1, max);
   })
-  .on("endPhase")
-  .if((c) => c.getVariable("vitality") >= 3)
+  .on("endPhase", (c) => c.getVariable("vitality") >= 3)
   .do((c) => {
     c.setVariable("vitality", 0);
     const ch = c.self.master();

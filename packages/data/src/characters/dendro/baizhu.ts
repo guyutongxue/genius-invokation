@@ -40,16 +40,18 @@ export const SeamlessShield: CombatStatusHandle = combatStatus(117053)
   .on("enter", (c, e) => e.overrided)
   .damage(DamageType.Dendro, 1)
   .heal(1, "my active")
-  .if((c) => c.$(`my equipment with definition id ${AllThingsAreOfTheEarth}`))
   .do((c) => {
-    c.generateDice(c.$(`my active`)!.element(), 1);
+    if (c.$(`my equipment with definition id ${AllThingsAreOfTheEarth}`)) {
+      c.generateDice(c.$(`my active`)!.element(), 1);
+    }
   })
   .on("selfDispose")
   .damage(DamageType.Dendro, 1)
   .heal(1, "my active")
-  .if((c) => c.$(`my equipment with definition id ${AllThingsAreOfTheEarth}`))
   .do((c) => {
-    c.generateDice(c.$(`my active`)!.element(), 1);
+    if (c.$(`my equipment with definition id ${AllThingsAreOfTheEarth}`)) {
+      c.generateDice(c.$(`my active`)!.element(), 1);
+    }
   })
   .done();
 

@@ -59,7 +59,7 @@ export const NiwabiEnshou = status(113051)
  */
 export const AurousBlaze = combatStatus(113052)
   .duration(2)
-  .on("useSkill", (c, e) => e.action.skill.caller.definition.id !== Yoimiya)
+  .on("useSkill", (c, e) => e.skill.caller.definition.id !== Yoimiya)
   .damage(DamageType.Pyro, 1)
   .done();
 

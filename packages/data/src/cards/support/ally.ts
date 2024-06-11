@@ -57,12 +57,8 @@ export const Timaeus = card(322003)
   .costSame(2)
   .support("ally")
   .variable("material", 2)
-  .on("enter")
-  .do((c) => {
-    if (c.player.initialPiles.filter((c) => c.tags.includes("artifact")).length >= 6) {
-      c.drawCards(1, { withTag: "artifact" });
-    }
-  })
+  .on("enter", (c) => c.player.initialPiles.filter((c) => c.tags.includes("artifact")).length >= 6)
+  .drawCards(1, { withTag: "artifact" })
   .on("endPhase")
   .addVariable("material", 1)
   .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
@@ -208,7 +204,7 @@ export const ChangTheNinth = card(322009)
   .on("reaction", (c, e) => c.getVariable("currentSkill"))
   .listenToAll()
   .setVariable("hasInspiration", 1)
-  .on("useSkill", (c, e) => e.action.skill.definition.id === c.getVariable("currentSkill"))
+  .on("useSkill", (c, e) => e.skill.definition.id === c.getVariable("currentSkill"))
   .listenToAll()
   .do((c) => {
     if (c.getVariable("hasInspiration")) {
@@ -216,6 +212,7 @@ export const ChangTheNinth = card(322009)
       if (c.getVariable("inspiration") >= 3) {
         c.drawCards(2);
         c.dispose();
+        return;
       }
     }
     c.setVariable("currentSkill", 0);
@@ -331,14 +328,12 @@ export const Xudong = card(322015)
 export const Dunyarzad = card(322016)
   .costSame(1)
   .support("ally")
-  .variable("playedCard", 0, { visible: false })
   .on("deductDiceCard", (c, e) => e.hasCardTag("ally"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("playCard", (c, e) => e.hasCardTag("ally"))
-  .if((c) => c.getVariable("playedCard") === 1) // 仅第二次打出时生效（第一次为自身不计）
+  .usage(1, { autoDispose: false, visible: false })
   .drawCards(1, { withTag: "ally" })
-  .addVariable("playedCard", 1)
   .done();
 
 /**
@@ -385,15 +380,10 @@ export const MasterZhang = card(322018)
 export const Setaria = card(322019)
   .costSame(1)
   .support("ally")
-  .on("action")
+  .on("action", (c) => c.player.hands.length === 0)
   .listenToAll()
-  .usage(3, { autoDecrease: false })
-  .do((c) => {
-    if (c.player.hands.length === 0) {
-      c.drawCards(1);
-      c.consumeUsage();
-    }
-  })
+  .usage(3)
+  .drawCards(1)
   .done();
 
 /**
@@ -427,7 +417,7 @@ export const YayoiNanatsuki = card(322020)
 export const Mamere: SupportHandle = card(322021)
   .support("ally")
   .on("playCard", (c, e) => 
-    e.action.card.definition.id !== Mamere &&
+    e.card.definition.id !== Mamere &&
     e.hasOneOfCardTag("food", "place", "ally", "item")
   )
   .usage(3)
@@ -438,7 +428,7 @@ export const Mamere: SupportHandle = card(322021)
     c.createHandCard(card.id as CardHandle);
   })
   .on("playCard", (c, e) => 
-    e.action.card.definition.id !== Mamere &&
+    e.card.definition.id !== Mamere &&
     e.hasOneOfCardTag("food", "place", "ally", "item")
   )
   .usagePerRound(1)
@@ -570,7 +560,7 @@ export const Taroumaru = card(322024)
   .variable("count", 0)
   .on("enter")
   .createPileCards(TaroumarusSavings, 4, "spaceAround")
-  .on("playCard", (c, e) => e.action.card.definition.id === TaroumarusSavings)
+  .on("playCard", (c, e) => e.card.definition.id === TaroumarusSavings)
   .do((c) => {
     c.addVariable("count", 1);
     if (c.getVariable("count") >= 2) {

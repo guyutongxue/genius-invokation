@@ -115,7 +115,7 @@ export const FatalFulmination = card(224051)
   .talent(ConsecratedScorpion, "none")
   .on("enter")
   .createHandCard(BonecrunchersEnergyBlock)
-  .on("playCard", (c, e) => e.action.card.definition.id === BonecrunchersEnergyBlock)
+  .on("playCard", (c, e) => e.card.definition.id === BonecrunchersEnergyBlock)
   .drawCards(1)
   .createPileCards(BonecrunchersEnergyBlock, 1, "random")
   .done();

@@ -27,7 +27,7 @@ import { character, skill, summon, combatStatus, card, DamageType, SummonHandle 
 export const CryoCicins: SummonHandle = summon(121011)
   .endPhaseDamage(DamageType.Cryo, 1)
   .usageCanAppend(2, 3)
-  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === FatuiCryoCicinMage && e.isSkillType("normal"))
+  .on("useSkill", (c, e) => e.skill.caller.definition.id === FatuiCryoCicinMage && e.isSkillType("normal"))
   .addVariable("usage", 1)
   .on("damaged", (c, e) => c.self.master().definition.id === FatuiCryoCicinMage && e.getReaction())
   .consumeUsage()

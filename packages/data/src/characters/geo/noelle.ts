@@ -114,12 +114,7 @@ export const IGotYourBack = card(216021)
   .talent(Noelle)
   .on("enter")
   .useSkill(Breastplate)
-  .on("useSkill", (c, e) => e.isSkillType("normal"))
-  .usagePerRound(1, { autoDecrease: false })
-  .do((c) => {
-    if (c.$(`my combat status with definition id ${FullPlate}`)) {
-      c.heal(1, "all my characters");
-      c.consumeUsagePerRound();
-    }
-  })
+  .on("useSkill", (c, e) => e.isSkillType("normal") && c.$(`my combat status with definition id ${FullPlate}`))
+  .usagePerRound(1)
+  .heal(1, "all my characters")
   .done();

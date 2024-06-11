@@ -95,7 +95,7 @@ export const Awakening = card(214021)
   .talent(Razor)
   .on("enter")
   .useSkill(ClawAndThunder)
-  .on("useSkill", (c, e) => e.action.skill.definition.id === ClawAndThunder)
+  .on("useSkill", (c, e) => e.skill.definition.id === ClawAndThunder)
   .usagePerRound(1)
   .gainEnergy(1, "my characters with tag (electro) and with energy < maxEnergy limit 1")
   .done();

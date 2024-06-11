@@ -58,10 +58,12 @@ import {
   EventArg,
   ModifyActionEventArg,
   ModifyRollEventArg,
+  PlayCardEventArg,
   PlayerEventArg,
   SkillInfo,
   SwitchActiveEventArg,
   SwitchActiveInfo,
+  UseSkillEventArg,
 } from "./base/skill";
 import { CardDefinition, CardSkillEventArg } from "./base/card";
 import { executeQueryOnState } from "./query";
@@ -675,6 +677,10 @@ export class Game extends StateMutator {
             who,
             skillIdOrZero: actionInfo.skill.definition.id,
           });
+          await this.handleEvent(
+            "onUseSkill",
+            new UseSkillEventArg(this.state, who, actionInfo.skill),
+          );
           break;
         case "playCard":
           if (actionInfo.card.definition.tags.includes("legend")) {
@@ -685,6 +691,7 @@ export class Game extends StateMutator {
               value: true,
             });
           }
+          await this.handleEvent("onPlayCard", new PlayCardEventArg(this.state, actionInfo));
           // 应用“禁用事件牌”效果
           if (
             player().combatStatuses.find((st) =>

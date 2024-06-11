@@ -25,6 +25,7 @@ import {
   DamageInfo,
   SwitchActiveEventArg,
   UseSkillInfo,
+  UseSkillEventArg,
 } from "../base/skill";
 import { CardSkillEventArg } from "../base/card";
 import { GiTcgDataError } from "../error";
@@ -57,7 +58,7 @@ export function executeQuery<
       },
       event: {
         skillCaller: () =>
-          (ctx.eventArg as ActionEventArg<UseSkillInfo>).action.skill.caller.id,
+          (ctx.eventArg as UseSkillEventArg).skill.caller.id,
         switchTo: () => (ctx.eventArg as SwitchActiveEventArg).switchInfo.to.id,
       },
       damage: {

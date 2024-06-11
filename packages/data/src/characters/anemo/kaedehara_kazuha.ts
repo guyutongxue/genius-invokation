@@ -227,7 +227,7 @@ export const KazuhaSlash = skill(15053)
  */
 export const ChihayaburuPassive = skill(15054)
   .type("passive")
-  .on("useSkill", (c, e) => e.action.skill.definition.id === Chihayaburu)
+  .on("useSkill", (c, e) => e.skill.definition.id === Chihayaburu)
   .switchActive("my next")
   .done();
 

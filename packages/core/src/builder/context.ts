@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, ExposedMutation, Reaction } from "@gi-tcg/typings";
+import { Aura, DamageType, DiceType, ExposedMutation, Reaction } from "@gi-tcg/typings";
 
 import {
   EntityArea,
@@ -1566,13 +1566,13 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     return this.state.definition;
   }
 
-  get health() {
+  get health(): number {
     return this.getVariable("health");
   }
-  get energy() {
+  get energy(): number {
     return this.getVariable("energy");
   }
-  get aura() {
+  get aura(): Aura {
     return this.getVariable("aura");
   }
   positionIndex() {

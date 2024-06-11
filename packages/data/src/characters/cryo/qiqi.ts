@@ -26,9 +26,9 @@ import { character, skill, summon, combatStatus, card, DamageType, SkillHandle }
 export const HeraldOfFrost = summon(111081)
   .endPhaseDamage(DamageType.Cryo, 1)
   .usage(3)
-  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
+  .on("useSkill", (c, e) => e.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
   .heal(1, "my characters order by health - maxHealth limit 1")
-  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
+  .on("useSkill", (c, e) => e.skill.caller.definition.id === Qiqi && e.isSkillType("normal"))
   .usagePerRound(1)
   .heal(1, "my active")
   .done();
@@ -41,16 +41,14 @@ export const HeraldOfFrost = summon(111081)
  * 可用次数：3
  */
 export const FortunepreservingTalisman = combatStatus(111082)
-  .on("useSkill", (c, e) => e.action.skill.definition.id !== AdeptusArtPreserverOfFortune)
-  .usage(3, { autoDecrease: false })
-  .do((c, e) => {
-    // 在使用技能且结算之后（而非使用技能的时刻）检测生命值
-    const skillCaller = c.of<"character">(e.action.skill.caller);
-    if (skillCaller.health < skillCaller.state.variables.maxHealth) {
-      skillCaller.heal(2);
-      c.addVariable("usage", -1);
+  .on("useSkill", (c, e) => {
+    if (e.skill.definition.id === AdeptusArtPreserverOfFortune) {
+      return false;
     }
+    return c.$(`@event.skillCaller and character with health < maxHealth`)
   })
+  .usage(3)
+  .heal(2, "@event.skillCaller")
   .done();
 
 /**
@@ -120,7 +118,7 @@ export const RiteOfResurrection = card(211081)
   .talent(Qiqi)
   .on("enter")
   .useSkill(AdeptusArtPreserverOfFortune)
-  .on("useSkill", (c, e) => e.action.skill.definition.id === AdeptusArtPreserverOfFortune)
+  .on("useSkill", (c, e) => e.skill.definition.id === AdeptusArtPreserverOfFortune)
   .usage(2, { autoDispose: false })
   .do((c) => {
     for (const ch of c.$$(`all my defeated characters`)) {

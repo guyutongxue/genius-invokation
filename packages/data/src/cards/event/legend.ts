@@ -128,7 +128,7 @@ export const PassingOfJudgment = card(330006)
   .toCombatStatus(300003, "opp")
   .tags("disableEvent")
   .oneDuration()
-  .on("playCard", (c, e) => e.action.card.definition.type === "event")
+  .on("playCard", (c, e) => e.card.definition.type === "event")
   .usage(3)
   .done();
 

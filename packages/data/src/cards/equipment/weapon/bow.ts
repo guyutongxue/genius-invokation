@@ -159,7 +159,7 @@ export const EndOfTheLine = card(311207)
   .variable("additivePerRound", 0, { visible: false })
   .on("roundBegin")
   .setVariable("additivePerRound", 0)
-  .on("playCard", (c, e) => !c.player.initialPiles.find((def) => e.action.card.definition.id === def.id))
+  .on("playCard", (c, e) => !c.player.initialPiles.find((def) => e.card.definition.id === def.id))
   .do((c) => {
     if (c.getVariable("additivePerRound") < 2) {
       c.addVariableWithMax("fishing", 1, 2);

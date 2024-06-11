@@ -40,7 +40,7 @@ export const PropSurplus = status(113102)
   .do((c, e) => {
     e.increaseDamage(c.getVariable("surplus"));
   })
-  .on("useSkill", (c, e) => e.action.skill.definition.id === BewilderingLights)
+  .on("useSkill", (c, e) => e.skill.definition.id === BewilderingLights)
   .do((c) => {
     const surplus = c.getVariable("surplus");
     c.heal(surplus, "@master");

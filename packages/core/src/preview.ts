@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -20,8 +20,10 @@ import {
   ActionInfo,
   DisposeOrTuneCardEventArg,
   ModifyActionEventArg,
+  PlayCardEventArg,
   SkillInfo,
   SwitchActiveEventArg,
+  UseSkillEventArg,
 } from "./base/skill";
 import { AnyState, GameState } from "./base/state";
 import { SkillExecutor } from "./skill_executor";
@@ -65,6 +67,13 @@ export class ActionPreviewer {
             skillInfo,
           );
         }
+        if (completed) {
+          [previewState, completed] = await SkillExecutor.previewEvent(
+            previewState,
+            "onUseSkill",
+            new UseSkillEventArg(previewState, this.who, newActionInfo.skill),
+          );
+        }
         break;
       }
       case "playCard": {
@@ -76,6 +85,21 @@ export class ActionPreviewer {
             flagName: "legendUsed",
             value: true,
           });
+        }
+        if (completed) {
+          [previewState, completed] = await SkillExecutor.previewEvent(
+            previewState,
+            "onPlayCard",
+            new PlayCardEventArg(previewState, newActionInfo),
+          );
+        }
+        if (
+          player().combatStatuses.find((st) =>
+            st.definition.tags.includes("disableEvent"),
+          ) &&
+          card.definition.type === "event"
+        ) {
+          break;
         }
         previewState = applyMutation(previewState, {
           type: "removeCard",

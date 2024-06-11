@@ -59,8 +59,7 @@ export const JadeChamber = card(321003)
   .do((c, e) => {
     e.fixDice(c.$("my active")!.element(), 2);
   })
-  .on("actionPhase")
-  .if((c) => c.player.hands.length <= 3)
+  .on("actionPhase", (c) => c.player.hands.length <= 3)
   .generateDice(DiceType.Omni, 1)
   .dispose()
   .done();
@@ -118,8 +117,7 @@ export const FavoniusCathedral = card(321006)
 export const Tenshukaku = card(321007)
   .costSame(2)
   .support("place")
-  .on("actionPhase")
-  .if((c) => new Set(c.player.dice).size >= 5)
+  .on("actionPhase", (c) => new Set(c.player.dice).size >= 5)
   .generateDice(DiceType.Omni, 1)
   .done();
 
@@ -324,7 +322,7 @@ export const OperaEpiclese = card(321017)
 export const StrictProhibited = combatStatus(301018)
   .tags("disableEvent")
   .oneDuration()
-  .on("playCard", (c, e) => e.action.card.definition.type === "event")
+  .on("playCard", (c, e) => e.card.definition.type === "event")
   .usage(1)
   .done();
 

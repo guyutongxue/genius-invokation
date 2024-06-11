@@ -252,13 +252,11 @@ const detailedEventDictionary = {
   action: defineDescriptor("onAction", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  playCard: defineDescriptor("onAction", (c, e, r) => {
-    return checkRelative(c.state, { who: e.who }, r) && e.isPlayCard();
+  playCard: defineDescriptor("onPlayCard", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r);
   }),
-  useSkill: defineDescriptor("onAction", (c, e, r) => {
-    return (
-      e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
-    );
+  useSkill: defineDescriptor("onUseSkill", (c, e, r) => {
+    return checkRelative(c.state, e.skill.caller.id, r)
   }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
@@ -310,10 +308,11 @@ const detailedEventDictionary = {
     return checkRelative(c.state, e.entity.id, r);
   }),
   dispose: defineDescriptor("onDispose", (c, e, r) => {
-    return checkRelative(c.state, e.entity.id, r);
+    return checkRelative(e._state, e.entity.id, r);
   }),
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
-    return e.entity.id === r.callerId;
+    // 由于此时场上不再存在 self，故只能通过 skillDefinition 是否位于 entity 的定义内来判断
+    return e.entity.definition.skills.some((sk) => sk.id === c.skillInfo.definition.id);
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return checkRelative(c.state, e.target.id, r) && e.damageInfo.causeDefeated;
@@ -333,9 +332,6 @@ type OverrideEventArgType = {
   deductDiceSwitch: ModifyActionEventArg<SwitchActiveInfo>;
   deductDiceCard: ModifyActionEventArg<PlayCardInfo>;
   deductDiceSkill: ModifyActionEventArg<UseSkillInfo>;
-  playCard: ActionEventArg<PlayCardInfo>;
-  useSkill: ActionEventArg<UseSkillInfo>;
-  elementalTuning: ActionEventArg<ElementalTuningInfo>;
 };
 
 type DetailedEventDictionary = typeof detailedEventDictionary;

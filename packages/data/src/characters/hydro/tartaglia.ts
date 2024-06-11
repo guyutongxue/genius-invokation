@@ -199,7 +199,6 @@ export const AbyssalMayhemHydrospout = card(212041)
   .talent(Tartaglia)
   .on("enter")
   .useSkill(FoulLegacyRagingTide)
-  .on("endPhase")
-  .if((c) => c.$(`opp active has status with definition id ${Riptide}`))
+  .on("endPhase", (c) => c.$(`opp active has status with definition id ${Riptide}`))
   .damage(DamageType.Piercing, 1, "opp active")
   .done();

@@ -111,9 +111,9 @@ export const RushingHoundSwiftAsTheWind = card(216061)
   .talent(Gorou)
   .on("enter")
   .useSkill(InuzakaAllroundDefense)
-  .on("skillDamage", (c, e) => e.type === DamageType.Geo)
+  .on("skillDamage", (c, e) => e.type === DamageType.Geo && 
+    c.$(`my combat status with definition id ${GeneralsWarBanner}`))
   .listenToPlayer()
   .usagePerRound(1)
-  .if((c) => c.$(`my combat status with definition id ${GeneralsWarBanner}`))
   .drawCards(1)
   .done();

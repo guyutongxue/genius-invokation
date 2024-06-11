@@ -38,7 +38,7 @@ export const ParametricTransformer = card(323001)
     (e.type !== DamageType.Physical && e.type !== DamageType.Piercing))
   .listenToAll()
   .setVariable("hasProgress", 1)
-  .on("useSkill", (c, e) => e.action.skill.definition.id === c.getVariable("currentSkill"))
+  .on("useSkill", (c, e) => e.skill.definition.id === c.getVariable("currentSkill"))
   .listenToAll()
   .do((c) => {
     if (c.getVariable("hasProgress")) {
@@ -46,6 +46,7 @@ export const ParametricTransformer = card(323001)
       if (c.getVariable("progress") >= 3) {
         c.generateDice("randomElement", 3);
         c.dispose();
+        return;
       }
     }
     c.setVariable("currentSkill", 0);
@@ -108,8 +109,8 @@ export const TreasureseekingSeelie = card(323004)
   .support("item")
   .variable("clue", 0)
   .on("useSkill")
-  .addVariable("clue", 1)
   .do((c) => {
+    c.addVariable("clue", 1);
     if (c.getVariable("clue") >= 3) {
       c.drawCards(3);
       c.dispose();
@@ -183,10 +184,11 @@ export const LumenstoneAdjuvant = card(323007)
   .replaceDescription("[GCG_TOKEN_COUNTER]", (st, self) => self.variables.playedCard)
   .on("playCard")
   .addVariable("playedCard", 1)
-  .on("playCard", (c) => c.getVariable("playedCard") === 2)
+  .on("playCard", (c) => c.getVariable("playedCard") === 3)
   .usagePerRound(1)
   .usage(3)
   .drawCards(1)
+  .generateDice(DiceType.Omni, 1)
   .on("actionPhase")
   .setVariable("playedCard", 0)
   .done();

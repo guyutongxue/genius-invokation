@@ -47,8 +47,7 @@ const IcesealedCrimsonWitchOfEmbers01 = status(121024)
  * 此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。
  */
 export const IcesealedCrimsonWitchOfEmbers = status(121021)
-  .on("actionPhase")
-  .if((c) => c.self.master().health <= 4)
+  .on("actionPhase", (c) => c.self.master().health <= 4)
   .dispose()
   .on("beforeDefeated")
   .immune(1)

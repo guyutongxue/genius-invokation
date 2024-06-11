@@ -149,6 +149,6 @@ export const DeathlyCyclone = card(225031)
   .talent(ConsecratedFlyingSerpent, "none")
   .on("enter")
   .createHandCard(BonecrunchersEnergyBlock)
-  .on("playCard", (c, e) => e.action.card.definition.id === BonecrunchersEnergyBlock)
+  .on("playCard", (c, e) => e.card.definition.id === BonecrunchersEnergyBlock)
   .combatStatus(DeathlyCycloneInEffect)
   .done();

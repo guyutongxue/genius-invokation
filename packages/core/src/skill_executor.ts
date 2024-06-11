@@ -15,6 +15,7 @@
 
 import { CardSkillEventArg } from "./base/card";
 import {
+  ActionEventArg,
   DamageInfo,
   DamageOrHealEventArg,
   EventAndRequest,
@@ -23,6 +24,7 @@ import {
   SkillInfo,
   SwitchActiveEventArg,
   TriggeredSkillDefinition,
+  UseSkillEventArg,
   ZeroHealthEventArg,
 } from "./base/skill";
 import { CharacterState, GameState, stringifyState } from "./base/state";
@@ -111,7 +113,9 @@ export class SkillExecutor extends StateMutator {
     const skillDef = skillInfo.definition;
 
     const preExposedMutations: ExposedMutation[] = [];
-    if (skillInfo.caller.definition.skills.find((sk) => sk.id === skillDef.id)) {
+    if (
+      skillInfo.caller.definition.skills.find((sk) => sk.id === skillDef.id)
+    ) {
       preExposedMutations.push({
         type: "triggered",
         id: skillInfo.caller.id,
@@ -438,13 +442,16 @@ export class SkillExecutor extends StateMutator {
           plunging: def.skillType === "normal" && player.canPlunging,
         };
         await this.finalizeSkill(skillInfo, void 0);
+        await this.handleEvent([
+          "onUseSkill",
+          new UseSkillEventArg(this.state, arg.who, skillInfo),
+        ]);
       } else {
         using l = this.subLog(
           DetailLogType.Event,
           `Handling event ${name} (${arg.toString()}):`,
         );
-        const onTimeState = arg._state;
-        for (const { caller, skill } of allSkills(onTimeState, name)) {
+        for (const { caller, skill } of allSkills(this.state, name)) {
           const skillInfo: Writable<SkillInfo> = {
             caller,
             definition: skill,
@@ -453,9 +460,6 @@ export class SkillExecutor extends StateMutator {
             charged: false,
             plunging: false,
           };
-          if (!(0, skill.filter)(onTimeState, skillInfo, arg)) {
-            continue;
-          }
           const currentEntities = allEntities(this.state);
           // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
           if (name === "onDispose" && arg.entity.id === caller.id) {
@@ -466,6 +470,9 @@ export class SkillExecutor extends StateMutator {
               true,
             );
           } else if (!currentEntities.find((et) => et.id === caller.id)) {
+            continue;
+          }
+          if (!(0, skill.filter)(this.state, skillInfo, arg)) {
             continue;
           }
           arg._currentSkillInfo = skillInfo;
@@ -508,7 +515,10 @@ export class SkillExecutor extends StateMutator {
   static async handleEvent(game: IoAndState, ...event: EventAndRequest) {
     return SkillExecutor.handleEvents(game, [event]);
   }
-  static async previewEvent(state: GameState, ...event: EventAndRequest): Promise<PreviewResult> {
+  static async previewEvent(
+    state: GameState,
+    ...event: EventAndRequest
+  ): Promise<PreviewResult> {
     const executor = new SkillExecutor(state);
     try {
       await executor.handleEvent(event);

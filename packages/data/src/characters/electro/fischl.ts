@@ -27,7 +27,7 @@ export const Oz01 = summon(114012)
   .conflictWith(114011)
   .endPhaseDamage(DamageType.Electro, 1)
   .usage(2)
-  .on("useSkill", (c, e) => e.action.skill.caller.definition.id === Fischl && e.isSkillType("normal"))
+  .on("useSkill", (c, e) => e.skill.caller.definition.id === Fischl && e.isSkillType("normal"))
   .damage(DamageType.Electro, 2)
   .consumeUsage()
   .done();

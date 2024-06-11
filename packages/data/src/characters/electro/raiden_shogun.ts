@@ -39,7 +39,7 @@ export const EyeOfStormyJudgment = summon(114071)
  */
 export const ChakraDesiderataStatus = status(114072)
   .variable("chakra", 0)
-  .on("useSkill", (c, e) => e.isSkillType("burst") && e.action.skill.caller.id !== c.self.master().id)
+  .on("useSkill", (c, e) => e.isSkillType("burst") && e.skill.caller.id !== c.self.master().id)
   .listenToPlayer()
   .addVariableWithMax("chakra", 1, 3)
   .on("modifySkillDamage", (c, e) => e.via.definition.id === SecretArtMusouShinsetsu)

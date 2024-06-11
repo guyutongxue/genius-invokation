@@ -166,7 +166,6 @@ export function StandaloneParent(props: StandaloneParentProps) {
     if (game !== null) {
       setStateLog((logs) => [...logs, { state, canResume }]);
     }
-    // await new Promise((resolve) => setTimeout(resolve, 500));
   };
 
   const onGameError = (e: unknown, from: Game) => {

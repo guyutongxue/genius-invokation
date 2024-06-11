@@ -51,7 +51,7 @@ export const IcyQuill01 = combatStatus(111072)
     if (e.viaSkillType("normal") && c.getVariable("noUsageEffect")) {
       c.setVariable("noUsageEffect", 0);
     } else {
-      c.addVariable("usage", -1);
+      c.consumeUsage()
     }
   })
   .done();

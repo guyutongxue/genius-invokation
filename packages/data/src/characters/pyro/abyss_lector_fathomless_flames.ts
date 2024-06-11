@@ -70,6 +70,7 @@ export const FieryRebirthStatus = status(123022)
       c.dispose(talent);
       c.characterStatus(AegisOfAbyssalFlame, "@master");
     }
+    c.self.master().setVariable("fieryRebirthTriggered", 1);
   })
   .characterStatus(FieryRebirthHoned, "@master")
   .dispose()
@@ -147,6 +148,17 @@ export const FieryRebirth = skill(23024)
   .done();
 
 /**
+ * @id 23028
+ * @name 火之新生
+ * @description
+ * 
+ */
+export const FieryRebirthSkill = skill(23028)
+  .type("passive")
+  .variable("fieryRebirthTriggered", 0)
+  .done();
+
+/**
  * @id 2302
  * @name 深渊咏者·渊火
  * @description
@@ -156,7 +168,7 @@ export const AbyssLectorFathomlessFlames = character(2302)
   .tags("pyro", "monster")
   .health(6)
   .energy(2)
-  .skills(FlameOfSalvation, SearingPrecept, OminousStar, FieryRebirth)
+  .skills(FlameOfSalvation, SearingPrecept, OminousStar, FieryRebirth, FieryRebirthSkill)
   .done();
 
 /**
@@ -170,21 +182,7 @@ export const AbyssLectorFathomlessFlames = character(2302)
 export const EmbersRekindled = card(223021)
   .costPyro(2)
   .talent(AbyssLectorFathomlessFlames, "none")
-  .on("enter")
-  .do((c) => {
-    if (!c.self.master().hasStatus(FieryRebirthStatus)) {
-      c.characterStatus(AegisOfAbyssalFlame, "@master");
-      c.dispose();
-    }
-  })
+  .on("enter", (c) => c.self.master().getVariable("fieryRebirthTriggered"))
+  .characterStatus(AegisOfAbyssalFlame, "@master")
+  .dispose()
   .done();
-
-/**
- * @id 23028
- * @name 火之新生
- * @description
- * 
- */
-export const FieryRebirth01 = skill(23028)
-  .type("passive")
-  .reserve();

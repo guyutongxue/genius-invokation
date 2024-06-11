@@ -93,7 +93,7 @@ export const ColdbloodedStrike = card(211031)
   .talent(Kaeya)
   .on("enter")
   .useSkill(Frostgnaw)
-  .on("useSkill", (c, e) => e.action.skill.definition.id === Frostgnaw)
+  .on("useSkill", (c, e) => e.skill.definition.id === Frostgnaw)
   .usagePerRound(1)
   .heal(2, "@master")
   .done();

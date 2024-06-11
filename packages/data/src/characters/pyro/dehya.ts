@@ -169,7 +169,6 @@ export const StalwartAndTrue = card(213091)
   .talent(Dehya)
   .on("enter")
   .useSkill(MoltenInferno)
-  .on("endPhase")
-  .if((c) => c.self.master().health <= 6)
+  .on("endPhase", (c) => c.self.master().health <= 6)
   .heal(2, "@master")
   .done();

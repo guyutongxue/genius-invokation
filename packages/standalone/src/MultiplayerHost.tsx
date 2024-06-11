@@ -10,6 +10,7 @@ import {
 import { PVP_ENDPOINT } from "./config";
 import {
   Game,
+  GameState,
   GameStateLogEntry,
   PlayerIO,
   serializeGameStateLog,
@@ -33,11 +34,10 @@ export function MultiplayerHost(props: MultiplayerHostProps) {
   let guestIo: PlayerIO | null = null;
   const [chessboard, setChessboard] = createSignal<JSX.Element>();
   let game: Game | null = null;
-  const pause = async () => {
+  const pause = async (state: GameState, mutations: unknown, canResume: boolean) => {
     if (game !== null) {
-      setStateLog(game.stateLog);
+      setStateLog((logs) => [...logs, { state, canResume }]);
     }
-    // await new Promise((resolve) => setTimeout(resolve, 500));
   };
 
   const onGameError = (e: unknown) => {

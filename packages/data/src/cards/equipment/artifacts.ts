@@ -349,7 +349,7 @@ export const ExilesCirclet = card(312006)
 export const OrnateKabuto = card(312007)
   .costSame(1)
   .artifact()
-  .on("useSkill", (c, e) => e.action.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
+  .on("useSkill", (c, e) => e.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
   .listenToPlayer()
   .gainEnergy(1, "@master")
   .done();
@@ -365,7 +365,7 @@ export const OrnateKabuto = card(312007)
 export const EmblemOfSeveredFate = card(312008)
   .costSame(2)
   .artifact()
-  .on("useSkill", (c, e) => e.action.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
+  .on("useSkill", (c, e) => e.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
   .listenToPlayer()
   .gainEnergy(1, "@master")
   .on("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
@@ -643,12 +643,10 @@ export const EchoesOfAnOffering = card(312020)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usagePerRound(1)
   .drawCards(1)
-  .on("useSkill")
+  .on("useSkill", (c) => c.player.dice.length <= c.player.hands.length)
   .usagePerRound(1)
   .do((c) => {
-    if (c.player.dice.length <= c.player.hands.length) {
-      c.generateDice(c.self.master().element(), 1);
-    }
+    c.generateDice(c.self.master().element(), 1);
   })
   .done();
 
@@ -724,8 +722,7 @@ export const VeteransVisage = card(312023)
 export const GoldenTroupesReward = card(312025)
   .artifact()
   .variable("reward", 0)
-  .on("endPhase")
-  .if((c) => !c.self.master().isActive())
+  .on("endPhase", (c) => !c.self.master().isActive())
   .addVariableWithMax("reward", 1, 2)
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .do((c, e) => {

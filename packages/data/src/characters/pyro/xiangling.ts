@@ -35,7 +35,7 @@ export const Guoba = summon(113021)
  * 可用次数：2
  */
 export const PyronadoStatus = combatStatus(113022)
-  .on("useSkill", (c, e) => e.action.skill.definition.id !== Pyronado)
+  .on("useSkill", (c, e) => e.skill.definition.id !== Pyronado)
   .usage(2)
   .damage(DamageType.Pyro, 2)
   .done();

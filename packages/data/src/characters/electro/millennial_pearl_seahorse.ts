@@ -61,10 +61,9 @@ export const FontemerPearl = status(124032)
         return; // 不扣除使用次数
       }
     }
-    c.addVariable("usage", -1)
+    c.consumeUsage();
   })
-  .on("declareEnd")
-  .if((c) => c.self.master().isActive())
+  .on("declareEnd", (c) => c.self.master().isActive())
   .drawCards(1)
   .done();
 
@@ -129,7 +128,7 @@ export const PearlArmor = skill(24034)
  */
 export const SwirlingSchoolOfFishPassive = skill(24037)
   .type("passive")
-  .on("useSkill", (c, e) => e.action.skill.definition.id === SwirlingSchoolOfFish && c.self.hasStatus(FontemerPearl))
+  .on("useSkill", (c, e) => e.skill.definition.id === SwirlingSchoolOfFish && c.self.hasStatus(FontemerPearl))
   .usagePerRound(1, { name: "usagePerRound1" })
   .do((c) => {
     const pearl = c.self.hasStatus(FontemerPearl)!;

@@ -62,10 +62,9 @@ export const AquilaFavonia = card(311503)
   .weapon("sword")
   .on("modifySkillDamage")
   .increaseDamage(1)
-  .on("useSkill", (c, e) => !c.of<"character">(e.action.skill.caller).isMine())
+  .on("useSkill", (c, e) => !c.of<"character">(e.skill.caller).isMine() && c.self.master().isActive())
   .listenToAll()
   .usagePerRound(2)
-  .if((c) => c.self.master().isActive())
   .heal(1, "@master")
   .done();
 

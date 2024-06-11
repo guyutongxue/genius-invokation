@@ -25,7 +25,7 @@ export const CrushingThunder = combatStatus(124044)
   .variable("playedCard", 0)
   .on("playCard")
   .addVariable("playedCard", 1)
-  .on("playCard", (c) => c.getVariable("playedCard") === 2)
+  .on("playCard", (c) => c.getVariable("playedCard") === 3)
   .do((c) => {
     const cicin = c.$(`opp summon with definition id ${ElectroCicin}`);
     if (cicin) {
@@ -45,7 +45,6 @@ export const CrushingThunder = combatStatus(124044)
  * 愚人众·雷萤术士受到元素反应伤害后：此牌可用次数-1。
  */
 export const ElectroCicin = summon(124041)
-  .variable("oppPlayedCard", 0)
   .endPhaseDamage(DamageType.Electro, 1)
   .usage(3)
   .on("damaged", (c, e) => e.target.definition.id === FatuiElectroCicinMage && e.getReaction() !== null)
