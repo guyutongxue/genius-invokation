@@ -18,9 +18,10 @@ import { AppController } from "./app.controller";
 import { AuthModule } from './auth/auth.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { UsersModule } from "./users/users.module";
+import { GamesModule } from './games/games.module';
 
 @Module({
   controllers: [AppController],
-  imports: [AuthModule, UsersModule, InvitationModule],
+  imports: [AuthModule, UsersModule, InvitationModule, GamesModule],
 })
 export class AppModule {}

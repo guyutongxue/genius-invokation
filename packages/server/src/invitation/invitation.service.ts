@@ -29,7 +29,7 @@ export class InvitationService {
     const invitation = await this.prisma.invitationCode.findFirst({
       where: { code },
     });
-    if (!invitation) {
+    if (!invitation || invitation.used) {
       return null;
     }
     await this.prisma.invitationCode.update({
