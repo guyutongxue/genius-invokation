@@ -14,11 +14,13 @@
 | `onEndPhase`            | 结束阶段时                       |
 | `onBeforeAction`        | 玩家行动前                       |
 | `onAction`              | 玩家行动后                       |
+| `onUseSkill`            | 使用技能后                       |
+| `onPlayCard`            | 打出手牌后                       |
+| `onDisposeOrTuneCard`   | 舍弃牌或元素调和时               |
 | `onSwitchActive`        | 切换出战角色时                   |
 | `onDamageOrHeal`        | 造成/受到伤害/治疗时；角色倒下时 |
 | `onReaction`            | 发生元素反应时                   |
 | `onDrawCards`           | 抓牌时                           |
-| `onDisposeOrTuneCard`   | 舍弃牌或元素调和时               |
 | `onTransformDefinition` | 角色/实体定义被替换时            |
 | `onEnter`               | 实体入场时                       |
 | `onDispose`             | 实体弃置时                       |
@@ -71,8 +73,8 @@
 | `beforeAction`          | `onBeforeAction`      | **我方**玩家行动前                        |
 | `replaceAction`         | `replaceAction`       | 等价                                      |
 | `action`                | `onAction`            | **我方**玩家行动后                        |
-| `playCard`              | `onAction`            | 我方玩家打出手牌后                        |
-| `useSkill`              | `onAction`            | 我方/所附着**角色使用主动技能**后         |
+| `playCard`              | `onPlayCard`          | 我方玩家打出手牌后                        |
+| `useSkill`              | `onUseSkill`          | 我方/所附着**角色使用主动技能**后         |
 | `declareEnd`            | `onAction`            | 我方玩家宣布回合结束后                    |
 | `switchActive`          | `onSwitchActive`      | 我方/所附着角色被切出/切入后              |
 | `dealDamage`            | `onDamageOrHeal`      | 我方/所附着角色造成伤害后                 |
