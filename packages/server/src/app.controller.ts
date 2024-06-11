@@ -19,7 +19,7 @@ import { Controller, Get } from "@nestjs/common";
 export class AppController {
   constructor() {}
 
-  @Get()
+  @Get("/hello")
   getHello(): string {
     return "Hello World!";
   }

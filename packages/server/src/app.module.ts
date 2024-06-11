@@ -16,9 +16,11 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AuthModule } from './auth/auth.module';
+import { InvitationModule } from './invitation/invitation.module';
+import { UsersModule } from "./users/users.module";
 
 @Module({
   controllers: [AppController],
-  imports: [AuthModule],
+  imports: [AuthModule, UsersModule, InvitationModule],
 })
 export class AppModule {}
