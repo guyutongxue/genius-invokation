@@ -331,12 +331,14 @@ export const Xudong = card(322015)
 export const Dunyarzad = card(322016)
   .costSame(1)
   .support("ally")
+  .variable("playedCard", 0, { visible: false })
   .on("deductDiceCard", (c, e) => e.hasCardTag("ally"))
   .usagePerRound(1)
   .deductCost(DiceType.Omni, 1)
   .on("playCard", (c, e) => e.hasCardTag("ally"))
-  .usage(1, { autoDispose: false, visible: false })
+  .if((c) => c.getVariable("playedCard") === 1) // 仅第二次打出时生效（第一次为自身不计）
   .drawCards(1, { withTag: "ally" })
+  .addVariable("playedCard", 1)
   .done();
 
 /**
