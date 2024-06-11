@@ -92,7 +92,6 @@ export interface DamageInfo {
   readonly target: CharacterState;
   readonly causeDefeated: boolean;
   readonly fromReaction: Reaction | null;
-  readonly roundNumber: number;
   readonly log?: string;
 }
 
@@ -105,8 +104,8 @@ export interface HealInfo {
   readonly target: CharacterState;
   readonly fromReaction: null;
   readonly causeDefeated: false;
-  readonly roundNumber: number;
   readonly log?: string;
+  readonly isDistribution: boolean;
 }
 
 export interface ReactionInfo {
@@ -551,6 +550,39 @@ export class DamageOrHealEventArg<
   }
 }
 
+export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
+  private _increased = 0;
+  private _decreased = 0;
+  private _log = super.damageInfo.log ?? "";
+  increaseHeal(value: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} increase heal by ${value}.\n`;
+    this._increased += value;
+  }
+  decreaseHeal(value: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} decrease heal by ${value}.\n`;
+    this._decreased += value;
+  }
+  override get damageInfo(): HealInfo {
+    const healInfo = super.damageInfo;
+    const expectedValue = Math.max(
+      0,
+      Math.ceil(healInfo.expectedValue + this._increased - this._decreased),
+    );
+    const targetLoss = healInfo.target.variables.maxHealth - healInfo.target.variables.health;
+    const value = Math.min(expectedValue, targetLoss);
+    return {
+      ...healInfo,
+      expectedValue,
+      value,
+      log: this._log,
+    };
+  }
+}
+
 export class ModifyDamage1EventArg<
   InfoT extends DamageInfo,
 > extends DamageOrHealEventArg<InfoT> {
@@ -783,6 +815,20 @@ export class DisposeOrTuneCardEventArg extends PlayerEventArg {
   }
 }
 
+export class GenerateDiceEventArg extends PlayerEventArg {
+  constructor(
+    state: GameState,
+    who: 0 | 1,
+    public readonly dice: DiceType[],
+  ) {
+    super(state, who);
+  }
+
+  override toString(): string {
+    return `player ${this.who} generate dice ${this.dice.join(", ")}`; 
+  }
+}
+
 export const EVENT_MAP = {
   onBattleBegin: EventArg,
   onRoundBegin: EventArg,
@@ -802,9 +848,11 @@ export const EVENT_MAP = {
   onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
   onReaction: ReactionEventArg,
   onTransformDefinition: TransformDefinitionEventArg,
+  onGenerateDice: GenerateDiceEventArg,
 
   modifyDamage0: ModifyDamage0EventArg,
   modifyDamage1: ModifyDamage1EventArg,
+  modifyHeal: ModifyHealEventArg,
   onDamageOrHeal: DamageOrHealEventArg,
 
   onEnter: EnterEventArg,
@@ -817,7 +865,7 @@ export const EVENT_MAP = {
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
 
-export type InlineEventNames = "modifyDamage0" | "modifyDamage1";
+export type InlineEventNames = "modifyDamage0" | "modifyDamage1" | "modifyHeal";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 

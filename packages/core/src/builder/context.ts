@@ -23,11 +23,10 @@ import {
   USAGE_PER_ROUND_VARIABLE_NAMES,
   stringifyEntityArea,
 } from "../base/entity";
-import { Mutation, applyMutation, stringifyMutation } from "../base/mutation";
+import { Mutation } from "../base/mutation";
 import {
   DamageInfo,
   DisposeOrTuneMethod,
-  EntityEventArg,
   EventAndRequest,
   EventAndRequestConstructorArgs,
   EventAndRequestNames,
@@ -36,6 +35,7 @@ import {
   InlineEventNames,
   ModifyDamage0EventArg,
   ModifyDamage1EventArg,
+  ModifyHealEventArg,
   ReactionInfo,
   SkillDescription,
   SkillInfo,
@@ -49,7 +49,6 @@ import {
   EntityState,
   EntityVariables,
   GameState,
-  UseSkillLogEntry,
   stringifyState,
 } from "../base/state";
 import {
@@ -106,6 +105,11 @@ interface DrawCardsOpt {
   withTag?: CardTag | null;
   /** 抽取选定定义的牌。设置此选项会忽略 withTag */
   withDefinition?: CardHandle | null;
+}
+
+interface HealOption {
+  /** 是否为分配生命值导致的治疗 */
+  distribution?: boolean;
 }
 
 type Setter<T> = (draft: Draft<T>) => void;
@@ -406,7 +410,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   /** 治疗角色。若角色已倒下，则复苏该角色。*/
-  heal(value: number, target: CharacterTargetArg) {
+  heal(value: number, target: CharacterTargetArg, { distribution = false }: HealOption = {}) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
@@ -438,7 +442,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         varName: "health",
         value: targetState.variables.health + finalValue,
       });
-      const healInfo: HealInfo = {
+      let healInfo: HealInfo = {
         type: damageType,
         expectedValue: value,
         value: finalValue,
@@ -446,16 +450,19 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         via: this.skillInfo,
         target: targetState,
         causeDefeated: false,
-        roundNumber: this.state.roundNumber,
         fromReaction: null,
+        isDistribution: distribution,
       };
+      const modifier = new ModifyHealEventArg(this.state, healInfo);
+      this.handleInlineEvent("modifyHeal", modifier);
+      healInfo = modifier.damageInfo;
       this.notify({
         mutations: [
           {
             type: "damage",
             damage: {
-              type: damageType,
-              value: finalValue,
+              type: healInfo.type,
+              value: healInfo.value,
               target: targetState.id,
             },
           },
@@ -493,7 +500,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         causeDefeated:
           !!targetState.variables.alive &&
           targetState.variables.health <= value,
-        roundNumber: this.state.roundNumber,
         fromReaction: this.fromReaction,
       };
       if (damageInfo.type !== DamageType.Piercing) {
@@ -1142,6 +1148,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       who: this.callerArea.who,
       value: newDice,
     });
+    this.emitEvent("onGenerateDice", this.state, this.callerArea.who, insertedDice);
   }
 
   createHandCard(cardId: CardHandle) {

@@ -234,6 +234,9 @@ const detailedEventDictionary = {
       e.type !== DamageType.Piercing && checkRelative(c.state, e.target.id, r)
     );
   }),
+  beforeHealed: defineDescriptor("modifyHeal", (c, e, r) => {
+    return checkRelative(c.state, e.target.id, r);
+  }),
   beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {
     return checkRelative(c.state, e.target.id, r) && e._immuneInfo === null;
   }),
@@ -321,6 +324,9 @@ const detailedEventDictionary = {
   transformDefinition: defineDescriptor("onTransformDefinition", (c, e, r) => {
     return checkRelative(c.state, e.entity.id, r);
   }),
+  generateDice: defineDescriptor("onGenerateDice", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r);
+  })
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideEventArgType = {

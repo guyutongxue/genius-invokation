@@ -249,7 +249,7 @@ export class SkillExecutor extends StateMutator {
           value: healValue,
           causeDefeated: false,
           fromReaction: null,
-          roundNumber: this.state.roundNumber,
+          isDistribution: false,
         };
         this.mutate({
           type: "modifyEntityVar",

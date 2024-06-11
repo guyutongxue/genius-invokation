@@ -85,7 +85,7 @@ export const ThunderboreBlast = skill(24053)
  */
 export const ImmortalRemnantsElectro = skill(24054)
   .type("passive")
-  .on("endPhase")
+  .on("endPhase", (c) => c.self.state.variables.alive)
   .createPileCards(BonecrunchersEnergyBlock, 2, "topRange10")
   .done();
 

@@ -39,18 +39,6 @@ export interface IteratorState {
   readonly id: number;
 }
 
-export interface PlayCardLogEntry {
-  readonly roundNumber: number;
-  readonly who: 0 | 1;
-  readonly card: CardState;
-}
-
-export interface UseSkillLogEntry {
-  readonly roundNumber: number;
-  readonly who: 0 | 1;
-  readonly skill: SkillInfo;
-}
-
 export interface GameState {
   readonly data: ReadonlyDataStore;
   readonly config: GameConfig;
