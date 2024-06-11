@@ -1,18 +1,51 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Put } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { User } from '../auth/user.decorator';
-import { Allow, IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
-import { User as UserT } from '@prisma/client';
-import { Public } from '../auth/auth.guard';
-import { InvitationService } from '../invitation/invitation.service';
+// Copyright (C) 2024 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Post,
+  Put,
+} from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { User } from "../auth/user.decorator";
+import {
+  Allow,
+  IsEmail,
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+} from "class-validator";
+import { User as UserT } from "@prisma/client";
+import { Public } from "../auth/auth.guard";
+import { InvitationService } from "../invitation/invitation.service";
 
 class SetPasswordDto {
-  @IsNotEmpty()
+  @MinLength(6)
+  @MaxLength(64)
   password!: string;
 }
 
 class SetNameDto {
   @IsNotEmpty()
+  @MaxLength(64)
   name!: string;
 }
 
@@ -20,7 +53,7 @@ class RegisterDto {
   @IsEmail()
   email!: string;
 
-  @IsNotEmpty()
+  @MinLength(6)
   @MaxLength(64)
   password!: string;
 
@@ -28,11 +61,14 @@ class RegisterDto {
   code?: string;
 }
 
-type UserNoPassword = Exclude<UserT, 'password' | 'salt'>;
+type UserNoPassword = Exclude<UserT, "password" | "salt">;
 
-@Controller('users')
+@Controller("users")
 export class UsersController {
-  constructor(private users: UsersService, private invitation: InvitationService) {}
+  constructor(
+    private users: UsersService,
+    private invitation: InvitationService,
+  ) {}
 
   @Get("me")
   async me(@User() userId: number): Promise<UserNoPassword> {
@@ -47,7 +83,10 @@ export class UsersController {
   }
 
   @Put("me/password")
-  async setPassword(@User() userId: number, @Body() { password }: SetPasswordDto) {
+  async setPassword(
+    @User() userId: number,
+    @Body() { password }: SetPasswordDto,
+  ) {
     await this.users.updatePassword(userId, password);
     return { message: "Password updated" };
   }
@@ -63,7 +102,9 @@ export class UsersController {
   @Post()
   async registerUser(@Body() { email, password, code }: RegisterDto) {
     if (!code) {
-      throw new BadRequestException(`We now require an invitation code to register. Please ask a friend for one.`);
+      throw new BadRequestException(
+        `We now require an invitation code to register. Please ask a friend for one.`,
+      );
     }
     const result = await this.invitation.useInvitationCode(code);
     if (result === null) {

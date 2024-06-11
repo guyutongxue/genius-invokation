@@ -5,3 +5,6 @@ node_modules
 # Prisma databases
 dev.db
 *.db-journal
+
+# vscode
+.vscode/*
