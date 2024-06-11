@@ -13,24 +13,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { NestFactory } from "@nestjs/core";
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from "@nestjs/platform-fastify";
-import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { IsEmail, IsNotEmpty } from "class-validator";
+import { AuthService } from "./auth.service";
+import { Public } from "./auth.guard";
 
-const app = await NestFactory.create<NestFastifyApplication>(
-  AppModule,
-  new FastifyAdapter(),
-);
-app.useGlobalPipes(new ValidationPipe());
+class LoginDto {
+  @IsEmail()
+  email!: string;
 
-await app.listen(3000, (err, address) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
+  @IsNotEmpty()
+  password!: string;
+}
+
+@Controller("auth")
+export class AuthController {
+
+  constructor(private auth: AuthService) {}
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post("login")
+  async login(@Body() { email, password }: LoginDto) {
+    return await this.auth.login(email, password);
   }
-  console.log(`Server listening at ${address}`);
-});
+}
