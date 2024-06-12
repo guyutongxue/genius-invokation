@@ -16,9 +16,15 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
 import type { CreateDeckDto, UpdateDeckDto } from "./decks.controller";
-import { type Deck, encode } from "@gi-tcg/utils";
+import { type Deck, encode, decode } from "@gi-tcg/utils";
 import { type Deck as DeckModel } from "@prisma/client";
 import { DeckVerificationError, verifyDeck } from "../utils";
+
+export interface DeckWithDeckModel extends Deck {
+  id: number;
+  name: string;
+  code: string;
+}
 
 @Injectable()
 export class DecksService {
@@ -48,12 +54,45 @@ export class DecksService {
     });
   }
 
-  async getAllDecks(userId: number): Promise<DeckModel[]> {
-    return await this.prisma.deck.findMany({
+  async getAllDecks(userId: number): Promise<DeckWithDeckModel[]> {
+    const models = await this.prisma.deck.findMany({
       where: {
         ownerUserId: userId,
       },
     });
+    return models.map((model) => {
+      const { characters, cards } = decode(model.code);
+      return {
+        id: model.id,
+        name: model.name,
+        code: model.code,
+        characters,
+        cards,
+      };
+    });
+  }
+
+  async getDeck(
+    userId: number,
+    deckId: number,
+  ): Promise<DeckWithDeckModel | null> {
+    const model = await this.prisma.deck.findFirst({
+      where: {
+        id: deckId,
+        ownerUserId: userId,
+      },
+    });
+    if (model === null) {
+      return null;
+    }
+    const { characters, cards } = decode(model.code);
+    return {
+      id: model.id,
+      name: model.name,
+      code: model.code,
+      characters,
+      cards,
+    };
   }
 
   async updateDeck(

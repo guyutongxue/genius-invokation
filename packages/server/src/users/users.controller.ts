@@ -21,6 +21,8 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Param,
+  ParseIntPipe,
   Post,
   Put,
 } from "@nestjs/common";
@@ -71,6 +73,18 @@ export class UsersController {
   @Get("me")
   async me(@User() userId: number): Promise<UserNoPassword> {
     const user = await this.users.findById(userId);
+    if (!user) {
+      throw new NotFoundException();
+    }
+    const userObj: any = { ...user };
+    delete userObj.password;
+    delete userObj.salt;
+    return userObj;
+  }
+
+  @Get(":id")
+  async getUser(@Param("id", ParseIntPipe) id: number): Promise<UserNoPassword> {
+    const user = await this.users.findById(id);
     if (!user) {
       throw new NotFoundException();
     }

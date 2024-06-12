@@ -21,6 +21,7 @@ import { DbModule } from '../db/db.module';
 @Module({
   imports: [DbModule],
   controllers: [DecksController],
-  providers: [DecksService]
+  providers: [DecksService],
+  exports: [DecksService],
 })
 export class DecksModule {}

@@ -35,7 +35,6 @@ import {
   Length,
 } from "class-validator";
 import { DecksService } from "./decks.service";
-import { decode } from "@gi-tcg/utils";
 
 export class CreateDeckDto {
   @Length(1, 64)
@@ -86,16 +85,7 @@ export class DecksController {
 
   @Get()
   async getAllDecks(@User() userId: number) {
-    return (await this.decks.getAllDecks(userId)).map((deck) => {
-      const { characters, cards } = decode(deck.code);
-      return {
-        id: deck.id,
-        name: deck.name,
-        code: deck.code,
-        characters,
-        cards,
-      };
-    });
+    return await this.decks.getAllDecks(userId);
   }
 
   @Patch(":deckId")
