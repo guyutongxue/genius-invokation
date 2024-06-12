@@ -42,9 +42,9 @@ export class InvitationService {
 
   async useInvitationCode(code: string) {
     const invitation = await this.prisma.invitationCode.findFirst({
-      where: { code },
+      where: { code, used: false },
     });
-    if (!invitation || invitation.used) {
+    if (!invitation) {
       return null;
     }
     await this.prisma.invitationCode.update({
