@@ -35,6 +35,7 @@ model User {
   games           PlayerOnGames[]
   createdAt       DateTime         @default(now())
   invitationCodes InvitationCode[]
+  decks           Deck[]
 }
 
 model Game {
@@ -63,4 +64,11 @@ model InvitationCode {
   used            Boolean  @default(false)
   createdBy       User     @relation(fields: [createdByUserId], references: [id])
   createdByUserId Int
+}
+
+model Deck {
+  id          Int    @id @default(autoincrement())
+  code        String
+  owner       User   @relation(fields: [ownerUserId], references: [id])
+  ownerUserId Int
 }
