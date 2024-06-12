@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Injectable, type OnModuleInit } from "@nestjs/common";
+import { ConflictException, Injectable, type OnModuleInit } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
-import { type User } from "@prisma/client";
+import { type User as UserModel } from "@prisma/client";
 import { deepEquals } from "bun";
 
 async function calcPassword(
@@ -52,6 +52,8 @@ async function createPassword(
   return [salt, key];
 }
 
+export type UserNoPassword = Omit<UserModel, "password" | "salt">;
+
 @Injectable()
 export class UsersService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
@@ -67,18 +69,26 @@ export class UsersService implements OnModuleInit {
     }
   }
 
-  private async findByEmail(email: string): Promise<User | null> {
+  private async findByEmail(email: string): Promise<UserModel | null> {
     return await this.prisma.user.findFirst({
       where: { email },
     });
   }
-  async findById(id: number): Promise<User | null> {
+  async findById(id: number): Promise<UserNoPassword | null> {
     return await this.prisma.user.findFirst({
+      omit: {
+        password: true,
+        salt: true,
+      },
       where: { id },
     });
   }
 
   async create(email: string, password: string, rank?: number) {
+    const user = await this.findByEmail(email);
+    if (user) {
+      throw new ConflictException(`Email ${email} already taken`);
+    }
     const [salt, key] = await createPassword(password);
     await this.prisma.user.create({
       data: {
@@ -106,7 +116,7 @@ export class UsersService implements OnModuleInit {
       },
     });
   }
-  async verifyPassword(email: string, password: string): Promise<User | null> {
+  async verifyPassword(email: string, password: string): Promise<UserModel | null> {
     const user = await this.findByEmail(email);
     if (!user) {
       return null;

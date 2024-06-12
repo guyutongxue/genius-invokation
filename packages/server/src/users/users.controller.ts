@@ -26,7 +26,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { UsersService } from "./users.service";
+import { UsersService, type UserNoPassword } from "./users.service";
 import { User } from "../auth/user.decorator";
 import {
   Allow,
@@ -35,7 +35,7 @@ import {
   Length,
   MaxLength,
 } from "class-validator";
-import { type User as UserT } from "@prisma/client";
+import { type User as UserModel } from "@prisma/client";
 import { Public } from "../auth/auth.guard";
 import { InvitationService } from "../invitation/invitation.service";
 
@@ -61,7 +61,6 @@ class RegisterDto {
   code?: string;
 }
 
-type UserNoPassword = Exclude<UserT, "password" | "salt">;
 
 @Controller("users")
 export class UsersController {
@@ -76,10 +75,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException();
     }
-    const userObj: any = { ...user };
-    delete userObj.password;
-    delete userObj.salt;
-    return userObj;
+    return user;
   }
 
   @Get(":id")
@@ -88,10 +84,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException();
     }
-    const userObj: any = { ...user };
-    delete userObj.password;
-    delete userObj.salt;
-    return userObj;
+    return user;
   }
 
   @Put("me/password")
