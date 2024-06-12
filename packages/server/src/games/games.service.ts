@@ -14,6 +14,28 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Injectable } from '@nestjs/common';
+import { GameConfig, Game as InternalGame } from "@gi-tcg/core";
+import data from "@gi-tcg/data"; 
+
+interface GameInstanceConfig extends GameConfig {
+  switchHandTime: number; // defaults 45
+  rerollTime: number; // defaults 40
+  roundTotalActionTime: number; // defaults 60
+  actionTime: number; // defaults 25
+}
+
+class GameInstance {
+  private game: InternalGame;
+  private players: [number, number];
+
+  constructor() {
+    this.game = new InternalGame({
+      data,
+      gameConfig: {},
+      playerConfigs: []
+    });
+  }
+}
 
 @Injectable()
 export class GamesService {}
