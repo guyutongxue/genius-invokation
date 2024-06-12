@@ -13,16 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { AuthModule } from './auth/auth.module';
-import { InvitationModule } from './invitation/invitation.module';
-import { UsersModule } from "./users/users.module";
-import { GamesModule } from './games/games.module';
-import { DecksModule } from './decks/decks.module';
+import { Module } from '@nestjs/common';
+import { DecksService } from './decks.service';
+import { DecksController } from './decks.controller';
+import { DbModule } from '../db/db.module';
 
 @Module({
-  controllers: [AppController],
-  imports: [AuthModule, UsersModule, InvitationModule, GamesModule, DecksModule],
+  imports: [DbModule],
+  controllers: [DecksController],
+  providers: [DecksService]
 })
-export class AppModule {}
+export class DecksModule {}

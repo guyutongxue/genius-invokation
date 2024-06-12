@@ -15,33 +15,29 @@
 
 import { Injectable, NotFoundException } from "@nestjs/common";
 import {
-  ActionRequest,
-  ActionResponse,
-  ChooseActiveRequest,
-  ChooseActiveResponse,
-  GameConfig,
-  GameStateLogEntry,
+  type ActionRequest,
+  type ActionResponse,
+  type ChooseActiveRequest,
+  type ChooseActiveResponse,
+  type GameConfig,
+  type GameStateLogEntry,
   GiTcgError,
-  GiTcgIOError,
   Game as InternalGame,
-  NotificationMessage,
-  PlayerConfig,
-  PlayerIO,
-  RerollDiceResponse,
-  RpcMethod,
-  RpcRequest,
-  RpcResponse,
-  SwitchHandsResponse,
+  type NotificationMessage,
+  type PlayerConfig,
+  type PlayerIO,
+  type RerollDiceResponse,
+  type RpcMethod,
+  type RpcRequest,
+  type RpcResponse,
+  type SwitchHandsResponse,
   serializeGameStateLog,
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
-import { Deck, flip } from "@gi-tcg/utils";
-import {
-  characters as characterData,
-  actionCards as actionCardData,
-} from "@gi-tcg/static-data";
+import { type Deck, flip } from "@gi-tcg/utils";
 import { Subject } from "rxjs";
 import { IsInt, IsObject } from "class-validator";
+import { verifyDeck } from "../utils";
 
 interface RoomConfig extends GameConfig {
   initActionTime: number; // defaults 45
@@ -67,6 +63,7 @@ export interface SSENotification {
 export interface SSERpc {
   type: "rpc";
   id: number;
+  timeout: number;
   method: RpcMethod;
   params: RpcRequest[RpcMethod];
 }
@@ -84,6 +81,14 @@ export class GameActionResponseDto {
   response!: RpcResponse[RpcMethod];
 }
 
+interface RpcResolver {
+  id: number;
+  method: RpcMethod;
+  params: any;
+  timeout: number;
+  resolve: (response: any) => void;
+}
+
 class Player implements PlayerIOWithError {
   public readonly sse$ = new Subject<SSEPayload>();
   constructor(
@@ -93,74 +98,113 @@ class Player implements PlayerIOWithError {
   giveUp = false;
 
   private _nextRpcId = 0;
-  private _rpcResolvers = new Map<number, (response: any) => void>();
+  private _rpcResolver: RpcResolver | null = null;
+  private _timeoutConfig: RoomConfig | null = null;
+  private _roundTimeout: number | null = null;
 
-  receiveResponse(response: GameActionResponseDto) {
-    const resolver = this._rpcResolvers.get(response.id);
-    if (resolver) {
-      resolver(response.response);
+  setTimeoutConfig(config: RoomConfig) {
+    this._timeoutConfig = config;
+  }
+  resetRoundTimeout() {
+    this._roundTimeout = this._timeoutConfig?.roundTotalActionTime ?? Infinity;
+  }
+  currentAction() {
+    if (this._rpcResolver) {
+      return {
+        id: this._rpcResolver.id,
+        timeout: this._rpcResolver.timeout,
+        method: this._rpcResolver.method,
+        params: this._rpcResolver.params,
+      };
     } else {
-      throw new NotFoundException("rpc response id not found");
+      return null;
     }
   }
+
+  receiveResponse(response: GameActionResponseDto) {
+    if (!this._rpcResolver) {
+      throw new NotFoundException(`No rpc now`);
+    } else if (this._rpcResolver.id !== response.id) {
+      throw new NotFoundException(`Rpc id not match`);
+    }
+    this._rpcResolver.resolve(response.response);
+  }
+
   notify(notification: NotificationMessage) {
     this.sse$.next({ type: "notification", data: notification });
   }
+
+  private timeoutRpc(method: RpcMethod, params: RpcRequest[RpcMethod]) {
+    if (method === "action") {
+      const { candidates } = params as ActionRequest;
+      const declareEndIdx = candidates.findIndex(
+        (c) => c.type === "declareEnd",
+      );
+      const result: ActionResponse = {
+        chosenIndex: declareEndIdx,
+        cost: [],
+      };
+      return result;
+    } else if (method === "chooseActive") {
+      const { candidates } = params as ChooseActiveRequest;
+      const result: ChooseActiveResponse = {
+        active: candidates[0],
+      };
+      return result;
+    } else if (method === "rerollDice") {
+      const result: RerollDiceResponse = {
+        rerollIndexes: [],
+      };
+      return result;
+    } else if (method === "switchHands") {
+      const result: SwitchHandsResponse = {
+        removedHands: [],
+      };
+      return result;
+    }
+  }
+
   async rpc(method: RpcMethod, params: RpcRequest[RpcMethod]): Promise<any> {
     const id = this._nextRpcId++;
-    const payload: SSERpc = { type: "rpc", id, method, params };
+    let timeout: number;
+    if (method === "rerollDice") {
+      timeout = this._timeoutConfig?.rerollTime ?? Infinity;
+    } else if (this._roundTimeout !== null) {
+      timeout =
+        this._roundTimeout + (this._timeoutConfig?.actionTime ?? Infinity);
+    } else {
+      timeout = this._timeoutConfig?.initActionTime ?? Infinity;
+    }
+    const payload: SSERpc = { type: "rpc", id, timeout, method, params };
     this.sse$.next(payload);
     return new Promise((resolve) => {
-      this._rpcResolvers.set(id, resolve);
+      const resolver: RpcResolver = {
+        id,
+        method,
+        params,
+        timeout,
+        resolve: (r) => {
+          clearInterval(interval);
+          this._rpcResolver = null;
+          resolve(r);
+        },
+      };
+      this._rpcResolver = resolver;
+      const interval = setInterval(() => {
+        resolver.timeout--;
+        if (resolver.timeout <= -2) {
+          clearInterval(interval);
+          this._rpcResolver = null;
+          resolve(this.timeoutRpc(method, params));
+        }
+      }, 1000);
     });
   }
+
   onError(e: GiTcgError) {
     this.sse$.next({ type: "error", message: e.message });
   }
 }
-
-class DeckVerificationError extends Error {}
-
-function verifyDeck({ characters, cards }: Deck) {
-  const characterTags = [];
-  for (const chId of characters) {
-    const character = characterData.find((ch) => ch.id === chId);
-    if (!character) {
-      throw new DeckVerificationError(`character id ${chId} not found`);
-    }
-    if (!character.obtainable) {
-      throw new DeckVerificationError(`character id ${chId} not obtainable`);
-    }
-    characterTags.push(...character.tags);
-  }
-  for (const cardId of cards) {
-    const card = actionCardData.find((c) => c.id === cardId);
-    if (!card) {
-      throw new DeckVerificationError(`card id ${cardId} not found`);
-    }
-    if (!card.obtainable) {
-      throw new DeckVerificationError(`card id ${cardId} not obtainable`);
-    }
-    if (
-      card.relatedCharacterId !== null &&
-      !characters.includes(card.relatedCharacterId)
-    ) {
-      throw new DeckVerificationError(
-        `card id ${cardId} related character not in deck`,
-      );
-    }
-    for (const requiredTag of card.relatedCharacterTags) {
-      const idx = characterTags.indexOf(requiredTag);
-      if (idx === -1) {
-        throw new DeckVerificationError(
-          `card id ${cardId} related character tags not in deck`,
-        );
-      }
-      characterTags.splice(idx, 1);
-    }
-  }
-}
-
 
 class Room {
   private game: InternalGame | null = null;
@@ -172,39 +216,6 @@ class Room {
 
   constructor(private readonly config: CreateRoomConfig) {
     this.hostWho = config.hostWho;
-  }
-
-  private wrapRpc(rpcHandler: PlayerIO["rpc"]): PlayerIO["rpc"] {
-    return (m, req) => {
-      const timeoutHandler = async () => {
-        if (m === "action") {
-          const { candidates } = req as ActionRequest;
-          const declareEndIdx = candidates.findIndex((c) => c.type === "declareEnd");
-          const result: ActionResponse = {
-            chosenIndex: declareEndIdx,
-            cost: []
-          };
-          return result;
-        } else if (m === "chooseActive") {
-          const { candidates } = req as ChooseActiveRequest;
-          const result: ChooseActiveResponse = {
-            active: candidates[0]
-          };
-          return result;
-        } else if (m === "rerollDice") {
-          const result: RerollDiceResponse = {
-            rerollIndexes: []
-          };
-          return result;
-        } else if (m === "switchHands") {
-          const result: SwitchHandsResponse = {
-            removedHands: []
-          };
-          return result;
-        }
-      }
-      return Promise.race<any>([rpcHandler(m, req), timeoutHandler()]);
-    }
   }
 
   setHost(player: Player) {
@@ -226,8 +237,8 @@ class Room {
     verifyDeck(this.guest.deck);
     let playerConfig0: PlayerConfig;
     let playerConfig1: PlayerConfig;
-    let playerIo0: PlayerIOWithError;
-    let playerIo1: PlayerIOWithError;
+    let playerIo0: Player;
+    let playerIo1: Player;
     if (this.hostWho === 0) {
       playerConfig0 = this.host.deck;
       playerIo0 = this.host;
@@ -239,6 +250,8 @@ class Room {
       playerConfig1 = this.host.deck;
       playerIo1 = this.host;
     }
+    playerIo0.setTimeoutConfig(this.config);
+    playerIo1.setTimeoutConfig(this.config);
     this.game = new InternalGame({
       data,
       gameConfig: this.config,
@@ -248,7 +261,8 @@ class Room {
           this.stateLog.push({ state, canResume });
           for (const mut of mutations) {
             if (mut.type === "changePhase" && mut.newPhase === "roll") {
-              // TODO: reset timer
+              playerIo0.resetRoundTimeout();
+              playerIo1.resetRoundTimeout();
             }
           }
         },

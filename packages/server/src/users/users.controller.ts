@@ -30,16 +30,15 @@ import {
   Allow,
   IsEmail,
   IsNotEmpty,
+  Length,
   MaxLength,
-  MinLength,
 } from "class-validator";
-import { User as UserT } from "@prisma/client";
+import { type User as UserT } from "@prisma/client";
 import { Public } from "../auth/auth.guard";
 import { InvitationService } from "../invitation/invitation.service";
 
 class SetPasswordDto {
-  @MinLength(6)
-  @MaxLength(64)
+  @Length(6, 64)
   password!: string;
 }
 
@@ -53,8 +52,7 @@ class RegisterDto {
   @IsEmail()
   email!: string;
 
-  @MinLength(6)
-  @MaxLength(64)
+  @Length(6, 64)
   password!: string;
 
   @Allow()

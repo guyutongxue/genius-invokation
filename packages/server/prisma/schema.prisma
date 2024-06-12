@@ -68,6 +68,7 @@ model InvitationCode {
 
 model Deck {
   id          Int    @id @default(autoincrement())
+  name        String
   code        String
   owner       User   @relation(fields: [ownerUserId], references: [id])
   ownerUserId Int
