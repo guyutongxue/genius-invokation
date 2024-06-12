@@ -44,7 +44,7 @@ import { Subject } from "rxjs";
 import { IsInt, IsObject } from "class-validator";
 
 interface RoomConfig extends GameConfig {
-  switchHandTime: number; // defaults 45
+  initActionTime: number; // defaults 45
   rerollTime: number; // defaults 40
   roundTotalActionTime: number; // defaults 60
   actionTime: number; // defaults 25
@@ -54,9 +54,9 @@ interface CreateRoomConfig extends RoomConfig {
   hostWho: 0 | 1;
 }
 
-interface ManagedPlayerIO {
-  notify: (notification: NotificationMessage) => void;
-  rpc: (method: RpcMethod, params: RpcRequest[RpcMethod]) => Promise<any>;
+interface PlayerIOWithError extends PlayerIO {
+  // notify: (notification: NotificationMessage) => void;
+  // rpc: (method: RpcMethod, params: RpcRequest[RpcMethod]) => Promise<any>;
   onError: (e: GiTcgError) => void;
 }
 
@@ -84,7 +84,7 @@ export class GameActionResponseDto {
   response!: RpcResponse[RpcMethod];
 }
 
-class Player implements PlayerIoWithError {
+class Player implements PlayerIOWithError {
   public readonly sse$ = new Subject<SSEPayload>();
   constructor(
     public readonly userId: number,
@@ -161,6 +161,7 @@ function verifyDeck({ characters, cards }: Deck) {
   }
 }
 
+
 class Room {
   private game: InternalGame | null = null;
   private hostWho: 0 | 1;
@@ -225,8 +226,8 @@ class Room {
     verifyDeck(this.guest.deck);
     let playerConfig0: PlayerConfig;
     let playerConfig1: PlayerConfig;
-    let playerIo0: PlayerIoWithError;
-    let playerIo1: PlayerIoWithError;
+    let playerIo0: PlayerIOWithError;
+    let playerIo1: PlayerIOWithError;
     if (this.hostWho === 0) {
       playerConfig0 = this.host.deck;
       playerIo0 = this.host;
@@ -243,8 +244,13 @@ class Room {
       gameConfig: this.config,
       playerConfigs: [playerConfig0, playerConfig1],
       io: {
-        pause: async (state, mut, canResume) => {
+        pause: async (state, mutations, canResume) => {
           this.stateLog.push({ state, canResume });
+          for (const mut of mutations) {
+            if (mut.type === "changePhase" && mut.newPhase === "roll") {
+              // TODO: reset timer
+            }
+          }
         },
         players: [playerIo0, playerIo1],
         onIoError: (e) => {
