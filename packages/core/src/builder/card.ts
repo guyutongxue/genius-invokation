@@ -24,7 +24,6 @@ import {
   CardSkillEventArg,
   CardTargetKind,
   CardType,
-  DeckRequirement,
   PlayCardFilter,
   PlayCardTargetGetter,
   SupportTag,
@@ -138,7 +137,6 @@ class CardBuilder<
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
   private _filters: StrictCardSkillFilter<KindTs, AssociatedExt>[] = [];
-  private _deckRequirement: DeckRequirement = {};
   /**
    * 在料理卡牌的行动结尾添加“设置饱腹状态”操作的目标；
    * `null` 表明不添加（不是料理牌或者手动指定）
@@ -290,7 +288,6 @@ class CardBuilder<
     } else {
       chs = [ch];
     }
-    this.requireCharacter(chs[0]);
     if (requires !== "none") {
       // 出战角色须为天赋角色
       this.filter((c) =>
@@ -317,16 +314,6 @@ class CardBuilder<
   ) {
     const targetQuery = this.prepareTalent(ch, requires);
     return this.addTarget(targetQuery);
-  }
-
-  requireCharacterTag(tag: CharacterTag): this {
-    this._deckRequirement.dualCharacterTag = tag;
-    return this;
-  }
-
-  requireCharacter(ch: CharacterHandle): this {
-    this._deckRequirement.character = ch;
-    return this;
   }
 
   filter(pred: StrictCardSkillFilter<KindTs, AssociatedExt>): this {
@@ -478,7 +465,6 @@ class CardBuilder<
       id: this.cardId,
       type: this._type,
       tags: this._tags,
-      deckRequirement: this._deckRequirement,
       getTarget: targetGetter,
       filter: filterFn,
       onPlay: skillDef,

@@ -39,6 +39,8 @@ export interface ActionCardRawData {
   englishName: string;
   tags: string[];
   targetList: ChooseTarget[];
+  relatedCharacterId: number | null;
+  relatedCharacterTags: [];
   storyTitle?: string;
   storyText?: string;
   rawDescription: string;
@@ -92,6 +94,12 @@ export function collateActionCards(langCode: string) {
       ? sanitizeDescription(locale[deckcardObj.storyDescTextMapHash])
       : void 0;
 
+    const relatedCharacterId = deckcardObj?.relatedCharacterId ?? null;
+    const relatedCharacterTags =
+      deckcardObj?.relatedCharacterTagList?.filter(
+        (e: string) => e !== "GCG_TAG_NONE",
+      ) ?? [];
+
     const rawDescription = locale[obj.descTextMapHash] ?? "";
     const descriptionReplaced = getDescriptionReplaced(rawDescription, locale);
     const description = sanitizeDescription(descriptionReplaced, true);
@@ -115,7 +123,9 @@ export function collateActionCards(langCode: string) {
         count: e.count,
       }));
 
-    const cardPrefabName = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
+    const cardPrefabName = xcardview.find(
+      (e) => e.id === obj.id,
+    )!.cardPrefabName;
     const cardFace = `UI_${cardPrefabName}`;
 
     const targetList: ChooseTarget[] = [];
@@ -145,6 +155,8 @@ export function collateActionCards(langCode: string) {
       englishName,
       tags,
       targetList,
+      relatedCharacterId,
+      relatedCharacterTags,
       storyTitle,
       storyText,
       playCost,

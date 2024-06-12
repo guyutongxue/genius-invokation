@@ -16,6 +16,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -38,6 +40,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -60,6 +64,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -82,6 +88,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -104,6 +112,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -126,6 +136,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -148,6 +160,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "",
     "description": "",
@@ -174,6 +188,8 @@
         "hintText": "装备给出战中的甘雨"
       }
     ],
+    "relatedCharacterId": 1101,
+    "relatedCharacterTags": [],
     "storyTitle": "甘雨·唯此一心",
     "storyText": "先矢夺人，好箭成霜。",
     "playCost": [
@@ -209,6 +225,8 @@
         "hintText": "装备给出战中的迪奥娜"
       }
     ],
+    "relatedCharacterId": 1102,
+    "relatedCharacterTags": [],
     "storyTitle": "迪奥娜·猫爪冰摇",
     "storyText": "摇晃摇晃，混合均匀。您要的续杯！",
     "playCost": [
@@ -244,6 +262,8 @@
         "hintText": "装备给出战中的凯亚"
       }
     ],
+    "relatedCharacterId": 1103,
+    "relatedCharacterTags": [],
     "storyTitle": "凯亚·冷血之剑",
     "storyText": "略显冷酷的玩笑。",
     "playCost": [
@@ -279,6 +299,8 @@
         "hintText": "装备给出战中的重云"
       }
     ],
+    "relatedCharacterId": 1104,
+    "relatedCharacterTags": [],
     "storyTitle": "重云·吐纳真定",
     "storyText": "吐纳霜华，心神真定。",
     "playCost": [
@@ -313,6 +335,8 @@
         "hintText": "装备给我方的神里绫华"
       }
     ],
+    "relatedCharacterId": 1105,
+    "relatedCharacterTags": [],
     "storyTitle": "神里绫华·寒天宣命祝词",
     "storyText": "雪鹤衔冰，翼影翩翩。",
     "playCost": [
@@ -348,6 +372,8 @@
         "hintText": "装备给出战中的优菈"
       }
     ],
+    "relatedCharacterId": 1106,
+    "relatedCharacterTags": [],
     "storyTitle": "优菈·战欲涌现",
     "storyText": "冰浪怒涛，断绝深仇。",
     "playCost": [
@@ -387,6 +413,8 @@
         "hintText": "装备给出战中的申鹤"
       }
     ],
+    "relatedCharacterId": 1107,
+    "relatedCharacterTags": [],
     "storyTitle": "申鹤·忘玄",
     "storyText": "炼气化神，意生冰身。",
     "playCost": [
@@ -422,6 +450,8 @@
         "hintText": "装备给出战中的七七"
       }
     ],
+    "relatedCharacterId": 1108,
+    "relatedCharacterTags": [],
     "storyTitle": "七七·起死回骸",
     "storyText": "「要…活下去…」",
     "playCost": [
@@ -461,6 +491,8 @@
         "hintText": "装备给出战中的莱依拉"
       }
     ],
+    "relatedCharacterId": 1109,
+    "relatedCharacterTags": [],
     "storyTitle": "莱依拉·归芒携信",
     "storyText": "「星星的加护。」",
     "playCost": [
@@ -496,6 +528,8 @@
         "hintText": "装备给出战中的夏洛蒂"
       }
     ],
+    "relatedCharacterId": 1110,
+    "relatedCharacterTags": [],
     "storyTitle": "夏洛蒂·以有趣相关为要义",
     "storyText": "「爆炸新闻！」",
     "playCost": [
@@ -531,6 +565,8 @@
         "hintText": "装备给出战中的莱欧斯利"
       }
     ],
+    "relatedCharacterId": 1111,
+    "relatedCharacterTags": [],
     "storyTitle": "莱欧斯利·予行恶者以惩惧",
     "storyText": "「无需畏惧，直面罪责。」",
     "playCost": [
@@ -570,6 +606,8 @@
         "hintText": "装备给出战中的芭芭拉"
       }
     ],
+    "relatedCharacterId": 1201,
+    "relatedCharacterTags": [],
     "storyTitle": "芭芭拉·光辉的季节",
     "storyText": "将我的歌声与祝福献给你。",
     "playCost": [
@@ -605,6 +643,8 @@
         "hintText": "装备给出战中的行秋"
       }
     ],
+    "relatedCharacterId": 1202,
+    "relatedCharacterTags": [],
     "storyTitle": "行秋·重帘留香",
     "storyText": "他的运笔方法一直让人印象深刻。",
     "playCost": [
@@ -640,6 +680,8 @@
         "hintText": "装备给出战中的莫娜"
       }
     ],
+    "relatedCharacterId": 1203,
+    "relatedCharacterTags": [],
     "storyTitle": "莫娜·沉没的预言",
     "storyText": "「嗨！应该出那一张！」\n「好吧，你就是不听我的。」",
     "playCost": [
@@ -679,6 +721,8 @@
         "hintText": "装备给出战中的达达利亚"
       }
     ],
+    "relatedCharacterId": 1204,
+    "relatedCharacterTags": [],
     "storyTitle": "达达利亚·凝水盛放",
     "storyText": "一次鲁莽但精确的攻击。",
     "playCost": [
@@ -714,6 +758,8 @@
         "hintText": "装备给出战中的珊瑚宫心海"
       }
     ],
+    "relatedCharacterId": 1205,
+    "relatedCharacterTags": [],
     "storyTitle": "珊瑚宫心海·匣中玉栉",
     "storyText": "匣中有智，潮起沧海。",
     "playCost": [
@@ -753,6 +799,8 @@
         "hintText": "装备给出战中的神里绫人"
       }
     ],
+    "relatedCharacterId": 1206,
+    "relatedCharacterTags": [],
     "storyTitle": "神里绫人·镜华风姿",
     "storyText": "在庭之椿，寒中清芬。",
     "playCost": [
@@ -788,6 +836,8 @@
         "hintText": "装备给出战中的坎蒂丝"
       }
     ],
+    "relatedCharacterId": 1207,
+    "relatedCharacterTags": [],
     "storyTitle": "坎蒂丝·衍溢的汐潮",
     "storyText": "在打牌时不遵纪者。是…\n所有卡牌游戏爱好者的敌人。",
     "playCost": [
@@ -827,6 +877,8 @@
         "hintText": "装备给出战中的妮露"
       }
     ],
+    "relatedCharacterId": 1208,
+    "relatedCharacterTags": [],
     "storyTitle": "妮露·星天的花雨",
     "storyText": "宛如七天的流绚，宛如摹录的梦景。",
     "playCost": [
@@ -862,6 +914,8 @@
         "hintText": "装备给出战中的夜兰"
       }
     ],
+    "relatedCharacterId": 1209,
+    "relatedCharacterTags": [],
     "storyTitle": "夜兰·猜先有方",
     "storyText": "「点数如何呢？」",
     "playCost": [
@@ -897,6 +951,8 @@
         "hintText": "装备给出战中的那维莱特"
       }
     ],
+    "relatedCharacterId": 1210,
+    "relatedCharacterTags": [],
     "storyTitle": "那维莱特·古海孑遗的权柄",
     "storyText": "「潮水啊，我已归来。」",
     "playCost": [
@@ -932,6 +988,8 @@
         "hintText": "切换芙宁娜及其召唤物的形态"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "在「{SPRITE_PRESET#3504}始基力：荒性」和「{SPRITE_PRESET#3505}始基力：芒性」之中，切换$[A1211]的形态。\\n如果我方场上存在<color=#FFFFFFFF>$[K1031]</color>或<color=#FFFFFFFF>$[K1032]</color>，也切换其形态。",
     "description": "在「始基力：荒性」和「始基力：芒性」之中，切换芙宁娜的形态。\n如果我方场上存在沙龙成员或众水的歌者，也切换其形态。",
@@ -958,6 +1016,8 @@
         "hintText": "装备给出战中的芙宁娜"
       }
     ],
+    "relatedCharacterId": 1211,
+    "relatedCharacterTags": [],
     "storyTitle": "芙宁娜·「诸君听我颂，共举爱之杯！」",
     "storyText": "「让世界热闹起来吧。」",
     "playCost": [
@@ -993,6 +1053,8 @@
         "hintText": "装备给出战中的迪卢克"
       }
     ],
+    "relatedCharacterId": 1301,
+    "relatedCharacterTags": [],
     "storyTitle": "迪卢克·流火焦灼",
     "storyText": "解决焦灼情况的一种简单手段。",
     "playCost": [
@@ -1028,6 +1090,8 @@
         "hintText": "装备给出战中的香菱"
       }
     ],
+    "relatedCharacterId": 1302,
+    "relatedCharacterTags": [],
     "storyTitle": "香菱·交叉火力",
     "storyText": "在厨房里，这只是一种常规火力。",
     "playCost": [
@@ -1063,6 +1127,8 @@
         "hintText": "装备给出战中的班尼特"
       }
     ],
+    "relatedCharacterId": 1303,
+    "relatedCharacterTags": [],
     "storyTitle": "班尼特·冒险憧憬",
     "storyText": "最美妙的冒险永远是下一次。",
     "playCost": [
@@ -1102,6 +1168,8 @@
         "hintText": "装备给出战中的安柏"
       }
     ],
+    "relatedCharacterId": 1304,
+    "relatedCharacterTags": [],
     "storyTitle": "安柏·一触即发",
     "storyText": "「兔兔伯爵，出击！」",
     "playCost": [
@@ -1137,6 +1205,8 @@
         "hintText": "装备给出战中的宵宫"
       }
     ],
+    "relatedCharacterId": 1305,
+    "relatedCharacterTags": [],
     "storyTitle": "宵宫·长野原龙势流星群",
     "storyText": "长野原·优势烟花储量学说。",
     "playCost": [
@@ -1172,6 +1242,8 @@
         "hintText": "装备给出战中的可莉"
       }
     ],
+    "relatedCharacterId": 1306,
+    "relatedCharacterTags": [],
     "storyTitle": "可莉·砰砰礼物",
     "storyText": "抽到这张牌时，发出一阵欢乐的大笑吧。",
     "playCost": [
@@ -1207,6 +1279,8 @@
         "hintText": "装备给出战中的胡桃"
       }
     ],
+    "relatedCharacterId": 1307,
+    "relatedCharacterTags": [],
     "storyTitle": "胡桃·血之灶火",
     "storyText": "在处理一些特定事务时，胡堂主所需要的火力还得再大些。",
     "playCost": [
@@ -1242,6 +1316,8 @@
         "hintText": "装备给出战中的烟绯"
       }
     ],
+    "relatedCharacterId": 1308,
+    "relatedCharacterTags": [],
     "storyTitle": "烟绯·最终解释权",
     "storyText": "「在打牌这方面，自然是…律无禁止即可为呀。」",
     "playCost": [
@@ -1281,6 +1357,8 @@
         "hintText": "装备给出战中的迪希雅"
       }
     ],
+    "relatedCharacterId": 1309,
+    "relatedCharacterTags": [],
     "storyTitle": "迪希雅·崇诚之真",
     "storyText": "「不用留情，开打吧！」",
     "playCost": [
@@ -1316,6 +1394,8 @@
         "hintText": "装备给出战中的林尼"
       }
     ],
+    "relatedCharacterId": 1310,
+    "relatedCharacterTags": [],
     "storyTitle": "林尼·完场喝彩",
     "storyText": "「响起你的掌声！」",
     "playCost": [
@@ -1351,6 +1431,8 @@
         "hintText": "装备给出战中的托马"
       }
     ],
+    "relatedCharacterId": 1311,
+    "relatedCharacterTags": [],
     "storyTitle": "托马·僚佐的才巧",
     "storyText": "「我会连带着为了你的份一起，好好努力的！」",
     "playCost": [
@@ -1390,6 +1472,8 @@
         "hintText": "装备给出战中的辛焱"
       }
     ],
+    "relatedCharacterId": 1312,
+    "relatedCharacterTags": [],
     "storyTitle": "辛焱·地狱里摇摆",
     "storyText": "「听我的最强音！」",
     "playCost": [
@@ -1429,6 +1513,8 @@
         "hintText": "装备给出战中的菲谢尔"
       }
     ],
+    "relatedCharacterId": 1401,
+    "relatedCharacterTags": [],
     "storyTitle": "菲谢尔·噬星魔鸦",
     "storyText": "「奥兹华尔多·赫芙那梵茵斯展现权能的一瞬。」",
     "playCost": [
@@ -1464,6 +1550,8 @@
         "hintText": "装备给出战中的雷泽"
       }
     ],
+    "relatedCharacterId": 1402,
+    "relatedCharacterTags": [],
     "storyTitle": "雷泽·觉醒",
     "storyText": "追猎，即将开始。",
     "playCost": [
@@ -1498,6 +1586,8 @@
         "hintText": "切换到刻晴，使用「星斗归位」"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [
       {
         "type": "GCG_COST_DICE_ELECTRO",
@@ -1529,6 +1619,8 @@
         "hintText": "装备给出战中的刻晴"
       }
     ],
+    "relatedCharacterId": 1403,
+    "relatedCharacterTags": [],
     "storyTitle": "刻晴·抵天雷罚",
     "storyText": "只要你没有真正作弊，这就只是一张卡牌而已。",
     "playCost": [
@@ -1564,6 +1656,8 @@
         "hintText": "装备给出战中的赛诺"
       }
     ],
+    "relatedCharacterId": 1404,
+    "relatedCharacterTags": [],
     "storyTitle": "赛诺·落羽的裁择",
     "storyText": "「这便是我的决斗之魂。」",
     "playCost": [
@@ -1599,6 +1693,8 @@
         "hintText": "装备给出战中的北斗"
       }
     ],
+    "relatedCharacterId": 1405,
+    "relatedCharacterTags": [],
     "storyTitle": "北斗·霹雳连霄",
     "storyText": "电光石火，霹雳连霄。",
     "playCost": [
@@ -1634,6 +1730,8 @@
         "hintText": "装备给出战中的九条裟罗"
       }
     ],
+    "relatedCharacterId": 1406,
+    "relatedCharacterTags": [],
     "storyTitle": "九条裟罗·我界",
     "storyText": "「持心正弦，遇敌必除！」",
     "playCost": [
@@ -1669,6 +1767,8 @@
         "hintText": "装备给出战中的雷电将军"
       }
     ],
+    "relatedCharacterId": 1407,
+    "relatedCharacterTags": [],
     "storyTitle": "雷电将军·万千的愿望",
     "storyText": "恶曜开眼，威光无赦。",
     "playCost": [
@@ -1708,6 +1808,8 @@
         "hintText": "装备给出战中的八重神子"
       }
     ],
+    "relatedCharacterId": 1408,
+    "relatedCharacterTags": [],
     "storyTitle": "八重神子·神篱之御荫",
     "storyText": "「欸…雷光凄美啊…」",
     "playCost": [
@@ -1746,6 +1848,8 @@
         "hintText": "装备给我方的丽莎"
       }
     ],
+    "relatedCharacterId": 1409,
+    "relatedCharacterTags": [],
     "storyTitle": "丽莎·脉冲的魔女",
     "storyText": "作为遍历万千卷藏的图书管理员，当然能轻松记住制胜的技巧…",
     "playCost": [
@@ -1781,6 +1885,8 @@
         "hintText": "装备给出战中的多莉"
       }
     ],
+    "relatedCharacterId": 1410,
+    "relatedCharacterTags": [],
     "storyTitle": "多莉·酌盈剂虚",
     "storyText": "「先把商品涨价百分之三十，然后再打八折卖出！」",
     "playCost": [
@@ -1820,6 +1926,8 @@
         "hintText": "装备给出战中的久岐忍"
       }
     ],
+    "relatedCharacterId": 1411,
+    "relatedCharacterTags": [],
     "storyTitle": "久岐忍·割舍软弱之心",
     "storyText": "「祈雷祓除！」",
     "playCost": [
@@ -1859,6 +1967,8 @@
         "hintText": "装备给出战中的砂糖"
       }
     ],
+    "relatedCharacterId": 1501,
+    "relatedCharacterTags": [],
     "storyTitle": "砂糖·混元熵增论",
     "storyText": "狂风骤降，乱中取胜。",
     "playCost": [
@@ -1898,6 +2008,8 @@
         "hintText": "装备给出战中的琴"
       }
     ],
+    "relatedCharacterId": 1502,
+    "relatedCharacterTags": [],
     "storyTitle": "琴·蒲公英的国土",
     "storyText": "「风啊，回应我吧！」",
     "playCost": [
@@ -1937,6 +2049,8 @@
         "hintText": "装备给出战中的温迪"
       }
     ],
+    "relatedCharacterId": 1503,
+    "relatedCharacterTags": [],
     "storyTitle": "温迪·绪风之拥",
     "storyText": "「小心脚下。」",
     "playCost": [
@@ -1972,6 +2086,8 @@
         "hintText": "装备给出战中的魈"
       }
     ],
+    "relatedCharacterId": 1504,
+    "relatedCharacterTags": [],
     "storyTitle": "魈·降魔",
     "storyText": "诸邪退散，万恶皆除。",
     "playCost": [
@@ -2011,6 +2127,8 @@
         "hintText": "装备给出战中的枫原万叶"
       }
     ],
+    "relatedCharacterId": 1505,
+    "relatedCharacterTags": [],
     "storyTitle": "枫原万叶·风物之诗咏",
     "storyText": "在对局之中，也隐有风雅之礼。\n至少…对局双方都「落牌无悔」。",
     "playCost": [
@@ -2046,6 +2164,8 @@
         "hintText": "装备给出战中的流浪者"
       }
     ],
+    "relatedCharacterId": 1506,
+    "relatedCharacterTags": [],
     "storyTitle": "流浪者·梦迹一风",
     "storyText": "「怒风腾天！」",
     "playCost": [
@@ -2081,6 +2201,8 @@
         "hintText": "装备给出战中的早柚"
       }
     ],
+    "relatedCharacterId": 1507,
+    "relatedCharacterTags": [],
     "storyTitle": "早柚·偷懒的新方法",
     "storyText": "「工作还不如睡觉。」",
     "playCost": [
@@ -2116,6 +2238,8 @@
         "hintText": "装备给出战中的琳妮特"
       }
     ],
+    "relatedCharacterId": 1508,
+    "relatedCharacterTags": [],
     "storyTitle": "琳妮特·如影流露的冷刃",
     "storyText": "「一点把戏。」",
     "playCost": [
@@ -2151,6 +2275,8 @@
         "hintText": "装备给出战中的珐露珊"
       }
     ],
+    "relatedCharacterId": 1509,
+    "relatedCharacterTags": [],
     "storyTitle": "珐露珊·妙道合真",
     "storyText": "「真理，复始周转。」",
     "playCost": [
@@ -2190,6 +2316,8 @@
         "hintText": "装备给出战中的凝光"
       }
     ],
+    "relatedCharacterId": 1601,
+    "relatedCharacterTags": [],
     "storyTitle": "凝光·储之千日，用之一刻",
     "storyText": "余裕，是自信的代名词。",
     "playCost": [
@@ -2225,6 +2353,8 @@
         "hintText": "装备给出战中的诺艾尔"
       }
     ],
+    "relatedCharacterId": 1602,
+    "relatedCharacterTags": [],
     "storyTitle": "诺艾尔·支援就交给我吧",
     "storyText": "坚毅之心，才是最牢固的岩铠。",
     "playCost": [
@@ -2260,6 +2390,8 @@
         "hintText": "装备给出战中的钟离"
       }
     ],
+    "relatedCharacterId": 1603,
+    "relatedCharacterTags": [],
     "storyTitle": "钟离·炊金馔玉",
     "storyText": "百川千仞，万古不移。",
     "playCost": [
@@ -2295,6 +2427,8 @@
         "hintText": "装备给出战中的阿贝多"
       }
     ],
+    "relatedCharacterId": 1604,
+    "relatedCharacterTags": [],
     "storyTitle": "阿贝多·神性之陨",
     "storyText": "「确认对局策略的过程，也是一种缜密的计算…」",
     "playCost": [
@@ -2330,6 +2464,8 @@
         "hintText": "装备给出战中的荒泷一斗"
       }
     ],
+    "relatedCharacterId": 1605,
+    "relatedCharacterTags": [],
     "storyTitle": "荒泷一斗·荒泷第一",
     "storyText": "无论如何，先在气势方面占据上风总没错。",
     "playCost": [
@@ -2369,6 +2505,8 @@
         "hintText": "装备给出战中的五郎"
       }
     ],
+    "relatedCharacterId": 1606,
+    "relatedCharacterTags": [],
     "storyTitle": "五郎·犬奔·疾如风",
     "storyText": "「兵贵先声！」",
     "playCost": [
@@ -2404,6 +2542,8 @@
         "hintText": "装备给出战中的云堇"
       }
     ],
+    "relatedCharacterId": 1607,
+    "relatedCharacterTags": [],
     "storyTitle": "云堇·庄谐并举",
     "storyText": "「戮力同心！」",
     "playCost": [
@@ -2443,6 +2583,8 @@
         "hintText": "装备给出战中的柯莱"
       }
     ],
+    "relatedCharacterId": 1701,
+    "relatedCharacterTags": [],
     "storyTitle": "柯莱·飞叶迴斜",
     "storyText": "不要小看柯莱，更不要小看猫猫。",
     "playCost": [
@@ -2478,6 +2620,8 @@
         "hintText": "装备给出战中的提纳里"
       }
     ],
+    "relatedCharacterId": 1702,
+    "relatedCharacterTags": [],
     "storyTitle": "提纳里·眼识殊明",
     "storyText": "犯错也是学习过程中的一环…但前提是，这些错误被发现且改正。",
     "playCost": [
@@ -2513,6 +2657,8 @@
         "hintText": "装备给出战中的纳西妲"
       }
     ],
+    "relatedCharacterId": 1703,
+    "relatedCharacterTags": [],
     "storyTitle": "纳西妲·心识蕴藏之种",
     "storyText": "「知识，与你分享。」",
     "playCost": [
@@ -2552,6 +2698,8 @@
         "hintText": "装备给出战中的瑶瑶"
       }
     ],
+    "relatedCharacterId": 1704,
+    "relatedCharacterTags": [],
     "storyTitle": "瑶瑶·慈惠仁心",
     "storyText": "「痛痛飞~」",
     "playCost": [
@@ -2587,6 +2735,8 @@
         "hintText": "装备给出战中的白术"
       }
     ],
+    "relatedCharacterId": 1705,
+    "relatedCharacterTags": [],
     "storyTitle": "白术·在地为化",
     "storyText": "「如能应天地通明，以气卫于外，清静治神，自可宝命无碍。」",
     "playCost": [
@@ -2626,6 +2776,8 @@
         "hintText": "装备给出战中的艾尔海森"
       }
     ],
+    "relatedCharacterId": 1706,
+    "relatedCharacterTags": [],
     "storyTitle": "艾尔海森·正理",
     "storyText": "「理论的推演。」",
     "playCost": [
@@ -2665,6 +2817,8 @@
         "hintText": "装备给出战中的绮良良"
       }
     ],
+    "relatedCharacterId": 1707,
+    "relatedCharacterTags": [],
     "storyTitle": "绮良良·沿途百景会心",
     "storyText": "「记得好评~」",
     "playCost": [
@@ -2700,6 +2854,8 @@
         "hintText": "装备给出战中的卡维"
       }
     ],
+    "relatedCharacterId": 1708,
+    "relatedCharacterTags": [],
     "storyTitle": "卡维·预算师的技艺",
     "storyText": "「万众瞩目！」",
     "playCost": [
@@ -2735,6 +2891,8 @@
         "hintText": "装备给出战中的愚人众·冰萤术士"
       }
     ],
+    "relatedCharacterId": 2101,
+    "relatedCharacterTags": [],
     "storyTitle": "冰萤术士·冰萤寒光",
     "storyText": "更多的雾虚草，更多的冰萤朋友。\n…雾虚草耗尽会如何？\n或许她并未想过。",
     "playCost": [
@@ -2769,6 +2927,8 @@
         "hintText": "装备给出战中的「女士」"
       }
     ],
+    "relatedCharacterId": 2102,
+    "relatedCharacterTags": [],
     "storyTitle": "「女士」·苦痛奉还",
     "storyText": "「将痛楚…与你分享。」",
     "playCost": [
@@ -2803,6 +2963,8 @@
         "hintText": "装备给出战中的无相之冰"
       }
     ],
+    "relatedCharacterId": 2103,
+    "relatedCharacterTags": [],
     "storyTitle": "无相之冰·严霜棱晶",
     "storyText": "即便有着高度稳定的形态与机械般的行动方式，也需要谨慎屏护要害…",
     "playCost": [
@@ -2838,6 +3000,8 @@
         "hintText": "装备给出战中的纯水精灵·洛蒂娅"
       }
     ],
+    "relatedCharacterId": 2201,
+    "relatedCharacterTags": [],
     "storyTitle": "如流悬泄",
     "storyText": "奔涌之水，是对已殁神灵敬爱的显现。",
     "playCost": [
@@ -2877,6 +3041,8 @@
         "hintText": "装备给出战中的愚人众·藏镜仕女"
       }
     ],
+    "relatedCharacterId": 2202,
+    "relatedCharacterTags": [],
     "storyTitle": "藏于镜中之秘",
     "storyText": "「镜子啊，镜子啊，请你倒映…我的敌人，现在哪里？」",
     "playCost": [
@@ -2911,6 +3077,8 @@
         "hintText": "装备给我方的深渊使徒·激流"
       }
     ],
+    "relatedCharacterId": 2203,
+    "relatedCharacterTags": [],
     "storyTitle": "深渊使徒·暗流涌动",
     "storyText": "「毁灭，不可阻挡！」",
     "playCost": [
@@ -2946,6 +3114,8 @@
         "hintText": "装备给出战中的吞星之鲸"
       }
     ],
+    "relatedCharacterId": 2204,
+    "relatedCharacterTags": [],
     "storyTitle": "吞星之鲸·无光鲸噬",
     "storyText": "梦中无月的漆黑海面上，尽是闪着磷光的浮游生物——或许正如某种巨兽的食粮。",
     "playCost": [
@@ -2981,6 +3151,8 @@
         "hintText": "装备给出战中的愚人众·火之债务处理人"
       }
     ],
+    "relatedCharacterId": 2301,
+    "relatedCharacterTags": [],
     "storyTitle": "隐秘回收",
     "storyText": "那是你要记得一生的事：你知道你亏欠了谁，你知道自己应在何时奉还。",
     "playCost": [
@@ -3015,6 +3187,8 @@
         "hintText": "装备给我方的深渊咏者·渊火"
       }
     ],
+    "relatedCharacterId": 2302,
+    "relatedCharacterTags": [],
     "storyTitle": "深渊咏者·烬火重燃",
     "storyText": "递播恩典之路，并非一路平顺。",
     "playCost": [
@@ -3050,6 +3224,8 @@
         "hintText": "装备给出战中的镀金旅团·炽沙叙事人"
       }
     ],
+    "relatedCharacterId": 2303,
+    "relatedCharacterTags": [],
     "storyTitle": "炽沙叙事人·魔蝎烈祸",
     "storyText": "「为了永恒绿洲！」",
     "playCost": [
@@ -3088,6 +3264,8 @@
         "hintText": "装备给我方的铁甲熔火帝皇"
       }
     ],
+    "relatedCharacterId": 2304,
+    "relatedCharacterTags": [],
     "storyTitle": "铁甲熔火帝皇·熔火铁甲",
     "storyText": "「设想这样的世界：将提瓦特所有的人都消除，无限成长下去的铁甲熔火帝皇终究会将沫芒宫穿在身上，作为最为华美的白石铠甲吧。」",
     "playCost": [
@@ -3123,6 +3301,8 @@
         "hintText": "对出战中的无相之雷生效"
       }
     ],
+    "relatedCharacterId": 2401,
+    "relatedCharacterTags": [],
     "storyTitle": "无相之雷·汲能棱晶",
     "storyText": "「好机会！」\n「嘿，它是我们这边的！」",
     "playCost": [
@@ -3156,6 +3336,8 @@
         "hintText": "装备给出战中的雷音权现"
       }
     ],
+    "relatedCharacterId": 2402,
+    "relatedCharacterTags": [],
     "storyTitle": "雷音权现·悲号回唱",
     "storyText": "驱动雷音权现的是更为原始纯粹的愤怒…",
     "playCost": [
@@ -3190,6 +3372,8 @@
         "hintText": "装备给出战中的千年珍珠骏麟"
       }
     ],
+    "relatedCharacterId": 2403,
+    "relatedCharacterTags": [],
     "storyTitle": "千年珍珠骏麟·明珠固化",
     "storyText": "异海珍珠，原海古雷…幻兽形姿的海马孤王并没有华丽或破败的王庭，有的只是让原海异种们惶恐退避的威能…",
     "playCost": [],
@@ -3220,6 +3404,8 @@
         "hintText": "装备给出战中的愚人众·雷萤术士"
       }
     ],
+    "relatedCharacterId": 2404,
+    "relatedCharacterTags": [],
     "storyTitle": "雷萤术士·雷萤浮闪",
     "storyText": "「你是，来陪我玩的吗？」",
     "playCost": [
@@ -3242,6 +3428,8 @@
     "englishName": "Bonecruncher's Energy Block",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "随机$[K56]1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「{SPRITE_PRESET#3506}圣骸兽」角色，则使其获得1点$[K310]。（每回合最多打出1张）",
     "description": "随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）",
@@ -3267,6 +3455,8 @@
         "hintText": "装备给我方的圣骸毒蝎"
       }
     ],
+    "relatedCharacterId": 2405,
+    "relatedCharacterTags": [],
     "storyTitle": "圣骸毒蝎·亡雷凝蓄",
     "storyText": "生物有其进化之法则，而圣骸兽的法则则是拥有足够的运气，能在同族之前发现在遥远过去就已亡殁的强大生灵遗骸。",
     "playCost": [
@@ -3302,6 +3492,8 @@
         "hintText": "装备给出战中的魔偶剑鬼"
       }
     ],
+    "relatedCharacterId": 2501,
+    "relatedCharacterTags": [],
     "storyTitle": "剑豪人形",
     "storyText": "毫厘不差的斩击，或已斩出千万次。",
     "playCost": [
@@ -3337,6 +3529,8 @@
         "hintText": "装备给出战中的特瓦林"
       }
     ],
+    "relatedCharacterId": 2502,
+    "relatedCharacterTags": [],
     "storyTitle": "特瓦林·毁裂风涡",
     "storyText": "尘埃能被轻易拭去，疑惧与毒也能被粉碎。",
     "playCost": [
@@ -3371,6 +3565,8 @@
         "hintText": "装备给我方的圣骸飞蛇"
       }
     ],
+    "relatedCharacterId": 2503,
+    "relatedCharacterTags": [],
     "storyTitle": "圣骸飞蛇·亡风啸卷",
     "storyText": "即使获得了操使元素的异能，圣骸兽自身也无法将体内不朽的亡骸彻底消化，而是与其力量融合异变…",
     "playCost": [
@@ -3406,6 +3602,8 @@
         "hintText": "装备给出战中的丘丘岩盔王"
       }
     ],
+    "relatedCharacterId": 2601,
+    "relatedCharacterTags": [],
     "storyTitle": "刚躯岩铸",
     "storyText": "似磐岩中生长而出的躯体，坚固之力在其身躯中流转。",
     "playCost": [
@@ -3445,6 +3643,8 @@
         "hintText": "对出战中的若陀龙王生效"
       }
     ],
+    "relatedCharacterId": 2602,
+    "relatedCharacterTags": [],
     "storyTitle": "若陀龙王·晦朔千引",
     "storyText": "「今日，便要算清一切宿怨！」",
     "playCost": [
@@ -3478,6 +3678,8 @@
         "hintText": "装备给出战中的翠翎恐蕈"
       }
     ],
+    "relatedCharacterId": 2701,
+    "relatedCharacterTags": [],
     "storyTitle": "粉尘孢子云",
     "storyText": "那是智慧远超一般生物的蕈兽之王布设的陷阱，鲜少有人能安然无恙地通过。",
     "playCost": [
@@ -3500,6 +3702,8 @@
     "englishName": "Awaken, My Kindred",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [
       {
         "type": "GCG_COST_DICE_DENDRO",
@@ -3530,6 +3734,8 @@
         "hintText": "装备给我方的阿佩普的绿洲守望者"
       }
     ],
+    "relatedCharacterId": 2702,
+    "relatedCharacterTags": [],
     "storyTitle": "阿佩普的绿洲守望者·万千子嗣",
     "storyText": "阿佩普曾与诸多子嗣一同在芳草之海、百尺巨木与千里之藤蔓中，如游鱼穿行于水。直到最终草木枯萎化为尘埃，如同砂砾般渺小的诸多生灵在它原本的土地上建立起脆弱的城国。\n阿佩普曾与诸多子嗣一同令沙海如沸水般翻腾，将城楼如落叶般吹散。直到新的沙海之王与失去故土的王相互和解，从此日光之下的沙丘都属于人与神，而龙的绿洲留在龙的心中。\n阿佩普曾与诸多子嗣一同分享进化的知识，因为流水不腐，而朽木必定倾倒。直到最终它践行了与沙之王的约定得到了终极的智慧，从此它只能看见终末的风景，漫无边际的末日…",
     "playCost": [
@@ -3567,6 +3773,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "止水息雷·魔导绪论",
     "storyText": "第十二版《魔导绪论》。\n尽管部分内容错漏较多，但依然是当今最权威的魔导入门指南。",
     "playCost": [
@@ -3604,6 +3812,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "气定神闲·祭礼残章",
     "storyText": "经历漫长岁月的歌谱残章，其上记载的颂词已经无法辨认。",
     "playCost": [
@@ -3641,6 +3851,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "千风万云·天空之卷",
     "storyText": "全称为「千风万云通览」。\n以诗与图鉴的形式，细致记载了北地天空的风与云。",
     "playCost": [
@@ -3678,6 +3890,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "千夜曙歌·千夜浮梦",
     "storyText": "「万物生灭皆有定期，如同黑夜与黎明往复不息。」\n「就让这盏灯中的故事，给你值得期许的美梦吧。」",
     "playCost": [
@@ -3715,6 +3929,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "月满之相·盈满之实",
     "storyText": "「就算是再苦涩的故事，其中也有勇气，具有力量…金发的好那菈与我们一同冒险的故事，会替好那菈保护森林。」",
     "playCost": [
@@ -3752,6 +3968,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "无边际的眷顾·四风原典",
     "storyText": "「闻见花香时，听见树涛沙沙时，便是我在唱自由的歌，风的歌。」",
     "playCost": [
@@ -3789,6 +4007,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "堙没的蓝宝石泪滴·图莱杜拉的回忆",
     "storyText": "「最终，一切良人与恶徒，都平等地被命运的磨盘碾碎，蓝宝石之城邦失色分崩离析，恰似泪滴在烈日下干涸。」",
     "playCost": [
@@ -3826,6 +4046,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "万世的浪涛·万世流涌大典",
     "storyText": "「…假如末日的先兆不幸来临，洪水将要洗濯一切。」\n「那我们将会心怀使命与幸福而战，正如神心怀我们…」",
     "playCost": [
@@ -3863,6 +4085,8 @@
         "hintText": "请选择要装备法器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "黄金的血潮·金流监督",
     "storyText": "「…精密机械打造的监督者嗡嗡作响，观察着渺小国度的金流。\n不知疲倦地记录着每笔金钱的易手，每个人的积蓄与挥霍，\n每种价值的提升降低，每张货币在指定周期内的流通次数。」",
     "playCost": [
@@ -3900,6 +4124,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "踏火止水·鸦羽弓",
     "storyText": "相传渡鸦是死的使者。因此，猎人会将鸦羽装饰在弓臂上，射出的每一箭都宣告着猎物的终末。",
     "playCost": [
@@ -3937,6 +4163,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "气定神闲·祭礼弓",
     "storyText": "经历漫长岁月的猎弓，上面的仪式性装饰依然清晰可见。",
     "playCost": [
@@ -3974,6 +4202,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "回响长诗·天空之翼",
     "storyText": "通透高天之琴，释弦时的鸣声是风之神的偏爱。",
     "playCost": [
@@ -4011,6 +4241,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "矢志不忘·阿莫斯之弓",
     "storyText": "「我梦见海浪与细沙，我梦见青翠的森林与大地」\n「我梦见野猪在浆果丛嬉戏，我梦见高耸的尖塔」",
     "playCost": [
@@ -4048,6 +4280,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "思念之歌·终末嗟叹之诗",
     "storyText": "「…但无论怎样的风」\n「也不能再为我带来你的注视了…」",
     "playCost": [
@@ -4085,6 +4319,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "森林教诲·王下近侍",
     "storyText": "从兰那罗的故事中得到的武器，具有弓的形制。\n「记住，这个世界只是森林的梦…请将森林的语言、保护王土的责任传给更多人。」",
     "playCost": [
@@ -4122,6 +4358,8 @@
         "hintText": "请选择要装备弓的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "网破·竭泽",
     "storyText": "「…原本在高原上巨大的湖泊中如箭头一般笔直射穿空间的鱼，\n它曾如长枪一般笔直，循着圣迹沿洄，\n溪流渐渐渗入沙中，湖泽退缩成水洼，\n最终只得在水洼中蜷曲身体，结果成为了朝圣之人的猎获。」",
     "playCost": [
@@ -4159,6 +4397,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "雪银之悼·白铁大剑",
     "storyText": "用轻质的白铁打造而成的双手大剑，轻巧实用，闪着冰雪与白银的光芒。",
     "playCost": [
@@ -4196,6 +4436,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "气定神闲·祭礼大剑",
     "storyText": "经历漫长岁月的大剑，曾属于善战勇猛而早夭的斗士一族。",
     "playCost": [
@@ -4233,6 +4475,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "巡狩山行·狼的末路",
     "storyText": "被誉为北风的骑士所使的大剑，在他与狼的情谊中获得了神话般的力量。",
     "playCost": [
@@ -4270,6 +4514,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "斩裂晴空·天空之傲",
     "storyText": "撼动高天之勇。守护万众的意志，让风之龙必诛恶秽的仇敌。",
     "playCost": [
@@ -4307,6 +4553,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "叛逆守护·钟剑",
     "storyText": "某位叛逆者曾向堕落的族人挥剑。\n虽然此人最终被贬黜，但据说他的组织却一直在工作。\n传说，就连「幼狼」鲁斯坦也与之有关…",
     "playCost": [
@@ -4344,6 +4592,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "沙海守望·苇海信标",
     "storyText": "「在挖掘出过往处决犯行者的王器的水池废墟之上，失去了沙之梦，又不愿放弃沙海的人们聚集于此。」\n「以从未存在的苇海为名，与曾经应许的梦相回响…」",
     "playCost": [
@@ -4381,6 +4631,8 @@
         "hintText": "请选择要装备双手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "森林的瑞佑·森林王器",
     "storyText": "「…后来水流改变了，明月被冲散了。许多的事物变化了，也有许多的事物从此不再改变。\n但你们与我一样，就算不曾见过王，也残留着『老虎』是高贵强大的森林王者的印象。」",
     "playCost": [
@@ -4418,6 +4670,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "苍蕤锋锐·白缨枪",
     "storyText": "千岩军士兵的制式装备，枪身牢靠，枪尖锋锐，是无比可靠的武器。",
     "playCost": [
@@ -4455,6 +4709,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "重嶂不移·千岩长枪",
     "storyText": "古代的千岩军爱用的武器。取孤云阁的岩片精工打造的长枪，枪尖坚固无比。",
     "playCost": [
@@ -4492,6 +4748,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "斫贯黑翼·天空之脊",
     "storyText": "支撑高天之脊。坚硬不移的意志，支撑着风之龙与恶秽的仇敌誓死厮杀。",
     "playCost": [
@@ -4529,6 +4787,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "金璋皇极·贯虹之槊",
     "storyText": "在坊间的传说故事之中，深海里盘踞着巨大的阴影，吞没来往的舰船…\n在故事的结尾，岩王帝君曾以长枪贯穿长虹，将肆虐大海的漩涡钉死在深海的中央。",
     "playCost": [
@@ -4566,6 +4826,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "非时之梦·薙草之稻光",
     "storyText": "所谓薙刀，乃是斩除芜杂之利器。\n秉薙刀之人，意在守护恒常之道。",
     "playCost": [
@@ -4603,6 +4865,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "幽林月影·贯月矢",
     "storyText": "「为月亮所迷的孩子望着月亮时会流泪，是因为月亮化成的细沙进入了眼中。在许许多多的故事里，没有一滴眼泪会是白流的。」",
     "playCost": [
@@ -4640,6 +4904,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "昭理的鸢之枪·和璞鸢",
     "storyText": "「石鸟甫一造成，便挣脱了万物桎梏的大地盘旋登上高空，如烈日投出的长枪般，直插大洋中心魔兽与岩鲸激斗的战场，巨兽应声被钉入了黑暗的海沟，不复浮出。从此璃月的人们便摆脱了海中巨兽的咆哮。」",
     "playCost": [
@@ -4677,6 +4943,8 @@
         "hintText": "请选择要装备长柄武器的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "枪尖一点·公义的酬报",
     "storyText": "「世界理应是如此运行，公义的道理应当如此。」\n「但『理应如此』的事情，却总难有好的结果。」",
     "playCost": [
@@ -4714,6 +4982,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "旅者之伴·旅行剑",
     "storyText": "趁手的钢剑，剑柄里藏着各类方便旅行的小物件。",
     "playCost": [
@@ -4751,6 +5021,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "气定神闲·祭礼剑",
     "storyText": "经历漫长岁月的道具用剑，在时间之风中变得如钢铁般锋利。",
     "playCost": [
@@ -4788,6 +5060,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "听凭风引·风鹰剑",
     "storyText": "异族斗士的佩剑，见证了她的跋涉与奋斗，最终见证她将自由与正义之风吹遍蒙德全地。",
     "playCost": [
@@ -4825,6 +5099,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "穿刺高天·天空之刃",
     "storyText": "贯穿高天之牙。当恶秽的仇敌陨灭，风之龙亦陷入沉眠。\n沉睡百年，蒙德的众生忘却了特瓦林的死战。\n这柄利剑是风龙恢复名誉的祈愿。",
     "playCost": [
@@ -4862,6 +5138,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "顺风而行·西风剑",
     "storyText": "「传说那获授幼狼之名的骑士能将细雨斩落，剑锋卷起的风便足以将蔷薇摧折；\n无人抵达过他昔日的境界，但骑士当初许诺守护的誓言，却依然传承到了今天。」",
     "playCost": [
@@ -4899,6 +5177,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "白月枝芒·裁叶萃光",
     "storyText": "「若你以为他仍有资格在森林迷宫之中寻回荣誉，就引导他折去纯白枝条…」\n「到那时，明月与新星将赐予他纯真的灵智，抛弃苦酒一般的回忆与欲望。」",
     "playCost": [
@@ -4936,6 +5216,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "森林的瑞佑·原木刀",
     "storyText": "「…即使如此，在沙漠的深处，如同森林王留下足印，你我留下故事。」\n「过去友情的痕迹，听说如同化为子种的兰那罗，仍在静静沉睡着。」",
     "playCost": [
@@ -4973,6 +5255,8 @@
         "hintText": "请选择要装备单手剑的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "湖光的朝与暮·静水流涌之辉",
     "storyText": "「…在澄澈如湖光的晨曦中，殷切而痛苦的话语打动了众水之主，\n于是仁慈的神向人子允诺了她的请求，又祝福她离去的前路。\n正如神所知晓，对无私者而言，唯有公义的裁决意味着宽赦。\n或许正是如此，那高贵的决意，便也染就了所谓命运的底色。」",
     "playCost": [
@@ -5007,6 +5291,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "蹊衢索途·冒险家头带",
     "storyText": "「星穹与深渊掩藏的一切缄秘，正等待这弱小的凡人去猎取。」",
     "playCost": [
@@ -5041,6 +5327,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "无忧之冕·幸运儿银冠",
     "storyText": "「生来幸运的孩子，即便是凶险的陷阱，也为他准备着意想不到的宝藏。」",
     "playCost": [
@@ -5075,6 +5363,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "悬壶林藂·游医的方巾",
     "storyText": "「无论是晴日当空、还是大雨瓢泼，都无法阻挡游医坚定的行步。」",
     "playCost": [
@@ -5109,6 +5399,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "喝雉呼卢·赌徒的耳环",
     "storyText": "「在生死攸关的对局中，多一分冷静理智，便也就多了一缕得胜的希望。」",
     "playCost": [
@@ -5143,6 +5435,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "事预则立·教官的帽子",
     "storyText": "「我没有作为将校指挥军旅的能力，除当兵外也不胜任别的什么工作，\n不如让我来教小伙子们吃点苦头，好让他们在战场上能多活几分钟。」",
     "playCost": [
@@ -5177,6 +5471,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "贵胄之裔·流放者头冠",
     "storyText": "「祸哉，那白银堆砌的大殿，你的冠冕何以被血淹没？」",
     "playCost": [
@@ -5211,6 +5507,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "往岁霆光·华饰之兜",
     "storyText": "「浮生若梦十三年，影峠绯雪翩跹烟，再顾君已远。」",
     "playCost": [
@@ -5245,6 +5543,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "绝缘之旗印·华饰之兜",
     "storyText": "浮生若梦十三年，\n影峠绯雪翩跹烟，\n再顾君已远。",
     "playCost": [
@@ -5279,6 +5579,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "誓愿无渝·将帅兜鍪",
     "storyText": "「直至最后一滴血汇入大地，琉璃砂终又显露光泽。」",
     "playCost": [
@@ -5313,6 +5615,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "千岩牢固·将帅兜鍪",
     "storyText": "「…为了保障难民的安全撤离，不辜负岩主的目光，\n头戴兜鍪的首领们率先向深渊刺出了手中的长枪。」",
     "playCost": [
@@ -5347,6 +5651,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "震息幽祸·虺雷之姿",
     "storyText": "「…天遒有夜叉，四臂何磊魁。\n远来层岩里，诸部扬讴歌…」",
     "playCost": [
@@ -5381,6 +5687,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "浓云夕照·辰砂往生录",
     "storyText": "「君不闻，朔风萧瑟鼓角落，人杰淹冉没回涡。」\n「竟不见，夜叉酣斗争天曙，空余长叹何蹉跎。」",
     "playCost": [
@@ -5415,6 +5723,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "思记隽永·无常之面",
     "storyText": "…即使浅笑也掩饰不住悲伤的神情，\n明明是祭典的日子，却仿佛即将告别一样…",
     "playCost": [
@@ -5449,6 +5759,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "万彩瞬灭·追忆之注连",
     "storyText": "「…世界之理本就无常，痴恋瞬灭之物，将遗失隽永的记忆，」\n「失去记忆之人，无异于失去生命，是乃永恒黑暗的死亡…」",
     "playCost": [
@@ -5483,6 +5795,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "真珠冠冕·海祇之冠",
     "storyText": "「海民的传唱中，真珠与珊瑚制成的华冠永远不会沾染污秽。」",
     "playCost": [
@@ -5517,6 +5831,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "海渊之忆·海染砗磲",
     "storyText": "「带着来自海渊的希望与记忆，浸润着失落已久的文明与历史，这些精巧优雅的冠冕，随同其主人一起滑落进入遗忘的裂隙。」",
     "playCost": [
@@ -5551,6 +5867,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "代施之辈·沙王的投影",
     "storyText": "「曾经，凡人的贤王与神官亲身领受圣谕，他们是大地的主人。」\n「而如今，绿洲之中代施统治的诸多显贵，成为了神主的影子。」",
     "playCost": [
@@ -5585,6 +5903,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "黄金愿景·饰金之梦",
     "storyText": "「许久以后，荒唐的决断伴着海市蜃楼般的狂想下达，便以美好的期许为诱饵，将臣民引向了苦涩的结局。」",
     "playCost": [
@@ -5619,6 +5939,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "佳话巡行·浮溯之珏",
     "storyText": "「…而没于清水的奇石也许是珏、璋、玦，抑或是杯盏。还有这么一说：故事中的『玉』其实是美人的喻体。」",
     "playCost": [],
@@ -5648,6 +5970,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "璞玉弥久·来歆余响",
     "storyText": "「…传说的大河下总会生出许多支流。其中又有故事说，美玉曾为神山中璞玉，是经帝君之手才被精心雕琢。」",
     "playCost": [
@@ -5682,6 +6006,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "涤净污浊·灵光明烁之心",
     "storyText": "「若无死亡的深黑威胁，任何生命将变得无足轻重，」\n「若无遗忘的浪潮冲刷，亦无所谓值得铭记的历史…」",
     "playCost": [],
@@ -5711,6 +6037,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "灵光百种·花海甘露之光",
     "storyText": "「花海有灵百种，怀着草木露水的愿望，涤净一切污浊，」\n「花海有灵百种，歌唱着那草木、甘露与鲜花三位母亲。」",
     "playCost": [
@@ -5745,6 +6073,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "荣辱之相·老兵的容颜",
     "storyText": "「即使能将伤痕完全遮盖，心里的伤也不会消失吧。」",
     "playCost": [
@@ -5779,6 +6109,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "荣光猎者·逐影猎人",
     "storyText": "「『追寻森森鬼影，将其尽数驱逐、猎杀』，\n这是后来被充满尊敬地称为『黄金猎人』，\n而本人却将这一名号视为耻辱的卡西奥多，\n协助建立「逐影猎人」这一职的名称由来。」",
     "playCost": [
@@ -5813,6 +6145,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "谐和乐章·黄金剧团的奖赏",
     "storyText": "「…待到黄金的大乐章重新奏响之时，『金色剧团』终将领取诚实者应得的报酬。」\n「待到完美的秩序在人类中分出主人与奴仆，健全与美令荣耀王国再度光荣…」",
     "playCost": [],
@@ -5842,6 +6176,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "超越旧梦·黄金剧团",
     "storyText": "「…待到那一日，待到那一日…\n『金色剧团』的每一位成员，自当赢得整个未来作为奖赏。」",
     "playCost": [
@@ -5876,6 +6212,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "深情盟约·紫晶的花冠",
     "storyText": "「为了永恒的绿洲乐土，为了盛放的帕蒂莎兰，花之女主人戴上了紫水晶的王冠。」",
     "playCost": [
@@ -5910,6 +6248,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "凋落梦景·乐园遗落之花",
     "storyText": "「但『永恒』终究是谎言，酣醉与欢爱只会磨却记忆，将之化作破碎的梦呓。」",
     "playCost": [
@@ -5944,6 +6284,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "遥世霜歌·破冰踏雪的回音",
     "storyText": "「越过冰封的门扉，走下深邃的回廊，他折下银白枝条，为雪国带来希望…」",
     "playCost": [
@@ -5978,6 +6320,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "冬日流旅·冰风迷途的勇士",
     "storyText": "「…请你活下去，请不要与我们共同走向灭亡，湮没于冰冷的遗忘…」",
     "playCost": [
@@ -6012,6 +6356,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "沉渊旧梦·酒渍船帽",
     "storyText": "「酒渍的船帽被暴风扬入高空，逐浪乘波而去，而那注定失去故乡之人，进行着无望无求的纷争。」",
     "playCost": [
@@ -6046,6 +6392,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "浪舟残想·沉沦之心",
     "storyText": "「…因一切死皆是枉死，耽溺过往之人没有救赎。」",
     "playCost": [
@@ -6080,6 +6428,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "烬行哀歌·焦灼的魔女帽",
     "storyText": "「…狂舞的灰烬啊，回答我，为何夺去我所爱的一切？」",
     "playCost": [
@@ -6114,6 +6464,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "灼思终散·炽烈的炎之魔女",
     "storyText": "「我拒绝挽歌，拒绝哀怨，拒绝悲叹，也拒绝一切无用的噪喧。\n若是公义早已不复，又该向谁献上救赎？」",
     "playCost": [
@@ -6148,6 +6500,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "紫电骤雨·唤雷的头冠",
     "storyText": "「直至清澈的歌声穿透低鸣的雷雨、撕裂空中的阴霭，将小小的光传给那高天的鸟儿。」",
     "playCost": [
@@ -6182,6 +6536,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "霆天片羽·如雷的盛怒",
     "storyText": "「当你同雷雨再来时，我唱别的歌给你听。」",
     "playCost": [
@@ -6216,6 +6572,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "青翠之风·翠绿的猎人之冠",
     "storyText": "「无人能为最杰出的猎人加冕，因为高于她的只有地与天。」",
     "playCost": [
@@ -6250,6 +6608,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "碎叶之梦·翠绿之影",
     "storyText": "「终有一日…在无边无际的猎场中，我们将再度相逢。」",
     "playCost": [
@@ -6284,6 +6644,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "玄岩嵯峨·不动玄石之相",
     "storyText": "「臧否分明，从无失准。」",
     "playCost": [
@@ -6318,6 +6680,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "岭嶂巉岩·悠古的磐岩",
     "storyText": "「千岩牢固，重嶂不移。」",
     "playCost": [
@@ -6352,6 +6716,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "唤雨之纹·月桂的宝冠",
     "storyText": "「万物生灭皆有定期，其循环往复不停。」",
     "playCost": [
@@ -6386,6 +6752,8 @@
         "hintText": "请选择要装备圣遗物的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "翠蔓之识·深林的记忆",
     "storyText": "「因为遵循自然的，终会穿过御林的迷宫，抵达漫无边际的原野。」",
     "playCost": [
@@ -6411,6 +6779,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "千帆络绎之港",
     "storyText": "「风雨犹祝，山海同欢，是承天地之佑。」",
     "playCost": [
@@ -6434,6 +6804,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "北陆书籍集成之所",
     "storyText": "「大部分馆藏皆可自由借阅，只是，切忌逾期归还…」",
     "playCost": [],
@@ -6454,6 +6826,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "高阁入云坐看星",
     "storyText": "「据说其中有千种珍宝，琳琅满目。」",
     "playCost": [],
@@ -6472,6 +6846,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "曙光初照的庄园",
     "storyText": "「最好的永远是明年酿造出的酒。」",
     "playCost": [
@@ -6495,6 +6871,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "荻花远眺之高车",
     "storyText": "「坊间有传说道，纵然贵为仙人者，偶尔也会在此沐浴清冷的月光…」",
     "playCost": [
@@ -6518,6 +6896,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "虔心之人聚于此",
     "storyText": "「若向风真诚倾诉，那话语总有一日能吹拂至神明的耳畔。」",
     "playCost": [
@@ -6541,6 +6921,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "千手百眼·天下人间",
     "storyText": "「仅由此身，为这天下人间代行永恒。」",
     "playCost": [
@@ -6564,6 +6946,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "遐世的绯染之梦",
     "storyText": "「影向山樱常盛，一如鸣神永恒。」",
     "playCost": [
@@ -6587,6 +6971,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "珠光弥布的宫阙",
     "storyText": "「珊瑚宫者，初为海渊，后有大蛇渡来，盘桓而升涡流，塑珊瑚而成岛。」",
     "playCost": [
@@ -6610,6 +6996,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "一切智慧具足之城",
     "storyText": "在繁枝茂叶的圣树之下，学城的贤者们已遍计所有的知识。",
     "playCost": [
@@ -6633,6 +7021,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "若循群林小径所至",
     "storyText": "「进入众多树木的记忆中吧，进入梦叶的苗圃，进入无忧的世界。」",
     "playCost": [],
@@ -6651,6 +7041,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "妖迹隐匿之处",
     "storyText": "传说，这片神林曾是诸多妖怪栖身之所。",
     "playCost": [
@@ -6674,6 +7066,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "黄金屋",
     "storyText": "流通大陆的「契约」，无不在此铸成。",
     "playCost": [],
@@ -6692,6 +7086,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "化城郭",
     "storyText": "旅者与巡林员们欢聚之地，倾听雨林心跳的村落。",
     "playCost": [
@@ -6715,6 +7111,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "风龙废墟",
     "storyText": "野心的梦傲立在烈风魔神的王都之上，土崩瓦解于「自由」的高歌之中。",
     "playCost": [
@@ -6740,6 +7138,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "湖中垂柳",
     "storyText": "在古时，湖中的垂柳是受到敬畏的。一切水脉在伊黎耶汇合，而垂柳随着水脉的甜与苦而繁茂或衰败。",
     "playCost": [
@@ -6763,6 +7163,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "欧庇克莱歌剧院",
     "storyText": "真实与虚幻，闹剧与悲剧在此处平等上演，或许正如古枫丹的剧作家所言，「世界不过是一幕表演，众生亦不过是舞台上的演员。」",
     "playCost": [
@@ -6786,6 +7188,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "梅洛彼得堡",
     "storyText": "「黄铜与锻铁的要塞终有崩毁之日，律法与正义的坚城永无陨落之时。」",
     "playCost": [
@@ -6809,6 +7213,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "清籁岛",
     "storyText": "「海天变色的大战已成为渐被遗忘的过去，应唤而来的悠远雷暴依然在此驻留。」",
     "playCost": [
@@ -6832,6 +7238,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "赤王陵",
     "storyText": "「巨大的锥体像是支撑在高天与黄沙之间的柱石，从不知何时的过去就伫立于沙漠正中。站在它的面前，无论是平民、富有者亦或是饱识的学者，都不过是几粒沙尘。」",
     "playCost": [
@@ -6852,6 +7260,8 @@
     "englishName": "Forbidden Knowledge",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "无法使用此牌进行元素调和，且每回合最多只能打出1张「禁忌知识」。\\n对我方出战角色造成1点$[K5]，抓1张牌。",
     "description": "无法使用此牌进行元素调和，且每回合最多只能打出1张「禁忌知识」。\n对我方出战角色造成1点穿透伤害，抓1张牌。",
@@ -6868,6 +7278,8 @@
       "GCG_TAG_PLACE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "枫丹科学院·中央实验室遗址",
     "storyText": "…在过剩的才智和热情的相互作用下，其以一种超乎所有人预期的方式实现了研究目的。\n在理想破灭后，保持沉默是它此刻最重要的责任…",
     "playCost": [
@@ -6891,6 +7303,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "最棒的向导·派蒙",
     "storyText": "「没错！你的幸福就是派蒙的幸福呀！所以反过来说，派蒙幸福，你也幸福。」",
     "playCost": [
@@ -6914,6 +7328,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "协会招待员·凯瑟琳",
     "storyText": "「向着星辰与深渊！欢迎来到冒险家协会。」",
     "playCost": [
@@ -6937,6 +7353,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "炼金学者·蒂玛乌斯",
     "storyText": "「你好…哦，是想要借用合成台吗？当然可以，请便。」",
     "playCost": [
@@ -6962,6 +7380,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "铁匠老板·瓦格纳",
     "storyText": "「打铁依靠的不只是蛮力，还有日以继夜努力而流下的汗水，以及比锻铁还要结实的毅力！」",
     "playCost": [
@@ -6987,6 +7407,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "灵光入味·卯师傅",
     "storyText": "「用最大众的食材，最普适的口味，最精湛的手艺，做出最最好吃的料理！」\n",
     "playCost": [
@@ -7010,6 +7432,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "销虹霁雨·阿圆",
     "storyText": "「沏一壶茶，守一方洞天。陪旅者和派蒙，等阿萍和老友。观云卷云舒，赏空澈天色。无需关注仙家要务的日子，甚是悠哉…」\n「啊呀，一不小心又睡着了，还好没人发现。」",
     "playCost": [
@@ -7033,6 +7457,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "纯白守候·提米",
     "storyText": "「飞走的鸽子，还会回来吗？」",
     "playCost": [],
@@ -7051,6 +7477,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "百货奇货·立本",
     "storyText": "「这个世界马上就要发生大事了！我这里有一笔好生意，你可愿意听听？」",
     "playCost": [],
@@ -7069,6 +7497,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "失意墨客·常九爷",
     "storyText": "「未曾清贫难成人，尚有书卷伴吾身！」",
     "playCost": [],
@@ -7087,6 +7517,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "骑士之梦·艾琳",
     "storyText": "「精神与力量都要修行到位，才能使出琴大人那样沉稳的剑法！」",
     "playCost": [
@@ -7110,6 +7542,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "书接上回·田铁嘴",
     "storyText": "「我来给您掰扯掰扯这个道理，您来听听原汁原味的评书！」",
     "playCost": [
@@ -7133,6 +7567,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "且听下回·刘苏",
     "storyText": "「各位客官，接下来您们还想再听段什么？」",
     "playCost": [
@@ -7156,6 +7592,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "萦殃祓却·花散里",
     "storyText": "「与君相别离，不知何日是归期，我如朝露转瞬晞。」",
     "playCost": [],
@@ -7174,6 +7612,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "藏鞠的心意·鲸井小弟",
     "storyText": "「藏手鞠的人要在一首手鞠歌的时间内藏好，找的人也要在一首歌的时间内找到，这样游戏才公平！」",
     "playCost": [],
@@ -7192,6 +7632,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "吃饱再说·旭东",
     "storyText": "「有问题？哎呀，吃饱再说也不迟。」",
     "playCost": [
@@ -7215,6 +7657,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "挚诚信心·迪娜泽黛",
     "storyText": "「我们是为了不留遗憾而活着的，对吗？」",
     "playCost": [
@@ -7238,6 +7682,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "记忆之珍·拉娜",
     "storyText": "「我们还有很长的时间，一起重新认识森林的大、世界的大、未来的无限。」",
     "playCost": [
@@ -7261,6 +7707,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "宝兵百锻出·老章",
     "storyText": "在成为一柄利剑前，铁块总是得经历许多焦灼的挫折。",
     "playCost": [
@@ -7284,6 +7732,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "翻越高墙·塞塔蕾",
     "storyText": "身为沙漠的天才，深入雨林的殿堂…",
     "playCost": [
@@ -7307,6 +7757,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "漆器之法·弥生七月",
     "storyText": "「如果最终能抵达极致的境界，那么漆器之中也会蕴含真理的纹样吧…」",
     "playCost": [
@@ -7330,6 +7782,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "玛梅赫",
     "storyText": "每天都在画画的美露莘。\n「把想要的东西画出来，会很开心！」",
     "playCost": [],
@@ -7348,6 +7802,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "流浪的沙与梦·婕德",
     "storyText": "「一千个拥抱！我们一定还会再见的！」\n「我希望我们下次相见，会是在一个阳光更好的日子。」",
     "playCost": [
@@ -7373,6 +7829,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "最棒的侍从·西尔弗和迈勒斯",
     "storyText": "「别害怕，我们会保护你到最后。」",
     "playCost": [
@@ -7398,6 +7856,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "太郎丸",
     "storyText": "木漏茶室的老板，传说所有的店员都和它签订了「契约」…\n鲜有人知的是，当年在「终末番」，太郎丸常伴强大的忍者左右，为社奉行尽力行事…",
     "playCost": [
@@ -7418,6 +7878,8 @@
     "englishName": "Taroumaru's Savings",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "生成1个$[K411]。",
     "description": "生成1个万能元素。",
@@ -7434,6 +7896,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "白手套和渔夫",
     "storyText": "「在我们当中，也有我们的正义。」",
     "playCost": [],
@@ -7449,6 +7913,8 @@
     "englishName": "\"Called In For Cleanup\"",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方出战角色下次造成的伤害+1。（可叠加，最多叠加到+2）",
     "description": "我方出战角色下次造成的伤害+1。（可叠加，最多叠加到+2）",
@@ -7465,6 +7931,8 @@
       "GCG_TAG_ALLY"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "亚瑟先生",
     "storyText": "「你好！你好！」",
     "playCost": [],
@@ -7483,6 +7951,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "恒态轮转·参量质变",
     "storyText": "「普遍而言，地上地下的一切都在循环，记忆与元素在地脉中恒常奔涌。」\n「或许，古早的文明正试图触达…从尘土到瑰宝的轮转法则。」",
     "playCost": [
@@ -7506,6 +7976,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "应急摄入·便携料理",
     "storyText": "「及时补充营养，以便剧烈运动。」",
     "playCost": [
@@ -7531,6 +8003,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "莫名风来·红羽团扇",
     "storyText": "据说在天狗手中，这把团扇可以发挥各种各样的力量。\n在一般人手中，它只有着「让身体稍微变得轻盈一点」程度的能力。\n但即使是这种程度的能力，也足够一般人运用了。",
     "playCost": [
@@ -7554,6 +8028,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "或可解语·寻宝仙灵",
     "storyText": "能引人寻宝的奇异仙灵。据说，有某人能与它们交流…？",
     "playCost": [
@@ -7577,6 +8053,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "化种匣",
     "storyText": "从萍姥姥处获得的神奇匣子。据萍姥姥说，这匣子具有「化种」之能…",
     "playCost": [],
@@ -7595,6 +8073,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "留念镜",
     "storyText": "据说在很久以前，传说中的「狐斋宫大人」曾经将一件法器作为退邪之物赠与彼时柊家家主弘嗣。\n柊以其为透镜部件的材料，后来从异国定做了特殊的「留影机」，并将其作为情谊的象征，回赠鸣神大社。",
     "playCost": [
@@ -7618,6 +8098,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "流明石触媒",
     "storyText": "「但愿它能如同掌心的小太阳一样，为黑暗中的跋涉带来些许光亮、些许慰藉。」",
     "playCost": [
@@ -7643,6 +8125,8 @@
       "GCG_TAG_ITEM"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "苦舍桓",
     "storyText": "「苦舍桓」呀，「苦舍桓」~♪\n记忆和梦的容器，里面满是力量。\n是开花的植物结出的果，也是新的种子，有全新的生命。\n是兰那罗记忆的暂居所，会给兰那罗力气。",
     "playCost": [],
@@ -7661,6 +8145,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "旧时庭园",
     "storyText": "「空蝉幽世此浮生，岂非渺然梦寤时。」",
     "playCost": [
@@ -7684,6 +8170,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "磐岩盟契",
     "storyText": "「岩王爷赐予他看清事物的双眼，与他约法三章。此后那龙便常伴岩王爷左右，随侍征战南北…」",
     "playCost": [
@@ -7707,6 +8195,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "愉舞欢游",
     "storyText": "「欢欣，与大家分享。」",
     "playCost": [
@@ -7730,6 +8220,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "自由的新风",
     "storyText": "「高天的诗人拂动琴弦，召来强风，吹散冰雪，劈开山峦，让新的蒙德成为自由之地。」",
     "playCost": [
@@ -7753,6 +8245,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "万家灶火",
     "storyText": "「灶神惜护民生，化出分身潜入千家万户帮着生火做饭，助人团圆。」",
     "playCost": [
@@ -7778,6 +8272,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "裁定之时",
     "storyText": "「是时候对这起案件做出最终的定夺了。」",
     "playCost": [
@@ -7814,6 +8310,8 @@
         "hintText": "对所选角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "抗争之日·碎梦之时",
     "storyText": "冲破囚笼之人一路得胜，永远的繁华之梦也随着这座王都土崩瓦解…",
     "playCost": [
@@ -7837,6 +8335,8 @@
       "GCG_TAG_LEGEND"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "旧日鏖战",
     "storyText": "海祇岛民信仰的魔神，曾与鸣神的主尊鏖战…\n八酝岛上漫长的「无想刃狭间」，便是那一战残存的瘢痕…",
     "playCost": [
@@ -7860,6 +8360,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_CRYO",
+      "GCG_TAG_ELEMENT_CRYO"
+    ],
     "storyTitle": "元素共鸣：交织之冰",
     "storyText": "坚冰凜冽，直撼高天。",
     "playCost": [],
@@ -7887,6 +8392,11 @@
         "hintText": "对我方出战角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_CRYO",
+      "GCG_TAG_ELEMENT_CRYO"
+    ],
     "storyTitle": "元素共鸣：粉碎之冰",
     "storyText": "霜华绽放，唯此一心。",
     "playCost": [
@@ -7910,6 +8420,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_HYDRO",
+      "GCG_TAG_ELEMENT_HYDRO"
+    ],
     "storyTitle": "元素共鸣：交织之水",
     "storyText": "水纳万生，清浊共舞。",
     "playCost": [],
@@ -7928,6 +8443,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_HYDRO",
+      "GCG_TAG_ELEMENT_HYDRO"
+    ],
     "storyTitle": "元素共鸣：愈疗之水",
     "storyText": "源清流洁，本盛末荣。",
     "playCost": [
@@ -7951,6 +8471,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_PYRO",
+      "GCG_TAG_ELEMENT_PYRO"
+    ],
     "storyTitle": "元素共鸣：交织之火",
     "storyText": "红莲劫尽，败者归尘。",
     "playCost": [],
@@ -7978,6 +8503,11 @@
         "hintText": "对我方出战角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_PYRO",
+      "GCG_TAG_ELEMENT_PYRO"
+    ],
     "storyTitle": "元素共鸣：热诚之火",
     "storyText": "灼灼凡心，不减日月。",
     "playCost": [
@@ -8001,6 +8531,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_ELECTRO",
+      "GCG_TAG_ELEMENT_ELECTRO"
+    ],
     "storyTitle": "元素共鸣：交织之雷",
     "storyText": "雷光所至，永恒之土。",
     "playCost": [],
@@ -8019,6 +8554,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_ELECTRO",
+      "GCG_TAG_ELEMENT_ELECTRO"
+    ],
     "storyTitle": "元素共鸣：强能之雷",
     "storyText": "雷霆迅起，威重万钧。",
     "playCost": [
@@ -8042,6 +8582,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_ANEMO",
+      "GCG_TAG_ELEMENT_ANEMO"
+    ],
     "storyTitle": "元素共鸣：交织之风",
     "storyText": "悠游风动，抚琴以歌。",
     "playCost": [],
@@ -8069,6 +8614,11 @@
         "hintText": "选择一个后台角色，切换到该角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_ANEMO",
+      "GCG_TAG_ELEMENT_ANEMO"
+    ],
     "storyTitle": "元素共鸣：迅捷之风",
     "storyText": "疾风穿林，驰骋四方。",
     "playCost": [
@@ -8092,6 +8642,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_GEO",
+      "GCG_TAG_ELEMENT_GEO"
+    ],
     "storyTitle": "元素共鸣：交织之岩",
     "storyText": "嵯峨层岩，鉴取深盟。",
     "playCost": [],
@@ -8110,6 +8665,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_GEO",
+      "GCG_TAG_ELEMENT_GEO"
+    ],
     "storyTitle": "元素共鸣：坚定之岩",
     "storyText": "山骞不崩，磐石为镇。",
     "playCost": [
@@ -8133,6 +8693,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_DENDRO",
+      "GCG_TAG_ELEMENT_DENDRO"
+    ],
     "storyTitle": "元素共鸣：交织之草",
     "storyText": "梦中欢舞，森罗万象。",
     "playCost": [],
@@ -8151,6 +8716,11 @@
       "GCG_TAG_RESONANCE"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_ELEMENT_DENDRO",
+      "GCG_TAG_ELEMENT_DENDRO"
+    ],
     "storyTitle": "元素共鸣：蔓生之草",
     "storyText": "新枝抽芽，郁郁成林。",
     "playCost": [
@@ -8172,6 +8742,11 @@
     "englishName": "Wind and Freedom",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_NATION_MONDSTADT",
+      "GCG_TAG_NATION_MONDSTADT"
+    ],
     "storyTitle": "自在叙事之诗",
     "storyText": "「终有一天，风会吹向更为光亮的方向。」",
     "playCost": [],
@@ -8188,6 +8763,11 @@
     "englishName": "Stone and Contracts",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_NATION_LIYUE",
+      "GCG_TAG_NATION_LIYUE"
+    ],
     "storyTitle": "亘古不移之契",
     "storyText": "「这是我对众生的信任，辜负了它就是玷污了我的血。」",
     "playCost": [
@@ -8209,6 +8789,11 @@
     "englishName": "Thunder and Eternity",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_NATION_INAZUMA",
+      "GCG_TAG_NATION_INAZUMA"
+    ],
     "storyTitle": "浮世众生之梦",
     "storyText": "「此身曾许诺予臣民一梦，即是千世万代不变不移的『永恒』。」",
     "playCost": [],
@@ -8225,6 +8810,11 @@
     "englishName": "Nature and Wisdom",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_NATION_SUMERU",
+      "GCG_TAG_NATION_SUMERU"
+    ],
     "storyTitle": "诸灵欢悦之智",
     "storyText": "「大家的欢舞里蕴藏着宇宙的一切。『生命』一直都是目的，『智慧』才是手段。」",
     "playCost": [
@@ -8246,6 +8836,11 @@
     "englishName": "Water and Justice",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_NATION_FONTAINE",
+      "GCG_TAG_NATION_FONTAINE"
+    ],
     "storyTitle": "贯彻正义之舞",
     "storyText": "「『存在』即为厄歌莉娅的正义…而对于我来说，正义应当意味着『存续』。」",
     "playCost": [
@@ -8267,6 +8862,8 @@
     "englishName": "The Bestest Travel Companion!",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "最好的伙伴！",
     "storyText": "「你是万千星辰中的一颗，于我而言却是整个世界。」",
     "playCost": [
@@ -8288,6 +8885,8 @@
     "englishName": "Changing Shifts",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "换班时间",
     "storyText": "「大人的工作时间到了，小孩子快回去睡觉吧。」",
     "playCost": [],
@@ -8304,6 +8903,8 @@
     "englishName": "Toss-Up",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "一掷乾坤",
     "storyText": "骰子掷下之前，无人知晓自己的命运。",
     "playCost": [],
@@ -8320,6 +8921,8 @@
     "englishName": "Strategize",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "运筹帷幄",
     "storyText": "「形势虽然错综复杂，但不外乎一百八十七种情况。」",
     "playCost": [
@@ -8341,6 +8944,8 @@
     "englishName": "I Haven't Lost Yet!",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "本大爷还没有输！",
     "storyText": "荒泷可以输但绝不认输名副其实男子汉一斗，永远可以再来一局。",
     "playCost": [],
@@ -8357,6 +8962,8 @@
     "englishName": "Leave It to Me!",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "交给我吧！",
     "storyText": "「什么都可以，全都交给我吧！」——这句话，常年稳居最令蒙德人安心的话语排行榜榜首。",
     "playCost": [],
@@ -8373,6 +8980,8 @@
     "englishName": "When the Crane Returned",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "鹤归之时",
     "storyText": "「彼时鹤归，茫茫天地无依靠，孤身离去。今日再会，新朋旧友坐满堂，共聚此时。」",
     "playCost": [
@@ -8403,6 +9012,8 @@
         "hintText": "对我方出战角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "命星轨迹",
     "storyText": "「此乃命运，无可违逆。」",
     "playCost": [
@@ -8433,6 +9044,8 @@
         "hintText": "对我方出战角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "炼金实验",
     "storyText": "「不必紧张，你看，实验已经完成了，很成功。」",
     "playCost": [
@@ -8471,6 +9084,8 @@
         "hintText": "将所选「武器」转移给一个角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "诸武精通",
     "storyText": "「伙伴，看好了！真正的战士不会挑剔兵器！」",
     "playCost": [],
@@ -8504,6 +9119,8 @@
         "hintText": "将所选「圣遗物」转移给一个角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "神宝迁宫",
     "storyText": "「呵呵…这下总该变得有意思起来了吧？」",
     "playCost": [],
@@ -8529,6 +9146,8 @@
         "hintText": "选择一个召唤物，补充可用次数"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "兔兔缝补",
     "storyText": "兔兔伯爵八百九十三世，经久耐用的秘诀就在于此。",
     "playCost": [
@@ -8559,6 +9178,8 @@
         "hintText": "选择一个召唤物，扣除可用次数"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "送你一程",
     "storyText": "「一波送走~往生堂服务品质保证，包您满意！」",
     "playCost": [
@@ -8580,6 +9201,8 @@
     "englishName": "Guardian's Oath",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "诸邪退散",
     "storyText": "「三眼五显仙人，魈，听召前来守护。」",
     "playCost": [
@@ -8601,6 +9224,11 @@
     "englishName": "Abyssal Summons",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_CAMP_MONSTER",
+      "GCG_TAG_CAMP_MONSTER"
+    ],
     "storyTitle": "深渊的呼唤",
     "storyText": "「Yaya ika！」",
     "playCost": [
@@ -8622,6 +9250,11 @@
     "englishName": "Fatui Conspiracy",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [
+      "GCG_TAG_CAMP_FATUI",
+      "GCG_TAG_CAMP_FATUI"
+    ],
     "storyTitle": "冬日密谋",
     "storyText": "…但谁也不知道他们究竟在密谋些什么。",
     "playCost": [
@@ -8654,6 +9287,8 @@
         "hintText": "切换到所选角色，然后该角色使用「普通攻击」"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "坠空急袭法",
     "storyText": "「…不要半途打开风之翼啊！要被发现了！」",
     "playCost": [
@@ -8684,6 +9319,8 @@
         "hintText": "对我方出战角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "劈石破岩法",
     "storyText": "对某些力气不是那么大的人来说…\n最好把「劈石破岩」仅仅看为「一个比喻」。",
     "playCost": [
@@ -8705,6 +9342,8 @@
     "englishName": "The Legend of Vennessa",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "莫弃自由之希望",
     "storyText": "「林中孤独的微风集聚，吹垮了暴君的高塔。」\n「幼狮在风中昂首，终于挣脱了镣铐。」",
     "playCost": [
@@ -8726,6 +9365,8 @@
     "englishName": "Friendship Eternal",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "挚友",
     "storyText": "朋友不会永远离去，而是以另一种形式陪在我们身边。",
     "playCost": [
@@ -8747,6 +9388,8 @@
     "englishName": "Rhythm of the Great Dream",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "大梦的曲调",
     "storyText": "「进入我们的梦、我们的世界。」\n「写下善良、勇敢、正直的故事。」",
     "playCost": [],
@@ -8772,6 +9415,8 @@
         "hintText": "请选择一个装备了「武器」的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "藏锋何处",
     "storyText": "不知身世的冒险家协会分会长，不断寻找着有关「剑」的线索，不停向沿途的强敌发起挑战…",
     "playCost": [],
@@ -8788,6 +9433,8 @@
     "englishName": "Pankration!",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "拳力斗技！",
     "storyText": "「为了胜利、特许券、破烂骨头商店的热门货…还有可能到来的自由，出拳！」",
     "playCost": [],
@@ -8813,6 +9460,8 @@
         "hintText": "请选择一个装备了「圣遗物」的角色"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "琴音之诗",
     "storyText": "「诗与歌的传统，在清澈动人的旋律中往复流转。」",
     "playCost": [],
@@ -8829,6 +9478,8 @@
     "englishName": "The Boar Princess",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "野猪公主",
     "storyText": "久远的传说中，野猪的王国富足快乐。王国的小公主带着智慧的狐狸与长寿的乌龟，踏上了前往北方的道路，打算让不幸的小狼变回原来的那个好孩子…",
     "playCost": [],
@@ -8845,6 +9496,8 @@
     "englishName": "Falls and Fortune",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "坍陷与契机",
     "storyText": "坠入陷坑的意外，亦是揭露尘封往事的契机。",
     "playCost": [
@@ -8875,6 +9528,8 @@
         "hintText": "对所选角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "浮烁的四叶印",
     "storyText": "形如四叶花的奇妙符印，操控元素之人的绝佳助力。",
     "playCost": [],
@@ -8900,6 +9555,8 @@
         "hintText": "对所选角色生效"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "机关铸成之链",
     "storyText": "加热工件，锻打工件，万千工件最终铸成这些效能卓越的机关，为梅洛彼得堡的犯人们留下充满价值的特许券…",
     "playCost": [],
@@ -8925,6 +9582,8 @@
         "hintText": "选择一张支援区卡牌，将其弃置"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "净觉花",
     "storyText": "「这凝明的色彩，是生命之泉流转的灵迹」\n「伴我长存，与我妙舞清歌，编织悠久的欢欣」…",
     "playCost": [],
@@ -8941,6 +9600,8 @@
     "englishName": "Controlled Directional Blast",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "可控性去危害化式定向爆破",
     "storyText": "「…什么也没隐瞒，所有始基矿都得到了妥善处理。这次的爆炸，本来是一次『可控性去危害化式定向爆破』。」",
     "playCost": [
@@ -8962,6 +9623,8 @@
     "englishName": "Underwater Treasure Hunt",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "海中寻宝",
     "storyText": "苍晶螺，幽光星星，偶尔还有隐藏在贝壳中的宝箱…",
     "playCost": [
@@ -8982,6 +9645,8 @@
     "englishName": "Undersea Treasure",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "治疗我方出战角色1点，生成1个随机基础元素骰。",
     "description": "治疗我方出战角色1点，生成1个随机基础元素骰。",
@@ -8996,6 +9661,8 @@
     "englishName": "Countdown to the Show: 3",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "幻戏倒计时",
     "storyText": "「想看魔术吗？来吧，跟着我一起念——三、二、一！」",
     "playCost": [
@@ -9016,6 +9683,8 @@
     "englishName": "Countdown to the Show: 2",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [
       {
         "type": "GCG_COST_DICE_SAME",
@@ -9034,6 +9703,8 @@
     "englishName": "Countdown to the Show: 1",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [
       {
         "type": "GCG_COST_DICE_SAME",
@@ -9052,6 +9723,8 @@
     "englishName": "The Show Begins!",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "将我方所有元素骰转换为$[K411]，抓4张牌。",
     "description": "将我方所有元素骰转换为万能元素，抓4张牌。",
@@ -9077,6 +9750,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "绝云锅巴",
     "storyText": "香香脆脆的绝云锅巴，锅巴吃了都赞不绝口。",
     "playCost": [],
@@ -9104,6 +9779,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "仙跳墙",
     "storyText": "据说其名源于，此菜曾引得仙人归复人间。那么到底是哪位仙人呢？真让人在意啊…",
     "playCost": [
@@ -9136,6 +9813,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "莲花酥",
     "storyText": "面团做成的花骨朵儿，放入宛若湖面一般的油锅中，花瓣便一层一层地绽放开来，真是赏心悦目。",
     "playCost": [
@@ -9168,6 +9847,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "北地烟熏鸡",
     "storyText": "北境常见的待客佳肴，这次端上来是要「招待」怎样的客人呢？",
     "playCost": [],
@@ -9195,6 +9876,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "甜甜花酿鸡",
     "storyText": "或许可能有人没见过鸡跑，但肯定没有人没吃过甜甜花酿鸡！",
     "playCost": [],
@@ -9222,6 +9905,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "蒙德土豆饼",
     "storyText": "香甜的口感，验证了某位提瓦特知名美食家的名言——能被冠以当地地名的菜肴，绝对不会难吃。",
     "playCost": [
@@ -9254,6 +9939,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "烤蘑菇披萨",
     "storyText": "据说有学者曾通过精密计算，研究出披萨的「最公平切法」，但由于太麻烦，根本没有人使用…",
     "playCost": [
@@ -9286,6 +9973,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "兽肉薄荷卷",
     "storyText": "虽然如今是这样的造型，但仔细想想，一开始到底是薄荷先卷的兽肉，还是兽肉先卷的薄荷呢？",
     "playCost": [
@@ -9318,6 +10007,8 @@
         "hintText": "选择一个倒下的角色，将其复苏"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "提瓦特煎蛋",
     "storyText": "有着阳光般和煦的口感，只一口便涌入了蓬勃生命力。\n吃的时候务必细嚼慢咽，不要让蓬勃的生命力噎住了命运的喉咙。",
     "playCost": [
@@ -9350,6 +10041,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "刺身拼盘",
     "storyText": "在厨师高超的刀工下，食材保留着最为巅峰的口感。入口时，仿佛依然带着生命力在唇齿间跳跃…\n等一等，难道这些食材真的还…",
     "playCost": [
@@ -9373,6 +10066,8 @@
       "GCG_TAG_FOOD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "唐杜尔烤鸡",
     "storyText": "鸡肉在舌尖伴随着香料的节奏，跳了一支神秘迷人的须弥舞蹈，仿佛将人带入了节庆时分的宴会之中…\n但就像烤鸡总会吃完，宴会也终有落幕之时。",
     "playCost": [
@@ -9396,6 +10091,8 @@
       "GCG_TAG_FOOD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "黄油蟹蟹",
     "storyText": "黄油浸润的蟹腿带着馥郁的香气，席卷味蕾，叫人无法抵抗这般鲜香的诱惑。\n「再来一份谢谢！」",
     "playCost": [
@@ -9419,6 +10116,8 @@
       "GCG_TAG_FOOD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "炸鱼薯条",
     "storyText": "鱼排裹好的面糊金黄酥脆，搭配薯条与多种酱汁，每一口都是令人满足的醇美…",
     "playCost": [
@@ -9451,6 +10150,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "松茸酿肉卷",
     "storyText": "肉泥裹上松茸细火慢煎，使松茸内吸满了香浓的肉汁，令人垂涎欲滴。",
     "playCost": [
@@ -9483,6 +10184,8 @@
         "hintText": "请选择一个角色食用料理"
       }
     ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "storyTitle": "缤纷马卡龙",
     "storyText": "五颜六色的小小圆饼。薄脆的外壳包裹着绵密又柔软的夹心，一切都完美得恰到好处。\n枫丹有句俗语：甜点里若是少了马卡龙，就如同众水少了源泉。",
     "playCost": [
@@ -9503,6 +10206,8 @@
     "englishName": "Ley Line Disorder: Driving Rain",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>双方出战角色$[K202]。",
     "description": "行动阶段开始时：双方出战角色附着水元素。",
@@ -9516,6 +10221,8 @@
     "englishName": "Ley Line Disorder: Smoldering Flames",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>对双方出战角色$[K203]。对于<color=#FF9999FF>已附着{SPRITE_PRESET#2103}火元素</color>的角色，改为造成2点$[K103]。",
     "description": "行动阶段开始时：对双方出战角色附着火元素。对于已附着火元素的角色，改为造成2点火元素伤害。",
@@ -9529,6 +10236,8 @@
     "englishName": "Ley Line Disorder: Wet",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方出战角色$[K202]。",
     "description": "行动阶段开始时：我方出战角色附着水元素。",
@@ -9542,6 +10251,8 @@
     "englishName": "Ley Line Disorder: Engulfing Storm",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>对双方出战角色$[K204]。对于<color=#FFACFFFF>已附着{SPRITE_PRESET#2104}雷元素</color>的角色，改为使其失去1点$[K310]。",
     "description": "行动阶段开始时：对双方出战角色附着雷元素。对于已附着雷元素的角色，改为使其失去1点充能。",
@@ -9555,6 +10266,8 @@
     "englishName": "Ley Line Disorder: Swift Wind",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>切换到下一个角色。（每回合1次）",
     "description": "我方角色使用技能后：切换到下一个角色。（每回合1次）",
@@ -9568,6 +10281,8 @@
     "englishName": "Ley Line Disorder: Freezing Ice",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>双方出战角色$[K201]。",
     "description": "行动阶段开始时：双方出战角色附着冰元素。",
@@ -9581,6 +10296,8 @@
     "englishName": "Ley Line Disorder: Overgrowth",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>双方出战角色$[K207]。",
     "description": "行动阶段开始时：双方出战角色附着草元素。",
@@ -9594,6 +10311,8 @@
     "englishName": "Ley Line Disorder: High Temperature",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>双方出战角色$[K203]。",
     "description": "行动阶段开始时：双方出战角色附着火元素。",
@@ -9607,6 +10326,8 @@
     "englishName": "Ley Line Disorder: Thunderstorm",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>双方出战角色$[K204]。",
     "description": "行动阶段开始时：双方出战角色附着雷元素。",
@@ -9620,6 +10341,8 @@
     "englishName": "Ley Line Disorder: Soaring Winds",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>切换到下一个角色。（每回合2次）",
     "description": "我方角色使用技能后：切换到下一个角色。（每回合2次）",
@@ -9633,6 +10356,8 @@
     "englishName": "Game of Wits: Hot Pod Mechanism",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>在先手牌手方生成$[C401001]。\\n<color=#FFFFFFFF>结束阶段：</color>如果$[C401001]在对方场上结算，则使对方牌手输掉对局。",
     "description": "行动阶段开始时：在先手牌手方生成烫烫爆弹。\n结束阶段：如果烫烫爆弹在对方场上结算，则使对方牌手输掉对局。",
@@ -9646,6 +10371,8 @@
     "englishName": "Ley Line Disorder: Forerunner's Punishment",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>一位牌手先宣布结束时：</color>该牌手的所有角色受到1点$[K5]。",
     "description": "一位牌手先宣布结束时：该牌手的所有角色受到1点穿透伤害。",
@@ -9659,6 +10386,8 @@
     "englishName": "Ley Line Disorder: Manifold Anguish",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方角色受到的元素伤害+1。\\n<color=#FFFFFFFF>我方角色受到元素伤害后：</color>如果对方的支援区未满，则将此牌转移到对方的支援区。",
     "description": "我方角色受到的元素伤害+1。\n我方角色受到元素伤害后：如果对方的支援区未满，则将此牌转移到对方的支援区。",
@@ -9672,6 +10401,8 @@
     "englishName": "Hilichurl Arrow Tower",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方出战中的$[A3002]，$[A3102]，$[A3402]受到的伤害-2（每回合1次）。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "我方出战中的射手丘丘人，冰箭丘丘人，雷箭丘丘人受到的伤害-2（每回合1次）。\n可用次数：2",
@@ -9685,6 +10416,8 @@
     "englishName": "Mutation Stone",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方出战角色<color=#FFFFFFFF>造成的伤害+2</color>。\\n进场时，初始具有2点「耐久」。（耗尽后，弃置此牌）\\n<color=#FFFFFFFF>我方角色被击倒后</color>：此牌失去1点「耐久」。",
     "description": "我方出战角色造成的伤害+2。\n进场时，初始具有2点「耐久」。（耗尽后，弃置此牌）\n我方角色被击倒后：此牌失去1点「耐久」。",
@@ -9698,6 +10431,8 @@
     "englishName": "Giant Mutation Stone",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方出战角色<color=#FFFFFFFF>造成的伤害+2</color>。\\n进场时，初始具有3点「耐久」。（耗尽后，弃置此牌）\\n<color=#FFFFFFFF>我方角色被击倒后</color>：此牌失去1点「耐久」。",
     "description": "我方出战角色造成的伤害+2。\n进场时，初始具有3点「耐久」。（耗尽后，弃置此牌）\n我方角色被击倒后：此牌失去1点「耐久」。",
@@ -9711,6 +10446,8 @@
     "englishName": "Ley Line Disorder: Fight or Flight",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方触发元素反应后：</color>治疗所有我方角色2点。",
     "description": "我方触发元素反应后：治疗所有我方角色2点。",
@@ -9724,6 +10461,8 @@
     "englishName": "Ley Line Disorder: Dire Echoes",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>本回合每倒下一个我方角色，所有我方剩余角色就获得2点护盾（可叠加到4点），并且造成的伤害永久+1（可叠加到+2）。",
     "description": "结束阶段：本回合每倒下一个我方角色，所有我方剩余角色就获得2点护盾（可叠加到4点），并且造成的伤害永久+1（可叠加到+2）。",
@@ -9737,6 +10476,8 @@
     "englishName": "Ley Line Disorder: Aegis of the Abyss",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方「深渊法师」在「元素护罩」破碎的状态下使用技能后：</color>恢复「元素护罩」。",
     "description": "我方「深渊法师」在「元素护罩」破碎的状态下使用技能后：恢复「元素护罩」。",
@@ -9750,6 +10491,8 @@
     "englishName": "Withering Corrosion",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "初始具有4点「生之烛计数」。\\n<color=#FFFFFFFF>我方角色使用技能后：</color>扣除1点「生之烛计数」。\\n<color=#FFFFFFFF>「生之烛计数」为0时，使对方牌手输掉对局。</color>",
     "description": "初始具有4点「生之烛计数」。\n我方角色使用技能后：扣除1点「生之烛计数」。\n「生之烛计数」为0时，使对方牌手输掉对局。",
@@ -9763,6 +10506,8 @@
     "englishName": "Withering Corrosion",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "初始具有5点「生之烛计数」。\\n<color=#FFFFFFFF>我方角色使用技能后：</color>扣除1点「生之烛计数」。\\n<color=#FFFFFFFF>「生之烛计数」为0时，使对方牌手输掉对局。</color>",
     "description": "初始具有5点「生之烛计数」。\n我方角色使用技能后：扣除1点「生之烛计数」。\n「生之烛计数」为0时，使对方牌手输掉对局。",
@@ -9776,6 +10521,8 @@
     "englishName": "Withering Corrosion",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "初始具有4点「生之烛计数」。\\n<color=#FFFFFFFF>我方角色使用技能后：</color>扣除1点「生之烛计数」。\\n<color=#FFFFFFFF>「生之烛计数」为0时，使对方牌手输掉对局。</color>",
     "description": "初始具有4点「生之烛计数」。\n我方角色使用技能后：扣除1点「生之烛计数」。\n「生之烛计数」为0时，使对方牌手输掉对局。",
@@ -9789,6 +10536,8 @@
     "englishName": "Ley Line Disorder: Fight or Flight",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方触发元素反应后：</color>治疗所有我方角色2点。",
     "description": "我方触发元素反应后：治疗所有我方角色2点。",
@@ -9802,6 +10551,8 @@
     "englishName": "Ley Line Disorder: Shamanic Curse",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方<color=#FFFFFFFF>岩丘丘萨满</color>入场时附带<color=#FFFFFFFF>「$[C402002]」</color>。",
     "description": "我方岩丘丘萨满入场时附带「异变之石·萨满藏品」。",
@@ -9815,6 +10566,8 @@
     "englishName": "Mastery Talisman: The Elements Entwined",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>双方角色受到元素反应伤害后：</color>累积1点「连缀计数」。\\n<color=#FFFFFFFF>如果此牌已累积6点「连缀计数」：</color>我方牌手赢得对局。",
     "description": "双方角色受到元素反应伤害后：累积1点「连缀计数」。\n如果此牌已累积6点「连缀计数」：我方牌手赢得对局。",
@@ -9828,6 +10581,8 @@
     "englishName": "Ley Line Disorder: Honed Factor",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方对未受$[K6]保护的敌方角色<color=#FFFFFFFF>造成的伤害+1</color>。",
     "description": "我方对未受护盾保护的敌方角色造成的伤害+1。",
@@ -9841,6 +10596,8 @@
     "englishName": "Ley Line Disorder: Mechanics of Penetration",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方对未受$[K6]保护的敌方角色<color=#FFFFFFFF>造成的伤害+2</color>。",
     "description": "我方对未受护盾保护的敌方角色造成的伤害+2。",
@@ -9856,6 +10613,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>提供<color=#FFFFFFFF>3点$[K6]</color>保护我方出战角色，但是此$[K6]无法抵消元素爆发伤害。\\n<color=#FFFFFFFF>敌方角色使用元素爆发后：</color>移除此$[K6]。",
     "description": "行动阶段开始时：提供3点护盾保护我方出战角色，但是此护盾无法抵消元素爆发伤害。\n敌方角色使用元素爆发后：移除此护盾。",
@@ -9871,6 +10630,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>提供<color=#FFFFFFFF>6点$[K6]</color>保护我方出战角色，但是此$[K6]无法抵消元素爆发伤害。\\n<color=#FFFFFFFF>敌方角色使用元素爆发后：</color>移除此$[K6]。",
     "description": "行动阶段开始时：提供6点护盾保护我方出战角色，但是此护盾无法抵消元素爆发伤害。\n敌方角色使用元素爆发后：移除此护盾。",
@@ -9884,6 +10645,8 @@
     "englishName": "Ley Line Disorder: Ignited Morale",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "战斗开始时，所有我方角色初始附属<color=#FFFFFFFF>$[C402003]</color>：角色被击倒时$[K54]并治疗到1点生命值，可用1次。",
     "description": "战斗开始时，所有我方角色初始附属士气鼓动：角色被击倒时免于被击倒并治疗到1点生命值，可用1次。",
@@ -9897,6 +10660,8 @@
     "englishName": "Ley Line Disorder: Belligerence Unfettered",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "战斗开始时，所有我方角色初始附属<color=#FFFFFFFF>$[C402004]</color>：角色被击倒时$[K54]并治疗到1点生命值，可用2次。",
     "description": "战斗开始时，所有我方角色初始附属战意倍增：角色被击倒时免于被击倒并治疗到1点生命值，可用2次。",
@@ -9910,6 +10675,8 @@
     "englishName": "Ley Line Disorder: Blazing Will",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "战斗开始时，所有我方角色初始附属<color=#FFFFFFFF>$[C402005]</color>：角色被击倒时$[K54]并治疗到1点生命值，可用3次。",
     "description": "战斗开始时，所有我方角色初始附属灼热斗志：角色被击倒时免于被击倒并治疗到1点生命值，可用3次。",
@@ -9923,6 +10690,8 @@
     "englishName": "Ley Line Disorder: Strong Feedback",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方触发元素反应后：</color>治疗所有我方角色3点。",
     "description": "我方触发元素反应后：治疗所有我方角色3点。",
@@ -9938,6 +10707,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>提供6点$[K6]，保护我方出战角色。",
     "description": "行动阶段开始时：提供6点护盾，保护我方出战角色。",
@@ -9951,6 +10722,8 @@
     "englishName": "Ley Line Disorder: Vicious Posture - Ferocity",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方出战角色<color=#FFFFFFFF>造成的伤害+2</color>。",
     "description": "我方出战角色造成的伤害+2。",
@@ -9964,6 +10737,8 @@
     "englishName": "Ley Line Disorder: Attrition Posture - Inspiration",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>累积3点「久续之能」。\\n<color=#FFFFFFFF>敌方角色使用技能后：</color>扣除1点「久续之能」。\\n<color=#FFFFFFFF>结束阶段：</color>如果计数器「久续之能」不为0，则治疗所有我方角色2点，并消耗所有「久续之能」，每消耗1点「久续之能」就使此治疗量+1。",
     "description": "行动阶段开始时：累积3点「久续之能」。\n敌方角色使用技能后：扣除1点「久续之能」。\n结束阶段：如果计数器「久续之能」不为0，则治疗所有我方角色2点，并消耗所有「久续之能」，每消耗1点「久续之能」就使此治疗量+1。",
@@ -9977,6 +10752,8 @@
     "englishName": "Ley Line Disorder: United Posture - Advance",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方场上每存在一个召唤物，就使我方角色「普通攻击」造成的伤害+1。\\n<color=#FFFFFFFF>结束阶段：</color>如果我方场上存在至少2个召唤物，则使我方出战角色获得1点$[K310]。",
     "description": "我方场上每存在一个召唤物，就使我方角色「普通攻击」造成的伤害+1。\n结束阶段：如果我方场上存在至少2个召唤物，则使我方出战角色获得1点充能。",
@@ -9992,6 +10769,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>提供3点$[K6]，保护我方出战角色。",
     "description": "行动阶段开始时：提供3点护盾，保护我方出战角色。",
@@ -10005,6 +10784,8 @@
     "englishName": "Ley Line Disorder: Vicious Posture - Blunt Force",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方出战角色<color=#FFFFFFFF>造成的伤害+1</color>。",
     "description": "我方出战角色造成的伤害+1。",
@@ -10018,6 +10799,8 @@
     "englishName": "Ley Line Disorder: Attrition Posture - Encouragement",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>累积3点「久续之能」。\\n<color=#FFFFFFFF>敌方角色使用技能后：</color>扣除1点「久续之能」。\\n<color=#FFFFFFFF>结束阶段：</color>如果计数器「久续之能」不为0，则治疗所有我方角色1点，并消耗所有「久续之能」，每消耗1点「久续之能」就使此治疗量+1。",
     "description": "行动阶段开始时：累积3点「久续之能」。\n敌方角色使用技能后：扣除1点「久续之能」。\n结束阶段：如果计数器「久续之能」不为0，则治疗所有我方角色1点，并消耗所有「久续之能」，每消耗1点「久续之能」就使此治疗量+1。",
@@ -10031,6 +10814,8 @@
     "englishName": "Ley Line Disorder: United Posture - Gentle War",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方场上每存在一个召唤物，就使我方角色「普通攻击」造成的伤害+1。",
     "description": "我方场上每存在一个召唤物，就使我方角色「普通攻击」造成的伤害+1。",
@@ -10044,6 +10829,8 @@
     "englishName": "Ley Line Disorder: Pneumousia Suffusion",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为我方角色补充荒性或芒性能源，使其转换为对应的形态。",
     "description": "行动阶段开始时：为我方角色补充荒性或芒性能源，使其转换为对应的形态。",
@@ -10057,6 +10844,8 @@
     "englishName": "Mastery Talisman: Arcane Secret to Elemental Victory",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色受到4种不同元素伤害后：</color>对方牌手立刻赢得牌局。",
     "description": "我方角色受到4种不同元素伤害后：对方牌手立刻赢得牌局。",
@@ -10070,6 +10859,8 @@
     "englishName": "Ousia Nodes: Power of Enhancement",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方生成<color=#FFFFFFFF>$[C402013]</color>",
     "description": "行动阶段开始时：我方生成强化增幅·荒性",
@@ -10083,6 +10874,8 @@
     "englishName": "Ley Line Disorder: Skyward Patrol",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>战斗开始时：</color>$[A2502]初始附属<color=#FFFFFFFF>$[C402014]</color>。\\n<color=#FFFFFFFF>$[A2502]所附属的$[C402014]效果结束时：</color>使其附属<color=#FFFFFFFF>$[C402015]</color>。\\n<color=#FFFFFFFF>$[A2502]所附属的$[C402015]效果结束时：</color>使其重新附属<color=#FFFFFFFF>$[C402014]</color>。",
     "description": "战斗开始时：特瓦林初始附属高天巡行。\n特瓦林所附属的高天巡行效果结束时：使其附属力竭坠地。\n特瓦林所附属的力竭坠地效果结束时：使其重新附属高天巡行。",
@@ -10096,6 +10889,8 @@
     "englishName": "Ley Line Disorder: Energetic Arena",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "行动阶段开始时：我方所有角色获得1点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：我方所有角色获得1点充能。\n可用次数：1",
@@ -10109,6 +10904,8 @@
     "englishName": "Ley Line Disorder: Bitter Belligerence - Advanced",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有未附属「冻结」状态且本回合使用过技能的我方角色6点；如果有敌方角色附属「冻结」状态，则在下回合行动阶段开始时对敌方出战角色附属<color=#FFFFFFFF>$[K1019]</color>。",
     "description": "结束阶段：治疗所有未附属「冻结」状态且本回合使用过技能的我方角色6点；如果有敌方角色附属「冻结」状态，则在下回合行动阶段开始时对敌方出战角色附属咕噜水泡。",
@@ -10122,6 +10919,8 @@
     "englishName": "Ley Line Disorder: Damage Concatenation - Advanced",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方获得3层「$[C402020]」。（角色造成的伤害提升1点，并且每有1层「$[C402020]」还会额外提升1点；「$[C402020]」最多累积3层）",
     "description": "行动阶段开始时：我方获得3层「多重毁伤」。（角色造成的伤害提升1点，并且每有1层「多重毁伤」还会额外提升1点；「多重毁伤」最多累积3层）",
@@ -10137,6 +10936,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "提供6点$[K6]，保护我方出战角色。\\n<color=#FFFFFFFF>行动阶段开始时：</color>恢复此牌提供的护盾。",
     "description": "提供6点护盾，保护我方出战角色。\n行动阶段开始时：恢复此牌提供的护盾。",
@@ -10150,6 +10951,8 @@
     "englishName": "Pneuma Node: Hold Fast - Advanced",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色被击倒时：</color>使角色$[K54]，并治疗该角色到2点生命值。\\n<color=#FFFFFFFF>$[K3]：12</color>\\n<color=#FFFFFFFF>我方角色受到具有「{SPRITE_PRESET#3504}始基力：荒性」的伤害后：</color>此牌的$[K3]-1。",
     "description": "我方角色被击倒时：使角色免于被击倒，并治疗该角色到2点生命值。\n可用次数：12\n我方角色受到具有「始基力：荒性」的伤害后：此牌的可用次数-1。",
@@ -10163,6 +10966,8 @@
     "englishName": "Ley Line Disorder: High Efficiency Supply - Pneuma",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>将此次切换视为「$[K2]」而非「$[K1]」。\\n<color=#FFFFFFFF>结束阶段：</color>为所附属的角色补充芒性能源，使其转换为「芒性形态」。",
     "description": "我方执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。\n结束阶段：为所附属的角色补充芒性能源，使其转换为「芒性形态」。",
@@ -10176,6 +10981,8 @@
     "englishName": "Ley Line Disorder: Bitter Belligerence - Intermediate",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有未附属「冻结」状态且本回合使用过技能的我方角色4点；如果有敌方角色附属「冻结」状态，则在下回合行动阶段开始时对敌方出战角色附属<color=#FFFFFFFF>$[K1019]</color>。",
     "description": "结束阶段：治疗所有未附属「冻结」状态且本回合使用过技能的我方角色4点；如果有敌方角色附属「冻结」状态，则在下回合行动阶段开始时对敌方出战角色附属咕噜水泡。",
@@ -10189,6 +10996,8 @@
     "englishName": "Ley Line Disorder: Damage Concatenation - Intermediate",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方获得2层「$[C402020]」。（角色造成的伤害提升1点，并且每有1层「$[C402020]」还会额外提升1点；「$[C402020]」最多累积3层）",
     "description": "行动阶段开始时：我方获得2层「多重毁伤」。（角色造成的伤害提升1点，并且每有1层「多重毁伤」还会额外提升1点；「多重毁伤」最多累积3层）",
@@ -10204,6 +11013,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "提供4点$[K6]，保护我方出战角色。\\n<color=#FFFFFFFF>行动阶段开始时：</color>恢复此牌提供的护盾。",
     "description": "提供4点护盾，保护我方出战角色。\n行动阶段开始时：恢复此牌提供的护盾。",
@@ -10217,6 +11028,8 @@
     "englishName": "Pneuma Node: Hold Fast - Intermediate",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色被击倒时：</color>使角色$[K54]，并治疗该角色到2点生命值。\\n<color=#FFFFFFFF>$[K3]：8</color>\\n<color=#FFFFFFFF>我方角色受到具有「{SPRITE_PRESET#3504}始基力：荒性」的伤害后：</color>此牌的$[K3]-1。",
     "description": "我方角色被击倒时：使角色免于被击倒，并治疗该角色到2点生命值。\n可用次数：8\n我方角色受到具有「始基力：荒性」的伤害后：此牌的可用次数-1。",
@@ -10230,6 +11043,8 @@
     "englishName": "Ley Line Disorder: Bitter Belligerence - Basic",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有未附属「冻结」状态且本回合使用过技能的我方角色2点；如果有敌方角色附属「冻结」状态，则在下回合行动阶段开始时对敌方出战角色附属<color=#FFFFFFFF>$[K1019]</color>。",
     "description": "结束阶段：治疗所有未附属「冻结」状态且本回合使用过技能的我方角色2点；如果有敌方角色附属「冻结」状态，则在下回合行动阶段开始时对敌方出战角色附属咕噜水泡。",
@@ -10243,6 +11058,8 @@
     "englishName": "Ley Line Disorder: Damage Concatenation - Basic",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方获得1层「$[C402020]」。（角色造成的伤害提升1点，并且每有1层「$[C402020]」还会额外提升1点；「$[C402020]」最多累积3层）",
     "description": "行动阶段开始时：我方获得1层「多重毁伤」。（角色造成的伤害提升1点，并且每有1层「多重毁伤」还会额外提升1点；「多重毁伤」最多累积3层）",
@@ -10258,6 +11075,8 @@
       "GCG_TAG_SHEILD"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "提供2点$[K6]，保护我方出战角色。\\n<color=#FFFFFFFF>行动阶段开始时：</color>恢复此牌提供的护盾。",
     "description": "提供2点护盾，保护我方出战角色。\n行动阶段开始时：恢复此牌提供的护盾。",
@@ -10271,6 +11090,8 @@
     "englishName": "Pneuma Node: Hold Fast - Basic",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色被击倒时：</color>使角色$[K54]，并治疗该角色到2点生命值。\\n<color=#FFFFFFFF>$[K3]：4</color>\\n<color=#FFFFFFFF>我方角色受到具有「{SPRITE_PRESET#3504}始基力：荒性」的伤害后：</color>此牌的$[K3]-1。",
     "description": "我方角色被击倒时：使角色免于被击倒，并治疗该角色到2点生命值。\n可用次数：4\n我方角色受到具有「始基力：荒性」的伤害后：此牌的可用次数-1。",
@@ -10284,6 +11105,8 @@
     "englishName": "Ley Line Disorder: Frontline Tactics",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方所有角色附属<color=#FFFFFFFF>$[C402024]</color>。（下次被击倒时$[K54]，并治疗到4点生命值）\\n<color=#FFFFFFFF>触发$[C402024]的效果时：</color>对方获得1个$[K411]。",
     "description": "行动阶段开始时：我方所有角色附属重振旗鼓。（下次被击倒时免于被击倒，并治疗到4点生命值）\n触发重振旗鼓的效果时：对方获得1个万能元素。",
@@ -10297,6 +11120,8 @@
     "englishName": "Ley Line Disorder: Armored Warfare",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "如果敌方出战角色未受到$[K6]状态或$[K6]出战状态保护，则我方角色造成的伤害+2。\\n<color=#FFFFFFFF>我方角色被击倒时：</color>如果敌方出战角色未受到$[K6]状态或$[K6]出战状态保护，则对所有敌方角色造成2点$[K5]。",
     "description": "如果敌方出战角色未受到护盾状态或护盾出战状态保护，则我方角色造成的伤害+2。\n我方角色被击倒时：如果敌方出战角色未受到护盾状态或护盾出战状态保护，则对所有敌方角色造成2点穿透伤害。",
@@ -10310,6 +11135,8 @@
     "englishName": "Ley Line Disorder: Prideful Bluster",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方打出行动牌后：</color>获得2点$[K6]，保护我方出战角色。（可叠加）",
     "description": "敌方打出行动牌后：获得2点护盾，保护我方出战角色。（可叠加）",
@@ -10323,6 +11150,8 @@
     "englishName": "Ley Line Disorder: Arrogant Bluster",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方打出行动牌后：</color>获得4点$[K6]，保护我方出战角色。（可叠加）",
     "description": "敌方打出行动牌后：获得4点护盾，保护我方出战角色。（可叠加）",
@@ -10336,6 +11165,8 @@
     "englishName": "Ley Line Disorder: Induced Weakness",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>战斗开始时：</color>在敌方场上生成$[C402025]。（使用技能需多花费1个元素骰）",
     "description": "战斗开始时：在敌方场上生成谜之虚弱。（使用技能需多花费1个元素骰）",
@@ -10349,6 +11180,8 @@
     "englishName": "Ley Line Disorder: Induced Enervation",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>战斗开始时：</color>在敌方场上生成$[C402026]。（使用技能需多花费2个元素骰）",
     "description": "战斗开始时：在敌方场上生成谜之力竭。（使用技能需多花费2个元素骰）",
@@ -10362,6 +11195,8 @@
     "englishName": "Ley Line Disorder: Smashing Momentum",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方角色造成的伤害+1。",
     "description": "我方角色造成的伤害+1。",
@@ -10375,6 +11210,8 @@
     "englishName": "Ley Line Disorder: Shattering Momentum",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方角色造成的伤害+2。",
     "description": "我方角色造成的伤害+2。",
@@ -10388,6 +11225,8 @@
     "englishName": "Ley Line Disorder: Cunning Leadership",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>$[K56]敌方原本元素骰费用最高的1张手牌。",
     "description": "行动阶段开始时：舍弃敌方原本元素骰费用最高的1张手牌。",
@@ -10401,6 +11240,8 @@
     "englishName": "Ley Line Disorder: Cunning Command",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>$[K56]敌方原本元素骰费用最高的2张手牌。",
     "description": "行动阶段开始时：舍弃敌方原本元素骰费用最高的2张手牌。",
@@ -10414,6 +11255,8 @@
     "englishName": "Elemental Orb",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "行动阶段开始时：我方所有角色获得1点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：我方所有角色获得1点充能。\n可用次数：1",
@@ -10427,6 +11270,8 @@
     "englishName": "Elemental Orb: Plentiful",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "行动阶段开始时：我方所有角色获得2点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：我方所有角色获得2点充能。\n可用次数：1",
@@ -10440,6 +11285,8 @@
     "englishName": "Elemental Orb: Dissipated",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "行动阶段开始时：双方所有角色获得1点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：双方所有角色获得1点充能。\n可用次数：1",
@@ -10453,6 +11300,8 @@
     "englishName": "Elemental Orb: Enduring",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "行动阶段开始时：我方所有角色获得1点充能。",
     "description": "行动阶段开始时：我方所有角色获得1点充能。",
@@ -10466,6 +11315,8 @@
     "englishName": "Ley Line Monolith: Frontline Fulcrum",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "初始具有20点「耐久」，耗尽后弃置此牌。\\n<color=#FFFFFFFF>我方角色受到伤害时：</color>消耗此牌的「耐久」以抵消伤害。\\n<color=#FFFFFFFF>此牌被弃置时：</color>我方牌手输掉对局。",
     "description": "初始具有20点「耐久」，耗尽后弃置此牌。\n我方角色受到伤害时：消耗此牌的「耐久」以抵消伤害。\n此牌被弃置时：我方牌手输掉对局。",
@@ -10479,6 +11330,8 @@
     "englishName": "Mastery Talisman: Surging Vigor",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>我方出战角色获得3点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：我方出战角色获得3点充能。\n可用次数：1",
@@ -10492,6 +11345,8 @@
     "englishName": "Mastery Talisman: Press the Attack",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色被击倒后：</color>生成1个$[K411]，抓1张牌。",
     "description": "敌方角色被击倒后：生成1个万能元素，抓1张牌。",
@@ -10505,6 +11360,8 @@
     "englishName": "Mastery Talisman: Immovable",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>如果我方出战角色受到$[K6]保护，则生成2个$[K411]，抓2张牌。\\n<color=#FFFFFFFF>打出任意手牌时：</color>少花费2个元素骰。（每回合1次）",
     "description": "行动阶段开始时：如果我方出战角色受到护盾保护，则生成2个万能元素，抓2张牌。\n打出任意手牌时：少花费2个元素骰。（每回合1次）",
@@ -10518,6 +11375,8 @@
     "englishName": "Mastery Talisman: Cycle Charge",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>少花费1个元素骰。（每回合2次）\\n<color=#FFFFFFFF>我方进行$[K52]时：</color>造成的伤害+2。",
     "description": "我方执行「切换角色」行动时：少花费1个元素骰。（每回合2次）\n我方进行下落攻击时：造成的伤害+2。",
@@ -10531,6 +11390,8 @@
     "englishName": "Mastery Talisman: Cold War",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方每个角色每回合使用的第一个技能或装备的第一张天赋的元素骰费用-1。\\n我方引发的冰元素反应伤害+2。",
     "description": "我方每个角色每回合使用的第一个技能或装备的第一张天赋的元素骰费用-1。\n我方引发的冰元素反应伤害+2。",
@@ -10544,6 +11405,8 @@
     "englishName": "Mastery Talisman: Decisive Battle",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方剩余生命值不多于6的角色造成的伤害+2。",
     "description": "我方剩余生命值不多于6的角色造成的伤害+2。",
@@ -10557,6 +11420,8 @@
     "englishName": "Mastery Talisman: Extended Explosion",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素反应伤害时：</color>累积1点「联延进度」。如果已有至少3点，则消耗3点「联延进度」，对所有敌方角色造成4点<color=#FFFFFFFF>$[K5]</color>。",
     "description": "敌方角色受到元素反应伤害时：累积1点「联延进度」。如果已有至少3点，则消耗3点「联延进度」，对所有敌方角色造成4点穿透伤害。",
@@ -10570,6 +11435,8 @@
     "englishName": "Mastery Talisman: Practice Makes Perfect",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方每个角色每回合使用的第一个技能或装备的第一张天赋的元素骰费用-1。",
     "description": "我方每个角色每回合使用的第一个技能或装备的第一张天赋的元素骰费用-1。",
@@ -10583,6 +11450,8 @@
     "englishName": "Mastery Talisman: Intelligence Update",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方切换角色后：</color>生成1个我方出战角色类型的元素骰。（每回合最多触发2次）",
     "description": "我方切换角色后：生成1个我方出战角色类型的元素骰。（每回合最多触发2次）",
@@ -10596,6 +11465,8 @@
     "englishName": "Mastery Talisman: Dual-Pronged Approach",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方使用技能后：</color>如果我方出战角色在$[K6]的保护下，则生成2个$[K411]和1点$[K6]。（每回合1次）",
     "description": "我方使用技能后：如果我方出战角色在护盾的保护下，则生成2个万能元素和1点护盾。（每回合1次）",
@@ -10609,6 +11480,8 @@
     "englishName": "Mastery Talisman: Dense Vegetation",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到草元素反应伤害后：</color>生成2个$[K411]。",
     "description": "敌方角色受到草元素反应伤害后：生成2个万能元素。",
@@ -10622,6 +11495,8 @@
     "englishName": "Zero Hour Invokation: All-Out Aggression",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>所有我方角色获得2点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：所有我方角色获得2点充能。\n可用次数：1",
@@ -10635,6 +11510,8 @@
     "englishName": "Mastery Talisman: Victorious Repute",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色被击倒时：</color>我方抓1张牌，并使我方当前出战角色在本场对局中造成的伤害+1（可叠加，最多叠加到+3）。",
     "description": "敌方角色被击倒时：我方抓1张牌，并使我方当前出战角色在本场对局中造成的伤害+1（可叠加，最多叠加到+3）。",
@@ -10648,6 +11525,8 @@
     "englishName": "Mastery Talisman: Planning Long-Term",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出总费用数至少为3的「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」装备牌时：</color>少花费3个元素骰。（每回合1次）",
     "description": "我方打出总费用数至少为3的「武器」或「圣遗物」装备牌时：少花费3个元素骰。（每回合1次）",
@@ -10661,6 +11540,8 @@
     "englishName": "Mastery Talisman: Arms and Armor Honed",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色进行$[K51]时：</color>造成的伤害+1。结算后，我方抓1张牌。",
     "description": "我方角色进行重击时：造成的伤害+1。结算后，我方抓1张牌。",
@@ -10674,6 +11555,8 @@
     "englishName": "Mastery Talisman: Battle-Ready",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方同时装备了「{SPRITE_PRESET#3003}武器」和「{SPRITE_PRESET#3004}圣遗物」的角色使用技能时：</color>少花费3个元素骰。（每回合1次）",
     "description": "我方同时装备了「武器」和「圣遗物」的角色使用技能时：少花费3个元素骰。（每回合1次）",
@@ -10687,6 +11570,8 @@
     "englishName": "Mastery Talisman: Cascading Defeat",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色被击倒时：</color>对所有敌方角色造成1点$[K5]。",
     "description": "敌方角色被击倒时：对所有敌方角色造成1点穿透伤害。",
@@ -10700,6 +11585,8 @@
     "englishName": "Mastery Talisman: Chaotic Banners",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素反应伤害后：</color>生成1个$[K411]。（每回合最多触发3次）",
     "description": "敌方角色受到元素反应伤害后：生成1个万能元素。（每回合最多触发3次）",
@@ -10713,6 +11600,8 @@
     "englishName": "Mastery Talisman: Sudden Ambush",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>在对方场上生成一个角色元素类型的「奇筹诡雷」。「奇筹诡雷」会在敌方增援角色入场后，对其造成1点对应元素的伤害。",
     "description": "我方角色使用技能后：在对方场上生成一个角色元素类型的「奇筹诡雷」。「奇筹诡雷」会在敌方增援角色入场后，对其造成1点对应元素的伤害。",
@@ -10726,6 +11615,8 @@
     "englishName": "Game of Wits: Enduring Victory",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "初始具有2点「胜利倒计时」。\\n<color=#FFFFFFFF>结束阶段：</color>「胜利倒计时」-1。如果「胜利倒计时」耗尽时我方没有角色被击倒，则我方牌手立刻赢得牌局。\\n<color=#FFFFFFFF>行动阶段开始时：</color>如果「胜利倒计时」刚好剩余1点，则生成4个$[K411]。",
     "description": "初始具有2点「胜利倒计时」。\n结束阶段：「胜利倒计时」-1。如果「胜利倒计时」耗尽时我方没有角色被击倒，则我方牌手立刻赢得牌局。\n行动阶段开始时：如果「胜利倒计时」刚好剩余1点，则生成4个万能元素。",
@@ -10739,6 +11630,8 @@
     "englishName": "Mastery Talisman: Swift Triumph",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>生成4个$[K411]。但是，我方牌手会在本回合结束阶段输掉牌局。\\n<color=#FFFFFFFF>敌方角色被击倒或我方角色使用「元素爆发」后：</color>生成3个$[K411]，抓1张牌，并且本次行动结束后我方可以再连续行动一次。",
     "description": "行动阶段开始时：生成4个万能元素。但是，我方牌手会在本回合结束阶段输掉牌局。\n敌方角色被击倒或我方角色使用「元素爆发」后：生成3个万能元素，抓1张牌，并且本次行动结束后我方可以再连续行动一次。",
@@ -10752,6 +11645,8 @@
     "englishName": "Mastery Talisman: Harmonic Tactics",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>从牌组中随机抽取1张「{SPRITE_PRESET#3006}天赋」牌。\\n<color=#FFFFFFFF>我方角色受到伤害后：</color>使该角色在本场对局中造成的伤害+1（可叠加，最多叠加到+3）。",
     "description": "行动阶段开始时：从牌组中随机抽取1张「天赋」牌。\n我方角色受到伤害后：使该角色在本场对局中造成的伤害+1（可叠加，最多叠加到+3）。",
@@ -10765,6 +11660,8 @@
     "englishName": "Mastery Talisman: Don't Push Your Luck",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素伤害后：</color>提供1点$[K6]，保护我方出战角色。（最多叠加到5点$[K6]）",
     "description": "敌方角色受到元素伤害后：提供1点护盾，保护我方出战角色。（最多叠加到5点护盾）",
@@ -10778,6 +11675,8 @@
     "englishName": "Mastery Talisman: Dauntless Pursuit",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色进行$[K52]造成元素伤害时：</color>伤害额外+2；技能结算后，生成2个我方出战角色类型的元素骰。（每回合1次）",
     "description": "我方角色进行下落攻击造成元素伤害时：伤害额外+2；技能结算后，生成2个我方出战角色类型的元素骰。（每回合1次）",
@@ -10791,6 +11690,8 @@
     "englishName": "Mastery Talisman: Buttressed Combined Assault",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>召唤物消失时：</color>累积1点「牙卫助力」。（最多累积3点）\\n<color=#FFFFFFFF>行动阶段开始时：</color>消耗所有「牙卫助力」。每消耗1点，就生成1个$[K411]。",
     "description": "召唤物消失时：累积1点「牙卫助力」。（最多累积3点）\n行动阶段开始时：消耗所有「牙卫助力」。每消耗1点，就生成1个万能元素。",
@@ -10804,6 +11705,8 @@
     "englishName": "Mastery Talisman: Fierce Follow-Up",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>本场对局中，该角色造成的伤害+1。（最多可以叠加到+3，但是每回合结束时衰减1层）",
     "description": "我方角色使用技能后：本场对局中，该角色造成的伤害+1。（最多可以叠加到+3，但是每回合结束时衰减1层）",
@@ -10817,6 +11720,8 @@
     "englishName": "Mastery Talisman: Unyielding Advance",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用本回合已使用过1次的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>我方角色使用本回合已使用过2次的技能时：</color>少花费2个元素骰。（每回合1次）",
     "description": "我方角色使用本回合已使用过1次的技能时：少花费1个元素骰。（每回合1次）\n我方角色使用本回合已使用过2次的技能时：少花费2个元素骰。（每回合1次）",
@@ -10830,6 +11735,8 @@
     "englishName": "Mastery Talisman: Sympathetic Pain",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色被击倒时：</color>对所有敌方角色造成2点$[K5]。",
     "description": "敌方角色被击倒时：对所有敌方角色造成2点穿透伤害。",
@@ -10843,6 +11750,8 @@
     "englishName": "Mastery Talisman: Verdant Overgrowth",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到绽放反应伤害后：</color>我方下次打出行动牌时少花费2个元素骰；我方下次对敌方出战角色造成的$[K102]或$[K107]伤害+2。",
     "description": "敌方角色受到绽放反应伤害后：我方下次打出行动牌时少花费2个元素骰；我方下次对敌方出战角色造成的水元素伤害或草元素伤害伤害+2。",
@@ -10856,6 +11765,8 @@
     "englishName": "Mastery Talisman: Battle Ready",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方装备了武器的角色造成的伤害+1；\\n<color=#FFFFFFFF>我方角色使用技能后：</color>如果此角色装备有「武器」牌，则将其返回手牌，并使我方下次打出「武器」牌时少花费2个元素骰。（每个角色每回合各可以触发1次）",
     "description": "我方装备了武器的角色造成的伤害+1；\n我方角色使用技能后：如果此角色装备有「武器」牌，则将其返回手牌，并使我方下次打出「武器」牌时少花费2个元素骰。（每个角色每回合各可以触发1次）",
@@ -10869,6 +11780,8 @@
     "englishName": "Mastery Talisman: Supplementary Damage",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出「武器」装备牌后：</color>生成2个万能元素骰。（每回合最多触发2次）\\n<color=#FFFFFFFF>牌局开始时：</color>从牌组中随机抽取1张「武器」装备牌。",
     "description": "我方打出「武器」装备牌后：生成2个万能元素骰。（每回合最多触发2次）\n牌局开始时：从牌组中随机抽取1张「武器」装备牌。",
@@ -10882,6 +11795,8 @@
     "englishName": "Ingenious Engineering: Harnessing Annihilation",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色发生$[K1015]后：</color>生成2个$[K411]。（角色被击倒时，不会发生$[K1015]）",
     "description": "敌方角色发生荒芒湮灭效应后：生成2个万能元素。（角色被击倒时，不会发生荒芒湮灭效应）",
@@ -10895,6 +11810,8 @@
     "englishName": "Ingenious Engineering: Pneuma-Ousia Conversion",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>战斗开始时：</color>我方生成<color=#FFFFFFFF>$[C403029]</color>。\\n<color=#FFFFFFFF>我方切换角色后：</color>如果我方场上存在$[C403029]，则将其切换为$[C403028]；如果我方场上存在$[C403028]，则将其切换为$[C403029]。\\n<color=#FFFFFFFF>敌方角色发生$[K1015]后：</color>生成2个$[K411]。（角色被击倒时，不会发生$[K1015]）",
     "description": "战斗开始时：我方生成芒性能量块·持久。\n我方切换角色后：如果我方场上存在芒性能量块·持久，则将其切换为荒性能量块·持久；如果我方场上存在荒性能量块·持久，则将其切换为芒性能量块·持久。\n敌方角色发生荒芒湮灭效应后：生成2个万能元素。（角色被击倒时，不会发生荒芒湮灭效应）",
@@ -10908,6 +11825,8 @@
     "englishName": "Ingenious Engineering: Pneuma Re-Creation",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方选择行动前：</color>如果我方剩余的元素骰不多于4个，则生成<color=#FFFFFFFF>$[C403027]</color>。（每回合1次）\\n<color=#FFFFFFFF>敌方角色发生$[K1015]后：</color>生成3个$[K411]。（角色被击倒时，不会发生$[K1015]）",
     "description": "我方选择行动前：如果我方剩余的元素骰不多于4个，则生成芒性能量块。（每回合1次）\n敌方角色发生荒芒湮灭效应后：生成3个万能元素。（角色被击倒时，不会发生荒芒湮灭效应）",
@@ -10921,6 +11840,8 @@
     "englishName": "Elemental Orb: The Grand Banquet",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "行动阶段开始时：双方所有角色获得2点充能。\\n<color=#FFFFFFFF>$[K3]：1</color>",
     "description": "行动阶段开始时：双方所有角色获得2点充能。\n可用次数：1",
@@ -10934,6 +11855,8 @@
     "englishName": "Mastery Talisman: Winterwind's Whip",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到冻结反应后：</color>生成2个$[K411]。（每回合最多触发2次）",
     "description": "敌方角色受到冻结反应后：生成2个万能元素。（每回合最多触发2次）",
@@ -10947,6 +11870,8 @@
     "englishName": "Mastery Talisman: Damage Control",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出1张行动牌后：</color>生成1个$[K411]，并移除1层敌方的「$[C402020]」。（每回合最多触发3次）",
     "description": "我方打出1张行动牌后：生成1个万能元素，并移除1层敌方的「多重毁伤」。（每回合最多触发3次）",
@@ -10960,6 +11885,8 @@
     "englishName": "Mastery Talisman: Enhancing Will",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>牌局开始时：</color>弃置此牌，生成$[C403030]。（我方打出支援牌时：生成1个$[K411]，抓1张牌，每回合1次）",
     "description": "牌局开始时：弃置此牌，生成意志驰援。（我方打出支援牌时：生成1个万能元素，抓1张牌，每回合1次）",
@@ -10975,6 +11902,8 @@
       "GCG_TAG_ARKHE_PNEUMA"
     ],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用元素爆发时：</color>少花费3个元素骰。（每回合1次）\\n<color=#FFFFFFFF>我方宣布结束时：</color>如果本回合中我方角色使用过元素爆发，则对所有敌方角色造成1点具有「{SPRITE_PRESET#3504}始基力：荒性」的$[K5]。",
     "description": "我方角色使用元素爆发时：少花费3个元素骰。（每回合1次）\n我方宣布结束时：如果本回合中我方角色使用过元素爆发，则对所有敌方角色造成1点具有「始基力：荒性」的穿透伤害。",
@@ -10988,6 +11917,8 @@
     "englishName": "Mastery Talisman: Lightweight Tactics",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出行动牌时：</color>少花费1个元素骰，并生成1个$[K411]。（每回合至多触发3次）",
     "description": "我方打出行动牌时：少花费1个元素骰，并生成1个万能元素。（每回合至多触发3次）",
@@ -11001,6 +11932,8 @@
     "englishName": "Mastery Talisman: Formation Assault",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用「元素爆发」时：</color>少花费3个元素骰。（每回合1次）\\n<color=#FFFFFFFF>我方角色受到伤害或治疗后：</color>此牌累积1点「阵势」。然后如果此牌已有5点「阵势」，则消耗5点，使所有我方角色获得1点$[K310]。",
     "description": "我方角色使用「元素爆发」时：少花费3个元素骰。（每回合1次）\n我方角色受到伤害或治疗后：此牌累积1点「阵势」。然后如果此牌已有5点「阵势」，则消耗5点，使所有我方角色获得1点充能。",
@@ -11014,6 +11947,8 @@
     "englishName": "Mastery Talisman: Stalwart Frontline",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方召唤物造成的伤害+1。\\n<color=#FFFFFFFF>我方宣布结束时：</color>我方场上每有一个召唤物，就在下回合行动阶段开始时生成1个$[K411]。",
     "description": "我方召唤物造成的伤害+1。\n我方宣布结束时：我方场上每有一个召唤物，就在下回合行动阶段开始时生成1个万能元素。",
@@ -11027,6 +11962,8 @@
     "englishName": "Mastery Talisman: Sharp Focus",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "我方角色普通攻击造成的元素伤害+1。\\n<color=#FFFFFFFF>本回合我方出战角色受到伤害或治疗3次后：</color>生成3个$[K411]。（每回合1次）",
     "description": "我方角色普通攻击造成的元素伤害+1。\n本回合我方出战角色受到伤害或治疗3次后：生成3个万能元素。（每回合1次）",
@@ -11040,6 +11977,8 @@
     "englishName": "Mastery Talisman: Spirited Counterattack",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色受到治疗后：</color>该角色下次造成的伤害+2。",
     "description": "我方角色受到治疗后：该角色下次造成的伤害+2。",
@@ -11053,6 +11992,8 @@
     "englishName": "Mastery Talisman: Airborne Reinforcements",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>将此次切换视为「$[K2]」而非「$[K1]」。\\n<color=#FFFFFFFF>我方进行$[K52]时：</color>造成的伤害+2。",
     "description": "我方执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。\n我方进行下落攻击时：造成的伤害+2。",
@@ -11066,6 +12007,8 @@
     "englishName": "Mastery Talisman: All or Nothing",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "如果我方手牌数量不多于1，则我方角色造成的伤害+2。",
     "description": "如果我方手牌数量不多于1，则我方角色造成的伤害+2。",
@@ -11079,6 +12022,8 @@
     "englishName": "Mastery Talisman: Frugality as Countermeasure",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出行动牌时：</color>少花费2个元素骰，并且抓1张牌。（每回合至多生效3次）",
     "description": "我方打出行动牌时：少花费2个元素骰，并且抓1张牌。（每回合至多生效3次）",
@@ -11092,6 +12037,8 @@
     "englishName": "Mastery Talisman: Fear No Pain",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方出战角色受到伤害后：</color>治疗我方出战角色1点。",
     "description": "我方出战角色受到伤害后：治疗我方出战角色1点。",
@@ -11105,6 +12052,8 @@
     "englishName": "Mastery Talisman: Press the Advantage",
     "tags": [],
     "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素反应伤害后：</color>抓2张牌，生成1个$[K411]。（每回合至多生效2次）",
     "description": "敌方角色受到元素反应伤害后：抓2张牌，生成1个万能元素。（每回合至多生效2次）",

@@ -35,11 +35,6 @@ export type CardTag =
 
 export type CardType = "event" | "support" | "equipment";
 
-export interface DeckRequirement {
-  dualCharacterTag?: CharacterTag;
-  character?: number;
-}
-
 export type CardTargetKind = readonly ("character" | "summon")[];
 
 export interface CardSkillEventArg {
@@ -64,7 +59,6 @@ export interface CardDefinition {
   readonly id: number;
   readonly type: CardType;
   readonly tags: readonly CardTag[];
-  readonly deckRequirement: DeckRequirement;
   readonly getTarget: PlayCardTargetGetter;
   readonly filter: PlayCardFilter;
   readonly onPlay: PlayCardSkillDefinition;

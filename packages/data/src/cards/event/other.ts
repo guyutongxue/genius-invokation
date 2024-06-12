@@ -130,7 +130,6 @@ export const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
 export const ElementalResonanceShatteringIce = card(331102)
   .costCryo(1)
   .tags("resonance")
-  .requireCharacterTag("cryo")
   .toStatus("my active", 303112)
   .oneDuration()
   .once("modifySkillDamage")
@@ -147,7 +146,6 @@ export const ElementalResonanceShatteringIce = card(331102)
 export const ElementalResonanceSoothingWater = card(331202)
   .costHydro(1)
   .tags("resonance")
-  .requireCharacterTag("hydro")
   .heal(2, "my active")
   .heal(1, "my standby")
   .done();
@@ -162,7 +160,6 @@ export const ElementalResonanceSoothingWater = card(331202)
 export const ElementalResonanceFerventFlames = card(331302)
   .costPyro(1)
   .tags("resonance")
-  .requireCharacterTag("pyro")
   .toStatus("my active", 303132)
   .oneDuration()
   .once("modifySkillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Pyro))
@@ -179,7 +176,6 @@ export const ElementalResonanceFerventFlames = card(331302)
 export const ElementalResonanceHighVoltage = card(331402)
   .costElectro(1)
   .tags("resonance")
-  .requireCharacterTag("electro")
   .gainEnergy(1, "my character with energy < maxEnergy limit 1")
   .done();
 
@@ -208,7 +204,6 @@ export const ElementalResonanceImpetuousWinds = card(331502)
 export const ElementalResonanceEnduringRock = card(331602)
   .costGeo(1)
   .tags("resonance")
-  .requireCharacterTag("geo")
   .toCombatStatus(303162)
   .oneDuration()
   .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
@@ -229,7 +224,6 @@ export const ElementalResonanceEnduringRock = card(331602)
 export const ElementalResonanceSprawlingGreenery = card(331702)
   .costDendro(1)
   .tags("resonance")
-  .requireCharacterTag("dendro")
   .do((c) => {
     c.$("my summon with definition id 115")?.addVariable("usage", 1);
     c.$("my combat statuses with definition id 116")?.addVariable("usage", 1);
@@ -250,7 +244,6 @@ export const ElementalResonanceSprawlingGreenery = card(331702)
  */
 export const ElementalResonanceWovenIce = card(331101)
   .tags("resonance")
-  .requireCharacterTag("cryo")
   .generateDice(DiceType.Cryo, 1)
   .done();
 
@@ -263,7 +256,6 @@ export const ElementalResonanceWovenIce = card(331101)
  */
 export const ElementalResonanceWovenWaters = card(331201)
   .tags("resonance")
-  .requireCharacterTag("hydro")
   .generateDice(DiceType.Hydro, 1)
   .done();
 
@@ -276,7 +268,6 @@ export const ElementalResonanceWovenWaters = card(331201)
  */
 export const ElementalResonanceWovenFlames = card(331301)
   .tags("resonance")
-  .requireCharacterTag("pyro")
   .generateDice(DiceType.Pyro, 1)
   .done();
 
@@ -289,7 +280,6 @@ export const ElementalResonanceWovenFlames = card(331301)
  */
 export const ElementalResonanceWovenThunder = card(331401)
   .tags("resonance")
-  .requireCharacterTag("electro")
   .generateDice(DiceType.Electro, 1)
   .done();
 
@@ -302,7 +292,6 @@ export const ElementalResonanceWovenThunder = card(331401)
  */
 export const ElementalResonanceWovenWinds = card(331501)
   .tags("resonance")
-  .requireCharacterTag("anemo")
   .generateDice(DiceType.Anemo, 1)
   .done();
 
@@ -315,7 +304,6 @@ export const ElementalResonanceWovenWinds = card(331501)
  */
 export const ElementalResonanceWovenStone = card(331601)
   .tags("resonance")
-  .requireCharacterTag("geo")
   .generateDice(DiceType.Geo, 1)
   .done();
 
@@ -328,7 +316,6 @@ export const ElementalResonanceWovenStone = card(331601)
  */
 export const ElementalResonanceWovenWeeds = card(331701)
   .tags("resonance")
-  .requireCharacterTag("dendro")
   .generateDice(DiceType.Dendro, 1)
   .done();
 
@@ -355,7 +342,6 @@ export const WindAndFreedom = card(331801)
  */
 export const StoneAndContracts = card(331802)
   .costVoid(3)
-  .requireCharacterTag("liyue")
   .toCombatStatus(303182)
   .once("actionPhase")
   .generateDice(DiceType.Omni, 3)
@@ -386,7 +372,6 @@ export const ThunderAndEternity = card(331803)
  */
 export const NatureAndWisdom = card(331804)
   .costSame(1)
-  .requireCharacterTag("sumeru")
   .drawCards(1)
   .switchCards()
   .done();
@@ -400,7 +385,6 @@ export const NatureAndWisdom = card(331804)
  */
 export const WaterAndJustice = card(331805)
   .costVoid(2)
-  .requireCharacterTag("fontaine")
   .do((c) => {
     const chs = c.$$("all my characters");
     const chCount = chs.length;
@@ -633,7 +617,6 @@ export const GuardiansOath = card(332014)
  */
 export const AbyssalSummons = card(332015)
   .costSame(2)
-  .requireCharacterTag("monster")
   .do((c) => {
     c.summon(
       c.random([
@@ -655,7 +638,6 @@ export const AbyssalSummons = card(332015)
  */
 export const FatuiConspiracy = card(332016)
   .costSame(2)
-  .requireCharacterTag("fatui")
   .do((c) => {
     c.combatStatus(
       c.random([
