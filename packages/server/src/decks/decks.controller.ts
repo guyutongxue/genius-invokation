@@ -13,7 +13,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from "@nestjs/common";
 import { User } from "../auth/user.decorator";
 import {
   ArrayMaxSize,
@@ -83,7 +94,7 @@ export class DecksController {
         code: deck.code,
         characters,
         cards,
-      }
+      };
     });
   }
 
@@ -98,5 +109,14 @@ export class DecksController {
       id: result.id,
       code: result.code,
     };
+  }
+
+  @Delete(":deckId")
+  async deleteDeck(
+    @User() userId: number,
+    @Param("deckId", ParseIntPipe) deckId: number,
+  ) {
+    await this.decks.deleteDeck(userId, deckId);
+    return { message: `deck ${deckId} deleted` };
   }
 }

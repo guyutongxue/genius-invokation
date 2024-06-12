@@ -20,12 +20,14 @@ import {
 } from "@nestjs/platform-fastify";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { PrismaClientExceptionFilter } from "./db/prisma-exception.filter";
 
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter(),
 );
 app.useGlobalPipes(new ValidationPipe());
+app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
 
 await app.listen(3000, (err, address) => {
   if (err) {

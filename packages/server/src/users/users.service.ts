@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable, type OnModuleInit } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
-import { User } from "@prisma/client";
+import { type User } from "@prisma/client";
 import { deepEquals } from "bun";
 
 async function calcPassword(

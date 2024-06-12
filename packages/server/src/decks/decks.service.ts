@@ -87,4 +87,13 @@ export class DecksService {
       },
     });
   }
+
+  async deleteDeck(userId: number, deckId: number) {
+    await this.prisma.deck.delete({
+      where: {
+        id: deckId,
+        ownerUserId: userId,
+      },
+    });
+  }
 }

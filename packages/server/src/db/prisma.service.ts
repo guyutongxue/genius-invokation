@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable, type OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
 @Injectable()
