@@ -111,11 +111,7 @@ export class UsersController {
         `We now require an invitation code to register. Please ask a friend for one.`,
       );
     }
-    const result = await this.invitation.useInvitationCode(code);
-    if (result === null) {
-      throw new BadRequestException(`Invalid invitation code.`);
-    }
-    await this.users.create(email, password);
+    await this.users.create(email, password, { code });
     return { message: "User created" };
   }
 }

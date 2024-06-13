@@ -15,7 +15,7 @@
 
 import { ConflictException, Injectable, type OnModuleInit } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
-import { type User as UserModel } from "@prisma/client";
+import { Prisma, type PrismaPromise, type User as UserModel } from "@prisma/client";
 import { deepEquals } from "bun";
 
 async function calcPassword(
@@ -54,6 +54,11 @@ async function createPassword(
 
 export type UserNoPassword = Omit<UserModel, "password" | "salt">;
 
+interface CreateUserOpt {
+  rank?: number;
+  code?: string;
+}
+
 @Injectable()
 export class UsersService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
@@ -64,7 +69,7 @@ export class UsersService implements OnModuleInit {
       await this.create(
         process.env.ADMIN_EMAIL!,
         process.env.ADMIN_PASSWORD!,
-        0,
+        { rank: 0 },
       );
     }
   }
@@ -84,20 +89,40 @@ export class UsersService implements OnModuleInit {
     });
   }
 
-  async create(email: string, password: string, rank?: number) {
-    const user = await this.findByEmail(email);
-    if (user) {
-      throw new ConflictException(`Email ${email} already taken`);
-    }
+  async create(email: string, password: string, { rank, code }: CreateUserOpt = {}) {
     const [salt, key] = await createPassword(password);
-    await this.prisma.user.create({
-      data: {
-        email,
-        password: Buffer.from(key),
-        salt: Buffer.from(salt),
-        rank,
-      },
-    });
+    const ops: PrismaPromise<any>[] = [];
+    if (code) {
+      ops.push(
+        this.prisma.invitationCode.update({
+          where: { code, used: false },
+          data: { used: true },
+        }),
+      );
+    }
+    ops.push(
+      this.prisma.user.create({
+        data: {
+          email,
+          password: Buffer.from(key),
+          salt: Buffer.from(salt),
+          rank,
+        },
+      }),
+    );
+    try {
+      await this.prisma.$transaction(ops);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2002") {
+          throw new ConflictException("User already exists");
+        } else if (e.code === "P2025") {
+          throw new ConflictException("Invitation code is invalid");
+        }
+      } else {
+        throw e;
+      }
+    }
   }
 
   async updateName(id: number, name: string) {

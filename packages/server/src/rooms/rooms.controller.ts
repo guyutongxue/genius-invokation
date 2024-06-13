@@ -124,7 +124,7 @@ export class RoomsController {
     return this.rooms.deleteRoom(userId, roomId);
   }
 
-  @Post(":roomId/player")
+  @Post(":roomId/players")
   joinRoom(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
@@ -133,7 +133,7 @@ export class RoomsController {
     return this.rooms.joinRoom(userId, roomId, deckId);
   }
 
-  @Get(":roomId/player/:userId/notification")
+  @Get(":roomId/players/:userId/notification")
   getNotification(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
@@ -142,7 +142,7 @@ export class RoomsController {
     return this.rooms.playerNotification(roomId, userId, targetUserId);
   }
 
-  @Get(":roomId/player/:userId/actionRequest")
+  @Get(":roomId/players/:userId/actionRequest")
   getAction(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
@@ -156,7 +156,7 @@ export class RoomsController {
     return this.rooms.playerAction(roomId, userId);
   }
 
-  @Post(":roomId/player/:userId/actionResponse")
+  @Post(":roomId/players/:userId/actionResponse")
   postAction(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
@@ -172,7 +172,7 @@ export class RoomsController {
     return { message: "response received" };
   }
 
-  @Post(":roomId/player/:userId/giveUp")
+  @Post(":roomId/players/:userId/giveUp")
   postGiveUp(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,

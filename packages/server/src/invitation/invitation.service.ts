@@ -39,18 +39,4 @@ export class InvitationService {
     });
     return code;
   }
-
-  async useInvitationCode(code: string) {
-    const invitation = await this.prisma.invitationCode.findFirst({
-      where: { code, used: false },
-    });
-    if (!invitation) {
-      return null;
-    }
-    await this.prisma.invitationCode.update({
-      where: { id: invitation.id },
-      data: { used: true }
-    });
-    return invitation.createdByUserId;
-  }
 }

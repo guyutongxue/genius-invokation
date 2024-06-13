@@ -42,17 +42,15 @@ import {
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
 import { type Deck, flip } from "@gi-tcg/utils";
-import {
-  BehaviorSubject,
-  Observable,
-  Subject,
-  filter,
-  startWith,
-} from "rxjs";
+import { BehaviorSubject, Observable, Subject, filter, startWith } from "rxjs";
 import { verifyDeck } from "../utils";
-import type { CreateRoomDto, PlayerActionResponseDto } from "./rooms.controller";
+import type {
+  CreateRoomDto,
+  PlayerActionResponseDto,
+} from "./rooms.controller";
 import { DecksService } from "../decks/decks.service";
 import { UsersService, type UserNoPassword } from "../users/users.service";
+import { GamesService } from "../games/games.service";
 
 interface RoomConfig extends Partial<GameConfig> {
   initTotalActionTime: number; // defaults 45
@@ -120,7 +118,7 @@ class Player implements PlayerIOWithError {
   );
   constructor(
     public readonly user: UserNoPassword,
-    public deck: Deck,
+    public readonly deck: Deck,
   ) {}
   giveUp = false;
 
@@ -266,7 +264,7 @@ class Player implements PlayerIOWithError {
   }
 }
 
-type GameStopHandler = (winner: 0 | 1 | null) => void;
+type GameStopHandler = (room: Room, game: InternalGame) => void;
 
 interface RoomInfo {
   id: number;
@@ -291,10 +289,17 @@ class Room {
   getHost() {
     return this.host;
   }
+  getGuest() {
+    return this.guest;
+  }
+  private get players(): [Player | null, Player | null] {
+    return this.hostWho === 0 ? [this.host, this.guest] : [this.guest, this.host];
+  }
+  getPlayer(who: 0 | 1): Player | null {
+    return this.players[who];
+  }
   getPlayers(): Player[] {
-    let players =
-      this.hostWho === 0 ? [this.host, this.guest] : [this.guest, this.host];
-    return players.filter((player): player is Player => player !== null);
+    return this.players.filter((player): player is Player => player !== null);
   }
   get started() {
     return this.game !== null;
@@ -318,68 +323,53 @@ class Room {
     if (this.terminated) {
       throw new ConflictException("room terminated");
     }
-    if (this.host === null || this.guest === null) {
+    const [player0, player1] = this.players;
+    if (player0 === null || player1 === null) {
       throw new ConflictException("player not ready");
     }
-    verifyDeck(this.host.deck);
-    verifyDeck(this.guest.deck);
-    let playerConfig0: PlayerConfig;
-    let playerConfig1: PlayerConfig;
-    let playerIo0: Player;
-    let playerIo1: Player;
-    if (this.hostWho === 0) {
-      playerConfig0 = this.host.deck;
-      playerIo0 = this.host;
-      playerConfig1 = this.guest.deck;
-      playerIo1 = this.guest;
-    } else {
-      playerConfig0 = this.guest.deck;
-      playerIo0 = this.guest;
-      playerConfig1 = this.host.deck;
-      playerIo1 = this.host;
-    }
-    playerIo0.setTimeoutConfig(this.config);
-    playerIo1.setTimeoutConfig(this.config);
+    verifyDeck(player0.deck);
+    verifyDeck(player1.deck);
+    player0.setTimeoutConfig(this.config);
+    player1.setTimeoutConfig(this.config);
     const game = new InternalGame({
       data,
       gameConfig: this.config,
-      playerConfigs: [playerConfig0, playerConfig1],
+      playerConfigs: [player0.deck, player1.deck],
       io: {
         pause: async (state, mutations, canResume) => {
           this.stateLog.push({ state, canResume });
           for (const mut of mutations) {
             if (mut.type === "changePhase" && mut.newPhase === "roll") {
-              playerIo0.resetRoundTimeout();
-              playerIo1.resetRoundTimeout();
+              player0.resetRoundTimeout();
+              player1.resetRoundTimeout();
             }
           }
         },
-        players: [playerIo0, playerIo1],
+        players: [player0, player1],
         onIoError: (e) => {
-          playerIo0.onError(e);
-          playerIo1.onError(e);
+          player0.onError(e);
+          player1.onError(e);
         },
       },
     });
-    this.host.onInitialized(0, this.guest.playerInfo);
-    this.guest.onInitialized(1, this.host.playerInfo);
+    player0.onInitialized(0, player1.playerInfo);
+    player1.onInitialized(1, player0.playerInfo);
     (async () => {
-      let winner: 0 | 1 | null = null;
       try {
         this.game = game;
-        winner = await game.start();
+        await game.start();
       } catch (e) {
         if (e instanceof GiTcgError) {
-          playerIo0.onError(e);
-          playerIo1.onError(e);
+          player0.onError(e);
+          player1.onError(e);
         } else {
           throw e;
         }
       }
-      playerIo0.complete();
-      playerIo1.complete();
+      player0.complete();
+      player1.complete();
       for (const cb of this.onStopHandlers) {
-        cb(winner);
+        cb(this, game);
       }
     })();
   }
@@ -415,12 +405,10 @@ export class RoomsService {
   constructor(
     private users: UsersService,
     private decks: DecksService,
+    private games: GamesService,
   ) {}
 
-  async createRoom(
-    hostUserId: number,
-    params: CreateRoomDto,
-  ) {
+  async createRoom(hostUserId: number, params: CreateRoomDto) {
     const allRooms = this.getAllRooms();
     const user = await this.users.findById(hostUserId);
     if (user === null) {
@@ -510,6 +498,18 @@ export class RoomsService {
       throw new NotFoundException(`Deck ${deckId} not found`);
     }
     room.setGuest(new Player(user, deck));
+    // Add to game database when room stopped
+    room.onStop((room, game) => {
+      const playerIds = room.getPlayers().map((player) => player.user.id);
+      const winnerWho = game.state.winner;
+      const winner = winnerWho === null ? null : room.getPlayer(winnerWho);
+      this.games.addGame({
+        version: Room.VERSION,
+        data: JSON.stringify(room.getStateLog()),
+        winnerId: winner?.user.id ?? null,
+        playerIds,
+      });
+    });
     room.start();
   }
 

@@ -18,9 +18,10 @@ import { RoomsService } from './rooms.service';
 import { RoomsController } from './rooms.controller';
 import { DecksModule } from '../decks/decks.module';
 import { UsersModule } from '../users/users.module';
+import { GamesModule } from '../games/games.module';
 
 @Module({
-  imports: [DecksModule, UsersModule],
+  imports: [DecksModule, UsersModule, GamesModule],
   providers: [RoomsService],
   controllers: [RoomsController]
 })

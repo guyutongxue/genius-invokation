@@ -44,7 +44,7 @@ model Game {
   players   PlayerOnGames[]
   version   String
   data      String // JSON log
-  winnerId  Int
+  winnerId  Int?
   createdAt DateTime        @default(now())
 }
 

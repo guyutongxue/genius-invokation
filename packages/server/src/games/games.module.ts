@@ -16,9 +16,12 @@
 import { Module } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { GamesController } from './games.controller';
+import { DbModule } from '../db/db.module';
 
 @Module({
+  imports: [DbModule],
   providers: [GamesService],
-  controllers: [GamesController]
+  controllers: [GamesController],
+  exports: [GamesService],
 })
 export class GamesModule {}

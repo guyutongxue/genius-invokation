@@ -14,7 +14,49 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../db/prisma.service";
+import type { Game as GameModel } from "@prisma/client";
+
+export interface AddGameOption {
+  playerIds: number[];
+  version: string;
+  data: string;
+  winnerId: number | null;
+}
 
 @Injectable()
 export class GamesService {
+  constructor(private prisma: PrismaService) {}
+
+  async addGame({ playerIds, ...data }: AddGameOption): Promise<GameModel> {
+    const playerOnGames = playerIds.map((id, who) => ({
+      playerId: id,
+      who,
+    }));
+    const game = await this.prisma.game.create({
+      data: {
+        ...data,
+        players: {
+          create: playerOnGames,
+        },
+      },
+    });
+    return game;
+  }
+
+  async allGames() {
+    return await this.prisma.game.findMany();
+  }
+
+  async gamesHasUser(userId: number) {
+    const results = await this.prisma.playerOnGames.findMany({
+      where: {
+        playerId: userId,
+      },
+      include: {
+        game: true
+      }
+    });
+    return results;
+  }
 }
