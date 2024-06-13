@@ -28,6 +28,11 @@ const app = await NestFactory.create<NestFastifyApplication>(
 );
 app.useGlobalPipes(new ValidationPipe());
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
+app.setGlobalPrefix("/api");
+
+if (import.meta.env.NODE_ENV !== "production") {
+  app.enableCors({ origin: "*" })
+}
 
 await app.listen(3000, (err, address) => {
   if (err) {

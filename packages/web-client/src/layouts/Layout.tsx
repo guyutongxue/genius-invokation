@@ -13,4 +13,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export const BACKEND_BASE_URL = import.meta.env.DEV ? "http://localhost:3000/api" : `${import.meta.env.BASE_URL}api`;
+import { JSX } from "solid-js";
+import { Header } from "../components/Header";
+
+export interface LayoutProps {
+  children?: JSX.Element;
+}
+
+export function Layout(props: LayoutProps) {
+  return (
+    <div class="w-full h-full flex flex-col">
+      <Header />
+      <main class="flex-grow flex-shrink-0">
+      {props.children}
+      </main>
+    </div>
+  );
+}

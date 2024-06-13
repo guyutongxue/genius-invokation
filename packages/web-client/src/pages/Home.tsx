@@ -13,4 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export const BACKEND_BASE_URL = import.meta.env.DEV ? "http://localhost:3000/api" : `${import.meta.env.BASE_URL}api`;
+import axios from "axios";
+import { Show, createSignal, onMount } from "solid-js";
+import { useUserContext } from "../App";
+import { Layout } from "../layouts/Layout";
+
+export function Home() {
+  const { user } = useUserContext();
+  return (
+    <Layout>
+      Home
+      <Show when={user()}>
+        {(user) => <div>Hello {user().name ?? user().id}!</div>}
+      </Show>
+    </Layout>
+  );
+}

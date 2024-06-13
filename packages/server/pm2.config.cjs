@@ -19,5 +19,8 @@
 module.exports = {
   name: "@gi-tcg/server",
   script: "src/main.ts",
+  env: {
+    NODE_ENV: "production"
+  },
   interpreter: "bun"
 }
