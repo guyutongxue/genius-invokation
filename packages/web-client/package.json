@@ -4,14 +4,30 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "check": "tsc --noEmit",
     "dev": "vite",
-    "build": "tsc && vite build",
+    "generate_data": "bun scripts/generate_names.ts",
+    "build": "bun generate_data && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gi-tcg/webui-core": "workspace:*",
+    "@solidjs/router": "^0.13.5",
     "solid-js": "^1.8.15"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "@gi-tcg/static-data": "workspace:*",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@types/core-js": "^2.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-plugin-solid": "^0.13.1",
+    "postcss-load-config": "^5.0.3",
+    "postcss-preset-env": "^9.3.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-solid": "^2.10.2"

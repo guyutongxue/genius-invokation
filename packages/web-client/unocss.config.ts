@@ -1,5 +1,3 @@
-/* @refresh reload */
-
 // Copyright (C) 2024 Guyutongxue
 // 
 // This program is free software: you can redistribute it and/or modify
@@ -13,13 +11,25 @@
 // GNU Affero General Public License for more details.
 // 
 // You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { render } from "solid-js/web";
+import { defineConfig, presetUno } from "unocss";
+import { parseColor, colorToString } from "@unocss/preset-mini/utils";
 
-import "./index.css";
-import App from "./App";
+export default defineConfig({
+  presets: [presetUno()],
+  rules: [
+    [
+      /^btn-(.*)$/,
+      ([, c], { theme }) => {
+        const data = parseColor(c, theme, "colors");
 
-const root = document.getElementById("root");
-
-render(() => <App />, root!);
+        if (data?.cssColor) {
+          return {
+            "--btn-color": colorToString(data.cssColor),
+          };
+        }
+      },
+    ],
+  ],
+});
