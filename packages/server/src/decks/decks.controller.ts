@@ -24,6 +24,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { User } from "../auth/user.decorator";
 import {
@@ -35,6 +36,7 @@ import {
   Length,
 } from "class-validator";
 import { DecksService } from "./decks.service";
+import { PaginationDto } from "../utils";
 
 export class CreateDeckDto {
   @Length(1, 64)
@@ -84,8 +86,8 @@ export class DecksController {
   }
 
   @Get()
-  async getAllDecks(@User() userId: number) {
-    return await this.decks.getAllDecks(userId);
+  async getAllDecks(@User() userId: number, @Query() pagination: PaginationDto) {
+    return await this.decks.getAllDecks(userId, pagination);
   }
 
   @Patch(":deckId")

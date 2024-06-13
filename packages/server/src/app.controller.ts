@@ -14,11 +14,20 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Controller, Get } from "@nestjs/common";
+import { Public } from "./auth/auth.guard";
+import { VERSION } from "@gi-tcg/core";
 
 @Controller()
 export class AppController {
   constructor() {}
 
+  @Public()
+  @Get("/version")
+  getVersion(): string {
+    return VERSION;
+  }
+
+  @Public()
   @Get("/hello")
   getHello(): string {
     return "Hello World!";

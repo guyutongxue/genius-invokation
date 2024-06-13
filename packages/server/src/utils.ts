@@ -18,6 +18,7 @@ import {
   characters as characterData,
   actionCards as actionCardData,
 } from "@gi-tcg/static-data";
+import { IsInt, IsOptional, IsPositive, Max } from "class-validator";
 
 export class DeckVerificationError extends Error {}
 
@@ -75,4 +76,17 @@ export function verifyDeck({ characters, cards }: Deck) {
       cardCounts.set(cardId, 1);
     }
   }
+}
+
+export class PaginationDto {
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  skip?: number;
+
+  @IsInt()
+  @IsPositive()
+  @Max(100)
+  @IsOptional()
+  take?: number;
 }

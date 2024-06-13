@@ -16,6 +16,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
 import type { Game as GameModel } from "@prisma/client";
+import type { PaginationDto } from "../utils";
 
 export interface AddGameOption {
   playerIds: number[];
@@ -44,17 +45,64 @@ export class GamesService {
     return game;
   }
 
-  async allGames() {
-    return await this.prisma.game.findMany();
+  async getAllGames({ skip = 0, take = 100 }: PaginationDto) {
+    return await this.prisma.game.findMany({
+      skip,
+      take,
+      omit: { data: true },
+      include: {
+        players: {
+          select: {
+            player: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
+            who: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
   }
 
-  async gamesHasUser(userId: number) {
+  async getGame(gameId: number) {
+    return await this.prisma.game.findFirst({
+      where: {
+        id: gameId,
+      },
+      include: {
+        players: {
+          select: {
+            player: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
+            who: true,
+          }
+        }
+      }
+    });
+  }
+
+  async gamesHasUser(userId: number, { skip = 0, take = 100 }: PaginationDto) {
     const results = await this.prisma.playerOnGames.findMany({
+      skip,
+      take,
       where: {
         playerId: userId,
       },
       include: {
-        game: true
+        game: {
+          omit: {
+            data: true
+          }
+        }
       }
     });
     return results;

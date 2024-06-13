@@ -13,7 +13,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { GamesService } from './games.service';
+import { User } from '../auth/user.decorator';
+import { PaginationDto } from '../utils';
 
 @Controller('games')
-export class GamesController {}
+export class GamesController {
+  constructor(private games: GamesService) {}
+
+  @Get()
+  async getAllGames(@Query() pagination: PaginationDto) {
+    return await this.games.getAllGames(pagination);
+  }
+
+  @Get("mine")
+  async getMyGames(@User() userId: number, @Query() pagination: PaginationDto) {
+    return await this.games.gamesHasUser(userId, pagination);
+  }
+
+  @Get(":gameId")
+  async getGame(@Param("gameId", ParseIntPipe) gameId: number) {
+    return await this.games.getGame(gameId);
+  }
+
+}

@@ -18,7 +18,7 @@ import { PrismaService } from "../db/prisma.service";
 import type { CreateDeckDto, UpdateDeckDto } from "./decks.controller";
 import { type Deck, encode, decode } from "@gi-tcg/utils";
 import { type Deck as DeckModel } from "@prisma/client";
-import { DeckVerificationError, verifyDeck } from "../utils";
+import { DeckVerificationError, PaginationDto, verifyDeck } from "../utils";
 
 export interface DeckWithDeckModel extends Deck {
   id: number;
@@ -54,7 +54,7 @@ export class DecksService {
     });
   }
 
-  async getAllDecks(userId: number): Promise<DeckWithDeckModel[]> {
+  async getAllDecks(userId: number, { skip = 0, take = 100 }: PaginationDto): Promise<DeckWithDeckModel[]> {
     const models = await this.prisma.deck.findMany({
       where: {
         ownerUserId: userId,
