@@ -41,14 +41,18 @@ import {
   VERSION,
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
-import { type Deck, flip, decode } from "@gi-tcg/utils";
-import { ReplaySubject, Subject } from "rxjs";
-import { IsInt, IsObject } from "class-validator";
+import { type Deck, flip } from "@gi-tcg/utils";
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  filter,
+  startWith,
+} from "rxjs";
 import { verifyDeck } from "../utils";
-import type { CreateRoomDto } from "./rooms.controller";
+import type { CreateRoomDto, PlayerActionResponseDto } from "./rooms.controller";
 import { DecksService } from "../decks/decks.service";
-import { UsersService } from "../users/users.service";
-import type { User } from "@prisma/client";
+import { UsersService, type UserNoPassword } from "../users/users.service";
 
 interface RoomConfig extends Partial<GameConfig> {
   initTotalActionTime: number; // defaults 45
@@ -56,6 +60,7 @@ interface RoomConfig extends Partial<GameConfig> {
   roundTotalActionTime: number; // defaults 60
   actionTime: number; // defaults 25
   watchable: boolean; // defaults false
+  private: boolean; // defaults false
 }
 
 interface CreateRoomConfig extends RoomConfig {
@@ -68,40 +73,34 @@ interface PlayerIOWithError extends PlayerIO {
   onError: (e: GiTcgError) => void;
 }
 
-interface OppDeckInfo extends Deck {
+interface PlayerInfo {
   userId: number;
   userName: string | null;
+  deck: Deck;
 }
 
 export interface SSEInitialized {
   type: "initialized";
   who: 0 | 1;
-  oppDeck: OppDeckInfo;
+  oppPlayerInfo: PlayerInfo;
 }
 
 export interface SSENotification {
   type: "notification";
   data: NotificationMessage;
 }
+export interface SSEError {
+  type: "error";
+  message: string;
+}
+export type SSEPayload = SSEInitialized | SSENotification | SSEError;
+
 export interface SSERpc {
   type: "rpc";
   id: number;
   timeout: number;
   method: RpcMethod;
   params: RpcRequest[RpcMethod];
-}
-export interface SSEError {
-  type: "error";
-  message: string;
-}
-export type SSEPayload = SSEInitialized | SSENotification | SSERpc | SSEError;
-
-export class GameActionResponseDto {
-  @IsInt()
-  id!: number;
-
-  @IsObject()
-  response!: RpcResponse[RpcMethod];
 }
 
 interface RpcResolver {
@@ -113,9 +112,14 @@ interface RpcResolver {
 }
 
 class Player implements PlayerIOWithError {
-  public readonly sse$ = new ReplaySubject<SSEPayload>();
+  private readonly notificationSseSource = new Subject<SSEPayload>();
+  public notificationSse$?: Observable<SSEPayload>;
+  private readonly rpcSseSource = new BehaviorSubject<SSERpc | null>(null);
+  public rpcSse$: Observable<SSERpc> = this.rpcSseSource.pipe(
+    filter((rpc): rpc is SSERpc => rpc !== null),
+  );
   constructor(
-    public readonly user: User,
+    public readonly user: UserNoPassword,
     public deck: Deck,
   ) {}
   giveUp = false;
@@ -124,6 +128,14 @@ class Player implements PlayerIOWithError {
   private _rpcResolver: RpcResolver | null = null;
   private _timeoutConfig: RoomConfig | null = null;
   private _roundTimeout = Infinity;
+
+  get playerInfo(): PlayerInfo {
+    return {
+      userId: this.user.id,
+      userName: this.user.name,
+      deck: this.deck,
+    };
+  }
 
   setTimeoutConfig(config: RoomConfig) {
     this._timeoutConfig = config;
@@ -145,7 +157,7 @@ class Player implements PlayerIOWithError {
     }
   }
 
-  receiveResponse(response: GameActionResponseDto) {
+  receiveResponse(response: PlayerActionResponseDto) {
     if (!this._rpcResolver) {
       throw new NotFoundException(`No rpc now`);
     } else if (this._rpcResolver.id !== response.id) {
@@ -155,7 +167,10 @@ class Player implements PlayerIOWithError {
   }
 
   notify(notification: NotificationMessage) {
-    this.sse$.next({ type: "notification", data: notification });
+    this.notificationSseSource.next({
+      type: "notification",
+      data: notification,
+    });
   }
 
   private timeoutRpc(method: RpcMethod, params: RpcRequest[RpcMethod]) {
@@ -172,7 +187,7 @@ class Player implements PlayerIOWithError {
     } else if (method === "chooseActive") {
       const { candidates } = params as ChooseActiveRequest;
       const result: ChooseActiveResponse = {
-        active: candidates[0],
+        active: candidates[0]!,
       };
       return result;
     } else if (method === "rerollDice") {
@@ -206,7 +221,7 @@ class Player implements PlayerIOWithError {
       };
     }
     const payload: SSERpc = { type: "rpc", id, timeout, method, params };
-    this.sse$.next(payload);
+    this.rpcSseSource.next(payload);
     return new Promise((resolve) => {
       const resolver: RpcResolver = {
         id,
@@ -234,23 +249,31 @@ class Player implements PlayerIOWithError {
   }
 
   onError(e: GiTcgError) {
-    this.sse$.next({ type: "error", message: e.message });
+    this.notificationSseSource.next({ type: "error", message: e.message });
   }
-  onInitialized(who: 0 | 1, opp: Player) {
-    this.sse$.next({
-      type: "initialized",
-      who,
-      oppDeck: {
-        userId: opp.user.id,
-        userName: opp.user.name,
-        cards: opp.deck.cards,
-        characters: opp.deck.characters,
-      },
-    });
+  onInitialized(who: 0 | 1, opp: PlayerInfo) {
+    this.notificationSse$ = this.notificationSseSource.pipe(
+      startWith<SSEPayload>({
+        type: "initialized",
+        who,
+        oppPlayerInfo: opp,
+      }),
+    );
+  }
+  complete() {
+    this.notificationSseSource.complete();
+    this.rpcSseSource.complete();
   }
 }
 
 type GameStopHandler = (winner: 0 | 1 | null) => void;
+
+interface RoomInfo {
+  id: number;
+  started: boolean;
+  watchable: boolean;
+  players: PlayerInfo[];
+}
 
 class Room {
   public static readonly VERSION = VERSION;
@@ -262,11 +285,16 @@ class Room {
   private terminated = false;
   private onStopHandlers: GameStopHandler[] = [];
 
-  constructor(private readonly config: CreateRoomConfig) {
+  constructor(public readonly config: CreateRoomConfig) {
     this.hostWho = config.hostWho;
   }
   getHost() {
     return this.host;
+  }
+  getPlayers(): Player[] {
+    let players =
+      this.hostWho === 0 ? [this.host, this.guest] : [this.guest, this.host];
+    return players.filter((player): player is Player => player !== null);
   }
   get started() {
     return this.game !== null;
@@ -333,15 +361,13 @@ class Room {
         },
       },
     });
-    this.host.onInitialized(0, this.guest);
-    this.guest.onInitialized(1, this.host);
+    this.host.onInitialized(0, this.guest.playerInfo);
+    this.guest.onInitialized(1, this.host.playerInfo);
     (async () => {
+      let winner: 0 | 1 | null = null;
       try {
         this.game = game;
-        const winner = await game.start();
-        for (const cb of this.onStopHandlers) {
-          cb(winner);
-        }
+        winner = await game.start();
       } catch (e) {
         if (e instanceof GiTcgError) {
           playerIo0.onError(e);
@@ -349,6 +375,11 @@ class Room {
         } else {
           throw e;
         }
+      }
+      playerIo0.complete();
+      playerIo1.complete();
+      for (const cb of this.onStopHandlers) {
+        cb(winner);
       }
     })();
   }
@@ -359,6 +390,15 @@ class Room {
 
   getStateLog() {
     return serializeGameStateLog(this.stateLog);
+  }
+
+  getRoomInfo(id: number): RoomInfo {
+    return {
+      id,
+      started: this.started,
+      watchable: this.config.watchable,
+      players: this.getPlayers().map((player) => player.playerInfo),
+    };
   }
 }
 
@@ -379,16 +419,23 @@ export class RoomsService {
 
   async createRoom(
     hostUserId: number,
-    hostDeckId: number,
     params: CreateRoomDto,
   ) {
+    const allRooms = this.getAllRooms();
     const user = await this.users.findById(hostUserId);
     if (user === null) {
       throw new NotFoundException(`User ${hostUserId} not found`);
     }
-    const deck = await this.decks.getDeck(hostUserId, hostDeckId);
+    if (
+      allRooms.some((room) =>
+        room.players.some((player) => player.userId === hostUserId),
+      )
+    ) {
+      throw new ConflictException(`User ${hostUserId} is already in a room`);
+    }
+    const deck = await this.decks.getDeck(hostUserId, params.hostDeckId);
     if (deck === null) {
-      throw new NotFoundException(`Deck ${hostDeckId} not found`);
+      throw new NotFoundException(`Deck ${params.hostDeckId} not found`);
     }
 
     const hostWho =
@@ -407,6 +454,7 @@ export class RoomsService {
       roundTotalActionTime: params.roundTotalActionTime ?? 60,
       actionTime: params.actionTime ?? 25,
       watchable: params.watchable ?? false,
+      private: params.private ?? false,
     };
     const roomId = this.rooms.indexOf(null);
     if (roomId === -1) {
@@ -425,7 +473,7 @@ export class RoomsService {
 
   deleteRoom(userId: number, roomId: number) {
     const room = this.rooms[roomId];
-    if (room === null) {
+    if (!room) {
       throw new NotFoundException(`Room ${roomId} not found`);
     }
     if (room.started) {
@@ -437,9 +485,10 @@ export class RoomsService {
     this.rooms[roomId] = null;
   }
 
-  async joinRoom(roomId: number, userId: number, deckId: number) {
+  async joinRoom(userId: number, roomId: number, deckId: number) {
+    const allRooms = this.getAllRooms();
     const room = this.rooms[roomId];
-    if (room === null) {
+    if (!room) {
       throw new NotFoundException(`Room ${roomId} not found`);
     }
     if (room.started) {
@@ -449,11 +498,124 @@ export class RoomsService {
     if (user === null) {
       throw new NotFoundException(`User ${userId} not found`);
     }
+    if (
+      allRooms.some((room) =>
+        room.players.some((player) => player.userId === userId),
+      )
+    ) {
+      throw new ConflictException(`User ${userId} is already in a room`);
+    }
     const deck = await this.decks.getDeck(userId, deckId);
     if (deck === null) {
       throw new NotFoundException(`Deck ${deckId} not found`);
     }
     room.setGuest(new Player(user, deck));
     room.start();
+  }
+
+  getRoom(roomId: number): RoomInfo {
+    const room = this.rooms[roomId];
+    if (!room) {
+      throw new NotFoundException(`Room not found`);
+    }
+    return room.getRoomInfo(roomId);
+  }
+
+  getAllRooms(): RoomInfo[] {
+    const result: RoomInfo[] = [];
+    for (let i = 0; i < this.rooms.length; i++) {
+      const room = this.rooms[i];
+      if (room && !room.config.private) {
+        result.push(room.getRoomInfo(i));
+      }
+    }
+    return result;
+  }
+
+  playerNotification(
+    roomId: number,
+    visitorUserId: number,
+    watchingUserId: number,
+  ): Observable<SSEPayload> {
+    const room = this.rooms[roomId];
+    if (!room) {
+      throw new NotFoundException(`Room not found`);
+    }
+    const players = room.getPlayers();
+    const playerUserIds = players.map((player) => player.user.id);
+    if (!playerUserIds.includes(watchingUserId)) {
+      throw new NotFoundException(`User ${watchingUserId} not in room`);
+    }
+    if (!room.config.watchable && visitorUserId !== watchingUserId) {
+      throw new UnauthorizedException(
+        `Room ${roomId} cannot be watched by other user`,
+      );
+    }
+    if (
+      playerUserIds.includes(visitorUserId) &&
+      visitorUserId !== watchingUserId
+    ) {
+      throw new UnauthorizedException(
+        `You cannot watch ${watchingUserId}, he is your opponent!`,
+      );
+    }
+    for (const player of players) {
+      if (player.user.id === watchingUserId) {
+        const observable = player.notificationSse$;
+        if (!observable) {
+          throw new ConflictException(`Player has not been initialized`);
+        }
+        return observable;
+      }
+    }
+    throw new InternalServerErrorException("unreachable");
+  }
+
+  playerAction(roomId: number, userId: number) {
+    const room = this.rooms[roomId];
+    if (!room) {
+      throw new NotFoundException(`Room not found`);
+    }
+    const players = room.getPlayers();
+    for (const player of players) {
+      if (player.user.id === userId) {
+        return player.rpcSse$;
+      }
+    }
+    throw new NotFoundException(`User ${userId} not in room`);
+  }
+
+  receivePlayerResponse(
+    roomId: number,
+    userId: number,
+    response: PlayerActionResponseDto,
+  ) {
+    const room = this.rooms[roomId];
+    if (!room) {
+      throw new NotFoundException(`Room not found`);
+    }
+    const players = room.getPlayers();
+    for (const player of players) {
+      if (player.user.id === userId) {
+        player.receiveResponse(response);
+        return;
+      }
+    }
+    throw new NotFoundException(`User ${userId} not in room`);
+  }
+
+  receivePlayerGiveUp(roomId: number, userId: number) {
+    const room = this.rooms[roomId];
+    if (!room) {
+      throw new NotFoundException(`Room not found`);
+    }
+    const players = room.getPlayers();
+    for (const player of players) {
+      if (player.user.id === userId) {
+        player.giveUp = true;
+        return;
+      }
+    }
+    throw new NotFoundException(`User ${userId} not in room`);
   }
 }
