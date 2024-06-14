@@ -183,7 +183,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
       pause,
       players: [childIo, uiIo],
     };
-    return { data, io, playerConfigs };
+    return { data: data(), io, playerConfigs };
   };
 
   const startGame = async () => {

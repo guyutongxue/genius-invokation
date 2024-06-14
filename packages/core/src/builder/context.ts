@@ -240,6 +240,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       );
       const desc = info.definition.action as SkillDescription<EventArgOf<E>>;
       const [newState, newEvents] = desc(this.state, info, arg);
+      this.notify();
       this.resetState(newState);
       this.eventAndRequests.push(...newEvents);
     }
@@ -1396,11 +1397,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           charged: false,
           plunging: false,
           logger: this.skillInfo.logger,
-          onNotify: this.skillInfo.onNotify,
+          onNotify: (opt) => this.onNotify(opt),
         };
         const [newState, newEvents] = disposeDef.action(this.state, skillInfo);
-        this.eventAndRequests.push(...newEvents);
+        this.notify();
         this.resetState(newState);
+        this.eventAndRequests.push(...newEvents);
       }
       const method: DisposeOrTuneMethod =
         where === "hands" ? "disposeFromHands" : "disposeFromPiles";

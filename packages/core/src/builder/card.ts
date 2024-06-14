@@ -64,8 +64,7 @@ import { combatStatus, status, equipment, support } from "./entity";
 import { GuessedTypeOfQuery } from "../query/types";
 import { GiTcgDataError } from "../error";
 import { Writable } from "../utils";
-import { INIT_VERSION, Version, VersionInfo } from "../base/version";
-import { DEFAULT_VERSION_INFO } from "./utils";
+import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [

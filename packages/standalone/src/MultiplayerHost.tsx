@@ -91,7 +91,7 @@ export function MultiplayerHost(props: MultiplayerHostProps) {
         }
         setChessboard(<Chessboard />);
         game = new Game({
-          data: tcgData,
+          data: tcgData(),
           io: {
             pause,
             players: playerIos,

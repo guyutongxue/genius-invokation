@@ -44,8 +44,8 @@ import {
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
-import { DEFAULT_VERSION_INFO, createVariable } from "./utils";
-import { Version, VersionInfo } from "../base/version";
+import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
+import { createVariable } from "./utils";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {

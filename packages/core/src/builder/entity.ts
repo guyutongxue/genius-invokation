@@ -42,11 +42,10 @@ import {
   SkillHandle,
 } from "./type";
 import { GiTcgDataError } from "../error";
-import { DEFAULT_VERSION_INFO, createVariable, createVariableCanAppend } from "./utils";
+import { createVariable, createVariableCanAppend } from "./utils";
 import { Writable, getEntityArea, getEntityById } from "../utils";
-import { EntityState, GameState } from "..";
-import { SkillContext } from "./context";
-import { INIT_VERSION, Version, VersionInfo } from "../base/version";
+import { EntityState, GameState } from "../base/state";
+import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
 export interface AppendOptions {
   /** 重复创建时的累积值上限 */

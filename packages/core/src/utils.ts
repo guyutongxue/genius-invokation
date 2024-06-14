@@ -344,7 +344,7 @@ export function getInitiativeSkillDefinition(data: GameData, skillId: number): I
 
 export function getSkillDefinition(data: GameData, skillId: number): SkillDefinition | undefined {
   const { version, skills } = data;
-  const results = skills.filter((sk): sk is InitiativeSkillDefinition => sk.id === skillId);
+  const results = skills.filter((sk) => sk.id === skillId);
   if (results.length === 0) {
     return;
   }

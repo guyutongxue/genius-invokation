@@ -40,5 +40,5 @@ export type {
 export { DiceType, DamageType, Aura, Reaction } from "@gi-tcg/typings";
 export type { CharacterState, EntityState } from "../base/state";
 
-export { diceCostOfCard } from "../utils";
+export { diceCostOfCard, getCardDefinition, getEntityDefinition, getCharacterDefinition } from "../utils";
 export { flip, pair } from "@gi-tcg/utils";

@@ -15,7 +15,7 @@
 
 import { GameState } from "./base/state";
 import { Version } from "./base/version";
-import { GameData, GameDataGetter } from "./builder";
+import { GameData, GameDataGetter, getCardDefinition } from "./builder";
 import { VERSION } from ".";
 
 import "core-js/proposals/explicit-resource-management";
@@ -161,6 +161,7 @@ function deserializeImpl(
     if ("$$" in v && "id" in v && typeof v.id === "number") {
       switch (v.$$) {
         case "characters": return getCharacterDefinition(data, v.id);
+        case "cards": return getCardDefinition(data, v.id);
         case "entities": return getEntityDefinition(data, v.id);
         case "skills": return getSkillDefinition(data, v.id);
         case "extensions": return data.extensions.find((e) => e.id === v.id);
@@ -200,13 +201,14 @@ function deserializeImpl(
 }
 
 export function deserializeGameStateLog(
-  data: GameDataGetter,
+  dataGetter: GameDataGetter,
   { store, log, v, gv }: SerializedLog,
 ): GameStateLogEntry[] {
   const restoredStore: Record<number, any> = {};
   const result: GameStateLogEntry[] = [];
+  const data = dataGetter(gv as Version);
   for (const entry of log) {
-    const restoredState = deserializeImpl(data(gv as Version), store, restoredStore, entry.s);
+    const restoredState = deserializeImpl(data, store, restoredStore, entry.s);
     result.push({
       state: {
         data,

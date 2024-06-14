@@ -77,3 +77,5 @@ export function findVersion<T extends WithVersionInfo>(
   }
   return until[0];
 }
+
+export const DEFAULT_VERSION_INFO: VersionInfo = { predicate: "since", version: INIT_VERSION };

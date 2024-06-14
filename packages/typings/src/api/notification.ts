@@ -71,6 +71,10 @@ export interface CharacterData {
   aura: Aura;
 }
 
+export type DescriptionDictionaryData = {
+  [key: string]: string;
+}
+
 export interface EntityData {
   /**
    * 全局唯一实体 id
@@ -89,8 +93,9 @@ export interface EntityData {
 
   /**
    * 描述中动态替换掉的变量值
+   * 
    */
-  descriptionDictionary: Record<`[${string}]`, string>;
+  descriptionDictionary: DescriptionDictionaryData;
 
   /**
    * 实体提示图标（召唤物伤害图标/支援牌治疗图标）
@@ -117,7 +122,7 @@ export interface CardData {
   /**
    * 描述中动态替换掉的变量值
    */
-  descriptionDictionary: Record<`[${string}]`, string>;
+  descriptionDictionary: DescriptionDictionaryData;
 
   /**
    * 行动牌定义 id

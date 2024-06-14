@@ -44,6 +44,7 @@ export abstract class StateMutator {
     if (this._mutationsToBeNotified.length > 0) {
       console.warn("Resetting state with pending mutations not notified");
       console.warn(this._mutationsToBeNotified);
+      // debugger;
     }
     this._state = newState;
     this._mutationsToBeNotified = [];

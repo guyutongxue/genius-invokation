@@ -57,7 +57,7 @@ function App() {
     players: [io0, io1],
   };
   const game = new Game({
-    data,
+    data: data(),
     io,
     playerConfigs: [playerConfig0, playerConfig1],
   });

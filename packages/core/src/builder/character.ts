@@ -24,9 +24,9 @@ import {
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { CharacterHandle, PassiveSkillHandle, SkillHandle } from "./type";
-import { DEFAULT_VERSION_INFO, createVariable } from "./utils";
+import { createVariable } from "./utils";
 import { VariableConfig } from "../base/entity";
-import { INIT_VERSION, Version, VersionInfo, findVersion } from "../base/version";
+import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
 class CharacterBuilder {
   private readonly _tags: CharacterTag[] = [];

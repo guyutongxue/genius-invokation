@@ -10,7 +10,7 @@ import { SkillContext } from "./context";
 import { registerExtension, registerSkill } from "./registry";
 import { WritableMetaOf } from "./skill";
 import { ExtensionHandle } from "./type";
-import { DEFAULT_VERSION_INFO } from "./utils";
+import { DEFAULT_VERSION_INFO } from "../base/version";
 
 type BuilderMetaOfExtension<
   ExtStateType extends object,
