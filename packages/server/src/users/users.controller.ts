@@ -66,7 +66,6 @@ class RegisterDto {
 export class UsersController {
   constructor(
     private users: UsersService,
-    private invitation: InvitationService,
   ) {}
 
   @Get("me")

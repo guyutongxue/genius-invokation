@@ -46,7 +46,7 @@ export function Register() {
   return (
     <Layout>
       <div class="w-full flex flex-col items-center mt-20">
-        <form onSubmit={submit} class="max-w-120 p-6 rounded-4 b-1 b-solid">
+        <form onSubmit={submit} class="w-120 p-6 rounded-4 b-1 b-solid">
           <h3 class="text-xl font-bold mb-3">注册新用户</h3>
           <div class="grid grid-cols-[auto_1fr] gap-3 items-center mb-3">
             <label for="email">邮箱</label>
@@ -81,6 +81,7 @@ export function Register() {
               onInput={(e) => e.target.setAttribute("data-dirty", "")}
             />
           </div>
+          <p class="mb-3">请<strong>务必</strong>确保您可以访问此邮箱；注册后无法修改邮箱地址。</p>
           <button type="submit" class="btn btn-solid-green text-1em gap-0.5em">
             注册
           </button>

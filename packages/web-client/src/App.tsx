@@ -20,12 +20,16 @@ import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Header } from "./components/Header";
 import axios from "axios";
+import { getGravatarUrl } from "./utils";
+import { User } from "./pages/User";
 
 export interface UserInfo {
   id: number;
+  email: string;
   name: string | null;
   rank: number;
   createdAt: string;
+  avatarUrl: string;
 }
 
 export interface UserContextValue {
@@ -41,6 +45,7 @@ function App() {
   const refresh = async () => {
     try {
       const { data } = await axios.get("users/me");
+      data.avatarUrl = await getGravatarUrl(data.email);
       setUser(data);
       console.log(data);
     } catch {
@@ -60,6 +65,7 @@ function App() {
       <div class="h-full w-full flex flex-row">
         <Router base={import.meta.env.BASE_URL}>
           <Route path="/" component={Home} />
+          <Route path="/user/:id" component={User} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
         </Router>

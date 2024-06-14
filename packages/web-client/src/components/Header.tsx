@@ -26,7 +26,7 @@ export function Header() {
     navigate("/");
   };
   return (
-    <header class="flex flex-row p-4 shadow-md items-center gap-4">
+    <header class="flex flex-row h-16 px-4 shadow-md items-center gap-4">
       <h1 class="flex-grow text-xl line-height-none font-bold flex items-center">
         <A href="/">七圣召唤模拟对战平台</A>
       </h1>
@@ -51,9 +51,21 @@ export function Header() {
           </ul>
         }
       >
-        <button class="btn btn-outline-red text-1em gap-0.5em" onClick={logout}>
-          退出登录
-        </button>
+        {(info) => (
+          <>
+            <A href={`/user/${info().id}`}>
+              <div class="rounded-full w-12 h-12 b-solid b-1 b-gray-200 flex items-center justify-center">
+                <img src={info().avatarUrl} class="w-10 h-10 [clip-path:circle()]" />
+              </div>
+            </A>
+            <button
+              class="btn btn-outline-red text-1em gap-0.5em"
+              onClick={logout}
+            >
+              退出登录
+            </button>
+          </>
+        )}
       </Show>
     </header>
   );

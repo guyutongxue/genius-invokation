@@ -46,7 +46,7 @@ export function Login() {
   return (
     <Layout>
       <div class="w-full flex flex-col items-center mt-20">
-        <form onSubmit={submit} class="max-w-120 p-6 rounded-4 b-1 b-solid">
+        <form onSubmit={submit} class="w-120 p-6 rounded-4 b-1 b-solid">
           <h3 class="text-xl font-bold mb-3">请登录</h3>
           <div class="grid grid-cols-[auto_1fr] gap-3 items-center mb-3">
             <label for="email">邮箱</label>
