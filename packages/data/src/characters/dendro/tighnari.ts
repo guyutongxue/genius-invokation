@@ -105,6 +105,7 @@ export const Tighnari = character(1702)
  * （牌组中包含提纳里，才能加入牌组）
  */
 export const KeenSight = card(217021)
+  .since("v3.6.0")
   .costDendro(4)
   .talent(Tighnari)
   .on("enter")

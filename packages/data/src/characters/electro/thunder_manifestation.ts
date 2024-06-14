@@ -155,6 +155,7 @@ export const ThunderManifestation = character(2402)
  * （牌组中包含雷音权现，才能加入牌组）
  */
 export const GrievingEcho = card(224021)
+  .since("v4.3.0")
   .costElectro(3)
   .talent(ThunderManifestation)
   .on("enter")

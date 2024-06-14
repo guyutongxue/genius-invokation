@@ -237,6 +237,7 @@ export const GuardianOfApepsOasis = character(2702)
  * （牌组中包含阿佩普的绿洲守望者，才能加入牌组）
  */
 export const AThousandYoung = card(227021)
+  .since("v4.7.0")
   .costDendro(2)
   .talent(GuardianOfApepsOasis, "none")
   .on("modifyDamage", (c, e) => 

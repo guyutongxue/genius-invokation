@@ -23,6 +23,7 @@ import { DamageType, DiceType, card, status } from "@gi-tcg/core/builder";
  * （角色最多装备1件「圣遗物」）
  */
 export const BrokenRimesEcho = card(312101)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Cryo))
@@ -38,6 +39,7 @@ export const BrokenRimesEcho = card(312101)
  * （角色最多装备1件「圣遗物」）
  */
 export const WinestainedTricorne = card(312201)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Hydro))
@@ -53,6 +55,7 @@ export const WinestainedTricorne = card(312201)
  * （角色最多装备1件「圣遗物」）
  */
 export const WitchsScorchingHat = card(312301)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Pyro))
@@ -68,6 +71,7 @@ export const WitchsScorchingHat = card(312301)
  * （角色最多装备1件「圣遗物」）
  */
 export const ThunderSummonersCrown = card(312401)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Electro))
@@ -83,6 +87,7 @@ export const ThunderSummonersCrown = card(312401)
  * （角色最多装备1件「圣遗物」）
  */
 export const ViridescentVenerersDiadem = card(312501)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Anemo))
@@ -98,6 +103,7 @@ export const ViridescentVenerersDiadem = card(312501)
  * （角色最多装备1件「圣遗物」）
  */
 export const MaskOfSolitudeBasalt = card(312601)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Geo))
@@ -113,6 +119,7 @@ export const MaskOfSolitudeBasalt = card(312601)
  * （角色最多装备1件「圣遗物」）
  */
 export const LaurelCoronet = card(312701)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Dendro))
@@ -129,6 +136,7 @@ export const LaurelCoronet = card(312701)
  * （角色最多装备1件「圣遗物」）
  */
 export const BlizzardStrayer = card(312102)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Cryo))
@@ -147,6 +155,7 @@ export const BlizzardStrayer = card(312102)
  * （角色最多装备1件「圣遗物」）
  */
 export const HeartOfDepth = card(312202)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Hydro))
@@ -165,6 +174,7 @@ export const HeartOfDepth = card(312202)
  * （角色最多装备1件「圣遗物」）
  */
 export const CrimsonWitchOfFlames = card(312302)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Pyro))
@@ -183,6 +193,7 @@ export const CrimsonWitchOfFlames = card(312302)
  * （角色最多装备1件「圣遗物」）
  */
 export const ThunderingFury = card(312402)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Electro))
@@ -201,6 +212,7 @@ export const ThunderingFury = card(312402)
  * （角色最多装备1件「圣遗物」）
  */
 export const ViridescentVenerer = card(312502)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Anemo))
@@ -219,6 +231,7 @@ export const ViridescentVenerer = card(312502)
  * （角色最多装备1件「圣遗物」）
  */
 export const ArchaicPetra = card(312602)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Geo))
@@ -237,6 +250,7 @@ export const ArchaicPetra = card(312602)
  * （角色最多装备1件「圣遗物」）
  */
 export const DeepwoodMemories = card(312702)
+  .since("v3.3.0")
   .costSame(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state) && e.canDeductCostOfType(DiceType.Dendro))
@@ -254,6 +268,7 @@ export const DeepwoodMemories = card(312702)
  * （角色最多装备1件「圣遗物」）
  */
 export const AdventurersBandana = card(312001)
+  .since("v3.3.0")
   .costSame(1)
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("normal"))
@@ -269,6 +284,7 @@ export const AdventurersBandana = card(312001)
  * （角色最多装备1件「圣遗物」）
  */
 export const LuckyDogsSilverCirclet = card(312002)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("elemental"))
@@ -284,6 +300,7 @@ export const LuckyDogsSilverCirclet = card(312002)
  * （角色最多装备1件「圣遗物」）
  */
 export const TravelingDoctorsHandkerchief = card(312003)
+  .since("v3.3.0")
   .costSame(1)
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("burst"))
@@ -299,6 +316,7 @@ export const TravelingDoctorsHandkerchief = card(312003)
  * （角色最多装备1件「圣遗物」）
  */
 export const GamblersEarrings = card(312004)
+  .since("v3.3.0")
   .costSame(1)
   .artifact()
   .on("defeated", (c, e) => c.self.master().isActive() && !c.of(e.target).isMine())
@@ -315,6 +333,7 @@ export const GamblersEarrings = card(312004)
  * （角色最多装备1件「圣遗物」）
  */
 export const InstructorsCap = card(312005)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("dealDamage", (c, e) => e.getReaction())
@@ -332,6 +351,7 @@ export const InstructorsCap = card(312005)
  * （角色最多装备1件「圣遗物」）
  */
 export const ExilesCirclet = card(312006)
+  .since("v3.3.0")
   .costVoid(2)
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("burst"))
@@ -347,6 +367,7 @@ export const ExilesCirclet = card(312006)
  * （角色最多装备1件「圣遗物」）
  */
 export const OrnateKabuto = card(312007)
+  .since("v3.5.0")
   .costSame(1)
   .artifact()
   .on("useSkill", (c, e) => e.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
@@ -363,6 +384,7 @@ export const OrnateKabuto = card(312007)
  * （角色最多装备1件「圣遗物」）
  */
 export const EmblemOfSeveredFate = card(312008)
+  .since("v3.7.0")
   .costSame(2)
   .artifact()
   .on("useSkill", (c, e) => e.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
@@ -391,6 +413,7 @@ export const UnmovableMountain = status(301201)
  * （角色最多装备1件「圣遗物」）
  */
 export const GeneralsAncientHelm = card(312009)
+  .since("v3.5.0")
   .costSame(2)
   .artifact()
   .on("actionPhase")
@@ -406,6 +429,7 @@ export const GeneralsAncientHelm = card(312009)
  * （角色最多装备1件「圣遗物」）
  */
 export const TenacityOfTheMillelith = card(312010)
+  .since("v3.7.0")
   .costSame(3)
   .artifact()
   .on("actionPhase")
@@ -425,6 +449,7 @@ export const TenacityOfTheMillelith = card(312010)
  * （角色最多装备1件「圣遗物」）
  */
 export const ThunderingPoise = card(312011)
+  .since("v3.7.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "normal"))
@@ -453,6 +478,7 @@ const VermillionHereafterEffect = status(301203)
  * （角色最多装备1件「圣遗物」）
  */
 export const VermillionHereafter = card(312012)
+  .since("v3.7.0")
   .costVoid(3)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "normal"))
@@ -470,6 +496,7 @@ export const VermillionHereafter = card(312012)
  * （角色最多装备1件「圣遗物」）
  */
 export const CapriciousVisage = card(312013)
+  .since("v3.7.0")
   .costVoid(2)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
@@ -486,6 +513,7 @@ export const CapriciousVisage = card(312013)
  * （角色最多装备1件「圣遗物」）
  */
 export const ShimenawasReminiscence = card(312014)
+  .since("v3.7.0")
   .costVoid(3)
   .artifact()
   .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
@@ -507,6 +535,7 @@ export const ShimenawasReminiscence = card(312014)
  * 【此卡含描述变量】
  */
 export const CrownOfWatatsumi = card(312015)
+  .since("v4.1.0")
   .costSame(1)
   .artifact()
   .variable("healedPts", 0, { visible: false })
@@ -540,6 +569,7 @@ export const CrownOfWatatsumi = card(312015)
  * 【此卡含描述变量】
  */
 export const OceanhuedClam = card(312016)
+  .since("v4.2.0")
   .costVoid(3)
   .artifact()
   .variable("healedPts", 0, { visible: false })
@@ -573,6 +603,7 @@ export const OceanhuedClam = card(312016)
  * （角色最多装备1件「圣遗物」）
  */
 export const ShadowOfTheSandKing = card(312017)
+  .since("v4.2.0")
   .costSame(1)
   .artifact()
   .on("enter")
@@ -592,6 +623,7 @@ export const ShadowOfTheSandKing = card(312017)
  * （角色最多装备1件「圣遗物」）
  */
 export const GildedDreams = card(312018)
+  .since("v4.3.0")
   .costSame(3)
   .artifact()
   .on("enter")
@@ -618,6 +650,7 @@ export const GildedDreams = card(312018)
  * （角色最多装备1件「圣遗物」）
  */
 export const FlowingRings = card(312019)
+  .since("v4.3.0")
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usagePerRound(1)
@@ -633,6 +666,7 @@ export const FlowingRings = card(312019)
  * （角色最多装备1件「圣遗物」）
  */
 export const EchoesOfAnOffering = card(312020)
+  .since("v4.3.0")
   .costSame(2)
   .artifact()
   .on("useSkill", (c, e) => e.isSkillType("normal"))
@@ -653,6 +687,7 @@ export const EchoesOfAnOffering = card(312020)
  * （角色最多装备1件「圣遗物」）
  */
 export const HeartOfKhvarenasBrilliance = card(312021)
+  .since("v4.3.0")
   .artifact()
   .on("damaged", (c) => c.self.master().isActive())
   .usagePerRound(1)
@@ -667,6 +702,7 @@ export const HeartOfKhvarenasBrilliance = card(312021)
  * （角色最多装备1件「圣遗物」）
  */
 export const VourukashasGlow = card(312022)
+  .since("v4.3.0")
   .costSame(1)
   .artifact()
   .variable("shouldHeal", 0)
@@ -689,6 +725,7 @@ export const VourukashasGlow = card(312022)
  * （角色最多装备1件「圣遗物」）
  */
 export const VeteransVisage = card(312023)
+  .since("v4.4.0")
   .costVoid(2)
   .artifact()
   .variable("triggered", 0)
@@ -715,6 +752,7 @@ export const VeteransVisage = card(312023)
  * （角色最多装备1件「圣遗物」）
  */
 export const GoldenTroupesReward = card(312025)
+  .since("v4.5.0")
   .artifact()
   .variable("reward", 0)
   .on("endPhase", (c) => !c.self.master().isActive())
@@ -738,6 +776,7 @@ export const GoldenTroupesReward = card(312025)
  * （角色最多装备1件「圣遗物」）
  */
 export const AmethystCrown = card(312027)
+  .since("v4.6.0")
   .costSame(1)
   .artifact()
   .variable("generatedCount", 0, { visible: false })
@@ -771,6 +810,7 @@ export const AmethystCrown = card(312027)
  * （角色最多装备1件「圣遗物」）
  */
 export const MarechausseeHunter = card(312024)
+  .since("v4.7.0")
   .costVoid(3)
   .artifact()
   .variable("count", 0)
@@ -795,6 +835,7 @@ export const MarechausseeHunter = card(312024)
  * （角色最多装备1件「圣遗物」）
  */
 export const GoldenTroupe = card(312026)
+  .since("v4.7.0")
   .costSame(2)
   .artifact()
   .variable("reward", 0)
@@ -819,6 +860,7 @@ export const GoldenTroupe = card(312026)
  * （角色最多装备1件「圣遗物」）
  */
 export const FlowerOfParadiseLost = card(312028)
+  .since("v4.7.0")
   .costSame(2)
   .artifact()
   .variable("crystal", 0)

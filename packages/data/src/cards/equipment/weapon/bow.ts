@@ -23,6 +23,7 @@ import { DiceType, card, combatStatus, status } from "@gi-tcg/core/builder";
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const RavenBow = card(311201)
+  .since("v3.3.0")
   .costSame(2)
   .weapon("bow")
   .on("modifySkillDamage")
@@ -38,6 +39,7 @@ export const RavenBow = card(311201)
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const SacrificialBow = card(311202)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("bow")
   .on("modifySkillDamage")
@@ -58,6 +60,7 @@ export const SacrificialBow = card(311202)
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const SkywardHarp = card(311203)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("bow")
   .on("modifySkillDamage")
@@ -76,6 +79,7 @@ export const SkywardHarp = card(311203)
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const AmosBow = card(311204)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("bow")
   .on("modifySkillDamage")
@@ -107,6 +111,7 @@ const MillennialMovementFarewellSong = combatStatus(301102)
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const ElegyForTheEnd = card(311205)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("bow")
   .on("modifySkillDamage")
@@ -136,6 +141,7 @@ export const KingsSquireStatus = status(301103)
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const KingsSquire = card(311206)
+  .since("v4.0.0")
   .costSame(3)
   .weapon("bow")
   .on("modifySkillDamage")
@@ -153,6 +159,7 @@ export const KingsSquire = card(311206)
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
 export const EndOfTheLine = card(311207)
+  .since("v4.7.0")
   .costSame(2)
   .weapon("bow")
   .variable("fishing", 0)

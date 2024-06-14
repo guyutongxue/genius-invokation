@@ -130,6 +130,7 @@ export const RaidenShogun = character(1407)
  * （牌组中包含雷电将军，才能加入牌组）
  */
 export const WishesUnnumbered = card(214071)
+  .since("v3.7.0")
   .costElectro(4)
   .costEnergy(2)
   .talent(RaidenShogun)

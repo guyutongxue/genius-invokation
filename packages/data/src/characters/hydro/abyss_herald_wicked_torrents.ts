@@ -201,6 +201,7 @@ export const AbyssHeraldWickedTorrents = character(2203)
  * （牌组中包含深渊使徒·激流，才能加入牌组）
  */
 export const SurgingUndercurrent = card(222031)
+  .since("v4.6.0")
   .costHydro(1)
   .talent(AbyssHeraldWickedTorrents, "none")
   .on("enter")

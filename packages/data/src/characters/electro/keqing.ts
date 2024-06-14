@@ -137,6 +137,7 @@ export const LightningStiletto = card(114031)
  * （牌组中包含刻晴，才能加入牌组）
  */
 export const ThunderingPenance = card(214031)
+  .since("v3.3.0")
   .costElectro(3)
   .talent(Keqing)
   .on("enter")

@@ -110,6 +110,7 @@ export const KamisatoAyato = character(1206)
  * （牌组中包含神里绫人，才能加入牌组）
  */
 export const KyoukaFuushi = card(212061)
+  .since("v3.6.0")
   .costHydro(3)
   .talent(KamisatoAyato)
   .on("enter")

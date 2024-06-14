@@ -121,6 +121,7 @@ export const Kirara = character(1707)
  * （牌组中包含绮良良，才能加入牌组）
  */
 export const CountlessSightsToSee = card(217071)
+  .since("v4.5.0")
   .costDendro(3)
   .talent(Kirara)
   .on("enter")

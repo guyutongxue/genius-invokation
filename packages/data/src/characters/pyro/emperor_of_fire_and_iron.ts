@@ -179,6 +179,7 @@ export const EmperorOfFireAndIron = character(2304)
  * （牌组中包含铁甲熔火帝皇，才能加入牌组）
  */
 export const MoltenMail = card(223041)
+  .since("v4.6.0")
   .costPyro(1)
   .talent(EmperorOfFireAndIron, "none")
   .on("enter")

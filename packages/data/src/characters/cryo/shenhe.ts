@@ -136,6 +136,7 @@ export const Shenhe = character(1107)
  * （牌组中包含申鹤，才能加入牌组）
  */
 export const MysticalAbandon = card(211071)
+  .since("v3.7.0")
   .costCryo(3)
   .talent(Shenhe)
   .on("enter")

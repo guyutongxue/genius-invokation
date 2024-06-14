@@ -111,6 +111,7 @@ export const ConsecratedScorpion = character(2405)
  * （牌组中包含圣骸毒蝎，才能加入牌组）
  */
 export const FatalFulmination = card(224051)
+  .since("v4.7.0")
   .costElectro(1)
   .talent(ConsecratedScorpion, "none")
   .on("enter")

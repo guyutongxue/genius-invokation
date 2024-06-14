@@ -107,6 +107,7 @@ export const Gorou = character(1606)
  * （牌组中包含五郎，才能加入牌组）
  */
 export const RushingHoundSwiftAsTheWind = card(216061)
+  .since("v4.3.0")
   .costGeo(3)
   .talent(Gorou)
   .on("enter")

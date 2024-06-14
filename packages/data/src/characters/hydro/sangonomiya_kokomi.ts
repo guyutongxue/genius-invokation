@@ -126,6 +126,7 @@ export const SangonomiyaKokomi = character(1205)
  * （牌组中包含珊瑚宫心海，才能加入牌组）
  */
 export const TamakushiCasket = card(212051)
+  .since("v3.5.0")
   .costHydro(3)
   .costEnergy(2)
   .talent(SangonomiyaKokomi)

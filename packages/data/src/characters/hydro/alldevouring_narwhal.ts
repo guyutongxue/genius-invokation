@@ -244,6 +244,7 @@ export const AlldevouringNarwhal = character(2204)
  * （牌组中包含吞星之鲸，才能加入牌组）
  */
 export const LightlessFeeding = card(222041)
+  .since("v4.7.0")
   .costHydro(4)
   .talent(AlldevouringNarwhal)
   .on("enter")

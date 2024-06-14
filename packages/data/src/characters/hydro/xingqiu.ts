@@ -124,6 +124,7 @@ export const Xingqiu = character(1202)
  * （牌组中包含行秋，才能加入牌组）
  */
 export const TheScentRemained = card(212021)
+  .since("v3.3.0")
   .costHydro(3)
   .talent(Xingqiu)
   .on("enter")

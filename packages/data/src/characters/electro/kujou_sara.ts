@@ -119,6 +119,7 @@ export const KujouSara = character(1406)
  * （牌组中包含九条裟罗，才能加入牌组）
  */
 export const SinOfPride = card(214061)
+  .since("v3.5.0")
   .costElectro(3)
   .talent(KujouSara)
   .on("enter")

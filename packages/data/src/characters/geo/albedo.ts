@@ -95,6 +95,7 @@ export const Albedo = character(1604)
  * （牌组中包含阿贝多，才能加入牌组）
  */
 export const DescentOfDivinity = card(216041)
+  .since("v4.0.0")
   .costGeo(3)
   .talent(Albedo)
   .on("enter")

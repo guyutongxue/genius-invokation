@@ -105,6 +105,7 @@ export const Collei = character(1701)
  * （牌组中包含柯莱，才能加入牌组）
  */
 export const FloralSidewinder = card(217011)
+  .since("v3.3.0")
   .costDendro(4)
   .talent(Collei)
   .on("enter")

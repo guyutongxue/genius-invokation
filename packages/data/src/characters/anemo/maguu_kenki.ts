@@ -129,6 +129,7 @@ export const MaguuKenki = character(2501)
  * （牌组中包含魔偶剑鬼，才能加入牌组）
  */
 export const TranscendentAutomaton = card(225011)
+  .since("v3.3.0")
   .costAnemo(3)
   .talent(MaguuKenki)
   .on("enter")

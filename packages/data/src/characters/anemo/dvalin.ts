@@ -170,6 +170,7 @@ export const Dvalin = character(2502)
  * （牌组中包含特瓦林，才能加入牌组）
  */
 export const RendingVortex = card(225021)
+  .since("v4.3.0")
   .costAnemo(3)
   .talent(Dvalin)
   .on("enter")

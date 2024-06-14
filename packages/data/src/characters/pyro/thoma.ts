@@ -122,6 +122,7 @@ export const Thoma = character(1311)
  * （牌组中包含托马，才能加入牌组）
  */
 export const ASubordinatesSkills = card(213111)
+  .since("v4.4.0")
   .costPyro(3)
   .costEnergy(2)
   .talent(Thoma)

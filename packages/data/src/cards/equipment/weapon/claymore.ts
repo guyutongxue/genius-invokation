@@ -23,6 +23,7 @@ import { card, combatStatus, status } from "@gi-tcg/core/builder";
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const WhiteIronGreatsword = card(311301)
+  .since("v3.3.0")
   .costSame(2)
   .weapon("claymore")
   .on("modifySkillDamage")
@@ -38,6 +39,7 @@ export const WhiteIronGreatsword = card(311301)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const SacrificialGreatsword = card(311302)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("claymore")
   .on("modifySkillDamage")
@@ -58,6 +60,7 @@ export const SacrificialGreatsword = card(311302)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const WolfsGravestone = card(311303)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("claymore")
   .on("modifySkillDamage")
@@ -79,6 +82,7 @@ export const WolfsGravestone = card(311303)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const SkywardPride = card(311304)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("claymore")
   .on("modifySkillDamage")
@@ -107,6 +111,7 @@ const RebelliousShield = combatStatus(121013)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const TheBell = card(311305)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("claymore")
   .on("modifySkillDamage")
@@ -149,6 +154,7 @@ const DesertWatchOffensiveDefense = status(301106)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const BeaconOfTheReedSea = card(311306)
+  .since("v4.3.0")
   .costSame(3)
   .weapon("claymore")
   .on("modifySkillDamage")
@@ -182,6 +188,7 @@ export const ForestRegaliaInEffect = status(301109)
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const ForestRegalia = card(311307)
+  .since("v4.7.0")
   .costVoid(3)
   .weapon("claymore")
   .on("modifySkillDamage")

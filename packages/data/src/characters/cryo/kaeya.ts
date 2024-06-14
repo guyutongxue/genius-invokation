@@ -89,6 +89,7 @@ export const Kaeya = character(1103)
  * （牌组中包含凯亚，才能加入牌组）
  */
 export const ColdbloodedStrike = card(211031)
+  .since("v3.3.0")
   .costCryo(4)
   .talent(Kaeya)
   .on("enter")

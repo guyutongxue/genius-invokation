@@ -164,6 +164,7 @@ export const Wriothesley = character(1111)
  * （牌组中包含莱欧斯利，才能加入牌组）
  */
 export const TerrorForTheEvildoers = card(211111)
+  .since("v4.7.0")
   .costCryo(1)
   .costVoid(2)
   .talent(Wriothesley)

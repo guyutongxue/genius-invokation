@@ -93,6 +93,7 @@ export const Barbara = character(1201)
  * （牌组中包含芭芭拉，才能加入牌组）
  */
 export const GloriousSeason = card(212011)
+  .since("v3.3.0")
   .costHydro(3)
   .talent(Barbara)
   .on("enter")

@@ -111,6 +111,7 @@ export const Charlotte = character(1110)
  * （牌组中包含夏洛蒂，才能加入牌组）
  */
 export const ASummationOfInterest = card(211101)
+  .since("v4.5.0")
   .costCryo(3)
   .talent(Charlotte)
   .on("enter")

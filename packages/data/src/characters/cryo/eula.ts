@@ -126,6 +126,7 @@ export const Eula = character(1106)
  * （牌组中包含优菈，才能加入牌组）
  */
 export const WellspringOfWarlust = card(211061)
+  .since("v3.5.0")
   .costCryo(3)
   .costEnergy(2)
   .talent(Eula)

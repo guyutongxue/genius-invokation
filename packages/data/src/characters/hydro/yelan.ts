@@ -126,6 +126,7 @@ export const Yelan = character(1209)
  * （牌组中包含夜兰，才能加入牌组）
  */
 export const TurnControl = card(212091)
+  .since("v4.3.0")
   .costHydro(3)
   .talent(Yelan)
   .on("enter")

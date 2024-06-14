@@ -132,6 +132,7 @@ export const FatuiPyroAgent = character(2301)
  * （牌组中包含愚人众·火之债务处理人，才能加入牌组）
  */
 export const PaidInFull = card(223011)
+  .since("v3.3.0")
   .costPyro(3)
   .talent(FatuiPyroAgent)
   .on("enter")

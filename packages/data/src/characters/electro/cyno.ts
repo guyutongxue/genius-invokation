@@ -127,6 +127,7 @@ export const Cyno = character(1404)
  * （牌组中包含赛诺，才能加入牌组）
  */
 export const FeatherfallJudgment = card(214041)
+  .since("v3.3.0")
   .costElectro(3)
   .talent(Cyno)
   .on("enter")

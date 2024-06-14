@@ -125,6 +125,7 @@ export const Zhongli = character(1603)
  * （牌组中包含钟离，才能加入牌组）
  */
 export const DominanceOfEarth = card(216031)
+  .since("v3.7.0")
   .costGeo(5)
   .talent(Zhongli)
   .on("enter")

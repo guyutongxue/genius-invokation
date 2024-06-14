@@ -96,6 +96,7 @@ export const Jean = character(1502)
  * （牌组中包含琴，才能加入牌组）
  */
 export const LandsOfDandelion = card(215021)
+  .since("v3.3.0")
   .costAnemo(4)
   .costEnergy(2)
   .talent(Jean)

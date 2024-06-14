@@ -114,6 +114,7 @@ export const HuTao = character(1307)
  * （牌组中包含胡桃，才能加入牌组）
  */
 export const SanguineRouge = card(213071)
+  .since("v3.7.0")
   .costPyro(2)
   .talent(HuTao)
   .on("enter")

@@ -111,6 +111,7 @@ export const Lisa = character(1409)
  * （牌组中包含丽莎，才能加入牌组）
  */
 export const PulsatingWitch = card(214091)
+  .since("v4.0.0")
   .costElectro(1)
   .talent(Lisa, "none")
   .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)

@@ -95,6 +95,7 @@ export const Amber = character(1304)
  * （牌组中包含安柏，才能加入牌组）
  */
 export const BunnyTriggered = card(213041)
+  .since("v3.7.0")
   .costPyro(3)
   .talent(Amber)
   .on("enter")

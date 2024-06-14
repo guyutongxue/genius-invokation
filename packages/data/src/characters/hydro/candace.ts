@@ -174,6 +174,7 @@ export const Candace = character(1207)
  * （牌组中包含坎蒂丝，才能加入牌组）
  */
 export const TheOverflow = card(212071)
+  .since("v3.8.0")
   .costHydro(3)
   .costEnergy(2)
   .talent(Candace)

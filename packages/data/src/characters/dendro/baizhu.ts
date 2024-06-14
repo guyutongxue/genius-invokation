@@ -131,6 +131,7 @@ export const Baizhu = character(1705)
  * （牌组中包含白术，才能加入牌组）
  */
 export const AllThingsAreOfTheEarth = card(217051)
+  .since("v4.2.0")
   .costDendro(4)
   .costEnergy(2)
   .talent(Baizhu)

@@ -71,7 +71,7 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playCost);
   return `export const ${pascalCase(card.englishName)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
-  .since("${newVersion}")
+  .since("${newVersion}.0")
   // TODO
   .done();`;
 }

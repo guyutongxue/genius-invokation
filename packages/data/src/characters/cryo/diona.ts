@@ -117,6 +117,7 @@ export const Diona = character(1102)
  * （牌组中包含迪奥娜，才能加入牌组）
  */
 export const ShakenNotPurred = card(211021)
+  .since("v3.3.0")
   .costCryo(3)
   .talent(Diona)
   .on("enter")

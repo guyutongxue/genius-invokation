@@ -110,6 +110,7 @@ export const Xinyan = character(1312)
  * （牌组中包含辛焱，才能加入牌组）
  */
 export const RockinInAFlamingWorld = card(213121)
+  .since("v4.7.0")
   .costPyro(1)
   .costVoid(2)
   .talent(Xinyan)

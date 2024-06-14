@@ -149,6 +149,7 @@ export const CryoHypostasis = character(2103)
  * （牌组中包含无相之冰，才能加入牌组）
  */
 export const SternfrostPrism = card(221031)
+  .since("v4.4.0")
   .costCryo(1)
   .talent(CryoHypostasis, "active")
   .on("enter")

@@ -156,6 +156,7 @@ export const YunJin = character(1607)
  * （牌组中包含云堇，才能加入牌组）
  */
 export const DecorousHarmony = card(216071)
+  .since("v4.7.0")
   .costGeo(3)
   .costEnergy(2)
   .talent(YunJin)

@@ -23,6 +23,7 @@ import { DiceType, card, status } from "@gi-tcg/core/builder";
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const TravelersHandySword = card(311501)
+  .since("v3.3.0")
   .costSame(2)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -38,6 +39,7 @@ export const TravelersHandySword = card(311501)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const SacrificialSword = card(311502)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -58,6 +60,7 @@ export const SacrificialSword = card(311502)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const AquilaFavonia = card(311503)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -77,6 +80,7 @@ export const AquilaFavonia = card(311503)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const SkywardBlade = card(311504)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -95,6 +99,7 @@ export const SkywardBlade = card(311504)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const FavoniusSword = card(311505)
+  .since("v3.6.0")
   .costSame(3)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -113,6 +118,7 @@ export const FavoniusSword = card(311505)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const LightOfFoliarIncision = card(311506)
+  .since("v4.3.0")
   .costSame(3)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -145,6 +151,7 @@ export const SapwoodBladeStatus = status(301107)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const SapwoodBlade = card(311507)
+  .since("v4.4.0")
   .costVoid(3)
   .weapon("sword")
   .on("modifySkillDamage")
@@ -162,6 +169,7 @@ export const SapwoodBlade = card(311507)
  * （「单手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const SplendorOfTranquilWaters = card(311508)
+  .since("v4.7.0")
   .costSame(2)
   .weapon("sword")
   .variable("lake", 0)

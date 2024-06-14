@@ -178,6 +178,7 @@ export const LaSignora = character(2102)
  * （牌组中包含「女士」，才能加入牌组）
  */
 export const PainForPain = card(221021)
+  .since("v4.3.0")
   .costSame(3)
   .talent([LaSignora, CrimsonWitchOfEmbers], "active")
   .on("enter")

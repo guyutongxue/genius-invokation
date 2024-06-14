@@ -123,6 +123,7 @@ export const Xiao = character(1504)
  * （牌组中包含魈，才能加入牌组）
  */
 export const ConquerorOfEvilGuardianYaksha = card(215041)
+  .since("v3.7.0")
   .costAnemo(3)
   .costEnergy(2)
   .talent(Xiao)

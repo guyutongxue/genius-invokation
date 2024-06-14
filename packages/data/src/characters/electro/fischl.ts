@@ -112,6 +112,7 @@ export const Fischl = character(1401)
  * （牌组中包含菲谢尔，才能加入牌组）
  */
 export const StellarPredator = card(214011)
+  .since("v3.3.0")
   .costElectro(3)
   .talent(Fischl)
   .on("enter")

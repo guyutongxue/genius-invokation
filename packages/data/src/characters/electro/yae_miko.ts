@@ -127,6 +127,7 @@ export const YaeMiko = character(1408)
  * （牌组中包含八重神子，才能加入牌组）
  */
 export const TheShrinesSacredShade = card(214081)
+  .since("v3.7.0")
   .costElectro(3)
   .costEnergy(2)
   .talent(YaeMiko)

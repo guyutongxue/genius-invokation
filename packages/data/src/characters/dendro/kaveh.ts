@@ -144,6 +144,7 @@ export const Kaveh = character(1708)
  * （牌组中包含卡维，才能加入牌组）
  */
 export const TheArtOfBudgeting = card(217081)
+  .since("v4.7.0")
   .costDendro(3)
   .talent(Kaveh)
   .on("enter")

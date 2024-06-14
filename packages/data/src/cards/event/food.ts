@@ -24,6 +24,7 @@ import { Satiated } from "../../commons";
  * （每回合每个角色最多食用1次「料理」）
  */
 export const JueyunGuoba = card(333001)
+  .since("v3.3.0")
   .food()
   .toStatus("@targets.0", 303301)
   .oneDuration()
@@ -39,6 +40,7 @@ export const JueyunGuoba = card(333001)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const AdeptusTemptation = card(333002)
+  .since("v3.3.0")
   .costVoid(2)
   .food()
   .toStatus("@targets.0", 303302)
@@ -55,6 +57,7 @@ export const AdeptusTemptation = card(333002)
  * （每回合中每个角色最多食用1次「料理」）
  */
 export const LotusFlowerCrisp = card(333003)
+  .since("v3.3.0")
   .costSame(1)
   .food()
   .toStatus("@targets.0", 303303)
@@ -71,6 +74,7 @@ export const LotusFlowerCrisp = card(333003)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const NorthernSmokedChicken = card(333004)
+  .since("v3.3.0")
   .food()
   .toStatus("@targets.0", 303304)
   .oneDuration()
@@ -86,6 +90,7 @@ export const NorthernSmokedChicken = card(333004)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const SweetMadame = card(333005)
+  .since("v3.3.0")
   .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(1, "@targets.0")
   .done();
@@ -98,6 +103,7 @@ export const SweetMadame = card(333005)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const MondstadtHashBrown = card(333006)
+  .since("v3.3.0")
   .costSame(1)
   .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(2, "@targets.0")
@@ -111,6 +117,7 @@ export const MondstadtHashBrown = card(333006)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const MushroomPizza = card(333007)
+  .since("v3.3.0")
   .costSame(1)
   .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(1, "@targets.0")
@@ -128,6 +135,7 @@ export const MushroomPizza = card(333007)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const MintyMeatRolls = card(333008)
+  .since("v3.3.0")
   .costSame(1)
   .food()
   .toStatus("@targets.0", 303306)
@@ -155,6 +163,7 @@ export const ReviveOnCooldown = combatStatus(303307)
  * （每回合中，最多通过「料理」复苏1个角色，并且每个角色最多食用1次「料理」）
  */
 export const TeyvatFriedEgg = card(333009)
+  .since("v3.7.0")
   .costSame(2)
   .tags("food")
   .filter((c) => !c.$(`my combat status with definition id ${ReviveOnCooldown}`))
@@ -172,6 +181,7 @@ export const TeyvatFriedEgg = card(333009)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const SashimiPlatter = card(333010)
+  .since("v3.7.0")
   .costSame(1)
   .food()
   .toStatus("@targets.0", 303308)
@@ -188,6 +198,7 @@ export const SashimiPlatter = card(333010)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const TandooriRoastChicken = card(333011)
+  .since("v3.7.0")
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303309)
@@ -204,6 +215,7 @@ export const TandooriRoastChicken = card(333011)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const ButterCrab = card(333012)
+  .since("v3.7.0")
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303310)
@@ -220,6 +232,7 @@ export const ButterCrab = card(333012)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const FishAndChips = card(333013)
+  .since("v4.3.0")
   .costVoid(2)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303311)
@@ -236,6 +249,7 @@ export const FishAndChips = card(333013)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const MatsutakeMeatRolls = card(333014)
+  .since("v4.4.0")
   .costSame(2)
   .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(2, "@targets.0")
@@ -253,6 +267,7 @@ export const MatsutakeMeatRolls = card(333014)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const RainbowMacarons = card(333015)
+  .since("v4.6.0")
   .costVoid(2)
   .tags("food")
   .food()

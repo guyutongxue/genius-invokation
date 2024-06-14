@@ -190,6 +190,7 @@ export const Nahida = character(1703)
  * （牌组中包含纳西妲，才能加入牌组）
  */
 export const TheSeedOfStoredKnowledge = card(217031)
+  .since("v3.7.0")
   .costDendro(3)
   .costEnergy(2)
   .talent(Nahida)

@@ -116,6 +116,7 @@ export const Wanderer = character(1506)
  * （牌组中包含#REALNAME[ID(1)，才能加入牌组）
  */
 export const GalesOfReverie = card(215061)
+  .since("v4.1.0")
   .costAnemo(4)
   .talent(Wanderer)
   .on("enter")

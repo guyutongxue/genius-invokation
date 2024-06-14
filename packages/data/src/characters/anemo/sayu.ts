@@ -149,6 +149,7 @@ export const Sayu = character(1507)
  * （牌组中包含早柚，才能加入牌组）
  */
 export const SkivingNewAndImproved = card(215071)
+  .since("v4.4.0")
   .costAnemo(3)
   .talent(Sayu)
   .on("enter")

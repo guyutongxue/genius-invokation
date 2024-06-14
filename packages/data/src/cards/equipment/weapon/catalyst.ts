@@ -23,6 +23,7 @@ import { DamageType, DiceType, card, status } from "@gi-tcg/core/builder";
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const MagicGuide = card(311101)
+  .since("v3.3.0")
   .costSame(2)
   .weapon("catalyst")
   .on("modifySkillDamage")
@@ -38,6 +39,7 @@ export const MagicGuide = card(311101)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const SacrificialFragments = card(311102)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("catalyst")
   .on("modifySkillDamage")
@@ -58,6 +60,7 @@ export const SacrificialFragments = card(311102)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const SkywardAtlas = card(311103)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("catalyst")
   .on("modifySkillDamage")
@@ -76,6 +79,7 @@ export const SkywardAtlas = card(311103)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const AThousandFloatingDreams = card(311104)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("catalyst")
   .on("modifySkillDamage")
@@ -95,6 +99,7 @@ export const AThousandFloatingDreams = card(311104)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const FruitOfFulfillment = card(311105)
+  .since("v3.8.0")
   .costVoid(3)
   .weapon("catalyst")
   .on("modifySkillDamage")
@@ -112,6 +117,7 @@ export const FruitOfFulfillment = card(311105)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const LostPrayerToTheSacredWinds = card(311106)
+  .since("v4.3.0")
   .costSame(3)
   .weapon("catalyst")
   .variable("extraDamage", 0)
@@ -132,6 +138,7 @@ export const LostPrayerToTheSacredWinds = card(311106)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const TulaytullahsRemembrance = card(311107)
+  .since("v4.3.0")
   .costSame(3)
   .weapon("catalyst")
   .on("modifySkillDamage")
@@ -162,6 +169,7 @@ export const AeonWave = status(301108)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const TomeOfTheEternalFlow = card(311108)
+  .since("v4.5.0")
   .costSame(3)
   .weapon("catalyst")
   .variable("count", 0)
@@ -198,6 +206,7 @@ export const CashflowSupervisionInEffect = status(301111)
  * （「法器」角色才能装备。角色最多装备1件「武器」）
  */
 export const CashflowSupervision = card(311109)
+  .since("v4.7.0")
   .costSame(2)
   .weapon("catalyst")
   .on("damagedOrHealed")

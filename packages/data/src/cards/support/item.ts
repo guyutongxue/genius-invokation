@@ -22,6 +22,7 @@ import { DamageType, DiceType, card, combatStatus, extension, pair } from "@gi-t
  * 双方角色使用技能后：如果造成了元素伤害，此牌累积1个「质变进度」。如果此牌已累积3个「质变进度」，则弃置此牌并生成3个不同的基础元素骰。
  */
 export const ParametricTransformer = card(323001)
+  .since("v3.3.0")
   .costVoid(2)
   .support("item")
   .variable("progress", 0)
@@ -62,6 +63,7 @@ export const ParametricTransformer = card(323001)
  * 我方打出「料理」事件牌时：从牌组中随机抽取1张「料理」事件牌。（每回合1次）
  */
 export const Nre = card(323002)
+  .since("v3.3.0")
   .costSame(1)
   .support("item")
   .on("enter")
@@ -91,6 +93,7 @@ export const RedFeatherFanStatus = combatStatus(302303)
  * 我方切换角色后：本回合中，我方执行的下次「切换角色」行动视为「快速行动」而非「战斗行动」，并且少花费1个元素骰。（每回合1次）
  */
 export const RedFeatherFan = card(323003)
+  .since("v3.7.0")
   .costSame(2)
   .support("item")
   .on("switchActive")
@@ -105,6 +108,7 @@ export const RedFeatherFan = card(323003)
  * 我方角色使用技能后：此牌累积1个「寻宝线索」。如果此牌已累积3个「寻宝线索」，则弃置此牌并抓3张牌。
  */
 export const TreasureseekingSeelie = card(323004)
+  .since("v3.7.0")
   .costSame(1)
   .support("item")
   .variable("clue", 0)
@@ -126,6 +130,7 @@ export const TreasureseekingSeelie = card(323004)
  * 可用次数：2
  */
 export const SeedDispensary = card(323005)
+  .since("v4.3.0")
   .support("item")
   .on("deductDiceCard", (c, e) => e.action.card.definition.onPlay.requiredCost.length >= 2 && e.action.card.definition.type === "support")
   .usagePerRound(1)
@@ -149,6 +154,7 @@ const CardPlayedExtension = extension(323006, { played: pair(new Set<number>()) 
  * 可用次数：2
  */
 export const MementoLens = card(323006)
+  .since("v4.3.0")
   .costSame(1)
   .support("item")
   .associateExtension(CardPlayedExtension)
@@ -178,6 +184,7 @@ export const MementoLens = card(323006)
  * 【此卡含描述变量】
  */
 export const LumenstoneAdjuvant = card(323007)
+  .since("v4.5.0")
   .costSame(2)
   .support("item")
   .variable("playedCard", 0, { visible: false })
@@ -201,6 +208,7 @@ export const LumenstoneAdjuvant = card(323007)
  * 我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。
  */
 export const Kusava = card(323008)
+  .since("v4.7.0")
   .support("item")
   .variable("memory", 0)
   .variable("cardPlayed", 0, { visible: false })

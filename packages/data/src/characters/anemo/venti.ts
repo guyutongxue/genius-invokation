@@ -138,6 +138,7 @@ export const Venti = character(1503)
  * （牌组中包含温迪，才能加入牌组）
  */
 export const EmbraceOfWinds = card(215031)
+  .since("v3.7.0")
   .costAnemo(3)
   .talent(Venti)
   .on("enter")

@@ -120,6 +120,7 @@ export const JadeplumeTerrorshroom = character(2701)
  * （牌组中包含翠翎恐蕈，才能加入牌组）
  */
 export const ProliferatingSpores = card(227011)
+  .since("v3.3.0")
   .costDendro(3)
   .talent(JadeplumeTerrorshroom)
   .on("enter")

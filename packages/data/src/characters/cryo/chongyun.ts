@@ -121,6 +121,7 @@ export const Chongyun = character(1104)
  * （牌组中包含重云，才能加入牌组）
  */
 export const SteadyBreathing = card(211041)
+  .since("v3.3.0")
   .costCryo(3)
   .talent(Chongyun)
   .on("enter")

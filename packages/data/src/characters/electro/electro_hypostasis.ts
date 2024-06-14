@@ -181,6 +181,7 @@ export const ElectroHypostasis = character(2401)
  * （牌组中包含无相之雷，才能加入牌组）
  */
 export const AbsorbingPrism = card(224011)
+  .since("v3.7.0")
   .costElectro(2)
   .eventTalent(ElectroHypostasis)
   .heal(3, "my active")

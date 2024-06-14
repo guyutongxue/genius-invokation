@@ -104,6 +104,7 @@ export const Xiangling = character(1302)
  * （牌组中包含香菱，才能加入牌组）
  */
 export const Crossfire = card(213021)
+  .since("v3.3.0")
   .costPyro(3)
   .talent(Xiangling)
   .on("enter")

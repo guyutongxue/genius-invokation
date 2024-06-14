@@ -160,6 +160,7 @@ export const Faruzan = character(1509)
  * （牌组中包含珐露珊，才能加入牌组）
  */
 export const TheWondrousPathOfTruth = card(215091)
+  .since("v4.6.0")
   .costAnemo(3)
   .costEnergy(2)
   .talent(Faruzan)

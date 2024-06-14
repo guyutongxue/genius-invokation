@@ -117,6 +117,7 @@ export const Alhaitham = character(1706)
  * （牌组中包含艾尔海森，才能加入牌组）
  */
 export const Structuration = card(217061)
+  .since("v4.3.0")
   .costDendro(3)
   .costEnergy(2)
   .talent(Alhaitham)

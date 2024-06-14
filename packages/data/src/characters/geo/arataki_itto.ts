@@ -146,6 +146,7 @@ export const AratakiItto = character(1605)
  * （牌组中包含荒泷一斗，才能加入牌组）
  */
 export const AratakiIchiban = card(216051)
+  .since("v3.6.0")
   .costGeo(1)
   .costVoid(2)
   .talent(AratakiItto)

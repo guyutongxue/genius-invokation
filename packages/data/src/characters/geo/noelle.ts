@@ -110,6 +110,7 @@ export const Noelle = character(1602)
  * （牌组中包含诺艾尔，才能加入牌组）
  */
 export const IGotYourBack = card(216021)
+  .since("v3.3.0")
   .costGeo(3)
   .talent(Noelle)
   .on("enter")

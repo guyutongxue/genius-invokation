@@ -23,6 +23,7 @@ import { DiceType, card, status } from "@gi-tcg/core/builder";
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const WhiteTassel = card(311401)
+  .since("v3.3.0")
   .costSame(2)
   .weapon("pole")
   .on("modifySkillDamage")
@@ -48,6 +49,7 @@ export const LithicGuard = status(301101)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const LithicSpear = card(311402)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("pole")
   .on("modifySkillDamage")
@@ -74,6 +76,7 @@ export const LithicSpear = card(311402)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const SkywardSpine = card(311403)
+  .since("v3.3.0")
   .costSame(3)
   .weapon("pole")
   .on("modifySkillDamage")
@@ -93,6 +96,7 @@ export const SkywardSpine = card(311403)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const VortexVanquisher = card(311404)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("pole")
   .on("modifySkillDamage")
@@ -120,6 +124,7 @@ export const VortexVanquisher = card(311404)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const EngulfingLightning = card(311405)
+  .since("v3.7.0")
   .costSame(3)
   .weapon("pole")
   .on("modifySkillDamage")
@@ -151,6 +156,7 @@ export const MoonpiercerStatus = status(301104)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const Moonpiercer = card(311406)
+  .since("v4.1.0")
   .costSame(3)
   .weapon("pole")
   .on("modifySkillDamage")
@@ -168,6 +174,7 @@ export const Moonpiercer = card(311406)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const PrimordialJadeWingedspear = card(311407)
+  .since("v4.3.0")
   .costSame(3)
   .weapon("pole")
   .variable("extraDamage", 1)
@@ -190,6 +197,7 @@ export const PrimordialJadeWingedspear = card(311407)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const RightfulReward = card(311408)
+  .since("v4.6.0")
   .costSame(2)
   .weapon("pole")
   .variable("justice", 0)

@@ -91,6 +91,7 @@ export const Razor = character(1402)
  * （牌组中包含雷泽，才能加入牌组）
  */
 export const Awakening = card(214021)
+  .since("v3.3.0")
   .costElectro(3)
   .talent(Razor)
   .on("enter")

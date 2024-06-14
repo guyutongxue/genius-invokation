@@ -128,6 +128,7 @@ export const Lynette = character(1508)
  * （牌组中包含琳妮特，才能加入牌组）
  */
 export const AColdBladeLikeAShadow = card(215081)
+  .since("v4.3.0")
   .costAnemo(3)
   .talent(Lynette)
   .on("enter")

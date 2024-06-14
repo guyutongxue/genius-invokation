@@ -125,6 +125,7 @@ export const FatuiCryoCicinMage = character(2101)
  * （牌组中包含愚人众·冰萤术士，才能加入牌组）
  */
 export const CicinsColdGlare = card(221011)
+  .since("v3.7.0")
   .costCryo(3)
   .talent(FatuiCryoCicinMage)
   .on("enter")

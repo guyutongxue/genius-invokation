@@ -145,6 +145,7 @@ export const Beidou = character(1405)
  * （牌组中包含北斗，才能加入牌组）
  */
 export const LightningStorm = card(214051)
+  .since("v3.4.0")
   .costElectro(3)
   .talent(Beidou)
   .on("enter")

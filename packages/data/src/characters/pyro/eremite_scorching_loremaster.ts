@@ -205,6 +205,7 @@ export const EremiteScorchingLoremaster = character(2303)
  * （牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）
  */
 export const Scorpocalypse = card(223031)
+  .since("v4.3.0")
   .costPyro(3)
   .costEnergy(2)
   .talent(EremiteScorchingLoremaster)

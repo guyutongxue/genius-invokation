@@ -113,6 +113,7 @@ export const Qiqi = character(1108)
  * （牌组中包含七七，才能加入牌组）
  */
 export const RiteOfResurrection = card(211081)
+  .since("v4.0.0")
   .costCryo(4)
   .costEnergy(3)
   .talent(Qiqi)

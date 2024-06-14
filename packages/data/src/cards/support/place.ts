@@ -24,6 +24,7 @@ import { ForbiddenKnowledge } from "../event/other";
  * 可用次数：2
  */
 export const LiyueHarborWharf = card(321001)
+  .since("v3.3.0")
   .costSame(2)
   .support("place")
   .on("endPhase")
@@ -39,6 +40,7 @@ export const LiyueHarborWharf = card(321001)
  * 投掷阶段：获得额外一次重投机会。
  */
 export const KnightsOfFavoniusLibrary = card(321002)
+  .since("v3.3.0")
   .support("place")
   .on("enter")
   .reroll(1)
@@ -54,6 +56,7 @@ export const KnightsOfFavoniusLibrary = card(321002)
  * 行动阶段开始时：如果我方手牌数量不多于3，则弃置此牌，生成1个万能元素。
  */
 export const JadeChamber = card(321003)
+  .since("v3.3.0")
   .support("place")
   .on("roll")
   .do((c, e) => {
@@ -71,6 +74,7 @@ export const JadeChamber = card(321003)
  * 我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）
  */
 export const DawnWinery = card(321004)
+  .since("v3.3.0")
   .costSame(2)
   .support("place")
   .on("deductDiceSwitch")
@@ -86,6 +90,7 @@ export const DawnWinery = card(321004)
  * 可用次数：2
  */
 export const WangshuInn = card(321005)
+  .since("v3.3.0")
   .costSame(2)
   .support("place")
   .on("endPhase")
@@ -101,6 +106,7 @@ export const WangshuInn = card(321005)
  * 可用次数：2
  */
 export const FavoniusCathedral = card(321006)
+  .since("v3.3.0")
   .costSame(2)
   .support("place")
   .on("endPhase")
@@ -115,6 +121,7 @@ export const FavoniusCathedral = card(321006)
  * 行动阶段开始时：如果我方的元素骰包含5种不同的元素，则生成1个万能元素。
  */
 export const Tenshukaku = card(321007)
+  .since("v3.7.0")
   .costSame(2)
   .support("place")
   .on("actionPhase", (c) => new Set(c.player.dice).size >= 5)
@@ -129,6 +136,7 @@ export const Tenshukaku = card(321007)
  * 可用次数：3
  */
 export const GrandNarukamiShrine = card(321008)
+  .since("v3.6.0")
   .costSame(2)
   .support("place")
   .on("enter")
@@ -146,6 +154,7 @@ export const GrandNarukamiShrine = card(321008)
  * 可用次数：2
  */
 export const SangonomiyaShrine = card(321009)
+  .since("v3.7.0")
   .costSame(2)
   .support("place")
   .on("endPhase")
@@ -160,6 +169,7 @@ export const SangonomiyaShrine = card(321009)
  * 我方打出「天赋」牌或我方角色使用技能时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）
  */
 export const SumeruCity = card(321010)
+  .since("v3.7.0")
   .costSame(2)
   .support("place")
   .on("deductDice", (c, e) =>
@@ -177,6 +187,7 @@ export const SumeruCity = card(321010)
  * 行动阶段开始时：拿回此牌所收集的元素骰。
  */
 export const Vanarana = card(321011)
+  .since("v3.7.0")
   .support("place")
   .variable("count", 0)
   .variable("d1", 0, { visible: false })
@@ -208,6 +219,7 @@ export const Vanarana = card(321011)
  * 可用次数：3
  */
 export const ChinjuForest = card(321012)
+  .since("v3.7.0")
   .costSame(1)
   .support("place")
   .on("actionPhase", (c) => !c.isMyTurn())
@@ -225,6 +237,7 @@ export const ChinjuForest = card(321012)
  * 可用次数：2
  */
 export const GoldenHouse = card(321013)
+  .since("v4.0.0")
   .support("place")
   .on("deductDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
@@ -242,6 +255,7 @@ export const GoldenHouse = card(321013)
  * 可用次数：3
  */
 export const GandharvaVille = card(321014)
+  .since("v4.1.0")
   .costSame(1)
   .support("place")
   .on("beforeAction", (c) => c.player.dice.length === 0)
@@ -258,6 +272,7 @@ export const GandharvaVille = card(321014)
  * 可用次数：3
  */
 export const StormterrorsLair = card(321015)
+  .since("v4.2.0")
   .costSame(2)
   .support("place")
   .on("enter")
@@ -279,6 +294,7 @@ export const StormterrorsLair = card(321015)
  * 可用次数：2
  */
 export const WeepingWillowOfTheLake = card(321016)
+  .since("v4.3.0")
   .costSame(1)
   .support("place")
   .on("endPhase", (c) => c.player.hands.length <= 2)
@@ -294,6 +310,7 @@ export const WeepingWillowOfTheLake = card(321016)
  * 可用次数：3
  */
 export const OperaEpiclese = card(321017)
+  .since("v4.3.0")
   .costSame(1)
   .support("place")
   .on("beforeAction", (c) => {
@@ -334,6 +351,7 @@ export const StrictProhibited = combatStatus(301018)
  * 行动阶段开始时：如果此牌已有4点「禁令」，则消耗4点，在对方场上生成严格禁令。（本回合中打出的1张事件牌无效）
  */
 export const FortressOfMeropide = card(321018)
+  .since("v4.5.0")
   .costSame(1)
   .support("place")
   .variable("forbidden", 0)
@@ -369,6 +387,7 @@ export const DistantStorm = status(301019)
  * 持续回合：2
  */
 export const SeiraiIsland = card(321019)
+  .since("v4.6.0")
   .costSame(1)
   .support("place")
   .duration(2)
@@ -400,6 +419,7 @@ export const TheMausoleumOfKingDeshretInEffect = combatStatus(301022)
  * 对方累积抓4张牌后：弃置此牌，在对方牌库顶生成2张禁忌知识。然后直到本回合结束前，对方每抓1张牌，就立刻生成1张禁忌知识，随机地置入对方牌库中。
  */
 export const TheMausoleumOfKingDeshret = card(321020)
+  .since("v4.7.0")
   .costSame(1)
   .support("place")
   .variable("drawnCardCount", 0)
@@ -421,6 +441,7 @@ export const TheMausoleumOfKingDeshret = card(321020)
  * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。
  */
 export const CentralLaboratoryRuins = card(321021)
+  .since("v4.7.0")
   .costSame(1)
   .support("place")
   .variable("progress", 0)

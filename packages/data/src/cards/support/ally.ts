@@ -24,6 +24,7 @@ import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
  * 可用次数：2
  */
 export const Paimon = card(322001)
+  .since("v3.3.0")
   .costSame(3)
   .support("ally")
   .on("actionPhase")
@@ -38,6 +39,7 @@ export const Paimon = card(322001)
  * 我方执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。（每回合1次）
  */
 export const Katheryne = card(322002)
+  .since("v3.3.0")
   .costSame(1)
   .support("ally")
   .on("beforeFastSwitch")
@@ -54,6 +56,7 @@ export const Katheryne = card(322002)
  * 打出「圣遗物」手牌时：如可能，则支付等同于「圣遗物」总费用数量的「合成材料」，以免费装备此「圣遗物」。（每回合1次）
  */
 export const Timaeus = card(322003)
+  .since("v3.3.0")
   .costSame(2)
   .support("ally")
   .variable("material", 2)
@@ -80,6 +83,7 @@ export const Timaeus = card(322003)
  * 打出「武器」手牌时：如可能，则支付等同于「武器」总费用数量的「锻造原胚」，以免费装备此「武器」。（每回合1次）
  */
 export const Wagner = card(322004)
+  .since("v3.3.0")
   .costSame(2)
   .support("ally")
   .variable("material", 2)
@@ -111,6 +115,7 @@ export const Wagner = card(322004)
  * 打出「料理」事件牌后：从牌组中随机抽取1张「料理」事件牌。（整场牌局限制1次）
  */
 export const ChefMao = card(322005)
+  .since("v3.3.0")
   .costSame(1)
   .support("ally")
   .on("playCard", (c, e) => e.hasCardTag("food"))
@@ -128,6 +133,7 @@ export const ChefMao = card(322005)
  * 打出「场地」支援牌时：少花费2个元素骰。（每回合1次）
  */
 export const Tubby = card(322006)
+  .since("v3.3.0")
   .costSame(2)
   .support("ally")
   .on("deductDiceCard", (c, e) => e.hasCardTag("place"))
@@ -141,6 +147,7 @@ export const Tubby = card(322006)
  * 每回合自动触发1次：此牌累积1只「鸽子」。如果此牌已累积3只「鸽子」，则弃置此牌，抓1张牌，并生成1点万能元素。
  */
 export const Timmie = card(322007)
+  .since("v3.3.0")
   .support("ally")
   .variable("pigeon", 1)
   .on("actionPhase")
@@ -162,6 +169,7 @@ export const Timmie = card(322007)
  * 行动阶段开始时：如果此牌已收集3个元素骰，则抓2张牌，生成2点万能元素，然后弃置此牌。
  */
 export const Liben = card(322008)
+  .since("v3.3.0")
   .support("ally")
   .variable("collected", 0)
   .on("endPhase")
@@ -186,6 +194,7 @@ export const Liben = card(322008)
  * 双方角色使用技能后：如果造成了物理伤害、穿透伤害或引发了元素反应，此牌累积1个「灵感」。如果此牌已累积3个「灵感」，则弃置此牌并抓2张牌。
  */
 export const ChangTheNinth = card(322009)
+  .since("v3.3.0")
   .support("ally")
   .variable("inspiration", 0)
   .variable("hasInspiration", 0, { visible: false })
@@ -227,6 +236,7 @@ export const ChangTheNinth = card(322009)
  * 我方角色使用本回合使用过的技能时：少花费1个元素骰。（每回合1次）
  */
 export const Ellin = card(322010)
+  .since("v3.3.0")
   .costSame(2)
   .support("ally")
   .on("deductDiceSkill", (c, e) => {
@@ -244,6 +254,7 @@ export const Ellin = card(322010)
  * 可用次数：2
  */
 export const IronTongueTian = card(322011)
+  .since("v3.3.0")
   .costVoid(2)
   .support("ally")
   .on("endPhase")
@@ -259,6 +270,7 @@ export const IronTongueTian = card(322011)
  * 可用次数：2
  */
 export const LiuSu = card(322012)
+  .since("v3.3.0")
   .costSame(1)
   .support("ally")
   .on("switchActive", (c, e) => c.of(e.switchInfo.to).energy === 0)
@@ -274,6 +286,7 @@ export const LiuSu = card(322012)
  * 我方打出「武器」或「圣遗物」装备时：如果「大祓」进度已达到3，则弃置此牌，使打出的卡牌少花费2个元素骰。
  */
 export const Hanachirusato = card(322013)
+  .since("v3.7.0")
   .support("ally")
   .variable("progress", 0)
   .on("dispose", (c, e) => e.entity.definition.type === "summon")
@@ -291,6 +304,7 @@ export const Hanachirusato = card(322013)
  * 行动阶段开始时：生成1点万能元素。然后，如果对方的支援区未满，则将此牌转移到对方的支援区。
  */
 export const KidKujirai = card(322014)
+  .since("v3.7.0")
   .support("ally")
   .on("actionPhase")
   .do((c) => {
@@ -311,6 +325,7 @@ export const KidKujirai = card(322014)
  * 打出「料理」事件牌时：少花费2个元素骰。（每回合1次）
  */
 export const Xudong = card(322015)
+  .since("v3.7.0")
   .costVoid(2)
   .support("ally")
   .on("deductDiceCard", (c, e) => e.hasCardTag("food"))
@@ -326,6 +341,7 @@ export const Xudong = card(322015)
  * 打出「伙伴」支援牌后：从牌组中随机抽取1张「伙伴」支援牌。（整场牌局限制1次）
  */
 export const Dunyarzad = card(322016)
+  .since("v3.7.0")
   .costSame(1)
   .support("ally")
   .on("deductDiceCard", (c, e) => e.hasCardTag("ally"))
@@ -343,6 +359,7 @@ export const Dunyarzad = card(322016)
  * 我方角色使用「元素战技」后：生成1个我方下一个后台角色类型的元素骰。（每回合1次）
  */
 export const Rana = card(322017)
+  .since("v3.7.0")
   .costSame(2)
   .support("ally")
   .on("useSkill", (c, e) => e.isSkillType("elemental"))
@@ -360,6 +377,7 @@ export const Rana = card(322017)
  * 我方打出「武器」手牌时：少花费1个元素骰；我方场上每有一个已装备「武器」的角色，就额外少花费1个元素骰。（每回合1次）
  */
 export const MasterZhang = card(322018)
+  .since("v3.8.0")
   .costSame(1)
   .support("ally")
   .on("deductDiceCard", (c, e) => e.hasCardTag("weapon"))
@@ -378,6 +396,7 @@ export const MasterZhang = card(322018)
  * 可用次数：3
  */
 export const Setaria = card(322019)
+  .since("v4.0.0")
   .costSame(1)
   .support("ally")
   .on("action", (c) => c.player.hands.length === 0)
@@ -393,6 +412,7 @@ export const Setaria = card(322019)
  * 我方打出「圣遗物」手牌时：少花费1个元素骰；如果我方场上已有2个已装备「圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）
  */
 export const YayoiNanatsuki = card(322020)
+  .since("v3.3.0")
   .costSame(1)
   .support("ally")
   .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
@@ -415,6 +435,7 @@ export const YayoiNanatsuki = card(322020)
  * 可用次数：3
  */
 export const Mamere: SupportHandle = card(322021)
+  .since("v4.3.0")
   .support("ally")
   .on("playCard", (c, e) => 
     e.card.definition.id !== Mamere &&
@@ -464,6 +485,7 @@ const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: 
  * 【此卡含描述变量】
  */
 export const Jeht = card(322022)
+  .since("v4.4.0")
   .costVoid(2)
   .associateExtension(DisposedSupportCountExtension)
   .replaceDescription("[GCG_TOKEN_COUNTER]", (_, { area }, ext) => ext.disposedSupportCount[area.who])
@@ -505,6 +527,7 @@ const DamageTypeCountExtension = extension(322023, { damages: pair(new Set<Damag
  * 【此卡含描述变量】
  */
 export const SilverAndMelus = card(322023)
+  .since("v4.4.0")
   .costSame(1)
   .associateExtension(DamageTypeCountExtension)
   .replaceDescription("[GCG_TOKEN_COUNTER]", (_, { area }, ext) => ext.damages[flip(area.who)].size)
@@ -552,6 +575,7 @@ export const TaromaruEnraged = summon(302201)
  * 我方打出2张太郎丸的存款后：弃置此牌，召唤愤怒的太郎丸。
  */
 export const Taroumaru = card(322024)
+  .since("v4.6.0")
   .costVoid(2)
   .support("ally")
   .variable("count", 0)
@@ -575,6 +599,7 @@ export const Taroumaru = card(322024)
  * 可用次数：2
  */
 export const TheWhiteGloveAndTheFisherman = card(322025)
+  .since("v4.6.0")
   .support("ally")
   .on("endPhase")
   .usage(2)
@@ -591,6 +616,7 @@ export const TheWhiteGloveAndTheFisherman = card(322025)
  * 结束阶段：如果此牌已累积2点「新闻线索」，则扣除2点，复制对方牌库顶的1张牌加入我方手牌。
  */
 export const SirArthur = card(322026)
+  .since("v4.7.0")
   .support("ally")
   .variable("clue", 0)
   .on("disposeOrTuneCard")

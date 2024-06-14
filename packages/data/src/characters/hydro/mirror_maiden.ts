@@ -116,6 +116,7 @@ export const MirrorMaiden = character(2202)
  * （牌组中包含愚人众·藏镜仕女，才能加入牌组）
  */
 export const MirrorCage = card(222021)
+  .since("v3.3.0")
   .costHydro(3)
   .talent(MirrorMaiden)
   .on("enter")

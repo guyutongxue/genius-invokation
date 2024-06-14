@@ -129,6 +129,7 @@ export const Yoimiya = character(1305)
  * （牌组中包含宵宫，才能加入牌组）
  */
 export const NaganoharaMeteorSwarm = card(213051)
+  .since("v3.3.0")
   .costPyro(1)
   .talent(Yoimiya)
   .on("enter")

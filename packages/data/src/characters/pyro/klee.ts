@@ -126,6 +126,7 @@ export const Klee = character(1306)
  * （牌组中包含可莉，才能加入牌组）
  */
 export const PoundingSurprise = card(213061)
+  .since("v3.4.0")
   .costPyro(3)
   .talent(Klee)
   .on("enter")

@@ -109,6 +109,7 @@ export const Yanfei = character(1308)
  * （牌组中包含烟绯，才能加入牌组）
  */
 export const RightOfFinalInterpretation = card(213081)
+  .since("v3.8.0")
   .costPyro(1)
   .costVoid(2)
   .talent(Yanfei)

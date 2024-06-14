@@ -133,6 +133,7 @@ export const Nilou = character(1208)
  * （牌组中包含妮露，才能加入牌组）
  */
 export const TheStarrySkiesTheirFlowersRain = card(212081)
+  .since("v4.2.0")
   .costHydro(3)
   .talent(Nilou)
   .on("enter")

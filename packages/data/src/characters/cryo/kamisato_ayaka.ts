@@ -133,6 +133,7 @@ export const KamisatoAyaka = character(1105)
  * （牌组中包含神里绫华，才能加入牌组）
  */
 export const KantenSenmyouBlessing = card(211051)
+  .since("v3.3.0")
   .costCryo(2)
   .talent(KamisatoAyaka, "none")
   .on("deductDiceSwitch", (c, e) => e.action.to.id === c.self.master().id)

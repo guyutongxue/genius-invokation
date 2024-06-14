@@ -95,6 +95,7 @@ export const KukiShinobu = character(1411)
  * （牌组中包含久岐忍，才能加入牌组）
  */
 export const ToWardWeakness = card(214111)
+  .since("v4.6.0")
   .costElectro(3)
   .costEnergy(2)
   .talent(KukiShinobu)

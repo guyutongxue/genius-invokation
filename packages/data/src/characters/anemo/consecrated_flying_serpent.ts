@@ -145,6 +145,7 @@ export const ConsecratedFlyingSerpent = character(2503)
  * （牌组中包含圣骸飞蛇，才能加入牌组）
  */
 export const DeathlyCyclone = card(225031)
+  .since("v4.7.0")
   .costAnemo(1)
   .talent(ConsecratedFlyingSerpent, "none")
   .on("enter")

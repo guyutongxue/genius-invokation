@@ -122,6 +122,7 @@ export const StonehideLawachurl = character(2601)
  * （牌组中包含丘丘岩盔王，才能加入牌组）
  */
 export const StonehideReforged = card(226011)
+  .since("v3.3.0")
   .costGeo(4)
   .costEnergy(2)
   .talent(StonehideLawachurl)

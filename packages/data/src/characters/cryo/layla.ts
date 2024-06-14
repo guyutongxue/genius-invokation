@@ -128,6 +128,7 @@ export const Layla = character(1109)
  * （牌组中包含莱依拉，才能加入牌组）
  */
 export const LightsRemit = card(211091)
+  .since("v4.3.0")
   .costCryo(3)
   .talent(Layla)
   .on("enter")

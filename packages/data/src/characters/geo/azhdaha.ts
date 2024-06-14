@@ -279,6 +279,7 @@ export const AzhdahaElectro = character(6604)
  * （牌组中包含若陀龙王，才能加入牌组）
  */
 export const LunarCyclesUnending = card(226022)
+  .since("v4.3.0")
   .costSame(2)
   .eventTalent([Azhdaha, AzhdahaCryo, AzhdahaHydro, AzhdahaPyro, AzhdahaElectro])
   .characterStatus(StoneFacetsElementalCrystallization, "@master")

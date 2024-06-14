@@ -195,6 +195,7 @@ export const Tartaglia = character(1204)
  * （牌组中包含达达利亚，才能加入牌组）
  */
 export const AbyssalMayhemHydrospout = card(212041)
+  .since("v3.7.0")
   .costHydro(3)
   .talent(Tartaglia)
   .on("enter")

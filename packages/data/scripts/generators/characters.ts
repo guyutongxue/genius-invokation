@@ -69,7 +69,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       name: obj.name,
       description: description,
       code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${obj.id})
-  .since("${newVersion}")
+  .since("${newVersion}.0")
   // TODO
   .done();`,
     };
@@ -156,7 +156,7 @@ export async function generateCharacters() {
       name: ch.name,
       description: ch.storyText ?? "",
       code: `export const ${pascalCase(ch.englishName)} = character(${ch.id})
-  .since("${newVersion}")
+  .since("${newVersion}.0")
   .tags(${tagCode})
   .health(${ch.hp})
   .energy(${ch.maxEnergy})

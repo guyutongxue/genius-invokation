@@ -143,6 +143,7 @@ export const Lyney = character(1310)
  * （牌组中包含林尼，才能加入牌组）
  */
 export const ConclusiveOvation = card(213101)
+  .since("v4.3.0")
   .costPyro(3)
   .talent(Lyney)
   .on("enter")

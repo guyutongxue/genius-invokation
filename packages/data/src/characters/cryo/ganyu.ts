@@ -123,6 +123,7 @@ export const Ganyu = character(1101)
  * （牌组中包含甘雨，才能加入牌组）
  */
 export const UndividedHeart = card(211011)
+  .since("v3.3.0")
   .costCryo(5)
   .talent(Ganyu)
   .on("enter")

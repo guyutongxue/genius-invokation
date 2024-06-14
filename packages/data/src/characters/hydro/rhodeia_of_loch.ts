@@ -187,6 +187,7 @@ export const RhodeiaOfLoch = character(2201)
  * （牌组中包含纯水精灵·洛蒂娅，才能加入牌组）
  */
 export const StreamingSurge = card(222011)
+  .since("v3.3.0")
   .costHydro(4)
   .costEnergy(3)
   .talent(RhodeiaOfLoch)

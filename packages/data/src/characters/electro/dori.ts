@@ -136,6 +136,7 @@ export const Dori = character(1410)
  * （牌组中包含多莉，才能加入牌组）
  */
 export const DiscretionarySupplement = card(214101)
+  .since("v4.2.0")
   .costElectro(3)
   .costEnergy(2)
   .talent(Dori)

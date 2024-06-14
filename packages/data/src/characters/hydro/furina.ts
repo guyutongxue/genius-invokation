@@ -257,6 +257,7 @@ export const FurinaOusia = character(1212)
  * （牌组中包含芙宁娜，才能加入牌组）
  */
 export const HearMeLetUsRaiseTheChaliceOfLove = card(212111)
+  .since("v4.7.0")
   .costHydro(3)
   .talent([FurinaPneuma, FurinaOusia])
   .on("enter")

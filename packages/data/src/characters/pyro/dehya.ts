@@ -165,6 +165,7 @@ export const Dehya = character(1309)
  * （牌组中包含迪希雅，才能加入牌组）
  */
 export const StalwartAndTrue = card(213091)
+  .since("v4.1.0")
   .costPyro(4)
   .talent(Dehya)
   .on("enter")

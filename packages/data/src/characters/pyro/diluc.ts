@@ -93,6 +93,7 @@ export const Diluc = character(1301)
  * （牌组中包含迪卢克，才能加入牌组）
  */
 export const FlowingFlame = card(213011)
+  .since("v3.3.0")
   .costPyro(3)
   .talent(Diluc)
   .on("enter")

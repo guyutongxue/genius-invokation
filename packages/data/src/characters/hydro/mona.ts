@@ -118,6 +118,7 @@ export const Mona = character(1203)
  * （牌组中包含莫娜，才能加入牌组）
  */
 export const ProphecyOfSubmersion = card(212031)
+  .since("v3.3.0")
   .costHydro(3)
   .costEnergy(3)
   .talent(Mona)

@@ -132,6 +132,7 @@ export const Yaoyao = character(1704)
  * （牌组中包含瑶瑶，才能加入牌组）
  */
 export const Beneficent = card(217041)
+  .since("v4.1.0")
   .costDendro(3)
   .talent(Yaoyao)
   .on("enter")

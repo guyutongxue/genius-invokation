@@ -180,6 +180,7 @@ export const AbyssLectorFathomlessFlames = character(2302)
  * （牌组中包含深渊咏者·渊火，才能加入牌组）
  */
 export const EmbersRekindled = card(223021)
+  .since("v3.7.0")
   .costPyro(2)
   .talent(AbyssLectorFathomlessFlames, "none")
   .on("enter", (c) => c.self.master().getVariable("fieryRebirthTriggered"))

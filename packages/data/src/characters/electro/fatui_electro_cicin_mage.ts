@@ -166,6 +166,7 @@ export const FatuiElectroCicinMage = character(2404)
  * （牌组中包含愚人众·雷萤术士，才能加入牌组）
  */
 export const ElectroCicinsGleam = card(224041)
+  .since("v4.5.0")
   .costElectro(3)
   .talent(FatuiElectroCicinMage)
   .on("enter")

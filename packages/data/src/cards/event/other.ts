@@ -128,6 +128,7 @@ export const FatuiAmbusherElectrohammerVanguard = combatStatus(303219)
  * （牌组包含至少2个冰元素角色，才能加入牌组）
  */
 export const ElementalResonanceShatteringIce = card(331102)
+  .since("v3.3.0")
   .costCryo(1)
   .tags("resonance")
   .toStatus("my active", 303112)
@@ -144,6 +145,7 @@ export const ElementalResonanceShatteringIce = card(331102)
  * （牌组包含至少2个水元素角色，才能加入牌组）
  */
 export const ElementalResonanceSoothingWater = card(331202)
+  .since("v3.3.0")
   .costHydro(1)
   .tags("resonance")
   .heal(2, "my active")
@@ -158,6 +160,7 @@ export const ElementalResonanceSoothingWater = card(331202)
  * （牌组包含至少2个火元素角色，才能加入牌组）
  */
 export const ElementalResonanceFerventFlames = card(331302)
+  .since("v3.3.0")
   .costPyro(1)
   .tags("resonance")
   .toStatus("my active", 303132)
@@ -174,6 +177,7 @@ export const ElementalResonanceFerventFlames = card(331302)
  * （牌组包含至少2个雷元素角色，才能加入牌组）
  */
 export const ElementalResonanceHighVoltage = card(331402)
+  .since("v3.3.0")
   .costElectro(1)
   .tags("resonance")
   .gainEnergy(1, "my character with energy < maxEnergy limit 1")
@@ -187,6 +191,7 @@ export const ElementalResonanceHighVoltage = card(331402)
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
 export const ElementalResonanceImpetuousWinds = card(331502)
+  .since("v3.3.0")
   .costAnemo(1)
   .tags("resonance")
   .addTarget("my character")
@@ -202,6 +207,7 @@ export const ElementalResonanceImpetuousWinds = card(331502)
  * （牌组包含至少2个岩元素角色，才能加入牌组）
  */
 export const ElementalResonanceEnduringRock = card(331602)
+  .since("v3.3.0")
   .costGeo(1)
   .tags("resonance")
   .toCombatStatus(303162)
@@ -222,6 +228,7 @@ export const ElementalResonanceEnduringRock = card(331602)
  * （牌组包含至少2个草元素角色，才能加入牌组）
  */
 export const ElementalResonanceSprawlingGreenery = card(331702)
+  .since("v3.3.0")
   .costDendro(1)
   .tags("resonance")
   .do((c) => {
@@ -243,6 +250,7 @@ export const ElementalResonanceSprawlingGreenery = card(331702)
  * （牌组包含至少2个冰元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenIce = card(331101)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Cryo, 1)
   .done();
@@ -255,6 +263,7 @@ export const ElementalResonanceWovenIce = card(331101)
  * （牌组包含至少2个水元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenWaters = card(331201)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Hydro, 1)
   .done();
@@ -267,6 +276,7 @@ export const ElementalResonanceWovenWaters = card(331201)
  * （牌组包含至少2个火元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenFlames = card(331301)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Pyro, 1)
   .done();
@@ -279,6 +289,7 @@ export const ElementalResonanceWovenFlames = card(331301)
  * （牌组包含至少2个雷元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenThunder = card(331401)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Electro, 1)
   .done();
@@ -291,6 +302,7 @@ export const ElementalResonanceWovenThunder = card(331401)
  * （牌组包含至少2个风元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenWinds = card(331501)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Anemo, 1)
   .done();
@@ -303,6 +315,7 @@ export const ElementalResonanceWovenWinds = card(331501)
  * （牌组包含至少2个岩元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenStone = card(331601)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Geo, 1)
   .done();
@@ -315,6 +328,7 @@ export const ElementalResonanceWovenStone = card(331601)
  * （牌组包含至少2个草元素角色，才能加入牌组）
  */
 export const ElementalResonanceWovenWeeds = card(331701)
+  .since("v3.3.0")
   .tags("resonance")
   .generateDice(DiceType.Dendro, 1)
   .done();
@@ -327,6 +341,7 @@ export const ElementalResonanceWovenWeeds = card(331701)
  * （牌组包含至少2个「蒙德」角色，才能加入牌组）
  */
 export const WindAndFreedom = card(331801)
+  .since("v3.7.0")
   .toCombatStatus(303181)
   .oneDuration()
   .on("useSkill")
@@ -341,6 +356,7 @@ export const WindAndFreedom = card(331801)
  * （牌组包含至少2个「璃月」角色，才能加入牌组）
  */
 export const StoneAndContracts = card(331802)
+  .since("v3.7.0")
   .costVoid(3)
   .toCombatStatus(303182)
   .once("actionPhase")
@@ -356,6 +372,7 @@ export const StoneAndContracts = card(331802)
  * （牌组包含至少2个「稻妻」角色，才能加入牌组）
  */
 export const ThunderAndEternity = card(331803)
+  .since("v3.7.0")
   .do((c) => {
     const count = c.player.dice.length;
     c.absorbDice("seq", count);
@@ -371,6 +388,7 @@ export const ThunderAndEternity = card(331803)
  * （牌组包含至少2个「须弥」角色，才能加入牌组）
  */
 export const NatureAndWisdom = card(331804)
+  .since("v3.7.0")
   .costSame(1)
   .drawCards(1)
   .switchCards()
@@ -384,6 +402,7 @@ export const NatureAndWisdom = card(331804)
  * （牌组包含至少2个「枫丹」角色，才能加入牌组）
  */
 export const WaterAndJustice = card(331805)
+  .since("v4.7.0")
   .costVoid(2)
   .do((c) => {
     const chs = c.$$("all my characters");
@@ -411,6 +430,7 @@ export const WaterAndJustice = card(331805)
  * 将所花费的元素骰转换为2个万能元素。
  */
 export const TheBestestTravelCompanion = card(332001)
+  .since("v3.3.0")
   .costVoid(2)
   .generateDice(DiceType.Omni, 2)
   .done();
@@ -422,6 +442,7 @@ export const TheBestestTravelCompanion = card(332001)
  * 我方下次执行「切换角色」行动时：少花费1个元素骰。
  */
 export const ChangingShifts = card(332002)
+  .since("v3.3.0")
   .toCombatStatus(303202)
   .once("deductDiceSwitch")
   .deductCost(DiceType.Omni, 1)
@@ -434,6 +455,7 @@ export const ChangingShifts = card(332002)
  * 选择任意元素骰重投，可重投2次。
  */
 export const TossUp = card(332003)
+  .since("v3.3.0")
   .reroll(2)
   .done();
 
@@ -444,6 +466,7 @@ export const TossUp = card(332003)
  * 抓2张牌。
  */
 export const Strategize = card(332004)
+  .since("v3.3.0")
   .costSame(1)
   .drawCards(2)
   .done();
@@ -465,6 +488,7 @@ export const IHaventLostYetCooldown = combatStatus(303205)
  * 本回合有我方角色被击倒，才能打出：生成1个万能元素，我方当前出战角色获得1点充能。（每回合中，最多只能打出1张「本大爷还没有输！」。）
  */
 export const IHaventLostYet = card(332005)
+  .since("v3.3.0")
   .filter((c) => c.player.hasDefeated && !c.$(`my combat status with definition id ${IHaventLostYetCooldown}`))
   .generateDice(DiceType.Omni, 1)
   .gainEnergy(1, "my active")
@@ -478,6 +502,7 @@ export const IHaventLostYet = card(332005)
  * 我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。
  */
 export const LeaveItToMe = card(332006)
+  .since("v3.3.0")
   .toCombatStatus(303206)
   .once("beforeFastSwitch")
   .setFastAction()
@@ -490,6 +515,7 @@ export const LeaveItToMe = card(332006)
  * 我方下一次使用技能后：将下一个我方后台角色切换到场上。
  */
 export const WhenTheCraneReturned = card(332007)
+  .since("v3.3.0")
   .costSame(1)
   .toCombatStatus(303207)
   .once("useSkill")
@@ -503,6 +529,7 @@ export const WhenTheCraneReturned = card(332007)
  * 我方当前出战角色获得1点充能。
  */
 export const Starsigns = card(332008)
+  .since("v3.3.0")
   .costVoid(2)
   .do((c) => c.$("my active character")!.gainEnergy(1))
   .done();
@@ -514,6 +541,7 @@ export const Starsigns = card(332008)
  * 从最多2个我方后台角色身上，转移1点充能到我方出战角色。
  */
 export const CalxsArts = card(332009)
+  .since("v3.3.0")
   .costSame(1)
   .do((c) => {
     const chs = c.$$("my standby characters limit 2");
@@ -532,6 +560,7 @@ export const CalxsArts = card(332009)
  * 将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。
  */
 export const MasterOfWeaponry = card(332010)
+  .since("v3.3.0")
   .addTarget("my character has equipment with tag (weapon)")
   .addTarget("my character with tag weapon of (@targets.0) and not @targets.0")
   .do((c, e) => {
@@ -554,6 +583,7 @@ export const MasterOfWeaponry = card(332010)
  * 将一个装备在我方角色的「圣遗物」装备牌，转移给另一个我方角色，并重置其效果的「每回合」次数限制。
  */
 export const BlessingOfTheDivineRelicsInstallation = card(332011)
+  .since("v3.3.0")
   .addTarget("my character has equipment with tag (artifact)")
   .addTarget("my character and not @targets.0")
   .do((c, e) => {
@@ -576,6 +606,7 @@ export const BlessingOfTheDivineRelicsInstallation = card(332011)
  * 选择一个我方「召唤物」，使其「可用次数」+1。
  */
 export const QuickKnit = card(332012)
+  .since("v3.3.0")
   .costSame(1)
   .addTarget("my summons")
   .do((c, e) => {
@@ -590,6 +621,7 @@ export const QuickKnit = card(332012)
  * 选择一个敌方「召唤物」，使其「可用次数」-2。
  */
 export const SendOff = card(332013)
+  .since("v3.3.0")
   .costSame(2)
   .addTarget("opp summon")
   .do((c, e) => {
@@ -604,6 +636,7 @@ export const SendOff = card(332013)
  * 消灭所有「召唤物」。（不分敌我！）
  */
 export const GuardiansOath = card(332014)
+  .since("v3.3.0")
   .costSame(4)
   .dispose("all summons")
   .done();
@@ -616,6 +649,7 @@ export const GuardiansOath = card(332014)
  * （牌组包含至少2个「魔物」角色，才能加入牌组）
  */
 export const AbyssalSummons = card(332015)
+  .since("v3.3.0")
   .costSame(2)
   .do((c) => {
     c.summon(
@@ -637,6 +671,7 @@ export const AbyssalSummons = card(332015)
  * （牌组包含至少2个「愚人众」角色，才能加入牌组）
  */
 export const FatuiConspiracy = card(332016)
+  .since("v3.7.0")
   .costSame(2)
   .do((c) => {
     c.combatStatus(
@@ -658,6 +693,7 @@ export const FatuiConspiracy = card(332016)
  * 战斗行动：切换到目标角色，然后该角色进行「普通攻击」。
  */
 export const PlungingStrike = card(332017)
+  .since("v3.7.0")
   .costSame(3)
   .tags("action")
   .addTarget("my characters")
@@ -681,6 +717,7 @@ export const PlungingStrike = card(332017)
  * 此次「普通攻击」为重击时：伤害额外+1。
  */
 export const HeavyStrike = card(332018)
+  .since("v3.7.0")
   .costSame(1)
   .toStatus("my active", 303220)
   .oneDuration()
@@ -697,6 +734,7 @@ export const HeavyStrike = card(332018)
  * 生成4个不同类型的基础元素骰。
  */
 export const TheLegendOfVennessa = card(332019)
+  .since("v3.7.0")
   .costSame(3)
   .generateDice("randomElement", 4)
   .done();
@@ -708,6 +746,7 @@ export const TheLegendOfVennessa = card(332019)
  * 手牌数小于4的牌手抓牌，直到手牌数各为4张。
  */
 export const FriendshipEternal = card(332020)
+  .since("v3.7.0")
   .costSame(2)
   .do((c) => {
     if (c.player.hands.length < 4) {
@@ -726,6 +765,7 @@ export const FriendshipEternal = card(332020)
  * 我方下次打出「武器」或「圣遗物」手牌时：少花费1个元素骰。
  */
 export const RhythmOfTheGreatDream = card(332021)
+  .since("v3.8.0")
   .toCombatStatus(302021)
   .once("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
   .deductCost(DiceType.Omni, 1)
@@ -739,6 +779,7 @@ export const RhythmOfTheGreatDream = card(332021)
  * 本回合中，我方下次打出「武器」手牌时：少花费2个元素骰。
  */
 export const WhereIsTheUnseenRazor = card(332022)
+  .since("v4.0.0")
   .addTarget("my character has equipment with tag (weapon)")
   .do((c, e) => {
     const { definition } = c.of(e.targets[0]).removeArtifact()!;
@@ -757,6 +798,7 @@ export const WhereIsTheUnseenRazor = card(332022)
  * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中一位牌手先宣布结束时，未宣布结束的牌手抓2张牌。
  */
 export const Pankration = card(332023)
+  .since("v4.1.0")
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
   .toCombatStatus(303223)
   .once("declareEnd")
@@ -778,6 +820,7 @@ export const Pankration = card(332023)
  * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
  */
 export const Lyresong = card(332024)
+  .since("v4.2.0")
   .addTarget("my character has equipment with tag (artifact)")
   .do((c, e) => {
     const { definition } = c.of(e.targets[0]).removeArtifact()!;
@@ -797,6 +840,7 @@ export const Lyresong = card(332024)
  * （角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）
  */
 export const TheBoarPrincess = card(332025)
+  .since("v4.3.0")
   .toCombatStatus(303225)
   .oneDuration()
   .on("dispose", (c, e) => e.entity.definition.type === "equipment")
@@ -811,6 +855,7 @@ export const TheBoarPrincess = card(332025)
  * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。
  */
 export const FallsAndFortune = card(332026)
+  .since("v4.3.0")
   .costSame(1)
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
   .toCombatStatus(303226)
@@ -827,6 +872,7 @@ export const FallsAndFortune = card(332026)
  * 目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。
  */
 export const FlickeringFourleafSigil = card(332027)
+  .since("v4.3.0")
   .addTarget("my characters")
   .toStatus("@targets.0", 303227)
   .on("endPhase")
@@ -841,6 +887,7 @@ export const FlickeringFourleafSigil = card(332027)
  * 我方打出原本费用不多于「备战度」的「武器」或「圣遗物」时：移除所有「备战度」，以免费打出该牌。
  */
 export const MachineAssemblyLine = card(332028)
+  .since("v4.4.0")
   .addTarget("my characters")
   .toStatus("@targets.0", 303228)
   .variable("readiness", 0)
@@ -863,6 +910,7 @@ export const MachineAssemblyLine = card(332028)
  * 本回合中，我方下次打出支援牌时：少花费1个元素骰。
  */
 export const SunyataFlower = card(332029)
+  .since("v4.4.0")
   .addTarget("my supports")
   .dispose("@targets.0")
   .do((c) => {
@@ -885,6 +933,7 @@ export const SunyataFlower = card(332029)
  * 对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。
  */
 export const ControlledDirectionalBlast = card(332030)
+  .since("v4.5.0")
   .costSame(1)
   .filter((c) => c.$$("opp summons or opp supports").length >= 4)
   .do((c) => {
@@ -946,6 +995,7 @@ export const UnderseaTreasure = card(303230)
  * 生成6张海底宝藏，随机地置入我方牌库中。
  */
 export const UnderwaterTreasureHunt = card(332031)
+  .since("v4.6.0")
   .costSame(2)
   .createPileCards(UnderseaTreasure, 6, "random")
   .done();
@@ -1030,6 +1080,7 @@ export const ForbiddenKnowledge = card(301020)
  * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。
  */
 export const CountdownToTheShow3 = card(332032)
+  .since("v4.7.0")
   .costSame(3)
   .do((c) => {
     const count = c.player.dice.length;

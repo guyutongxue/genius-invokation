@@ -23,6 +23,7 @@ import { DiceType, card } from "@gi-tcg/core/builder";
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const AncientCourtyard = card(330001)
+  .since("v3.8.0")
   .legend()
   .filter((c) => c.$("my character has equipment with tag (weapon) or my character has equipment with tag (artifact)"))
   .toCombatStatus(300001)
@@ -39,6 +40,7 @@ export const AncientCourtyard = card(330001)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const CovenantOfRock = card(330002)
+  .since("v3.8.0")
   .legend()
   .filter((c) => c.player.dice.length === 0)
   .generateDice("randomElement", 2)
@@ -52,6 +54,7 @@ export const CovenantOfRock = card(330002)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const JoyousCelebration = card(330003)
+  .since("v4.0.0")
   .legend()
   .filter((c) => [DiceType.Cryo, DiceType.Hydro, DiceType.Pyro, DiceType.Electro, DiceType.Dendro].includes(c.$("my active")!.element()))
   .do((c) => {
@@ -72,6 +75,7 @@ export const JoyousCelebration = card(330003)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const FreshWindOfFreedom = card(330004)
+  .since("v4.1.0")
   .legend()
   .toCombatStatus(300002)
   .oneDuration()
@@ -98,6 +102,7 @@ export const FreshWindOfFreedom = card(330004)
  * 【此卡含描述变量】
  */
 export const InEveryHouseAStove = card(330005)
+  .since("v4.2.0")
   .legend()
   .replaceDescription("[T]", (st) => st.roundNumber)
   .do((c) => {
@@ -123,6 +128,7 @@ export const InEveryHouseAStove = card(330005)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const PassingOfJudgment = card(330006)
+  .since("v4.3.0")
   .costSame(1)
   .legend()
   .toCombatStatus(300003, "opp")
@@ -140,6 +146,7 @@ export const PassingOfJudgment = card(330006)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const DayOfResistanceMomentOfShatteredDreams = card(330007)
+  .since("v4.5.0")
   .legend()
   .addTarget("my character")
   .toStatus("@targets.0", 300004)
@@ -157,6 +164,7 @@ export const DayOfResistanceMomentOfShatteredDreams = card(330007)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const ViciousAncientBattle = card(330008)
+  .since("v4.7.0")
   .legend()
   .do((c) => {
     c.$("opp active")!.loseEnergy(1);

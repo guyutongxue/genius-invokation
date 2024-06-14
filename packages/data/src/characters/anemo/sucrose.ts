@@ -115,6 +115,7 @@ export const Sucrose = character(1501)
  * （牌组中包含砂糖，才能加入牌组）
  */
 export const ChaoticEntropy = card(215011)
+  .since("v3.3.0")
   .costAnemo(3)
   .costEnergy(2)
   .talent(Sucrose)

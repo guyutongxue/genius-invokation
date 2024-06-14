@@ -159,6 +159,7 @@ export const Neuvillette = character(1210)
  * （牌组中包含那维莱特，才能加入牌组）
  */
 export const HeirToTheAncientSeasAuthority = card(212101)
+  .since("v4.5.0")
   .costHydro(1)
   .costVoid(2)
   .talent(Neuvillette)

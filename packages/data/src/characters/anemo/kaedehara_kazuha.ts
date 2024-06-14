@@ -254,6 +254,7 @@ export const KaedeharaKazuha = character(1505)
  * （牌组中包含枫原万叶，才能加入牌组）
  */
 export const PoeticsOfFuubutsu = card(215051)
+  .since("v3.8.0")
   .costAnemo(3)
   .talent(KaedeharaKazuha)
   .on("dealDamage", (c, e) => e.isSwirl())

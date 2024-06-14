@@ -112,6 +112,7 @@ export const Bennett = character(1303)
  * （牌组中包含班尼特，才能加入牌组）
  */
 export const GrandExpectation: EquipmentHandle = card(213031)
+  .since("v3.3.0")
   .costPyro(4)
   .costEnergy(2)
   .talent(Bennett)
