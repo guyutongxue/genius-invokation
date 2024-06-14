@@ -123,5 +123,6 @@ import "./characters/pyro/xiangling";
 import "./characters/pyro/xinyan";
 import "./characters/pyro/yanfei";
 import "./characters/pyro/yoimiya";
+import "./old_versions/v4.6.1";
 
 export { default } from "./end";

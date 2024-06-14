@@ -86,6 +86,30 @@ function register<C extends RegisterCategory>(
   value: DefinitionMap[C],
 ) {
   const store = getCurrentStore()[type];
+  if ("version" in value) {
+    const sameIdObjects = store.filter((obj) => obj.id === value.id);
+    if (
+      value.version.predicate === "since" &&
+      sameIdObjects.some(
+        (obj) => "version" in obj && obj.version.predicate === "since",
+      )
+    ) {
+      throw new GiTcgDataError(
+        `Duplicate since version definition for ${type} id ${value.id}`,
+      );
+    } else {
+      if (
+        sameIdObjects.some(
+          (obj) =>
+            "version" in obj && obj.version.version === value.version.version,
+        )
+      ) {
+        throw new GiTcgDataError(
+          `Duplicate until version definition for ${type} id ${value.id}`,
+        );
+      }
+    }
+  }
   store.push(value);
 }
 export function registerCharacter(value: CharacterDefinition) {

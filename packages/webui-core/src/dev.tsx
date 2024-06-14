@@ -23,14 +23,15 @@ import { Game, GameIO, PlayerConfig } from "@gi-tcg/core";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
-  characters: [1111, 1408, 2404],
+  characters: [1301, 1305, 2404],
   cards: [
+    330005, 213011, 213051,
     // 323007, 323007, 321018, 321018, 331702, 
     321017, 322022, 322024, 322011, 322011,
     331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
     332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
-    332019, 331803, 332003, 332007, 332022, 331801, 332011,
+    332019, 331803, 332003, 332007, 332022, 331801, 332011, 
   ],
   noShuffle: import.meta.env.DEV,
   alwaysOmni: import.meta.env.DEV,
@@ -57,7 +58,7 @@ function App() {
     players: [io0, io1],
   };
   const game = new Game({
-    data: data(),
+    data: data("v4.6.1"),
     io,
     playerConfigs: [playerConfig0, playerConfig1],
   });

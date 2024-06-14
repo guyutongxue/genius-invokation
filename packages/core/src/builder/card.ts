@@ -208,7 +208,9 @@ class CardBuilder<
         c.$("character and @targets.0")?.equip(this.cardId as EquipmentHandle);
       })
       .done();
-    return equipment(this.cardId);
+    const builder = equipment(this.cardId);
+    builder._versionInfo = this._versionInfo;
+    return builder;
   }
   weapon(type: WeaponCardTag) {
     return this.tags("weapon", type)
@@ -228,7 +230,9 @@ class CardBuilder<
       }
       c.createEntity("support", this.cardId as SupportHandle);
     }).done();
-    return support(this.cardId).tags(type);
+    const builder = support(this.cardId).tags(type);
+    builder._versionInfo = this._versionInfo;
+    return builder;
   }
 
   /**
@@ -243,7 +247,9 @@ class CardBuilder<
     this.do((c) => {
       c.combatStatus(id as CombatStatusHandle, where);
     }).done();
-    return combatStatus(id);
+    const builder = combatStatus(id);
+    builder._versionInfo = this._versionInfo;
+    return builder;
   }
   /**
    * 添加“打出后为某角色附着状态”的操作。
@@ -258,7 +264,9 @@ class CardBuilder<
     this.do((c) => {
       c.characterStatus(id as StatusHandle, target);
     }).done();
-    return status(id);
+    const builder = status(id);
+    builder._versionInfo = this._versionInfo;
+    return builder;
   }
 
   addTarget<Q extends TargetQuery>(
