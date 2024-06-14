@@ -15,9 +15,18 @@
 
 import { defineConfig, presetUno } from "unocss";
 import presetUna from "@una-ui/preset";
+import presetIcons from "@unocss/preset-icons";
 
 export default defineConfig({
-  presets: [presetUno(), presetUna({
-    primary: "yellow" as any
-  }) as any],
+  presets: [
+    presetUno(), 
+    presetIcons({
+      collections: {
+        mdi: () => import("@iconify-json/mdi").then((i) => i.icons)
+      }
+    }),
+    (<any>presetUna)({
+      primary: "yellow"
+    }),
+  ],
 });

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ConflictException, Injectable, type OnModuleInit } from "@nestjs/common";
+import { ConflictException, Injectable, UnauthorizedException, type OnModuleInit } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
 import { Prisma, type PrismaPromise, type User as UserModel } from "@prisma/client";
 import { deepEquals } from "bun";
@@ -87,6 +87,13 @@ export class UsersService implements OnModuleInit {
       },
       where: { id },
     });
+  }
+
+  async ensureAdmin(id: number) {
+    const user = await this.findById(id);
+    if (!user || user.rank !== 0) {
+      throw new UnauthorizedException(`Not admin`);
+    }
   }
 
   async create(email: string, password: string, { rank, code }: CreateUserOpt = {}) {

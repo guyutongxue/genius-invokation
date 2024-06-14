@@ -13,14 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { DbModule } from '../db/db.module';
 import { UsersController } from './users.controller';
-import { InvitationModule } from '../invitation/invitation.module';
 
 @Module({
-  imports: [DbModule, forwardRef(() => InvitationModule)],
+  imports: [DbModule],
   providers: [UsersService],
   exports: [UsersService],
   controllers: [UsersController],
