@@ -108,6 +108,7 @@ export const Raincutter = skill(12023)
  * 「怎么最近小说里的主角，都是些私塾里的学生…」
  */
 export const Xingqiu = character(1202)
+  .since("v3.3.0")
   .tags("hydro", "sword", "liyue")
   .health(10)
   .energy(2)

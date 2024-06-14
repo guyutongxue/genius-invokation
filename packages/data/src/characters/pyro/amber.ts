@@ -79,6 +79,7 @@ export const FieryRain = skill(13043)
  * 首先，要有坐上牌桌的勇气。
  */
 export const Amber = character(1304)
+  .since("v3.7.0")
   .tags("pyro", "bow", "mondstadt")
   .health(10)
   .energy(2)

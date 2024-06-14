@@ -102,6 +102,7 @@ export const IllusoryTorrent = skill(12034)
  * 无论胜负平弃，都是命当如此。
  */
 export const Mona = character(1203)
+  .since("v3.3.0")
   .tags("hydro", "catalyst", "mondstadt")
   .health(10)
   .energy(3)

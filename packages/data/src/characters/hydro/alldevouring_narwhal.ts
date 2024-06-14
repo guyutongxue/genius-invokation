@@ -228,6 +228,7 @@ export const InsatiableAppetite = skill(22044)
  * 或许宇宙渗入提瓦特的过程从未停止；也许更高的意志为它划定了边界是为了保护这个世界。
  */
 export const AlldevouringNarwhal = character(2204)
+  .since("v4.7.0")
   .tags("hydro", "monster")
   .health(5)
   .energy(2)

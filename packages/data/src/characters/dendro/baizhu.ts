@@ -115,6 +115,7 @@ export const HolisticRevivification = skill(17053)
  * 生老三千疾，何处可问医。
  */
 export const Baizhu = character(1705)
+  .since("v4.2.0")
   .tags("dendro", "catalyst", "liyue")
   .health(10)
   .energy(2)

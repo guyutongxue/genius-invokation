@@ -179,6 +179,7 @@ export const AddRiptideToNextCharacter = skill(12046)
  * 牌局亦为战场，能者方可争先。
  */
 export const Tartaglia = character(1204)
+  .since("v3.7.0")
   .tags("hydro", "bow", "fatui")
   .health(10)
   .energy(3)

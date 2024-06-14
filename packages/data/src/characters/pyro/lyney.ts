@@ -127,6 +127,7 @@ export const WondrousTrickMiracleParade = skill(13104)
  * 镜中捧花，赠予何人。
  */
 export const Lyney = character(1310)
+  .since("v4.3.0")
   .tags("pyro", "bow", "fontaine", "fatui", "ousia")
   .health(10)
   .energy(2)

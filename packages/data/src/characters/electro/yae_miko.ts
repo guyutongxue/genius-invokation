@@ -111,6 +111,7 @@ export const GreatSecretArtTenkoKenshin = skill(14083)
  * 「兼具智慧与美貌的八重神子大人」
  */
 export const YaeMiko = character(1408)
+  .since("v3.7.0")
   .tags("electro", "catalyst", "inazuma")
   .health(10)
   .energy(2)

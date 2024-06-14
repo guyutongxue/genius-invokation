@@ -154,6 +154,7 @@ export const CaelestinumFinaleTermini = skill(25024)
  * 「如此，你就会明白，这样的天空与大地，是值得为之奋战的。」
  */
 export const Dvalin = character(2502)
+  .since("v4.3.0")
   .tags("anemo", "monster")
   .health(10)
   .energy(2)

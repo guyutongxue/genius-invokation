@@ -115,6 +115,7 @@ export const StealthMaster = skill(23014)
  * 「死债不可免，活债更难逃…」
  */
 export const FatuiPyroAgent = character(2301)
+  .since("v3.3.0")
   .tags("pyro", "fatui")
   .health(9)
   .energy(2)

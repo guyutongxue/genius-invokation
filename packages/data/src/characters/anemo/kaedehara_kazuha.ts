@@ -238,6 +238,7 @@ export const ChihayaburuPassive = skill(15054)
  * 拾花鸟之一趣，照月风之长路。
  */
 export const KaedeharaKazuha = character(1505)
+  .since("v3.8.0")
   .tags("anemo", "sword", "inazuma")
   .health(10)
   .energy(2)

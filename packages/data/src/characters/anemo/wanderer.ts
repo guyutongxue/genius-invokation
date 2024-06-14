@@ -100,6 +100,7 @@ export const KyougenFiveCeremonialPlays = skill(15063)
  * 千般劫渡，不可得知。
  */
 export const Wanderer = character(1506)
+  .since("v4.1.0")
   .tags("anemo", "catalyst")
   .health(10)
   .energy(3)

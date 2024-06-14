@@ -77,6 +77,7 @@ export const Dawn = skill(13013)
  * 他的心是他最大的敌人。
  */
 export const Diluc = character(1301)
+  .since("v3.3.0")
   .tags("pyro", "claymore", "mondstadt")
   .health(10)
   .energy(3)

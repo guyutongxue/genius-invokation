@@ -114,6 +114,7 @@ export const ChakraDesiderata = skill(14074)
  * 鸣雷寂灭，浮世泡影。
  */
 export const RaidenShogun = character(1407)
+  .since("v3.7.0")
   .tags("electro", "pole", "inazuma")
   .health(10)
   .energy(2)

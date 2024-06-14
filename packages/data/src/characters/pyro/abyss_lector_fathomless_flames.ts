@@ -165,6 +165,7 @@ export const FieryRebirthSkill = skill(23028)
  * 章典示现，劝听箴言。
  */
 export const AbyssLectorFathomlessFlames = character(2302)
+  .since("v3.7.0")
   .tags("pyro", "monster")
   .health(6)
   .energy(2)

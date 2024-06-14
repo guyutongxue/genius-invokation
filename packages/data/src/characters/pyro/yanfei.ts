@@ -93,6 +93,7 @@ export const DoneDeal = skill(13083)
  * 不期修古，不法常可。
  */
 export const Yanfei = character(1308)
+  .since("v3.8.0")
   .tags("pyro", "catalyst", "liyue")
   .health(10)
   .energy(2)

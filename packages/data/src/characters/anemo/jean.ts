@@ -80,6 +80,7 @@ export const DandelionBreeze = skill(15023)
  * 在夺得最终的胜利之前，她总是认为自己做得还不够好。
  */
 export const Jean = character(1502)
+  .since("v3.3.0")
   .tags("anemo", "sword", "mondstadt")
   .health(10)
   .energy(3)

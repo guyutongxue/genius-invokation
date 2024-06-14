@@ -161,6 +161,7 @@ export const StoneFacets = skill(26025)
  * 枷锁的隐隐震响与龙祖低沉的怒吼，同记忆一般在山峦间回荡。
  */
 export const Azhdaha = character(2602)
+  .since("v4.3.0")
   .tags("geo", "monster")
   .health(10)
   .energy(2)

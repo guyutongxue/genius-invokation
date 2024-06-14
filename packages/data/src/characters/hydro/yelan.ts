@@ -110,6 +110,7 @@ export const Breakthrough = skill(12094)
  * 天地一渺渺，幽客自来去。
  */
 export const Yelan = character(1209)
+  .since("v4.3.0")
   .tags("hydro", "bow", "liyue")
   .health(10)
   .energy(3)

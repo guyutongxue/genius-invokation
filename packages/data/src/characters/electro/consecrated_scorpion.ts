@@ -96,6 +96,7 @@ export const ImmortalRemnantsElectro = skill(24054)
  * 因为啃噬伟大的生命体，而扭曲异变的毒蝎，操纵着险恶的轰雷。
  */
 export const ConsecratedScorpion = character(2405)
+  .since("v4.7.0")
   .tags("electro", "monster", "sacread")
   .health(10)
   .energy(2)

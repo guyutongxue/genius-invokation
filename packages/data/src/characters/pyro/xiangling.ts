@@ -88,6 +88,7 @@ export const Pyronado: SkillHandle = skill(13023)
  * 身为一个厨师，她几乎什么都做得到。
  */
 export const Xiangling = character(1302)
+  .since("v3.3.0")
   .tags("pyro", "pole", "liyue")
   .health(10)
   .energy(2)

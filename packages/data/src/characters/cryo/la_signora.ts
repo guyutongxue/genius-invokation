@@ -163,6 +163,7 @@ export const InfernosAwakening = skill(21025) // 定义为：当移除冰封的�
  * 但这也没什么所谓。因为她心中明白，自己早已被烈火吞没。
  */
 export const LaSignora = character(2102)
+  .since("v4.3.0")
   .tags("cryo", "fatui")
   .health(10)
   .energy(2)

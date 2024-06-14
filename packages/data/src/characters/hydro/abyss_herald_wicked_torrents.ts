@@ -186,6 +186,7 @@ export const WateryRebirth01 = skill(22038)
  * 断绝诸世，万物湮灭。
  */
 export const AbyssHeraldWickedTorrents = character(2203)
+  .since("v4.6.0")
   .tags("hydro", "monster")
   .health(6)
   .energy(2)

@@ -105,6 +105,7 @@ export const SecretArtSurpriseDispatch = skill(17073)
  * 歧尾骏足，通达万户。
  */
 export const Kirara = character(1707)
+  .since("v4.5.0")
   .tags("dendro", "sword", "inazuma")
   .health(10)
   .energy(2)

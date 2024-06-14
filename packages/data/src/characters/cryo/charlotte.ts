@@ -95,6 +95,7 @@ export const StillPhotoComprehensiveConfirmation = skill(11103)
  * 「真实至上，故事超群！」
  */
 export const Charlotte = character(1110)
+  .since("v4.5.0")
   .tags("cryo", "catalyst", "fontaine", "ousia")
   .health(10)
   .energy(2)

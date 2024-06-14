@@ -171,6 +171,7 @@ export const TideAndTorrent = skill(22014)
  * 「但，只要百川奔流，雨露不休，水就不会消失…」
  */
 export const RhodeiaOfLoch = character(2201)
+  .since("v3.3.0")
   .tags("hydro", "monster")
   .health(10)
   .energy(3)

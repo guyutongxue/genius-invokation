@@ -118,6 +118,7 @@ export const KamisatoArtSenho: PassiveSkillHandle = skill(11054)
  * 如霜凝华，如鹭在庭。
  */
 export const KamisatoAyaka = character(1105)
+  .since("v3.3.0")
   .tags("cryo", "sword", "inazuma")
   .health(10)
   .energy(3)

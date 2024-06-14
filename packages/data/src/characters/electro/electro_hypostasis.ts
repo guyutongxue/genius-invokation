@@ -167,6 +167,7 @@ export const ElectroCrystalCoreSkill = skill(24014)
  * 就算猜拳获胜，它一般也不会认输。
  */
 export const ElectroHypostasis = character(2401)
+  .since("v3.7.0")
   .tags("electro", "monster")
   .health(8)
   .energy(2)

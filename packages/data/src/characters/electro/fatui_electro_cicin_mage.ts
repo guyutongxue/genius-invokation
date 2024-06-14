@@ -150,6 +150,7 @@ export const ThunderingShield = skill(24043)
  * …正如雾虚草的气味会令雷萤迷醉，嗜虐的术士也贪恋着戏弄对手的快感…
  */
 export const FatuiElectroCicinMage = character(2404)
+  .since("v4.5.0")
   .tags("electro", "fatui")
   .health(10)
   .energy(2)

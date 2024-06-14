@@ -101,6 +101,7 @@ export const SignatureMix = skill(11023)
  * 用1%的力气调酒，99%的力气…拒绝失败。
  */
 export const Diona = character(1102)
+  .since("v3.3.0")
   .tags("cryo", "bow", "mondstadt")
   .health(10)
   .energy(3)

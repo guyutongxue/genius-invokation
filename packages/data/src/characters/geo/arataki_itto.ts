@@ -130,6 +130,7 @@ export const RoyalDescentBeholdIttoTheEvil = skill(16053)
  * 「荒泷卡牌游戏王中王一斗」
  */
 export const AratakiItto = character(1605)
+  .since("v3.6.0")
   .tags("geo", "claymore", "inazuma")
   .health(10)
   .energy(3)

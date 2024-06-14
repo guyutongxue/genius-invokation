@@ -200,6 +200,7 @@ export const ArkheSeatsSacredAndSecular = skill(12115)
  * 永世领唱，无尽圆舞。
  */
 export const FurinaPneuma = character(1211)
+  .since("v4.7.0")
   .tags("hydro", "sword", "fontaine", "pneuma")
   .health(10)
   .energy(2)

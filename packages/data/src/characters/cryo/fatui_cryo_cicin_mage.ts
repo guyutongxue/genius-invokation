@@ -109,6 +109,7 @@ export const BlizzardBranchBlossom = skill(21013)
  * 至少在雾虚草耗尽之前，冰萤不会离她而去。
  */
 export const FatuiCryoCicinMage = character(2101)
+  .since("v3.7.0")
   .tags("cryo", "fatui")
   .health(10)
   .energy(3)

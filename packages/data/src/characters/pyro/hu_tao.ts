@@ -98,6 +98,7 @@ export const SpiritSoother = skill(13073)
  * 「送走，全送走。」
  */
 export const HuTao = character(1307)
+  .since("v3.7.0")
   .tags("pyro", "pole", "liyue")
   .health(10)
   .energy(3)

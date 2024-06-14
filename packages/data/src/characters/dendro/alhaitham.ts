@@ -101,6 +101,7 @@ export const ParticularFieldFettersOfPhenomena = skill(17063)
  * 学识、思考及处事之道。
  */
 export const Alhaitham = character(1706)
+  .since("v4.3.0")
   .tags("dendro", "sword", "sumeru")
   .health(10)
   .energy(2)

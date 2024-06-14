@@ -107,6 +107,7 @@ export const CelestialShower = skill(11014)
  * 「既然是明早前要，那这份通稿，只要熬夜写完就好。」
  */
 export const Ganyu = character(1101)
+  .since("v3.3.0")
   .tags("cryo", "bow", "liyue")
   .health(10)
   .energy(3)

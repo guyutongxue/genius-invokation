@@ -129,6 +129,7 @@ export const Stormbreaker = skill(14053)
  * 「记住这一天，你差点赢了南十字船队老大的钱。」
  */
 export const Beidou = character(1405)
+  .since("v3.4.0")
   .tags("electro", "claymore", "liyue")
   .health(10)
   .energy(3)

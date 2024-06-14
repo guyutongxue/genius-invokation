@@ -122,6 +122,7 @@ export const WindsGrandOde = skill(15033)
  * 「要是没有吟游诗人，谁去把这些传唱？」
  */
 export const Venti = character(1503)
+  .since("v3.7.0")
   .tags("anemo", "bow", "mondstadt")
   .health(10)
   .energy(2)

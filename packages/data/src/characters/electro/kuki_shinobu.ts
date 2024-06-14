@@ -78,6 +78,7 @@ export const GyoeiNarukamiKariyamaRite = skill(14113)
  * 百业通才，鬼之副手。
  */
 export const KukiShinobu = character(1411)
+  .since("v4.6.0")
   .tags("electro", "sword", "inazuma")
   .health(10)
   .energy(2)

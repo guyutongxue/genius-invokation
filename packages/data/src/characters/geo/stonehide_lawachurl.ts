@@ -106,6 +106,7 @@ export const InfusedStonehide = skill(26014)
  * 绕道而行吧，因为前方是属于「王」的领域。
  */
 export const StonehideLawachurl = character(2601)
+  .since("v3.3.0")
   .tags("geo", "monster", "hilichurl")
   .health(8)
   .energy(2)

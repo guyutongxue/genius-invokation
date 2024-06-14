@@ -120,6 +120,7 @@ export const DivineMaidensDeliverance = skill(11073)
  * 红尘渺渺，因果烟消。
  */
 export const Shenhe = character(1107)
+  .since("v3.7.0")
   .tags("cryo", "pole", "liyue")
   .health(10)
   .energy(2)

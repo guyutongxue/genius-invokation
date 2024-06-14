@@ -130,6 +130,7 @@ export const SquallDrawCardsCounter = skill(25035)
  * 因为啃噬伟大的生命体，而扭曲异变的飞蛇，驾驭着凌厉的狂风。
  */
 export const ConsecratedFlyingSerpent = character(2503)
+  .since("v4.7.0")
   .tags("anemo", "monster", "sacread")
   .health(10)
   .energy(2)

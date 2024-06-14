@@ -96,6 +96,7 @@ export const FantasticVoyage = skill(13033)
  * 当你知道自己一定会输时，那你肯定也知道如何能赢。
  */
 export const Bennett = character(1303)
+  .since("v3.3.0")
   .tags("pyro", "sword", "mondstadt")
   .health(10)
   .energy(2)

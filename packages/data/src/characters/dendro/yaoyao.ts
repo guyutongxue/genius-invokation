@@ -116,6 +116,7 @@ export const MoonjadeDescent = skill(17043)
  * 玲珑玉质，身含仙骨。
  */
 export const Yaoyao = character(1704)
+  .since("v4.1.0")
   .tags("dendro", "pole", "liyue")
   .health(10)
   .energy(2)

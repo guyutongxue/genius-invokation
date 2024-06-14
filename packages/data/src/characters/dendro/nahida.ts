@@ -171,6 +171,7 @@ export const IllusoryHeart = skill(17034)
  * 白草净华，幽宫启蛰。
  */
 export const Nahida = character(1703)
+  .since("v3.7.0")
   .tags("dendro", "catalyst", "sumeru")
   .health(10)
   .energy(2)

@@ -139,6 +139,7 @@ export const LightningProbe = skill(24024)
  * 只要土地中的怨恨不消，那雷鸣也不会断绝吧。
  */
 export const ThunderManifestation = character(2402)
+  .since("v4.3.0")
   .tags("electro", "monster")
   .health(10)
   .energy(2)

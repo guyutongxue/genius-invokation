@@ -188,6 +188,7 @@ export const PyroScorpionGuardianStanceSkill01 = skill(23037)
  * 如今仍然能记起许多故事的人，是不会背叛流淌在体内的沙漠血脉的。
  */
 export const EremiteScorchingLoremaster = character(2303)
+  .since("v4.3.0")
   .tags("pyro", "eremite")
   .health(10)
   .energy(2)

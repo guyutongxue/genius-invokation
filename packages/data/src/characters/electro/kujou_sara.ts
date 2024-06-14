@@ -103,6 +103,7 @@ export const SubjugationKoukouSendou: SkillHandle = skill(14063)
  * 「此为，大义之举。」
  */
 export const KujouSara = character(1406)
+  .since("v3.5.0")
   .tags("electro", "bow", "inazuma")
   .health(10)
   .energy(2)

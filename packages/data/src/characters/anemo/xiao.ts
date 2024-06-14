@@ -107,6 +107,7 @@ export const BaneOfAllEvil: SkillHandle = skill(15043)
  * 护法夜叉，靖妖降魔。
  */
 export const Xiao = character(1504)
+  .since("v3.7.0")
   .tags("anemo", "pole", "liyue")
   .health(10)
   .energy(2)

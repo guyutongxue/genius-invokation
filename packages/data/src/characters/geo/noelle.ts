@@ -94,6 +94,7 @@ export const SweepingTime = skill(16023)
  * 整理牌桌这种事，真的可以交给她。
  */
 export const Noelle = character(1602)
+  .since("v3.3.0")
   .tags("geo", "claymore", "mondstadt")
   .health(10)
   .energy(2)

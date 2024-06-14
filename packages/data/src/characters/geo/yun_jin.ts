@@ -140,6 +140,7 @@ export const CountDisposeOrTune = skill(16075)
  * 红毹婵娟，庄谐并举。
  */
 export const YunJin = character(1607)
+  .since("v4.7.0")
   .tags("geo", "pole", "liyue")
   .health(10)
   .energy(2)

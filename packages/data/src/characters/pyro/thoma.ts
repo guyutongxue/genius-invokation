@@ -106,6 +106,7 @@ export const CrimsonOoyoroi: SkillHandle = skill(13113)
  * 渡来介者，赤袖丹心。
  */
 export const Thoma = character(1311)
+  .since("v4.4.0")
   .tags("pyro", "pole", "inazuma")
   .health(10)
   .energy(2)

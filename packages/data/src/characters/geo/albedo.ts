@@ -79,6 +79,7 @@ export const RiteOfProgenitureTectonicTide = skill(16043)
  * 黑土与白垩，赤成与黄金。
  */
 export const Albedo = character(1604)
+  .since("v4.0.0")
   .tags("geo", "sword", "mondstadt")
   .health(10)
   .energy(2)

@@ -158,6 +158,7 @@ export const SacredRiteWagtailsTide: SkillHandle = skill(12073)
  * 赤沙浮金，恪誓戍御。
  */
 export const Candace = character(1207)
+  .since("v3.8.0")
   .tags("hydro", "pole", "sumeru")
   .health(10)
   .energy(2)

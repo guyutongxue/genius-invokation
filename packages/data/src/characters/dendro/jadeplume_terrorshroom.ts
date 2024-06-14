@@ -104,6 +104,7 @@ export const RadicalVitality = skill(27014)
  * 悄声静听，可以听到幽林之中，蕈类王者巡视领土的脚步…
  */
 export const JadeplumeTerrorshroom = character(2701)
+  .since("v3.3.0")
   .tags("dendro", "monster")
   .health(10)
   .energy(2)

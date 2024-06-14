@@ -97,6 +97,7 @@ export const AdeptusArtPreserverOfFortune: SkillHandle = skill(11083)
  * 流转不息，生生不绝。
  */
 export const Qiqi = character(1108)
+  .since("v4.0.0")
   .tags("cryo", "sword", "liyue")
   .health(10)
   .energy(3)

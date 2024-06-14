@@ -110,6 +110,7 @@ export const GlacialIllumination = skill(11063)
  * 这只是一场游戏，无论是取胜或落败，你都不会因此被添上罪状。
  */
 export const Eula = character(1106)
+  .since("v3.5.0")
   .tags("cryo", "claymore", "mondstadt")
   .health(10)
   .energy(2)

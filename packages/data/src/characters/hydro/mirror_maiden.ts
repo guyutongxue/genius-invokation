@@ -99,6 +99,7 @@ export const RippledReflection = skill(22023)
  * 一切隐秘，都将深藏于潋光的水镜之中吧…
  */
 export const MirrorMaiden = character(2202)
+  .since("v3.3.0")
   .tags("hydro", "fatui")
   .health(10)
   .energy(2)

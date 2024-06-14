@@ -77,6 +77,7 @@ export const ShiningMiracle = skill(12013)
  * 无论何时都能治愈人心。
  */
 export const Barbara = character(1201)
+  .since("v3.3.0")
   .tags("hydro", "catalyst", "mondstadt")
   .health(10)
   .energy(3)

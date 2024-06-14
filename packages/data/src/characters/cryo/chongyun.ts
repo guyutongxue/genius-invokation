@@ -104,6 +104,7 @@ export const CloudpartingStar = skill(11043)
  * 「夏天啊，你还是悄悄过去吧…」
  */
 export const Chongyun = character(1104)
+  .since("v3.3.0")
   .tags("cryo", "claymore", "liyue")
   .health(10)
   .energy(3)

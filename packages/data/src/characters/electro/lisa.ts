@@ -97,6 +97,7 @@ export const LightningRose = skill(14093)
  * 追寻魔导的奥秘，静待真相的机缘。
  */
 export const Lisa = character(1409)
+  .since("v4.0.0")
   .tags("electro", "catalyst", "mondstadt")
   .health(10)
   .energy(2)

@@ -117,6 +117,7 @@ export const DanceOfAbzendegiDistantDreamsListeningSpring = skill(12083)
  * 莲步轻舞，出尘醉梦。
  */
 export const Nilou = character(1208)
+  .since("v4.2.0")
   .tags("hydro", "sword", "sumeru")
   .health(10)
   .energy(2)

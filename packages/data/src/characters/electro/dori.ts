@@ -120,6 +120,7 @@ export const AlcazarzaraysExactitude: SkillHandle = skill(14103)
  * 摩拉多多，快乐多多！
  */
 export const Dori = character(1410)
+  .since("v4.2.0")
   .tags("electro", "claymore", "sumeru")
   .health(10)
   .energy(2)

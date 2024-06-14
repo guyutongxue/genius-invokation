@@ -94,6 +94,7 @@ export const KamisatoArtSuiyuu = skill(12063)
  * 神守之柏，已焕新材。
  */
 export const KamisatoAyato = character(1206)
+  .since("v3.6.0")
   .tags("hydro", "sword", "inazuma")
   .health(10)
   .energy(2)

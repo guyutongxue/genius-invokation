@@ -96,6 +96,7 @@ export const MidnightPhantasmagoria = skill(14013)
  * 「小姐，我可没办法帮你换一张牌啊…」
  */
 export const Fischl = character(1401)
+  .since("v3.3.0")
   .tags("electro", "bow", "mondstadt")
   .health(10)
   .energy(3)

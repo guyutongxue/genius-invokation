@@ -99,6 +99,7 @@ export const ForbiddenCreationIsomer75TypeIi: SkillHandle = skill(15013)
  * 「没有实战过的牌组不值得判断强度！」
  */
 export const Sucrose = character(1501)
+  .since("v3.3.0")
   .tags("anemo", "catalyst", "mondstadt")
   .health(10)
   .energy(2)

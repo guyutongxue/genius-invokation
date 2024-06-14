@@ -89,6 +89,7 @@ export const FashionersTanglevineShaft = skill(17023)
  * 从某种角度来说，经验并不等同于智慧。
  */
 export const Tighnari = character(1702)
+  .since("v3.6.0")
   .tags("dendro", "bow", "sumeru")
   .health(10)
   .energy(2)

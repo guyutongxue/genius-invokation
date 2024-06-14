@@ -143,6 +143,7 @@ export const SourcewaterDropletSkill = skill(12105)
  * 凡高大者，无不蔑视。
  */
 export const Neuvillette = character(1210)
+  .since("v4.5.0")
   .tags("hydro", "catalyst", "fontaine", "ousia")
   .health(10)
   .energy(2)

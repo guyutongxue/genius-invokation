@@ -75,6 +75,7 @@ export const LightningFang = skill(14023)
  * 「但，有朋友…」
  */
 export const Razor = character(1402)
+  .since("v3.3.0")
   .tags("electro", "claymore", "mondstadt")
   .health(10)
   .energy(2)

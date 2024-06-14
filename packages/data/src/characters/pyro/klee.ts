@@ -110,6 +110,7 @@ export const SparksNSplash = skill(13063)
  * 每一次抽牌，都可能带来一次「爆炸性惊喜」。
  */
 export const Klee = character(1306)
+  .since("v3.4.0")
   .tags("pyro", "catalyst", "mondstadt")
   .health(10)
   .energy(3)

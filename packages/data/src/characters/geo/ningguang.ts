@@ -81,6 +81,7 @@ export const Starshatter = skill(16013)
  * 她保守着一个最大的秘密，那就是自己保守着璃月港的许多秘密。
  */
 export const Ningguang = character(1601)
+  .since("v3.3.0")
   .tags("geo", "catalyst", "liyue")
   .health(10)
   .energy(3)

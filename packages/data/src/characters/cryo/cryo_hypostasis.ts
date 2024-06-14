@@ -134,6 +134,7 @@ export const CryoCrystalCore02 = status(121036)
  * 似乎很不擅长球类运动…
  */
 export const CryoHypostasis = character(2103)
+  .since("v4.4.0")
   .tags("cryo", "monster")
   .health(8)
   .energy(2)

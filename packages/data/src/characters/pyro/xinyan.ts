@@ -94,6 +94,7 @@ export const RiffRevolution = skill(13123)
  * 摇滚时间到！
  */
 export const Xinyan = character(1312)
+  .since("v4.7.0")
   .tags("pyro", "claymore", "liyue")
   .health(10)
   .energy(2)

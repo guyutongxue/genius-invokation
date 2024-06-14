@@ -109,6 +109,7 @@ export const PlanetBefall = skill(16034)
  * 韬玉之石，可明八荒；灿若天星，纵横无双 。
  */
 export const Zhongli = character(1603)
+  .since("v3.7.0")
   .tags("geo", "pole", "liyue")
   .health(10)
   .energy(3)

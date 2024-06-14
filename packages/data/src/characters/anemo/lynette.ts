@@ -112,6 +112,7 @@ export const MagicTrickAstonishingShift = skill(15083)
  * 水中窥月，洞见夜明。
  */
 export const Lynette = character(1508)
+  .since("v4.3.0")
   .tags("anemo", "sword", "fontaine", "fatui", "pneuma")
   .health(10)
   .energy(2)

@@ -113,6 +113,7 @@ export const RyuukinSaxifrage: SkillHandle = skill(13053)
  * 花见坂第十一届全街邀请赛「长野原队」队长兼首发牌手。
  */
 export const Yoimiya = character(1305)
+  .since("v3.3.0")
   .tags("pyro", "bow", "inazuma")
   .health(10)
   .energy(3)

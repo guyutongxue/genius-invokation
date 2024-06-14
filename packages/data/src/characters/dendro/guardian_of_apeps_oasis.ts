@@ -222,6 +222,7 @@ export const InvokationOfPropagation = skill(27024)
  * 阿佩普曾视沙海之底为自己的墓场，而非失乡之王的行宫。「智慧」的毒很快就会让它从无数个月亮的仇恨与愤怒中解脱。它已经对终末缺乏颜色的景象感到厌倦了。直到最终年轻的神明与金色的旅人让它再度回想起，即便自己曾经主宰的青绿土地已经化作饰金的荒原，即便自己与子嗣为了在其中生存而变得扭曲丑陋，但它的心中始终珍藏着那一角绿洲的景象。
  */
 export const GuardianOfApepsOasis = character(2702)
+  .since("v4.7.0")
   .tags("dendro", "monster")
   .health(10)
   .energy(2)

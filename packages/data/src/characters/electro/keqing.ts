@@ -107,6 +107,7 @@ export const StarwardSword = skill(14033)
  * 她能构筑出许多从未设想过的牌组，拿下许多难以想象的胜利。
  */
 export const Keqing = character(1403)
+  .since("v3.3.0")
   .tags("electro", "sword", "liyue")
   .health(10)
   .energy(3)

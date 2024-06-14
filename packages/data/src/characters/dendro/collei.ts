@@ -89,6 +89,7 @@ export const TrumpcardKitty = skill(17013)
  * 「大声喊出卡牌的名字会让它威力加倍…这一定是虚构的吧？」
  */
 export const Collei = character(1701)
+  .since("v3.3.0")
   .tags("dendro", "bow", "sumeru")
   .health(10)
   .energy(2)

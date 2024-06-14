@@ -128,6 +128,7 @@ export const PaintedDome = skill(17083)
  * 体悟、仁爱与识美之知。
  */
 export const Kaveh = character(1708)
+  .since("v4.7.0")
   .tags("dendro", "claymore", "sumeru")
   .health(10)
   .energy(2)

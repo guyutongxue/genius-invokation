@@ -111,6 +111,7 @@ export const LawfulEnforcer = skill(14044)
  * 卡牌中蕴藏的，是大风纪官如沙漠烈日般炙热的喜爱之情。
  */
 export const Cyno = character(1404)
+  .since("v3.3.0")
   .tags("electro", "pole", "sumeru")
   .health(10)
   .energy(2)

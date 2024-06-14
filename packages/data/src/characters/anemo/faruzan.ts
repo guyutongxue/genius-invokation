@@ -144,6 +144,7 @@ export const TheWindsSecretWays: SkillHandle = skill(15093)
  * 机巧易解，世殊难算。
  */
 export const Faruzan = character(1509)
+  .since("v4.6.0")
   .tags("anemo", "bow", "sumeru")
   .health(10)
   .energy(2)

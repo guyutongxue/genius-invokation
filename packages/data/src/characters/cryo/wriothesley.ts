@@ -147,6 +147,7 @@ export const DarkgoldWolfbite01 = skill(11116)
  * 罪囚于斯，深水无漪。
  */
 export const Wriothesley = character(1111)
+  .since("v4.7.0")
   .tags("cryo", "catalyst", "fontaine", "pneuma")
   .health(10)
   .energy(3)

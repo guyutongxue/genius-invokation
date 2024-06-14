@@ -143,6 +143,7 @@ export const SwirlingSchoolOfFishPassive = skill(24037)
  * 矗立在原海异种顶端的两位霸主之一，因身姿修长优美，被诗人与作者视为孤傲而高洁的生灵，获称「骏麟」。
  */
 export const MillennialPearlSeahorse = character(2403)
+  .since("v4.4.0")
   .tags("electro", "monster")
   .health(8)
   .energy(2)

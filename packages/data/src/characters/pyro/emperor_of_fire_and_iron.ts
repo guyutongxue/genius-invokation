@@ -164,6 +164,7 @@ export const ImperialPanoply01 = skill(23047)
  * 矗立在原海异种顶端的两位霸主之一，不遇天敌，不倦狩猎并成长之蟹。有着半是敬畏，半是戏谑的「帝皇」之称。
  */
 export const EmperorOfFireAndIron = character(2304)
+  .since("v4.6.0")
   .tags("pyro", "monster")
   .health(6)
   .energy(2)

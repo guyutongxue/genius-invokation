@@ -73,6 +73,7 @@ export const GlacialWaltz = skill(11033)
  * 他很擅长在他人身上发掘出「骑士般的美德」。
  */
 export const Kaeya = character(1103)
+  .since("v3.3.0")
   .tags("cryo", "sword", "mondstadt")
   .health(10)
   .energy(2)

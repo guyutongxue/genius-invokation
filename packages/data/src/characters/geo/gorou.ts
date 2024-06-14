@@ -91,6 +91,7 @@ export const JuugaForwardUntoVictory = skill(16063)
  * 锵锵领兵行！
  */
 export const Gorou = character(1606)
+  .since("v4.3.0")
   .tags("geo", "bow", "inazuma")
   .health(10)
   .energy(2)

@@ -133,6 +133,7 @@ export const YoohooArtMujinaFlurry = skill(15073)
  * 一梦作伴，万野无踪。
  */
 export const Sayu = character(1507)
+  .since("v4.4.0")
   .tags("anemo", "claymore", "inazuma")
   .health(10)
   .energy(2)

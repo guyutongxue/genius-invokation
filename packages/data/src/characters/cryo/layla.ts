@@ -112,6 +112,7 @@ export const DreamOfTheStarstreamShaker = skill(11093)
  * 夜沉星移，月笼梦行。
  */
 export const Layla = character(1109)
+  .since("v4.3.0")
   .tags("cryo", "sword", "sumeru")
   .health(10)
   .energy(2)

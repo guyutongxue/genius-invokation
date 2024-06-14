@@ -113,6 +113,7 @@ export const PseudoTenguSweeper = skill(25014)
  * 今日，其仍徘徊在因缘断绝之地。
  */
 export const MaguuKenki = character(2501)
+  .since("v3.3.0")
   .tags("anemo", "monster")
   .health(10)
   .energy(3)
