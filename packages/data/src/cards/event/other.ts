@@ -950,6 +950,7 @@ export const ControlledDirectionalBlast = card(332030)
  * 生成1个万能元素。
  */
 export const TaroumarusSavings = card(302202)
+  .since("v4.6.0")
   .generateDice(DiceType.Omni, 1)
   .done();
 
@@ -974,6 +975,7 @@ export const CalledInForCleanupStatus = combatStatus(302204)
  * 我方出战角色下次造成的伤害+1。（可叠加，最多叠加到+2）
  */
 export const CalledInForCleanup = card(302203)
+  .since("v4.6.0")
   .combatStatus(CalledInForCleanupStatus)
   .done();
 
@@ -984,6 +986,7 @@ export const CalledInForCleanup = card(302203)
  * 治疗我方出战角色1点，生成1个随机基础元素骰。
  */
 export const UnderseaTreasure = card(303230)
+  .since("v4.6.0")
   .heal(1, "my active")
   .generateDice("randomElement", 1)
   .done();
@@ -1034,6 +1037,7 @@ export const BonecrunchersEnergyBlockCombatStatus = combatStatus(124053)
  * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）
  */
 export const BonecrunchersEnergyBlock = card(124051)
+  .since("v4.7.0")
   .filter((c) => !c.$(`my combat status with definition id ${BonecrunchersEnergyBlockCombatStatus}`))
   .do((c) => {
     const hands = c.getMaxCostHands();
@@ -1066,6 +1070,7 @@ export const ForbiddenKnowledgeCoolDown = combatStatus(301021)
  * 对我方出战角色造成1点穿透伤害，抓1张牌。
  */
 export const ForbiddenKnowledge = card(301020)
+  .since("v4.7.0")
   .tags("noTuning")
   .damage(DamageType.Piercing, 1, "my active")
   .drawCards(1)
@@ -1101,6 +1106,7 @@ export const CountdownToTheShow3 = card(332032)
  * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。
  */
 export const CountdownToTheShow2 = card(332033)
+  .since("v4.7.0")
   .costSame(2)
   .do((c) => {
     const count = c.player.dice.length;
@@ -1121,6 +1127,7 @@ export const CountdownToTheShow2 = card(332033)
  * 此牌在手牌或牌库中被舍弃后：将1张元素骰费用为0的「幻戏开始！」放置到你的牌库顶。
  */
 export const CountdownToTheShow1 = card(332034)
+  .since("v4.7.0")
   .costSame(1)
   .do((c) => {
     const count = c.player.dice.length;
@@ -1140,6 +1147,7 @@ export const CountdownToTheShow1 = card(332034)
  * 将我方所有元素骰转换为万能元素，抓4张牌。
  */
 export const TheShowBegins = card(332035)
+  .since("v4.7.0")
   .do((c) => {
     const count = c.player.dice.length;
     c.absorbDice("seq", count);

@@ -188,6 +188,7 @@ export const FrostspikeWave = skill(66013)
  * 
  */
 export const AzhdahaCryo = character(6601)
+  .since("v4.3.0")
   .tags("geo", "monster")
   .health(10)
   .energy(2)
@@ -214,6 +215,7 @@ export const TorrentialRebuke = skill(66023)
  * 
  */
 export const AzhdahaHydro = character(6602)
+  .since("v4.3.0")
   .tags("geo", "monster")
   .health(10)
   .energy(2)
@@ -240,6 +242,7 @@ export const BlazingRebuke = skill(66033)
  * 
  */
 export const AzhdahaPyro = character(6603)
+  .since("v4.3.0")
   .tags("geo", "monster")
   .health(10)
   .energy(2)
@@ -266,6 +269,7 @@ export const ThunderstormWave = skill(66043)
  * 
  */
 export const AzhdahaElectro = character(6604)
+  .since("v4.3.0")
   .tags("geo", "monster")
   .health(10)
   .energy(2)

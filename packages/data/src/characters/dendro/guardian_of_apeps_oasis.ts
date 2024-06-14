@@ -70,6 +70,7 @@ export const ProliferatedOrganism04 = summon(127025)
  * 打出此牌或舍弃此牌时：召唤一个独立的增殖生命体。
  */
 export const AwakenMyKindred = card(127021)
+  .since("v4.7.0")
   .costDendro(2)
   .do((c) => {
     if (!c.$(`my summon with definition id ${ProliferatedOrganism01}`)) {

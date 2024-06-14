@@ -122,6 +122,7 @@ export const Keqing = character(1403)
  * （刻晴使用星斗归位时，如果此牌在手中：不会再生成雷楔，而是改为弃置此牌，并为刻晴附属雷元素附魔）
  */
 export const LightningStiletto = card(114031)
+  .since("v3.3.0")
   .costElectro(3)
   .tags("action")
   .useSkill(StellarRestoration)

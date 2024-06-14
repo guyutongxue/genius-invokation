@@ -23,6 +23,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Chara
  * 如果我方场上存在沙龙成员或众水的歌者，也切换其形态。
  */
 export const SeatsSacredAndSecular = card(112113)
+  .since("v4.7.0")
   .do((c) => {
     const furina = c.player.characters.find((char) => [FurinaPneuma, FurinaOusia].includes(char.definition.id as CharacterHandle));
     if (!furina) {
@@ -242,6 +243,7 @@ export const SalonSolitaireOusia = skill(12122)
  * 
  */
 export const FurinaOusia = character(1212)
+  .since("v4.7.0")
   .tags("hydro", "sword", "fontaine", "ousia")
   .health(10)
   .energy(2)

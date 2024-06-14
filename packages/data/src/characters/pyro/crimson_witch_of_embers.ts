@@ -95,6 +95,7 @@ export const WhirlingBlaze = skill(63013)
  * 
  */
 export const CrimsonWitchOfEmbers = character(6301)
+  .since("v4.3.0")
   .tags("pyro", "fatui")
   .health(10)
   .energy(2)
