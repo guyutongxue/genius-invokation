@@ -21,7 +21,7 @@
 
 ```ts
 interface StartOption {
-  data: ReadonlyDataStore; // import('@gi-tcg/data') 即是
+  data: GameData; // import('@gi-tcg/data') 可获取
   playerConfigs: [PlayerConfig, PlayerConfig];
   io: GameIO; // see below
 }
