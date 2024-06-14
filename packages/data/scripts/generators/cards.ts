@@ -16,7 +16,7 @@
 import { pascalCase } from "case-anything";
 
 import { getCostCode, isLegend } from "./cost";
-import { SourceInfo, writeSourceCode } from "./source";
+import { SourceInfo, newVersion, writeSourceCode } from "./source";
 import { ActionCardRawData, actionCards } from "@gi-tcg/static-data";
 
 export function getCardTypeAndTags(card: ActionCardRawData) {
@@ -71,6 +71,7 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playCost);
   return `export const ${pascalCase(card.englishName)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
+  .since("${newVersion}")
   // TODO
   .done();`;
 }

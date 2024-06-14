@@ -781,8 +781,8 @@ class InitiativeSkillBuilder<
   }
   until(version: Version) {
     this._versionInfo = { predicate: "until", version };
+    return this;
   }
-
 
   associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
     if (typeof this.associatedExtensionId !== "undefined") {

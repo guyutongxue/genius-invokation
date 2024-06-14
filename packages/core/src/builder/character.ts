@@ -44,6 +44,7 @@ class CharacterBuilder {
   }
   until(version: Version) {
     this._versionInfo = { predicate: "until", version };
+    return this;
   }
 
   tags(...tags: CharacterTag[]) {

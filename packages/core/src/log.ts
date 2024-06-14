@@ -14,12 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { GameState } from "./base/state";
-import { Version } from "./base/version";
+import { Version, VersionInfo } from "./base/version";
 import { GameData, GameDataGetter, getCardDefinition } from "./builder";
 import { VERSION } from ".";
 
 import "core-js/proposals/explicit-resource-management";
-import { getCharacterDefinition, getEntityDefinition, getSkillDefinition } from "./utils";
+import {
+  getCharacterDefinition,
+  getEntityDefinition,
+  getSkillDefinition,
+} from "./utils";
 
 export interface GameStateLogEntry {
   readonly state: GameState;
@@ -55,25 +59,31 @@ function serializeImpl(store: StoreEntry[], v: unknown): any {
   }
   if (v instanceof Map) {
     return {
-      "__type": "map",
+      __type: "map",
       entries: Array.from(v.entries()).map(([key, value]) => [
         serializeImpl(store, key),
         serializeImpl(store, value),
       ]),
-    }
+    };
   }
   if (v instanceof Set) {
     return {
-      "__type": "set",
+      __type: "set",
       values: Array.from(v).map((value) => serializeImpl(store, value)),
-    }
+    };
   }
   if (typeof v === "object") {
     if ("__definition" in v && "id" in v) {
-      const result = {
+      const result: any = {
         $$: v.__definition,
         id: v.id,
       };
+      if ("version" in v) {
+        const ver: any = v.version;
+        if (ver.predicate === "until") {
+          result.u = ver.version;
+        }
+      }
       store.push({ key: v, value: result });
       return { $: store.length - 1 };
     }
@@ -130,9 +140,32 @@ export function serializeGameStateLog(
   };
 }
 
-function isValidDefKey(defKey: unknown): defKey is keyof GameData {
+const VALID_DEF_KEYS = [
+  "characters",
+  "entities",
+  "skills",
+  "cards",
+  "extensions",
+] as const;
+type ValidDefKeys = (typeof VALID_DEF_KEYS)[number];
+
+function isValidDefKey(defKey: unknown): defKey is ValidDefKeys {
   return ["characters", "entities", "skills", "cards", "extensions"].includes(
     defKey as string,
+  );
+}
+
+function getDefinition(
+  data: GameData,
+  defKey: ValidDefKeys,
+  id: number,
+  version?: string,
+) {
+  const store = data[defKey];
+  return store.find((def) =>
+    def.id === id && typeof version === "undefined"
+      ? def.version.predicate === "since"
+      : def.version.predicate === "until" && def.version.version === version,
   );
 }
 
@@ -158,15 +191,12 @@ function deserializeImpl(
       }
       return restoredStore[v.$];
     }
-    if ("$$" in v && "id" in v && typeof v.id === "number") {
-      switch (v.$$) {
-        case "characters": return getCharacterDefinition(data, v.id);
-        case "cards": return getCardDefinition(data, v.id);
-        case "entities": return getEntityDefinition(data, v.id);
-        case "skills": return getSkillDefinition(data, v.id);
-        case "extensions": return data.extensions.find((e) => e.id === v.id);
-        default: return;
+    if ("$$" in v && "id" in v && typeof v.id === "number" && isValidDefKey(v.$$)) {
+      let version: string | undefined = void 0;
+      if ("u" in v && typeof v.u === "string") {
+        version = v.u;
       }
+      return getDefinition(data, v.$$, v.id, version);
     }
     if ("__type" in v) {
       if (v.__type === "map" && "entries" in v && Array.isArray(v.entries)) {

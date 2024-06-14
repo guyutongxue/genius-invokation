@@ -14,9 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { SkillDefinition } from "./skill";
+import { VersionInfo } from "./version";
 
 export interface ExtensionDefinition {
   readonly __definition: "extensions",
+  readonly version: VersionInfo;
   readonly type: "extension";
   readonly id: number;
   readonly initialState: unknown;

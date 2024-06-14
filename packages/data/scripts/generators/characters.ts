@@ -15,7 +15,7 @@
 
 import { characters, entities, actionCards, EntityRawData } from "@gi-tcg/static-data";
 import { pascalCase, snakeCase } from "case-anything";
-import { writeSourceCode, SourceInfo } from "./source";
+import { writeSourceCode, SourceInfo, newVersion } from "./source";
 import { getCostCode } from "./cost";
 import { getCardCode, getCardTypeAndTags } from "./cards";
 
@@ -69,6 +69,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       name: obj.name,
       description: description,
       code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${obj.id})
+  .since("${newVersion}")
   // TODO
   .done();`,
     };
@@ -155,6 +156,7 @@ export async function generateCharacters() {
       name: ch.name,
       description: ch.storyText ?? "",
       code: `export const ${pascalCase(ch.englishName)} = character(${ch.id})
+  .since("${newVersion}")
   .tags(${tagCode})
   .health(${ch.hp})
   .energy(${ch.maxEnergy})

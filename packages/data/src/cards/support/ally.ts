@@ -503,9 +503,6 @@ const DamageTypeCountExtension = extension(322023, { damages: pair(new Set<Damag
  * 此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点）
  * 结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。
  * 【此卡含描述变量】
- * @outdated
- * 此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点，当前为$[GCG_TOKEN_COUNTER]点）
- * 结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。
  */
 export const SilverAndMelus = card(322023)
   .costSame(1)

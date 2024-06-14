@@ -84,6 +84,7 @@ export class ExtensionBuilder<ExtStateType extends object> {
       __definition: "extensions",
       type: "extension",
       id: this.id,
+      version: DEFAULT_VERSION_INFO,
       initialState: this.initialState,
       skills: this._skillList,
     });

@@ -21,9 +21,12 @@ import tsdoc, {
   TSDocTagSyntaxKind,
 } from "@microsoft/tsdoc";
 import { existsSync } from "node:fs";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, appendFile } from "node:fs/promises";
 import path from "node:path";
 import { BASE_PATH, LICENSE } from "./config";
+
+const oldVersion = "v4.7.0";
+export const newVersion = "v4.8.0";
 
 const config = new TSDocConfiguration();
 const tagDefs = [
@@ -80,6 +83,7 @@ interface CommentInfo {
   id: number;
   name: string;
   description: string;
+  code: string;
 }
 
 async function getExistsComments(path: string): Promise<CommentInfo[]> {
@@ -102,6 +106,7 @@ async function getExistsComments(path: string): Promise<CommentInfo[]> {
       continue;
     }
     const range = docComments[docComments.length - 1];
+    const code = content.substring(range.end + 1, node.end);
     const text = content.substring(range.pos, range.end);
     const parseCtx = parser.parseString(text);
     if (parseCtx.log.messages.length > 0) {
@@ -142,7 +147,7 @@ async function getExistsComments(path: string): Promise<CommentInfo[]> {
     if (outdated !== null) {
       description = outdated;
     }
-    result.push({ range, id, name, description });
+    result.push({ range, id, name, description, code });
   }
   return result;
 }
@@ -189,6 +194,14 @@ function sameDescription(a: string, b: string) {
   return sameArray(descriptionToLines(a), descriptionToLines(b));
 }
 
+const SAVE_OLD_CODES = true;
+
+const OLD_VERSION_PATH = path.resolve(BASE_PATH, `old_versions/${oldVersion}.ts`);
+
+if (SAVE_OLD_CODES && !existsSync(OLD_VERSION_PATH)) {
+  await writeFile(OLD_VERSION_PATH, `import { card, character } from "@gi-tcg/core/builder";\n`);
+}
+
 export async function writeSourceCode(
   filepath: string,
   init: string,
@@ -202,7 +215,7 @@ export async function writeSourceCode(
     infos.sort((a, b) => a.id - b.id);
   }
 
-  let newInfos = [];
+  let newInfos: SourceInfo[] = [];
   let resultText = LICENSE + init;
   if (existsSync(filepath)) {
     const existsComments = await getExistsComments(filepath);
@@ -236,6 +249,20 @@ export async function writeSourceCode(
         newComment,
       );
       offset += newComment.length - (item.range.end - item.range.pos);
+      console.log("=====\n",item.code);
+      if (SAVE_OLD_CODES) {
+      await appendFile(
+        OLD_VERSION_PATH, `
+/**
+ * @id ${item.id}
+ * @name ${item.name}
+ * @description
+ * ${writeDescriptionAsComment(item.description)}
+ */
+${item.code.replace(/export /, "").replace(/\n(  \.since\(".*?"\)\n)?/, `\n  .until("${oldVersion}")\n`)}
+`
+        );
+      }
     }
   } else {
     newInfos = infos;
@@ -255,5 +282,5 @@ ${item.code}
       )
       .join("\n");
   resultText = resultText.trim() + "\n";
-  await writeFile(filepath, resultText, "utf-8");
+  await writeFile(filepath, resultText);
 }
