@@ -11,7 +11,7 @@ import { Game } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
 
 const game = new Game({
-  data,
+  data: data(),
   // other options...
 });
 ```

@@ -60,6 +60,11 @@ export interface CharacterDefinition {
   readonly version: VersionInfo;
   readonly tags: readonly CharacterTag[];
   readonly varConfigs: CharacterVariableConfigs;
+  /**
+   * 存放主动技能 id 列表。
+   * 不直接存 SkillDefinition，因为需要在运行时
+   * 从 GameData 查找对应游戏版本的技能定义
+   */
   readonly initiativeSkills: readonly number[];
   readonly skills: readonly TriggeredSkillDefinition[];
 }

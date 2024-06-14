@@ -206,7 +206,7 @@ class WsGame extends WsJsonRpcBase {
     if (this.players[0] && this.players[1]) {
       const io = this.createGameIo();
       this.game = new Game({
-        data,
+        data: data(),
         io,
         playerConfigs: [this.players[0], this.players[1]],
       });

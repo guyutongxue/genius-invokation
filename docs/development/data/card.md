@@ -4,6 +4,7 @@
 
 ## 通用方法
 
+- `.since("v3.3.0")` 引入次卡时的[游戏版本](./version.md)
 - `.costXxx` 可指定卡牌所消耗的骰子。
 - `.legend()` 秘传牌。
 - `.requireCharacterTag` 指定“牌组至少包含两个 xx 角色”。

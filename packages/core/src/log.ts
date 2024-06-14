@@ -109,8 +109,8 @@ interface SerializedLogEntry {
 }
 
 interface SerializedLog {
-  v: string;
-  gv: string;
+  v: string;  // 模拟核心库版本
+  gv: string; // 游戏版本
   store: any[];
   log: SerializedLogEntry[];
 }

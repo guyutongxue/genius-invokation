@@ -6,6 +6,7 @@
 
 ```ts
 const Ganyu = character(1101)   // 角色 ID
+  .since("v3.3.0")              // 引入游戏版本（见 version.md）
   .tags("cryo", "bow", "liyue") // 角色标签，通常必须包含元素、武器、国籍
   .health(10)                   // 最大生命值
   .energy(3)                    // 最大能量值
