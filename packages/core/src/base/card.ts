@@ -17,6 +17,7 @@ import { CharacterTag, WeaponTag } from "./character";
 import { DescriptionDictionary } from "./entity";
 import { InitiativeSkillDefinition, SkillInfo } from "./skill";
 import { AnyState, GameState } from "./state";
+import { VersionInfo } from "./version";
 
 export type WeaponCardTag = Exclude<WeaponTag, "other">;
 
@@ -58,6 +59,7 @@ export interface CardDefinition {
   readonly __definition: "cards";
   readonly id: number;
   readonly type: CardType;
+  readonly version: VersionInfo;
   readonly tags: readonly CardTag[];
   readonly getTarget: PlayCardTargetGetter;
   readonly filter: PlayCardFilter;

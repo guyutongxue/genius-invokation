@@ -16,6 +16,7 @@
 import { Aura } from "@gi-tcg/typings";
 import { TriggeredSkillDefinition, InitiativeSkillDefinition } from "./skill";
 import { VariableConfig } from "./entity";
+import { Version, VersionInfo } from "./version";
 
 export type ElementTag =
   | "cryo"
@@ -56,9 +57,10 @@ export interface CharacterDefinition {
   readonly __definition: "characters";
   readonly type: "character";
   readonly id: number;
+  readonly version: VersionInfo;
   readonly tags: readonly CharacterTag[];
   readonly varConfigs: CharacterVariableConfigs;
-  readonly initiativeSkills: readonly InitiativeSkillDefinition[];
+  readonly initiativeSkills: readonly number[];
   readonly skills: readonly TriggeredSkillDefinition[];
 }
 

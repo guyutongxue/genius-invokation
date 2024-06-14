@@ -10,6 +10,7 @@ import { SkillContext } from "./context";
 import { registerExtension, registerSkill } from "./registry";
 import { WritableMetaOf } from "./skill";
 import { ExtensionHandle } from "./type";
+import { DEFAULT_VERSION_INFO } from "./utils";
 
 type BuilderMetaOfExtension<
   ExtStateType extends object,
@@ -63,6 +64,7 @@ export class ExtensionBuilder<ExtStateType extends object> {
     const def: TriggeredSkillDefinition = {
       __definition: "skills",
       type: "skill",
+      version: DEFAULT_VERSION_INFO,
       skillType: null,
       id: this.generateSkillId(),
       triggerOn: event,

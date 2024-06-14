@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { VariableConfig } from "../base/entity";
+import { INIT_VERSION, VersionInfo } from "../base/version";
 
 export function createVariable<const T extends number>(initialValue: T, forceOverwrite = false): VariableConfig<T> {
   return {
@@ -35,3 +36,5 @@ export function createVariableCanAppend(initialValue: number, appendLimit = Infi
     }
   }
 }
+
+export const DEFAULT_VERSION_INFO: VersionInfo = { predicate: "since", version: INIT_VERSION };

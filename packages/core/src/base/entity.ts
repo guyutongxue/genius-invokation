@@ -16,6 +16,7 @@
 import { GameState, EntityState } from "./state";
 import { EquipmentTag, SupportTag } from "./card";
 import { TriggeredSkillDefinition } from "./skill";
+import { VersionInfo } from "./version";
 
 export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
@@ -39,6 +40,7 @@ export interface EntityDefinition {
   readonly __definition: "entities";
   readonly type: EntityType;
   readonly id: number;
+  readonly version: VersionInfo;
   readonly visibleVarName: string | null;
   readonly tags: readonly EntityTag[];
   readonly hintText: string | null;

@@ -35,6 +35,7 @@ import { EntityDefinition, UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
 import { diceCostOfCard, getEntityArea } from "../utils";
+import { VersionInfo } from "./version";
 
 export interface SkillDefinitionBase<Arg> {
   readonly __definition: "skills";
@@ -57,6 +58,7 @@ export type SkillType = CommonSkillType | "playCard" | "disposeCard";
 export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
   readonly skillType: SkillType;
+  readonly version: VersionInfo;
   readonly requiredCost: readonly DiceType[];
   readonly gainEnergy: boolean;
   readonly triggerOn: null;
@@ -274,10 +276,10 @@ export class ActionEventArg<
     skillType?: CommonSkillType,
   ): boolean {
     if (this.action.type === "useSkill") {
-      const skillDefId = this.action.skill.definition.id;
-      return !!character.definition.initiativeSkills.find(
-        (def) =>
-          def.id === skillDefId && (!skillType || def.skillType === skillType),
+      const skillDef = this.action.skill.definition;
+      return (
+        character.definition.initiativeSkills.includes(skillDef.id) &&
+        (!skillType || skillDef.skillType === skillType)
       );
     } else if (this.action.type === "playCard") {
       return !!(
@@ -990,6 +992,7 @@ export type TriggeredSkillFilter<E extends EventNames> = (
 export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
   extends SkillDefinitionBase<EventArgOf<E>> {
   readonly skillType: null;
+  readonly version: VersionInfo;
   readonly triggerOn: E;
   readonly filter: TriggeredSkillFilter<E>;
   readonly requiredCost: readonly [];

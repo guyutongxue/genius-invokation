@@ -64,6 +64,8 @@ import { combatStatus, status, equipment, support } from "./entity";
 import { GuessedTypeOfQuery } from "../query/types";
 import { GiTcgDataError } from "../error";
 import { Writable } from "../utils";
+import { INIT_VERSION, Version, VersionInfo } from "../base/version";
+import { DEFAULT_VERSION_INFO } from "./utils";
 
 type StateOf<TargetKindTs extends CardTargetKind> =
   TargetKindTs extends readonly [
@@ -148,9 +150,18 @@ class CardBuilder<
   > | null = null;
   private _targetQueries: string[] = [];
   private _descriptionDictionary: Writable<DescriptionDictionary> = {};
+  private _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
 
   constructor(private readonly cardId: number) {
     super(cardId);
+  }
+
+  since(version: Version) {
+    this._versionInfo = { predicate: "since", version };
+    return this;
+  }
+  until(version: Version) {
+    this._versionInfo = { predicate: "until", version };
   }
 
   replaceDescription(
@@ -426,6 +437,7 @@ class CardBuilder<
       type: "skill",
       skillType: "playCard",
       id: this.cardId,
+      version: this._versionInfo,
       triggerOn: null,
       requiredCost: this._cost,
       gainEnergy: false,
@@ -452,6 +464,7 @@ class CardBuilder<
         type: "skill",
         skillType: "disposeCard",
         id: this.cardId + 0.01,
+        version: this._versionInfo,
         triggerOn: null,
         requiredCost: [],
         gainEnergy: false,
@@ -464,6 +477,7 @@ class CardBuilder<
       __definition: "cards",
       id: this.cardId,
       type: this._type,
+      version: this._versionInfo,
       tags: this._tags,
       getTarget: targetGetter,
       filter: filterFn,

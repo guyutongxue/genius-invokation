@@ -20,7 +20,7 @@ import { CharacterDefinition, CharacterVariableConfigs } from "./character";
 import { EntityDefinition, EntityVariableConfigs, VariableOfConfig } from "./entity";
 import { Mutation } from "./mutation";
 import { DamageInfo, HealInfo, SkillInfo } from "./skill";
-import { ReadonlyDataStore } from "../builder/registry";
+import { GameData } from "../builder/registry";
 import { ExtensionDefinition } from "./extension";
 
 export interface GameConfig {
@@ -40,7 +40,7 @@ export interface IteratorState {
 }
 
 export interface GameState {
-  readonly data: ReadonlyDataStore;
+  readonly data: GameData;
   readonly config: GameConfig;
   readonly iterators: IteratorState;
   readonly phase: PhaseType;

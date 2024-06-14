@@ -13,7 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Aura, DamageType, DiceType, ExposedMutation, Reaction } from "@gi-tcg/typings";
+import {
+  Aura,
+  DamageType,
+  DiceType,
+  ExposedMutation,
+  Reaction,
+} from "@gi-tcg/typings";
 
 import {
   EntityArea,
@@ -58,8 +64,11 @@ import {
   diceCostOfCard,
   elementOfCharacter,
   getActiveCharacterIndex,
+  getCardDefinition,
+  getCharacterDefinition,
   getEntityArea,
   getEntityById,
+  getEntityDefinition,
   sortDice,
 } from "../utils";
 import { executeQuery } from "../query";
@@ -410,7 +419,11 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   /** 治疗角色。若角色已倒下，则复苏该角色。*/
-  heal(value: number, target: CharacterTargetArg, { distribution = false }: HealOption = {}) {
+  heal(
+    value: number,
+    target: CharacterTargetArg,
+    { distribution = false }: HealOption = {},
+  ) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
@@ -657,7 +670,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           this.state,
           {
             ...this.skillInfo,
-            onNotify: (opt) => this.onNotify(opt)
+            onNotify: (opt) => this.onNotify(opt),
           },
           reactionDescriptionEventArg,
         );
@@ -674,7 +687,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     opt: CreateEntityOptions = {},
   ): Entity<Meta> | null {
     const id2 = id as number;
-    const def = this.state.data.entities.get(id2);
+    const def = getEntityDefinition(this.state.data, id2);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
@@ -1034,7 +1047,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       }
     }
     const oldDef = target.definition;
-    const def = this.state.data[oldDef.__definition].get(newDefId);
+    let def: CharacterDefinition | EntityDefinition | undefined = void 0;
+    if (oldDef.__definition === "characters") {
+      def = getCharacterDefinition(this.state.data, newDefId);
+    } else {
+      def = getEntityDefinition(this.state.data, newDefId);
+    }
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown definition id ${newDefId}`);
     }
@@ -1148,11 +1166,16 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       who: this.callerArea.who,
       value: newDice,
     });
-    this.emitEvent("onGenerateDice", this.state, this.callerArea.who, insertedDice);
+    this.emitEvent(
+      "onGenerateDice",
+      this.state,
+      this.callerArea.who,
+      insertedDice,
+    );
   }
 
   createHandCard(cardId: CardHandle) {
-    const cardDef = this.state.data.cards.get(cardId);
+    const cardDef = getCardDefinition(this.state.data, cardId);
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
@@ -1250,7 +1273,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
     );
-    const cardDef = this.state.data.cards.get(cardId);
+    const cardDef = getCardDefinition(this.state.data, cardId);
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
@@ -1649,7 +1672,10 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     // Remove exist artifact/weapon first
     for (const tag of ["artifact", "weapon"] as const) {
       if (
-        this.skillContext.state.data.entities.get(equipment)?.tags.includes(tag)
+        getEntityDefinition(
+          this.skillContext.state.data,
+          equipment,
+        )?.tags.includes(tag)
       ) {
         const exist = this.state.entities.find((v) =>
           v.definition.tags.includes(tag),

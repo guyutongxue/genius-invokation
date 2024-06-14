@@ -24,17 +24,27 @@ import {
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { CharacterHandle, PassiveSkillHandle, SkillHandle } from "./type";
-import { createVariable } from "./utils";
+import { DEFAULT_VERSION_INFO, createVariable } from "./utils";
 import { VariableConfig } from "../base/entity";
+import { INIT_VERSION, Version, VersionInfo, findVersion } from "../base/version";
 
 class CharacterBuilder {
   private readonly _tags: CharacterTag[] = [];
   private _maxHealth = 10;
   private _maxEnergy = 3;
   private _varConfigs: Record<number, VariableConfig> = {};
-  private readonly _initiativeSkills: InitiativeSkillDefinition[] = [];
+  private readonly _initiativeSkills: number[] = [];
   private readonly _skills: TriggeredSkillDefinition[] = [];
+  private _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
   constructor(private readonly id: number) {}
+
+  since(version: Version) {
+    this._versionInfo = { predicate: "since", version };
+    return this;
+  }
+  until(version: Version) {
+    this._versionInfo = { predicate: "until", version };
+  }
 
   tags(...tags: CharacterTag[]) {
     this._tags.push(...tags);
@@ -48,7 +58,7 @@ class CharacterBuilder {
         this._varConfigs = { ...this._varConfigs, ...def.varConfigs };
         this._skills.push(...def.skills);
       } else {
-        this._initiativeSkills.push(def);
+        this._initiativeSkills.push(sk);
       }
     }
     return this;
@@ -68,6 +78,7 @@ class CharacterBuilder {
       __definition: "characters",
       type: "character",
       id: this.id,
+      version: this._versionInfo,
       tags: this._tags,
       varConfigs: {
         ...this._varConfigs,

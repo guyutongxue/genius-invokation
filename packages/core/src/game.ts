@@ -46,8 +46,11 @@ import {
   shuffle,
   sortDice,
   isSkillDisabled,
+  getInitiativeSkillDefinition,
+  getCardDefinition,
+  getCharacterDefinition,
 } from "./utils";
-import { ReadonlyDataStore } from "./builder/registry";
+import { GameData } from "./builder/registry";
 import {
   ActionEventArg,
   ActionInfo,
@@ -104,11 +107,11 @@ const IO_CHECK_GIVEUP_INTERVAL = 500;
 
 /** 获取玩家初始状态，主要是初始化“起始牌堆” */
 function initPlayerState(
-  data: ReadonlyDataStore,
+  data: GameData,
   playerConfig: PlayerConfig,
 ): PlayerState {
   let initialPiles: readonly CardDefinition[] = playerConfig.cards.map((id) => {
-    const def = data.cards.get(id);
+    const def = getCardDefinition(data, id);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown card id ${id}`);
     }
@@ -224,7 +227,7 @@ export class Game extends StateMutator {
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
-      const def = this.state.data.characters.get(ch);
+      const def = getCharacterDefinition(this.state.data, ch);
       if (typeof def === "undefined") {
         throw new GiTcgDataError(`Unknown character id ${ch}`);
       }
@@ -860,7 +863,8 @@ export class Game extends StateMutator {
     if (isSkillDisabled(activeCh)) {
       // Use skill is disabled, skip
     } else {
-      for (const skill of activeCh.definition.initiativeSkills) {
+      for (const skillId of activeCh.definition.initiativeSkills) {
+        const skill = getInitiativeSkillDefinition(this.state.data, skillId)!;
         const skillInfo = {
           caller: activeCh,
           definition: skill,
@@ -1089,7 +1093,7 @@ export class Game extends StateMutator {
 }
 
 export interface GameOption {
-  readonly data: ReadonlyDataStore;
+  readonly data: GameData;
   readonly gameConfig?: Partial<GameConfig>;
   readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   readonly io: GameIO;

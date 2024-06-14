@@ -36,6 +36,7 @@ import {
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
+import { getInitiativeSkillDefinition } from "./utils";
 
 export interface PlayerIO {
   giveUp: boolean;
@@ -258,7 +259,14 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
         combatStatuses: p.combatStatuses.map((e) => exposeEntity(state, e)),
         supports: p.supports.map((e) => exposeEntity(state, e)),
         summons: p.summons.map((e) => exposeEntity(state, e)),
-        skills: i === who ? skills.map(exposeInitiativeSkill) : [],
+        skills:
+          i === who
+            ? skills.map((id) =>
+                exposeInitiativeSkill(
+                  getInitiativeSkillDefinition(state.data, id),
+                ),
+              )
+            : [],
         declaredEnd: p.declaredEnd,
         legendUsed: p.legendUsed,
       };
@@ -273,7 +281,9 @@ export function exposeAction(action: ActionInfo): Action {
         type: "useSkill",
         skill: action.skill.definition.id,
         cost: action.cost,
-        preview: action.preview ? exposeState(action.who, action.preview) : void 0,
+        preview: action.preview
+          ? exposeState(action.who, action.preview)
+          : void 0,
       };
     }
     case "playCard": {
@@ -282,7 +292,9 @@ export function exposeAction(action: ActionInfo): Action {
         card: action.card.id,
         cost: action.cost,
         targets: action.targets.map((t) => t.id),
-        preview: action.preview ? exposeState(action.who, action.preview) : void 0,
+        preview: action.preview
+          ? exposeState(action.who, action.preview)
+          : void 0,
       };
     }
     case "switchActive":

@@ -44,7 +44,8 @@ import {
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
-import { createVariable } from "./utils";
+import { DEFAULT_VERSION_INFO, createVariable } from "./utils";
+import { Version, VersionInfo } from "../base/version";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -665,6 +666,7 @@ export class TriggeredSkillBuilder<
     const def: TriggeredSkillDefinition = {
       __definition: "skills",
       type: "skill",
+      version: this.parent._versionInfo,
       skillType: null,
       id: this.id,
       triggerOn: eventName,
@@ -768,9 +770,20 @@ class InitiativeSkillBuilder<
   private _skillType: SkillType = "normal";
   private _gainEnergy = true;
   protected _cost: DiceType[] = [];
+  private _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
   constructor(private readonly skillId: number) {
     super(skillId);
   }
+
+  since(version: Version) {
+    this._versionInfo = { predicate: "since", version };
+    return this;
+  }
+  until(version: Version) {
+    this._versionInfo = { predicate: "until", version };
+  }
+
+
   associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
     if (typeof this.associatedExtensionId !== "undefined") {
       throw new GiTcgDataError(
@@ -809,6 +822,7 @@ class InitiativeSkillBuilder<
     registerSkill({
       __definition: "skills",
       type: "skill",
+      version: this._versionInfo,
       skillType: this._skillType,
       id: this.skillId,
       triggerOn: null,

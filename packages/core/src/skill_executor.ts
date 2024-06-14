@@ -36,6 +36,7 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
+  getInitiativeSkillDefinition,
 } from "./utils";
 import { GiTcgCoreInternalError } from "./error";
 import { flip } from "@gi-tcg/utils";
@@ -417,10 +418,7 @@ export class SkillExecutor extends StateMutator {
           );
           continue;
         }
-        const def = activeCh.definition.initiativeSkills.find(
-          (sk) => sk.id === arg.requestingSkillId,
-        );
-        if (typeof def === "undefined") {
+        if (!activeCh.definition.initiativeSkills.includes(arg.requestingSkillId)) {
           this.log(
             DetailLogType.Other,
             `Skill [skill:${
@@ -433,6 +431,7 @@ export class SkillExecutor extends StateMutator {
           );
           continue;
         }
+        const def = getInitiativeSkillDefinition(this.state.data, arg.requestingSkillId);
         const skillInfo: SkillInfo = {
           caller: activeCh,
           definition: def,

@@ -13,10 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ExtensionState, GameState } from "./base/state";
-import { ReadonlyDataStore } from "./builder";
+import { GameState } from "./base/state";
+import { Version } from "./base/version";
+import { GameData, GameDataGetter } from "./builder";
+import { VERSION } from ".";
 
 import "core-js/proposals/explicit-resource-management";
+import { getCharacterDefinition, getEntityDefinition, getSkillDefinition } from "./utils";
 
 export interface GameStateLogEntry {
   readonly state: GameState;
@@ -96,6 +99,8 @@ interface SerializedLogEntry {
 }
 
 interface SerializedLog {
+  v: string;
+  gv: string;
   store: any[];
   log: SerializedLogEntry[];
 }
@@ -118,19 +123,21 @@ export function serializeGameStateLog(
     });
   }
   return {
+    v: VERSION,
+    gv: log[0].state.data.version,
     store: store.map(({ value }) => value),
     log: logResult,
   };
 }
 
-function isValidDefKey(defKey: unknown): defKey is keyof ReadonlyDataStore {
+function isValidDefKey(defKey: unknown): defKey is keyof GameData {
   return ["characters", "entities", "skills", "cards", "extensions"].includes(
     defKey as string,
   );
 }
 
 function deserializeImpl(
-  data: ReadonlyDataStore,
+  data: GameData,
   store: readonly any[],
   restoredStore: Record<number, any>,
   v: unknown,
@@ -151,8 +158,14 @@ function deserializeImpl(
       }
       return restoredStore[v.$];
     }
-    if ("$$" in v && "id" in v && isValidDefKey(v.$$)) {
-      return data[v.$$].get(v.id as number);
+    if ("$$" in v && "id" in v && typeof v.id === "number") {
+      switch (v.$$) {
+        case "characters": return getCharacterDefinition(data, v.id);
+        case "entities": return getEntityDefinition(data, v.id);
+        case "skills": return getSkillDefinition(data, v.id);
+        case "extensions": return data.extensions.find((e) => e.id === v.id);
+        default: return;
+      }
     }
     if ("__type" in v) {
       if (v.__type === "map" && "entries" in v && Array.isArray(v.entries)) {
@@ -187,13 +200,13 @@ function deserializeImpl(
 }
 
 export function deserializeGameStateLog(
-  data: ReadonlyDataStore,
-  { store, log }: SerializedLog,
+  data: GameDataGetter,
+  { store, log, v, gv }: SerializedLog,
 ): GameStateLogEntry[] {
   const restoredStore: Record<number, any> = {};
   const result: GameStateLogEntry[] = [];
   for (const entry of log) {
-    const restoredState = deserializeImpl(data, store, restoredStore, entry.s);
+    const restoredState = deserializeImpl(data(gv as Version), store, restoredStore, entry.s);
     result.push({
       state: {
         data,

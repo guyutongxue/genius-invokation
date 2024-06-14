@@ -42,10 +42,11 @@ import {
   SkillHandle,
 } from "./type";
 import { GiTcgDataError } from "../error";
-import { createVariable, createVariableCanAppend } from "./utils";
+import { DEFAULT_VERSION_INFO, createVariable, createVariableCanAppend } from "./utils";
 import { Writable, getEntityArea, getEntityById } from "../utils";
 import { EntityState, GameState } from "..";
 import { SkillContext } from "./context";
+import { INIT_VERSION, Version, VersionInfo } from "../base/version";
 
 export interface AppendOptions {
   /** 重复创建时的累积值上限 */
@@ -115,6 +116,7 @@ export class EntityBuilder<
   _associatedExtensionId: number | undefined = void 0;
   private _hintText: string | null = null;
   private _descriptionDictionary: Writable<DescriptionDictionary> = {};
+  _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -124,6 +126,14 @@ export class EntityBuilder<
     public _type: CallerType,
     private id: number,
   ) {}
+
+  since(version: Version) {
+    this._versionInfo = { predicate: "since", version };
+    return this;
+  }
+  until(version: Version) {
+    this._versionInfo = { predicate: "until", version };
+  }
 
   replaceDescription(
     key: DescriptionDictionaryKey,
@@ -449,13 +459,14 @@ export class EntityBuilder<
       registerEntity({
         __definition: "entities",
         id: this.id,
+        version: this._versionInfo,
         visibleVarName: this._visibleVarName,
         varConfigs: this._varConfigs,
         hintText: this._hintText,
         skills: this._skillList,
         tags: this._tags,
         type: this._type,
-        descriptionDictionary: this._descriptionDictionary, // TODO
+        descriptionDictionary: this._descriptionDictionary,
       });
     }
     return this.id as EntityBuilderResultT<CallerType>;

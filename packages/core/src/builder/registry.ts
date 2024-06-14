@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -25,6 +25,7 @@ import {
 } from "../base/skill";
 import { GiTcgDataError } from "../error";
 import { isCharacterInitiativeSkill } from "../utils";
+import { CURRENT_VERSION, Version } from "../base/version";
 
 let currentStore: DataStore | null = null;
 
@@ -33,12 +34,12 @@ export function beginRegistration() {
     throw new GiTcgDataError("Already in registration");
   }
   currentStore = {
-    characters: new Map(),
-    entities: new Map(),
-    skills: new Map(),
-    cards: new Map(),
-    passiveSkills: new Map(),
-    extensions: new Map(),
+    characters: [],
+    entities: [],
+    skills: [],
+    cards: [],
+    passiveSkills: [],
+    extensions: [],
   };
 }
 
@@ -61,9 +62,17 @@ type DefinitionMap = {
 type RegisterCategory = keyof DefinitionMap;
 
 export type DataStore = {
-  [K in RegisterCategory]: Map<number, DefinitionMap[K]>;
+  [K in RegisterCategory]: DefinitionMap[K][];
 };
-export type ReadonlyDataStore = Immutable<DataStore>;
+
+export interface GameData {
+  readonly version: Version;
+  readonly extensions: readonly ExtensionDefinition[];
+  readonly characters: readonly CharacterDefinition[];
+  readonly entities: readonly EntityDefinition[];
+  readonly skills: readonly SkillDefinition[];
+  readonly cards: readonly CardDefinition[];
+}
 
 function getCurrentStore(): DataStore {
   if (currentStore === null) {
@@ -77,10 +86,7 @@ function register<C extends RegisterCategory>(
   value: DefinitionMap[C],
 ) {
   const store = getCurrentStore()[type];
-  if (store.has(value.id)) {
-    throw new GiTcgDataError(`Duplicate ${type} id ${value.id}`);
-  }
-  store.set(value.id, value);
+  store.push(value);
 }
 export function registerCharacter(value: CharacterDefinition) {
   register("characters", value);
@@ -106,30 +112,18 @@ function getDefinition<C extends RegisterCategory>(
   id: number,
 ): DefinitionMap[C] {
   const store = getCurrentStore();
-  const result = store[type].get(id);
+  const result = store[type].find((obj) => obj.id === id);
   if (typeof result === "undefined") {
     throw new GiTcgDataError(`Unknown ${type} id ${id}`);
   }
   return result as DefinitionMap[C];
-}
-export function getCharacterDefinition(id: number) {
-  return getDefinition("characters", id);
-}
-export function getEntityDefinition(id: number) {
-  return getDefinition("entities", id);
-}
-export function getSkillDefinition(id: number) {
-  return getDefinition("skills", id);
-}
-export function getCardDefinition(id: number) {
-  return getDefinition("cards", id);
 }
 
 export function getCharacterSkillDefinition(
   id: number,
 ): InitiativeSkillDefinition<any> | PassiveSkillDefinition {
   try {
-    const def = getSkillDefinition(id);
+    const def = getDefinition("skills", id);
     if (!isCharacterInitiativeSkill(def)) {
       throw new GiTcgDataError("Skill found but not a character skill");
     }
@@ -139,6 +133,16 @@ export function getCharacterSkillDefinition(
   return def;
 }
 
-export function endRegistration(): ReadonlyDataStore {
-  return getCurrentStore();
+export type GameDataGetter = (version?: Version) => GameData;
+
+export function endRegistration(): GameDataGetter {
+  const store = getCurrentStore();
+  return (version = CURRENT_VERSION) => ({
+    version,
+    extensions: store.extensions,
+    characters: store.characters,
+    entities: store.entities,
+    skills: store.skills,
+    cards: store.cards,
+  });
 }
