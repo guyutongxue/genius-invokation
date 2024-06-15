@@ -143,7 +143,7 @@ export const EngulfingLightning = card(311405)
  */
 export const MoonpiercerStatus = status(301104)
   .oneDuration()
-  .once("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .once("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .deductCost(DiceType.Omni, 2)
   .done();
 
