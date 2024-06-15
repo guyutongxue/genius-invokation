@@ -158,8 +158,16 @@
     }
   }
 
-  .entity[data-highlight="true"] {
-    box-shadow:
-      0 0 6px yellow inset;
+  .entity-highlight-layer[data-highlight="true"] {
+    animation: entity-highlight 2s ease-out infinite alternate;
+  }
+}
+
+@keyframes entity-highlight {
+  from {
+    box-shadow: none;
+  }
+  to {
+    box-shadow: 0 0 10px yellow inset;
   }
 }

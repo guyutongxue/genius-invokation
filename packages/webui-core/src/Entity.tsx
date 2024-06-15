@@ -31,12 +31,12 @@ export function Summon(props: EntityProps) {
         definitionId={props.data.definitionId}
       >
         <div
-          class="h-full w-full entity absolute top-0 left-0 z-1 rounded-lg"
+          class="h-full w-full entity-highlight-layer absolute top-0 left-0 z-1 rounded-lg"
           data-highlight={props.data.usagePerRoundHighlight}
         />
         <Image
           imageId={props.data.definitionId}
-          class="h-full w-full rounded-lg entity"
+          class="h-full w-full rounded-lg"
         />
         <Show when={props.data.variable !== null}>
           <div class="absolute right-0 top-0 bg-white b-1 b-solid b-black w-6 h-6 rounded-3 translate-x-[50%] translate-y-[-50%] flex justify-center items-center z-2">
