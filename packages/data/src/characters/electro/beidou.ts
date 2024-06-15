@@ -24,8 +24,8 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType } fr
  */
 export const SummonerOfLightning = status(114052)
   .oneDuration()
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+  .on("deductVoidDiceSkill", (c, e) => e.isSkillType("normal"))
+  .deductVoidCost(1)
   .done();
 
 /**

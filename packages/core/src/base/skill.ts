@@ -259,6 +259,15 @@ export class ActionEventArg<
       this.action.cost,
     )}, fast: ${this.action.fast}`;
   }
+  originalDiceCost(): DiceType[] {
+    if (this.isUseSkill()) {
+      return this.action.skill.definition.requiredCost.filter((d) => d !== DiceType.Energy);
+    } else if (this.isPlayCard()) {
+      return this.action.card.definition.onPlay.requiredCost.filter((d) => d !== DiceType.Energy);
+    } else {
+      return [];
+    }
+  }
 
   isSwitchActive(): this is ActionEventArg<SwitchActiveInfo> {
     return this.action.type === "switchActive";
@@ -322,18 +331,16 @@ export class ActionEventArg<
   }
 }
 
-export class ModifyActionEventArg<
+export class ModifyAction0EventArg<
   InfoT extends ActionInfoBase,
 > extends ActionEventArg<InfoT> {
-  private _cost: DiceType[];
-  private _deductedCost: (readonly [DiceType, number])[];
+  protected _cost: DiceType[];
+  protected _log = "";
   private _fast: boolean;
-  private _log = "";
 
   constructor(state: GameState, action: WithActionDetail<InfoT>) {
     super(state, action);
     this._cost = [...action.cost];
-    this._deductedCost = [];
     this._fast = action.fast;
   }
 
@@ -347,69 +354,27 @@ export class ModifyActionEventArg<
   }
 
   get cost() {
-    // 消耗相同骰子时，只考虑“任意元素骰”的减费
-    if (this._cost.length === 0 || this._cost.includes(DiceType.Same)) {
-      let totalCount = this._cost.length;
-      for (const [type, count] of this._deductedCost) {
-        if (type === DiceType.Omni) {
-          totalCount = Math.max(0, totalCount - count);
-        }
-      }
-      const result: DiceType[] = [];
-      for (let i = 0; i < totalCount; i++) {
-        result.push(DiceType.Same);
-      }
-      return result;
-    }
-    // 否则，在骰子需求列表中，先考察有色元素骰，再考虑无色骰子
-    const result = [...this._cost];
-    // 对于所有减骰效果，优先考虑无色元素，其次是有色元素，最后是任意元素
-    const allDeduction = this._deductedCost
-      .map(([type, count]) => [type, count] as [DiceType, number])
-      .toSorted(([a], [b]) => a - b);
-    for (const diceType of [
-      DiceType.Cryo,
-      DiceType.Hydro,
-      DiceType.Pyro,
-      DiceType.Electro,
-      DiceType.Anemo,
-      DiceType.Geo,
-      DiceType.Dendro,
-      DiceType.Void,
-    ]) {
-      for (;;) {
-        const index = result.indexOf(diceType);
-        if (index === -1) {
-          break;
-        }
-        const deductionIndex = allDeduction.findIndex(([type]) => {
-          if (diceType === DiceType.Void) {
-            return true;
-          } else {
-            return type === diceType || type === DiceType.Omni;
-          }
-        });
-        if (deductionIndex === -1) {
-          break;
-        }
-        const deduction = allDeduction[deductionIndex];
-        deduction[1]--;
-        if (deduction[1] === 0) {
-          allDeduction.splice(deductionIndex, 1);
-        }
-        result.splice(index, 1);
-      }
-    }
-    return result;
+    const order = (d: DiceType) => d === DiceType.Void ? 100 : d;
+    return this._cost.toSorted((a, b) => order(a) - order(b));
   }
+
   isFast() {
     return this._fast;
   }
-  canDeductCost() {
-    return this.cost.length > 0;
+  canDeductVoidCost() {
+    return this.cost.includes(DiceType.Void);
   }
-  canDeductCostOfType(diceType: DiceType) {
-    return this.cost.includes(diceType) || this.cost.includes(DiceType.Void);
+  deductVoidCost(count: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} deduct ${count} [dice:0] from cost.\n`;
+    for (let i = 0; i < count; i++) {
+      const voidIndex = this._cost.indexOf(DiceType.Void);
+      if (voidIndex === -1) {
+        break;
+      }
+      this._cost.splice(voidIndex, 1);
+    }
   }
 
   addCost(type: DiceType, count: number) {
@@ -418,15 +383,7 @@ export class ModifyActionEventArg<
     )} add ${count} [dice:${type}] to cost.\n`;
     if (type === DiceType.Omni) {
       // 增加 Omni 类型：假设原本要求为单色*n，增加该类型的元素骰
-      let originalCost: readonly DiceType[];
-      if (this.isUseSkill()) {
-        originalCost = this.action.skill.definition.requiredCost;
-      } else if (this.isPlayCard()) {
-        originalCost = this.action.card.definition.onPlay.requiredCost;
-      } else {
-        return;
-      }
-      originalCost = originalCost.filter((type) => type !== DiceType.Energy);
+      const originalCost = this.originalDiceCost();
       const targetType = originalCost[0] ?? DiceType.Same;
       if (originalCost.find((type) => type !== targetType)) {
         throw new GiTcgDataError(
@@ -438,18 +395,57 @@ export class ModifyActionEventArg<
       this._cost.push(...new Array<DiceType>(count).fill(type));
     }
   }
-  deductCost(type: DiceType, count: number) {
-    this._log += `${stringifyState(
-      this.caller,
-    )} deduct ${count} [dice:${type}] from cost.\n`;
-    this._deductedCost.push([type, count]);
-  }
   setFastAction(): void {
     if (this._fast) {
       console.warn("Potential error: fast action already set");
     }
     this._log += `${stringifyState(this.caller)} set fast action.\n`;
     this._fast = true;
+  }
+}
+
+export class ModifyAction1EventArg<
+InfoT extends ActionInfoBase,
+> extends ModifyAction0EventArg<InfoT> {
+  canDeductCostOfType(type: Exclude<DiceType, DiceType.Omni | DiceType.Void>) {
+    return this.cost.includes(type) || this.cost.includes(DiceType.Void); 
+  }
+  deductCost(type: Exclude<DiceType, DiceType.Omni>, count: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} deduct ${count} [dice:${type}] from cost.\n`;
+    for (let i = 0; i < count; i++) {
+      // 减有色骰子时：先检查此颜色，再检查无色
+      const index = this._cost.indexOf(type);
+      if (index === -1) {
+        const voidIndex = this._cost.indexOf(DiceType.Void);
+        if (voidIndex === -1) {
+          break;
+        }
+        this._cost.splice(voidIndex, 1);
+      } else {
+        this._cost.splice(index, 1);
+      }
+    }
+  }
+}
+
+export class ModifyAction2EventArg<InfoT extends ActionInfoBase> extends ModifyAction1EventArg<InfoT> {
+  canDeductCost() {
+    return this.cost.length > 0;
+  }
+  deductOmniCost(count: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} deduct ${count} [dice:8] from cost.\n`;
+    this._cost = this.cost.toSpliced(0, count);
+  }
+}
+
+export class ModifyAction3EventArg<InfoT extends ActionInfoBase> extends ModifyAction2EventArg<InfoT> {
+  deductAllCost() {
+    this._log += `${stringifyState(this.caller)} deduct all cost.\n`;
+    this._cost = [];
   }
 }
 
@@ -887,7 +883,10 @@ export const EVENT_MAP = {
   replaceAction: EventArg,
 
   onBeforeAction: PlayerEventArg,
-  modifyAction: ModifyActionEventArg,
+  modifyAction0: ModifyAction0EventArg, // 快速行动、增骰、减无色
+  modifyAction1: ModifyAction1EventArg, // 减有色
+  modifyAction2: ModifyAction2EventArg, // 减任意
+  modifyAction3: ModifyAction3EventArg, // 蒂玛乌斯 & 瓦格纳
   onAction: ActionEventArg,
   onUseSkill: UseSkillEventArg,
   onPlayCard: PlayCardEventArg,

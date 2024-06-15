@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, diceCostOfCard, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -404,6 +404,7 @@ export const NatureAndWisdom = card(331804)
 export const WaterAndJustice = card(331805)
   .since("v4.7.0")
   .costVoid(2)
+  .filter((c) => c.$(`my characters with maxHealth - health > 0`))
   .do((c) => {
     const chs = c.$$("all my characters");
     const chCount = chs.length;
@@ -443,9 +444,10 @@ export const TheBestestTravelCompanion = card(332001)
  */
 export const ChangingShifts = card(332002)
   .since("v3.3.0")
+  .filter((c) => c.$(`my standby characters`))
   .toCombatStatus(303202)
-  .once("deductDiceSwitch")
-  .deductCost(DiceType.Omni, 1)
+  .once("deductOmniDiceSwitch")
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -503,6 +505,7 @@ export const IHaventLostYet = card(332005)
  */
 export const LeaveItToMe = card(332006)
   .since("v3.3.0")
+  .filter((c) => c.$(`my standby characters`))
   .toCombatStatus(303206)
   .once("beforeFastSwitch")
   .setFastAction()
@@ -767,8 +770,8 @@ export const FriendshipEternal = card(332020)
 export const RhythmOfTheGreatDream = card(332021)
   .since("v3.8.0")
   .toCombatStatus(302021)
-  .once("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
-  .deductCost(DiceType.Omni, 1)
+  .once("deductOmniDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -787,8 +790,8 @@ export const WhereIsTheUnseenRazor = card(332022)
   })
   .toCombatStatus(303222)
   .oneDuration()
-  .once("deductDiceCard", (c, e) => e.hasCardTag("weapon"))
-  .deductCost(DiceType.Omni, 2)
+  .once("deductOmniDiceCard", (c, e) => e.hasCardTag("weapon"))
+  .deductOmniCost(2)
   .done();
 
 /**
@@ -828,8 +831,8 @@ export const Lyresong = card(332024)
   })
   .toCombatStatus(303224)
   .oneDuration()
-  .once("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
-  .deductCost(DiceType.Omni, 2)
+  .once("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .deductOmniCost(2)
   .done();
 
 /**
@@ -842,10 +845,17 @@ export const Lyresong = card(332024)
 export const TheBoarPrincess = card(332025)
   .since("v4.3.0")
   .toCombatStatus(303225)
+  .usage(2)
   .oneDuration()
   .on("dispose", (c, e) => e.entity.definition.type === "equipment")
-  .usage(2)
   .generateDice(DiceType.Omni, 1)
+  .consumeUsage()
+  .on("enter", (c, e) => e.overrided &&
+    e.entity.definition.type === "equipment" && (
+    e.entity.definition.tags.includes("weapon") ||
+    e.entity.definition.tags.includes("artifact")))
+  .generateDice(DiceType.Omni, 1)
+  .consumeUsage()
   .done();
 
 /**
@@ -893,11 +903,11 @@ export const MachineAssemblyLine = card(332028)
   .variable("readiness", 0)
   .on("damagedOrHealed")
   .addVariableWithMax("readiness", 1, 2)
-  .once("deductDiceCard", (c, e) =>
+  .once("deductOmniDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
-    e.action.card.definition.onPlay.requiredCost.length <= c.getVariable("readiness"))
+    diceCostOfCard(e.action.card.definition) <= c.getVariable("readiness"))
   .do((c, e) => {
-    e.deductCost(DiceType.Omni, e.cost.length);
+    e.deductOmniCost(e.cost.length);
     c.setVariable("readiness", 0);
   })
   .done();
@@ -922,8 +932,8 @@ export const SunyataFlower = card(332029)
   })
   .toCombatStatus(303229)
   .oneDuration()
-  .once("deductDiceCard", (c, e) => e.action.card.definition.type === "support")
-  .deductCost(DiceType.Omni, 1)
+  .once("deductOmniDiceCard", (c, e) => e.action.card.definition.type === "support")
+  .deductOmniCost(1)
   .done();
 
 /**

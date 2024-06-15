@@ -25,7 +25,7 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType } fr
  */
 export const ChillingPenalty = status(111111)
   .variable("healAfterUseSkill", 0, { visible: false })
-  .on("deductDiceSkill", (c, e) => c.self.master().health >= 6 &&
+  .on("deductElementDiceSkill", (c, e) => c.self.master().health >= 6 &&
     e.isSkillType("normal") && 
     e.canDeductCostOfType(DiceType.Cryo))
   .deductCost(DiceType.Cryo, 1)
@@ -132,11 +132,11 @@ export const DarkgoldWolfbite01 = skill(11116)
   .setVariable("damageOrHealCount", 0)
   .on("damagedOrHealed")
   .addVariable("damageOrHealCount", 1)
-  .on("deductDiceSkill", (c, e) => e.isSkillType("burst"))
+  .on("deductOmniDiceSkill", (c, e) => e.isSkillType("burst"))
   .do((c, e) => {
     const cnt = c.getVariable("damageOrHealCount");
     const deducted = Math.min(Math.floor(cnt / 2), 2);
-    e.deductCost(DiceType.Omni, deducted);
+    e.deductOmniCost(deducted);
   })
   .done();
 

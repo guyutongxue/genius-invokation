@@ -54,7 +54,6 @@ import {
   ElementalTuningInfo,
   EventAndRequest,
   EventArg,
-  ModifyActionEventArg,
   ModifyRollEventArg,
   PlayCardEventArg,
   PlayerEventArg,
@@ -596,7 +595,10 @@ export class Game extends StateMutator {
         throw new GiTcgIOError(who, `User chosen index out of range`);
       }
       const actionInfo = actions[chosenIndex];
-      await this.handleEvent("modifyAction", actionInfo.eventArg);
+      await this.handleEvent("modifyAction0", actionInfo.eventArg);
+      await this.handleEvent("modifyAction1", actionInfo.eventArg);
+      await this.handleEvent("modifyAction2", actionInfo.eventArg);
+      await this.handleEvent("modifyAction3", actionInfo.eventArg);
 
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {

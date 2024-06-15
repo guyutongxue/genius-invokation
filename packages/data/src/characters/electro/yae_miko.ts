@@ -39,8 +39,8 @@ export const SesshouSakura = summon(114081)
  */
 export const RiteOfDispatch = status(114082)
   .oneDuration()
-  .once("deductDiceSkill", (c, e) => e.action.skill.definition.id === YakanEvocationSesshouSakura)
-  .deductCost(DiceType.Omni, 2)
+  .once("deductOmniDiceSkill", (c, e) => e.action.skill.definition.id === YakanEvocationSesshouSakura)
+  .deductOmniCost(2)
   .done();
 
 /**

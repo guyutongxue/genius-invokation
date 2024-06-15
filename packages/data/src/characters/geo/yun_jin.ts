@@ -62,8 +62,8 @@ export const SpearFlourishStatus = status(116072)
  * 可用次数：1（可叠加，最多叠加到4次）
  */
 export const FlyingCloudFlagFormation = combatStatus(116073)
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && c.player.hands.length <= 1)
-  .deductCost(DiceType.Omni, 1)
+  .on("deductOmniDiceSkill", (c, e) => e.isSkillType("normal") && c.player.hands.length <= 1)
+  .deductOmniCost(1)
   .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .usageCanAppend(1, 4)
   .do((c, e) => {

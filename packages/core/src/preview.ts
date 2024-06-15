@@ -19,7 +19,7 @@ import {
   ActionEventArg,
   ActionInfo,
   DisposeOrTuneCardEventArg,
-  ModifyActionEventArg,
+  ModifyAction3EventArg,
   PlayCardEventArg,
   SkillInfo,
   SwitchActiveEventArg,
@@ -30,7 +30,7 @@ import { SkillExecutor } from "./skill_executor";
 import { Writable, allEntities, getActiveCharacterIndex } from "./utils";
 
 export type ActionInfoWithModification = ActionInfo & {
-  eventArg: ModifyActionEventArg<ActionInfo>;
+  eventArg: ModifyAction3EventArg<ActionInfo>;
 };
 
 /**
@@ -45,16 +45,38 @@ export class ActionPreviewer {
   async modifyAndPreview(
     actionInfo: ActionInfo,
   ): Promise<ActionInfoWithModification> {
-    // eventArg1 为预计算，只应用 ActionInfo 的副作用
-    // eventArg2 行动后使用，然后传入 handleEvent 使其真正发生
-    const eventArg1 = new ModifyActionEventArg(this.originalState, actionInfo);
-    const eventArg2 = new ModifyActionEventArg(this.originalState, actionInfo);
+    // eventArg_PreCalc 为预计算，只应用 ActionInfo 的副作用
+    // eventArg_Real 行动后使用，然后传入 handleEvent 使其真正发生
+    const eventArgPreCalc = new ModifyAction3EventArg(this.originalState, actionInfo);
+    const eventArgReal = new ModifyAction3EventArg(this.originalState, actionInfo);
     let [previewState, completed] = await SkillExecutor.previewEvent(
       this.originalState,
-      "modifyAction",
-      eventArg1,
+      "modifyAction0",
+      eventArgPreCalc,
     );
-    const newActionInfo = eventArg1.action;
+    if (completed) {
+      [previewState, completed] = await SkillExecutor.previewEvent(
+        previewState,
+        "modifyAction1",
+        eventArgPreCalc,
+      );
+    }
+    if (completed) {
+      [previewState, completed] = await SkillExecutor.previewEvent(
+        previewState,
+        "modifyAction2",
+        eventArgPreCalc,
+      );
+    }
+    if (completed) {
+      [previewState, completed] = await SkillExecutor.previewEvent(
+        previewState,
+        "modifyAction3",
+        eventArgPreCalc,
+      );
+    }
+    const newActionInfo = eventArgPreCalc.action;
+
     const player = () => previewState.players[this.who];
     const activeCh = () =>
       player().characters[getActiveCharacterIndex(player())];
@@ -181,9 +203,10 @@ export class ActionPreviewer {
         new ActionEventArg(previewState, newActionInfo),
       );
     }
+    console.log(newActionInfo);
     return {
       ...newActionInfo,
-      eventArg: eventArg2,
+      eventArg: eventArgReal,
       preview: this.checkPreviewState(previewState),
     };
   }

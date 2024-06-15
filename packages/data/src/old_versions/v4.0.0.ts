@@ -224,9 +224,9 @@ const Dunyarzad = card(322016)
   .until("v4.0.0")
   .costSame(1)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("ally"))
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("ally"))
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**

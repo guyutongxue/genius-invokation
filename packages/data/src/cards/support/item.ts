@@ -81,9 +81,10 @@ export const Nre = card(323002)
  */
 export const RedFeatherFanStatus = combatStatus(302303)
   .oneDuration()
-  .once("modifyAction", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
+  .usage(1, { visible: false })
+  .on("modifyAction2", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
   .setFastAction()
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -132,10 +133,10 @@ export const TreasureseekingSeelie = card(323004)
 export const SeedDispensary = card(323005)
   .since("v4.3.0")
   .support("item")
-  .on("deductDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) >= 2 && e.action.card.definition.type === "support")
+  .on("deductOmniDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) >= 2 && e.action.card.definition.type === "support")
   .usagePerRound(1)
   .usage(2)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 const CardPlayedExtension = extension(323006, { played: pair(new Set<number>()) })
@@ -159,7 +160,7 @@ export const MementoLens = card(323006)
   .support("item")
   .associateExtension(CardPlayedExtension)
   .variable("totalUsage", 2)
-  .on("deductDiceCard", (c, e) => {
+  .on("deductOmniDiceCard", (c, e) => {
     if (!e.hasOneOfCardTag("weapon", "artifact", "place", "ally")) {
       return false;
     }
@@ -167,7 +168,7 @@ export const MementoLens = card(323006)
   })
   .usagePerRound(1)
   .do((c, e) => {
-    e.deductCost(DiceType.Omni, 2);
+    e.deductOmniCost(2);
     c.addVariable("totalUsage", -1);
     if (c.getVariable("totalUsage") <= 0) {
       c.dispose();
@@ -222,7 +223,7 @@ export const Kusava = card(323008)
   })
   .on("playCard")
   .setVariable("cardPlayed", 1)
-  .on("deductDiceSkill", (c, e) => !c.getVariable("cardPlayed") && c.getVariable("memory") > 0)
-  .deductCost(DiceType.Omni, 1)
+  .on("deductOmniDiceSkill", (c, e) => !c.getVariable("cardPlayed") && c.getVariable("memory") > 0)
+  .deductOmniCost(1)
   .addVariable("memory", -1)
   .done();

@@ -24,7 +24,7 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType, Ski
  */
 export const ExplosiveSpark01 = status(113062)
   .conflictWith(113061)
-  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
+  .on("deductElementDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
   .deductCost(DiceType.Pyro, 1)
   .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
   .usage(2)
@@ -40,7 +40,7 @@ export const ExplosiveSpark01 = status(113062)
  */
 export const ExplosiveSpark = status(113061)
   .conflictWith(113062)
-  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
+  .on("deductElementDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
   .deductCost(DiceType.Pyro, 1)
   .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
   .usage(1)

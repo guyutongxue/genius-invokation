@@ -38,7 +38,7 @@ export const ScarletSeal = status(113081)
  */
 export const Brilliance = status(113082)
   .duration(2)
-  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
+  .on("deductElementDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Pyro))
   .usagePerRound(1)
   .deductCost(DiceType.Pyro, 1)
   .on("endPhase")

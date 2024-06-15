@@ -26,9 +26,9 @@ import { character, skill, summon, card, DamageType, DiceType } from "@gi-tcg/co
 export const SolarIsotoma = summon(116041)
   .endPhaseDamage(DamageType.Geo, 1)
   .usage(3)
-  .on("deductDiceSkill", (c, e) => e.isPlungingAttack() && e.canDeductCostOfType(DiceType.Void))
+  .on("deductVoidDiceSkill", (c, e) => e.isPlungingAttack())
   .usagePerRound(1)
-  .deductCost(DiceType.Void, 1)
+  .deductVoidCost(1)
   .done();
 
 /**

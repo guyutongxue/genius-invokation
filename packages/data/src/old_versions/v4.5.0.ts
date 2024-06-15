@@ -100,11 +100,11 @@ export const YayoiNanatsuki = card(322020)
   .until("v4.5.0")
   .costSame(1)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
   .usagePerRound(1)
   .do((c, e) => {
     const artifactedCh = c.$$("my characters has equipment with tag (artifact)").length;
-    e.deductCost(DiceType.Omni, 1 + artifactedCh);
+    e.deductOmniCost(1 + artifactedCh);
   })
   .done();
 
@@ -118,9 +118,9 @@ export const YayoiNanatsuki = card(322020)
 const SeedDispensary = card(323005)
   .until("v4.5.0")
   .support("item")
-  .on("deductDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) === 1 &&
+  .on("deductOmniDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) === 1 &&
     ["equipment", "support"].includes(e.action.card.definition.type))
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .usage(2)
   .done();
 

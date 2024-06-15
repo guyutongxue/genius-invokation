@@ -70,8 +70,8 @@ export const DazzlingPolyhedron01 = summon(115096)
  * 可用次数：1
  */
 export const ManifestGale = status(115091)
-  .on("deductDiceSkill", (c, e) => e.canDeductCostOfType(DiceType.Void) && e.isChargedAttack())
-  .deductCost(DiceType.Void, 1)
+  .on("deductVoidDiceSkill", (c, e) => e.isChargedAttack())
+  .deductVoidCost(1)
   .on("modifySkillDamageType", (c, e) => e.viaChargedAttack())
   .changeDamageType(DamageType.Anemo)
   .do((c, e) => {

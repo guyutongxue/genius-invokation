@@ -28,8 +28,8 @@ export const AncientCourtyard = card(330001)
   .filter((c) => c.$("my character has equipment with tag (weapon) or my character has equipment with tag (artifact)"))
   .toCombatStatus(300001)
   .oneDuration()
-  .on("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
-  .deductCost(DiceType.Omni, 2)
+  .on("deductOmniDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact"))
+  .deductOmniCost(2)
   .done();
 
 /**

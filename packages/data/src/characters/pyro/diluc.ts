@@ -99,7 +99,7 @@ export const FlowingFlame = card(213011)
   .talent(Diluc)
   .on("enter")
   .useSkill(SearingOnslaught)
-  .on("deductDiceSkill", (c, e) =>
+  .on("deductElementDiceSkill", (c, e) =>
     e.action.skill.definition.id === SearingOnslaught && 
     [1, 2].includes(c.countOfSkill(SearingOnslaught)) &&
     e.canDeductCostOfType(DiceType.Pyro))

@@ -37,8 +37,8 @@ export const Stormeye = summon(115034)
  */
 export const WindsOfHarmony = combatStatus(115033)
   .oneDuration()
-  .once("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+  .once("deductVoidDiceSkill", (c, e) => e.isSkillType("normal"))
+  .deductVoidCost(1)
   .done();
 
 /**
@@ -50,9 +50,9 @@ export const WindsOfHarmony = combatStatus(115033)
  */
 export const Stormzone01 = combatStatus(115032)
   .conflictWith(115031)
-  .on("deductDiceSwitch")
+  .on("deductOmniDiceSwitch")
   .usage(2)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .combatStatus(WindsOfHarmony)
   .done();
 
@@ -65,9 +65,9 @@ export const Stormzone01 = combatStatus(115032)
  */
 export const Stormzone = combatStatus(115031)
   .conflictWith(115032)
-  .on("deductDiceSwitch")
+  .on("deductOmniDiceSwitch")
   .usage(2)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**

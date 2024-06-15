@@ -185,13 +185,11 @@ const Timaeus = card(322003)
   .variable("material", 2)
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("artifact") && c.getVariable("material") >= e.cost.length)
   .usagePerRound(1)
   .do((c, e) => {
-    if (c.getVariable("material") >= e.cost.length) {
-      c.addVariable("material", -e.cost.length);
-      e.deductCost(DiceType.Omni, e.cost.length);
-    }
+    c.addVariable("material", -e.cost.length);
+    e.deductAllCost();
   })
   .done();
 
@@ -211,13 +209,11 @@ const Wagner = card(322004)
   .variable("material", 2)
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductDiceCard", (c, e) => e.hasCardTag("weapon"))
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("weapon") && c.getVariable("material") >= e.cost.length)
   .usagePerRound(1)
   .do((c, e) => {
-    if (c.getVariable("material") >= e.cost.length) {
-      c.addVariable("material", -e.cost.length);
-      e.deductCost(DiceType.Omni, e.cost.length);
-    }
+    c.addVariable("material", -e.cost.length);
+    e.deductAllCost();
   })
   .done();
 

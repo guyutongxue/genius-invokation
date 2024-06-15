@@ -27,7 +27,10 @@ import {
   SwitchActiveInfo,
   UseSkillInfo,
   EventArgOf,
-  ModifyActionEventArg,
+  ModifyAction0EventArg,
+  ModifyAction1EventArg,
+  ModifyAction2EventArg,
+  ModifyAction3EventArg,
   ActionEventArg,
   DamageInfo,
   SkillResult,
@@ -170,34 +173,60 @@ const detailedEventDictionary = {
   roll: defineDescriptor("modifyRoll", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  modifyAction: defineDescriptor("modifyAction", (c, { who }, r) => {
+  modifyAction: defineDescriptor("modifyAction0", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  deductDice: defineDescriptor("modifyAction", (c, e, r) => {
+  modifyAction2: defineDescriptor("modifyAction2", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
+  }),
+  deductElementDice: defineDescriptor("modifyAction1", (c, e, r) => {
+    return checkRelative(c.state, { who: e.who }, r);
+  }),
+  deductOmniDice: defineDescriptor("modifyAction2", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.canDeductCost();
   }),
-  deductDiceSwitch: defineDescriptor("modifyAction", (c, e, r) => {
+  deductOmniDiceSwitch: defineDescriptor("modifyAction2", (c, e, r) => {
     return (
       checkRelative(c.state, { who: e.who }, r) &&
       e.isSwitchActive() &&
       e.canDeductCost()
     );
   }),
-  deductDiceCard: defineDescriptor("modifyAction", (c, e, r) => {
+  deductOmniDiceCard: defineDescriptor("modifyAction2", (c, e, r) => {
     return (
       checkRelative(c.state, { who: e.who }, r) &&
       e.isPlayCard() &&
       e.canDeductCost()
     );
   }),
-  deductDiceSkill: defineDescriptor("modifyAction", (c, e, r) => {
+  deductAllDiceCard: defineDescriptor("modifyAction3", (c, e, r) => {
+    return (
+      checkRelative(c.state, { who: e.who }, r) &&
+      e.isPlayCard() &&
+      e.canDeductCost()
+    );
+  }),
+  deductVoidDiceSkill: defineDescriptor("modifyAction0", (c, e, r) => {
+    return (
+      e.isUseSkill() &&
+      checkRelative(c.state, e.action.skill.caller.id, r) &&
+      e.canDeductVoidCost()
+    );
+  }),
+  deductElementDiceSkill: defineDescriptor("modifyAction1", (c, e, r) => {
+    return (
+      e.isUseSkill() &&
+      checkRelative(c.state, e.action.skill.caller.id, r)
+    );
+  }),
+  deductOmniDiceSkill: defineDescriptor("modifyAction2", (c, e, r) => {
     return (
       e.isUseSkill() &&
       checkRelative(c.state, e.action.skill.caller.id, r) &&
       e.canDeductCost()
     );
   }),
-  beforeFastSwitch: defineDescriptor("modifyAction", (c, e, r) => {
+  beforeFastSwitch: defineDescriptor("modifyAction0", (c, e, r) => {
     return (
       checkRelative(c.state, { who: e.who }, r) &&
       e.isSwitchActive() &&
@@ -330,9 +359,12 @@ const detailedEventDictionary = {
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideEventArgType = {
-  deductDiceSwitch: ModifyActionEventArg<SwitchActiveInfo>;
-  deductDiceCard: ModifyActionEventArg<PlayCardInfo>;
-  deductDiceSkill: ModifyActionEventArg<UseSkillInfo>;
+  deductOmniDiceSwitch: ModifyAction2EventArg<SwitchActiveInfo>;
+  deductOmniDiceCard: ModifyAction2EventArg<PlayCardInfo>;
+  deductAllDiceCard: ModifyAction3EventArg<PlayCardInfo>;
+  deductVoidDiceSkill: ModifyAction0EventArg<UseSkillInfo>;
+  deductElementDiceSkill: ModifyAction1EventArg<UseSkillInfo>;
+  deductOmniDiceSkill: ModifyAction2EventArg<UseSkillInfo>;
 };
 
 type DetailedEventDictionary = typeof detailedEventDictionary;

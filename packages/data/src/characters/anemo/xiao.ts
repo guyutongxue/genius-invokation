@@ -24,7 +24,7 @@ import { character, skill, status, card, DamageType, DiceType, SkillHandle } fro
  * 所附属角色不再附属夜叉傩面时：移除此效果。
  */
 export const ConquerorOfEvilWrathDeity = status(115042)
-  .on("deductDiceSkill", (c, e) => e.action.skill.definition.id === LemniscaticWindCycling && 
+  .on("deductElementDiceSkill", (c, e) => e.action.skill.definition.id === LemniscaticWindCycling && 
     e.canDeductCostOfType(DiceType.Anemo))
   .usage(2)
   .deductCost(DiceType.Anemo, 1)
@@ -47,9 +47,9 @@ export const YakshasMask = status(115041)
   .increaseDamage(1)
   .on("modifySkillDamage", (c, e) => e.viaPlungingAttack())
   .increaseDamage(2)
-  .on("deductDiceSwitch", (c) => c.self.master().isActive())
+  .on("deductOmniDiceSwitch", (c) => c.self.master().isActive())
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .on("selfDispose")
   .do((c) => {
     const conquerorStatus = c.self.master().hasStatus(ConquerorOfEvilWrathDeity);

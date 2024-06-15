@@ -77,8 +77,8 @@ const MintyMeatRolls = card(333008)
   .food()
   .toStatus("@targets.0", 303306)
   .oneDuration()
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+  .on("deductVoidDiceSkill", (c, e) => e.isSkillType("normal"))
+  .deductVoidCost(1)
   .done();
 
 /**

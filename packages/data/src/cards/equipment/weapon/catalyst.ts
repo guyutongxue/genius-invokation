@@ -143,9 +143,9 @@ export const TulaytullahsRemembrance = card(311107)
   .weapon("catalyst")
   .on("modifySkillDamage")
   .increaseDamage(1)
-  .on("deductDiceSkill", (c, e) => e.isChargedAttack() && e.canDeductCostOfType(DiceType.Void))
+  .on("deductVoidDiceSkill", (c, e) => e.isChargedAttack())
   .usagePerRound(2)
-  .deductCost(DiceType.Void, 1)
+  .deductVoidCost(1)
   .done();
 
 /**
@@ -192,8 +192,8 @@ export const TomeOfTheEternalFlow = card(311108)
  */
 export const CashflowSupervisionInEffect = status(301111)
   .oneDuration()
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+  .on("deductVoidDiceSkill", (c, e) => e.isSkillType("normal"))
+  .deductVoidCost(1)
   .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();

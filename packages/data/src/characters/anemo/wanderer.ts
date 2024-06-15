@@ -23,8 +23,8 @@ import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/co
  * 可用次数：1
  */
 export const Descent = status(115062)
-  .on("deductDiceSwitch", (c) => c.self.master().isActive())
-  .deductCost(DiceType.Omni, 1)
+  .on("deductOmniDiceSwitch", (c) => c.self.master().isActive())
+  .deductOmniCost(1)
   .on("switchActive", (c, e) => c.self.master().id === e.switchInfo.from.id)
   .usage(1)
   .damage(DamageType.Anemo, 1)

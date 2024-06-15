@@ -26,11 +26,10 @@ export const SuperlativeSuperstrength = status(116054)
   .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
   .usageCanAppend(1, 3)
   .increaseDamage(1)
-  .on("deductDiceSkill", (c, e) =>
+  .on("deductVoidDiceSkill", (c, e) =>
     e.isChargedAttack() && 
-    c.getVariable("usage") >= 2 && 
-    e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+    c.getVariable("usage") >= 2)
+  .deductVoidCost(1)
   .done();
 
 /**

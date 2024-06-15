@@ -78,8 +78,8 @@ export const NorthernSmokedChicken = card(333004)
   .food()
   .toStatus("@targets.0", 303304)
   .oneDuration()
-  .once("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+  .once("deductVoidDiceSkill", (c, e) => e.isSkillType("normal"))
+  .deductVoidCost(1)
   .done();
 
 /**
@@ -140,9 +140,9 @@ export const MintyMeatRolls = card(333008)
   .food()
   .toStatus("@targets.0", 303306)
   .oneDuration()
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Void))
+  .on("deductVoidDiceSkill", (c, e) => e.isSkillType("normal"))
   .usage(3)
-  .deductCost(DiceType.Void, 1)
+  .deductVoidCost(1)
   .done();
 
 /**
@@ -237,8 +237,8 @@ export const FishAndChips = card(333013)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303311)
   .oneDuration()
-  .once("deductDiceSkill")
-  .deductCost(DiceType.Omni, 1)
+  .once("deductOmniDiceSkill")
+  .deductOmniCost(1)
   .done();
 
 /**

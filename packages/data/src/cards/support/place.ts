@@ -77,9 +77,9 @@ export const DawnWinery = card(321004)
   .since("v3.3.0")
   .costSame(2)
   .support("place")
-  .on("deductDiceSwitch")
+  .on("deductOmniDiceSwitch")
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -172,11 +172,11 @@ export const SumeruCity = card(321010)
   .since("v3.7.0")
   .costSame(2)
   .support("place")
-  .on("deductDice", (c, e) =>
+  .on("deductOmniDice", (c, e) =>
     (e.isUseSkill() || e.hasCardTag("talent")) && 
     (c.player.dice.length <= c.player.hands.length))
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -239,12 +239,12 @@ export const ChinjuForest = card(321012)
 export const GoldenHouse = card(321013)
   .since("v4.0.0")
   .support("place")
-  .on("deductDiceCard", (c, e) =>
+  .on("deductOmniDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
-    e.action.card.definition.onPlay.requiredCost.length >= 3)
+    diceCostOfCard(e.action.card.definition) >= 3)
   .usagePerRound(1)
   .usage(2)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -277,13 +277,13 @@ export const StormterrorsLair = card(321015)
   .support("place")
   .on("enter")
   .drawCards(1, { withTag: "talent" })
-  .on("deductDice", (c, e) => {
+  .on("deductOmniDice", (c, e) => {
     return e.hasCardTag("talent") ||
-      (e.isUseSkill() && e.action.skill.definition.requiredCost.length >= 4);
+      (e.isUseSkill() && e.action.skill.definition.requiredCost.filter((d) => d !== DiceType.Energy).length >= 4);
   })
   .usage(3)
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**

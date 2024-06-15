@@ -64,13 +64,11 @@ export const Timaeus = card(322003)
   .drawCards(1, { withTag: "artifact" })
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("artifact") && c.getVariable("material") >= e.cost.length)
   .usagePerRound(1)
   .do((c, e) => {
-    if (c.getVariable("material") >= e.cost.length) {
-      c.addVariable("material", -e.cost.length);
-      e.deductCost(DiceType.Omni, e.cost.length);
-    }
+    c.addVariable("material", -e.cost.length);
+    e.deductAllCost();
   })
   .done();
 
@@ -97,13 +95,11 @@ export const Wagner = card(322004)
   })
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductDiceCard", (c, e) => e.hasCardTag("weapon"))
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("weapon") && c.getVariable("material") >= e.cost.length)
   .usagePerRound(1)
   .do((c, e) => {
-    if (c.getVariable("material") >= e.cost.length) {
-      c.addVariable("material", -e.cost.length);
-      e.deductCost(DiceType.Omni, e.cost.length);
-    }
+    c.addVariable("material", -e.cost.length);
+    e.deductAllCost();
   })
   .done();
 
@@ -136,8 +132,8 @@ export const Tubby = card(322006)
   .since("v3.3.0")
   .costSame(2)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("place"))
-  .deductCost(DiceType.Omni, 2)
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("place"))
+  .deductOmniCost(2)
   .done();
 
 /**
@@ -239,11 +235,11 @@ export const Ellin = card(322010)
   .since("v3.3.0")
   .costSame(2)
   .support("ally")
-  .on("deductDiceSkill", (c, e) => {
+  .on("deductOmniDiceSkill", (c, e) => {
     return c.countOfSkill(e.action.skill.definition.id as SkillHandle) > 0;
   })
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -292,8 +288,8 @@ export const Hanachirusato = card(322013)
   .on("dispose", (c, e) => e.entity.definition.type === "summon")
   .listenToAll()
   .addVariableWithMax("progress", 1, 3)
-  .on("deductDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact") && c.getVariable("progress") >= 3)
-  .deductCost(DiceType.Omni, 2)
+  .on("deductOmniDiceCard", (c, e) => e.hasOneOfCardTag("weapon", "artifact") && c.getVariable("progress") >= 3)
+  .deductOmniCost(2)
   .dispose()
   .done();
 
@@ -328,9 +324,9 @@ export const Xudong = card(322015)
   .since("v3.7.0")
   .costVoid(2)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("food"))
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("food"))
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 2)
+  .deductOmniCost(2)
   .done();
 
 /**
@@ -344,9 +340,9 @@ export const Dunyarzad = card(322016)
   .since("v3.7.0")
   .costSame(1)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("ally"))
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("ally"))
   .usagePerRound(1)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .on("playCard", (c, e) => e.hasCardTag("ally"))
   .usage(1, { autoDispose: false, visible: false })
   .drawCards(1, { withTag: "ally" })
@@ -380,11 +376,11 @@ export const MasterZhang = card(322018)
   .since("v3.8.0")
   .costSame(1)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("weapon"))
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("weapon"))
   .usagePerRound(1)
   .do((c, e) => {
     const weaponedCh = c.$$("my characters has equipment with tag (weapon)").length;
-    e.deductCost(DiceType.Omni, 1 + weaponedCh);
+    e.deductOmniCost(1 + weaponedCh);
   })
   .done();
 
@@ -415,14 +411,14 @@ export const YayoiNanatsuki = card(322020)
   .since("v3.3.0")
   .costSame(1)
   .support("ally")
-  .on("deductDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .on("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
   .usagePerRound(1)
   .do((c, e) => {
     const artifactedCh = c.$$("my characters has equipment with tag (artifact)");
     if (artifactedCh.length >= 2) {
-      e.deductCost(DiceType.Omni, 2);
+      e.deductOmniCost(2);
     } else {
-      e.deductCost(DiceType.Omni, 1);
+      e.deductOmniCost(1);
     }
   })
   .done();
@@ -463,9 +459,9 @@ export const Mamere: SupportHandle = card(322021)
  * 可用次数：1
  */
 export const SandsAndDream = status(302205)
-  .on("deductDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .on("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
   .usage(1)
-  .deductCost(DiceType.Omni, 3)
+  .deductOmniCost(3)
   .done();
 
 export const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: pair(0) })

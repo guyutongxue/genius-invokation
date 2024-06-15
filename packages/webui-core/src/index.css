@@ -160,9 +160,6 @@
 
   .entity[data-highlight="true"] {
     box-shadow:
-      1px 1px 6px #ffeb56,
-      -1px 1px 6px #ffeb56,
-      1px -1px 6px #ffeb56,
-      -1px -1px 6px #ffeb56;
+      0 0 15px yellow inset;
   }
 }

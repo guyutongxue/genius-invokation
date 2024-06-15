@@ -111,9 +111,8 @@ export const KeenSight = card(217021)
   .talent(Tighnari)
   .on("enter")
   .useSkill(VijnanaphalaMine)
-  .on("deductDiceSkill", (c, e) => 
+  .on("deductVoidDiceSkill", (c, e) => 
     c.self.master().hasStatus(VijnanaSuffusion) && 
-    e.isChargedAttack() &&
-    e.canDeductCostOfType(DiceType.Void))
-  .deductCost(DiceType.Void, 1)
+    e.isChargedAttack())
+  .deductVoidCost(1)
   .done();

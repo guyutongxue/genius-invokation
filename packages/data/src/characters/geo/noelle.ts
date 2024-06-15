@@ -25,7 +25,7 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType } fr
  */
 export const SweepingTimeStatus = status(116022)
   .duration(2)
-  .on("deductDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Geo))
+  .on("deductElementDiceSkill", (c, e) => e.isSkillType("normal") && e.canDeductCostOfType(DiceType.Geo))
   .usagePerRound(1)
   .deductCost(DiceType.Geo, 1)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)

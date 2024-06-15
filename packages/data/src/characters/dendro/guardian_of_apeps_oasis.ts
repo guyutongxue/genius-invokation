@@ -151,9 +151,9 @@ export const HeartOfOasis = combatStatus(127029)
  * 可用次数：1（可叠加到3）
  */
 export const OasisNourishment = combatStatus(127026)
-  .on("deductDiceCard", (c, e) => e.action.card.definition.id === AwakenMyKindred)
+  .on("deductOmniDiceCard", (c, e) => e.action.card.definition.id === AwakenMyKindred)
   .usageCanAppend(1, 3)
-  .deductCost(DiceType.Omni, 1)
+  .deductOmniCost(1)
   .done();
 
 /**
