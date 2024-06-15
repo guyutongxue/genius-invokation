@@ -1,15 +1,19 @@
 import { characters, actionCards } from "../src/index";
+import { version as packageJsonVersion } from "../package.json" with { type: "json" };
+
 const existingVersion = Object.fromEntries(
   [...characters, ...actionCards]
     .filter((d) => d.sinceVersion)
     .map((d) => [d.shareId!, d.sinceVersion!] as const),
 );
 
-const newVersion = "4.8.0";
+const giIndex = packageJsonVersion.indexOf("gi-");
+const newVersion = packageJsonVersion.substring(giIndex + 3).replace(/-/g, ".");
 
 let newVersionChecked = false;
 function checkNewVersion() {
   if (!newVersionChecked) {
+    console.log(newVersion);
     if (Object.values(existingVersion).includes(newVersion)) {
       throw new Error(
         "New version already exists, you may forget to update newVersion!",

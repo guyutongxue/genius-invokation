@@ -27,6 +27,7 @@ import {
   getExcel,
   propPlayingDescription2,
 } from "./utils";
+import { getVersion } from "./version";
 
 const xchoose = getExcel("GCGChooseExcelConfigData");
 
@@ -88,6 +89,7 @@ export function collateActionCards(langCode: string) {
     const deckcardObj = xdeckcard.find((e) => e.id === obj.id);
 
     const shareId = deckcardObj?.[propShareId];
+    const sinceVersion = getVersion(shareId);
     const storyTitle = deckcardObj
       ? locale[deckcardObj.storyTitleTextMapHash]
       : void 0;
@@ -150,6 +152,7 @@ export function collateActionCards(langCode: string) {
     result.push({
       id,
       shareId,
+      sinceVersion,
       obtainable,
       type,
       name,

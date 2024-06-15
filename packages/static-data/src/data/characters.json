@@ -2,6 +2,7 @@
   {
     "id": 1101,
     "shareId": 1,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "甘雨",
     "englishName": "Ganyu",
@@ -92,12 +93,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ganyu",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ganyu"
   },
   {
     "id": 1102,
     "shareId": 2,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "迪奥娜",
     "englishName": "Diona",
@@ -171,12 +172,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diona",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diona"
   },
   {
     "id": 1103,
     "shareId": 3,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "凯亚",
     "englishName": "Kaeya",
@@ -250,12 +251,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaeya",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaeya"
   },
   {
     "id": 1104,
     "shareId": 4,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "重云",
     "englishName": "Chongyun",
@@ -329,12 +330,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Chongyun",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Chongyun"
   },
   {
     "id": 1105,
     "shareId": 5,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "神里绫华",
     "englishName": "Kamisato Ayaka",
@@ -418,12 +419,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayaka",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayaka"
   },
   {
     "id": 1106,
     "shareId": 6,
+    "sinceVersion": "v3.5.0",
     "obtainable": true,
     "name": "优菈",
     "englishName": "Eula",
@@ -497,12 +498,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Eula",
-    "sinceVersion": "v3.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Eula"
   },
   {
     "id": 1107,
     "shareId": 7,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "申鹤",
     "englishName": "Shenhe",
@@ -576,12 +577,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shenhe",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shenhe"
   },
   {
     "id": 1108,
     "shareId": 8,
+    "sinceVersion": "v4.0.0",
     "obtainable": true,
     "name": "七七",
     "englishName": "Qiqi",
@@ -653,12 +654,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qiqi",
-    "sinceVersion": "v4.0.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qiqi"
   },
   {
     "id": 1109,
     "shareId": 279,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "莱依拉",
     "englishName": "Layla",
@@ -730,12 +731,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Layla",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Layla"
   },
   {
     "id": 1110,
     "shareId": 334,
+    "sinceVersion": "v4.5.0",
     "obtainable": true,
     "name": "夏洛蒂",
     "englishName": "Charlotte",
@@ -810,12 +811,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Charlotte",
-    "sinceVersion": "v4.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Charlotte"
   },
   {
     "id": 1111,
     "shareId": 363,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "莱欧斯利",
     "englishName": "Wriothesley",
@@ -918,12 +919,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wriothesley",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wriothesley"
   },
   {
     "id": 1201,
     "shareId": 9,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "芭芭拉",
     "englishName": "Barbara",
@@ -995,12 +996,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Barbara",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Barbara"
   },
   {
     "id": 1202,
     "shareId": 10,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "行秋",
     "englishName": "Xingqiu",
@@ -1074,12 +1075,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xingqiu",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xingqiu"
   },
   {
     "id": 1203,
     "shareId": 11,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "莫娜",
     "englishName": "Mona",
@@ -1163,12 +1164,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Mona",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Mona"
   },
   {
     "id": 1204,
     "shareId": 12,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "达达利亚",
     "englishName": "Tartaglia",
@@ -1272,12 +1273,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tartaglia",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tartaglia"
   },
   {
     "id": 1205,
     "shareId": 13,
+    "sinceVersion": "v3.5.0",
     "obtainable": true,
     "name": "珊瑚宫心海",
     "englishName": "Sangonomiya Kokomi",
@@ -1349,12 +1350,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kokomi",
-    "sinceVersion": "v3.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kokomi"
   },
   {
     "id": 1206,
     "shareId": 14,
+    "sinceVersion": "v3.6.0",
     "obtainable": true,
     "name": "神里绫人",
     "englishName": "Kamisato Ayato",
@@ -1428,12 +1429,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayato",
-    "sinceVersion": "v3.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayato"
   },
   {
     "id": 1207,
     "shareId": 15,
+    "sinceVersion": "v3.8.0",
     "obtainable": true,
     "name": "坎蒂丝",
     "englishName": "Candace",
@@ -1517,12 +1518,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Candace",
-    "sinceVersion": "v3.8.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Candace"
   },
   {
     "id": 1208,
     "shareId": 16,
+    "sinceVersion": "v4.2.0",
     "obtainable": true,
     "name": "妮露",
     "englishName": "Nilou",
@@ -1596,12 +1597,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nilou",
-    "sinceVersion": "v4.2.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nilou"
   },
   {
     "id": 1209,
     "shareId": 280,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "夜兰",
     "englishName": "Yelan",
@@ -1685,12 +1686,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yelan",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yelan"
   },
   {
     "id": 1210,
     "shareId": 335,
+    "sinceVersion": "v4.5.0",
     "obtainable": true,
     "name": "那维莱特",
     "englishName": "Neuvillette",
@@ -1787,12 +1788,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Neuvillette",
-    "sinceVersion": "v4.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Neuvillette"
   },
   {
     "id": 1211,
     "shareId": 364,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "芙宁娜",
     "englishName": "Furina",
@@ -1885,8 +1886,7 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Furina",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Furina"
   },
   {
     "id": 1212,
@@ -1985,6 +1985,7 @@
   {
     "id": 1301,
     "shareId": 17,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "迪卢克",
     "englishName": "Diluc",
@@ -2058,12 +2059,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diluc",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diluc"
   },
   {
     "id": 1302,
     "shareId": 18,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "香菱",
     "englishName": "Xiangling",
@@ -2135,12 +2136,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiangling",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiangling"
   },
   {
     "id": 1303,
     "shareId": 19,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "班尼特",
     "englishName": "Bennett",
@@ -2214,12 +2215,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Bennett",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Bennett"
   },
   {
     "id": 1304,
     "shareId": 20,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "安柏",
     "englishName": "Amber",
@@ -2291,12 +2292,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ambor",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ambor"
   },
   {
     "id": 1305,
     "shareId": 21,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "宵宫",
     "englishName": "Yoimiya",
@@ -2368,12 +2369,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yoimiya",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yoimiya"
   },
   {
     "id": 1306,
     "shareId": 22,
+    "sinceVersion": "v3.4.0",
     "obtainable": true,
     "name": "可莉",
     "englishName": "Klee",
@@ -2447,12 +2448,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Klee",
-    "sinceVersion": "v3.4.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Klee"
   },
   {
     "id": 1307,
     "shareId": 23,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "胡桃",
     "englishName": "Hu Tao",
@@ -2524,12 +2525,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Hutao",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Hutao"
   },
   {
     "id": 1308,
     "shareId": 24,
+    "sinceVersion": "v3.8.0",
     "obtainable": true,
     "name": "烟绯",
     "englishName": "Yanfei",
@@ -2603,12 +2604,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Feiyan",
-    "sinceVersion": "v3.8.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Feiyan"
   },
   {
     "id": 1309,
     "shareId": 25,
+    "sinceVersion": "v4.1.0",
     "obtainable": true,
     "name": "迪希雅",
     "englishName": "Dehya",
@@ -2705,12 +2706,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dehya",
-    "sinceVersion": "v4.1.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dehya"
   },
   {
     "id": 1310,
     "shareId": 281,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "林尼",
     "englishName": "Lyney",
@@ -2803,12 +2804,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Liney",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Liney"
   },
   {
     "id": 1311,
     "shareId": 319,
+    "sinceVersion": "v4.4.0",
     "obtainable": true,
     "name": "托马",
     "englishName": "Thoma",
@@ -2882,12 +2883,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tohma",
-    "sinceVersion": "v4.4.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tohma"
   },
   {
     "id": 1312,
     "shareId": 365,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "辛焱",
     "englishName": "Xinyan",
@@ -2961,12 +2962,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xinyan",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xinyan"
   },
   {
     "id": 1401,
     "shareId": 26,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "菲谢尔",
     "englishName": "Fischl",
@@ -3040,12 +3041,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Fischl",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Fischl"
   },
   {
     "id": 1402,
     "shareId": 27,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "雷泽",
     "englishName": "Razor",
@@ -3119,12 +3120,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Razor",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Razor"
   },
   {
     "id": 1403,
     "shareId": 28,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "刻晴",
     "englishName": "Keqing",
@@ -3198,12 +3199,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Keqing",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Keqing"
   },
   {
     "id": 1404,
     "shareId": 29,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "赛诺",
     "englishName": "Cyno",
@@ -3287,12 +3288,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Cyno",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Cyno"
   },
   {
     "id": 1405,
     "shareId": 30,
+    "sinceVersion": "v3.4.0",
     "obtainable": true,
     "name": "北斗",
     "englishName": "Beidou",
@@ -3376,12 +3377,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Beidou",
-    "sinceVersion": "v3.4.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Beidou"
   },
   {
     "id": 1406,
     "shareId": 31,
+    "sinceVersion": "v3.5.0",
     "obtainable": true,
     "name": "九条裟罗",
     "englishName": "Kujou Sara",
@@ -3455,12 +3456,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sara",
-    "sinceVersion": "v3.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sara"
   },
   {
     "id": 1407,
     "shareId": 32,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "雷电将军",
     "englishName": "Raiden Shogun",
@@ -3542,12 +3543,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shougun",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shougun"
   },
   {
     "id": 1408,
     "shareId": 33,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "八重神子",
     "englishName": "Yae Miko",
@@ -3619,12 +3620,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yae",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yae"
   },
   {
     "id": 1409,
     "shareId": 34,
+    "sinceVersion": "v4.0.0",
     "obtainable": true,
     "name": "丽莎",
     "englishName": "Lisa",
@@ -3698,12 +3699,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Lisa",
-    "sinceVersion": "v4.0.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Lisa"
   },
   {
     "id": 1410,
     "shareId": 35,
+    "sinceVersion": "v4.2.0",
     "obtainable": true,
     "name": "多莉",
     "englishName": "Dori",
@@ -3777,12 +3778,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dori",
-    "sinceVersion": "v4.2.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dori"
   },
   {
     "id": 1411,
     "shareId": 348,
+    "sinceVersion": "v4.6.0",
     "obtainable": true,
     "name": "久岐忍",
     "englishName": "Kuki Shinobu",
@@ -3854,12 +3855,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shinobu",
-    "sinceVersion": "v4.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shinobu"
   },
   {
     "id": 1501,
     "shareId": 36,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "砂糖",
     "englishName": "Sucrose",
@@ -3933,12 +3934,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sucrose",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sucrose"
   },
   {
     "id": 1502,
     "shareId": 37,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "琴",
     "englishName": "Jean",
@@ -4010,12 +4011,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qin",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qin"
   },
   {
     "id": 1503,
     "shareId": 38,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "温迪",
     "englishName": "Venti",
@@ -4089,12 +4090,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Venti",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Venti"
   },
   {
     "id": 1504,
     "shareId": 39,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "魈",
     "englishName": "Xiao",
@@ -4168,12 +4169,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiao",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiao"
   },
   {
     "id": 1505,
     "shareId": 40,
+    "sinceVersion": "v3.8.0",
     "obtainable": true,
     "name": "枫原万叶",
     "englishName": "Kaedehara Kazuha",
@@ -4257,12 +4258,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kazuha",
-    "sinceVersion": "v3.8.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kazuha"
   },
   {
     "id": 1506,
     "shareId": 41,
+    "sinceVersion": "v4.1.0",
     "obtainable": true,
     "name": "流浪者",
     "englishName": "Wanderer",
@@ -4335,12 +4336,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wanderer",
-    "sinceVersion": "v4.1.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wanderer"
   },
   {
     "id": 1507,
     "shareId": 320,
+    "sinceVersion": "v4.4.0",
     "obtainable": true,
     "name": "早柚",
     "englishName": "Sayu",
@@ -4426,12 +4427,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sayu",
-    "sinceVersion": "v4.4.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sayu"
   },
   {
     "id": 1508,
     "shareId": 282,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "琳妮特",
     "englishName": "Lynette",
@@ -4507,12 +4508,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Linette",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Linette"
   },
   {
     "id": 1509,
     "shareId": 349,
+    "sinceVersion": "v4.6.0",
     "obtainable": true,
     "name": "珐露珊",
     "englishName": "Faruzan",
@@ -4586,12 +4587,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Faruzan",
-    "sinceVersion": "v4.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Faruzan"
   },
   {
     "id": 1601,
     "shareId": 42,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "凝光",
     "englishName": "Ningguang",
@@ -4665,12 +4666,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ningguang",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ningguang"
   },
   {
     "id": 1602,
     "shareId": 43,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "诺艾尔",
     "englishName": "Noelle",
@@ -4744,12 +4745,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Noel",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Noel"
   },
   {
     "id": 1603,
     "shareId": 44,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "钟离",
     "englishName": "Zhongli",
@@ -4840,12 +4841,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Zhongli",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Zhongli"
   },
   {
     "id": 1604,
     "shareId": 45,
+    "sinceVersion": "v4.0.0",
     "obtainable": true,
     "name": "阿贝多",
     "englishName": "Albedo",
@@ -4917,12 +4918,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Albedo",
-    "sinceVersion": "v4.0.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Albedo"
   },
   {
     "id": 1605,
     "shareId": 46,
+    "sinceVersion": "v3.6.0",
     "obtainable": true,
     "name": "荒泷一斗",
     "englishName": "Arataki Itto",
@@ -4996,12 +4997,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Itto",
-    "sinceVersion": "v3.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Itto"
   },
   {
     "id": 1606,
     "shareId": 283,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "五郎",
     "englishName": "Gorou",
@@ -5075,12 +5076,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Gorou",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Gorou"
   },
   {
     "id": 1607,
     "shareId": 366,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "云堇",
     "englishName": "Yun Jin",
@@ -5174,12 +5175,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yunjin",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yunjin"
   },
   {
     "id": 1701,
     "shareId": 47,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "柯莱",
     "englishName": "Collei",
@@ -5253,12 +5254,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Collei",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Collei"
   },
   {
     "id": 1702,
     "shareId": 48,
+    "sinceVersion": "v3.6.0",
     "obtainable": true,
     "name": "提纳里",
     "englishName": "Tighnari",
@@ -5332,12 +5333,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tighnari",
-    "sinceVersion": "v3.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tighnari"
   },
   {
     "id": 1703,
     "shareId": 49,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "纳西妲",
     "englishName": "Nahida",
@@ -5428,12 +5429,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nahida",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nahida"
   },
   {
     "id": 1704,
     "shareId": 50,
+    "sinceVersion": "v4.1.0",
     "obtainable": true,
     "name": "瑶瑶",
     "englishName": "Yaoyao",
@@ -5505,12 +5506,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yaoyao",
-    "sinceVersion": "v4.1.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yaoyao"
   },
   {
     "id": 1705,
     "shareId": 51,
+    "sinceVersion": "v4.2.0",
     "obtainable": true,
     "name": "白术",
     "englishName": "Baizhu",
@@ -5582,12 +5583,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Baizhuer",
-    "sinceVersion": "v4.2.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Baizhuer"
   },
   {
     "id": 1706,
     "shareId": 284,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "艾尔海森",
     "englishName": "Alhaitham",
@@ -5661,12 +5662,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Alhatham",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Alhatham"
   },
   {
     "id": 1707,
     "shareId": 336,
+    "sinceVersion": "v4.5.0",
     "obtainable": true,
     "name": "绮良良",
     "englishName": "Kirara",
@@ -5738,12 +5739,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Momoka",
-    "sinceVersion": "v4.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Momoka"
   },
   {
     "id": 1708,
     "shareId": 367,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "卡维",
     "englishName": "Kaveh",
@@ -5817,12 +5818,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaveh",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaveh"
   },
   {
     "id": 2101,
     "shareId": 52,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "愚人众·冰萤术士",
     "englishName": "Fatui Cryo Cicin Mage",
@@ -5896,12 +5897,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusMageice",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusMageice"
   },
   {
     "id": 2102,
     "shareId": 277,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "「女士」",
     "englishName": "La Signora",
@@ -5995,12 +5996,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_LaSignora",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_LaSignora"
   },
   {
     "id": 2103,
     "shareId": 321,
+    "sinceVersion": "v4.4.0",
     "obtainable": true,
     "name": "无相之冰",
     "englishName": "Cryo Hypostasis",
@@ -6084,8 +6085,7 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyice",
-    "sinceVersion": "v4.4.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyice"
   },
   {
     "id": 6301,
@@ -6177,6 +6177,7 @@
   {
     "id": 2201,
     "shareId": 53,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "纯水精灵·洛蒂娅",
     "englishName": "Rhodeia of Loch",
@@ -6263,12 +6264,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Oceanid",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Oceanid"
   },
   {
     "id": 2202,
     "shareId": 54,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "愚人众·藏镜仕女",
     "englishName": "Mirror Maiden",
@@ -6342,12 +6343,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Maidenwater",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Maidenwater"
   },
   {
     "id": 2203,
     "shareId": 350,
+    "sinceVersion": "v4.6.0",
     "obtainable": true,
     "name": "深渊使徒·激流",
     "englishName": "Abyss Herald: Wicked Torrents",
@@ -6468,12 +6469,12 @@
     ],
     "hp": 6,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_InvokerHeraldWater",
-    "sinceVersion": "v4.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_InvokerHeraldWater"
   },
   {
     "id": 2204,
     "shareId": 368,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "吞星之鲸",
     "englishName": "All-Devouring Narwhal",
@@ -6556,12 +6557,12 @@
     ],
     "hp": 5,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ptahur",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ptahur"
   },
   {
     "id": 2301,
     "shareId": 55,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "愚人众·火之债务处理人",
     "englishName": "Fatui Pyro Agent",
@@ -6645,12 +6646,12 @@
     ],
     "hp": 9,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fatuus",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fatuus"
   },
   {
     "id": 2302,
     "shareId": 56,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "深渊咏者·渊火",
     "englishName": "Abyss Lector: Fathomless Flames",
@@ -6744,12 +6745,12 @@
     ],
     "hp": 6,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_DeaconFire",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_DeaconFire"
   },
   {
     "id": 2303,
     "shareId": 285,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "镀金旅团·炽沙叙事人",
     "englishName": "Eremite Scorching Loremaster",
@@ -6863,12 +6864,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Muscleman",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Muscleman"
   },
   {
     "id": 2304,
     "shareId": 351,
+    "sinceVersion": "v4.6.0",
     "obtainable": true,
     "name": "铁甲熔火帝皇",
     "englishName": "Emperor of Fire and Iron",
@@ -6972,12 +6973,12 @@
     ],
     "hp": 6,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_HermitCrabPrimo",
-    "sinceVersion": "v4.6.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_HermitCrabPrimo"
   },
   {
     "id": 2401,
     "shareId": 57,
+    "sinceVersion": "v3.7.0",
     "obtainable": true,
     "name": "无相之雷",
     "englishName": "Electro Hypostasis",
@@ -7085,12 +7086,12 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyelectric",
-    "sinceVersion": "v3.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyelectric"
   },
   {
     "id": 2402,
     "shareId": 286,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "雷音权现",
     "englishName": "Thunder Manifestation",
@@ -7174,12 +7175,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Raijin",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Raijin"
   },
   {
     "id": 2403,
     "shareId": 322,
+    "sinceVersion": "v4.4.0",
     "obtainable": true,
     "name": "千年珍珠骏麟",
     "englishName": "Millennial Pearl Seahorse",
@@ -7273,12 +7274,12 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_SeaHorsePrimo",
-    "sinceVersion": "v4.4.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_SeaHorsePrimo"
   },
   {
     "id": 2404,
     "shareId": 337,
+    "sinceVersion": "v4.5.0",
     "obtainable": true,
     "name": "愚人众·雷萤术士",
     "englishName": "Fatui Electro Cicin Mage",
@@ -7362,12 +7363,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusSummoner",
-    "sinceVersion": "v4.5.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusSummoner"
   },
   {
     "id": 2405,
     "shareId": 369,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "圣骸毒蝎",
     "englishName": "Consecrated Scorpion",
@@ -7452,12 +7453,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_ScorpionSacred",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_ScorpionSacred"
   },
   {
     "id": 2501,
     "shareId": 58,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "魔偶剑鬼",
     "englishName": "Maguu Kenki",
@@ -7544,12 +7545,12 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ningyo",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ningyo"
   },
   {
     "id": 2502,
     "shareId": 287,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "特瓦林",
     "englishName": "Dvalin",
@@ -7664,12 +7665,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dvalin",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dvalin"
   },
   {
     "id": 2503,
     "shareId": 370,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "圣骸飞蛇",
     "englishName": "Consecrated Flying Serpent",
@@ -7764,12 +7765,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_ChrysopeleaSacred",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_ChrysopeleaSacred"
   },
   {
     "id": 2601,
     "shareId": 59,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "丘丘岩盔王",
     "englishName": "Stonehide Lawachurl",
@@ -7854,12 +7855,12 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Bruterock",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Bruterock"
   },
   {
     "id": 2602,
     "shareId": 278,
+    "sinceVersion": "v4.3.0",
     "obtainable": true,
     "name": "若陀龙王",
     "englishName": "Azhdaha",
@@ -7943,8 +7944,7 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dahaka",
-    "sinceVersion": "v4.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dahaka"
   },
   {
     "id": 6601,
@@ -8357,6 +8357,7 @@
   {
     "id": 2701,
     "shareId": 60,
+    "sinceVersion": "v3.3.0",
     "obtainable": true,
     "name": "翠翎恐蕈",
     "englishName": "Jadeplume Terrorshroom",
@@ -8440,12 +8441,12 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fungusgrass",
-    "sinceVersion": "v3.3.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fungusgrass"
   },
   {
     "id": 2702,
     "shareId": 371,
+    "sinceVersion": "v4.7.0",
     "obtainable": true,
     "name": "阿佩普的绿洲守望者",
     "englishName": "Guardian of Apep's Oasis",
@@ -8527,7 +8528,6 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Apep",
-    "sinceVersion": "v4.7.0"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Apep"
   }
 ]

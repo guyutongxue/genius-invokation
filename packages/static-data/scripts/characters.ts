@@ -24,6 +24,7 @@ import {
   xchar,
   xdeckcard,
 } from "./utils";
+import { getVersion } from "./version";
 
 export interface CharacterRawData {
   id: number;
@@ -69,6 +70,7 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
     );
 
     const shareId = deckcardObj?.[propShareId];
+    const sinceVersion = getVersion(shareId);
     const storyTitle = deckcardObj
       ? locale[deckcardObj.storyTitleTextMapHash]
       : void 0;
@@ -93,6 +95,7 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
     result.push({
       id,
       shareId,
+      sinceVersion,
       obtainable,
       name,
       englishName,
