@@ -2,6 +2,10 @@
 
 **仅记录破坏性改动。**
 
+## 0.9.0
+- 重要接口更新：`@gi-tcg/data` 现导出函数以传入版本信息。
+- `CharacterState` 中的主动技能只保存 `id`，不再存储技能定义（技能定义根据版本信息动态查询获得）
+
 ## 0.8.0
 - 重构：`GameState` 中部分全局状态值改为由数据提供的可自定义 `extensions`
 - Mutation `replaceCharacterDefinition` 重命名为 `transformDefinition`

@@ -22,6 +22,7 @@ export {
 export { type GameStateLogEntry, DetailLogType, type DetailLogEntry, serializeGameStateLog, deserializeGameStateLog } from "./log";
 export type * from "./base/state";
 export { type Mutation } from "./base/mutation";
+export { type Version, VERSIONS } from "./base/version";
 export { type GameIO, type PlayerIO, exposeState } from "./io";
 export * from "./error";
 export type * from "@gi-tcg/typings";

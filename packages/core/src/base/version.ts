@@ -50,6 +50,8 @@ export interface VersionInfo {
 }
 
 export interface WithVersionInfo {
+  readonly __definition: string;
+  readonly id: number;
   readonly version: VersionInfo;
 }
 
@@ -74,8 +76,9 @@ export function findVersion<T extends WithVersionInfo>(
     )
     .toSorted((a, b) => versionCompare(a.version.version, b.version.version));
   if (!since || versionCompare(since.version.version, version) > 0) {
+    const describeStr = `${candidates[0].__definition} definition id ${candidates[0].id}`;
     throw new GiTcgCoreInternalError(
-      `No definition found for version ${version}`,
+      `No ${describeStr} found for version ${version}`,
     );
   }
   if (until.length === 0) {

@@ -54,12 +54,13 @@ class CharacterBuilder {
 
   skills(...skills: (SkillHandle | PassiveSkillHandle)[]) {
     for (const sk of skills) {
-      const def = getCharacterSkillDefinition(sk);
-      if (def.type === "passiveSkill") {
+      const untilVer = this._versionInfo.predicate === "until" ? this._versionInfo.version : void 0;
+      const def = getCharacterSkillDefinition(sk, untilVer);
+      if (typeof def === "number") {
+        this._initiativeSkills.push(def);
+      } else {
         this._varConfigs = { ...this._varConfigs, ...def.varConfigs };
         this._skills.push(...def.skills);
-      } else {
-        this._initiativeSkills.push(sk);
       }
     }
     return this;

@@ -13,19 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { Immutable } from "immer";
 import { CardDefinition } from "../base/card";
 import { CharacterDefinition } from "../base/character";
 import { EntityDefinition, VariableConfig } from "../base/entity";
 import { ExtensionDefinition } from "../base/extension";
 import {
-  InitiativeSkillDefinition,
   SkillDefinition,
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { GiTcgDataError } from "../error";
-import { isCharacterInitiativeSkill } from "../utils";
-import { CURRENT_VERSION, Version } from "../base/version";
+import { CURRENT_VERSION, Version, VersionInfo } from "../base/version";
 
 let currentStore: DataStore | null = null;
 
@@ -46,6 +43,7 @@ export function beginRegistration() {
 interface PassiveSkillDefinition {
   id: number;
   type: "passiveSkill";
+  version: VersionInfo,
   varConfigs: Record<string, VariableConfig>;
   skills: readonly TriggeredSkillDefinition[];
 }
@@ -131,30 +129,26 @@ export function registerExtension(value: ExtensionDefinition) {
   register("extensions", value);
 }
 
-function getDefinition<C extends RegisterCategory>(
-  type: C,
-  id: number,
-): DefinitionMap[C] {
-  const store = getCurrentStore();
-  const result = store[type].find((obj) => obj.id === id);
-  if (typeof result === "undefined") {
-    throw new GiTcgDataError(`Unknown ${type} id ${id}`);
-  }
-  return result as DefinitionMap[C];
-}
-
 export function getCharacterSkillDefinition(
   id: number,
-): InitiativeSkillDefinition<any> | PassiveSkillDefinition {
-  try {
-    const def = getDefinition("skills", id);
-    if (!isCharacterInitiativeSkill(def)) {
-      throw new GiTcgDataError("Skill found but not a character skill");
+  untilVer?: string
+): number | PassiveSkillDefinition {
+  const allPassiveSkills = getCurrentStore().passiveSkills;
+  const def = allPassiveSkills.find((sk) => {
+    if (sk.id !== id) {
+      return false;
     }
+    if (typeof untilVer === "undefined") {
+      return sk.version.predicate === "since";
+    } else {
+      return sk.version.predicate === "until" && sk.version.version === untilVer;
+    }
+  });
+  if (typeof def !== "undefined") {
     return def;
-  } catch {}
-  const def = getDefinition("passiveSkills", id);
-  return def;
+  }
+  // Assume this is a initiative skill
+  return id;
 }
 
 export type GameDataGetter = (version?: Version) => GameData;

@@ -452,6 +452,7 @@ export class EntityBuilder<
       registerPassiveSkill({
         id: this.id,
         type: "passiveSkill",
+        version: this._versionInfo,
         varConfigs: this._varConfigs,
         skills: this._skillList,
       });
