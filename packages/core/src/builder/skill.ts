@@ -803,7 +803,9 @@ class InitiativeSkillBuilder<
   type(type: CommonSkillType): this;
   type(type: CommonSkillType | "passive"): any {
     if (type === "passive") {
-      return new EntityBuilder("character", this.skillId);
+      const builder = new EntityBuilder("character", this.skillId);
+      builder._versionInfo = this._versionInfo;
+      return builder;
     }
     if (type === "burst") {
       this._gainEnergy = false;

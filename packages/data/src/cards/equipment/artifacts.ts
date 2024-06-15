@@ -463,7 +463,7 @@ export const ThunderingPoise = card(312011)
  * @description
  * 本回合中，角色「普通攻击」造成的伤害+1。
  */
-const VermillionHereafterEffect = status(301203)
+export const VermillionHereafterEffect = status(301203)
   .oneDuration()
   .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)

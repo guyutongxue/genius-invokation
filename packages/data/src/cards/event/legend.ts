@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card } from "@gi-tcg/core/builder";
+import { DiceType, card, flip } from "@gi-tcg/core/builder";
 
 /**
  * @id 330001
@@ -85,7 +85,7 @@ export const FreshWindOfFreedom = card(330004)
   .do((c) => {
     c.mutate({
       type: "setPlayerFlag",
-      who: (1 - c.self.who) as 0 | 1,
+      who: flip(c.self.who),
       flagName: "skipNextTurn",
       value: true
     });
@@ -114,7 +114,7 @@ export const InEveryHouseAStove = card(330005)
         c.drawCards(1, { withTag: "talent" });
       }
     } else {
-      const count = c.state.roundNumber - 1;
+      const count = Math.min(c.state.roundNumber - 1, 4);
       c.drawCards(count);
     }
   })

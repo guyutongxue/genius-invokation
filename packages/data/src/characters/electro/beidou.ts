@@ -152,6 +152,6 @@ export const LightningStorm = card(214051)
   .on("enter")
   .useSkill(Tidecaller)
   .on("useSkill", (c, e) => e.skill.definition.id === Wavestrider)
-  .usagePerRound(2)
+  .usage(2, { autoDispose: false })
   .characterStatus(SummonerOfLightning, "@master")
   .done();

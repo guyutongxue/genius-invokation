@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, card, DamageType, SummonHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115021
@@ -22,12 +22,12 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段：造成1点风元素伤害，治疗我方出战角色1点。
  * 可用次数：2
  */
-export const DandelionField = summon(115021)
+export const DandelionField: SummonHandle = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
   .heal(1, "my active")
   .on("modifyDamage", (c, e) => 
-    c.$("my characters has equipment with definition id 215021") && // 装备有天赋的琴在场时
+    c.$(`my equipment with definition id ${LandsOfDandelion}`) && // 装备有天赋的琴在场时
     e.type === DamageType.Anemo
   )
   .increaseDamage(1)
@@ -83,7 +83,7 @@ export const Jean = character(1502)
   .since("v3.3.0")
   .tags("anemo", "sword", "mondstadt")
   .health(10)
-  .energy(3)
+  .energy(2)
   .skills(FavoniusBladework, GaleBlade, DandelionBreeze)
   .done();
 

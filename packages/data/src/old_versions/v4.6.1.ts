@@ -15,7 +15,7 @@ const InEveryHouseAStove = card(330005)
   .until("v4.6.1")
   .legend()
   .do((c) => {
-    const count = c.state.roundNumber - 1;
+    const count = Math.min(c.state.roundNumber - 1, 4);
     c.drawCards(count);
   })
   .done();

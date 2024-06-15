@@ -116,7 +116,7 @@ interface SkillContext {
   switchCards(): void;
 
   // 请求执行“重投骰子”
-  reroll(times: number): void;
+  rerollDice(times: number): void;
 
   // 请求执行“执行另一条技能”
   useSkill(skill: SkillHandle | "normal"): void;
