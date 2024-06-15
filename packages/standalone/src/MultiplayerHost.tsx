@@ -90,16 +90,20 @@ export function MultiplayerHost(props: MultiplayerHostProps) {
           playerIos = [guestIo, hostIo] as const;
         }
         setChessboard(<Chessboard />);
-        game = new Game({
-          data: tcgData(),
-          io: {
-            pause,
-            players: playerIos,
-          },
-          playerConfigs,
-        });
-        game.start().catch(onGameError);
-        setStarted(true);
+        try {
+          game = new Game({
+            data: tcgData(),
+            io: {
+              pause,
+              players: playerIos,
+            },
+            playerConfigs,
+          });
+          game.start().catch(onGameError);
+          setStarted(true);
+        } catch (e) {
+          onGameError(e);
+        }
         break;
       }
       case "giveUp": {

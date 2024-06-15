@@ -170,8 +170,8 @@ export function StandaloneParent(props: StandaloneParentProps) {
     }
   };
 
-  const onGameError = (e: unknown, from: Game) => {
-    if (from === game) {
+  const onGameError = (e: unknown, from?: Game) => {
+    if (!from || from === game) {
       console.error(e);
       alert(e instanceof Error ? e.message : String(e));
     }
@@ -189,10 +189,14 @@ export function StandaloneParent(props: StandaloneParentProps) {
   };
 
   const startGame = async () => {
-    await showPopup();
-    const initialGame = new Game(getGameOption());
-    game = initialGame;
-    initialGame.start().catch((e) => onGameError(e, initialGame));
+    try {
+      await showPopup();
+      const initialGame = new Game(getGameOption());
+      game = initialGame;
+      initialGame.start().catch((e) => onGameError(e, initialGame));
+    } catch (e) {
+      onGameError(e);
+    }
   };
 
   const resumeGame = async () => {
