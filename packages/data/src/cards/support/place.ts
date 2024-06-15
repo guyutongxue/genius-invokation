@@ -43,7 +43,7 @@ export const KnightsOfFavoniusLibrary = card(321002)
   .since("v3.3.0")
   .support("place")
   .on("enter")
-  .reroll(1)
+  .rerollDice(1)
   .on("roll")
   .addRerollCount(1)
   .done();

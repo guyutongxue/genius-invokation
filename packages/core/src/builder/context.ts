@@ -1425,7 +1425,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   switchCards() {
     this.emitEvent("requestSwitchHands", this.skillInfo, this.callerArea.who);
   }
-  reroll(times: number) {
+  rerollDice(times: number) {
     this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
   useSkill(skillId: SkillHandle) {

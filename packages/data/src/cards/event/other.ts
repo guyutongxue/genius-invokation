@@ -456,7 +456,7 @@ export const ChangingShifts = card(332002)
  */
 export const TossUp = card(332003)
   .since("v3.3.0")
-  .reroll(2)
+  .rerollDice(2)
   .done();
 
 /**
