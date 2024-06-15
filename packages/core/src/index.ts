@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { version as VERSION } from "../package.json" /* with { type: "json" } */;
+export { version as CORE_VERSION } from "../package.json" /* with { type: "json" } */;
 export {
   Game,
   type GameOption,
@@ -22,7 +22,7 @@ export {
 export { type GameStateLogEntry, DetailLogType, type DetailLogEntry, serializeGameStateLog, deserializeGameStateLog } from "./log";
 export type * from "./base/state";
 export { type Mutation } from "./base/mutation";
-export { type Version, VERSIONS } from "./base/version";
+export { type Version, VERSIONS, CURRENT_VERSION } from "./base/version";
 export { type GameIO, type PlayerIO, exposeState } from "./io";
 export * from "./error";
 export type * from "@gi-tcg/typings";

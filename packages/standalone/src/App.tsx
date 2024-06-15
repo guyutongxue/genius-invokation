@@ -13,13 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Match, Switch, createSignal } from "solid-js";
+import { For, Match, Switch, createSignal } from "solid-js";
 import data from "@gi-tcg/data";
-import { GameStateLogEntry, deserializeGameStateLog } from "@gi-tcg/core";
+import {
+  CURRENT_VERSION,
+  GameStateLogEntry,
+  Version,
+  deserializeGameStateLog,
+} from "@gi-tcg/core";
 import { StandaloneChild } from "./StandaloneChild";
 import { StandaloneParent } from "./StandaloneParent";
 import { MultiplayerHost } from "./MultiplayerHost";
 import { MultiplayerGuest } from "./MultiplayerGuest";
+import { VERSIONS } from "@gi-tcg/core";
 
 enum GameMode {
   NotStarted = 0,
@@ -28,13 +34,17 @@ enum GameMode {
   MultiplayerGuest = 3,
 }
 
-let INIT_DECK0 = "EZGQOBoTA4AQ25cPCVBx9jAPE2EBCDMQE4ExOzQTE7FgCsYQDLFgC9UQDdFQEdkRDTAA";
-let INIT_DECK1 = "AFBA1QoUAZGwSZcNE5AB2TATE4ERODETE6Ax9DMPDECQ9ckQDIGgCMoTDbEQTNEUDcAA";
+let INIT_DECK0 =
+  "EZGQOBoTA4AQ25cPCVBx9jAPE2EBCDMQE4ExOzQTE7FgCsYQDLFgC9UQDdFQEdkRDTAA";
+let INIT_DECK1 =
+  "AFBA1QoUAZGwSZcNE5AB2TATE4ERODETE6Ax9DMPDECQ9ckQDIGgCMoTDbEQTNEUDcAA";
 
 if (import.meta.env.DEV) {
   // Debug here!
-  INIT_DECK0 = "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA";
-  INIT_DECK1 = "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA";
+  INIT_DECK0 =
+    "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA";
+  INIT_DECK1 =
+    "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA";
 }
 
 export function App() {
@@ -46,6 +56,7 @@ export function App() {
   const [logs, setLogs] = createSignal<GameStateLogEntry[]>();
   const [deck0, setDeck0] = createSignal(INIT_DECK0);
   const [deck1, setDeck1] = createSignal(INIT_DECK1);
+  const [version, setVersion] = createSignal<Version>(CURRENT_VERSION);
   const [roomId, setRoomId] = createSignal<string>("");
   const importLog = async () => {
     return new Promise<GameStateLogEntry[]>((resolve, reject) => {
@@ -109,6 +120,17 @@ export function App() {
                   value={deck1()}
                   onInput={(e) => setDeck1(e.currentTarget.value)}
                 />
+              </div>
+              <div class="config-panel__deck">
+                <label>游戏版本</label>
+                <select
+                  value={version()}
+                  onChange={(e) => setVersion(e.target.value as Version)}
+                >
+                  <For each={VERSIONS}>
+                    {(ver) => <option value={ver}>{ver}</option>}
+                  </For>
+                </select>
               </div>
               <div class="config-panel__description">
                 点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
@@ -245,7 +267,12 @@ export function App() {
           </ul>
         </Match>
         <Match when={mode() === GameMode.Standalone}>
-          <StandaloneParent logs={logs()} deck0={deck0()} deck1={deck1()} />
+          <StandaloneParent
+            logs={logs()}
+            deck0={deck0()}
+            deck1={deck1()}
+            version={version()}
+          />
         </Match>
         <Match when={mode() === GameMode.MultiplayerHost}>
           <MultiplayerHost deck={deck0()} />

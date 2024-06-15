@@ -20,6 +20,7 @@ import {
   GameIO,
   GameState,
   GameStateLogEntry,
+  Version,
   exposeState,
   serializeGameStateLog,
 } from "@gi-tcg/core";
@@ -39,6 +40,7 @@ export interface StandaloneParentProps {
   logs?: GameStateLogEntry[];
   deck0: string;
   deck1: string;
+  version: Version;
 }
 
 export function StandaloneParent(props: StandaloneParentProps) {
@@ -183,7 +185,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
       pause,
       players: [childIo, uiIo],
     };
-    return { data: data(), io, playerConfigs };
+    return { data: data(props.version), io, playerConfigs };
   };
 
   const startGame = async () => {

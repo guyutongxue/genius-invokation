@@ -15,15 +15,10 @@
 
 import { GameState } from "./base/state";
 import { Version, VersionInfo } from "./base/version";
-import { GameData, GameDataGetter, getCardDefinition } from "./builder";
-import { VERSION } from ".";
+import { GameData, GameDataGetter } from "./builder";
+import { CORE_VERSION } from ".";
 
 import "core-js/proposals/explicit-resource-management";
-import {
-  getCharacterDefinition,
-  getEntityDefinition,
-  getSkillDefinition,
-} from "./utils";
 
 export interface GameStateLogEntry {
   readonly state: GameState;
@@ -133,7 +128,7 @@ export function serializeGameStateLog(
     });
   }
   return {
-    v: VERSION,
+    v: CORE_VERSION,
     gv: log[0].state.data.version,
     store: store.map(({ value }) => value),
     log: logResult,
