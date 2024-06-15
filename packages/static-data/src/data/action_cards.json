@@ -202,7 +202,8 @@
     "description": "战斗行动：我方出战角色为甘雨时，装备此牌。\n甘雨装备此牌后，立刻使用一次霜华矢。\n装备有此牌的甘雨使用霜华矢时：如果此技能在本场对局中曾经被使用过，则其对敌方后台角色造成的穿透伤害改为3点。\n（牌组中包含甘雨，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1101]使用<color=#FFFFFFFF>$[S11013]</color>时：如果此技能在本场对局中曾经被使用过，则其对敌方后台角色造成的$[K5]改为3点。",
     "playingDescription": "装备有此牌的甘雨使用霜华矢时：如果此技能在本场对局中曾经被使用过，则其对敌方后台角色造成的穿透伤害改为3点。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ganyu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ganyu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 211021,
@@ -239,7 +240,8 @@
     "description": "战斗行动：我方出战角色为迪奥娜时，装备此牌。\n迪奥娜装备此牌后，立刻使用一次猫爪冻冻。\n装备有此牌的迪奥娜生成的猫爪护盾，所提供的护盾值+1。\n（牌组中包含迪奥娜，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1102]生成的<color=#FFFFFFFF>$[C111021]</color>，所提供的$[K6]值+1。",
     "playingDescription": "装备有此牌的迪奥娜生成的猫爪护盾，所提供的护盾值+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Diona"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Diona",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 211031,
@@ -276,7 +278,8 @@
     "description": "战斗行动：我方出战角色为凯亚时，装备此牌。\n凯亚装备此牌后，立刻使用一次霜袭。\n装备有此牌的凯亚使用霜袭后：治疗自身2点。（每回合1次）\n（牌组中包含凯亚，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1103]使用<color=#FFFFFFFF>$[S11032]</color>后：治疗自身2点。（每回合1次）",
     "playingDescription": "装备有此牌的凯亚使用霜袭后：治疗自身2点。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Keaya"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Keaya",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 211041,
@@ -313,7 +316,8 @@
     "description": "战斗行动：我方出战角色为重云时，装备此牌。\n重云装备此牌后，立刻使用一次重华叠霜。\n装备有此牌的重云生成的重华叠霜领域获得以下效果：\n使我方单手剑、双手剑或长柄武器角色的普通攻击伤害+1。\n（牌组中包含重云，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1104]生成的<color=#FFFFFFFF>$[C111041]</color>获得以下效果：\\n使我方单手剑、双手剑或长柄武器角色的<color=#FFFFFFFF>普通攻击</color>伤害+1。",
     "playingDescription": "装备有此牌的重云生成的重华叠霜领域获得以下效果：\n使我方单手剑、双手剑或长柄武器角色的普通攻击伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Chongyun"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Chongyun",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 211051,
@@ -349,7 +353,8 @@
     "description": "装备有此牌的神里绫华生成的冰元素附魔会使所附属角色造成的冰元素伤害+1。\n切换到装备有此牌的神里绫华时：少花费1个元素骰。（每回合1次）\n（牌组中包含神里绫华，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A1105]</color>生成的<color=#FFFFFFFF>$[C111052]</color>会使所附属角色造成的<color=#99FFFFFF>$[K101]</color>+1。\\n切换到装备有此牌的$[A1105]时：少花费1个元素骰。（每回合1次）",
     "playingDescription": "装备有此牌的神里绫华生成的冰元素附魔会使所附属角色造成的冰元素伤害+1。\n切换到装备有此牌的神里绫华时：少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ayaka"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ayaka",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 211061,
@@ -390,7 +395,8 @@
     "description": "战斗行动：我方出战角色为优菈时，装备此牌。\n优菈装备此牌后，立刻使用一次凝浪之光剑。\n装备有此牌的优菈使用冰潮的涡旋时：额外为光降之剑累积1点「能量层数」。\n（牌组中包含优菈，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1106]使用<color=#FFFFFFFF>$[S11062]</color>时：额外为<color=#FFFFFFFF>$[C111062]</color>累积1点<color=#FFFFFFFF>「能量层数」</color>。",
     "playingDescription": "装备有此牌的优菈使用冰潮的涡旋时：额外为光降之剑累积1点「能量层数」。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Eula"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Eula",
+    "sinceVersion": "v3.5.0"
   },
   {
     "id": 211071,
@@ -427,7 +433,8 @@
     "description": "战斗行动：我方出战角色为申鹤时，装备此牌。\n申鹤装备此牌后，立刻使用一次仰灵威召将役咒。\n装备有此牌的申鹤生成的冰翎被我方角色的「普通攻击」触发时：不消耗可用次数。（每回合1次）\n（牌组中包含申鹤，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1107]生成的<color=#FFFFFFFF>$[C111071]</color>被我方角色的<color=#FFFFFFFF>「普通攻击」</color>触发时：不消耗可用次数。（每回合1次）",
     "playingDescription": "装备有此牌的申鹤生成的冰翎被我方角色的「普通攻击」触发时：不消耗可用次数。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Shenhe"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Shenhe",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 211081,
@@ -468,7 +475,8 @@
     "description": "战斗行动：我方出战角色为七七时，装备此牌。\n七七装备此牌后，立刻使用一次仙法·救苦度厄。\n装备有此牌的七七使用仙法·救苦度厄时：复苏我方所有倒下的角色，并治疗其2点。（整场牌局限制2次）\n（牌组中包含七七，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1108]使用<color=#FFFFFFFF>$[S11083]</color>时：复苏我方所有倒下的角色，并治疗其2点。（整场牌局限制2次）",
     "playingDescription": "装备有此牌的七七使用仙法·救苦度厄时：复苏我方所有倒下的角色，并治疗其2点。（整场牌局限制2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Qiqi"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Qiqi",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 211091,
@@ -505,7 +513,8 @@
     "description": "战斗行动：我方出战角色为莱依拉时，装备此牌。\n莱依拉装备此牌后，立刻使用一次垂裳端凝之夜。\n装备有此牌的莱依拉在场时，每当飞星造成伤害，就抓1张牌。\n（牌组中包含莱依拉，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1109]在场时，每当<color=#FFFFFFFF>$[C111092]</color>造成伤害，就抓1张牌。",
     "playingDescription": "装备有此牌的莱依拉在场时，每当飞星造成伤害，就抓1张牌。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Layla"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Layla",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 211101,
@@ -542,7 +551,8 @@
     "description": "战斗行动：我方出战角色为夏洛蒂时，装备此牌。\n夏洛蒂装备此牌后，立刻使用一次取景·冰点构图法。\n装备有此牌的夏洛蒂在场时，我方角色进行普通攻击后：如果对方场上有角色附属有瞬时剪影，则治疗我方出战角色2点。（每回合1次）\n（牌组中包含夏洛蒂，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1110]在场时，我方角色进行普通攻击后：如果对方场上有角色附属有<color=#FFFFFFFF>$[C111101]</color>，则治疗我方出战角色2点。（每回合1次）",
     "playingDescription": "装备有此牌的夏洛蒂在场时，我方角色进行普通攻击后：如果对方场上有角色附属有瞬时剪影，则治疗我方出战角色2点。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Charlotte"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Charlotte",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 211111,
@@ -583,7 +593,8 @@
     "description": "战斗行动：我方出战角色为莱欧斯利时，装备此牌。\n莱欧斯利装备此牌后，立刻使用一次迅烈倾霜拳。\n装备有此牌的莱欧斯利受到伤害或治疗后，此牌累积1点「惩戒计数」。\n装备有此牌的莱欧斯利使用技能时：如果已有3点「惩戒计数」，则消耗3点使此技能伤害+1。\n（牌组中包含莱欧斯利，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1111]受到伤害或治疗后，此牌累积1点<color=#FFFFFFFF>「惩戒计数」</color>。\\n装备有此牌的莱欧斯利使用技能时：如果已有3点<color=#FFFFFFFF>「惩戒计数」</color>，则消耗3点使此技能伤害+1。",
     "playingDescription": "装备有此牌的莱欧斯利受到伤害或治疗后，此牌累积1点「惩戒计数」。\n装备有此牌的莱欧斯利使用技能时：如果已有3点「惩戒计数」，则消耗3点使此技能伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Wriothesley"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Wriothesley",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 212011,
@@ -620,7 +631,8 @@
     "description": "战斗行动：我方出战角色为芭芭拉时，装备此牌。\n芭芭拉装备此牌后，立刻使用一次演唱，开始♪。\n装备有此牌的芭芭拉在场时，歌声之环会使我方执行「切换角色」行动时少花费1个元素骰。（每回合1次）\n（牌组中包含芭芭拉，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1201]在场时，<color=#FFFFFFFF>$[C112011]</color>会使我方执行「切换角色」行动时少花费1个元素骰。（每回合1次）",
     "playingDescription": "装备有此牌的芭芭拉在场时，歌声之环会使我方执行「切换角色」行动时少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Barbara"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Barbara",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 212021,
@@ -657,7 +669,8 @@
     "description": "战斗行动：我方出战角色为行秋时，装备此牌。\n行秋装备此牌后，立刻使用一次画雨笼山。\n装备有此牌的行秋生成的雨帘剑改为可以抵挡至少为2的伤害，并且初始可用次数+1。\n（牌组中包含行秋，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1202]生成的<color=#FFFFFFFF>$[C112021]</color>改为可以抵挡至少为2的伤害，并且初始$[K3]+1。",
     "playingDescription": "装备有此牌的行秋生成的雨帘剑改为可以抵挡至少为2的伤害，并且初始可用次数+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Xingqiu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Xingqiu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 212031,
@@ -698,7 +711,8 @@
     "description": "战斗行动：我方出战角色为莫娜时，装备此牌。\n莫娜装备此牌后，立刻使用一次星命定轨。\n装备有此牌的莫娜出战期间，我方引发的水元素相关反应伤害额外+2。\n（牌组中包含莫娜，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1203]出战期间，我方引发的$[K212]伤害额外+2。",
     "playingDescription": "装备有此牌的莫娜出战期间，我方引发的水元素相关反应伤害额外+2。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Mona"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Mona",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 212041,
@@ -735,7 +749,8 @@
     "description": "战斗行动：我方出战角色为达达利亚时，装备此牌。\n达达利亚装备此牌后，立刻使用一次魔王武装·狂澜。\n结束阶段：装备有此牌的达达利亚在场时，如果敌方出战角色附属有断流，则对其造成1点穿透伤害。\n（牌组中包含达达利亚，才能加入牌组）",
     "rawPlayingDescription": "结束阶段：装备有此牌的$[A1204]在场时，如果敌方出战角色附属有<color=#FFFFFFFF>$[C112043]</color>，则对其造成1点$[K5]。",
     "playingDescription": "结束阶段：装备有此牌的达达利亚在场时，如果敌方出战角色附属有断流，则对其造成1点穿透伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Tartaglia"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Tartaglia",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 212051,
@@ -776,7 +791,8 @@
     "description": "战斗行动：我方出战角色为珊瑚宫心海时，装备此牌。\n珊瑚宫心海装备此牌后，立刻使用一次海人化羽。\n装备有此牌的珊瑚宫心海使用海人化羽时：召唤一个可用次数为1的化海月；如果化海月已在场，则改为使其可用次数+1。\n仪来羽衣存在期间，化海月造成的伤害+1。\n（牌组中包含珊瑚宫心海，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1205]使用<color=#FFFFFFFF>$[S12053]</color>时：召唤一个$[K3]为1的<color=#FFFFFFFF>$[C112051]</color>；如果<color=#FFFFFFFF>$[C112051]</color>已在场，则改为使其$[K3]+1。\\n<color=#FFFFFFFF>$[C112052]</color>存在期间，<color=#FFFFFFFF>$[C112051]</color>造成的伤害+1。",
     "playingDescription": "装备有此牌的珊瑚宫心海使用海人化羽时：召唤一个可用次数为1的化海月；如果化海月已在场，则改为使其可用次数+1。\n仪来羽衣存在期间，化海月造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Kokomi"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Kokomi",
+    "sinceVersion": "v3.5.0"
   },
   {
     "id": 212061,
@@ -813,7 +829,8 @@
     "description": "战斗行动：我方出战角色为神里绫人时，装备此牌。\n神里绫人装备此牌后，立刻使用一次神里流·镜花。\n装备有此牌的神里绫人触发泷廻鉴花的效果时：对于生命值不多于6的敌人伤害额外+2。\n（牌组中包含神里绫人，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1206]触发<color=#FFFFFFFF>$[C112061]</color>的效果时：对于生命值不多于6的敌人伤害额外+2。",
     "playingDescription": "装备有此牌的神里绫人触发泷廻鉴花的效果时：对于生命值不多于6的敌人伤害额外+2。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Ayato"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Ayato",
+    "sinceVersion": "v3.6.0"
   },
   {
     "id": 212071,
@@ -854,7 +871,8 @@
     "description": "战斗行动：我方出战角色为坎蒂丝时，装备此牌。\n坎蒂丝装备此牌后，立刻使用一次圣仪·灰鸰衒潮。\n装备有此牌的坎蒂丝生成的赤冕祝祷额外具有以下效果：我方角色普通攻击后：造成1点水元素伤害。（每回合1次）\n（牌组中包含坎蒂丝，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1207]生成的<color=#FFFFFFFF>$[C112072]</color>额外具有以下效果：<color=#FFFFFFFF>我方角色普通攻击后：</color>造成1点$[K102]。（每回合1次）",
     "playingDescription": "装备有此牌的坎蒂丝生成的赤冕祝祷额外具有以下效果：我方角色普通攻击后：造成1点水元素伤害。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Candace"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Candace",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 212081,
@@ -891,7 +909,8 @@
     "description": "战斗行动：我方出战角色为妮露时，装备此牌。\n妮露装备此牌后，立刻使用一次七域舞步。\n装备有此牌的妮露在场时：我方丰穰之核造成的伤害+1。\n（牌组中包含妮露，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1208]在场时：我方<color=#FFFFFFFF>$[C112082]</color>造成的伤害+1。",
     "playingDescription": "装备有此牌的妮露在场时：我方丰穰之核造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Nilou"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Nilou",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 212091,
@@ -928,7 +947,8 @@
     "description": "战斗行动：我方出战角色为夜兰时，装备此牌。\n夜兰装备此牌后，立刻使用一次萦络纵命索。\n投掷阶段：装备有此牌的夜兰在场，则我方队伍中每有1种元素类型，就使1个元素骰总是投出万能元素。（最多3个）\n（牌组中包含夜兰，才能加入牌组）",
     "rawPlayingDescription": "投掷阶段：装备有此牌的$[A1209]在场，则我方队伍中每有1种元素类型，就使1个元素骰总是投出$[K411]。（最多3个）",
     "playingDescription": "投掷阶段：装备有此牌的夜兰在场，则我方队伍中每有1种元素类型，就使1个元素骰总是投出万能元素。（最多3个）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yelan"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yelan",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 212101,
@@ -969,7 +989,8 @@
     "description": "战斗行动：我方出战角色为那维莱特时，装备此牌。\n那维莱特装备此牌后，立刻使用一次如水从平。\n我方角色引发水元素相关反应后：装备有此牌的那维莱特接下来2次造成的伤害+1。\n（牌组中包含那维莱特，才能加入牌组）",
     "rawPlayingDescription": "我方角色引发$[K212]后：装备有此牌的那维莱特接下来2次造成的伤害+1。",
     "playingDescription": "我方角色引发水元素相关反应后：装备有此牌的那维莱特接下来2次造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Neuvillette"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Neuvillette",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 112113,
@@ -1030,7 +1051,8 @@
     "description": "战斗行动：我方出战角色为芙宁娜时，装备此牌。\n芙宁娜装备此牌后，立刻使用一次孤心沙龙。\n装备有此牌的芙宁娜使用孤心沙龙时，会对自身附属万众瞩目。（角色普通攻击时根据形态触发不同效果）\n（牌组中包含芙宁娜，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1211]使用<color=#FFFFFFFF>$[S12123]</color>时，会对自身附属<color=#FFFFFFFF>$[K1030]</color>。（角色普通攻击时根据形态触发不同效果）",
     "playingDescription": "装备有此牌的芙宁娜使用孤心沙龙时，会对自身附属万众瞩目。（角色普通攻击时根据形态触发不同效果）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Furina"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Furina",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 213011,
@@ -1067,7 +1089,8 @@
     "description": "战斗行动：我方出战角色为迪卢克时，装备此牌。\n迪卢克装备此牌后，立刻使用一次逆焰之刃。\n装备有此牌的迪卢克每回合第2次与第3次使用逆焰之刃时：少花费1个火元素。\n（牌组中包含迪卢克，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1301]每回合第2次与第3次使用<color=#FFFFFFFF>$[S13012]</color>时：少花费1个{SPRITE_PRESET#1103}<color=#FF9999FF>火元素</color>。",
     "playingDescription": "装备有此牌的迪卢克每回合第2次与第3次使用逆焰之刃时：少花费1个火元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Diluc"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Diluc",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 213021,
@@ -1104,7 +1127,8 @@
     "description": "战斗行动：我方出战角色为香菱时，装备此牌。\n香菱装备此牌后，立刻使用一次锅巴出击。\n装备有此牌的香菱使用锅巴出击时：自身也会造成1点火元素伤害。\n（牌组中包含香菱，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1302]使用<color=#FFFFFFFF>$[S13022]</color>时：自身也会造成1点$[K103]。",
     "playingDescription": "装备有此牌的香菱使用锅巴出击时：自身也会造成1点火元素伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Xiangling"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Xiangling",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 213031,
@@ -1145,7 +1169,8 @@
     "description": "战斗行动：我方出战角色为班尼特时，装备此牌。\n班尼特装备此牌后，立刻使用一次美妙旅程。\n装备有此牌的班尼特生成的鼓舞领域，其伤害提升效果改为总是生效，不再具有生命值限制。\n（牌组中包含班尼特，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1303]生成的<color=#FFFFFFFF>$[C113031]</color>，其伤害提升效果改为总是生效，不再具有生命值限制。",
     "playingDescription": "装备有此牌的班尼特生成的鼓舞领域，其伤害提升效果改为总是生效，不再具有生命值限制。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Bennett"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Bennett",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 213041,
@@ -1182,7 +1207,8 @@
     "description": "战斗行动：我方出战角色为安柏时，装备此牌。\n安柏装备此牌后，立刻使用一次爆弹玩偶。\n安柏普通攻击后：如果此牌和兔兔伯爵仍在场，则引爆兔兔伯爵，造成4点火元素伤害。\n（牌组中包含安柏，才能加入牌组）",
     "rawPlayingDescription": "$[A1304]<color=#FFFFFFFF>普通攻击</color>后：如果此牌和<color=#FFFFFFFF>$[C113041]</color>仍在场，则引爆<color=#FFFFFFFF>$[C113041]</color>，造成4点$[K103]。",
     "playingDescription": "安柏普通攻击后：如果此牌和兔兔伯爵仍在场，则引爆兔兔伯爵，造成4点火元素伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Ambor"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Ambor",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 213051,
@@ -1219,7 +1245,8 @@
     "description": "战斗行动：我方出战角色为宵宫时，装备此牌。\n宵宫装备此牌后，立刻使用一次焰硝庭火舞。\n装备有此牌的宵宫所生成的庭火焰硝触发后额外造成1点火元素伤害。\n（牌组中包含宵宫，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1305]所生成的<color=#FFFFFFFF>$[C113051]</color>触发后额外造成1点$[K103]。",
     "playingDescription": "装备有此牌的宵宫所生成的庭火焰硝触发后额外造成1点火元素伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Yoyimiya"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Yoyimiya",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 213061,
@@ -1256,7 +1283,8 @@
     "description": "战斗行动：我方出战角色为可莉时，装备此牌。\n可莉装备此牌后，立刻使用一次蹦蹦炸弹。\n装备有此牌的可莉生成的爆裂火花的可用次数+1。\n（牌组中包含可莉，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1306]生成的<color=#FFFFFFFF>$[C113061]</color>的$[K3]+1。",
     "playingDescription": "装备有此牌的可莉生成的爆裂火花的可用次数+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Klee"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Klee",
+    "sinceVersion": "v3.4.0"
   },
   {
     "id": 213071,
@@ -1293,7 +1321,8 @@
     "description": "战斗行动：我方出战角色为胡桃时，装备此牌。\n胡桃装备此牌后，立刻使用一次蝶引来生。\n装备有此牌的胡桃在生命值不多于6时：造成的火元素伤害+1。\n（牌组中包含胡桃，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1307]在生命值不多于6时：造成的$[K103]+1。",
     "playingDescription": "装备有此牌的胡桃在生命值不多于6时：造成的火元素伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Hutao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Hutao",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 213081,
@@ -1334,7 +1363,8 @@
     "description": "战斗行动：我方出战角色为烟绯时，装备此牌。\n烟绯装备此牌后，立刻使用一次火漆制印。\n装备有此牌的烟绯进行重击时：对生命值不多于6的敌人造成的伤害+1；如果触发了丹火印，则在技能结算后抓1张牌。\n（牌组中包含烟绯，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1308]进行$[K51]时：对生命值不多于6的敌人造成的伤害+1；如果触发了$[K1010]，则在技能结算后抓1张牌。",
     "playingDescription": "装备有此牌的烟绯进行重击时：对生命值不多于6的敌人造成的伤害+1；如果触发了丹火印，则在技能结算后抓1张牌。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Feiyan"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Feiyan",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 213091,
@@ -1371,7 +1401,8 @@
     "description": "战斗行动：我方出战角色为迪希雅时，装备此牌。\n迪希雅装备此牌后，立刻使用一次熔铁流狱。\n结束阶段：如果装备有此牌的迪希雅生命值不多于6，则治疗该角色2点。\n（牌组中包含迪希雅，才能加入牌组）",
     "rawPlayingDescription": "结束阶段：如果装备有此牌的$[A1309]生命值不多于6，则治疗该角色2点。",
     "playingDescription": "结束阶段：如果装备有此牌的迪希雅生命值不多于6，则治疗该角色2点。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Dehya"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Dehya",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 213101,
@@ -1408,7 +1439,8 @@
     "description": "战斗行动：我方出战角色为林尼时，装备此牌。\n林尼装备此牌后，立刻使用一次隐具魔术箭。\n装备有此牌的林尼在场时，林尼自身和怪笑猫猫帽对具有火元素附着的角色造成的伤害+2。（每回合1次）\n（牌组中包含林尼，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1310]在场时，$[A1310]自身和<color=#FFFFFFFF>$[C113101]</color>对具有{SPRITE_PRESET#2103}<color=#FF9999FF>火元素附着</color>的角色造成的伤害+2。（每回合1次）",
     "playingDescription": "装备有此牌的林尼在场时，林尼自身和怪笑猫猫帽对具有火元素附着的角色造成的伤害+2。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Liney"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Liney",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 213111,
@@ -1449,7 +1481,8 @@
     "description": "战斗行动：我方出战角色为托马时，装备此牌。\n托马装备此牌后，立刻使用一次真红炽火之大铠。\n装备有此牌的托马生成的炽火大铠，初始可用次数+1。\n（牌组中包含托马，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1311]生成的<color=#FFFFFFFF>$[C113112]</color>，初始$[K3]+1。",
     "playingDescription": "装备有此牌的托马生成的炽火大铠，初始可用次数+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Thoma"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Thoma",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 213121,
@@ -1490,7 +1523,8 @@
     "description": "战斗行动：我方出战角色为辛焱时，装备此牌。\n辛焱装备此牌后，立刻使用一次炎舞。\n装备有此牌的辛焱使用技能时：如果我方手牌数量不多于1，则造成的伤害+2。（每回合1次）\n（牌组中包含辛焱，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1312]使用技能时：如果我方手牌数量不多于1，则造成的伤害+2。（每回合1次）",
     "playingDescription": "装备有此牌的辛焱使用技能时：如果我方手牌数量不多于1，则造成的伤害+2。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Xinyan"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Xinyan",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 214011,
@@ -1527,7 +1561,8 @@
     "description": "战斗行动：我方出战角色为菲谢尔时，装备此牌。\n菲谢尔装备此牌后，立刻使用一次夜巡影翼。\n装备有此牌的菲谢尔生成的奥兹，会在菲谢尔普通攻击后造成2点雷元素伤害。（需消耗可用次数）\n（牌组中包含菲谢尔，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1401]生成的<color=#FFFFFFFF>$[C114011]</color>，会在$[A1401]<color=#FFFFFFFF>普通攻击</color>后造成2点$[K104]。（需消耗$[K3]）",
     "playingDescription": "装备有此牌的菲谢尔生成的奥兹，会在菲谢尔普通攻击后造成2点雷元素伤害。（需消耗可用次数）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Fischl"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Fischl",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 214021,
@@ -1564,7 +1599,8 @@
     "description": "战斗行动：我方出战角色为雷泽时，装备此牌。\n雷泽装备此牌后，立刻使用一次利爪与苍雷。\n装备有此牌的雷泽使用利爪与苍雷后：使我方一个雷元素角色获得1点充能。（每回合1次，出战角色优先）\n（牌组中包含雷泽，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1402]使用<color=#FFFFFFFF>$[S14022]</color>后：使我方一个雷元素角色获得1点充能。（每回合1次，出战角色优先）",
     "playingDescription": "装备有此牌的雷泽使用利爪与苍雷后：使我方一个雷元素角色获得1点充能。（每回合1次，出战角色优先）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Razor"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Razor",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 114031,
@@ -1633,7 +1669,8 @@
     "description": "战斗行动：我方出战角色为刻晴时，装备此牌。\n刻晴装备此牌后，立刻使用一次星斗归位。\n装备有此牌的刻晴生成的雷元素附魔获得以下效果：\n初始持续回合+1，并且会使所附属角色造成的雷元素伤害+1。\n（牌组中包含刻晴，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1403]生成的<color=#FFFFFFFF>$[C114032]</color>获得以下效果：\\n初始$[K4]+1，并且会使所附属角色造成的$[K104]+1。",
     "playingDescription": "装备有此牌的刻晴生成的雷元素附魔获得以下效果：\n初始持续回合+1，并且会使所附属角色造成的雷元素伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Keqing"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Keqing",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 214041,
@@ -1670,7 +1707,8 @@
     "description": "战斗行动：我方出战角色为赛诺时，装备此牌。\n赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。\n装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。\n（牌组中包含赛诺，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1404]在<color=#FFFFFFFF>$[C114041]</color>的「凭依」级数为偶数时，使用<color=#FFFFFFFF>$[S14042]</color>造成的伤害+1。",
     "playingDescription": "装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Cyno"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Cyno",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 214051,
@@ -1707,7 +1745,8 @@
     "description": "战斗行动：我方出战角色为北斗时，装备此牌。\n北斗装备此牌后，立刻使用一次捉浪。\n装备有此牌的北斗使用踏潮后：使北斗本回合内「普通攻击」少花费1个无色元素。（最多触发2次）\n（牌组中包含北斗，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1405]使用<color=#FFFFFFFF>$[S14054]</color>后：使$[A1405]本回合内「普通攻击」少花费1个$[K309]。（最多触发2次）",
     "playingDescription": "装备有此牌的北斗使用踏潮后：使北斗本回合内「普通攻击」少花费1个无色元素。（最多触发2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Beidou"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Beidou",
+    "sinceVersion": "v3.4.0"
   },
   {
     "id": 214061,
@@ -1744,7 +1783,8 @@
     "description": "战斗行动：我方出战角色为九条裟罗时，装备此牌。\n九条裟罗装备此牌后，立刻使用一次鸦羽天狗霆雷召咒。\n装备有此牌的九条裟罗在场时，我方附属有鸣煌护持的雷元素角色，元素战技和元素爆发造成的伤害额外+1。\n（牌组中包含九条裟罗，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1406]在场时，我方附属有<color=#FFFFFFFF>$[C114063]</color>的{SPRITE_PRESET#2104}<color=#FFACFFFF>雷元素</color>角色，<color=#FFFFFFFF>元素战技</color>和<color=#FFFFFFFF>元素爆发</color>造成的伤害额外+1。",
     "playingDescription": "装备有此牌的九条裟罗在场时，我方附属有鸣煌护持的雷元素角色，元素战技和元素爆发造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Sara"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Sara",
+    "sinceVersion": "v3.5.0"
   },
   {
     "id": 214071,
@@ -1785,7 +1825,8 @@
     "description": "战斗行动：我方出战角色为雷电将军时，装备此牌。\n雷电将军装备此牌后，立刻使用一次奥义·梦想真说。\n装备有此牌的雷电将军使用奥义·梦想真说时：每消耗1点「愿力」，都使造成的伤害额外+1。\n（牌组中包含雷电将军，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1407]使用<color=#FFFFFFFF>$[S14073]</color>时：每消耗1点<color=#FFFFFFFF>「愿力」</color>，都使造成的伤害额外+1。",
     "playingDescription": "装备有此牌的雷电将军使用奥义·梦想真说时：每消耗1点「愿力」，都使造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Shougun"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Shougun",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 214081,
@@ -1826,7 +1867,8 @@
     "description": "战斗行动：我方出战角色为八重神子时，装备此牌。\n八重神子装备此牌后，立刻使用一次大密法·天狐显真。\n装备有此牌的八重神子通过大密法·天狐显真消灭了杀生樱后：本回合下次使用野干役咒·杀生樱时少花费2个元素骰。\n（牌组中包含八重神子，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1408]通过<color=#FFFFFFFF>$[S14083]</color>消灭了<color=#FFFFFFFF>$[C114081]</color>后：本回合下次使用<color=#FFFFFFFF>$[S14082]</color>时少花费2个元素骰。",
     "playingDescription": "装备有此牌的八重神子通过大密法·天狐显真消灭了杀生樱后：本回合下次使用野干役咒·杀生樱时少花费2个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yae"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yae",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 214091,
@@ -1862,7 +1904,8 @@
     "description": "切换到装备有此牌的丽莎后：使敌方出战角色附属引雷。（每回合1次）\n（牌组中包含丽莎，才能加入牌组）",
     "rawPlayingDescription": "切换到装备有此牌的<color=#FFFFFFFF>$[A1409]</color>后：使敌方出战角色附属<color=#FFFFFFFF>$[C114091]</color>。（每回合1次）",
     "playingDescription": "切换到装备有此牌的丽莎后：使敌方出战角色附属引雷。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Lisa"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Lisa",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 214101,
@@ -1903,7 +1946,8 @@
     "description": "战斗行动：我方出战角色为多莉时，装备此牌。\n多莉装备此牌后，立刻使用一次卡萨扎莱宫的无微不至。\n装备有此牌的多莉所召唤的灯中幽精，对生命值不多于6的角色造成的治疗+1，使没有充能的角色获得充能时获得量+1。\n（牌组中包含多莉，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1410]所召唤的<color=#FFFFFFFF>$[C114102]</color>，对生命值不多于6的角色造成的治疗+1，使没有$[K310]的角色获得$[K310]时获得量+1。",
     "playingDescription": "装备有此牌的多莉所召唤的灯中幽精，对生命值不多于6的角色造成的治疗+1，使没有充能的角色获得充能时获得量+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Dori"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Dori",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 214111,
@@ -1944,7 +1988,8 @@
     "description": "战斗行动：我方出战角色为久岐忍时，装备此牌。\n久岐忍装备此牌后，立刻使用一次御咏鸣神刈山祭。\n装备有此牌的久岐忍被击倒时：角色免于被击倒，并治疗该角色到1点生命值。（每回合1次）\n如果装备有此牌的久岐忍生命值不多于5，则该角色造成的伤害+1。\n（牌组中包含久岐忍，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1411]被击倒时：角色免于被击倒，并治疗该角色到1点生命值。（每回合1次）\\n如果装备有此牌的$[A1411]生命值不多于5，则该角色造成的伤害+1。",
     "playingDescription": "装备有此牌的久岐忍被击倒时：角色免于被击倒，并治疗该角色到1点生命值。（每回合1次）\n如果装备有此牌的久岐忍生命值不多于5，则该角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Shinobu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Shinobu",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 215011,
@@ -1985,7 +2030,8 @@
     "description": "战斗行动：我方出战角色为砂糖时，装备此牌。\n砂糖装备此牌后，立刻使用一次禁·风灵作成·柒伍同构贰型。\n装备有此牌的砂糖生成的大型风灵已转换成另一种元素后：我方造成的此类元素伤害+1。\n（牌组中包含砂糖，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1501]生成的<color=#FFFFFFFF>$[C115011]</color>已转换成另一种元素后：我方造成的此类元素伤害+1。",
     "playingDescription": "装备有此牌的砂糖生成的大型风灵已转换成另一种元素后：我方造成的此类元素伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Sucrose"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Sucrose",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 215021,
@@ -2026,7 +2072,8 @@
     "description": "战斗行动：我方出战角色为琴时，装备此牌。\n琴装备此牌后，立刻使用一次蒲公英之风。\n装备有此牌的琴在场时，蒲公英领域会使我方造成的风元素伤害+1。\n（牌组中包含琴，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1502]在场时，<color=#FFFFFFFF>$[C115021]</color>会使我方造成的<color=#80FFD7FF>$[K105]</color>+1。",
     "playingDescription": "装备有此牌的琴在场时，蒲公英领域会使我方造成的风元素伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Qin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Qin",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 215031,
@@ -2063,7 +2110,8 @@
     "description": "战斗行动：我方出战角色为温迪时，装备此牌。\n温迪装备此牌后，立刻使用一次高天之歌。\n装备有此牌的温迪生成的风域触发后，会使本回合中我方角色下次「普通攻击」少花费1个无色元素。\n（牌组中包含温迪，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1503]生成的<color=#FFFFFFFF>$[C115031]</color>触发后，会使本回合中我方角色下次<color=#FFFFFFFF>「普通攻击」</color>少花费1个$[K309]。",
     "playingDescription": "装备有此牌的温迪生成的风域触发后，会使本回合中我方角色下次「普通攻击」少花费1个无色元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Venti"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Venti",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 215041,
@@ -2104,7 +2152,8 @@
     "description": "战斗行动：我方出战角色为魈时，装备此牌。\n魈装备此牌后，立刻使用一次靖妖傩舞。\n装备有此牌的魈附属夜叉傩面期间，使用风轮两立时少花费1个风元素。（每附属1次夜叉傩面，可触发2次）\n（牌组中包含魈，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1504]附属<color=#FFFFFFFF>$[C115041]</color>期间，使用<color=#FFFFFFFF>$[S15042]</color>时少花费1个{SPRITE_PRESET#1105}<color=#80FFD7FF>风元素</color>。（每附属1次<color=#FFFFFFFF>$[C115041]</color>，可触发2次）",
     "playingDescription": "装备有此牌的魈附属夜叉傩面期间，使用风轮两立时少花费1个风元素。（每附属1次夜叉傩面，可触发2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Xiao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Xiao",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 215051,
@@ -2141,7 +2190,8 @@
     "description": "战斗行动：我方出战角色为枫原万叶时，装备此牌。\n枫原万叶装备此牌后，立刻使用一次千早振。\n装备有此牌的枫原万叶引发扩散反应后：使我方角色和召唤物接下来2次所造成的被扩散元素类型的伤害+1。（每种元素类型分别计算次数）\n（牌组中包含枫原万叶，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1505]引发扩散反应后：使我方角色和召唤物接下来2次所造成的被扩散元素类型的伤害+1。（每种元素类型分别计算次数）",
     "playingDescription": "装备有此牌的枫原万叶引发扩散反应后：使我方角色和召唤物接下来2次所造成的被扩散元素类型的伤害+1。（每种元素类型分别计算次数）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Kazuha"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Kazuha",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 215061,
@@ -2178,7 +2228,8 @@
     "description": "战斗行动：我方出战角色为{REALNAME[ID(1)时，装备此牌。\n#{REALNAME[ID(1)装备此牌后，立刻使用一次羽画·风姿华歌。\n装备有此牌的#{REALNAME[ID(1)在优风倾姿状态下进行重击后：下次从该角色执行「切换角色」行动时少花费1个元素骰，并且造成1点风元素伤害。\n（牌组中包含#{REALNAME[ID(1)，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1506]在<color=#FFFFFFFF>$[C115061]</color>状态下进行$[K51]后：下次从该角色执行「切换角色」行动时少花费1个元素骰，并且造成1点$[K105]。",
     "playingDescription": "装备有此牌的{REALNAME[ID(1)在优风倾姿状态下进行重击后：下次从该角色执行「切换角色」行动时少花费1个元素骰，并且造成1点风元素伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Wanderer"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Wanderer",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 215071,
@@ -2215,7 +2266,8 @@
     "description": "战斗行动：我方出战角色为早柚时，装备此牌。\n早柚装备此牌后，立刻使用一次呜呼流·风隐急进。\n装备有此牌的早柚为出战角色期间，我方引发扩散反应时：抓2张牌。（每回合1次）\n（牌组中包含早柚，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1507]为出战角色期间，我方引发扩散反应时：抓2张牌。（每回合1次）",
     "playingDescription": "装备有此牌的早柚为出战角色期间，我方引发扩散反应时：抓2张牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Sayu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Sayu",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 215081,
@@ -2252,7 +2304,8 @@
     "description": "战斗行动：我方出战角色为琳妮特时，装备此牌。\n琳妮特装备此牌后，立刻使用一次谜影障身法。\n装备有此牌的琳妮特每回合第二次使用谜影障身法时：伤害+2，并强制敌方切换到前一个角色。\n（牌组中包含琳妮特，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1508]每回合第二次使用<color=#FFFFFFFF>$[S15082]</color>时：伤害+2，并强制敌方切换到前一个角色。",
     "playingDescription": "装备有此牌的琳妮特每回合第二次使用谜影障身法时：伤害+2，并强制敌方切换到前一个角色。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Linette"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Linette",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 215091,
@@ -2293,7 +2346,8 @@
     "description": "战斗行动：我方出战角色为珐露珊时，装备此牌。\n珐露珊装备此牌后，立刻使用一次抟风秘道。\n装备有此牌的珐露珊所生成的赫耀多方面体，会在其入场时和行动阶段开始时生成1个风元素。\n（牌组中包含珐露珊，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1509]所生成的<color=#FFFFFFFF>$[C115093]</color>，会在其入场时和行动阶段开始时生成1个<color=#80FFD7FF>$[K305]</color>。",
     "playingDescription": "装备有此牌的珐露珊所生成的赫耀多方面体，会在其入场时和行动阶段开始时生成1个风元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Faruzan"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Faruzan",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 216011,
@@ -2330,7 +2384,8 @@
     "description": "战斗行动：我方出战角色为凝光时，装备此牌。\n凝光装备此牌后，立刻使用一次璇玑屏。\n装备有此牌的凝光在场时，璇玑屏会使我方造成的岩元素伤害+1。\n（牌组中包含凝光，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1601]在场时，<color=#FFFFFFFF>$[C116011]</color>会使我方造成的<color=#FFE699FF>$[K106]</color>+1。",
     "playingDescription": "装备有此牌的凝光在场时，璇玑屏会使我方造成的岩元素伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ningguang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ningguang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 216021,
@@ -2367,7 +2422,8 @@
     "description": "战斗行动：我方出战角色为诺艾尔时，装备此牌。\n诺艾尔装备此牌后，立刻使用一次护心铠。\n诺艾尔普通攻击后：如果此牌和护体岩铠仍在场，则治疗我方所有角色1点。（每回合1次）\n（牌组中包含诺艾尔，才能加入牌组）",
     "rawPlayingDescription": "$[A1602]<color=#FFFFFFFF>普通攻击</color>后：如果此牌和<color=#FFFFFFFF>$[C116021]</color>仍在场，则治疗我方所有角色1点。（每回合1次）",
     "playingDescription": "诺艾尔普通攻击后：如果此牌和护体岩铠仍在场，则治疗我方所有角色1点。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Noel"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Noel",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 216031,
@@ -2404,7 +2460,8 @@
     "description": "战斗行动：我方出战角色为钟离时，装备此牌。\n钟离装备此牌后，立刻使用一次地心·磐礴。\n我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。\n（牌组中包含钟离，才能加入牌组）",
     "rawPlayingDescription": "我方出战角色在$[K6]角色状态或$[K6]出战状态的保护下时，我方召唤物造成的$[K106]+1。",
     "playingDescription": "我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Zhongli"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Zhongli",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 216041,
@@ -2441,7 +2498,8 @@
     "description": "战斗行动：我方出战角色为阿贝多时，装备此牌。\n阿贝多装备此牌后，立刻使用一次创生法·拟造阳华。\n装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时造成的伤害+1。\n（牌组中包含阿贝多，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1604]在场时，如果我方场上存在<color=#FFFFFFFF>$[C116041]</color>，则我方角色进行$[K52]时造成的伤害+1。",
     "playingDescription": "装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Albedo"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Albedo",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 216051,
@@ -2482,7 +2540,8 @@
     "description": "战斗行动：我方出战角色为荒泷一斗时，装备此牌。\n荒泷一斗装备此牌后，立刻使用一次喧哗屋传说。\n装备有此牌的荒泷一斗每回合第2次及以后使用喧哗屋传说时：如果触发乱神之怪力，伤害额外+1。\n（牌组中包含荒泷一斗，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1605]每回合第2次及以后使用<color=#FFFFFFFF>$[S16051]</color>时：如果触发$[K1007]，伤害额外+1。",
     "playingDescription": "装备有此牌的荒泷一斗每回合第2次及以后使用喧哗屋传说时：如果触发乱神之怪力，伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Itto"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Itto",
+    "sinceVersion": "v3.6.0"
   },
   {
     "id": 216061,
@@ -2519,7 +2578,8 @@
     "description": "战斗行动：我方出战角色为五郎时，装备此牌。\n五郎装备此牌后，立刻使用一次犬坂吠吠方圆阵。\n装备有此牌的五郎在场时，我方角色造成岩元素伤害后：如果场上存在大将旗指物，抓1张牌。（每回合1次）\n（牌组中包含五郎，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1606]在场时，我方角色造成$[K106]后：如果场上存在<color=#FFFFFFFF>$[C116061]</color>，抓1张牌。（每回合1次）",
     "playingDescription": "装备有此牌的五郎在场时，我方角色造成岩元素伤害后：如果场上存在大将旗指物，抓1张牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Gorou"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Gorou",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 216071,
@@ -2560,7 +2620,8 @@
     "description": "战斗行动：我方出战角色为云堇时，装备此牌。\n云堇装备此牌后，立刻使用一次破嶂见旌仪。\n装备有此牌的云堇在场时，如果我方没有手牌，则飞云旗阵会使普通攻击造成的伤害额外+2。\n（牌组中包含云堇，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1607]在场时，如果我方没有手牌，则<color=#FFFFFFFF>$[C116073]</color>会使普通攻击造成的伤害额外+2。",
     "playingDescription": "装备有此牌的云堇在场时，如果我方没有手牌，则飞云旗阵会使普通攻击造成的伤害额外+2。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yunjin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yunjin",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 217011,
@@ -2597,7 +2658,8 @@
     "description": "战斗行动：我方出战角色为柯莱时，装备此牌。\n柯莱装备此牌后，立刻使用一次拂花偈叶。\n装备有此牌的柯莱使用了拂花偈叶的回合中，我方角色的技能引发草元素相关反应后：造成1点草元素伤害。（每回合1次）\n（牌组中包含柯莱，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1701]使用了<color=#FFFFFFFF>$[S17012]</color>的回合中，我方角色的技能引发$[K217]后：造成1点$[K107]。（每回合1次）",
     "playingDescription": "装备有此牌的柯莱使用了拂花偈叶的回合中，我方角色的技能引发草元素相关反应后：造成1点草元素伤害。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Collei"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Collei",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 217021,
@@ -2634,7 +2696,8 @@
     "description": "战斗行动：我方出战角色为提纳里时，装备此牌。\n提纳里装备此牌后，立刻使用一次识果种雷。\n装备有此牌的提纳里在附属通塞识状态期间，进行重击时少花费1个无色元素。\n（牌组中包含提纳里，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1702]在附属<color=#FFFFFFFF>$[C117021]</color>状态期间，进行$[K51]时少花费1个$[K309]。",
     "playingDescription": "装备有此牌的提纳里在附属通塞识状态期间，进行重击时少花费1个无色元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Tighnari"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Tighnari",
+    "sinceVersion": "v3.6.0"
   },
   {
     "id": 217031,
@@ -2675,7 +2738,8 @@
     "description": "战斗行动：我方出战角色为纳西妲时，装备此牌。\n纳西妲装备此牌后，立刻使用一次心景幻成。\n装备有此牌的纳西妲在场时，根据我方队伍中存在的元素类型提供效果：\n火元素：摩耶之殿在场时，自身受到元素反应触发蕴种印的敌方角色，所受蕴种印的穿透伤害改为草元素伤害；\n雷元素：摩耶之殿入场时，使当前对方场上蕴种印的可用次数+1；\n水元素：装备有此牌的纳西妲所生成的摩耶之殿初始持续回合+1。\n（牌组中包含纳西妲，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1703]在场时，根据我方队伍中存在的元素类型提供效果：\\n{SPRITE_PRESET#2103}<color=#FF9999FF>火元素</color>：<color=#FFFFFFFF>$[C117032]</color>在场时，自身受到元素反应触发<color=#FFFFFFFF>$[C117031]</color>的敌方角色，所受<color=#FFFFFFFF>$[C117031]</color>的$[K5]改为$[K107]；\\n{SPRITE_PRESET#2104}<color=#FFACFFFF>雷元素</color>：<color=#FFFFFFFF>$[C117032]</color>入场时，使当前对方场上<color=#FFFFFFFF>$[C117031]</color>的$[K3]+1；\\n{SPRITE_PRESET#2102}<color=#80C0FFFF>水元素</color>：装备有此牌的$[A1703]所生成的<color=#FFFFFFFF>$[C117032]</color>初始$[K4]+1。",
     "playingDescription": "装备有此牌的纳西妲在场时，根据我方队伍中存在的元素类型提供效果：\n火元素：摩耶之殿在场时，自身受到元素反应触发蕴种印的敌方角色，所受蕴种印的穿透伤害改为草元素伤害；\n雷元素：摩耶之殿入场时，使当前对方场上蕴种印的可用次数+1；\n水元素：装备有此牌的纳西妲所生成的摩耶之殿初始持续回合+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Tighnari"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Tighnari",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 217041,
@@ -2712,7 +2776,8 @@
     "description": "战斗行动：我方出战角色为瑶瑶时，装备此牌。\n瑶瑶装备此牌后，立刻使用一次云台团团降芦菔。\n装备有此牌的瑶瑶生成的月桂·抛掷型，在可用次数仅剩余最后1次时造成的伤害和治疗各+1。\n（牌组中包含瑶瑶，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1704]生成的<color=#FFFFFFFF>$[C117041]</color>，在$[K3]仅剩余最后1次时造成的伤害和治疗各+1。",
     "playingDescription": "装备有此牌的瑶瑶生成的月桂·抛掷型，在可用次数仅剩余最后1次时造成的伤害和治疗各+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Yaoyao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Yaoyao",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 217051,
@@ -2753,7 +2818,8 @@
     "description": "战斗行动：我方出战角色为白术时，装备此牌。\n白术装备此牌后，立刻使用一次愈气全形论。\n装备有此牌的白术在场，无郤气护盾触发治疗效果时：生成1个出战角色类型的元素骰。\n（牌组中包含白术，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1705]在场，<color=#FFFFFFFF>$[C117053]</color>触发治疗效果时：生成1个出战角色类型的元素骰。",
     "playingDescription": "装备有此牌的白术在场，无郤气护盾触发治疗效果时：生成1个出战角色类型的元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Baizhuer"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Baizhuer",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 217061,
@@ -2794,7 +2860,8 @@
     "description": "战斗行动：我方出战角色为艾尔海森时，装备此牌。\n艾尔海森装备此牌后，立刻使用一次殊境·显象缚结。\n装备有此牌的艾尔海森使用殊境·显象缚结时：如果消耗了持续回合至少为1的琢光镜，则总是附属持续回合为3的琢光镜，并且抓1张牌。\n（牌组中包含艾尔海森，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1706]使用<color=#FFFFFFFF>$[S17063]</color>时：如果消耗了$[K4]至少为1的<color=#FFFFFFFF>$[C117061]</color>，则总是附属$[K4]为3的<color=#FFFFFFFF>$[C117061]</color>，并且抓1张牌。",
     "playingDescription": "装备有此牌的艾尔海森使用殊境·显象缚结时：如果消耗了持续回合至少为1的琢光镜，则总是附属持续回合为3的琢光镜，并且抓1张牌。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Alhatham"
+    "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Alhatham",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 217071,
@@ -2831,7 +2898,8 @@
     "description": "战斗行动：我方出战角色为绮良良时，装备此牌。\n绮良良装备此牌后，立刻使用一次呜喵町飞足。\n装备有此牌的绮良良为出战角色，我方进行「切换角色」行动时：少花费1个元素骰。（每回合1次）\n（牌组中包含绮良良，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1707]为出战角色，我方进行「切换角色」行动时：少花费1个元素骰。（每回合1次）",
     "playingDescription": "装备有此牌的绮良良为出战角色，我方进行「切换角色」行动时：少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Momoka"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Momoka",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 217081,
@@ -2868,7 +2936,8 @@
     "description": "战斗行动：我方出战角色为卡维时，装备此牌。\n卡维装备此牌后，立刻使用一次画则巧施。\n装备有此牌的卡维在场，我方触发迸发扫描的效果后：将1张所舍弃卡牌的复制加入你的手牌。如果该牌为「场地」牌，则使本回合中我方下次打出「场地」时少花费2个元素骰。（每回合1次）\n（牌组中包含卡维，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1708]在场，我方触发<color=#FFFFFFFF>$[C117082]</color>的效果后：将1张所$[K56]卡牌的复制加入你的手牌。如果该牌为「{SPRITE_PRESET#3104}场地」牌，则使本回合中我方下次打出「{SPRITE_PRESET#3104}场地」时少花费2个元素骰。（每回合1次）",
     "playingDescription": "装备有此牌的卡维在场，我方触发迸发扫描的效果后：将1张所舍弃卡牌的复制加入你的手牌。如果该牌为「场地」牌，则使本回合中我方下次打出「场地」时少花费2个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Kaveh"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Kaveh",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 221011,
@@ -2905,7 +2974,8 @@
     "description": "战斗行动：我方出战角色为愚人众·冰萤术士时，装备此牌。\n愚人众·冰萤术士装备此牌后，立刻使用一次雾虚摇唤。\n装备有此牌的愚人众·冰萤术士使用技能后：如果冰萤的可用次数被叠加到超过上限，则造成2点冰元素伤害。\n（牌组中包含愚人众·冰萤术士，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2101]使用技能后：如果<color=#FFFFFFFF>$[C121011]</color>的$[K3]被叠加到超过上限，则造成2点$[K101]。",
     "playingDescription": "装备有此牌的愚人众·冰萤术士使用技能后：如果冰萤的可用次数被叠加到超过上限，则造成2点冰元素伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_MageIce"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_MageIce",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 221021,
@@ -2941,7 +3011,8 @@
     "description": "我方出战角色为「女士」时，才能打出：入场时，生成3个「女士」当前元素类型的元素骰。\n角色受到至少为3点的伤害时：抵消1点伤害，然后根据「女士」的形态对敌方出战角色附属严寒或炽热。（每回合1次）\n（牌组中包含「女士」，才能加入牌组）",
     "rawPlayingDescription": "角色受到至少为3点的伤害时：抵消1点伤害，然后根据$[A2102]的形态对敌方出战角色附属<color=#FFFFFFFF>$[K1016]</color>或<color=#FFFFFFFF>$[K1017]</color>。（每回合1次）",
     "playingDescription": "角色受到至少为3点的伤害时：抵消1点伤害，然后根据「女士」的形态对敌方出战角色附属严寒或炽热。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_LaSignora"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_LaSignora",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 221031,
@@ -2977,7 +3048,8 @@
     "description": "我方出战角色为无相之冰时，才能打出：使其附属冰晶核心。\n装备有此牌的无相之冰触发冰晶核心后：对敌方出战角色附属严寒。\n（牌组中包含无相之冰，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2103]触发<color=#FFFFFFFF>$[C121034]</color>后：对敌方出战角色附属<color=#FFFFFFFF>$[K1016]</color>。",
     "playingDescription": "装备有此牌的无相之冰触发冰晶核心后：对敌方出战角色附属严寒。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_EffigyIce"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_EffigyIce",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 222011,
@@ -3018,7 +3090,8 @@
     "description": "战斗行动：我方出战角色为纯水精灵·洛蒂娅时，装备此牌。\n纯水精灵·洛蒂娅装备此牌后，立刻使用一次潮涌与激流。\n装备有此牌的纯水精灵·洛蒂娅使用潮涌与激流时：我方所有召唤物可用次数+1。\n（牌组中包含纯水精灵·洛蒂娅，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2201]使用<color=#FFFFFFFF>$[S22014]</color>时：我方所有召唤物$[K3]+1。",
     "playingDescription": "装备有此牌的纯水精灵·洛蒂娅使用潮涌与激流时：我方所有召唤物可用次数+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Chunshui"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Chunshui",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 222021,
@@ -3055,7 +3128,8 @@
     "description": "战斗行动：我方出战角色为愚人众·藏镜仕女时，装备此牌。\n愚人众·藏镜仕女装备此牌后，立刻使用一次潋波绽破。\n装备有此牌的愚人众·藏镜仕女生成的水光破镜获得以下效果：\n初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。\n（牌组中包含愚人众·藏镜仕女，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2202]生成的<color=#FFFFFFFF>$[C122021]</color>获得以下效果：\\n初始$[K4]+1，并且会使所附属角色切换到其他角色时元素骰费用+1。",
     "playingDescription": "装备有此牌的愚人众·藏镜仕女生成的水光破镜获得以下效果：\n初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Maidenwater"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Maidenwater",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 222031,
@@ -3091,7 +3165,8 @@
     "description": "入场时：如果装备有此牌的深渊使徒·激流已触发过水之新生，则在对方场上生成暗流的诅咒。\n装备有此牌的深渊使徒·激流被击倒或触发水之新生时：在对方场上生成暗流的诅咒。\n（牌组中包含深渊使徒·激流，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2203]被击倒或触发<color=#FFFFFFFF>$[C122031]</color>时：在对方场上生成$[K1022]。",
     "playingDescription": "装备有此牌的深渊使徒·激流被击倒或触发水之新生时：在对方场上生成暗流的诅咒。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_InvokerHeraldWater"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_InvokerHeraldWater",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 222041,
@@ -3128,7 +3203,8 @@
     "description": "战斗行动：我方出战角色为吞星之鲸时，装备此牌。\n吞星之鲸装备此牌后，立刻使用一次迸落星雨。\n装备有此牌的吞星之鲸使用迸落星雨舍弃1张手牌后：治疗此角色该手牌元素骰费用的点数。（每回合1次）\n（牌组中包含吞星之鲸，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2204]使用<color=#FFFFFFFF>$[S22042]</color>$[K56]1张手牌后：治疗此角色该手牌元素骰费用的点数。（每回合1次）",
     "playingDescription": "装备有此牌的吞星之鲸使用迸落星雨舍弃1张手牌后：治疗此角色该手牌元素骰费用的点数。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ptahur"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ptahur",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 223011,
@@ -3165,7 +3241,8 @@
     "description": "战斗行动：我方出战角色为愚人众·火之债务处理人时，装备此牌。\n愚人众·火之债务处理人装备此牌后，立刻使用一次伺机而动。\n装备有此牌的愚人众·火之债务处理人生成的潜行获得以下效果：\n初始可用次数+1，并且使所附属角色造成的物理伤害变为火元素伤害。\n（牌组中包含愚人众·火之债务处理人，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2301]生成的<color=#FFFFFFFF>$[C123012]</color>获得以下效果：\\n初始$[K3]+1，并且使所附属角色造成的$[K100]变为$[K103]。",
     "playingDescription": "装备有此牌的愚人众·火之债务处理人生成的潜行获得以下效果：\n初始可用次数+1，并且使所附属角色造成的物理伤害变为火元素伤害。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_FatuiPyroAgent"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_FatuiPyroAgent",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 223021,
@@ -3201,7 +3278,8 @@
     "description": "入场时：如果装备有此牌的深渊咏者·渊火已触发过火之新生，就立刻弃置此牌，为角色附属渊火加护。\n装备有此牌的深渊咏者·渊火触发火之新生时：弃置此牌，为角色附属渊火加护。\n（牌组中包含深渊咏者·渊火，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2302]触发<color=#FFFFFFFF>$[C123022]</color>时：弃置此牌，为角色附属$[K1006]。",
     "playingDescription": "装备有此牌的深渊咏者·渊火触发火之新生时：弃置此牌，为角色附属渊火加护。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_DeaconFire"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_DeaconFire",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 223031,
@@ -3242,7 +3320,8 @@
     "description": "战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。\n镀金旅团·炽沙叙事人装备此牌后，立刻使用一次厄灵苏醒·炎之魔蝎。\n装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；\n厄灵·炎之魔蝎的减伤效果改为每回合至多2次。\n（牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2303]生成的<color=#FFFFFFFF>$[C123031]</color>在$[A2303]使用过<color=#FFFFFFFF>「普通攻击」</color>或<color=#FFFFFFFF>「元素战技」</color>的回合中，造成的伤害+1；\\n<color=#FFFFFFFF>$[C123031]</color>的减伤效果改为每回合至多2次。",
     "playingDescription": "装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；\n厄灵·炎之魔蝎的减伤效果改为每回合至多2次。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Muscleman"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Muscleman",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 223041,
@@ -3278,7 +3357,8 @@
     "description": "入场时：对装备有此牌的铁甲熔火帝皇附着火元素。\n我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳。（每回合1次）\n（牌组中包含铁甲熔火帝皇，才能加入牌组）",
     "rawPlayingDescription": "我方除$[K1023]以外的$[K6]状态或$[K6]出战状态被移除后：装备有此牌的$[A2304]附属2层$[K1023]。（每回合1次）",
     "playingDescription": "我方除重甲蟹壳以外的护盾状态或护盾出战状态被移除后：装备有此牌的铁甲熔火帝皇附属2层重甲蟹壳。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_HermitCrabPrimo"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_HermitCrabPrimo",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 224011,
@@ -3313,7 +3393,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>$[K1]：</color>我方出战角色为<color=#FFFFFFFF>$[A2401]</color>时，治疗该角色3点，并附属<color=#FFFFFFFF>$[C124014]</color>。\\n（牌组中包含$[A2401]，才能加入牌组）",
     "description": "战斗行动：我方出战角色为无相之雷时，治疗该角色3点，并附属雷晶核心。\n（牌组中包含无相之雷，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Effigyelectric"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Effigyelectric",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 224021,
@@ -3350,7 +3431,8 @@
     "description": "战斗行动：我方出战角色为雷音权现时，装备此牌。\n雷音权现装备此牌后，立刻使用一次雷墙倾轧。\n装备有此牌的雷音权现在场，附属有雷鸣探知的敌方角色受到伤害时：我方抓1张牌。（每回合1次）\n（牌组中包含雷音权现，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2402]在场，附属有<color=#FFFFFFFF>$[C124022]</color>的敌方角色受到伤害时：我方抓1张牌。（每回合1次）",
     "playingDescription": "装备有此牌的雷音权现在场，附属有雷鸣探知的敌方角色受到伤害时：我方抓1张牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Raijin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Raijin",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 224031,
@@ -3381,7 +3463,8 @@
     "description": "我方出战角色为千年珍珠骏麟时，才能打出：入场时，使千年珍珠骏麟附属可用次数为1的原海明珠；如果已附属原海明珠，则使其可用次数+1。\n装备有此牌的千年珍珠骏麟所附属的原海明珠抵消召唤物伤害时，改为每回合2次不消耗可用次数。\n（牌组中包含千年珍珠骏麟，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2403]所附属的<color=#FFFFFFFF>$[C124032]</color>抵消召唤物伤害时，改为每回合2次不消耗$[K3]。",
     "playingDescription": "装备有此牌的千年珍珠骏麟所附属的原海明珠抵消召唤物伤害时，改为每回合2次不消耗可用次数。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_SeaHorsePrimo"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_SeaHorsePrimo",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 224041,
@@ -3418,7 +3501,8 @@
     "description": "战斗行动：我方出战角色为愚人众·雷萤术士时，装备此牌。\n愚人众·雷萤术士装备此牌后，立刻使用一次雾虚之召。\n装备有此牌的愚人众·雷萤术士在场时，我方选择行动前：如果雷萤的可用次数至少为3，则雷萤立刻造成1点雷元素伤害。（需消耗可用次数，每回合1次）\n（牌组中包含愚人众·雷萤术士，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2404]在场时，我方选择行动前：如果<color=#FFFFFFFF>$[C124041]</color>的$[K3]至少为3，则<color=#FFFFFFFF>$[C124041]</color>立刻造成1点$[K104]。（需消耗$[K3]，每回合1次）",
     "playingDescription": "装备有此牌的愚人众·雷萤术士在场时，我方选择行动前：如果雷萤的可用次数至少为3，则雷萤立刻造成1点雷元素伤害。（需消耗可用次数，每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_FatuusSummoner"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_FatuusSummoner",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 124051,
@@ -3469,7 +3553,8 @@
     "description": "入场时：生成1张噬骸能量块，置入我方手牌。\n装备有此牌的圣骸毒蝎在场，我方打出噬骸能量块后：抓1张牌，然后生成1张噬骸能量块，随机置入我方牌库中。\n（牌组中包含圣骸毒蝎，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2405]</color>在场，我方打出<color=#FFFFFFFF>$[C124051]</color>后：抓1张牌，然后生成1张<color=#FFFFFFFF>$[C124051]</color>，随机置入我方牌库中。",
     "playingDescription": "装备有此牌的圣骸毒蝎在场，我方打出噬骸能量块后：抓1张牌，然后生成1张噬骸能量块，随机置入我方牌库中。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_ScorpionSacred"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_ScorpionSacred",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 225011,
@@ -3506,7 +3591,8 @@
     "description": "战斗行动：我方出战角色为魔偶剑鬼时，装备此牌。\n魔偶剑鬼装备此牌后，立刻使用一次孤风刀势。\n装备有此牌的魔偶剑鬼使用孤风刀势后，我方切换到后一个角色；使用霜驰影突后，我方切换到前一个角色。\n（牌组中包含魔偶剑鬼，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2501]使用<color=#FFFFFFFF>$[S25012]</color>后，我方切换到后一个角色；使用<color=#FFFFFFFF>$[S25013]</color>后，我方切换到前一个角色。",
     "playingDescription": "装备有此牌的魔偶剑鬼使用孤风刀势后，我方切换到后一个角色；使用霜驰影突后，我方切换到前一个角色。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ningyo"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Ningyo",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 225021,
@@ -3543,7 +3629,8 @@
     "description": "战斗行动：我方出战角色为特瓦林时，装备此牌。\n特瓦林装备此牌后，立刻使用一次暴风轰击。\n装备有此牌的特瓦林在场时，敌方角色所附属的坍毁状态被移除后：对下一个敌方后台角色附属坍毁。（每回合1次）\n（牌组中包含特瓦林，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2502]在场时，敌方角色所附属的<color=#FFFFFFFF>$[C125021]</color>状态被移除后：对下一个敌方后台角色附属<color=#FFFFFFFF>$[C125021]</color>。（每回合1次）",
     "playingDescription": "装备有此牌的特瓦林在场时，敌方角色所附属的坍毁状态被移除后：对下一个敌方后台角色附属坍毁。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Dvalin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Dvalin",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 225031,
@@ -3579,7 +3666,8 @@
     "description": "入场时：生成1张噬骸能量块，置入我方手牌。\n装备有此牌的圣骸飞蛇在场，我方打出噬骸能量块后：本回合中，我方下次切换角色后生成1个出战角色类型的元素骰。\n（牌组中包含圣骸飞蛇，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2503]</color>在场，我方打出<color=#FFFFFFFF>$[C124051]</color>后：本回合中，我方下次切换角色后生成1个出战角色类型的元素骰。",
     "playingDescription": "装备有此牌的圣骸飞蛇在场，我方打出噬骸能量块后：本回合中，我方下次切换角色后生成1个出战角色类型的元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_ChrysopeleaSacred"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_ChrysopeleaSacred",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 226011,
@@ -3620,7 +3708,8 @@
     "description": "战斗行动：我方出战角色为丘丘岩盔王时，装备此牌。\n丘丘岩盔王装备此牌后，立刻使用一次Upa Shato。\n装备有此牌的丘丘岩盔王击倒敌方角色后：丘丘岩盔王重新附属岩盔和坚岩之力。\n（牌组中包含丘丘岩盔王，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2601]击倒敌方角色后：$[A2601]重新附属<color=#FFFFFFFF>$[C126011]</color>和<color=#FFFFFFFF>$[C126012]</color>。",
     "playingDescription": "装备有此牌的丘丘岩盔王击倒敌方角色后：丘丘岩盔王重新附属岩盔和坚岩之力。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Rockbrute"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Rockbrute",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 226022,
@@ -3655,7 +3744,8 @@
     ],
     "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2602]</color>时，对该角色打出。使$[A2602]附属<color=#FFFFFFFF>$[C126022]</color>，然后生成每种我方角色所具有的元素类型的元素骰各1个。\\n（牌组中包含$[A2602]，才能加入牌组）",
     "description": "战斗行动：我方出战角色为若陀龙王时，对该角色打出。使若陀龙王附属磐岩百相·元素凝晶，然后生成每种我方角色所具有的元素类型的元素骰各1个。\n（牌组中包含若陀龙王，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Dahaka"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Dahaka",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 227011,
@@ -3692,7 +3782,8 @@
     "description": "战斗行动：我方出战角色为翠翎恐蕈时，装备此牌。\n翠翎恐蕈装备此牌后，立刻使用一次不稳定孢子云。\n装备有此牌的翠翎恐蕈，可累积的「活化激能」层数+1。\n（牌组中包含翠翎恐蕈，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A2701]，可累积的<color=#FFFFFFFF>「活化激能」</color>层数+1。",
     "playingDescription": "装备有此牌的翠翎恐蕈，可累积的「活化激能」层数+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Fungusgrass"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Fungusgrass",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 127021,
@@ -3748,7 +3839,8 @@
     "description": "入场时：生成4张唤醒眷属，随机置入我方牌库。\n装备有此牌的阿佩普的绿洲守望者在场时:我方增殖生命体造成的伤害+1。\n（牌组中包含阿佩普的绿洲守望者，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2702]</color>在场时:我方<color=#FFFFFFFF>$[C127022]</color>造成的伤害+1。",
     "playingDescription": "装备有此牌的阿佩普的绿洲守望者在场时:我方增殖生命体造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Apep"
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Apep",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 311101,
@@ -3787,7 +3879,8 @@
     "description": "角色造成的伤害+1。\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_CatalystIntro"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_CatalystIntro",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311102,
@@ -3826,7 +3919,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>生成1个此角色类型的元素骰。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_CatalystFossil"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_CatalystFossil",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311103,
@@ -3865,7 +3959,8 @@
     "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
     "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_CatalystDvalin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_CatalystDvalin",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311104,
@@ -3904,7 +3999,8 @@
     "description": "角色造成的伤害+1。\n我方角色引发元素反应时：造成的伤害+1。（每回合最多触发2次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>我方角色引发元素反应时：</color>造成的伤害+1。（每回合最多触发2次）",
     "playingDescription": "角色造成的伤害+1。\n我方角色引发元素反应时：造成的伤害+1。（每回合最多触发2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Ayus"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Ayus",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311105,
@@ -3943,7 +4039,8 @@
     "description": "角色造成的伤害+1。\n入场时：抓2张牌。\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Arakalari"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Arakalari",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 311106,
@@ -3982,7 +4079,8 @@
     "description": "此牌每有1点「伤害加成」，角色造成的伤害+1。\n结束阶段：此牌累积1点「伤害加成」。（最多累积到2点）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>此牌每有1点「伤害加成」，角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>结束阶段：</color>此牌累积1点<color=#FFFFFFFF>「伤害加成」</color>。（最多累积到2点）",
     "playingDescription": "此牌每有1点「伤害加成」，角色造成的伤害+1。\n结束阶段：此牌累积1点「伤害加成」。（最多累积到2点）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Yuandian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Yuandian",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 311107,
@@ -4021,7 +4119,8 @@
     "description": "角色造成的伤害+1。\n角色进行重击时：少花费1个无色元素。（每回合最多触发2次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色进行$[K51]时：</color>少花费1个$[K309]。（每回合最多触发2次）",
     "playingDescription": "角色造成的伤害+1。\n角色进行重击时：少花费1个无色元素。（每回合最多触发2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Tulaidu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Tulaidu",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 311108,
@@ -4060,7 +4159,8 @@
     "description": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色受到伤害或治疗后：</color>如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Wanshiliuyongdadian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Wanshiliuyongdadian",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 311109,
@@ -4099,7 +4199,8 @@
     "description": "角色受到伤害或治疗后：使角色本回合中下一次「普通攻击」少花费1个无色元素，且造成的伤害+1。（每回合至多2次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色受到伤害或治疗后：</color>使角色本回合中下一次<color=#FFFFFFFF>「普通攻击」</color>少花费1个$[K309]，且造成的伤害+1。（每回合至多2次）",
     "playingDescription": "角色受到伤害或治疗后：使角色本回合中下一次「普通攻击」少花费1个无色元素，且造成的伤害+1。（每回合至多2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jinliujiandu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jinliujiandu",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 311201,
@@ -4138,7 +4239,8 @@
     "description": "角色造成的伤害+1。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BowCrowfeather"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BowCrowfeather",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311202,
@@ -4177,7 +4279,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>生成1个此角色类型的元素骰。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BowFossil"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BowFossil",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311203,
@@ -4216,7 +4319,8 @@
     "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
     "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BowDvalin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BowDvalin",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311204,
@@ -4255,7 +4359,8 @@
     "description": "角色造成的伤害+1。\n角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用原本元素骰费用+充能费用至少为5的技能时，</color>伤害额外+2。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Amos"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Amos",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311205,
@@ -4294,7 +4399,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素爆发」后：生成「千年的大乐章·别离之歌」。（我方角色造成的伤害+1，持续回合：2）\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素爆发」后：</color>生成<color=#FFFFFFFF>「$[C301102]」</color>。（我方角色造成的伤害+1，$[K4]：2）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素爆发」后：生成「千年的大乐章·别离之歌」。（我方角色造成的伤害+1，持续回合：2）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Widsith"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Widsith",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311206,
@@ -4333,7 +4439,8 @@
     "description": "角色造成的伤害+1。\n入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Wangxia"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Wangxia",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 311207,
@@ -4372,7 +4479,8 @@
     "description": "我方打出名称不存在于初始牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点，每回合最多累积2点）\n角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方打出名称不存在于初始牌组中的行动牌后：</color>此牌累积1点<color=#FFFFFFFF>「渔猎」</color>。（最多累积2点）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「渔猎」</color>，则消耗所有<color=#FFFFFFFF>「渔猎」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「渔猎」</color>就抓1张牌。",
     "playingDescription": "我方打出名称不存在于初始牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点）\n角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jieze"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jieze",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 311301,
@@ -4411,7 +4519,8 @@
     "description": "角色造成的伤害+1。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_ClaymoreTin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_ClaymoreTin",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311302,
@@ -4450,7 +4559,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>生成1个此角色类型的元素骰。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Fossil"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Fossil",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311303,
@@ -4489,7 +4599,8 @@
     "description": "角色造成的伤害+1。\n攻击剩余生命值不多于6的目标时，伤害额外+2。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n攻击剩余生命值不多于6的目标时，伤害额外+2。",
     "playingDescription": "角色造成的伤害+1。\n攻击剩余生命值不多于6的目标时，伤害额外+2。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_ClaymoreWolfmound"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_ClaymoreWolfmound",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311304,
@@ -4528,7 +4639,8 @@
     "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
     "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_ClaymoreDvalin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_ClaymoreDvalin",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311305,
@@ -4567,7 +4679,8 @@
     "description": "角色造成的伤害+1。\n角色使用技能后：为我方出战角色提供1点护盾。（每回合1次，可叠加到2点）\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用技能后：</color>为我方出战角色提供1点$[K6]。（每回合1次，可叠加到2点）",
     "playingDescription": "角色造成的伤害+1。\n角色使用技能后：为我方出战角色提供1点护盾。（每回合1次，可叠加到2点）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Troupe"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Troupe",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311306,
@@ -4606,7 +4719,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素战技」后：本回合内，角色下次造成的伤害额外+1。（每回合1次）\n角色受到伤害后：本回合内，角色下次造成的伤害额外+1。（每回合1次）\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>本回合内，角色下次造成的伤害额外+1。（每回合1次）\\n<color=#FFFFFFFF>角色受到伤害后：</color>本回合内，角色下次造成的伤害额外+1。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素战技」后：本回合内，角色下次造成的伤害额外+1。（每回合1次）\n角色受到伤害后：本回合内，角色下次造成的伤害额外+1。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Xinbiao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Xinbiao",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 311307,
@@ -4645,7 +4759,8 @@
     "description": "角色造成的伤害+1。\n入场时：所附属角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Shenlinwangqi"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Shenlinwangqi",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 311401,
@@ -4684,7 +4799,8 @@
     "description": "角色造成的伤害+1。\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_PoleRuby"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_PoleRuby",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311402,
@@ -4723,7 +4839,8 @@
     "description": "角色造成的伤害+1。\n入场时：我方队伍中每有一名「璃月」角色，此牌就为附属的角色提供1点护盾。（最多3点）\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_PoleLapis"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_PoleLapis",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311403,
@@ -4762,7 +4879,8 @@
     "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
     "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_PoleDvalin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_PoleDvalin",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311404,
@@ -4801,7 +4919,8 @@
     "description": "角色造成的伤害+1。\n角色如果在护盾角色状态或护盾出战状态的保护下，则造成的伤害额外+1。\n角色使用「元素战技」后：如果我方存在提供「护盾」的出战状态，则为一个此类出战状态补充1点「护盾」。（每回合1次）\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n角色如果在$[K6]角色状态或$[K6]出战状态的保护下，则造成的伤害额外+1。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>如果我方存在提供「$[K6]」的出战状态，则为一个此类出战状态补充1点「$[K6]」。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色如果在护盾角色状态或护盾出战状态的保护下，则造成的伤害额外+1。\n角色使用「元素战技」后：如果我方存在提供「护盾」的出战状态，则为一个此类出战状态补充1点「护盾」。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Kunwu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Kunwu",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311405,
@@ -4840,7 +4959,8 @@
     "description": "角色造成的伤害+1。\n每回合自动触发1次：如果所附属角色没有充能，就使其获得1点充能。\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合自动触发1次：</color>如果所附属角色没有$[K310]，就使其获得1点$[K310]。",
     "playingDescription": "角色造成的伤害+1。\n每回合自动触发1次：如果所附属角色没有充能，就使其获得1点充能。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Narukami"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Narukami",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311406,
@@ -4879,7 +4999,8 @@
     "description": "角色造成的伤害+1。\n入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Guanyue"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Guanyue",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 311407,
@@ -4918,7 +5039,8 @@
     "description": "角色造成的伤害+1。\n角色使用技能后：直到回合结束前，此牌所提供的伤害加成值额外+1。（最多累积到+2）\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用技能后：</color>直到回合结束前，此牌所提供的伤害加成值额外+1。（最多累积到+2）",
     "playingDescription": "角色造成的伤害+1。\n角色使用技能后：直到回合结束前，此牌所提供的伤害加成值额外+1。（最多累积到+2）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Hepuyuan"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Hepuyuan",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 311408,
@@ -4957,7 +5079,8 @@
     "description": "角色使用「元素爆发」造成的伤害+2。\n我方出战角色受到伤害或治疗后：累积1点「公义之理」。如果此牌已累积3点「公义之理」，则消耗3点「公义之理」，使角色获得1点充能。\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「元素爆发」造成的伤害+2</color>。\\n<color=#FFFFFFFF>我方出战角色受到伤害或治疗后：</color>累积1点<color=#FFFFFFFF>「公义之理」</color>。如果此牌已累积3点<color=#FFFFFFFF>「公义之理」</color>，则消耗3点<color=#FFFFFFFF>「公义之理」</color>，使角色获得1点$[K310]。",
     "playingDescription": "角色使用「元素爆发」造成的伤害+2。\n我方出战角色受到伤害或治疗后：累积1点「公义之理」。如果此牌已累积3点「公义之理」，则消耗3点「公义之理」，使角色获得1点充能。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Gongyichoubao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Gongyichoubao",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 311501,
@@ -4996,7 +5119,8 @@
     "description": "角色造成的伤害+1。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordDarker"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordDarker",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311502,
@@ -5035,7 +5159,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>生成1个此角色类型的元素骰。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素战技」后：生成1个此角色类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordFossil"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordFossil",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311503,
@@ -5074,7 +5199,8 @@
     "description": "角色造成的伤害+1。\n对方使用技能后：如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>对方使用技能后：</color>如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）",
     "playingDescription": "角色造成的伤害+1。\n对方使用技能后：如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordFalcon"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordFalcon",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 311504,
@@ -5113,7 +5239,8 @@
     "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
     "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordDvalin"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordDvalin",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 311505,
@@ -5152,7 +5279,8 @@
     "description": "角色造成的伤害+1。\n角色使用「元素战技」后：角色额外获得1点充能。（每回合1次）\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「元素战技」后：</color>角色额外获得1点$[K310]。（每回合1次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「元素战技」后：角色额外获得1点充能。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Xifengjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Xifengjian",
+    "sinceVersion": "v3.6.0"
   },
   {
     "id": 311506,
@@ -5191,7 +5319,8 @@
     "description": "角色造成的伤害+1。\n角色使用「普通攻击」后：生成1个随机基础元素骰。（每回合最多触发2次）\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用「普通攻击」后：</color>生成1个随机基础元素骰。（每回合最多触发2次）",
     "playingDescription": "角色造成的伤害+1。\n角色使用「普通攻击」后：生成1个随机基础元素骰。（每回合最多触发2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Caiye"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Caiye",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 311507,
@@ -5230,7 +5359,8 @@
     "description": "角色造成的伤害+1。\n入场时：所附属角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Yuanmu"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Yuanmu",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 311508,
@@ -5269,7 +5399,8 @@
     "description": "我方角色受到伤害或治疗后：此牌累积1点「湖光」。\n角色进行普通攻击时：如果已有12点「湖光」，则消耗12点，使此技能少花费2个无色元素且造成的伤害+1，并且治疗所附属角色1点（每回合1次）。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方角色受到伤害或治疗后：</color>此牌累积1点<color=#FFFFFFFF>「湖光」</color>。\\n<color=#FFFFFFFF>角色进行普通攻击时：</color>如果已有12点<color=#FFFFFFFF>「湖光」</color>，则消耗12点，使此技能少花费2个$[K309]且造成的伤害+1，并且治疗所附属角色1点（每回合1次）。",
     "playingDescription": "我方角色受到伤害或治疗后：此牌累积1点「湖光」。\n角色进行普通攻击时：如果已有12点「湖光」，则消耗12点，使此技能少花费2个无色元素且造成的伤害+1，并且治疗所附属角色1点（每回合1次）。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jinshuiliuyong"
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jinshuiliuyong",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 312001,
@@ -5305,7 +5436,8 @@
     "description": "角色使用「普通攻击」后：治疗自身1点。（每回合至多3次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「普通攻击」后：</color>治疗自身1点。（每回合至多3次）",
     "playingDescription": "角色使用「普通攻击」后：治疗自身1点。（每回合至多3次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_MaoxianjiaDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_MaoxianjiaDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312002,
@@ -5341,7 +5473,8 @@
     "description": "角色使用「元素战技」后：治疗自身2点。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「元素战技」后：</color>治疗自身2点。（每回合1次）",
     "playingDescription": "角色使用「元素战技」后：治疗自身2点。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_XingyunerDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_XingyunerDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312003,
@@ -5377,7 +5510,8 @@
     "description": "角色使用「元素爆发」后：治疗所有我方角色1点。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「元素爆发」后：</color>治疗所有我方角色1点。（每回合1次）",
     "playingDescription": "角色使用「元素爆发」后：治疗所有我方角色1点。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_YouyiDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_YouyiDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312004,
@@ -5413,7 +5547,8 @@
     "description": "敌方角色被击倒后：如果所附属角色为「出战角色」，则生成2个万能元素。（整场牌局限制3次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>敌方角色被击倒后：</color>如果所附属角色为「出战角色」，则生成2个$[K411]。（整场牌局限制3次）",
     "playingDescription": "敌方角色被击倒后：如果所附属角色为「出战角色」，则生成2个万能元素。（整场牌局限制3次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_DutuDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_DutuDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312005,
@@ -5449,7 +5584,8 @@
     "description": "角色引发元素反应后：生成1个此角色元素类型的元素骰。（每回合至多3次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色引发元素反应后：</color>生成1个此角色元素类型的元素骰。（每回合至多3次）",
     "playingDescription": "角色引发元素反应后：生成1个此角色元素类型的元素骰。（每回合至多3次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_JiaoguanDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_JiaoguanDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312006,
@@ -5485,7 +5621,8 @@
     "description": "角色使用「元素爆发」后：所有我方后台角色获得1点充能。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「元素爆发」后：</color>所有我方后台角色获得1点$[K310]。（每回合1次）",
     "playingDescription": "角色使用「元素爆发」后：所有我方后台角色获得1点充能。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_LiufangzheDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_LiufangzheDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312007,
@@ -5521,7 +5658,8 @@
     "description": "其他我方角色使用「元素爆发」后：所附属角色获得1点充能。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>其他我方角色使用「元素爆发」后：</color>所附属角色获得1点$[K310]。",
     "playingDescription": "其他我方角色使用「元素爆发」后：所附属角色获得1点充能。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huashi"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huashi",
+    "sinceVersion": "v3.5.0"
   },
   {
     "id": 312008,
@@ -5557,7 +5695,8 @@
     "description": "其他我方角色使用「元素爆发」后：所附属角色获得1点充能。\n角色使用「元素爆发」造成的伤害+2。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>其他我方角色使用「元素爆发」后：</color>所附属角色获得1点$[K310]。\\n角色使用「元素爆发」造成的伤害+2。（每回合1次）",
     "playingDescription": "其他我方角色使用「元素爆发」后：所附属角色获得1点充能。\n角色使用「元素爆发」造成的伤害+2。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_JueyuanTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_JueyuanTaozhuang",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 312009,
@@ -5593,7 +5732,8 @@
     "description": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为角色附属<color=#FFFFFFFF>「$[C301201]」</color>。（提供2点$[K6]，保护该角色。）",
     "playingDescription": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Jiangshuai"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Jiangshuai",
+    "sinceVersion": "v3.5.0"
   },
   {
     "id": 312010,
@@ -5629,7 +5769,8 @@
     "description": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为角色附属<color=#FFFFFFFF>「$[C301201]」</color>。（提供2点$[K6]，保护该角色。）\\n<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）",
     "playingDescription": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_QianyanTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_QianyanTaozhuang",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 312011,
@@ -5665,7 +5806,8 @@
     "description": "对角色打出「天赋」或角色使用「普通攻击」时：少花费1个元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「普通攻击」时：</color>少花费1个元素骰。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用「普通攻击」时：少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ChenshaDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ChenshaDanjian",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 312012,
@@ -5701,7 +5843,8 @@
     "description": "对角色打出「天赋」或角色使用「普通攻击」时：少花费1个元素骰。（每回合1次）\n角色被切换为「出战角色」后：本回合中，角色「普通攻击」造成的伤害+1。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「普通攻击」时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>角色被切换为「出战角色」后：</color>本回合中，角色<color=#FFFFFFFF>普通攻击</color>造成的伤害+1。",
     "playingDescription": "对角色打出「天赋」或角色使用「普通攻击」时：少花费1个元素骰。（每回合1次）\n角色被切换为「出战角色」后：本回合中，角色普通攻击造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ChenshaTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ChenshaTaozhuang",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 312013,
@@ -5737,7 +5880,8 @@
     "description": "对角色打出「天赋」或角色使用「元素战技」时：少花费1个元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「元素战技」时：</color>少花费1个元素骰。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用「元素战技」时：少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Zhuiyidanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Zhuiyidanjian",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 312014,
@@ -5773,7 +5917,8 @@
     "description": "对角色打出「天赋」或角色使用「元素战技」时：少花费1个元素骰。（每回合1次）\n如果角色具有至少2点充能，就使角色「普通攻击」和「元素战技」造成的伤害+1。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「元素战技」时：</color>少花费1个元素骰。（每回合1次）\\n如果角色具有至少2点$[K310]，就使角色「普通攻击」和「元素战技」造成的伤害+1。",
     "playingDescription": "对角色打出「天赋」或角色使用「元素战技」时：少花费1个元素骰。（每回合1次）\n如果角色具有至少2点充能，就使角色「普通攻击」和「元素战技」造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZhuiyiTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZhuiyiTaozhuang",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 312015,
@@ -5809,7 +5954,8 @@
     "description": "我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个）\n角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "我方角色每受到3点治疗，此牌就累积1个<color=#FFFFFFFF>「海染泡沫」</color>。（最多累积2个，<color=#D3BC8EFF>当前已受到${[GCG_TOKEN_SHIELD]}点治疗</color>）\\n<color=#FFFFFFFF>角色造成伤害时：</color>消耗所有<color=#FFFFFFFF>「海染泡沫」</color>，每消耗1个都使造成的伤害+1。",
     "playingDescription": "我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个，当前已受到${[GCG_TOKEN_SHIELD]}点治疗）\n角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_HaiRanDanJian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_HaiRanDanJian",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 312016,
@@ -5845,7 +5991,8 @@
     "description": "入场时：治疗所附属角色2点。\n我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个）\n角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "我方角色每受到3点治疗，此牌就累积1个<color=#FFFFFFFF>「海染泡沫」</color>。（最多累积2个，<color=#D3BC8EFF>当前已受到${[GCG_TOKEN_SHIELD]}点治疗</color>）\\n<color=#FFFFFFFF>角色造成伤害时：</color>消耗所有<color=#FFFFFFFF>「海染泡沫」</color>，每消耗1个都使造成的伤害+1。",
     "playingDescription": "我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个，当前已受到${[GCG_TOKEN_SHIELD]}点治疗）\n角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Hairantaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Hairantaozhuang",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 312017,
@@ -5881,7 +6028,8 @@
     "description": "入场时：抓1张牌。\n所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色为出战角色期间，敌方受到元素反应伤害时：</color>抓1张牌。（每回合1次）",
     "playingDescription": "所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Chiwangdanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Chiwangdanjian",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 312018,
@@ -5917,7 +6065,8 @@
     "description": "入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。\n所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色为出战角色期间，敌方受到元素反应伤害时：</color>抓1张牌。（每回合至多2次）",
     "playingDescription": "所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Chiwangtao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Chiwangtao",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 312019,
@@ -5948,7 +6097,8 @@
     "description": "角色使用「普通攻击」后：抓1张牌。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「普通攻击」后：</color>抓1张牌。（每回合1次）",
     "playingDescription": "角色使用「普通攻击」后：抓1张牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Yuxiang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Yuxiang",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 312020,
@@ -5984,7 +6134,8 @@
     "description": "角色使用「普通攻击」后：抓1张牌。（每回合1次）\n角色使用技能后：如果我方元素骰数量不多于手牌数量，则生成1个所附属角色类型的元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「普通攻击」后：</color>抓1张牌。（每回合1次）\\n<color=#FFFFFFFF>角色使用技能后：</color>如果我方元素骰数量不多于手牌数量，则生成1个所附属角色类型的元素骰。（每回合1次）",
     "playingDescription": "角色使用「普通攻击」后：抓1张牌。（每回合1次）\n角色使用技能后：如果我方元素骰数量不多于手牌数量，则生成1个所附属角色类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Yuxiangtao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Yuxiangtao",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 312021,
@@ -6015,7 +6166,8 @@
     "description": "角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则抓1张牌。（每回合1次）",
     "playingDescription": "角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huashen"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huashen",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 312022,
@@ -6051,7 +6203,8 @@
     "description": "角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌，并且在本回合结束阶段中治疗所附属角色1点。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则抓1张牌，并且在本回合结束阶段中治疗所附属角色1点。（每回合1次）",
     "playingDescription": "角色受到伤害后：如果所附属角色为「出战角色」，则抓1张牌，并且在本回合结束阶段中治疗所附属角色1点。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huashentao"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huashentao",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 312023,
@@ -6087,7 +6240,8 @@
     "description": "角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。\n第1次触发：生成1个此角色类型的元素骰。\n第2次触发：抓1张牌。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色受到伤害或治疗后：</color>根据本回合触发此效果的次数，执行不同的效果。\\n<color=#FFFFFFFF>第1次触发：</color>生成1个此角色类型的元素骰。\\n<color=#FFFFFFFF>第2次触发：</color>抓1张牌。",
     "playingDescription": "角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。\n第1次触发：生成1个此角色类型的元素骰。\n第2次触发：抓1张牌。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_LaobinDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_LaobinDanjian",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 312024,
@@ -6123,7 +6277,8 @@
     "description": "角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。\n第1次触发：生成1个此角色类型的元素骰。\n第2次触发：抓1张牌。\n第4次触发：生成1个此角色类型的元素骰。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>角色受到伤害或治疗后：</color>根据本回合触发此效果的次数，执行不同的效果。\\n<color=#FFFFFFFF>第1次触发：</color>生成1个此角色类型的元素骰。\\n<color=#FFFFFFFF>第2次触发：</color>抓1张牌。\\n<color=#FFFFFFFF>第4次触发：</color>生成1个此角色类型的元素骰。",
     "playingDescription": "角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。\n第1次触发：生成1个此角色类型的元素骰。\n第2次触发：抓1张牌。\n第4次触发：生成1个此角色类型的元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZhuYingDa"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZhuYingDa",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 312025,
@@ -6154,7 +6309,8 @@
     "description": "结束阶段：如果所附属角色在后台，则此牌累积1点「报酬」。（最多累积2点）\n对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>结束阶段：</color>如果所附属角色在后台，则此牌累积1点<color=#FFFFFFFF>「报酬」</color>。（最多累积2点）\\n<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「元素战技」时：</color>此牌每有1点<color=#FFFFFFFF>「报酬」</color>，就将其消耗，以少花费1个元素骰。",
     "playingDescription": "结束阶段：如果所附属角色在后台，则此牌累积1点「报酬」。（最多累积2点）\n对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_HuangjinjutuanXiaojian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_HuangjinjutuanXiaojian",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 312026,
@@ -6190,7 +6346,8 @@
     "description": "结束阶段：如果所附属角色在后台，则此牌累积2点「报酬」。（最多累积4点）\n对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>结束阶段：</color>如果所附属角色在后台，则此牌累积2点<color=#FFFFFFFF>「报酬」</color>。（最多累积4点）\\n<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「元素战技」时：</color>此牌每有1点<color=#FFFFFFFF>「报酬」</color>，就将其消耗，以少花费1个元素骰。",
     "playingDescription": "结束阶段：如果所附属角色在后台，则此牌累积2点「报酬」。（最多累积4点）\n对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huangjinjutuanda"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Huangjinjutuanda",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 312027,
@@ -6226,7 +6383,8 @@
     "description": "所附属角色为出战角色，敌方受到草元素伤害后：累积1枚「花冠水晶」。如果「花冠水晶」大于等于我方手牌数，则生成1个随机基础元素骰。\n（每回合至多生成2个）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色为出战角色，敌方受到$[K107]后：</color>累积1枚<color=#FFFFFFFF>「花冠水晶」</color>。如果<color=#FFFFFFFF>「花冠水晶」</color>大于等于我方手牌数，则生成1个随机基础元素骰。\\n（每回合至多生成2个）",
     "playingDescription": "所附属角色为出战角色，敌方受到草元素伤害后：累积1枚「花冠水晶」。如果「花冠水晶」大于等于我方手牌数，则生成1个随机基础元素骰。\n（每回合至多生成2个）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Zijinghuaguan"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Zijinghuaguan",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 312028,
@@ -6262,7 +6420,8 @@
     "description": "所附属角色为出战角色，敌方受到伤害后：如果此伤害是草元素伤害或发生了草元素相关反应，则累积2枚「花冠水晶」。如果「花冠水晶」大于等于我方手牌数，则生成1个万能元素。\n（每回合至多生成2个）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色为出战角色，敌方受到伤害后：</color>如果此伤害是$[K107]或发生了$[K217]，则累积2枚<color=#FFFFFFFF>「花冠水晶」</color>。如果<color=#FFFFFFFF>「花冠水晶」</color>大于等于我方手牌数，则生成1个$[K411]。\\n（每回合至多生成2个）",
     "playingDescription": "所附属角色为出战角色，敌方受到伤害后：如果此伤害是草元素伤害或发生了草元素相关反应，则累积2枚「花冠水晶」。如果「花冠水晶」大于等于我方手牌数，则生成1个万能元素。\n（每回合至多生成2个）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZijinghuaguanDa"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZijinghuaguanDa",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 312101,
@@ -6298,7 +6457,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个冰元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1101}<color=#99FFFFFF>冰元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个冰元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_BinDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_BinDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312102,
@@ -6334,7 +6494,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个冰元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出冰元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1101}<color=#99FFFFFF>冰元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1101}<color=#99FFFFFF>冰元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个冰元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出冰元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_BinTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_BinTaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312201,
@@ -6370,7 +6531,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个水元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1102}<color=#80C0FFFF>水元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个水元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Shuidanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Shuidanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312202,
@@ -6406,7 +6568,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个水元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出水元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1102}<color=#80C0FFFF>水元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1102}<color=#80C0FFFF>水元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个水元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出水元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Shuitaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Shuitaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312301,
@@ -6442,7 +6605,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个火元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1103}<color=#FF9999FF>火元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个火元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Monvdanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Monvdanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312302,
@@ -6478,7 +6642,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个火元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出火元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1103}<color=#FF9999FF>火元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1103}<color=#FF9999FF>火元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个火元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出火元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Monvtaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Monvtaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312401,
@@ -6514,7 +6679,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个雷元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1104}<color=#FFACFFFF>雷元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个雷元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Leidanjia"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Leidanjia",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312402,
@@ -6550,7 +6716,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个雷元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出雷元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1104}<color=#FFACFFFF>雷元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1104}<color=#FFACFFFF>雷元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个雷元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出雷元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Leitaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Leitaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312501,
@@ -6586,7 +6753,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个风元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1105}<color=#80FFD7FF>风元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个风元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_FengDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_FengDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312502,
@@ -6622,7 +6790,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个风元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出风元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1105}<color=#80FFD7FF>风元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1105}<color=#80FFD7FF>风元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个风元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出风元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_FengTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_FengTaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312601,
@@ -6658,7 +6827,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个岩元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1106}<color=#FFE699FF>岩元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个岩元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_YanDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_YanDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312602,
@@ -6694,7 +6864,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个岩元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出岩元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1106}<color=#FFE699FF>岩元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1106}<color=#FFE699FF>岩元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个岩元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出岩元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_YanTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_YanTaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312701,
@@ -6730,7 +6901,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个草元素。（每回合1次）\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1107}<color=#7EC236FF>草元素</color>。（每回合1次）",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个草元素。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_CaoDanjian"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_CaoDanjian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 312702,
@@ -6766,7 +6938,8 @@
     "description": "对角色打出「天赋」或角色使用技能时：少花费1个草元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出草元素。\n（角色最多装备1件「圣遗物」）",
     "rawPlayingDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个{SPRITE_PRESET#1107}<color=#7EC236FF>草元素</color>。（每回合1次）\\n<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出{SPRITE_PRESET#1107}<color=#7EC236FF>草元素</color>。",
     "playingDescription": "对角色打出「天赋」或角色使用技能时：少花费1个草元素。（每回合1次）\n投掷阶段：2个元素骰初始总是投出草元素。",
-    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_CaoTaozhuang"
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_CaoTaozhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321001,
@@ -6791,7 +6964,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>抓2张牌。\\n$[K3]：2",
     "description": "结束阶段：抓2张牌。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_LiyueHarbor"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_LiyueHarbor",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321002,
@@ -6813,7 +6987,8 @@
     "description": "入场时：选择任意元素骰重投。\n投掷阶段：获得额外一次重投机会。",
     "rawPlayingDescription": "<color=#FFFFFFFF>投掷阶段：</color>获得额外一次重投机会。",
     "playingDescription": "投掷阶段：获得额外一次重投机会。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_MdLibrary"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_MdLibrary",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321003,
@@ -6833,7 +7008,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>投掷阶段：</color>2个元素骰初始总是投出我方出战角色类型的元素。\\n<color=#FFFFFFFF>行动阶段开始时：</color>如果我方手牌数量不多于3，则弃置此牌，生成1个$[K411]。",
     "description": "投掷阶段：2个元素骰初始总是投出我方出战角色类型的元素。\n行动阶段开始时：如果我方手牌数量不多于3，则弃置此牌，生成1个万能元素。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Qunyuge"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Qunyuge",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321004,
@@ -6858,7 +7034,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>少花费1个元素骰。（每回合1次）",
     "description": "我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Chenxijiuzhuang"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Chenxijiuzhuang",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321005,
@@ -6883,7 +7060,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗受伤最多的我方后台角色2点。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "结束阶段：治疗受伤最多的我方后台角色2点。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Wangshukezhan"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Wangshukezhan",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321006,
@@ -6908,7 +7086,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗我方「出战角色」2点。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "结束阶段：治疗我方「出战角色」2点。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_FavoniusChurch"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_FavoniusChurch",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 321007,
@@ -6933,7 +7112,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>如果我方的元素骰包含5种不同的元素，则生成1个$[K411]。",
     "description": "行动阶段开始时：如果我方的元素骰包含5种不同的元素，则生成1个万能元素。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Tianshou"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Tianshou",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 321008,
@@ -6958,7 +7138,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>每回合自动触发1次：</color>生成1个随机的基础元素骰。\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "description": "每回合自动触发1次：生成1个随机的基础元素骰。\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Mingshendashe"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Mingshendashe",
+    "sinceVersion": "v3.6.0"
   },
   {
     "id": 321009,
@@ -6983,7 +7164,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有我方角色1点。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "结束阶段：治疗所有我方角色1点。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Shanhu"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Shanhu",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 321010,
@@ -7008,7 +7190,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌或我方角色使用技能时：</color>如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）",
     "description": "我方打出「天赋」牌或我方角色使用技能时：如果我方元素骰数量不多于手牌数量，则少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Xumi"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Xumi",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 321011,
@@ -7028,7 +7211,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>收集最多2个未使用的元素骰。\\n<color=#FFFFFFFF>行动阶段开始时：</color>拿回此牌所收集的元素骰。",
     "description": "结束阶段：收集最多2个未使用的元素骰。\n行动阶段开始时：拿回此牌所收集的元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Hengna"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Hengna",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 321012,
@@ -7053,7 +7237,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>如果我方不是「先手牌手」，则生成1个出战角色类型的元素骰。\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "description": "行动阶段开始时：如果我方不是「先手牌手」，则生成1个出战角色类型的元素骰。\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Zhengshoui"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Zhengshoui",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 321013,
@@ -7073,7 +7258,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出原本元素骰费用至少为3的「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "我方打出原本元素骰费用至少为3的「武器」或「圣遗物」手牌时：少花费1个元素骰。（每回合1次）\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Huangjinwu"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Huangjinwu",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 321014,
@@ -7098,7 +7284,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方选择行动前，元素骰数量为0时：</color>生成1个$[K411]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "description": "我方选择行动前，元素骰数量为0时：生成1个万能元素。（每回合1次）\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Gandharva"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Gandharva",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 321015,
@@ -7125,7 +7312,8 @@
     "description": "入场时：从牌组中随机抽取一张「天赋」牌。\n我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "playingDescription": "我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Fenglong"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Fenglong",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 321016,
@@ -7150,7 +7338,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>如果我方手牌数量不多于2，则抓2张牌。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "结束阶段：如果我方手牌数量不多于2，则抓2张牌。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Chuiliu"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Chuiliu",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 321017,
@@ -7175,7 +7364,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方选择行动前：</color>如果我方角色所装备卡牌的原本元素骰费用总和不比对方更低，则生成1个出战角色类型的元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "description": "我方选择行动前：如果我方角色所装备卡牌的原本元素骰费用总和不比对方更低，则生成1个出战角色类型的元素骰。（每回合1次）\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Gejuyuan"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Gejuyuan",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 321018,
@@ -7200,7 +7390,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方出战角色受到伤害或治疗后：</color>此牌累积1点<color=#FFFFFFFF>「禁令」</color>。（最多累积到4点）\\n<color=#FFFFFFFF>行动阶段开始时：</color>如果此牌已有4点<color=#FFFFFFFF>「禁令」</color>，则消耗4点，在对方场上生成<color=#FFFFFFFF>$[C301018]</color>。（本回合中打出的1张事件牌无效）",
     "description": "我方出战角色受到伤害或治疗后：此牌累积1点「禁令」。（最多累积到4点）\n行动阶段开始时：如果此牌已有4点「禁令」，则消耗4点，在对方场上生成严格禁令。（本回合中打出的1张事件牌无效）",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_BideBao"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_BideBao",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 321019,
@@ -7225,7 +7416,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>任意阵营的角色受到治疗后：</color>使该角色附属$[K1025]。（结束阶段受到2点穿透伤害，可用1次）\\n<color=#FFFFFFFF>$[K4]：2</color>",
     "description": "任意阵营的角色受到治疗后：使该角色附属悠远雷暴。（结束阶段受到2点穿透伤害，可用1次）\n持续回合：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_Qinglaidao"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Qinglaidao",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 321020,
@@ -7250,7 +7442,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>对方累积抓4张牌后：</color>弃置此牌，在对方牌库顶生成2张<color=#FFFFFFFF>$[K2004]</color>。然后直到本回合结束前，对方每抓1张牌，就立刻生成1张<color=#FFFFFFFF>$[K2004]</color>，随机地置入对方牌库中。",
     "description": "对方累积抓4张牌后：弃置此牌，在对方牌库顶生成2张禁忌知识。然后直到本回合结束前，对方每抓1张牌，就立刻生成1张禁忌知识，随机地置入对方牌库中。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_ChiWangLin"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_ChiWangLin",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 301020,
@@ -7290,7 +7483,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方$[K56]或$[K57]1张牌后：</color>此牌累积1点<color=#FFFFFFFF>「实验进展」</color>。每当<color=#FFFFFFFF>「实验进展」</color>达到3点、6点、9点时，就获得1个万能元素骰。然后，如果<color=#FFFFFFFF>「实验进展」</color>至少为9点，则弃置此牌。",
     "description": "我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Location_FontaineSci"
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_FontaineSci",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 322001,
@@ -7315,7 +7509,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>生成2点$[K411]。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "行动阶段开始时：生成2点万能元素。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Paimon"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Paimon",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322002,
@@ -7340,7 +7535,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>将此次切换视为「$[K2]」而非「$[K1]」。（每回合1次）",
     "description": "我方执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Katheryne"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Katheryne",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322003,
@@ -7367,7 +7563,8 @@
     "description": "入场时：此牌附带2个「合成材料」。如果我方牌组中初始包含至少6张「圣遗物」，则从牌组中随机抽取1张「圣遗物」牌。\n结束阶段：此牌补充1个「合成材料」。\n打出「圣遗物」手牌时：如可能，则支付等同于「圣遗物」总费用数量的「合成材料」，以免费装备此「圣遗物」。（每回合1次）",
     "rawPlayingDescription": "<color=#FFFFFFFF>结束阶段：</color>此牌补充1个<color=#FFFFFFFF>「合成材料」</color>。\\n<color=#FFFFFFFF>打出「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>如可能，则支付等同于「{SPRITE_PRESET#3004}圣遗物」总费用数量的<color=#FFFFFFFF>「合成材料」</color>，以免费装备此「{SPRITE_PRESET#3004}圣遗物」。（每回合1次）",
     "playingDescription": "结束阶段：此牌补充1个「合成材料」。\n打出「圣遗物」手牌时：如可能，则支付等同于「圣遗物」总费用数量的「合成材料」，以免费装备此「圣遗物」。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Timaeus"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Timaeus",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322004,
@@ -7394,7 +7591,8 @@
     "description": "入场时：此牌附带2个「锻造原胚」。如果我方牌组中初始包含至少3种不同的「武器」，则从牌组中随机抽取1张「武器」牌。\n结束阶段：此牌补充1个「锻造原胚」。\n打出「武器」手牌时：如可能，则支付等同于「武器」总费用数量的「锻造原胚」，以免费装备此「武器」。（每回合1次）",
     "rawPlayingDescription": "<color=#FFFFFFFF>结束阶段：</color>此牌补充1个<color=#FFFFFFFF>「锻造原胚」</color>。\\n<color=#FFFFFFFF>打出「{SPRITE_PRESET#3003}武器」手牌时：</color>如可能，则支付等同于「{SPRITE_PRESET#3003}武器」总费用数量的<color=#FFFFFFFF>「锻造原胚」</color>，以免费装备此「{SPRITE_PRESET#3003}武器」。（每回合1次）",
     "playingDescription": "结束阶段：此牌补充1个「锻造原胚」。\n打出「武器」手牌时：如可能，则支付等同于「武器」总费用数量的「锻造原胚」，以免费装备此「武器」。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Wagner"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Wagner",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322005,
@@ -7419,7 +7617,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>打出「{SPRITE_PRESET#3101}料理」事件牌后：</color>生成1个随机基础元素骰。（每回合1次）\\n<color=#FFFFFFFF>打出「{SPRITE_PRESET#3101}料理」事件牌后：</color>从牌组中随机抽取1张「{SPRITE_PRESET#3101}料理」事件牌。（整场牌局限制1次）",
     "description": "打出「料理」事件牌后：生成1个随机基础元素骰。（每回合1次）\n打出「料理」事件牌后：从牌组中随机抽取1张「料理」事件牌。（整场牌局限制1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Maoshifu"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Maoshifu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322006,
@@ -7444,7 +7643,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>打出「{SPRITE_PRESET#3104}场地」支援牌时：</color>少花费2个元素骰。（每回合1次）",
     "description": "打出「场地」支援牌时：少花费2个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_AYuan"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_AYuan",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322007,
@@ -7464,7 +7664,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>每回合自动触发1次：</color>此牌累积1只<color=#FFFFFFFF>「鸽子」</color>。如果此牌已累积3只<color=#FFFFFFFF>「鸽子」</color>，则弃置此牌，抓1张牌，并生成1点$[K411]。",
     "description": "每回合自动触发1次：此牌累积1只「鸽子」。如果此牌已累积3只「鸽子」，则弃置此牌，抓1张牌，并生成1点万能元素。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Timmy"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Timmy",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322008,
@@ -7484,7 +7685,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>收集我方未使用的元素骰（每种最多1个）。\\n<color=#FFFFFFFF>行动阶段开始时：</color>如果此牌已收集3个元素骰，则抓2张牌，生成2点$[K411]，然后弃置此牌。",
     "description": "结束阶段：收集我方未使用的元素骰（每种最多1个）。\n行动阶段开始时：如果此牌已收集3个元素骰，则抓2张牌，生成2点万能元素，然后弃置此牌。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_LiBen"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_LiBen",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322009,
@@ -7504,7 +7706,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>双方角色使用技能后：</color>如果造成了$[K100]、$[K5]或引发了<color=#FFFFFFFF>元素反应</color>，此牌累积1个<color=#FFFFFFFF>「灵感」</color>。如果此牌已累积3个<color=#FFFFFFFF>「灵感」</color>，则弃置此牌并抓2张牌。",
     "description": "双方角色使用技能后：如果造成了物理伤害、穿透伤害或引发了元素反应，此牌累积1个「灵感」。如果此牌已累积3个「灵感」，则弃置此牌并抓2张牌。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Changjiuye"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Changjiuye",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322010,
@@ -7529,7 +7732,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用本回合使用过的技能时：</color>少花费1个元素骰。（每回合1次）",
     "description": "我方角色使用本回合使用过的技能时：少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Aileen"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Aileen",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322011,
@@ -7554,7 +7758,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>我方一名充能未满的角色获得1点$[K310]。（出战角色优先）\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "结束阶段：我方一名充能未满的角色获得1点充能。（出战角色优先）\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Tiantiezui"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Tiantiezui",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322012,
@@ -7579,7 +7784,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方切换角色后：</color>如果切换到的角色没有$[K310]，则使该角色获得1点$[K310]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "我方切换角色后：如果切换到的角色没有充能，则使该角色获得1点充能。（每回合1次）\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Liusu"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Liusu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322013,
@@ -7599,7 +7805,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>召唤物消失时：</color>此牌累积1点<color=#FFFFFFFF>「大祓」进度</color>。（最多累积3点）\\n<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」装备时：</color>如果<color=#FFFFFFFF>「大祓」进度</color>已达到3，则弃置此牌，使打出的卡牌少花费2个元素骰。",
     "description": "召唤物消失时：此牌累积1点「大祓」进度。（最多累积3点）\n我方打出「武器」或「圣遗物」装备时：如果「大祓」进度已达到3，则弃置此牌，使打出的卡牌少花费2个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Huasanli"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Huasanli",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 322014,
@@ -7619,7 +7826,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>生成1点$[K411]。然后，如果对方的支援区未满，则将此牌转移到对方的支援区。",
     "description": "行动阶段开始时：生成1点万能元素。然后，如果对方的支援区未满，则将此牌转移到对方的支援区。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Yingjin"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Yingjin",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 322015,
@@ -7644,7 +7852,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>打出「{SPRITE_PRESET#3101}料理」事件牌时：</color>少花费2个元素骰。（每回合1次）",
     "description": "打出「料理」事件牌时：少花费2个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Xudong"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Xudong",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 322016,
@@ -7669,7 +7878,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>打出「{SPRITE_PRESET#3103}伙伴」支援牌时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>打出「{SPRITE_PRESET#3103}伙伴」支援牌后：</color>从牌组中随机抽取1张「{SPRITE_PRESET#3103}伙伴」支援牌。（整场牌局限制1次）",
     "description": "打出「伙伴」支援牌时：少花费1个元素骰。（每回合1次）\n打出「伙伴」支援牌后：从牌组中随机抽取1张「伙伴」支援牌。（整场牌局限制1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Dina"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Dina",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 322017,
@@ -7694,7 +7904,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用「元素战技」后：</color>生成1个我方下一个后台角色类型的元素骰。（每回合1次）",
     "description": "我方角色使用「元素战技」后：生成1个我方下一个后台角色类型的元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Lana"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Lana",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 322018,
@@ -7719,7 +7930,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3003}武器」手牌时：</color>少花费1个元素骰；我方场上每有一个已装备「{SPRITE_PRESET#3003}武器」的角色，就额外少花费1个元素骰。（每回合1次）",
     "description": "我方打出「武器」手牌时：少花费1个元素骰；我方场上每有一个已装备「武器」的角色，就额外少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Laozhang"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Laozhang",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 322019,
@@ -7744,7 +7956,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>双方执行任意行动后，我方手牌数量为0时：</color>抓1张牌。\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "description": "双方执行任意行动后，我方手牌数量为0时：抓1张牌。\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Saileita"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Saileita",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 322020,
@@ -7769,7 +7982,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>少花费1个元素骰；如果我方场上已有2个已装备「{SPRITE_PRESET#3004}圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）",
     "description": "我方打出「圣遗物」手牌时：少花费1个元素骰；如果我方场上已有2个已装备「圣遗物」的角色，就额外少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Yayoyi"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Yayoyi",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 322021,
@@ -7789,7 +8003,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出「玛梅赫」以外的「{SPRITE_PRESET#3101}料理」/「{SPRITE_PRESET#3104}场地」/「{SPRITE_PRESET#3103}伙伴」/「{SPRITE_PRESET#3102}道具」行动牌后：</color>随机生成1张「玛梅赫」以外的「{SPRITE_PRESET#3101}料理」/「{SPRITE_PRESET#3104}场地」/「{SPRITE_PRESET#3103}伙伴」/「{SPRITE_PRESET#3102}道具」行动牌，将其加入手牌。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "description": "我方打出「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌后：随机生成1张「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌，将其加入手牌。（每回合1次）\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Mamere"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Mamere",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 322022,
@@ -7816,7 +8031,8 @@
     "description": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）\n我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。",
     "rawPlayingDescription": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为<color=#FFFFFFFF>「阅历」</color>。（最多6点，<color=#D3BC8EFF>当前为${[GCG_TOKEN_COUNTER]}点</color>）\\n<color=#FFFFFFFF>我方角色使用「元素爆发」后：</color>如果<color=#FFFFFFFF>「阅历」</color>至少为6，则弃置此牌，对我方出战角色附属$[K1028]。",
     "playingDescription": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点，当前为${[GCG_TOKEN_COUNTER]}点）\n我方角色使用「元素爆发」后：如果「阅历」至少为6，则弃置此牌，对我方出战角色附属沙与梦。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Jeht"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Jeht",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 322023,
@@ -7843,7 +8059,8 @@
     "description": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点）\n结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。",
     "rawPlayingDescription": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为<color=#FFFFFFFF>「侍从的周到」</color>。（最多4点，<color=#D3BC8EFF>当前为${[GCG_TOKEN_COUNTER]}点</color>）\\n<color=#FFFFFFFF>结束阶段：</color>如果<color=#FFFFFFFF>「侍从的周到」</color>至少为3，则弃置此牌，然后抓<color=#FFFFFFFF>「侍从的周到」</color>点数的牌。",
     "playingDescription": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点，当前为${[GCG_TOKEN_COUNTER]}点）\n结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Silver"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Silver",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 322024,
@@ -7868,7 +8085,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>入场时：</color>生成4张<color=#FFFFFFFF>$[K2001]</color>，均匀地置入我方牌库中。\\n<color=#FFFFFFFF>我方打出2张$[K2001]后：</color>弃置此牌，召唤<color=#FFFFFFFF>$[K1021]</color>。",
     "description": "入场时：生成4张太郎丸的存款，均匀地置入我方牌库中。\n我方打出2张太郎丸的存款后：弃置此牌，召唤愤怒的太郎丸。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Taroumaru"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Taroumaru",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 302202,
@@ -7903,7 +8121,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>生成1张<color=#FFFFFFFF>$[K2002]</color>，随机将其置入我方牌库顶部5张牌之中。如果此牌的$[K3]仅剩余1，则抓1张牌。\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "结束阶段：生成1张「清洁工作」，随机将其置入我方牌库顶部5张牌之中。如果此牌的可用次数仅剩余1，则抓1张牌。\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Baishoutao"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Baishoutao",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 302203,
@@ -7938,7 +8157,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方$[K56]或$[K57]1张牌后：</color>此牌累积1点<color=#FFFFFFFF>「新闻线索」</color>。（最多累积到2点）\\n<color=#FFFFFFFF>结束阶段：</color>如果此牌已累积2点<color=#FFFFFFFF>「新闻线索」</color>，则扣除2点，复制对方牌库顶的1张牌加入我方手牌。",
     "description": "我方舍弃或调和1张牌后：此牌累积1点「新闻线索」。（最多累积到2点）\n结束阶段：如果此牌已累积2点「新闻线索」，则扣除2点，复制对方牌库顶的1张牌加入我方手牌。",
-    "cardFace": "UI_Gcg_CardFace_Assist_NPC_MrArthur"
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_MrArthur",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 323001,
@@ -7963,7 +8183,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>双方角色使用技能后：</color>如果造成了元素伤害，此牌累积1个<color=#FFFFFFFF>「质变进度」</color>。如果此牌已累积3个<color=#FFFFFFFF>「质变进度」</color>，则弃置此牌并生成3个不同的基础元素骰。",
     "description": "双方角色使用技能后：如果造成了元素伤害，此牌累积1个「质变进度」。如果此牌已累积3个「质变进度」，则弃置此牌并生成3个不同的基础元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_ParametricTransformer"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_ParametricTransformer",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 323002,
@@ -7990,7 +8211,8 @@
     "description": "入场时：从牌组中随机抽取1张「料理」事件。\n我方打出「料理」事件牌时：从牌组中随机抽取1张「料理」事件牌。（每回合1次）",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3101}料理」事件牌时：</color>从牌组中随机抽取1张「{SPRITE_PRESET#3101}料理」事件牌。（每回合1次）",
     "playingDescription": "我方打出「料理」事件牌时：从牌组中随机抽取1张「料理」事件牌。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_NREMenu"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_NREMenu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 323003,
@@ -8015,7 +8237,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方切换角色后：</color>本回合中，我方执行的下次「切换角色」行动视为「$[K2]」而非「$[K1]」，并且少花费1个元素骰。（每回合1次）",
     "description": "我方切换角色后：本回合中，我方执行的下次「切换角色」行动视为「快速行动」而非「战斗行动」，并且少花费1个元素骰。（每回合1次）",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Hongye"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Hongye",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 323004,
@@ -8040,7 +8263,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>此牌累积1个<color=#FFFFFFFF>「寻宝线索」</color>。如果此牌已累积3个<color=#FFFFFFFF>「寻宝线索」</color>，则弃置此牌并抓3张牌。",
     "description": "我方角色使用技能后：此牌累积1个「寻宝线索」。如果此牌已累积3个「寻宝线索」，则弃置此牌并抓3张牌。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Xunbao"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Xunbao",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 323005,
@@ -8060,7 +8284,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方打出原本元素骰费用至少为2的支援牌时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "我方打出原本元素骰费用至少为2的支援牌时：少花费1个元素骰。（每回合1次）\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Seedbox"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Seedbox",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 323006,
@@ -8085,7 +8310,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3003}武器」/「{SPRITE_PRESET#3004}圣遗物」/「{SPRITE_PRESET#3104}场地」/「{SPRITE_PRESET#3103}伙伴」手牌时：</color>如果本场对局中我方曾经打出过所打出牌的同名卡牌，则少花费2个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：2</color>",
     "description": "我方打出「武器」/「圣遗物」/「场地」/「伙伴」手牌时：如果本场对局中我方曾经打出过所打出牌的同名卡牌，则少花费2个元素骰。（每回合1次）\n可用次数：2",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Mirror"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Mirror",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 323007,
@@ -8112,7 +8338,8 @@
     "description": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）\n可用次数：3",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方打出行动牌后：</color>如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个$[K411]。（每回合1次，<color=#D3BC8EFF>当前已打出${[GCG_TOKEN_COUNTER]}张</color>）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "playingDescription": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次，当前已打出${[GCG_TOKEN_COUNTER]}张）\n可用次数：3",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Liumingshi"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Liumingshi",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 323008,
@@ -8132,7 +8359,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>$[K56]最多2张元素骰费用最高的手牌，每$[K56]1张，此牌就累积1点<color=#FFFFFFFF>「记忆和梦」</color>。（最多2点）\\n<color=#FFFFFFFF>我方角色使用技能时：</color>如果我方本回合未打出过行动牌，则消耗1点<color=#FFFFFFFF>「记忆和梦」</color>，以使此技能少花费1个元素骰。",
     "description": "行动阶段开始时：舍弃最多2张元素骰费用最高的手牌，每舍弃1张，此牌就累积1点「记忆和梦」。（最多2点）\n我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Assist_Prop_KuSheHeng"
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_KuSheHeng",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 330001,
@@ -8157,7 +8385,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方有角色已装备「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」时，才能打出：</color>本回合中，我方下次打出「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」装备牌时少花费2个元素骰。\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "我方有角色已装备「武器」或「圣遗物」时，才能打出：本回合中，我方下次打出「武器」或「圣遗物」装备牌时少花费2个元素骰。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Jiangjun"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Jiangjun",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 330002,
@@ -8182,7 +8411,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方剩余元素骰数量为0时，才能打出：</color>生成2个不同的基础元素骰。\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "我方剩余元素骰数量为0时，才能打出：生成2个不同的基础元素骰。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Chuanglong"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Chuanglong",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 330003,
@@ -8207,7 +8437,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方出战角色的元素类型为{SPRITE_PRESET#2101}<color=#99FFFFFF>冰</color>/{SPRITE_PRESET#2102}<color=#80C0FFFF>水</color>/{SPRITE_PRESET#2103}<color=#FF9999FF>火</color>/{SPRITE_PRESET#2104}<color=#FFACFFFF>雷</color>/{SPRITE_PRESET#2107}<color=#7EC236FF>草</color>时，才能打出：</color>对我方所有具有元素附着的角色，附着我方出战角色类型的元素。\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "我方出战角色的元素类型为冰/水/火/雷/草时，才能打出：对我方所有具有元素附着的角色，附着我方出战角色类型的元素。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Qingdian"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Qingdian",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 330004,
@@ -8232,7 +8463,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>本回合中，轮到我方行动期间有对方角色被击倒时：</color>本次行动结束后，我方可以再连续行动一次。\\n<color=#FFFFFFFF>$[K3]：1</color>\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "本回合中，轮到我方行动期间有对方角色被击倒时：本次行动结束后，我方可以再连续行动一次。\n可用次数：1\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Xinfeng"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Xinfeng",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 330005,
@@ -8259,7 +8491,8 @@
     "description": "第1回合打出此牌时：如果我方牌组中初始包含至少2张不同的「天赋」牌，则抓1张「天赋」牌。\n第2回合及以后打出此牌时：我方抓当前的回合数-1数量的牌。（最多抓4张）\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
     "rawPlayingDescription": "<color=#FFFFFFFF>第1回合打出此牌时：</color>如果我方牌组中初始包含至少2张不同的「{SPRITE_PRESET#3006}天赋」牌，则抓1张「{SPRITE_PRESET#3006}天赋」牌。\\n<color=#FFFFFFFF>第2回合及以后打出此牌时：</color>我方抓<color=#FFFFFFFF>当前的回合数-1</color>数量的牌。（最多抓4张，<color=#D3BC8EFF>当前为回合${[T]}</color>）\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "playingDescription": "第1回合打出此牌时：如果我方牌组中初始包含至少2张不同的「天赋」牌，则抓1张「天赋」牌。\n第2回合及以后打出此牌时：我方抓当前的回合数-1数量的牌。（最多抓4张，当前为回合${[T]}）\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Guobahelp"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Guobahelp",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 330006,
@@ -8288,7 +8521,8 @@
     ],
     "rawDescription": "本回合中，对方牌手打出的3张事件牌无效。\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "本回合中，对方牌手打出的3张事件牌无效。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Xuanpanyouzui"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Xuanpanyouzui",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 330007,
@@ -8322,7 +8556,8 @@
     ],
     "rawDescription": "本回合中，目标我方角色受到的伤害-1。（最多生效4次）\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "本回合中，目标我方角色受到的伤害-1。（最多生效4次）\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Fankang"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Fankang",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 330008,
@@ -8347,7 +8582,8 @@
     ],
     "rawDescription": "敌方出战角色失去1点$[K310]。\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "敌方出战角色失去1点充能。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_LeiShenZhan"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_LeiShenZhan",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 331101,
@@ -8370,7 +8606,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#99FFFFFF>{SPRITE_PRESET#1101}冰元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2101}<color=#99FFFFFF>冰元素</color>角色，才能加入牌组）",
     "description": "生成1个冰元素骰。\n（牌组包含至少2个冰元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Ice"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Ice",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331102,
@@ -8407,7 +8644,8 @@
     ],
     "rawDescription": "本回合中，我方当前出战角色下一次造成的伤害+2。\\n（牌组包含至少2个{SPRITE_PRESET#2101}<color=#99FFFFFF>冰元素</color>角色，才能加入牌组）",
     "description": "本回合中，我方当前出战角色下一次造成的伤害+2。\n（牌组包含至少2个冰元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Ice"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Ice",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331201,
@@ -8430,7 +8668,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#80C0FFFF>{SPRITE_PRESET#1102}水元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2102}<color=#80C0FFFF>水元素</color>角色，才能加入牌组）",
     "description": "生成1个水元素骰。\n（牌组包含至少2个水元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Water"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Water",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331202,
@@ -8458,7 +8697,8 @@
     ],
     "rawDescription": "治疗我方出战角色2点。然后，治疗所有我方后台角色1点。\\n（牌组包含至少2个{SPRITE_PRESET#2102}<color=#80C0FFFF>水元素</color>角色，才能加入牌组）",
     "description": "治疗我方出战角色2点。然后，治疗所有我方后台角色1点。\n（牌组包含至少2个水元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Water"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Water",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331301,
@@ -8481,7 +8721,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#FF9999FF>{SPRITE_PRESET#1103}火元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2103}<color=#FF9999FF>火元素</color>角色，才能加入牌组）",
     "description": "生成1个火元素骰。\n（牌组包含至少2个火元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Fire"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Fire",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331302,
@@ -8518,7 +8759,8 @@
     ],
     "rawDescription": "本回合中，我方当前出战角色下一次引发$[K213]时，造成的伤害+3。\\n（牌组包含至少2个{SPRITE_PRESET#2103}<color=#FF9999FF>火元素</color>角色，才能加入牌组）",
     "description": "本回合中，我方当前出战角色下一次引发火元素相关反应时，造成的伤害+3。\n（牌组包含至少2个火元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Fire"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Fire",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331401,
@@ -8541,7 +8783,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#FFACFFFF>{SPRITE_PRESET#1104}雷元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2104}<color=#FFACFFFF>雷元素</color>角色，才能加入牌组）",
     "description": "生成1个雷元素骰。\n（牌组包含至少2个雷元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Electric"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Electric",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331402,
@@ -8569,7 +8812,8 @@
     ],
     "rawDescription": "我方一名充能未满的角色获得1点$[K310]。（出战角色优先）\\n（牌组包含至少2个{SPRITE_PRESET#2104}<color=#FFACFFFF>雷元素</color>角色，才能加入牌组）",
     "description": "我方一名充能未满的角色获得1点充能。（出战角色优先）\n（牌组包含至少2个雷元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Electric"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Electric",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331501,
@@ -8592,7 +8836,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#80FFD7FF>{SPRITE_PRESET#1105}风元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2105}<color=#80FFD7FF>风元素</color>角色，才能加入牌组）",
     "description": "生成1个风元素骰。\n（牌组包含至少2个风元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Wind"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Wind",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331502,
@@ -8629,7 +8874,8 @@
     ],
     "rawDescription": "切换到目标角色，并生成1点$[K411]。\\n（牌组包含至少2个{SPRITE_PRESET#2105}<color=#80FFD7FF>风元素</color>角色，才能加入牌组）",
     "description": "切换到目标角色，并生成1点万能元素。\n（牌组包含至少2个风元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Wind"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Wind",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331601,
@@ -8652,7 +8898,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#FFE699FF>{SPRITE_PRESET#1106}岩元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2106}<color=#FFE699FF>岩元素</color>角色，才能加入牌组）",
     "description": "生成1个岩元素骰。\n（牌组包含至少2个岩元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Rock"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Rock",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331602,
@@ -8680,7 +8927,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>本回合中，我方角色下一次造成$[K106]后：</color>如果我方存在提供「$[K6]」的出战状态，则为一个此类出战状态补充3点「$[K6]」。\\n（牌组包含至少2个{SPRITE_PRESET#2106}<color=#FFE699FF>岩元素</color>角色，才能加入牌组）",
     "description": "本回合中，我方角色下一次造成岩元素伤害后：如果我方存在提供「护盾」的出战状态，则为一个此类出战状态补充3点「护盾」。\n（牌组包含至少2个岩元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Rock"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Rock",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331701,
@@ -8703,7 +8951,8 @@
     "playCost": [],
     "rawDescription": "生成1个<color=#7EC236FF>{SPRITE_PRESET#1107}草元素骰</color>。\\n（牌组包含至少2个{SPRITE_PRESET#2107}<color=#7EC236FF>草元素</color>角色，才能加入牌组）",
     "description": "生成1个草元素骰。\n（牌组包含至少2个草元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Grass"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceB_Grass",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331702,
@@ -8731,7 +8980,8 @@
     ],
     "rawDescription": "本回合中，我方下一次引发元素反应时，造成的伤害+2。\\n使我方场上的<color=#FFFFFFFF>$[C115]、$[C116]和$[C117]</color>「$[K3]」+1。\\n（牌组包含至少2个{SPRITE_PRESET#2107}<color=#7EC236FF>草元素</color>角色，才能加入牌组）",
     "description": "本回合中，我方下一次引发元素反应时，造成的伤害+2。\n使我方场上的燃烧烈焰、草原核和激化领域「可用次数」+1。\n（牌组包含至少2个草元素角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Grass"
+    "cardFace": "UI_Gcg_CardFace_Event_ResonanceA_Grass",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 331801,
@@ -8752,7 +9002,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>本回合中，我方角色使用技能后：</color>将下一个我方后台角色切换到场上。\\n（牌组包含至少2个「{SPRITE_PRESET#3401}蒙德」角色，才能加入牌组）",
     "description": "本回合中，我方角色使用技能后：将下一个我方后台角色切换到场上。\n（牌组包含至少2个「蒙德」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Fengyuziyou"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Fengyuziyou",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 331802,
@@ -8778,7 +9029,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>下回合行动阶段开始时：</color>生成3点$[K411]，抓1张牌。\\n（牌组包含至少2个「{SPRITE_PRESET#3402}璃月」角色，才能加入牌组）",
     "description": "下回合行动阶段开始时：生成3点万能元素，抓1张牌。\n（牌组包含至少2个「璃月」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Yanyuqiyue"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Yanyuqiyue",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 331803,
@@ -8799,7 +9051,8 @@
     "playCost": [],
     "rawDescription": "将我方所有元素骰转换为$[K411]。\\n（牌组包含至少2个「{SPRITE_PRESET#3403}稻妻」角色，才能加入牌组）",
     "description": "将我方所有元素骰转换为万能元素。\n（牌组包含至少2个「稻妻」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Leiyuyongheng"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Leiyuyongheng",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 331804,
@@ -8825,7 +9078,8 @@
     ],
     "rawDescription": "抓1张牌。然后，选择任意手牌替换。\\n（牌组包含至少2个「{SPRITE_PRESET#3404}须弥」角色，才能加入牌组）",
     "description": "抓1张牌。然后，选择任意手牌替换。\n（牌组包含至少2个「须弥」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Caoyuzhihui"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Caoyuzhihui",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 331805,
@@ -8851,7 +9105,8 @@
     ],
     "rawDescription": "平均分配我方未被击倒的角色的生命值，然后治疗所有我方角色1点。\\n（牌组包含至少2个「{SPRITE_PRESET#3405}枫丹」角色，才能加入牌组）",
     "description": "平均分配我方未被击倒的角色的生命值，然后治疗所有我方角色1点。\n（牌组包含至少2个「枫丹」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_WaterJustice"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_WaterJustice",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 332001,
@@ -8874,7 +9129,8 @@
     ],
     "rawDescription": "将所花费的元素骰转换为2个$[K411]。",
     "description": "将所花费的元素骰转换为2个万能元素。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_BestAibo"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_BestAibo",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332002,
@@ -8892,7 +9148,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方下次执行「切换角色」行动时：</color>少花费1个元素骰。",
     "description": "我方下次执行「切换角色」行动时：少花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Huanbanshijian"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Huanbanshijian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332003,
@@ -8910,7 +9167,8 @@
     "playCost": [],
     "rawDescription": "选择任意元素骰<color=#FFFFFFFF>重投</color>，可重投2次。",
     "description": "选择任意元素骰重投，可重投2次。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Yizhiqiankun"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Yizhiqiankun",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332004,
@@ -8933,7 +9191,8 @@
     ],
     "rawDescription": "抓2张牌。",
     "description": "抓2张牌。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Yunchouweiwo"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Yunchouweiwo",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332005,
@@ -8951,7 +9210,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>本回合有我方角色被击倒，才能打出：</color>生成1个$[K411]，我方当前出战角色获得1点$[K310]。（每回合中，最多只能打出1张「本大爷还没有输！」。）",
     "description": "本回合有我方角色被击倒，才能打出：生成1个万能元素，我方当前出战角色获得1点充能。（每回合中，最多只能打出1张「本大爷还没有输！」。）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Bendayehaimeiyoushu"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Bendayehaimeiyoushu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332006,
@@ -8969,7 +9229,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方下次执行「切换角色」行动时：</color>将此次切换视为「$[K2]」而非「$[K1]」。",
     "description": "我方下次执行「切换角色」行动时：将此次切换视为「快速行动」而非「战斗行动」。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Jiaogeiwoba"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Jiaogeiwoba",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332007,
@@ -8992,7 +9253,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方下一次使用技能后：</color>将下一个我方后台角色切换到场上。",
     "description": "我方下一次使用技能后：将下一个我方后台角色切换到场上。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Heguizhishi"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Heguizhishi",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332008,
@@ -9024,7 +9286,8 @@
     ],
     "rawDescription": "我方当前出战角色<color=#FFFFFFFF>获得1点$[K310]</color>。",
     "description": "我方当前出战角色获得1点充能。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Xingtian"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Xingtian",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332009,
@@ -9056,7 +9319,8 @@
     ],
     "rawDescription": "从最多2个我方后台角色身上，转移1点$[K310]到我方出战角色。",
     "description": "从最多2个我方后台角色身上，转移1点充能到我方出战角色。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Baiezhishu"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Baiezhishu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332010,
@@ -9091,7 +9355,8 @@
     "playCost": [],
     "rawDescription": "将一个装备在我方角色的「{SPRITE_PRESET#3003}武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。",
     "description": "将一个装备在我方角色的「武器」装备牌，转移给另一个武器类型相同的我方角色，并重置其效果的「每回合」次数限制。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Zhuwujingtong"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Zhuwujingtong",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332011,
@@ -9126,7 +9391,8 @@
     "playCost": [],
     "rawDescription": "将一个装备在我方角色的「{SPRITE_PRESET#3004}圣遗物」装备牌，转移给另一个我方角色，并重置其效果的「每回合」次数限制。",
     "description": "将一个装备在我方角色的「圣遗物」装备牌，转移给另一个我方角色，并重置其效果的「每回合」次数限制。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Shenbaoqiangongzhuci"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Shenbaoqiangongzhuci",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332012,
@@ -9158,7 +9424,8 @@
     ],
     "rawDescription": "选择一个我方「召唤物」，使其「$[K3]」+1。",
     "description": "选择一个我方「召唤物」，使其「可用次数」+1。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Kuaikuaifengbushu"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Kuaikuaifengbushu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332013,
@@ -9190,7 +9457,8 @@
     ],
     "rawDescription": "选择一个敌方「召唤物」，使其「$[K3]」-2。",
     "description": "选择一个敌方「召唤物」，使其「可用次数」-2。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Songniyicheng"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Songniyicheng",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332014,
@@ -9213,7 +9481,8 @@
     ],
     "rawDescription": "消灭所有「召唤物」。（不分敌我！）",
     "description": "消灭所有「召唤物」。（不分敌我！）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Hufazhishi"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Hufazhishi",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332015,
@@ -9239,7 +9508,8 @@
     ],
     "rawDescription": "召唤一个$[K1001]！\\n（牌组包含至少2个「{SPRITE_PRESET#3503}魔物」角色，才能加入牌组）",
     "description": "召唤一个随机「丘丘人」召唤物！\n（牌组包含至少2个「魔物」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Abyssdehuhuan"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Abyssdehuhuan",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 332016,
@@ -9265,7 +9535,8 @@
     ],
     "rawDescription": "在对方场上，生成1个随机类型的「$[K1004]」。\\n（牌组包含至少2个「{SPRITE_PRESET#3501}愚人众」角色，才能加入牌组）",
     "description": "在对方场上，生成1个随机类型的「愚人众伏兵」。\n（牌组包含至少2个「愚人众」角色，才能加入牌组）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Yurenzhongi"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Yurenzhongi",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 332017,
@@ -9299,7 +9570,8 @@
     ],
     "rawDescription": "$[K1]：切换到目标角色，然后该角色进行<color=#FFFFFFFF>「普通攻击」</color>。",
     "description": "战斗行动：切换到目标角色，然后该角色进行「普通攻击」。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Xialuo"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Xialuo",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 332018,
@@ -9331,7 +9603,8 @@
     ],
     "rawDescription": "本回合中，当前我方出战角色下次<color=#FFFFFFFF>「普通攻击」</color>造成的伤害+1。\\n<color=#FFFFFFFF>此次「普通攻击」为$[K51]时：</color>伤害额外+1。",
     "description": "本回合中，当前我方出战角色下次「普通攻击」造成的伤害+1。\n此次「普通攻击」为重击时：伤害额外+1。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Zhonggongji"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Zhonggongji",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 332019,
@@ -9354,7 +9627,8 @@
     ],
     "rawDescription": "生成4个不同类型的基础元素骰。",
     "description": "生成4个不同类型的基础元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Wennisha"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Wennisha",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 332020,
@@ -9377,7 +9651,8 @@
     ],
     "rawDescription": "手牌数小于4的牌手抓牌，直到手牌数各为4张。",
     "description": "手牌数小于4的牌手抓牌，直到手牌数各为4张。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Yongyuandeyouyi"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Yongyuandeyouyi",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 332021,
@@ -9395,7 +9670,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方下次打出「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>少花费1个元素骰。",
     "description": "我方下次打出「武器」或「圣遗物」手牌时：少花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Dameng"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Dameng",
+    "sinceVersion": "v3.8.0"
   },
   {
     "id": 332022,
@@ -9422,7 +9698,8 @@
     "playCost": [],
     "rawDescription": "将一个我方角色所装备的「{SPRITE_PRESET#3003}武器」返回手牌。\\n<color=#FFFFFFFF>本回合中，我方下次打出「{SPRITE_PRESET#3003}武器」手牌时：</color>少花费2个元素骰。",
     "description": "将一个我方角色所装备的「武器」返回手牌。\n本回合中，我方下次打出「武器」手牌时：少花费2个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Cangfen"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Cangfen",
+    "sinceVersion": "v4.0.0"
   },
   {
     "id": 332023,
@@ -9440,7 +9717,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：</color>本回合中一位牌手先宣布结束时，未宣布结束的牌手抓2张牌。",
     "description": "我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中一位牌手先宣布结束时，未宣布结束的牌手抓2张牌。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Heiquan"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Heiquan",
+    "sinceVersion": "v4.1.0"
   },
   {
     "id": 332024,
@@ -9467,7 +9745,8 @@
     "playCost": [],
     "rawDescription": "将一个我方角色所装备的「{SPRITE_PRESET#3004}圣遗物」返回手牌。\\n<color=#FFFFFFFF>本回合中，我方下次打出「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>少花费2个元素骰。",
     "description": "将一个我方角色所装备的「圣遗物」返回手牌。\n本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Wangfu"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Wangfu",
+    "sinceVersion": "v4.2.0"
   },
   {
     "id": 332025,
@@ -9485,7 +9764,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：</color>获得1个$[K411]。（最多获得2个）\\n（角色被击倒时弃置装备牌，或者覆盖装备「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」，都可以触发此效果）",
     "description": "本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）\n（角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Yezhu"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Yezhu",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 332026,
@@ -9508,7 +9788,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：</color>本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。",
     "description": "我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Tanta"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Tanta",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 332027,
@@ -9535,7 +9816,8 @@
     "playCost": [],
     "rawDescription": "目标角色附属<color=#FFFFFFFF>$[C303227]</color>：每个回合的结束阶段，我方都切换到此角色。",
     "description": "目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Siyeyin"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Siyeyin",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 332028,
@@ -9562,7 +9844,8 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>目标我方角色每次受到伤害或治疗后：</color>累积1点<color=#FFFFFFFF>「备战度」</color>（最多累积2点）。\\n<color=#FFFFFFFF>我方打出原本费用不多于<color=#FFFFFFFF>「备战度」</color>的「{SPRITE_PRESET#3003}武器」或「{SPRITE_PRESET#3004}圣遗物」时：</color>移除所有<color=#FFFFFFFF>「备战度」</color>，以免费打出该牌。",
     "description": "目标我方角色每次受到伤害或治疗后：累积1点「备战度」（最多累积2点）。\n我方打出原本费用不多于「备战度」的「武器」或「圣遗物」时：移除所有「备战度」，以免费打出该牌。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Fatiaoji"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Fatiaoji",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 332029,
@@ -9589,7 +9872,8 @@
     "playCost": [],
     "rawDescription": "选择一张我方支援区的牌，将其弃置。然后，在我方手牌中随机生成2张支援牌。\\n<color=#FFFFFFFF>本回合中，我方下次打出支援牌时：</color>少花费1个元素骰。",
     "description": "选择一张我方支援区的牌，将其弃置。然后，在我方手牌中随机生成2张支援牌。\n本回合中，我方下次打出支援牌时：少花费1个元素骰。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Ganluhua"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Ganluhua",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 332030,
@@ -9612,7 +9896,8 @@
     ],
     "rawDescription": "<color=#FFFFFFFF>对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：</color>双方所有召唤物的可用次数-1。",
     "description": "对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Kexueyuan"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Kexueyuan",
+    "sinceVersion": "v4.5.0"
   },
   {
     "id": 332031,
@@ -9635,7 +9920,8 @@
     ],
     "rawDescription": "生成6张<color=#FFFFFFFF>$[K2003]</color>，随机地置入我方牌库中。",
     "description": "生成6张海底宝藏，随机地置入我方牌库中。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_Xunbao"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Xunbao",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 303230,
@@ -9673,7 +9959,8 @@
     ],
     "rawDescription": "将我方所有元素骰转换为$[K411]，抓4张牌。\\n<color=#FFFFFFFF>此牌在手牌或牌库中被$[K56]后：</color>将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。",
     "description": "将我方所有元素骰转换为万能元素，抓4张牌。\n此牌在手牌或牌库中被舍弃后：将1张元素骰费用比此牌少1个的「幻戏倒计时」放置到你的牌库顶。",
-    "cardFace": "UI_Gcg_CardFace_Event_Event_MagicCount3"
+    "cardFace": "UI_Gcg_CardFace_Event_Event_MagicCount3",
+    "sinceVersion": "v4.7.0"
   },
   {
     "id": 332033,
@@ -9757,7 +10044,8 @@
     "playCost": [],
     "rawDescription": "本回合中，目标角色下一次<color=#FFFFFFFF>「普通攻击」</color>造成的伤害+1。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，目标角色下一次「普通攻击」造成的伤害+1。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Jueyunguoba"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Jueyunguoba",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333002,
@@ -9791,7 +10079,8 @@
     ],
     "rawDescription": "本回合中，目标角色下一次<color=#FFFFFFFF>「元素爆发」</color>造成的伤害+3。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，目标角色下一次「元素爆发」造成的伤害+3。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_XTQ"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_XTQ",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333003,
@@ -9825,7 +10114,8 @@
     ],
     "rawDescription": "本回合中，目标角色下次受到的伤害-3。\\n（每回合中每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，目标角色下次受到的伤害-3。\n（每回合中每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Lianhuasu"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Lianhuasu",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333004,
@@ -9854,7 +10144,8 @@
     "playCost": [],
     "rawDescription": "本回合中，目标角色下一次<color=#FFFFFFFF>「普通攻击」</color>少花费1个$[K309]。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，目标角色下一次「普通攻击」少花费1个无色元素。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Beidiyanxunji"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Beidiyanxunji",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333005,
@@ -9883,7 +10174,8 @@
     "playCost": [],
     "rawDescription": "治疗目标角色1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "治疗目标角色1点。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Huaniangji"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Huaniangji",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333006,
@@ -9917,7 +10209,8 @@
     ],
     "rawDescription": "治疗目标角色2点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "治疗目标角色2点。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Tudoubin"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Tudoubin",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333007,
@@ -9951,7 +10244,8 @@
     ],
     "rawDescription": "治疗目标角色1点，两回合内结束阶段再治疗此角色1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "治疗目标角色1点，两回合内结束阶段再治疗此角色1点。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Kaomogupisa"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Kaomogupisa",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333008,
@@ -9985,7 +10279,8 @@
     ],
     "rawDescription": "目标角色在本回合结束前，之后三次<color=#FFFFFFFF>「普通攻击」</color>都少花费1个$[K309]。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "目标角色在本回合结束前，之后三次「普通攻击」都少花费1个无色元素。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Bohejuan"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Bohejuan",
+    "sinceVersion": "v3.3.0"
   },
   {
     "id": 333009,
@@ -10019,7 +10314,8 @@
     ],
     "rawDescription": "复苏目标角色，并治疗此角色1点。\\n（每回合中，最多通过「{SPRITE_PRESET#3101}料理」复苏1个角色，并且每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "复苏目标角色，并治疗此角色1点。\n（每回合中，最多通过「料理」复苏1个角色，并且每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Jiandan"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Jiandan",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 333010,
@@ -10053,7 +10349,8 @@
     ],
     "rawDescription": "目标角色在本回合结束前，<color=#FFFFFFFF>「普通攻击」</color>造成的伤害+1。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "目标角色在本回合结束前，「普通攻击」造成的伤害+1。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Cishen"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Cishen",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 333011,
@@ -10078,7 +10375,8 @@
     ],
     "rawDescription": "本回合中，所有我方角色下一次<color=#FFFFFFFF>「元素战技」</color>造成的伤害+2。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，所有我方角色下一次「元素战技」造成的伤害+2。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Tangduer"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Tangduer",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 333012,
@@ -10103,7 +10401,8 @@
     ],
     "rawDescription": "本回合中，所有我方角色下次受到的伤害-2。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，所有我方角色下次受到的伤害-2。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Huangyou"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Huangyou",
+    "sinceVersion": "v3.7.0"
   },
   {
     "id": 333013,
@@ -10128,7 +10427,8 @@
     ],
     "rawDescription": "本回合中，所有我方角色下次使用技能时少花费1个元素骰。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "本回合中，所有我方角色下次使用技能时少花费1个元素骰。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Chips"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Chips",
+    "sinceVersion": "v4.3.0"
   },
   {
     "id": 333014,
@@ -10162,7 +10462,8 @@
     ],
     "rawDescription": "治疗目标角色2点，3回合内的结束阶段再治疗此角色1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "治疗目标角色2点，3回合内的结束阶段再治疗此角色1点。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Matsutake"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Matsutake",
+    "sinceVersion": "v4.4.0"
   },
   {
     "id": 333015,
@@ -10196,7 +10497,8 @@
     ],
     "rawDescription": "治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。\n（每回合每个角色最多食用1次「料理」）",
-    "cardFace": "UI_Gcg_CardFace_Event_Food_Macarons"
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Macarons",
+    "sinceVersion": "v4.6.0"
   },
   {
     "id": 421001,

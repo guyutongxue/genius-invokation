@@ -35,6 +35,7 @@ export interface ActionCardRawData {
   type: string;
   obtainable: boolean;
   shareId?: number;
+  sinceVersion?: string;
   name: string;
   englishName: string;
   tags: string[];

@@ -29,6 +29,7 @@ export interface CharacterRawData {
   id: number;
   obtainable: boolean;
   shareId?: number;
+  sinceVersion?: string;
   name: string;
   englishName: string;
   tags: string[];

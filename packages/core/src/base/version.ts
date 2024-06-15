@@ -53,8 +53,12 @@ export interface WithVersionInfo {
   readonly version: VersionInfo;
 }
 
+const versionIdxMap = Object.freeze(
+  Object.fromEntries(VERSIONS.map((v, i) => [v, i])),
+);
+
 export function versionCompare(a: Version, b: Version) {
-  return VERSIONS.indexOf(a) - VERSIONS.indexOf(b);
+  return versionIdxMap[a] - versionIdxMap[b];
 }
 
 export function findVersion<T extends WithVersionInfo>(
@@ -63,10 +67,12 @@ export function findVersion<T extends WithVersionInfo>(
 ): T {
   const since = candidates.find((c) => c.version.predicate === "since");
   const until = candidates
-    .filter((c) => c.version.predicate === "until" && versionCompare(c.version.version, version) >= 0)
-    .toSorted((a, b) =>
-      versionCompare(a.version.version, b.version.version),
-    );
+    .filter(
+      (c) =>
+        c.version.predicate === "until" &&
+        versionCompare(c.version.version, version) >= 0,
+    )
+    .toSorted((a, b) => versionCompare(a.version.version, b.version.version));
   if (!since || versionCompare(since.version.version, version) > 0) {
     throw new GiTcgCoreInternalError(
       `No definition found for version ${version}`,
@@ -78,4 +84,7 @@ export function findVersion<T extends WithVersionInfo>(
   return until[0];
 }
 
-export const DEFAULT_VERSION_INFO: VersionInfo = { predicate: "since", version: INIT_VERSION };
+export const DEFAULT_VERSION_INFO: VersionInfo = {
+  predicate: "since",
+  version: INIT_VERSION,
+};
