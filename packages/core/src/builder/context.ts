@@ -1133,13 +1133,14 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
   generateDice(type: DiceType | "randomElement", count: number) {
+    const maxCount = this.state.config.maxDice - this.player.dice.length;
     using l = this.subLog(
       DetailLogType.Primitive,
-      `Generate ${count} dice of ${
-        typeof type === "string" ? type : `[dice:${type}]`
-      }`,
+      `Generate ${count}${
+        maxCount < count ? ` (only ${maxCount} due to limit)` : ""
+      } dice of ${typeof type === "string" ? type : `[dice:${type}]`}`,
     );
-    const maxCount = this.state.config.maxDice - this.player.dice.length;
+    count = Math.min(count, maxCount);
     let insertedDice: DiceType[] = [];
     if (type === "randomElement") {
       const diceTypes = [
@@ -1159,7 +1160,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     } else {
       insertedDice = new Array<DiceType>(count).fill(type);
     }
-    insertedDice.splice(0, maxCount);
     const newDice = sortDice(this.player, [
       ...this.player.dice,
       ...insertedDice,
