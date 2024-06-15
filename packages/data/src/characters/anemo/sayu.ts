@@ -36,7 +36,7 @@ export const MujimujiDaruma = summon(115072)
  */
 export const FuufuuWhirlwindKick = skill(15074)
   .type("elemental")
-  .noEnergy()
+  .prepared()
   .do((c) => {
     const caller = c.skillInfo.requestBy!.caller;
     const damageType = c.getVariable("swirled", caller);
@@ -137,7 +137,7 @@ export const Sayu = character(1507)
   .tags("anemo", "claymore", "inazuma")
   .health(10)
   .energy(2)
-  .skills(ShuumatsubanNinjaBlade, YoohooArtFuuinDash, YoohooArtMujinaFlurry)
+  .skills(ShuumatsubanNinjaBlade, YoohooArtFuuinDash, YoohooArtMujinaFlurry, FuufuuWhirlwindKick)
   .done();
 
 /**

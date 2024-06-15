@@ -771,6 +771,7 @@ class InitiativeSkillBuilder<
   private _gainEnergy = true;
   protected _cost: DiceType[] = [];
   private _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
+  private _prepared = false;
   constructor(private readonly skillId: number) {
     super(skillId);
   }
@@ -794,6 +795,10 @@ class InitiativeSkillBuilder<
     return this as unknown as InitiativeSkillBuilder<ExtensionHandle<NewExtT>>;
   }
 
+  prepared(): this {
+    this._prepared = true;
+    return this.noEnergy();
+  }
   noEnergy(): this {
     this._gainEnergy = false;
     return this;
@@ -830,6 +835,7 @@ class InitiativeSkillBuilder<
       triggerOn: null,
       requiredCost: this._cost,
       gainEnergy: this._gainEnergy,
+      prepared: this._prepared,
       action,
     });
     return this.skillId as SkillHandle;

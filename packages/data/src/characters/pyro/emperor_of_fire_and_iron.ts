@@ -24,7 +24,7 @@ import { character, skill, status, card, DamageType, CardHandle } from "@gi-tcg/
  */
 export const SearingBlast = skill(23046)
   .type("burst")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Piercing, 2, "opp standby")
   .do((c) => {
     const value = c.$(`status with definition id ${ArmoredCrabCarapace} at @self`)?.getVariable("shield") ?? 0;
@@ -168,7 +168,7 @@ export const EmperorOfFireAndIron = character(2304)
   .tags("pyro", "monster")
   .health(6)
   .energy(2)
-  .skills(ShatterclampStrike, BusterBlaze, BattlelineDetonation, ImperialPanoply)
+  .skills(ShatterclampStrike, BusterBlaze, BattlelineDetonation, ImperialPanoply, SearingBlast)
   .done();
 
 /**

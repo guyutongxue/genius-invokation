@@ -120,7 +120,7 @@
     background-color: var(--btn-color-light);
     border-color: var(--btn-color-light);
   }
-  
+
   .hands-area {
     .card-wrapper {
       perspective: 800px;
@@ -156,5 +156,13 @@
     .card {
       height: 100%;
     }
+  }
+
+  .entity[data-highlight="true"] {
+    box-shadow:
+      1px 1px 6px #ffeb56,
+      -1px 1px 6px #ffeb56,
+      1px -1px 6px #ffeb56,
+      -1px -1px 6px #ffeb56;
   }
 }

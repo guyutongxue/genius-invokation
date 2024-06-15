@@ -69,7 +69,7 @@ export const ElectroCrystalCore = status(124014)
  */
 export const RockpaperscissorsComboPaper = skill(24016)
   .type("elemental")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Electro, 3)
   .done();
 
@@ -92,7 +92,7 @@ export const RockpaperscissorsComboPaperStatus = status(124012)
  */
 export const RockpaperscissorsComboScissors = skill(24015)
   .type("elemental")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Electro, 2)
   .characterStatus(RockpaperscissorsComboPaperStatus)
   .done();
@@ -171,7 +171,7 @@ export const ElectroHypostasis = character(2401)
   .tags("electro", "monster")
   .health(8)
   .energy(2)
-  .skills(ElectroCrystalProjection, RockpaperscissorsCombo, LightningLockdown, ElectroCrystalCoreSkill)
+  .skills(ElectroCrystalProjection, RockpaperscissorsCombo, LightningLockdown, ElectroCrystalCoreSkill, RockpaperscissorsComboScissors, RockpaperscissorsComboPaper)
   .done();
 
 /**

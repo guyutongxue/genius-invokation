@@ -31,12 +31,7 @@ import {
   GameState,
   PlayerState,
 } from "./base/state";
-import {
-  Mutation,
-  StepRandomM,
-  applyMutation,
-  stringifyMutation,
-} from "./base/mutation";
+import { Mutation } from "./base/mutation";
 import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   elementOfCharacter,
@@ -206,7 +201,6 @@ export class Game extends StateMutator {
   query(who: 0 | 1, query: string): AnyState[] {
     return executeQueryOnState(this.state, who, query);
   }
-
 
   /** 初始化玩家的角色牌和牌堆 */
   private initPlayerCards(who: 0 | 1) {
@@ -679,7 +673,10 @@ export class Game extends StateMutator {
               value: true,
             });
           }
-          await this.handleEvent("onPlayCard", new PlayCardEventArg(this.state, actionInfo));
+          await this.handleEvent(
+            "onPlayCard",
+            new PlayCardEventArg(this.state, actionInfo),
+          );
           // 应用“禁用事件牌”效果
           if (
             player().combatStatuses.find((st) =>
@@ -850,6 +847,9 @@ export class Game extends StateMutator {
     } else {
       for (const skillId of activeCh.definition.initiativeSkills) {
         const skill = getInitiativeSkillDefinition(this.state.data, skillId)!;
+        if (skill.prepared) {
+          continue;
+        }
         const skillInfo = {
           caller: activeCh,
           definition: skill,
@@ -957,7 +957,7 @@ export class Game extends StateMutator {
     const { removedHands } = await this.rpc(who, "switchHands", {});
     return removedHands;
   }
-  
+
   /** @internal */
   override async requestReroll(who: 0 | 1) {
     const { rerollIndexes } = await this.rpc(who, "rerollDice", {});

@@ -37,6 +37,7 @@ import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
 import { getInitiativeSkillDefinition } from "./utils";
+import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 
 export interface PlayerIO {
   giveUp: boolean;
@@ -186,12 +187,16 @@ function exposeEntity(state: GameState, e: EntityState): EntityData {
       v(state, e.id),
     ]),
   );
+  const usagePerRoundHighlight = USAGE_PER_ROUND_VARIABLE_NAMES.some(
+    (name) => e.variables[name],
+  );
   return {
     id: e.id,
     definitionId: e.id === 0 ? 0 : e.definition.id,
     variable: e.definition.visibleVarName
       ? e.variables[e.definition.visibleVarName] ?? null
       : null,
+    usagePerRoundHighlight,
     hintIcon: e.variables.hintIcon ?? null,
     hintText: e.definition.hintText,
     equipment,
@@ -214,6 +219,7 @@ function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
   return {
     id: c.id,
     descriptionDictionary,
+    isLegend: !hide && c.definition.tags.includes("legend"),
     definitionId: hide ? 0 : c.definition.id,
     definitionCost: hide ? [] : [...c.definition.onPlay.requiredCost],
   };
@@ -261,11 +267,10 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
         summons: p.summons.map((e) => exposeEntity(state, e)),
         skills:
           i === who
-            ? skills.map((id) =>
-                exposeInitiativeSkill(
-                  getInitiativeSkillDefinition(state.data, id),
-                ),
-              )
+            ? skills
+                .map((id) => getInitiativeSkillDefinition(state.data, id))
+                .filter((def) => !def.prepared)
+                .map(exposeInitiativeSkill)
             : [],
         declaredEnd: p.declaredEnd,
         legendUsed: p.legendUsed,

@@ -33,7 +33,7 @@ export const AbyssalTides = status(122036)
  */
 export const RipplingBlades = skill(22035)
   .type("elemental")
-  .noEnergy()
+  .prepared()
   .costHydro(3)
   .damage(DamageType.Hydro, 1)
   .done();
@@ -190,7 +190,7 @@ export const AbyssHeraldWickedTorrents = character(2203)
   .tags("hydro", "monster")
   .health(6)
   .energy(2)
-  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth)
+  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades)
   .done();
 
 /**

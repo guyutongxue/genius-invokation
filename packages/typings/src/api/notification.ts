@@ -92,6 +92,11 @@ export interface EntityData {
   variable: number | null;
 
   /**
+   * 是否有“本回合使用次数未耗尽”的高亮效果
+   */
+  usagePerRoundHighlight: boolean;
+
+  /**
    * 描述中动态替换掉的变量值
    * 
    */
@@ -123,6 +128,11 @@ export interface CardData {
    * 描述中动态替换掉的变量值
    */
   descriptionDictionary: DescriptionDictionaryData;
+
+  /**
+   * 是否为秘传牌
+   */
+  isLegend: boolean;
 
   /**
    * 行动牌定义 id

@@ -33,7 +33,7 @@ export const DraconicMajesty = status(125024)
  */
 export const UltimateCleansing = skill(25026)
   .type("elemental")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Anemo, 2, "opp prev")
   .done();
 
@@ -56,7 +56,7 @@ export const DvalinsSigh01 = status(125023)
  */
 export const PerpetualCleansing = skill(25025)
   .type("elemental")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Anemo, 1, "opp next")
   .characterStatus(DvalinsSigh01)
   .done();
@@ -158,7 +158,7 @@ export const Dvalin = character(2502)
   .tags("anemo", "monster")
   .health(10)
   .energy(2)
-  .skills(LaceratingSlash, TempestuousBarrage, DvalinsCleansing, CaelestinumFinaleTermini)
+  .skills(LaceratingSlash, TempestuousBarrage, DvalinsCleansing, CaelestinumFinaleTermini, PerpetualCleansing, UltimateCleansing)
   .done();
 
 /**

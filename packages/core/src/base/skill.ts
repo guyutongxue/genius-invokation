@@ -61,6 +61,7 @@ export interface InitiativeSkillDefinition<Arg = void>
   readonly version: VersionInfo;
   readonly requiredCost: readonly DiceType[];
   readonly gainEnergy: boolean;
+  readonly prepared: boolean;
   readonly triggerOn: null;
 }
 

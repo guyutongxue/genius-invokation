@@ -69,7 +69,7 @@ export const ElectroCicin = summon(124041)
  */
 export const SurgingThunder = skill(24044)
   .type("burst")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Electro, 2)
   .done();
 
@@ -154,7 +154,7 @@ export const FatuiElectroCicinMage = character(2404)
   .tags("electro", "fatui")
   .health(10)
   .energy(2)
-  .skills(HurtlingBolts, MistyCall, ThunderingShield)
+  .skills(HurtlingBolts, MistyCall, ThunderingShield, SurgingThunder)
   .done();
 
 /**

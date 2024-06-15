@@ -24,7 +24,10 @@ import { character, skill, status, combatStatus, card, DamageType, SkillHandle }
  */
 export const HeronStrike = skill(12074)
   .type("elemental")
-  .noEnergy()
+  .prepared()
+  .do((c) => {
+    c.$(`status with definition id ${HeronShield} at @self`)?.dispose();
+  })
   .damage(DamageType.Hydro, 3)
   .done();
 
@@ -46,10 +49,6 @@ export const HeronShield = status(112071)
  */
 export const HeronStrikeStatus = status(112074)
   .prepare(HeronStrike)
-  .on("selfDispose")
-  .do((c) => {
-    c.$(`status with definition id ${HeronShield} at @self`)?.dispose();
-  })
   .done();
 
 /**
@@ -162,7 +161,7 @@ export const Candace = character(1207)
   .tags("hydro", "pole", "sumeru")
   .health(10)
   .energy(2)
-  .skills(GleamingSpearGuardianStance, SacredRiteHeronsSanctum, SacredRiteWagtailsTide)
+  .skills(GleamingSpearGuardianStance, SacredRiteHeronsSanctum, SacredRiteWagtailsTide, HeronStrike)
   .done();
 
 /**

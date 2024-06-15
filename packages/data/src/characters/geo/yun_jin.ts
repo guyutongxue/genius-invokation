@@ -33,6 +33,10 @@ export const ShieldOfSwirlingClouds = status(116071)
  */
 export const SpearFlourish = skill(16074)
   .type("elemental")
+  .prepared()
+  .do((c) => {
+    c.$(`status with definition id ${ShieldOfSwirlingClouds} at @self`)?.dispose();
+  })
   .if((c) => c.self.getVariable("disposeOrTuneCardCount") > 0)
   .damage(DamageType.Geo, 3)
   .else()
@@ -47,10 +51,6 @@ export const SpearFlourish = skill(16074)
  */
 export const SpearFlourishStatus = status(116072)
   .prepare(SpearFlourish)
-  .on("selfDispose")
-  .do((c) => {
-    c.$(`status with definition id ${ShieldOfSwirlingClouds} at @self`)?.dispose();
-  })
   .done();
 
 /**
@@ -144,7 +144,7 @@ export const YunJin = character(1607)
   .tags("geo", "pole", "liyue")
   .health(10)
   .energy(2)
-  .skills(CloudgrazingStrike, OpeningFlourish, CliffbreakersBanner, CountDisposeOrTune)
+  .skills(CloudgrazingStrike, OpeningFlourish, CliffbreakersBanner, SpearFlourish, CountDisposeOrTune)
   .done();
 
 /**

@@ -24,7 +24,7 @@ import { character, skill, status, combatStatus, card, DamageType, CharacterStat
  */
 export const EquitableJudgment = skill(12104)
   .type("normal")
-  .noEnergy()
+  .prepared()
   .do((c) => {
     if (c.self.health >= 6) {
       c.damage(DamageType.Hydro, 3);
@@ -147,7 +147,7 @@ export const Neuvillette = character(1210)
   .tags("hydro", "catalyst", "fontaine", "ousia")
   .health(10)
   .energy(2)
-  .skills(AsWaterSeeksEquilibrium, OTearsIShallRepay, OTidesIHaveReturned, SourcewaterDropletSkill)
+  .skills(AsWaterSeeksEquilibrium, OTearsIShallRepay, OTidesIHaveReturned, EquitableJudgment, SourcewaterDropletSkill)
   .done();
 
 /**

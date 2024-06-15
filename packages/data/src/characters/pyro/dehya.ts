@@ -67,7 +67,7 @@ export const BlazingLionessFlamemanesFist = status(113091)
  */
 export const IncinerationDrive = skill(13095)
   .type("burst")
-  .noEnergy()
+  .prepared()
   .damage(DamageType.Pyro, 3)
   .done();
 
@@ -153,7 +153,7 @@ export const Dehya = character(1309)
   .tags("pyro", "claymore", "sumeru", "eremite")
   .health(10)
   .energy(2)
-  .skills(SandstormAssault, MoltenInferno, LeonineBite, FierySanctumRedmanesBlood)
+  .skills(SandstormAssault, MoltenInferno, LeonineBite, IncinerationDrive, FierySanctumRedmanesBlood)
   .done();
 
 /**

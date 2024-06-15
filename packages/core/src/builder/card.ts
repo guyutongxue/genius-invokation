@@ -449,6 +449,7 @@ class CardBuilder<
       triggerOn: null,
       requiredCost: this._cost,
       gainEnergy: false,
+      prepared: false,
       action,
     };
     registerSkill(skillDef);
@@ -476,6 +477,7 @@ class CardBuilder<
         triggerOn: null,
         requiredCost: [],
         gainEnergy: false,
+        prepared: false,
         action: disposeAction, // FIX ME maybe
       };
       registerSkill(disposeDef);

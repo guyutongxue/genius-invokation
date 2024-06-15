@@ -37,7 +37,10 @@ export const SummonerOfLightning = status(114052)
  */
 export const Wavestrider = skill(14054)
   .type("elemental")
-  .noEnergy()
+  .prepared()
+  .do((c) => {
+    c.$(`status with definition id ${TidecallerSurfEmbrace} at @self`)?.dispose();
+  })
   .damage(DamageType.Electro, 3)
   .done();
 
@@ -60,9 +63,6 @@ export const TidecallerSurfEmbrace = status(114051)
 export const WavestriderStatus = status(114055)
   .prepare(Wavestrider)
   .on("selfDispose")
-  .do((c) => {
-    c.$(`status with definition id ${TidecallerSurfEmbrace} at @self`)?.dispose();
-  })
   .done();
 
 
@@ -133,7 +133,7 @@ export const Beidou = character(1405)
   .tags("electro", "claymore", "liyue")
   .health(10)
   .energy(3)
-  .skills(Oceanborne, Tidecaller, Stormbreaker)
+  .skills(Oceanborne, Tidecaller, Stormbreaker, Wavestrider)
   .done();
 
 /**

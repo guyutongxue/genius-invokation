@@ -534,11 +534,16 @@ export function createPlayer(
             结束回合
           </button>
         </Show>
-        <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col bg-yellow-800">
+        <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col items-center bg-yellow-800">
           <Show
             when={diceSelectProp()}
             fallback={
-              <For each={myPlayer().dice}>{(d) => <Dice type={d} />}</For>
+              <>
+                <div class="rounded-full bg-white w-6 h-6 my-2 line-height-1em flex items-center justify-center">
+                  {myPlayer().dice.length}
+                </div>
+                <For each={myPlayer().dice}>{(d) => <Dice type={d} />}</For>
+              </>
             }
           >
             <DiceSelect
