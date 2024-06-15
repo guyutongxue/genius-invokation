@@ -1139,6 +1139,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         typeof type === "string" ? type : `[dice:${type}]`
       }`,
     );
+    const maxCount = this.state.config.maxDice - this.player.dice.length;
     let insertedDice: DiceType[] = [];
     if (type === "randomElement") {
       const diceTypes = [
@@ -1158,6 +1159,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     } else {
       insertedDice = new Array<DiceType>(count).fill(type);
     }
+    insertedDice.splice(0, maxCount);
     const newDice = sortDice(this.player, [
       ...this.player.dice,
       ...insertedDice,
