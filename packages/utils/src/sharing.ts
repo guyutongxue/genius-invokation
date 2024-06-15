@@ -51,6 +51,9 @@ export function decodeRaw(src: string) {
 
 /** 将原始分享码 id 数组编码为分享码 */
 export function encodeRaw(arr: readonly number[]) {
+  if (arr.length !== 33) {
+    throw new Error("Invalid input: should be exactly 33 number");
+  }
   const padded = [...arr, 0];
   const reordered = Array.from({ length: 17 }).flatMap((_, i) => [
     padded[i * 2] >> 4,

@@ -1,0 +1,76 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  password        Bytes
+  salt            Bytes
+  rank            Int              @default(10)
+  name            String?
+  games           PlayerOnGames[]
+  createdAt       DateTime         @default(now())
+  invitationCodes InvitationCode[]
+  decks           Deck[]
+}
+
+model Game {
+  id        Int             @id @default(autoincrement())
+  players   PlayerOnGames[]
+  version   String
+  data      String // JSON log
+  winnerId  Int?
+  createdAt DateTime        @default(now())
+}
+
+model PlayerOnGames {
+  player   User @relation(fields: [playerId], references: [id])
+  playerId Int
+  game     Game @relation(fields: [gameId], references: [id])
+  gameId   Int
+  who      Int
+
+  @@id([playerId, gameId])
+}
+
+model InvitationCode {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique
+  createdAt       DateTime @default(now())
+  used            Boolean  @default(false)
+  createdBy       User     @relation(fields: [createdByUserId], references: [id])
+  createdByUserId Int
+}
+
+model Deck {
+  id          Int    @id @default(autoincrement())
+  name        String
+  code        String
+  owner       User   @relation(fields: [ownerUserId], references: [id])
+  ownerUserId Int
+}

@@ -73,15 +73,12 @@ import {
 import {
   DetailLogType,
   DetailLogger,
-  GameStateLogEntry,
-  IDetailLogger,
 } from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 import {
   InternalNotifyOption,
   InternalPauseOption,
-  NotifyOption,
   StateMutator,
 } from "./mutator";
 import { ActionInfoWithModification, ActionPreviewer } from "./preview";

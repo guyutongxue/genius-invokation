@@ -1,40 +1,43 @@
 {
-  "name": "@gi-tcg/standalone",
+  "name": "@gi-tcg/web-client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "check": "tsc --noEmit",
-    "dev": "bunx --bun vite",
+    "dev": "vite",
     "generate_data": "bun scripts/generate_names.ts",
     "build": "bun generate_data && vite build",
     "preview": "vite preview"
   },
-  "browserslist": "defaults",
   "dependencies": {
-    "@gi-tcg/core": "workspace:*",
-    "@gi-tcg/data": "workspace:*",
-    "@gi-tcg/utils": "workspace:*",
     "@gi-tcg/webui-core": "workspace:*",
-    "@vercel/analytics": "^1.2.0",
-    "core-js": "3.37.0",
-    "solid-js": "^1.8.15"
+    "@solidjs/router": "^0.13.5",
+    "@una-ui/preset": "^0.4.0-beta.5",
+    "@unocss/reset": "^0.61.0",
+    "axios": "^1.7.2",
+    "solid-js": "^1.8.15",
+    "core-js": "3.37.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",
     "@babel/preset-env": "^7.24.4",
     "@gi-tcg/static-data": "workspace:*",
+    "@iconify-json/mdi": "^1.1.66",
     "@rollup/plugin-babel": "^6.0.4",
     "@types/core-js": "^2.5.8",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "@unocss/postcss": "^0.61.0",
+    "@unocss/preset-icons": "^0.61.0",
     "eslint": "^8.56.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-solid": "^0.13.1",
     "postcss-load-config": "^5.0.3",
     "postcss-preset-env": "^9.3.0",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8",
-    "vite-plugin-solid": "^2.8.0"
+    "unocss": "^0.61.0",
+    "vite": "^5.2.0",
+    "vite-plugin-solid": "^2.10.2"
   }
 }
