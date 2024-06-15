@@ -24,3 +24,18 @@ export const LiutianArchery = ...
 如果维护程序读取到来自官方数据的一条新定义（文件中未出现对应 `@id`），那么就会自动将生成的模板代码（带有 `TODO` 标记）放在文件末尾。模板代码有概率无法直接编译通过，此时需要开发者手动修改。如果自动生成的模板代码中，有的实体/技能定义是不必要的（比如实现方式的不同或者官方残留的数据），那么建议将 `.done();` 结尾改为 `.reserve();` 结尾，而非直接删去定义。这保证维护程序仍然能正确处理它们，而且不会影响我们的数据生成。
 
 请注意：尽管这种手段能发现并处理大部分平衡性调整，但是**无法处理骰子需求的修改**。请版本更新时特别注意骰子需求的变化，并手动将它们修改到新版本。
+
+## 更新操作备忘录
+
+- 获取最新的 GenshinData；
+- 进入 `@gi-tcg/static-data`，设置 `version` 的 `gi-` 版本；
+- 指定 `$GENSHIN_DATA` 路径后，运行 `bun generate`；
+- 进入 `@gi-tcg/data`，前往 `scripts/generators/config.ts` 设置版本信息；
+- 运行 `bun regenerate_data`；
+- 修复生成的代码使得编译通过；
+- 发布新版本至 `npmjs.org`；
+- 前往 `@gi-tcg/assets`，更新依赖；
+- 导出游戏内图片资源后，指定 `$TEXTURE2D_FOLDER`，运行 `bun build:image`；
+- 使用 `bun dev` 启动状态图标编辑器，维护最新状态图标映射；
+- 导出映射文件后，回填至 `@gi-tcg/static-data` 的 `scripts/mappings/buff_icons.json`。
+

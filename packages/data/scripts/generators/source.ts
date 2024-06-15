@@ -23,10 +23,7 @@ import tsdoc, {
 import { existsSync } from "node:fs";
 import { readFile, writeFile, mkdir, appendFile } from "node:fs/promises";
 import path from "node:path";
-import { BASE_PATH, LICENSE } from "./config";
-
-const oldVersion = "v4.7.0";
-export const newVersion = "v4.8.0";
+import { BASE_PATH, LICENSE, SAVE_OLD_CODES, OLD_VERSION } from "./config";
 
 const config = new TSDocConfiguration();
 const tagDefs = [
@@ -194,9 +191,8 @@ function sameDescription(a: string, b: string) {
   return sameArray(descriptionToLines(a), descriptionToLines(b));
 }
 
-const SAVE_OLD_CODES = true;
 
-const OLD_VERSION_PATH = path.resolve(BASE_PATH, `old_versions/${oldVersion}.ts`);
+const OLD_VERSION_PATH = path.resolve(BASE_PATH, `old_versions/${OLD_VERSION}.ts`);
 
 if (SAVE_OLD_CODES && !existsSync(OLD_VERSION_PATH)) {
   await writeFile(OLD_VERSION_PATH, `import { card, skill } from "@gi-tcg/core/builder";\n`);
@@ -259,7 +255,7 @@ export async function writeSourceCode(
  * @description
  * ${writeDescriptionAsComment(item.description)}
  */
-${item.code.replace(/export /, "").replace(/\n(  \.since\(".*?"\)\n)?/, `\n  .until("${oldVersion}")\n`)}
+${item.code.replace(/export /, "").replace(/\n(  \.since\(".*?"\)\n)?/, `\n  .until("${OLD_VERSION}")\n`)}
 `
         );
       }
