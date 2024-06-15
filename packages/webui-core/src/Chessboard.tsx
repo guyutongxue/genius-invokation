@@ -527,7 +527,7 @@ export function createPlayer(
       >
         <Show when={allClickable.includes(DECLARE_END_ID)}>
           <button
-            class="absolute left-22 top-[50%] translate-y-[-50%] btn btn-green-500"
+            class="absolute left-22 top-[50%] translate-y-[-50%] btn btn-green-500 z-10"
             v-if="clickable.includes(DECLARE_END_ID)"
             onClick={() => notifyElementClicked(DECLARE_END_ID)}
           >
@@ -659,7 +659,7 @@ function Chessboard(props: ChessboardProps) {
           />
           <PlayerArea data={local.stateData.players[local.who]} opp={false} />
         </div>
-        <div class="absolute left-0 top-[50%] translate-y-[-50%]">
+        <div class="absolute left-0 top-[50%] translate-y-[-50%] z-10">
           <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
             <Dice
               type={8 /* omni */}
