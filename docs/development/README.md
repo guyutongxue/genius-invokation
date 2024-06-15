@@ -69,11 +69,11 @@ interface PlayerIO {
 
 ## 开发环境
 
-在 Linux 或 macOS 环境下安装 [Bun](https://bun.sh)，在仓库根目录下执行：
+安装 [Bun](https://bun.sh)，在仓库根目录下执行：
 
 ```sh
 bun install
-bun run build # 部分包需要额外的构建步骤产出 JS 源码
+bun run build
 ```
 
 随后即可调试修改数据定义包、核心包或者其它代码。
