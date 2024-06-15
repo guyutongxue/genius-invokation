@@ -12,16 +12,22 @@
 | `onRoundBegin`          | 每回合开始时                     |
 | `onActionPhase`         | 行动阶段开始时                   |
 | `onEndPhase`            | 结束阶段时                       |
+|                         |                                  |
 | `onBeforeAction`        | 玩家行动前                       |
 | `onAction`              | 玩家行动后                       |
+|                         |                                  |
+| `onBeforeUseSkill`      | （使用技能前）                   |
 | `onUseSkill`            | 使用技能后                       |
-| `onPlayCard`            | 打出手牌后                       |
+| `onBeforePlayCard`      | 打出手牌后（手牌描述执行前）     |
 | `onDisposeOrTuneCard`   | 舍弃牌或元素调和时               |
-| `onSwitchActive`        | 切换出战角色时                   |
+| `onSwitchActive`        | 切换出战角色后                   |
+|                         |                                  |
 | `onDamageOrHeal`        | 造成/受到伤害/治疗时；角色倒下时 |
 | `onReaction`            | 发生元素反应时                   |
 | `onDrawCards`           | 抓牌时                           |
 | `onTransformDefinition` | 角色/实体定义被替换时            |
+| `onGenerateDice`        | 生成骰子时                       |
+|                         |                                  |
 | `onEnter`               | 实体入场时                       |
 | `onDispose`             | 实体弃置时                       |
 | `onRevive`              | 角色复苏时                       |
@@ -31,12 +37,15 @@
 | 事件名             | 含义                                                 |
 | ------------------ | ---------------------------------------------------- |
 | `modifyRoll`       | 掷骰阶段时（修改掷骰属性）                           |
+|                    |                                                      |
 | `modifyAction0`    | 修改玩家行动属性（第一次，快速行动、增骰、减无色骰） |
 | `modifyAction1`    | 修改玩家行动属性（第二次，减基础元素骰）             |
 | `modifyAction2`    | 修改玩家行动属性（第三次，减任意元素骰）             |
 | `modifyAction3`    | 修改玩家行动属性（第四次，尝试免费使用行动）         |
+|                    |                                                      |
 | `modifyDamage0`    | 修改伤害（第一次，可修改伤害类型）                   |
 | `modifyDamage1`    | 修改伤害（第二次，只可修改伤害数值）                 |
+|                    |                                                      |
 | `modifyZeroHealth` | 角色击倒前（免于被击倒）                             |
 
 有副作用事件会在所有实体的响应过程中记录一些信息（如修改的伤害值），供调用方（技能或者游戏流程）使用。

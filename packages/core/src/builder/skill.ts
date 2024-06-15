@@ -215,8 +215,7 @@ const detailedEventDictionary = {
   }),
   deductElementDiceSkill: defineDescriptor("modifyAction1", (c, e, r) => {
     return (
-      e.isUseSkill() &&
-      checkRelative(c.state, e.action.skill.caller.id, r)
+      e.isUseSkill() && checkRelative(c.state, e.action.skill.caller.id, r)
     );
   }),
   deductOmniDiceSkill: defineDescriptor("modifyAction2", (c, e, r) => {
@@ -282,11 +281,11 @@ const detailedEventDictionary = {
   action: defineDescriptor("onAction", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  playCard: defineDescriptor("onPlayCard", (c, e, r) => {
+  playCard: defineDescriptor("onBeforePlayCard", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r);
   }),
   useSkill: defineDescriptor("onUseSkill", (c, e, r) => {
-    return checkRelative(c.state, e.skill.caller.id, r)
+    return checkRelative(c.state, e.skill.caller.id, r);
   }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
@@ -342,7 +341,9 @@ const detailedEventDictionary = {
   }),
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
     // 由于此时场上不再存在 self，故只能通过 skillDefinition 是否位于 entity 的定义内来判断
-    return e.entity.definition.skills.some((sk) => sk.id === c.skillInfo.definition.id);
+    return e.entity.definition.skills.some(
+      (sk) => sk.id === c.skillInfo.definition.id,
+    );
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return checkRelative(c.state, e.target.id, r) && e.damageInfo.causeDefeated;
@@ -355,7 +356,7 @@ const detailedEventDictionary = {
   }),
   generateDice: defineDescriptor("onGenerateDice", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r);
-  })
+  }),
 } satisfies Record<string, Descriptor<any>>;
 
 type OverrideEventArgType = {
@@ -386,6 +387,10 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   constructor(protected readonly id: number) {}
   protected applyFilter = false;
   protected _filter: SkillFilter<Meta> = () => true;
+
+  protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfo {
+    return { ...skillInfo, associatedExtensionId: this.associatedExtensionId };
+  }
 
   if(filter: SkillFilter<Meta>): this {
     this._filter = filter;
@@ -426,7 +431,7 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   ): SkillResult {
     const ctx = new SkillContext<WritableMetaOf<Meta>>(
       state,
-      { ...skillInfo, associatedExtensionId: this.associatedExtensionId },
+      this._wrapSkillInfoWithExt(skillInfo),
       arg,
     );
     for (const op of this.operations) {
@@ -689,7 +694,11 @@ export class TriggeredSkillBuilder<
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
     const filter: TriggeredSkillFilter<any> = (state, skillInfo, arg) => {
-      const ctx = new SkillContext(state, skillInfo, arg);
+      const ctx = new SkillContext(
+        state,
+        this._wrapSkillInfoWithExt(skillInfo),
+        arg,
+      );
       return !!this._triggerFilter(ctx as any, arg);
     };
     const action: SkillDescription<any> = (state, skillInfo, arg) => {

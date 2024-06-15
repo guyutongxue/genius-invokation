@@ -888,8 +888,10 @@ export const EVENT_MAP = {
   modifyAction2: ModifyAction2EventArg, // 减任意
   modifyAction3: ModifyAction3EventArg, // 蒂玛乌斯 & 瓦格纳
   onAction: ActionEventArg,
+
+  onBeforeUseSkill: UseSkillEventArg,
   onUseSkill: UseSkillEventArg,
-  onPlayCard: PlayCardEventArg,
+  onBeforePlayCard: PlayCardEventArg,
   onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   onSwitchActive: SwitchActiveEventArg,

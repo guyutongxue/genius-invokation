@@ -183,6 +183,30 @@ export const Liben = card(322008)
   })
   .done();
 
+export const SkillDamageAndReactionExtension = extension(322009, {
+  hasElementalDamage: false,
+  hasNonElementalDamage: false,
+  hasReaction: false
+})
+  .mutateWhen("onBeforeUseSkill", (st, e) => {
+    st.hasElementalDamage = false;
+    st.hasNonElementalDamage = false;
+    st.hasReaction = false;
+  })
+  .mutateWhen("onDamageOrHeal", (st, e) => {
+    if (e.isDamageTypeDamage()) {
+      if (e.type === DamageType.Physical || e.type === DamageType.Piercing) {
+        st.hasNonElementalDamage = true;
+      } else {
+        st.hasElementalDamage = true;
+      }
+    }
+  })
+  .mutateWhen("onReaction", (st, e) => {
+    st.hasReaction = true;
+  })
+  .done();
+
 /**
  * @id 322009
  * @name 常九爷
@@ -192,36 +216,20 @@ export const Liben = card(322008)
 export const ChangTheNinth = card(322009)
   .since("v3.3.0")
   .support("ally")
+  .associateExtension(SkillDamageAndReactionExtension)
   .variable("inspiration", 0)
-  .variable("hasInspiration", 0, { visible: false })
-  .variable("currentSkill", 0, { visible: false })
-  .on("modifyAction")
-  .listenToAll()
-  .do((c, e) => {
-    if (e.action.type === "useSkill") {
-      c.setVariable("currentSkill", e.action.skill.definition.id);
-    }
+  .on("useSkill", (c) => {
+    const ext = c.getExtensionState();
+    return ext.hasNonElementalDamage || ext.hasReaction;
   })
-  .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
-    (e.type === DamageType.Physical || e.type === DamageType.Piercing))
-  .listenToAll()
-  .setVariable("hasInspiration", 1)
-  .on("reaction", (c, e) => c.getVariable("currentSkill"))
-  .listenToAll()
-  .setVariable("hasInspiration", 1)
-  .on("useSkill", (c, e) => e.skill.definition.id === c.getVariable("currentSkill"))
   .listenToAll()
   .do((c) => {
-    if (c.getVariable("hasInspiration")) {
-      c.addVariable("inspiration", 1);
-      if (c.getVariable("inspiration") >= 3) {
-        c.drawCards(2);
-        c.dispose();
-        return;
-      }
+    c.addVariable("inspiration", 1);
+    if (c.getVariable("inspiration") >= 3) {
+      c.drawCards(2);
+      c.dispose();
+      return;
     }
-    c.setVariable("currentSkill", 0);
-    c.setVariable("hasInspiration", 0);
   })
   .done();
 

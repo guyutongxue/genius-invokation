@@ -84,6 +84,13 @@ export class ActionPreviewer {
       case "useSkill": {
         const skillInfo = newActionInfo.skill;
         if (completed) {
+          [previewState, completed] = await SkillExecutor.previewEvent(
+            previewState,
+            "onBeforeUseSkill",
+            new UseSkillEventArg(previewState, this.who, newActionInfo.skill),
+          );
+        }
+        if (completed) {
           [previewState, completed] = await SkillExecutor.previewSkill(
             previewState,
             skillInfo,
@@ -111,7 +118,7 @@ export class ActionPreviewer {
         if (completed) {
           [previewState, completed] = await SkillExecutor.previewEvent(
             previewState,
-            "onPlayCard",
+            "onBeforePlayCard",
             new PlayCardEventArg(previewState, newActionInfo),
           );
         }

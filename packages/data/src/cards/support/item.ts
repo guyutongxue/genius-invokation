@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { DamageType, DiceType, card, combatStatus, diceCostOfCard, extension, pair } from "@gi-tcg/core/builder";
+import { SkillDamageAndReactionExtension } from "./ally";
 
 /**
  * @id 323001
@@ -25,33 +26,17 @@ export const ParametricTransformer = card(323001)
   .since("v3.3.0")
   .costVoid(2)
   .support("item")
+  .associateExtension(SkillDamageAndReactionExtension)
   .variable("progress", 0)
-  .variable("hasProgress", 0, { visible: false })
-  .variable("currentSkill", 0, { visible: false })
-  .on("modifyAction")
-  .listenToAll()
-  .do((c, e) => {
-    if (e.action.type === "useSkill") {
-      c.setVariable("currentSkill", e.action.skill.definition.id);
-    }
-  })
-  .on("dealDamage", (c, e) => c.getVariable("currentSkill") &&
-    (e.type !== DamageType.Physical && e.type !== DamageType.Piercing))
-  .listenToAll()
-  .setVariable("hasProgress", 1)
-  .on("useSkill", (c, e) => e.skill.definition.id === c.getVariable("currentSkill"))
+  .on("useSkill", (c) => c.getExtensionState().hasElementalDamage)
   .listenToAll()
   .do((c) => {
-    if (c.getVariable("hasProgress")) {
-      c.self.addVariable("progress", 1);
-      if (c.getVariable("progress") >= 3) {
-        c.generateDice("randomElement", 3);
-        c.dispose();
-        return;
-      }
+    c.addVariable("progress", 1);
+    if (c.getVariable("progress") >= 3) {
+      c.generateDice("randomElement", 3);
+      c.dispose();
+      return;
     }
-    c.setVariable("currentSkill", 0);
-    c.setVariable("hasProgress", 0);
   })
   .done();
 

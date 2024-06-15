@@ -70,10 +70,7 @@ import {
   GiTcgError,
   GiTcgIOError,
 } from "./error";
-import {
-  DetailLogType,
-  DetailLogger,
-} from "./log";
+import { DetailLogType, DetailLogger } from "./log";
 import { randomSeed } from "./random";
 import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 import {
@@ -651,7 +648,11 @@ export class Game extends StateMutator {
       }
 
       switch (actionInfo.type) {
-        case "useSkill":
+        case "useSkill": {
+          await this.handleEvent(
+            "onBeforeUseSkill",
+            new UseSkillEventArg(this.state, who, actionInfo.skill),
+          );
           await this.executeSkill(actionInfo.skill);
           this.mutate({
             type: "mutateRoundSkillLog",
@@ -663,7 +664,8 @@ export class Game extends StateMutator {
             new UseSkillEventArg(this.state, who, actionInfo.skill),
           );
           break;
-        case "playCard":
+        }
+        case "playCard": {
           if (actionInfo.card.definition.tags.includes("legend")) {
             this.mutate({
               type: "setPlayerFlag",
@@ -673,7 +675,7 @@ export class Game extends StateMutator {
             });
           }
           await this.handleEvent(
-            "onPlayCard",
+            "onBeforePlayCard",
             new PlayCardEventArg(this.state, actionInfo),
           );
           // 应用“禁用事件牌”效果
@@ -713,10 +715,12 @@ export class Game extends StateMutator {
             );
           }
           break;
-        case "switchActive":
+        }
+        case "switchActive": {
           this.switchActive(who, actionInfo.to);
           break;
-        case "elementalTuning":
+        }
+        case "elementalTuning": {
           this.mutate({
             type: "removeCard",
             who,
@@ -740,7 +744,8 @@ export class Game extends StateMutator {
           );
           await this.handleEvent("onDisposeOrTuneCard", tuneCardEventArg);
           break;
-        case "declareEnd":
+        }
+        case "declareEnd": {
           this.mutate({
             type: "setPlayerFlag",
             who,
@@ -748,6 +753,7 @@ export class Game extends StateMutator {
             value: true,
           });
           break;
+        }
       }
       if (!actionInfo.fast) {
         this.mutate({

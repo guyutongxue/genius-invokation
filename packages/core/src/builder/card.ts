@@ -366,7 +366,7 @@ class CardBuilder<
     const [first, ...rest] = targetQuery;
     const ctx = new SkillContext<ReadonlyMetaOf<LooseBuilderMetaForCard>>(
       state,
-      skillInfo,
+      this._wrapSkillInfoWithExt(skillInfo),
       {
         targets: known,
       },
@@ -423,7 +423,11 @@ class CardBuilder<
     const filterFn: PlayCardFilter = (state, skillInfo, args) => {
       const ctx = new SkillContext<
         ReadonlyMetaOf<StrictBuilderMetaForCard<KindTs, AssociatedExt>>
-      >(state, skillInfo, args as any);
+      >(
+        state,
+        this._wrapSkillInfoWithExt(skillInfo),
+        args as any,
+      );
       for (const filter of this._filters) {
         if (!filter(ctx, ctx.eventArg)) {
           return false;
@@ -463,7 +467,11 @@ class CardBuilder<
           ) => {
             const ctx = new SkillContext<
               WritableMetaOf<BuilderMetaForCardDispose<AssociatedExt>>
-            >(state, skillInfo, arg);
+            >(
+              state,
+              this._wrapSkillInfoWithExt(skillInfo),
+              arg,
+            );
             disposeOp(ctx, {});
             ctx._terminate();
             return [ctx.state, ctx.events];
