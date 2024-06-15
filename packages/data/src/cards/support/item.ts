@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, card, combatStatus, extension, pair } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, combatStatus, diceCostOfCard, extension, pair } from "@gi-tcg/core/builder";
 
 /**
  * @id 323001
@@ -132,7 +132,7 @@ export const TreasureseekingSeelie = card(323004)
 export const SeedDispensary = card(323005)
   .since("v4.3.0")
   .support("item")
-  .on("deductDiceCard", (c, e) => e.action.card.definition.onPlay.requiredCost.length >= 2 && e.action.card.definition.type === "support")
+  .on("deductDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) >= 2 && e.action.card.definition.type === "support")
   .usagePerRound(1)
   .usage(2)
   .deductCost(DiceType.Omni, 1)

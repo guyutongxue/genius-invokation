@@ -43,6 +43,7 @@ import { flip } from "@gi-tcg/utils";
 import { DetailLogType, IDetailLogger } from "./log";
 import { Writable } from "./utils";
 import {
+  GiTcgIoNotProvideError,
   InternalNotifyOption,
   InternalPauseOption,
   StateMutator,
@@ -50,8 +51,8 @@ import {
 
 interface IoDuringSkillFinalize {
   logger: IDetailLogger;
-  switchCard(who: 0 | 1): Promise<void>;
-  reroll(who: 0 | 1, times: number): Promise<void>;
+  requestSwitchCard(who: 0 | 1): Promise<number[]>;
+  requestReroll(who: 0 | 1): Promise<number[]>;
   chooseActive(who: 0 | 1, state: GameState): Promise<CharacterState>;
   onNotify(opt: InternalNotifyOption): void;
   onPause(opt: InternalPauseOption): Promise<void>;
@@ -59,12 +60,6 @@ interface IoDuringSkillFinalize {
 
 interface IoAndState extends IoDuringSkillFinalize {
   readonly state: GameState;
-}
-
-class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
-  constructor() {
-    super("IO is not provided. This error should be caught.");
-  }
 }
 
 export type GeneralSkillArg = EventArg | CardSkillEventArg | void;
@@ -91,6 +86,20 @@ export class SkillExecutor extends StateMutator {
   }
   protected override async onPause(opt: InternalNotifyOption) {
     await this._io?.onPause(opt);
+  }
+  protected override async requestReroll(who: 0 | 1): Promise<number[]> {
+    if (this._io) {
+      return this._io.requestReroll(who);
+    } else {
+      throw new GiTcgIoNotProvideError();
+    }
+  }
+  protected override async requestSwitchCard(who: 0 | 1): Promise<number[]> {
+    if (this._io) {
+      return this._io.requestSwitchCard(who);
+    } else {
+      throw new GiTcgIoNotProvideError();
+    }
   }
 
   async finalizeSkill(
@@ -387,13 +396,13 @@ export class SkillExecutor extends StateMutator {
           DetailLogType.Event,
           `request player ${arg.who} to reroll`,
         );
-        await this.io.reroll(arg.who, arg.times);
+        await this.reroll(arg.who, arg.times);
       } else if (name === "requestSwitchHands") {
         using l = this.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to switch hands`,
         );
-        await this.io.switchCard(arg.who);
+        await this.switchCard(arg.who);
       } else if (name === "requestUseSkill") {
         using l = this.subLog(
           DetailLogType.Event,

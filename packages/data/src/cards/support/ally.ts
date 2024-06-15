@@ -468,7 +468,7 @@ export const SandsAndDream = status(302205)
   .deductCost(DiceType.Omni, 3)
   .done();
 
-const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: pair(0) })
+export const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: pair(0) })
   .mutateWhen("onDispose", (st, e) => {
     if (e.entity.definition.type === "support") {
       st.disposedSupportCount[e.who]++;

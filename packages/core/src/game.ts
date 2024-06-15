@@ -207,21 +207,6 @@ export class Game extends StateMutator {
     return executeQueryOnState(this.state, who, query);
   }
 
-  private randomDice(count: number, alwaysOmni?: boolean): readonly DiceType[] {
-    if (alwaysOmni) {
-      return new Array<DiceType>(count).fill(DiceType.Omni);
-    }
-    const mut: StepRandomM = {
-      type: "stepRandom",
-      value: 0,
-    };
-    const result: DiceType[] = [];
-    for (let i = 0; i < count; i++) {
-      this.mutate(mut);
-      result.push((mut.value % 8) + 1);
-    }
-    return result;
-  }
 
   /** 初始化玩家的角色牌和牌堆 */
   private initPlayerCards(who: 0 | 1) {
@@ -968,86 +953,15 @@ export class Game extends StateMutator {
   }
 
   /** @internal */
-  async switchCard(who: 0 | 1) {
-    const player = () => this.state.players[who];
+  override async requestSwitchCard(who: 0 | 1) {
     const { removedHands } = await this.rpc(who, "switchHands", {});
-    // swapIn: 从手牌到牌堆
-    // swapOut: 从牌堆到手牌
-    const count = removedHands.length;
-    const swapInCards = removedHands.map((id) => {
-      const card = player().hands.find((c) => c.id === id);
-      if (typeof card === "undefined") {
-        throw new GiTcgDataError(`Unknown card id ${id}`);
-      }
-      return card;
-    });
-    const swapInCardIds = swapInCards.map((c) => c.definition.id);
-
-    for (const card of swapInCards) {
-      const mutation: Mutation = {
-        type: "stepRandom",
-        value: -1,
-      };
-      this.mutate(mutation);
-      const index = mutation.value % (player().piles.length + 1);
-      this.mutate({
-        type: "transferCard",
-        path: "handsToPiles",
-        who,
-        value: card,
-        targetIndex: index,
-      });
-    }
-    // 如果牌堆顶的手牌是刚刚换入的同名牌，那么暂时不选它
-    let topIndex = 0;
-    for (let i = 0; i < count; i++) {
-      let candidate: CardState;
-      while (
-        topIndex < player().piles.length &&
-        swapInCardIds.includes(player().piles[topIndex].definition.id)
-      ) {
-        topIndex++;
-      }
-      if (topIndex >= player().piles.length) {
-        // 已经跳过了所有同名牌，只能从头开始
-        candidate = player().piles[0];
-      } else {
-        candidate = player().piles[topIndex];
-      }
-      this.mutate({
-        type: "transferCard",
-        path: "pilesToHands",
-        who,
-        value: candidate,
-      });
-    }
-    this.notify();
+    return removedHands;
   }
-
+  
   /** @internal */
-  async reroll(who: 0 | 1, times: number) {
-    for (let i = 0; i < times; i++) {
-      const dice = this.state.players[who].dice;
-      const { rerollIndexes } = await this.rpc(who, "rerollDice", {});
-      if (rerollIndexes.length === 0) {
-        return;
-      }
-      const controlled: DiceType[] = [];
-      for (let k = 0; k < dice.length; k++) {
-        if (!rerollIndexes.includes(k)) {
-          controlled.push(dice[k]);
-        }
-      }
-      this.mutate({
-        type: "resetDice",
-        who,
-        value: sortDice(this.state.players[who], [
-          ...controlled,
-          ...this.randomDice(rerollIndexes.length),
-        ]),
-      });
-      this.notifyOne(who);
-    }
+  override async requestReroll(who: 0 | 1) {
+    const { rerollIndexes } = await this.rpc(who, "rerollDice", {});
+    return rerollIndexes;
   }
 
   private async switchActive(who: 0 | 1, to: CharacterState) {

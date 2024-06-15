@@ -17,10 +17,7 @@ import { CardDefinition } from "../base/card";
 import { CharacterDefinition } from "../base/character";
 import { EntityDefinition, VariableConfig } from "../base/entity";
 import { ExtensionDefinition } from "../base/extension";
-import {
-  SkillDefinition,
-  TriggeredSkillDefinition,
-} from "../base/skill";
+import { SkillDefinition, TriggeredSkillDefinition } from "../base/skill";
 import { GiTcgDataError } from "../error";
 import { CURRENT_VERSION, Version, VersionInfo } from "../base/version";
 
@@ -43,7 +40,7 @@ export function beginRegistration() {
 interface PassiveSkillDefinition {
   id: number;
   type: "passiveSkill";
-  version: VersionInfo,
+  version: VersionInfo;
   varConfigs: Record<string, VariableConfig>;
   skills: readonly TriggeredSkillDefinition[];
 }
@@ -99,7 +96,9 @@ function register<C extends RegisterCategory>(
       if (
         sameIdObjects.some(
           (obj) =>
-            "version" in obj && obj.version.version === value.version.version,
+            "version" in obj &&
+            obj.version.predicate === "until" &&
+            obj.version.version === value.version.version,
         )
       ) {
         throw new GiTcgDataError(
@@ -131,7 +130,7 @@ export function registerExtension(value: ExtensionDefinition) {
 
 export function getCharacterSkillDefinition(
   id: number,
-  untilVer?: string
+  untilVer?: string,
 ): number | PassiveSkillDefinition {
   const allPassiveSkills = getCurrentStore().passiveSkills;
   const def = allPassiveSkills.find((sk) => {
@@ -141,7 +140,9 @@ export function getCharacterSkillDefinition(
     if (typeof untilVer === "undefined") {
       return sk.version.predicate === "since";
     } else {
-      return sk.version.predicate === "until" && sk.version.version === untilVer;
+      return (
+        sk.version.predicate === "until" && sk.version.version === untilVer
+      );
     }
   });
   if (typeof def !== "undefined") {
