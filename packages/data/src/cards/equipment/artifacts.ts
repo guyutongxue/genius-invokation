@@ -636,7 +636,7 @@ export const GildedDreams = card(312018)
       c.generateDice(diceType, 1);
     }
   })
-  .on("damaged", (c, e) => !c.of(e.target).isMine() && e.getReaction())
+  .on("damaged", (c, e) => !c.of(e.target).isMine() && c.self.master().isActive() && e.getReaction())
   .listenToAll()
   .usagePerRound(2)
   .drawCards(1)
