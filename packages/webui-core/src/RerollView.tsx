@@ -25,20 +25,26 @@ export interface RerollViewProps {
 
 export function RerollView(props: RerollViewProps) {
   const [chosenIndexes, setChosenIndexes] = createStore<number[]>([]);
+  const reverseChosen = (i: number) => {
+    chosenIndexes.includes(i)
+                  ? setChosenIndexes(chosenIndexes.filter((x) => x !== i))
+                  : setChosenIndexes([...chosenIndexes, i])
+  }
   return (
     <div class="w-full h-full flex flex-col justify-center items-center">
       <ul class="max-w-[20em] grid grid-cols-4 gap-6">
         <Index each={props.dice}>
           {(d, i) => (
-            <li
-              class="cursor-pointer"
-              onClick={() =>
-                chosenIndexes.includes(i)
-                  ? setChosenIndexes(chosenIndexes.filter((x) => x !== i))
-                  : setChosenIndexes([...chosenIndexes, i])
-              }
-            >
-              <Dice type={d()} selected={chosenIndexes.includes(i)} size={70} />
+            <li>
+              <div class="relative">
+                {/* 骰子 */}
+                <Dice type={d()} selected={chosenIndexes.includes(i)} size={70} />
+                {/* 点选、滑动点选触发区域，css调整使其位于父对象居中 */}
+                <div class="cursor-pointer absolute z-1 w-60px h-60px left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan opacity-0"
+                  onMouseDown={() => reverseChosen(i)}
+                  onMouseEnter={(event) => event.buttons === 1 && reverseChosen(i)}>
+                </div>
+              </div>
             </li>
           )}
         </Index>
