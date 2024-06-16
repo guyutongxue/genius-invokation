@@ -235,6 +235,8 @@ export function createPlayer(
   const [allClickable, setClickable] = createStore<number[]>([]);
   const [allSelected, setSelected] = createStore<number[]>([]);
   const [, waitElementClick, notifyElementClicked] = createWaitNotify<number>();
+  const [, waitChessboardClick, notifyChessboardClicked] =
+    createWaitNotify<void>();
 
   const [allCosts, setAllCosts] = createStore<
     Record<number, readonly DiceType[]>
@@ -368,11 +370,21 @@ export function createPlayer(
         while (!("actionIndex" in state)) {
           setClickable([...(state.clickable?.keys() ?? [])]);
           setSelected([...state.selected]);
-          const val = await waitElementClick();
-          if (!state.clickable?.has(val)) {
-            throw new Error(`Click event emitted with an invalid value`);
+          const val = await Promise.race([
+            waitElementClick(),
+            waitChessboardClick(),
+          ]);
+          if (typeof val === "undefined") {
+            state = {
+              clickable: initialClickable,
+              selected: [],
+            };
+          } else {
+            if (!state.clickable?.has(val)) {
+              throw new Error(`Click event emitted with an invalid value`);
+            }
+            state = state.clickable.get(val)!;
           }
-          state = state.clickable.get(val)!;
         }
         setClickable([...(state.clickable?.keys() ?? [])]);
         setSelected([...state.selected]);
@@ -390,7 +402,11 @@ export function createPlayer(
         }
 
         setDiceSelectProp(state);
-        const r = await Promise.race([waitDiceSelect(), waitElementClick()]);
+        const r = await Promise.race([
+          waitDiceSelect(),
+          waitElementClick(),
+          waitChessboardClick(),
+        ]);
         if (Array.isArray(r) || typeof r === "undefined") {
           setDiceSelectProp();
           if (Array.isArray(r)) {
@@ -524,6 +540,7 @@ export function createPlayer(
         who={who}
         mutations={mutations()}
         previewing={previewing()}
+        onClick={() => notifyChessboardClicked()}
       >
         <Show when={allClickable.includes(DECLARE_END_ID)}>
           <button
@@ -604,6 +621,7 @@ interface ChessboardProps extends ComponentProps<"div"> {
   who: 0 | 1;
   children?: JSX.Element;
   previewing?: boolean;
+  onClick?: (e: MouseEvent) => void;
 }
 
 function Chessboard(props: ChessboardProps) {
@@ -651,6 +669,7 @@ function Chessboard(props: ChessboardProps) {
       >
         <div
           data-previewing={props.previewing}
+          onClick={(e) => props.onClick?.(e)}
           class="w-full b-solid b-black b-2 relative data-[previewing=true]:grayscale-50"
         >
           <PlayerArea

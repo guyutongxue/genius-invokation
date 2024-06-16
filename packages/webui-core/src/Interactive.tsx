@@ -55,7 +55,12 @@ export function Interactive(props: InteractiveProps) {
         clickable: clickable(),
         focused: focused(),
       }}
-      onClick={() => clickable() && onClick(props.id)}
+      onClick={(e) => {
+        if (clickable()) {
+          e.stopPropagation(); 
+          onClick(props.id);
+        }
+      }}
       draggable={draggable()}
       onDragStart={dragStart}
       onDragEnd={dragEnd}
