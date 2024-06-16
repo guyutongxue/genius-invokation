@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { GameState } from "./base/state";
-import { Version, VersionInfo } from "./base/version";
+import { Version } from "./base/version";
 import { GameData, GameDataGetter } from "./builder";
 import { CORE_VERSION } from ".";
 
@@ -73,12 +73,6 @@ function serializeImpl(store: StoreEntry[], v: unknown): any {
         $$: v.__definition,
         id: v.id,
       };
-      if ("version" in v) {
-        const ver: any = v.version;
-        if (ver.predicate === "until") {
-          result.u = ver.version;
-        }
-      }
       store.push({ key: v, value: result });
       return { $: store.length - 1 };
     }
@@ -138,29 +132,14 @@ export function serializeGameStateLog(
 const VALID_DEF_KEYS = [
   "characters",
   "entities",
-  "skills",
   "cards",
   "extensions",
 ] as const;
 type ValidDefKeys = (typeof VALID_DEF_KEYS)[number];
 
 function isValidDefKey(defKey: unknown): defKey is ValidDefKeys {
-  return ["characters", "entities", "skills", "cards", "extensions"].includes(
+  return ["characters", "entities", "cards", "extensions"].includes(
     defKey as string,
-  );
-}
-
-function getDefinition(
-  data: GameData,
-  defKey: ValidDefKeys,
-  id: number,
-  version?: string,
-) {
-  const store = data[defKey];
-  return store.find((def) =>
-    def.id === id && typeof version === "undefined"
-      ? def.version.predicate === "since"
-      : def.version.predicate === "until" && def.version.version === version,
   );
 }
 
@@ -187,11 +166,7 @@ function deserializeImpl(
       return restoredStore[v.$];
     }
     if ("$$" in v && "id" in v && typeof v.id === "number" && isValidDefKey(v.$$)) {
-      let version: string | undefined = void 0;
-      if ("u" in v && typeof v.u === "string") {
-        version = v.u;
-      }
-      return getDefinition(data, v.$$, v.id, version);
+      return data[v.$$].get(v.id);
     }
     if ("__type" in v) {
       if (v.__type === "map" && "entries" in v && Array.isArray(v.entries)) {

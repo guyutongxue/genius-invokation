@@ -64,11 +64,8 @@ import {
   diceCostOfCard,
   elementOfCharacter,
   getActiveCharacterIndex,
-  getCardDefinition,
-  getCharacterDefinition,
   getEntityArea,
   getEntityById,
-  getEntityDefinition,
   sortDice,
 } from "../utils";
 import { executeQuery } from "../query";
@@ -688,7 +685,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     opt: CreateEntityOptions = {},
   ): Entity<Meta> | null {
     const id2 = id as number;
-    const def = getEntityDefinition(this.state.data, id2);
+    const def = this.state.data.entities.get(id2);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown entity definition id ${id2}`);
     }
@@ -1048,12 +1045,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       }
     }
     const oldDef = target.definition;
-    let def: CharacterDefinition | EntityDefinition | undefined = void 0;
-    if (oldDef.__definition === "characters") {
-      def = getCharacterDefinition(this.state.data, newDefId);
-    } else {
-      def = getEntityDefinition(this.state.data, newDefId);
-    }
+    const def = this.state.data[oldDef.__definition].get(newDefId);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown definition id ${newDefId}`);
     }
@@ -1178,7 +1170,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   createHandCard(cardId: CardHandle) {
-    const cardDef = getCardDefinition(this.state.data, cardId);
+    const cardDef = this.state.data.cards.get(cardId);
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
@@ -1227,7 +1219,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           cards.push(card);
         }
       }
-      this.emitEvent("onDrawCards", this.state, who, cards);
     } else {
       const check = (card: CardState) => {
         if (withDefinition !== null) {
@@ -1276,7 +1267,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
     );
-    const cardDef = getCardDefinition(this.state.data, cardId);
+    const cardDef = this.state.data.cards.get(cardId);
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
@@ -1676,10 +1667,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     // Remove exist artifact/weapon first
     for (const tag of ["artifact", "weapon"] as const) {
       if (
-        getEntityDefinition(
-          this.skillContext.state.data,
-          equipment,
-        )?.tags.includes(tag)
+        this.skillContext.state.data.entities.get(equipment)?.tags.includes(tag)
       ) {
         const exist = this.state.entities.find((v) =>
           v.definition.tags.includes(tag),

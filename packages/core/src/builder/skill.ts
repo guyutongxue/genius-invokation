@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { DamageType, DiceType } from "@gi-tcg/typings";
-import { registerSkill } from "./registry";
 import {
   CommonSkillType,
   SkillDescription,
@@ -49,6 +48,7 @@ import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
 import { createVariable } from "./utils";
+import { registerInitiativeSkill } from "./registry";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -704,9 +704,7 @@ export class TriggeredSkillBuilder<
       return this.applyActions(state, skillInfo, arg as any);
     };
     const def: TriggeredSkillDefinition = {
-      __definition: "skills",
       type: "skill",
-      version: this.parent._versionInfo,
       skillType: null,
       id: this.id,
       triggerOn: eventName,
@@ -716,7 +714,6 @@ export class TriggeredSkillBuilder<
       action,
       usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
     };
-    registerSkill(def);
     this.parent._skillList.push(def);
   }
 
@@ -866,17 +863,21 @@ class InitiativeSkillBuilder<
     const action: SkillDescription<void> = (state, skillInfo) => {
       return this.applyActions(state, skillInfo, void 0);
     };
-    registerSkill({
-      __definition: "skills",
-      type: "skill",
+    registerInitiativeSkill({
+      __definition: "initiativeSkills",
+      type: "initiativeSkill",
       version: this._versionInfo,
-      skillType: this._skillType,
       id: this.skillId,
-      triggerOn: null,
-      requiredCost: this._cost,
-      gainEnergy: this._gainEnergy,
-      prepared: this._prepared,
-      action,
+      skill: {
+        type: "skill",
+        skillType: this._skillType,
+        id: this.skillId,
+        triggerOn: null,
+        requiredCost: this._cost,
+        gainEnergy: this._gainEnergy,
+        prepared: this._prepared,
+        action,
+      }
     });
     return this.skillId as SkillHandle;
   }

@@ -1,6 +1,6 @@
 import { card, character, DamageType, DiceType, skill, summon, SummonHandle } from "@gi-tcg/core/builder";
 import { OceanicMimicRaptor, OceanicMimicSquirrel } from "../characters/hydro/rhodeia_of_loch";
-import { BladeAblaze, Prowl, Stealth, Thrust } from "../characters/pyro/fatui_pyro_agent";
+import { BladeAblaze, Prowl, Stealth, StealthMaster, Thrust } from "../characters/pyro/fatui_pyro_agent";
 
 /**
  * @id 331801
@@ -107,18 +107,6 @@ const OceanicMimicFrog = summon(122013)
   .on("endPhase", (c) => c.getVariable("usage") <= 0)
   .damage(DamageType.Hydro, 2)
   .dispose()
-  .done();
-/**
- * @id 23014
- * @name 潜行大师
- * @description
- * 【被动】战斗开始时，初始附属潜行。
- */
-const StealthMaster = skill(23014)
-  .until("v4.2.0")
-  .type("passive")
-  .on("battleBegin")
-  .characterStatus(Stealth)
   .done();
 
 /**

@@ -40,7 +40,7 @@ import {
   ExEntityType,
 } from "../base/entity";
 import { SkillDescription, SkillInfo } from "../base/skill";
-import { registerCard, registerSkill } from "./registry";
+import { registerCard } from "./registry";
 import { SkillContext } from "./context";
 import {
   SkillBuilderWithCost,
@@ -445,18 +445,15 @@ class CardBuilder<
       return targetIdsList.map((targets) => ({ targets }));
     };
     const skillDef: PlayCardSkillDefinition = {
-      __definition: "skills",
       type: "skill",
       skillType: "playCard",
       id: this.cardId,
-      version: this._versionInfo,
       triggerOn: null,
       requiredCost: this._cost,
       gainEnergy: false,
       prepared: false,
       action,
     };
-    registerSkill(skillDef);
     let onDispose: DisposeCardSkillDefinition | undefined = void 0;
     if (this._doSameWhenDisposed || this._disposeOperation !== null) {
       const disposeOp = this._disposeOperation;
@@ -477,18 +474,15 @@ class CardBuilder<
             return [ctx.state, ctx.events];
           }) : (action as unknown as SkillDescription<void>);
       const disposeDef: DisposeCardSkillDefinition = {
-        __definition: "skills",
         type: "skill",
         skillType: "disposeCard",
         id: this.cardId + 0.01,
-        version: this._versionInfo,
         triggerOn: null,
         requiredCost: [],
         gainEnergy: false,
         prepared: false,
-        action: disposeAction, // FIX ME maybe
+        action: disposeAction,
       };
-      registerSkill(disposeDef);
       onDispose = disposeDef;
     }
     const cardDef: CardDefinition = {

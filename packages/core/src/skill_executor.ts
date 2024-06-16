@@ -36,9 +36,7 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
-  getInitiativeSkillDefinition,
 } from "./utils";
-import { GiTcgCoreInternalError } from "./error";
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType, IDetailLogger } from "./log";
 import { Writable } from "./utils";
@@ -427,7 +425,10 @@ export class SkillExecutor extends StateMutator {
           );
           continue;
         }
-        if (!activeCh.definition.initiativeSkills.includes(arg.requestingSkillId)) {
+        const skillDef = activeCh.definition.initiativeSkills.find(
+          (sk) => sk.id === arg.requestingSkillId,
+        );
+        if (!skillDef) {
           this.log(
             DetailLogType.Other,
             `Skill [skill:${
@@ -440,14 +441,14 @@ export class SkillExecutor extends StateMutator {
           );
           continue;
         }
-        const def = getInitiativeSkillDefinition(this.state.data, arg.requestingSkillId);
         const skillInfo: SkillInfo = {
           caller: activeCh,
-          definition: def,
+          definition: skillDef,
           fromCard: null,
           requestBy: arg.via,
-          charged: def.skillType === "normal" && player.dice.length % 2 === 0,
-          plunging: def.skillType === "normal" && player.canPlunging,
+          charged:
+            skillDef.skillType === "normal" && player.dice.length % 2 === 0,
+          plunging: skillDef.skillType === "normal" && player.canPlunging,
         };
         await this.finalizeSkill(skillInfo, void 0);
         await this.handleEvent([

@@ -7,7 +7,7 @@ import {
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { SkillContext } from "./context";
-import { registerExtension, registerSkill } from "./registry";
+import { registerExtension } from "./registry";
 import { WritableMetaOf } from "./skill";
 import { ExtensionHandle } from "./type";
 import { DEFAULT_VERSION_INFO } from "../base/version";
@@ -62,9 +62,7 @@ export class ExtensionBuilder<ExtStateType extends object> {
       return [ctx.state, ctx.events] as const;
     };
     const def: TriggeredSkillDefinition = {
-      __definition: "skills",
       type: "skill",
-      version: DEFAULT_VERSION_INFO,
       skillType: null,
       id: this.generateSkillId(),
       triggerOn: event,
@@ -74,7 +72,6 @@ export class ExtensionBuilder<ExtStateType extends object> {
       action,
       usagePerRoundVariableName: null,
     };
-    registerSkill(def);
     this._skillList.push(def);
     return this;
   }

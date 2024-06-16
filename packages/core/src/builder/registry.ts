@@ -17,9 +17,20 @@ import { CardDefinition } from "../base/card";
 import { CharacterDefinition } from "../base/character";
 import { EntityDefinition, VariableConfig } from "../base/entity";
 import { ExtensionDefinition } from "../base/extension";
-import { SkillDefinition, TriggeredSkillDefinition } from "../base/skill";
+import {
+  InitiativeSkillDefinition,
+  TriggeredSkillDefinition,
+} from "../base/skill";
 import { GiTcgDataError } from "../error";
-import { CURRENT_VERSION, Version, VersionInfo } from "../base/version";
+import {
+  CURRENT_VERSION,
+  Version,
+  VersionInfo,
+  WithVersionInfo,
+  getCorrectVersion,
+} from "../base/version";
+import { freeze } from "immer";
+import { isCharacterInitiativeSkill } from "../utils";
 
 let currentStore: DataStore | null = null;
 
@@ -28,16 +39,22 @@ export function beginRegistration() {
     throw new GiTcgDataError("Already in registration");
   }
   currentStore = {
-    characters: [],
-    entities: [],
-    skills: [],
-    cards: [],
-    passiveSkills: [],
-    extensions: [],
+    characters: new Map(),
+    entities: new Map(),
+    cards: new Map(),
+    initiativeSkills: new Map(),
+    passiveSkills: new Map(),
+    extensions: new Map(),
   };
 }
 
-interface PassiveSkillDefinition {
+interface CharacterEntry
+  extends Omit<CharacterDefinition, "skills" | "initiativeSkills"> {
+  skillIds: readonly number[];
+}
+
+interface CharacterPassiveSkillEntry {
+  __definition: "passiveSkills";
   id: number;
   type: "passiveSkill";
   version: VersionInfo;
@@ -45,28 +62,35 @@ interface PassiveSkillDefinition {
   skills: readonly TriggeredSkillDefinition[];
 }
 
+interface CharacterInitiativeSkillEntry {
+  __definition: "initiativeSkills";
+  id: number;
+  type: "initiativeSkill";
+  version: VersionInfo;
+  skill: InitiativeSkillDefinition;
+}
+
 type DefinitionMap = {
-  characters: CharacterDefinition;
+  characters: CharacterEntry;
   entities: EntityDefinition;
-  skills: SkillDefinition;
   cards: CardDefinition;
-  passiveSkills: PassiveSkillDefinition;
   extensions: ExtensionDefinition;
+  initiativeSkills: CharacterInitiativeSkillEntry;
+  passiveSkills: CharacterPassiveSkillEntry;
 };
 
 type RegisterCategory = keyof DefinitionMap;
 
 export type DataStore = {
-  [K in RegisterCategory]: DefinitionMap[K][];
+  [K in RegisterCategory]: Map<number, DefinitionMap[K][]>;
 };
 
 export interface GameData {
   readonly version: Version;
-  readonly extensions: readonly ExtensionDefinition[];
-  readonly characters: readonly CharacterDefinition[];
-  readonly entities: readonly EntityDefinition[];
-  readonly skills: readonly SkillDefinition[];
-  readonly cards: readonly CardDefinition[];
+  readonly extensions: ReadonlyMap<number, ExtensionDefinition>;
+  readonly characters: ReadonlyMap<number, CharacterDefinition>;
+  readonly entities: ReadonlyMap<number, EntityDefinition>;
+  readonly cards: ReadonlyMap<number, CardDefinition>;
 }
 
 function getCurrentStore(): DataStore {
@@ -81,45 +105,46 @@ function register<C extends RegisterCategory>(
   value: DefinitionMap[C],
 ) {
   const store = getCurrentStore()[type];
-  if ("version" in value) {
-    const sameIdObjects = store.filter((obj) => obj.id === value.id);
+  if (!store.has(value.id)) {
+    store.set(value.id, []);
+  }
+  const allVersions = store.get(value.id)!;
+  if (
+    value.version.predicate === "since" &&
+    allVersions.some(
+      (obj) => "version" in obj && obj.version.predicate === "since",
+    )
+  ) {
+    throw new GiTcgDataError(
+      `Duplicate since version definition for ${type} id ${value.id}`,
+    );
+  } else {
     if (
-      value.version.predicate === "since" &&
-      sameIdObjects.some(
-        (obj) => "version" in obj && obj.version.predicate === "since",
+      allVersions.some(
+        (obj) =>
+          "version" in obj &&
+          obj.version.predicate === "until" &&
+          obj.version.version === value.version.version,
       )
     ) {
       throw new GiTcgDataError(
-        `Duplicate since version definition for ${type} id ${value.id}`,
+        `Duplicate until version definition for ${type} id ${value.id}`,
       );
-    } else {
-      if (
-        sameIdObjects.some(
-          (obj) =>
-            "version" in obj &&
-            obj.version.predicate === "until" &&
-            obj.version.version === value.version.version,
-        )
-      ) {
-        throw new GiTcgDataError(
-          `Duplicate until version definition for ${type} id ${value.id}`,
-        );
-      }
     }
   }
-  store.push(value);
+  allVersions.push(value);
 }
-export function registerCharacter(value: CharacterDefinition) {
+export function registerCharacter(value: CharacterEntry) {
   register("characters", value);
 }
 export function registerEntity(value: EntityDefinition) {
   register("entities", value);
 }
-export function registerSkill(value: SkillDefinition) {
-  register("skills", value);
-}
-export function registerPassiveSkill(value: PassiveSkillDefinition) {
+export function registerPassiveSkill(value: CharacterPassiveSkillEntry) {
   register("passiveSkills", value);
+}
+export function registerInitiativeSkill(value: CharacterInitiativeSkillEntry) {
+  register("initiativeSkills", value);
 }
 export function registerCard(value: CardDefinition) {
   register("cards", value);
@@ -128,40 +153,77 @@ export function registerExtension(value: ExtensionDefinition) {
   register("extensions", value);
 }
 
-export function getCharacterSkillDefinition(
-  id: number,
-  untilVer?: string,
-): number | PassiveSkillDefinition {
-  const allPassiveSkills = getCurrentStore().passiveSkills;
-  const def = allPassiveSkills.find((sk) => {
-    if (sk.id !== id) {
-      return false;
-    }
-    if (typeof untilVer === "undefined") {
-      return sk.version.predicate === "since";
-    } else {
-      return (
-        sk.version.predicate === "until" && sk.version.version === untilVer
-      );
-    }
-  });
-  if (typeof def !== "undefined") {
-    return def;
+export type GameDataGetter = (version?: Version) => GameData;
+
+function combineObject<T extends {}, U extends {}>(a: T, b: U): T & U {
+  const combined = { ...a, ...b };
+  const overlappingKeys = Object.keys(a).filter((key) => key in b);
+  if (overlappingKeys.length > 0) {
+    throw new Error(`Properties ${overlappingKeys.join(", ")} are overlapping`);
   }
-  // Assume this is a initiative skill
-  return id;
+  return combined;
 }
 
-export type GameDataGetter = (version?: Version) => GameData;
+function selectVersion<T extends WithVersionInfo>(
+  version: Version,
+  source: Map<number, T[]>,
+): Map<number, T>;
+function selectVersion<T extends WithVersionInfo, U>(
+  version: Version,
+  source: Map<number, T[]>,
+  transformFn: (v: T) => U,
+): Map<number, U>;
+function selectVersion<T extends WithVersionInfo>(
+  version: Version,
+  source: Map<number, T[]>,
+  transformFn?: (v: T) => unknown,
+): Map<number, unknown> {
+  const result = new Map<number, unknown>();
+  for (const [id, defs] of source) {
+    const chosen = getCorrectVersion(defs, version);
+    if (!chosen) {
+      continue;
+    }
+    const transformed = transformFn ? transformFn(chosen) : chosen;
+    result.set(id, transformed);
+  }
+  return result;
+}
 
 export function endRegistration(): GameDataGetter {
   const store = getCurrentStore();
-  return (version = CURRENT_VERSION) => ({
-    version,
-    extensions: store.extensions,
-    characters: store.characters,
-    entities: store.entities,
-    skills: store.skills,
-    cards: store.cards,
-  });
+  return (version = CURRENT_VERSION): GameData => {
+    const data: GameData = {
+      version,
+      extensions: selectVersion(version, store.extensions),
+      entities: selectVersion(version, store.entities),
+      cards: selectVersion(version, store.cards),
+      characters: selectVersion(version, store.characters, (correctCh) => {
+        const initiativeSkills = correctCh.skillIds
+          .map((id) => store.initiativeSkills.get(id))
+          .filter((e): e is CharacterInitiativeSkillEntry[] => !!e)
+          .map((e) => getCorrectVersion(e, version))
+          .filter((e): e is CharacterInitiativeSkillEntry => !!e);
+        const passiveSkills = correctCh.skillIds
+          .map((id) => store.passiveSkills.get(id))
+          .filter((e): e is CharacterPassiveSkillEntry[] => !!e)
+          .map((e) => getCorrectVersion(e, version))
+          .filter((e): e is CharacterPassiveSkillEntry => !!e);
+        const passiveSkillVarConfigs = passiveSkills.reduce(
+          (acc, { varConfigs }) => combineObject(acc, varConfigs),
+          <Record<string, VariableConfig>>{},
+        );
+        return {
+          ...correctCh,
+          initiativeSkills: initiativeSkills.map((e) => e.skill),
+          varConfigs: combineObject(
+            correctCh.varConfigs,
+            passiveSkillVarConfigs,
+          ),
+          skills: passiveSkills.flatMap((e) => e.skills),
+        };
+      }),
+    };
+    return freeze(data);
+  };
 }

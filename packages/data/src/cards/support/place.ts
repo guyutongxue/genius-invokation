@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, EntityState, card, combatStatus, diceCostOfCard, getCardDefinition, status } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, EntityState, card, combatStatus, diceCostOfCard, status } from "@gi-tcg/core/builder";
 import { ForbiddenKnowledge } from "../event/other";
 
 /**
@@ -315,7 +315,7 @@ export const OperaEpiclese = card(321017)
   .support("place")
   .on("beforeAction", (c) => {
     function costOfEquipment(equipment: EntityState) {
-      const cardDef = getCardDefinition(c.state.data, equipment.definition.id)!;
+      const cardDef = c.state.data.cards.get(equipment.definition.id)!;
       return diceCostOfCard(cardDef);
     }
     const myCost = c.$$(`my equipments`).map((entity) => costOfEquipment(entity.state)).reduce((a, b) => a + b, 0);

@@ -41,9 +41,6 @@ import {
   shuffle,
   sortDice,
   isSkillDisabled,
-  getInitiativeSkillDefinition,
-  getCardDefinition,
-  getCharacterDefinition,
 } from "./utils";
 import { GameData } from "./builder/registry";
 import {
@@ -99,7 +96,7 @@ function initPlayerState(
   playerConfig: PlayerConfig,
 ): PlayerState {
   let initialPiles: readonly CardDefinition[] = playerConfig.cards.map((id) => {
-    const def = getCardDefinition(data, id);
+    const def = data.cards.get(id);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown card id ${id}`);
     }
@@ -199,7 +196,7 @@ export class Game extends StateMutator {
   private initPlayerCards(who: 0 | 1) {
     const config = this.playerConfigs[who];
     for (const ch of config.characters) {
-      const def = getCharacterDefinition(this.state.data, ch);
+      const def = this.state.data.characters.get(ch);
       if (typeof def === "undefined") {
         throw new GiTcgDataError(`Unknown character id ${ch}`);
       }
@@ -850,8 +847,7 @@ export class Game extends StateMutator {
     if (isSkillDisabled(activeCh)) {
       // Use skill is disabled, skip
     } else {
-      for (const skillId of activeCh.definition.initiativeSkills) {
-        const skill = getInitiativeSkillDefinition(this.state.data, skillId)!;
+      for (const skill of activeCh.definition.initiativeSkills) {
         if (skill.prepared) {
           continue;
         }

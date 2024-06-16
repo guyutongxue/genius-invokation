@@ -36,7 +36,6 @@ import {
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
-import { getInitiativeSkillDefinition } from "./utils";
 import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 
 export interface PlayerIO {
@@ -267,10 +266,7 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
         summons: p.summons.map((e) => exposeEntity(state, e)),
         skills:
           i === who
-            ? skills
-                .map((id) => getInitiativeSkillDefinition(state.data, id))
-                .filter((def) => !def.prepared)
-                .map(exposeInitiativeSkill)
+            ? skills.filter((sk) => !sk.prepared).map(exposeInitiativeSkill)
             : [],
         declaredEnd: p.declaredEnd,
         legendUsed: p.legendUsed,

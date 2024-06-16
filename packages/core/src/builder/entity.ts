@@ -450,6 +450,7 @@ export class EntityBuilder<
     }
     if (this._type === "character") {
       registerPassiveSkill({
+        __definition: "passiveSkills",
         id: this.id,
         type: "passiveSkill",
         version: this._versionInfo,

@@ -41,7 +41,7 @@ import {
   GiTcgCoreInternalError,
 } from "./error";
 import { NotifyOption } from "./mutator";
-import { Version, findVersion } from "./base/version";
+import { Version, getCorrectVersion } from "./base/version";
 import { GameData } from "./builder/registry";
 
 export type Writable<T> = {
@@ -334,66 +334,6 @@ export function sortDice(
     return d as number;
   };
   return dice.toSorted((a, b) => value(a) - value(b));
-}
-
-export function getInitiativeSkillDefinition(
-  data: GameData,
-  skillId: number,
-): InitiativeSkillDefinition<void> {
-  const { version, skills } = data;
-  const results = skills.filter(
-    (sk): sk is InitiativeSkillDefinition =>
-      sk.id === skillId && sk.triggerOn === null,
-  );
-  return findVersion(results, version);
-}
-
-export function getSkillDefinition(
-  data: GameData,
-  skillId: number,
-): SkillDefinition | undefined {
-  const { version, skills } = data;
-  const results = skills.filter((sk) => sk.id === skillId);
-  if (results.length === 0) {
-    return;
-  }
-  return findVersion(results, version);
-}
-
-export function getCardDefinition(
-  data: GameData,
-  cardId: number,
-): CardDefinition | undefined {
-  const { version, cards } = data;
-  const results = cards.filter((c) => c.id === cardId);
-  if (results.length === 0) {
-    return;
-  }
-  return findVersion(results, version);
-}
-
-export function getCharacterDefinition(
-  data: GameData,
-  characterId: number,
-): CharacterDefinition | undefined {
-  const { version, characters } = data;
-  const results = characters.filter((c) => c.id === characterId);
-  if (results.length === 0) {
-    return;
-  }
-  return findVersion(results, version);
-}
-
-export function getEntityDefinition(
-  data: GameData,
-  definitionId: number,
-): EntityDefinition | undefined {
-  const { version, entities } = data;
-  const results = entities.filter((e) => e.id === definitionId);
-  if (results.length === 0) {
-    return;
-  }
-  return findVersion(results, version);
 }
 
 declare global {

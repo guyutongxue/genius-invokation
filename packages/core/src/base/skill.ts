@@ -39,7 +39,6 @@ import { VersionInfo } from "./version";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {
-  readonly __definition: "skills";
   readonly type: "skill";
   readonly id: number;
   readonly action: SkillDescription<Arg>;
@@ -59,7 +58,6 @@ export type SkillType = CommonSkillType | "playCard" | "disposeCard";
 export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
   readonly skillType: SkillType;
-  readonly version: VersionInfo;
   readonly requiredCost: readonly DiceType[];
   readonly gainEnergy: boolean;
   readonly prepared: boolean;
@@ -262,9 +260,13 @@ export class ActionEventArg<
   }
   originalDiceCost(): DiceType[] {
     if (this.isUseSkill()) {
-      return this.action.skill.definition.requiredCost.filter((d) => d !== DiceType.Energy);
+      return this.action.skill.definition.requiredCost.filter(
+        (d) => d !== DiceType.Energy,
+      );
     } else if (this.isPlayCard()) {
-      return this.action.card.definition.onPlay.requiredCost.filter((d) => d !== DiceType.Energy);
+      return this.action.card.definition.onPlay.requiredCost.filter(
+        (d) => d !== DiceType.Energy,
+      );
     } else {
       return [];
     }
@@ -289,7 +291,9 @@ export class ActionEventArg<
     if (this.action.type === "useSkill") {
       const skillDef = this.action.skill.definition;
       return (
-        character.definition.initiativeSkills.includes(skillDef.id) &&
+        character.definition.initiativeSkills.some(
+          (sk) => sk.id === skillDef.id,
+        ) &&
         (!skillType || skillDef.skillType === skillType)
       );
     } else if (this.action.type === "playCard") {
@@ -355,7 +359,7 @@ export class ModifyAction0EventArg<
   }
 
   get cost() {
-    const order = (d: DiceType) => d === DiceType.Void ? 100 : d;
+    const order = (d: DiceType) => (d === DiceType.Void ? 100 : d);
     return this._cost.toSorted((a, b) => order(a) - order(b));
   }
 
@@ -406,10 +410,10 @@ export class ModifyAction0EventArg<
 }
 
 export class ModifyAction1EventArg<
-InfoT extends ActionInfoBase,
+  InfoT extends ActionInfoBase,
 > extends ModifyAction0EventArg<InfoT> {
   canDeductCostOfType(type: Exclude<DiceType, DiceType.Omni | DiceType.Void>) {
-    return this.cost.includes(type) || this.cost.includes(DiceType.Void); 
+    return this.cost.includes(type) || this.cost.includes(DiceType.Void);
   }
   deductCost(type: Exclude<DiceType, DiceType.Omni>, count: number) {
     this._log += `${stringifyState(
@@ -431,7 +435,9 @@ InfoT extends ActionInfoBase,
   }
 }
 
-export class ModifyAction2EventArg<InfoT extends ActionInfoBase> extends ModifyAction1EventArg<InfoT> {
+export class ModifyAction2EventArg<
+  InfoT extends ActionInfoBase,
+> extends ModifyAction1EventArg<InfoT> {
   canDeductCost() {
     return this.cost.length > 0;
   }
@@ -443,7 +449,9 @@ export class ModifyAction2EventArg<InfoT extends ActionInfoBase> extends ModifyA
   }
 }
 
-export class ModifyAction3EventArg<InfoT extends ActionInfoBase> extends ModifyAction2EventArg<InfoT> {
+export class ModifyAction3EventArg<
+  InfoT extends ActionInfoBase,
+> extends ModifyAction2EventArg<InfoT> {
   deductAllCost() {
     this._log += `${stringifyState(this.caller)} deduct all cost.\n`;
     this._cost = [];
@@ -1000,7 +1008,6 @@ export type TriggeredSkillFilter<E extends EventNames> = (
 export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
   extends SkillDefinitionBase<EventArgOf<E>> {
   readonly skillType: null;
-  readonly version: VersionInfo;
   readonly triggerOn: E;
   readonly filter: TriggeredSkillFilter<E>;
   readonly requiredCost: readonly [];

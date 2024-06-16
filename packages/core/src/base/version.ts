@@ -50,8 +50,6 @@ export interface VersionInfo {
 }
 
 export interface WithVersionInfo {
-  readonly __definition: string;
-  readonly id: number;
   readonly version: VersionInfo;
 }
 
@@ -63,10 +61,10 @@ export function versionCompare(a: Version, b: Version) {
   return versionIdxMap[a] - versionIdxMap[b];
 }
 
-export function findVersion<T extends WithVersionInfo>(
+export function getCorrectVersion<T extends WithVersionInfo>(
   candidates: readonly T[],
   version: Version,
-): T {
+): T | undefined {
   const since = candidates.find((c) => c.version.predicate === "since");
   const until = candidates
     .filter(
@@ -76,10 +74,7 @@ export function findVersion<T extends WithVersionInfo>(
     )
     .toSorted((a, b) => versionCompare(a.version.version, b.version.version));
   if (!since || versionCompare(since.version.version, version) > 0) {
-    const describeStr = `${candidates[0].__definition} definition id ${candidates[0].id}`;
-    throw new GiTcgCoreInternalError(
-      `No ${describeStr} found for version ${version}`,
-    );
+    return;
   }
   if (until.length === 0) {
     return since;
