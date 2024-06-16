@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -107,9 +107,10 @@ export function CharacterArea(props: CharacterAreaProps) {
           <Show when={weapon()}>
             {(et) => (
               <Interactive
-                class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
+                class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
+                dataHighlight={et().usagePerRoundHighlight}
               >
                 &#x1F5E1;
               </Interactive>
@@ -118,9 +119,10 @@ export function CharacterArea(props: CharacterAreaProps) {
           <Show when={artifact()}>
             {(et) => (
               <Interactive
-                class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
+                class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
+                dataHighlight={et().usagePerRoundHighlight}
               >
                 &#x1F451;
               </Interactive>
@@ -129,9 +131,10 @@ export function CharacterArea(props: CharacterAreaProps) {
           <For each={otherEquipments()}>
             {(et) => (
               <Interactive
-                class="w-6 h-6 rounded-3 text-center bg-yellow-100 border-solid border-1 border-yellow-800"
+                class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et.id}
                 definitionId={et.definitionId}
+                dataHighlight={et.usagePerRoundHighlight}
               >
                 &#x2728;
               </Interactive>

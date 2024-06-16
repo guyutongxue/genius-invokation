@@ -25,6 +25,7 @@ export interface InteractiveProps {
   id: number;
   class?: string;
   definitionId: number;
+  dataHighlight?: boolean;
   children: JSX.Element;
 }
 
@@ -48,6 +49,7 @@ export function Interactive(props: InteractiveProps) {
   return (
     <div
       class={`relative group ${props.class}`}
+      data-highlight={props.dataHighlight}
       classList={{
         selected: selected(),
         clickable: clickable(),
