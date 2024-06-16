@@ -42,7 +42,7 @@ export interface ActionCardRawData {
   tags: string[];
   targetList: ChooseTarget[];
   relatedCharacterId: number | null;
-  relatedCharacterTags: [];
+  relatedCharacterTags: string[];
   storyTitle?: string;
   storyText?: string;
   rawDescription: string;
