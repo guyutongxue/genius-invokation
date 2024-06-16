@@ -405,7 +405,7 @@ export const NatureAndWisdom = card(331804)
 export const WaterAndJustice = card(331805)
   .since("v4.7.0")
   .costVoid(2)
-  .filter((c) => c.$(`my characters with maxHealth - health > 0`))
+  .filter((c) => c.$(`my characters with health < maxHealth`))
   .do((c) => {
     const chs = c.$$("all my characters");
     const chCount = chs.length;
