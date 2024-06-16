@@ -142,16 +142,11 @@ function defineDescriptor<E extends EventNames>(
  * 2. 该技能不是准备技能触发的。
  * 3. Note: 通过使用卡牌（天赋等）触发的技能也适用。
  */
-function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
-  // 主动技能且并非卡牌描述
-  if (isCharacterInitiativeSkill(skillInfo.definition)) {
-    // 准备技能不触发
-    if (skillInfo.requestBy?.definition.triggerOn === "replaceAction") {
-      return false;
-    }
-    return true;
-  }
-  return false;
+export function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
+  return (
+    isCharacterInitiativeSkill(skillInfo.definition) &&
+    !skillInfo.definition.prepared
+  );
 }
 
 function isDebuff(state: GameState, damageInfo: DamageInfo): boolean {
@@ -239,7 +234,7 @@ const detailedEventDictionary = {
     return (
       e.type !== DamageType.Piercing &&
       checkRelative(c.state, e.source.id, r) &&
-      commonInitiativeSkillCheck(e.via) &&
+      isCharacterInitiativeSkill(e.via.definition) &&
       e.damageInfo.fromReaction === null
     );
   }),
@@ -254,7 +249,7 @@ const detailedEventDictionary = {
     return (
       e.type !== DamageType.Piercing &&
       checkRelative(c.state, e.source.id, r) &&
-      commonInitiativeSkillCheck(e.via) &&
+      isCharacterInitiativeSkill(e.via.definition) &&
       e.damageInfo.fromReaction === null
     );
   }),
@@ -285,7 +280,10 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who: e.who }, r);
   }),
   useSkill: defineDescriptor("onUseSkill", (c, e, r) => {
-    return checkRelative(c.state, e.skill.caller.id, r);
+    return (
+      checkRelative(c.state, e.skill.caller.id, r) &&
+      commonInitiativeSkillCheck(e.skill)
+    );
   }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
     return checkRelative(c.state, { who: e.who }, r) && e.isDeclareEnd();
@@ -312,11 +310,7 @@ const detailedEventDictionary = {
     return e.isDamageTypeDamage() && checkRelative(c.state, e.source.id, r);
   }),
   skillDamage: defineDescriptor("onDamageOrHeal", (c, e, r) => {
-    return (
-      e.isDamageTypeDamage() &&
-      checkRelative(c.state, e.source.id, r) &&
-      commonInitiativeSkillCheck(e.damageInfo.via)
-    );
+    return e.isDamageTypeDamage() && checkRelative(c.state, e.source.id, r);
   }),
   damaged: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return e.isDamageTypeDamage() && checkRelative(c.state, e.target.id, r);
@@ -329,6 +323,11 @@ const detailedEventDictionary = {
   }),
   reaction: defineDescriptor("onReaction", (c, e, r) => {
     return checkRelative(c.state, e.reactionInfo.target.id, r);
+  }),
+  skillReaction: defineDescriptor("onReaction", (c, e, r) => {
+    return (
+      checkRelative(c.state, e.caller.id, r) && e.viaCommonInitiativeSkill()
+    );
   }),
   enter: defineDescriptor("onEnter", (c, e, r) => {
     return e.entity.id === r.callerId;

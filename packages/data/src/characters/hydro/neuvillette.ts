@@ -166,6 +166,7 @@ export const HeirToTheAncientSeasAuthority = card(212101)
   .talent(Neuvillette)
   .on("enter")
   .useSkill(AsWaterSeeksEquilibrium)
-  .on("reaction", (c, e) => c.of(e.caller).isMine() && e.relatedTo(DamageType.Hydro))
+  .on("skillReaction", (c, e) => e.relatedTo(DamageType.Hydro))
+  .listenToPlayer()
   .characterStatus(PastDraconicGlories, "@master")
   .done();

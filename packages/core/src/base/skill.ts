@@ -36,6 +36,7 @@ import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
 import { diceCostOfCard, getEntityArea } from "../utils";
 import { VersionInfo } from "./version";
+import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {
   readonly __definition: "skills";
@@ -782,6 +783,11 @@ export class ReactionEventArg extends CharacterEventArg {
   }
   get type() {
     return this.reactionInfo.type;
+  }
+
+  /** 是否为“角色引发的” */
+  viaCommonInitiativeSkill() {
+    return commonInitiativeSkillCheck(this.reactionInfo.via);
   }
 
   relatedTo(target: DamageType): boolean {
