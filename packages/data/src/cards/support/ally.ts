@@ -118,7 +118,7 @@ export const ChefMao = card(322005)
   .usagePerRound(1)
   .generateDice("randomElement", 1)
   .on("playCard", (c, e) => e.hasCardTag("food"))
-  .usage(1, { autoDispose: false })
+  .usage(1, { autoDispose: false, visible: false })
   .drawCards(1, { withTag: "food" })
   .done();
 
