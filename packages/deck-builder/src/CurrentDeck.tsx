@@ -6,6 +6,8 @@ import {
   a as actionCards,
 } from "./data.json" /*  with { type: "json" } */;
 import { createStore } from "solid-js/store";
+import { CHARACTER_CARDS } from "./AllCharacterCards";
+import { ACTION_CARDS } from "./AllActionCards";
 
 type Character = (typeof characters)[0];
 type ActionCard = (typeof actionCards)[0];
@@ -20,11 +22,11 @@ export function CurrentDeck(props: AllCardsProps) {
 
   createEffect(() => {
     const selectedChs = props.deck.characters
-      .map((id) => characters.find((ch) => ch.i === id))
+      .map((id) => CHARACTER_CARDS[id])
       .filter((ch): ch is Character => typeof ch !== "undefined")
       .toSorted((a, b) => a.i - b.i);
     const selectedAcs = props.deck.cards
-      .map((id) => actionCards.find((ac) => ac.i === id))
+      .map((id) => ACTION_CARDS[id])
       .filter((ac): ac is ActionCard => typeof ac !== "undefined")
       .toSorted((a, b) => a.i - b.i);
     for (let i = 0; i < 3; i++) {
