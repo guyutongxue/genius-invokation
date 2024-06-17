@@ -625,12 +625,10 @@ export const SirArthur = card(322026)
   .variable("clue", 0)
   .on("disposeOrTuneCard")
   .addVariableWithMax("clue", 1, 2)
-  .on("endPhase")
+  .on("endPhase", (c) => c.getVariable("clue") >= 2)
   .do((c) => {
-    if (c.getVariable("clue") >= 2) {
-      c.addVariable("clue", -2);
-      const top = c.oppPlayer.piles[0];
-      c.createPileCards(top.definition.id as CardHandle, 1, "top");
-    }
+    c.addVariable("clue", -2);
+    const top = c.oppPlayer.piles[0];
+    c.createHandCard(top.definition.id as CardHandle);
   })
   .done();
