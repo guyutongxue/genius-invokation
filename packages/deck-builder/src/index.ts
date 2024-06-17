@@ -1,4 +1,4 @@
 import "./index.css";
-import "@unocss/reset/tailwind-compat.css";
+import "./reset.css";
 
 export { DeckBuilder } from "./DeckBuilder";

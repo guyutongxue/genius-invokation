@@ -22,7 +22,7 @@ import { $ } from "bun";
 
 $.throws(true);
 
-const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "standalone"]
+const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "deck-builder", "standalone"]
 
 for (const pkg of packages) {
   await $`bun run build`.cwd(`packages/${pkg}`);

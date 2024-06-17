@@ -12,7 +12,7 @@ export interface AllCardsProps {
 export function AllCards(props: AllCardsProps) {
   const [tab, setTab] = createSignal(0);
   return (
-    <div class="flex-grow h-full flex flex-col min-h-0">
+    <div class="min-w-0 flex-grow h-full flex flex-col min-h-0">
       <ul class="flex flex-row gap-2 mb-2">
         <li>
           <button

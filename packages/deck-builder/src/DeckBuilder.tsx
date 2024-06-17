@@ -38,20 +38,22 @@ export function DeckBuilder(props: DeckBuilderProps) {
           "https://gi-tcg-assets.guyutongxue.site/api/v2",
       }}
     >
-      <div
-        class={`flex flex-row items-stretch gap-3 select-none ${local.class}`}
-        {...rest}
-      >
-        <AllCards
-          deck={props.deck ?? EMPTY_DECK}
-          onChangeDeck={props.onChangeDeck}
-        />
-        <div class="b-r-1 b-gray" />
-        <div />
-        <CurrentDeck
-          deck={props.deck ?? EMPTY_DECK}
-          onChangeDeck={props.onChangeDeck}
-        />
+      <div class={`gi-tcg-deck-builder ${local.class}`}>
+        <div
+          class="w-full h-full flex flex-row items-stretch gap-3 select-none"
+          {...rest}
+        >
+          <AllCards
+            deck={props.deck ?? EMPTY_DECK}
+            onChangeDeck={props.onChangeDeck}
+          />
+          <div class="b-r-1 b-gray" />
+          <div />
+          <CurrentDeck
+            deck={props.deck ?? EMPTY_DECK}
+            onChangeDeck={props.onChangeDeck}
+          />
+        </div>
       </div>
     </DeckBuilderContext.Provider>
   );

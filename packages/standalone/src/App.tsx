@@ -26,6 +26,9 @@ import { StandaloneParent } from "./StandaloneParent";
 import { MultiplayerHost } from "./MultiplayerHost";
 import { MultiplayerGuest } from "./MultiplayerGuest";
 import { VERSIONS } from "@gi-tcg/core";
+import { DeckBuilder } from "@gi-tcg/deck-builder";
+import "@gi-tcg/deck-builder/style.css";
+import { Deck, decode, encode } from "@gi-tcg/utils";
 
 enum GameMode {
   NotStarted = 0,
@@ -86,6 +89,46 @@ export function App() {
       };
       input.click();
     });
+  };
+
+  let deckBuilderDialog: HTMLDialogElement;
+  const [deckBuilderValue, setDeckBuilderValue] = createSignal<Deck>({
+    characters: [],
+    cards: [],
+  });
+  const openDeckBuilder = () => {
+    deckBuilderDialog.showModal();
+  };
+  const closeDeckBuilder = () => {
+    deckBuilderDialog.close();
+  };
+  const loadDeckBuilderValue = async () => {
+    const code = prompt(`Input share code:`);
+    if (code === null) {
+      return;
+    }
+    try {
+      const deck = decode(code);
+      setDeckBuilderValue(deck);
+    } catch (e) {
+      if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
+  };
+  const saveDeckBuilderValue = async () => {
+    const deck = deckBuilderValue();
+    try {
+      const code = encode(deck);
+      await navigator.clipboard.writeText(code);
+      alert(`Deck code copied to clipboard: ${code}`);
+    } catch (e) {
+      if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
   };
 
   return (
@@ -205,13 +248,25 @@ export function App() {
           <h3>友情链接</h3>
           <ul>
             <li>
+              获取牌组码：
               <a
-                href="https://webstatic.mihoyo.com/ys/event/bbs-lineup-qskp/index.html#/pc/publish"
+                href="https://webstatic.mihoyo.com/ys/event/bbs-lineup-qskp/index.html"
                 target="_blank"
               >
-                米游社「七圣召唤」卡牌广场牌组编辑器
+                米游社「七圣召唤」卡牌广场
               </a>
-              （可生成牌组码）
+            </li>
+            <li>
+              获取牌组码：
+              <a
+                href="https://gjfleo.github.io/summoners-summit/teams/"
+                target="_blank"
+              >
+                召唤之颠：原神赛事数据统计平台
+              </a>
+            </li>
+            <li>
+              获取牌组码：<button onClick={openDeckBuilder}>启动组牌器</button>
             </li>
             <li>
               此项目{" "}
@@ -281,6 +336,18 @@ export function App() {
           <MultiplayerGuest deck={deck0()} roomId={roomId()} />
         </Match>
       </Switch>
+      <dialog ref={deckBuilderDialog!} class="deck-builder-dialog">
+        <DeckBuilder
+          class="deck-builder"
+          deck={deckBuilderValue()}
+          onChangeDeck={setDeckBuilderValue}
+        />
+        <div class="deck-builder-actions">
+          <button onClick={closeDeckBuilder}>Close</button>
+          <button onClick={saveDeckBuilderValue}>Save</button>
+          <button onClick={loadDeckBuilderValue}>Load from code</button>
+        </div>
+      </dialog>
     </div>
   );
 }

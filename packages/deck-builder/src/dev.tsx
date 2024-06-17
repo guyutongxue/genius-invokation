@@ -2,6 +2,7 @@ import { render } from "solid-js/web";
 import { DeckBuilder } from ".";
 import type { Deck } from "@gi-tcg/utils";
 import { createEffect, createSignal } from "solid-js";
+import "@unocss/reset/tailwind-compat.css";
 
 const EMPTY_DECK: Deck = {
   characters: [],
@@ -15,7 +16,6 @@ function App() {
   });
   return (
     <DeckBuilder
-      class="w-[100vw] h-[100vh]"
       deck={deck()}
       onChangeDeck={setDeck}
     />
