@@ -22,6 +22,8 @@ import { Header } from "./components/Header";
 import axios from "axios";
 import { getGravatarUrl } from "./utils";
 import { User } from "./pages/User";
+import { Decks } from "./pages/Decks";
+import { NewDeck } from "./pages/NewDeck";
 
 export interface UserInfo {
   id: number;
@@ -68,6 +70,8 @@ function App() {
           <Route path="/user/:id" component={User} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
+          <Route path="/decks" component={Decks} />
+          <Route path="/decks/new" component={NewDeck} />
         </Router>
       </div>
     </UserContext.Provider>

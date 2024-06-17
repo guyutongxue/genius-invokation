@@ -57,13 +57,13 @@ export function CurrentDeck(props: AllCardsProps) {
   };
 
   return (
-    <div class="flex-shrink-0 flex flex-col items-center justify-center gap-5">
+    <div class="flex-shrink-0 flex flex-col items-center justify-center gap-3">
       <div>
         <ul class="flex flex-row gap-3">
           <Index each={currentChs}>
             {(ch, idx) => (
               <li
-                class="w-[80px] aspect-ratio-[7/12] relative group"
+                class="w-[75px] aspect-ratio-[7/12] relative group"
                 onClick={() => ch() && removeCharacter(idx)}
               >
                 <Show
@@ -91,7 +91,7 @@ export function CurrentDeck(props: AllCardsProps) {
           <Index each={currentAcs}>
             {(ac, idx) => (
               <li
-                class="w-[60px] aspect-ratio-[7/12] relative group"
+                class="w-[50px] aspect-ratio-[7/12] relative group"
                 onClick={() => ac() && removeActionCard(idx)}
               >
                 <Show
@@ -103,7 +103,7 @@ export function CurrentDeck(props: AllCardsProps) {
                   {(ac) => (
                     <>
                       <Card id={ac().i} name={ac().n} />
-                      <div class="absolute left-1/2 top-1/2 translate-x--1/2 translate-y--1/2 text-2xl group-hover:block hidden">
+                      <div class="absolute left-1/2 top-1/2 translate-x--1/2 translate-y--1/2 text-2xl group-hover:block hidden pointer-events-none">
                       &#10060;
                       </div>
                     </>

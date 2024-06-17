@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import axios from "axios";
-import { Show, createSignal, onMount } from "solid-js";
+import { Show } from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 

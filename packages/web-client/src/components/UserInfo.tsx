@@ -17,6 +17,7 @@ import { For, Show, createResource, createSignal, onMount } from "solid-js";
 import { UserInfo as UserInfoT, useUserContext } from "../App";
 import { copyToClipboard, getGravatarUrl } from "../utils";
 import axios, { AxiosError } from "axios";
+import { A } from "@solidjs/router";
 
 export interface UserInfoProps extends Exclude<UserInfoT, "avatarUrl"> {
   editable: boolean;
@@ -170,10 +171,7 @@ export function UserInfo(props: UserInfoProps) {
               <i class="i-mdi-plus" />
               新建
             </button>
-            <button
-              class="btn btn-outline"
-              onClick={refreshInvitationCodes}
-            >
+            <button class="btn btn-outline" onClick={refreshInvitationCodes}>
               <i class="i-mdi-refresh" />
               刷新
             </button>
@@ -257,6 +255,10 @@ export function UserInfo(props: UserInfoProps) {
               </button>
             </form>
           </Show>
+          <hr class="h-1 w-full text-gray-4 my-4" />
+          <A class="btn btn-ghost" href="/decks">
+            我的牌组…
+          </A>
         </Show>
       </div>
     </div>
