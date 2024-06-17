@@ -30,7 +30,7 @@ export const Refraction01 = status(122022)
   .duration(3)
   .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
-  .on("modifyAction", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
+  .on("addDice", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
   .addCost(DiceType.Void, 1)
   .done();
 

@@ -340,8 +340,8 @@ export class ModifyAction0EventArg<
   InfoT extends ActionInfoBase,
 > extends ActionEventArg<InfoT> {
   protected _cost: DiceType[];
+  protected _fast: boolean;
   protected _log = "";
-  private _fast: boolean;
 
   constructor(state: GameState, action: WithActionDetail<InfoT>) {
     super(state, action);
@@ -400,13 +400,6 @@ export class ModifyAction0EventArg<
       this._cost.push(...new Array<DiceType>(count).fill(type));
     }
   }
-  setFastAction(): void {
-    if (this._fast) {
-      console.warn("Potential error: fast action already set");
-    }
-    this._log += `${stringifyState(this.caller)} set fast action.\n`;
-    this._fast = true;
-  }
 }
 
 export class ModifyAction1EventArg<
@@ -446,6 +439,13 @@ export class ModifyAction2EventArg<
       this.caller,
     )} deduct ${count} [dice:8] from cost.\n`;
     this._cost = this.cost.toSpliced(0, count);
+  }
+  setFastAction(): void {
+    if (this._fast) {
+      console.warn("Potential error: fast action already set");
+    }
+    this._log += `${stringifyState(this.caller)} set fast action.\n`;
+    this._fast = true;
   }
 }
 

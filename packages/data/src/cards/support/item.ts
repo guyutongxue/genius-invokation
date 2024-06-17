@@ -67,7 +67,7 @@ export const Nre = card(323002)
 export const RedFeatherFanStatus = combatStatus(302303)
   .oneDuration()
   .usage(1, { visible: false })
-  .on("modifyAction2", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
+  .on("modifyAction", (c, e) => e.action.type === "switchActive" && (!e.isFast() || e.canDeductCost()))
   .setFastAction()
   .deductOmniCost(1)
   .done();

@@ -168,10 +168,7 @@ const detailedEventDictionary = {
   roll: defineDescriptor("modifyRoll", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  modifyAction: defineDescriptor("modifyAction0", (c, { who }, r) => {
-    return checkRelative(c.state, { who }, r);
-  }),
-  modifyAction2: defineDescriptor("modifyAction2", (c, { who }, r) => {
+  addDice: defineDescriptor("modifyAction0", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
   deductElementDice: defineDescriptor("modifyAction1", (c, e, r) => {
@@ -220,7 +217,10 @@ const detailedEventDictionary = {
       e.canDeductCost()
     );
   }),
-  beforeFastSwitch: defineDescriptor("modifyAction0", (c, e, r) => {
+  modifyAction: defineDescriptor("modifyAction2", (c, { who }, r) => {
+    return checkRelative(c.state, { who }, r);
+  }),
+  beforeFastSwitch: defineDescriptor("modifyAction2", (c, e, r) => {
     return (
       checkRelative(c.state, { who: e.who }, r) &&
       e.isSwitchActive() &&

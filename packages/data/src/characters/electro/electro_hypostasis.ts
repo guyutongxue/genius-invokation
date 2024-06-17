@@ -26,7 +26,7 @@ import { character, skill, summon, status, card, DamageType, DiceType } from "@g
 export const ChainsOfWardingThunder = summon(124013)
   .endPhaseDamage(DamageType.Electro, 1)
   .usage(2)
-  .on("modifyAction", (c, e) => c.self.who !== e.action.who && e.action.type === "switchActive")
+  .on("addDice", (c, e) => c.self.who !== e.action.who && e.action.type === "switchActive")
   .listenToAll()
   .addCost(DiceType.Void, 1)
   .done();

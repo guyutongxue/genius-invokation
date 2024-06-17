@@ -872,7 +872,7 @@ export const FallsAndFortune = card(332026)
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
   .toCombatStatus(303226)
   .oneDuration()
-  .on("modifyAction", (c, e) => e.action.type === "switchActive")
+  .on("addDice", (c, e) => e.action.type === "switchActive")
   .listenToAll()
   .addCost(DiceType.Void, 1)
   .done();

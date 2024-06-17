@@ -34,19 +34,19 @@
 
 ### 有副作用事件列表
 
-| 事件名             | 含义                                                 |
-| ------------------ | ---------------------------------------------------- |
-| `modifyRoll`       | 掷骰阶段时（修改掷骰属性）                           |
-|                    |                                                      |
-| `modifyAction0`    | 修改玩家行动属性（第一次，快速行动、增骰、减无色骰） |
-| `modifyAction1`    | 修改玩家行动属性（第二次，减基础元素骰）             |
-| `modifyAction2`    | 修改玩家行动属性（第三次，减任意元素骰）             |
-| `modifyAction3`    | 修改玩家行动属性（第四次，尝试免费使用行动）         |
-|                    |                                                      |
-| `modifyDamage0`    | 修改伤害（第一次，可修改伤害类型）                   |
-| `modifyDamage1`    | 修改伤害（第二次，只可修改伤害数值）                 |
-|                    |                                                      |
-| `modifyZeroHealth` | 角色击倒前（免于被击倒）                             |
+| 事件名             | 含义                                               |
+| ------------------ | -------------------------------------------------- |
+| `modifyRoll`       | 掷骰阶段时（修改掷骰属性）                         |
+|                    |                                                    |
+| `modifyAction0`    | 修改玩家行动属性（第一次，增骰、减无色骰）         |
+| `modifyAction1`    | 修改玩家行动属性（第二次，减基础元素骰）           |
+| `modifyAction2`    | 修改玩家行动属性（第三次，快速行动、减任意元素骰） |
+| `modifyAction3`    | 修改玩家行动属性（第四次，尝试免费使用行动）       |
+|                    |                                                    |
+| `modifyDamage0`    | 修改伤害（第一次，可修改伤害类型）                 |
+| `modifyDamage1`    | 修改伤害（第二次，只可修改伤害数值）               |
+|                    |                                                    |
+| `modifyZeroHealth` | 角色击倒前（免于被击倒）                           |
 
 有副作用事件会在所有实体的响应过程中记录一些信息（如修改的伤害值），供调用方（技能或者游戏流程）使用。
 
@@ -67,9 +67,9 @@
 | 事件名                   | 对应核心事件          | 条件                                        |
 | ------------------------ | --------------------- | ------------------------------------------- |
 | `roll`                   | `modifyRoll`          | **我方**掷骰时                              |
-| `beforeFastSwitch`       | `modifyAction`        | 我方尝试设置切换角色行动为快速行动时        |
-| `modifyAction`           | `modifyAction0`       | 我方增骰/设置快速行动时                     |
-| `modifyAction2`          | `modifyAction2`       | 我方减骰/设置快速行动时                     |
+| `beforeFastSwitch`       | `modifyAction2`       | 我方尝试设置切换角色行动为快速行动时        |
+| `addDice`                | `modifyAction0`       | 我方增骰时                                  |
+| `modifyAction`           | `modifyAction2`       | 我方减骰/设置快速行动时                     |
 | `deductVoidDiceSkill`    | `modifyAction0`       | 我方/所附着角色尝试减少角色技能的无色骰子时 |
 | `deductElementDice`      | `modifyAction1`       | 我方尝试减少行动的基础元素骰子时            |
 | `deductElementDiceSkill` | `modifyAction1`       | 我方/所附着角色尝试减少角色技能的基础骰子时 |
