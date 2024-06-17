@@ -40,12 +40,13 @@ model User {
 }
 
 model Game {
-  id        Int             @id @default(autoincrement())
-  players   PlayerOnGames[]
-  version   String
-  data      String // JSON log
-  winnerId  Int?
-  createdAt DateTime        @default(now())
+  id          Int             @id @default(autoincrement())
+  players     PlayerOnGames[]
+  coreVersion String
+  gameVersion String
+  data        String // JSON log
+  winnerId    Int?
+  createdAt   DateTime        @default(now())
 }
 
 model PlayerOnGames {
