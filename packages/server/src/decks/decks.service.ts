@@ -19,13 +19,18 @@ import type { CreateDeckDto, UpdateDeckDto } from "./decks.controller";
 import { type Deck, encode, decode } from "@gi-tcg/utils";
 import { type Deck as DeckModel } from "@prisma/client";
 import { DeckVerificationError, PaginationDto, verifyDeck } from "../utils";
+import type { Version } from "@gi-tcg/core";
 
-export interface DeckWithDeckModel extends Deck {
+interface DeckWithVersion extends Deck {
+  sinceVersion: Version;
+}
+
+export interface DeckWithDeckModel extends DeckWithVersion {
   id: number;
   name: string;
   code: string;
+  sinceVersion: Version;
 }
-
 @Injectable()
 export class DecksService {
   constructor(private prisma: PrismaService) {}
@@ -43,6 +48,15 @@ export class DecksService {
     }
   }
 
+  private codeToDeck(code: string): DeckWithVersion {
+    const deck = decode(code);
+    const sinceVersion = verifyDeck(deck);
+    return {
+      ...deck,
+      sinceVersion,
+    };
+  }
+
   async createDeck(userId: number, deck: CreateDeckDto): Promise<DeckModel> {
     const code = this.deckToCode(deck);
     return await this.prisma.deck.create({
@@ -54,20 +68,23 @@ export class DecksService {
     });
   }
 
-  async getAllDecks(userId: number, { skip = 0, take = 100 }: PaginationDto): Promise<DeckWithDeckModel[]> {
+  async getAllDecks(userId: number, { skip = 0, take = 10 }: PaginationDto): Promise<DeckWithDeckModel[]> {
     const models = await this.prisma.deck.findMany({
+      skip,
+      take,
       where: {
         ownerUserId: userId,
       },
     });
     return models.map((model) => {
-      const { characters, cards } = decode(model.code);
+      const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
       return {
         id: model.id,
         name: model.name,
         code: model.code,
         characters,
         cards,
+        sinceVersion,
       };
     });
   }
@@ -85,13 +102,14 @@ export class DecksService {
     if (model === null) {
       return null;
     }
-    const { characters, cards } = decode(model.code);
+    const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
     return {
       id: model.id,
       name: model.name,
       code: model.code,
       characters,
       cards,
+      sinceVersion,
     };
   }
 

@@ -23,15 +23,20 @@ import {
   Post,
   UnauthorizedException,
 } from "@nestjs/common";
-import { IsBoolean, IsInt, IsNumber, IsObject, IsOptional, Max, Min } from "class-validator";
+import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, Max, Min } from "class-validator";
 import { RoomsService } from "./rooms.service";
 import { User } from "../auth/user.decorator";
 import type { RpcMethod, RpcResponse } from "@gi-tcg/typings";
+import { VERSIONS, type Version } from "@gi-tcg/core";
 
 export class CreateRoomDto {
   @IsBoolean()
   @IsOptional()
   hostFirst?: boolean;
+
+  @IsIn(VERSIONS)
+  @IsOptional()
+  gameVersion?: Version;
 
   @IsInt()
   hostDeckId!: number;

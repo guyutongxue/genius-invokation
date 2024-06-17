@@ -76,6 +76,7 @@ import {
   StateMutator,
 } from "./mutator";
 import { ActionInfoWithModification, ActionPreviewer } from "./preview";
+import { Version } from ".";
 
 type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
@@ -176,6 +177,10 @@ export class Game extends StateMutator {
     this.io = opt.io;
     this.initPlayerCards(0);
     this.initPlayerCards(1);
+  }
+
+  get gameVersion(): Version {
+    return this.state.data.version;
   }
 
   get detailLog() {

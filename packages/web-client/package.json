@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@gi-tcg/webui-core": "workspace:*",
+    "@gi-tcg/deck-builder": "workspace:*",
     "@solidjs/router": "^0.13.5",
     "@una-ui/preset": "^0.4.0-beta.5",
     "@unocss/reset": "^0.61.0",

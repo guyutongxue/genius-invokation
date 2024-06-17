@@ -38,7 +38,9 @@ import {
   type RpcResponse,
   type SwitchHandsResponse,
   serializeGameStateLog,
-  VERSION,
+  CORE_VERSION,
+  VERSIONS,
+  type Version
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
 import { type Deck, flip } from "@gi-tcg/utils";
@@ -59,6 +61,7 @@ interface RoomConfig extends Partial<GameConfig> {
   actionTime: number; // defaults 25
   watchable: boolean; // defaults false
   private: boolean; // defaults false
+  gameVersion?: Version;
 }
 
 interface CreateRoomConfig extends RoomConfig {
@@ -274,7 +277,7 @@ interface RoomInfo {
 }
 
 class Room {
-  public static readonly VERSION = VERSION;
+  public static readonly CORE_VERSION = CORE_VERSION;
   private game: InternalGame | null = null;
   private hostWho: 0 | 1;
   private host: Player | null = null;
@@ -332,7 +335,7 @@ class Room {
     player0.setTimeoutConfig(this.config);
     player1.setTimeoutConfig(this.config);
     const game = new InternalGame({
-      data,
+      data: data(this.config.gameVersion),
       gameConfig: this.config,
       playerConfigs: [player0.deck, player1.deck],
       io: {
@@ -437,6 +440,7 @@ export class RoomsService {
     const roomConfig: CreateRoomConfig = {
       hostWho,
       randomSeed: params.randomSeed,
+      gameVersion: params.gameVersion,
       initTotalActionTime: params.initTotalActionTime ?? 45,
       rerollTime: params.rerollTime ?? 40,
       roundTotalActionTime: params.roundTotalActionTime ?? 60,
@@ -504,7 +508,8 @@ export class RoomsService {
       const winnerWho = game.state.winner;
       const winner = winnerWho === null ? null : room.getPlayer(winnerWho);
       this.games.addGame({
-        version: Room.VERSION,
+        coreVersion: Room.CORE_VERSION,
+        gameVersion: game.gameVersion,
         data: JSON.stringify(room.getStateLog()),
         winnerId: winner?.user.id ?? null,
         playerIds,

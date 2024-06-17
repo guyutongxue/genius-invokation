@@ -20,7 +20,8 @@ import type { PaginationDto } from "../utils";
 
 export interface AddGameOption {
   playerIds: number[];
-  version: string;
+  coreVersion: string;
+  gameVersion: string;
   data: string;
   winnerId: number | null;
 }
@@ -45,7 +46,7 @@ export class GamesService {
     return game;
   }
 
-  async getAllGames({ skip = 0, take = 100 }: PaginationDto) {
+  async getAllGames({ skip = 0, take = 10 }: PaginationDto) {
     return await this.prisma.game.findMany({
       skip,
       take,
@@ -90,7 +91,7 @@ export class GamesService {
     });
   }
 
-  async gamesHasUser(userId: number, { skip = 0, take = 100 }: PaginationDto) {
+  async gamesHasUser(userId: number, { skip = 0, take = 10 }: PaginationDto) {
     const results = await this.prisma.playerOnGames.findMany({
       skip,
       take,
