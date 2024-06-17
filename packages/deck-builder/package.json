@@ -24,6 +24,10 @@
   "peerDependencies": {
     "solid-js": "^1.8.15"
   },
+  "dependencies": {
+    "@gi-tcg/utils": "workspace:*",
+    "@unocss/reset": "^0.61.0"
+  },
   "devDependencies": {
     "@gi-tcg/static-data": "workspace:*",
     "@typescript-eslint/eslint-plugin": "^6.18.0",
@@ -39,8 +43,5 @@
     "vite": "^5.0.10",
     "vite-plugin-dts": "^3.7.0",
     "vite-plugin-solid": "^2.8.0"
-  },
-  "dependencies": {
-    "@unocss/reset": "^0.61.0"
   }
 }
