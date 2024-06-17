@@ -2,7 +2,6 @@ import { render } from "solid-js/web";
 import { DeckBuilder } from ".";
 import type { Deck } from "@gi-tcg/utils";
 import { createEffect, createSignal } from "solid-js";
-import "@unocss/reset/tailwind-compat.css";
 
 const EMPTY_DECK: Deck = {
   characters: [],
