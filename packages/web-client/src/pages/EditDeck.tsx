@@ -18,7 +18,8 @@ import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
 import { decode, encode, type Deck } from "@gi-tcg/utils";
 import { A, useBeforeLeave, useNavigate, useParams } from "@solidjs/router";
-import { SizedDeckBuilder } from "../components/SizedDeckBuilder";
+import { DeckBuilder } from "@gi-tcg/deck-builder";
+import "@gi-tcg/deck-builder/style.css";
 
 export function EditDeck() {
   const params = useParams();
@@ -98,12 +99,12 @@ export function EditDeck() {
   };
   return (
     <Layout>
-      <div class="container mx-auto h-full flex flex-col">
+      <div class="container mx-auto h-full flex flex-col min-h-0">
         <Switch>
           <Match when={deckData.loading}>正在加载中...</Match>
           <Match when={deckData.error}>加载失败，请刷新页面重试</Match>
           <Match when={true}>
-            <div class="flex-shrink-0 flex flex-row gap-3 mb-5">
+            <div class="flex-shrink-0 flex flex-row gap-3 mb-5 min-h-0">
               <h2 class="text-2xl font-bold">{deckName()}</h2>
               <button class="btn btn-outline-blue" onClick={importCode}>
                 导入分享码
@@ -123,7 +124,8 @@ export function EditDeck() {
                 返回牌组列表
               </A>
             </div>
-            <SizedDeckBuilder
+            <DeckBuilder
+              class="min-h-0 h-full w-full"
               deck={deckValue()}
               onChangeDeck={(v) => (setDeckValue(v), setDirty(true))}
             />

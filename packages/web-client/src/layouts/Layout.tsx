@@ -24,7 +24,7 @@ export function Layout(props: LayoutProps) {
   return (
     <div class="w-full h-full flex flex-col">
       <Header />
-      <main class="w-full h-full p-8 mt-16">
+      <main class="min-h-0 flex-grow w-full p-8 mt-16">
       {props.children}
       </main>
     </div>
