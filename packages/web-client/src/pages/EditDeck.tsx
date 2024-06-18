@@ -29,7 +29,7 @@ import "@gi-tcg/deck-builder/style.css";
 
 export function EditDeck() {
   const params = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isNew = params.id === "new";
   const deckId = Number(params.id);
   const navigate = useNavigate();
@@ -51,6 +51,7 @@ export function EditDeck() {
     const { data } = await axios.get(`decks/${deckId}`);
     setDeckValue(data);
     setDeckName(data.name);
+    setSearchParams({ name: null });
     return data;
   });
   const [dirty, setDirty] = createSignal(false);

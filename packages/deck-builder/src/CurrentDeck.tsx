@@ -75,8 +75,8 @@ export function CurrentDeck(props: AllCardsProps) {
                   {(ch) => (
                     <>
                       <Card id={ch().i} name={ch().n} />
-                      <div class="absolute left-1/2 top-1/2 translate-x--1/2 translate-y--1/2 text-2xl group-hover:block hidden">
-                      &#10060;
+                      <div class="absolute left-1/2 top-1/2 translate-x--1/2 translate-y--1/2 text-2xl group-hover:block hidden pointer-events-none text-red-500">
+                        &#10060;
                       </div>
                     </>
                   )}
@@ -103,8 +103,8 @@ export function CurrentDeck(props: AllCardsProps) {
                   {(ac) => (
                     <>
                       <Card id={ac().i} name={ac().n} />
-                      <div class="absolute left-1/2 top-1/2 translate-x--1/2 translate-y--1/2 text-2xl group-hover:block hidden pointer-events-none">
-                      &#10060;
+                      <div class="absolute left-1/2 top-1/2 translate-x--1/2 translate-y--1/2 text-2xl group-hover:block hidden pointer-events-none text-red-500">
+                        &#10060;
                       </div>
                     </>
                   )}
