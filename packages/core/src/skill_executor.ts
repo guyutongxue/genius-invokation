@@ -161,6 +161,7 @@ export class SkillExecutor extends StateMutator {
 
     const damageEventArgs: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
     const zeroHealthEventArgs: ZeroHealthEventArg[] = [];
+    const failedPlayers = new Set<0 | 1>();
     for (const [, arg] of damageEvents) {
       if (arg.damageInfo.causeDefeated) {
         // Wrap original EventArg to ZeroHealthEventArg
@@ -208,22 +209,7 @@ export class SkillExecutor extends StateMutator {
               (ch) => ch.variables.alive,
             );
             if (aliveCharacters.length === 0) {
-              this.log(
-                DetailLogType.Other,
-                `player ${who} has no alive characters, set winner to ${flip(
-                  who,
-                )}`,
-              );
-              this.mutate({
-                type: "changePhase",
-                newPhase: "gameEnd",
-              });
-              this.mutate({
-                type: "setWinner",
-                winner: flip(who),
-              });
-              await this.notifyAndPause();
-              return;
+              failedPlayers.add(who);
             }
           }
         }
@@ -231,6 +217,34 @@ export class SkillExecutor extends StateMutator {
       } else {
         damageEventArgs.push(arg);
       }
+    }
+    if (failedPlayers.size === 2) {
+      this.log(
+        DetailLogType.Other,
+        `Both player has no alive characters, set winner to null`,
+      );
+      this.mutate({
+        type: "changePhase",
+        newPhase: "gameEnd",
+      });
+      await this.notifyAndPause();
+      return;
+    } else if (failedPlayers.size === 1) {
+      const who = [...failedPlayers.values()][0];
+      this.log(
+        DetailLogType.Other,
+        `player ${who} has no alive characters, set winner to ${flip(who)}`,
+      );
+      this.mutate({
+        type: "changePhase",
+        newPhase: "gameEnd",
+      });
+      this.mutate({
+        type: "setWinner",
+        winner: flip(who),
+      });
+      await this.notifyAndPause();
+      return;
     }
     const safeDamageEvents = damageEventArgs.filter(
       (arg) => !arg.damageInfo.causeDefeated,
