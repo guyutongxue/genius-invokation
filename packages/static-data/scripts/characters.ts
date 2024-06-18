@@ -40,6 +40,7 @@ export interface CharacterRawData {
   hp: number;
   maxEnergy: number;
   cardFace: string;
+  icon: string;
 }
 
 export async function collateCharacters(langCode: string): Promise<CharacterRawData[]> {
@@ -91,6 +92,7 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
 
     const cardPrefabName = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
     const cardFace = `UI_${cardPrefabName}`;
+    const icon = cardFace.replace(/CardFace_Char_([a-zA-Z]+)_/, "Char_$1Icon_");
 
     result.push({
       id,
@@ -106,6 +108,7 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
       hp,
       maxEnergy,
       cardFace,
+      icon,
     });
   }
   return result;

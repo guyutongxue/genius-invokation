@@ -93,7 +93,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ganyu"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ganyu",
+    "icon": "UI_Gcg_Char_AvatarIcon_Ganyu"
   },
   {
     "id": 1102,
@@ -172,7 +173,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diona"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diona",
+    "icon": "UI_Gcg_Char_AvatarIcon_Diona"
   },
   {
     "id": 1103,
@@ -251,7 +253,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaeya"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaeya",
+    "icon": "UI_Gcg_Char_AvatarIcon_Kaeya"
   },
   {
     "id": 1104,
@@ -330,7 +333,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Chongyun"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Chongyun",
+    "icon": "UI_Gcg_Char_AvatarIcon_Chongyun"
   },
   {
     "id": 1105,
@@ -419,7 +423,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayaka"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayaka",
+    "icon": "UI_Gcg_Char_AvatarIcon_Ayaka"
   },
   {
     "id": 1106,
@@ -498,7 +503,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Eula"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Eula",
+    "icon": "UI_Gcg_Char_AvatarIcon_Eula"
   },
   {
     "id": 1107,
@@ -577,7 +583,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shenhe"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shenhe",
+    "icon": "UI_Gcg_Char_AvatarIcon_Shenhe"
   },
   {
     "id": 1108,
@@ -654,7 +661,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qiqi"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qiqi",
+    "icon": "UI_Gcg_Char_AvatarIcon_Qiqi"
   },
   {
     "id": 1109,
@@ -731,7 +739,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Layla"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Layla",
+    "icon": "UI_Gcg_Char_AvatarIcon_Layla"
   },
   {
     "id": 1110,
@@ -811,7 +820,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Charlotte"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Charlotte",
+    "icon": "UI_Gcg_Char_AvatarIcon_Charlotte"
   },
   {
     "id": 1111,
@@ -919,7 +929,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wriothesley"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wriothesley",
+    "icon": "UI_Gcg_Char_AvatarIcon_Wriothesley"
   },
   {
     "id": 1201,
@@ -996,7 +1007,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Barbara"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Barbara",
+    "icon": "UI_Gcg_Char_AvatarIcon_Barbara"
   },
   {
     "id": 1202,
@@ -1075,7 +1087,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xingqiu"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xingqiu",
+    "icon": "UI_Gcg_Char_AvatarIcon_Xingqiu"
   },
   {
     "id": 1203,
@@ -1164,7 +1177,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Mona"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Mona",
+    "icon": "UI_Gcg_Char_AvatarIcon_Mona"
   },
   {
     "id": 1204,
@@ -1273,7 +1287,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tartaglia"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tartaglia",
+    "icon": "UI_Gcg_Char_AvatarIcon_Tartaglia"
   },
   {
     "id": 1205,
@@ -1350,7 +1365,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kokomi"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kokomi",
+    "icon": "UI_Gcg_Char_AvatarIcon_Kokomi"
   },
   {
     "id": 1206,
@@ -1429,7 +1445,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayato"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ayato",
+    "icon": "UI_Gcg_Char_AvatarIcon_Ayato"
   },
   {
     "id": 1207,
@@ -1518,7 +1535,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Candace"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Candace",
+    "icon": "UI_Gcg_Char_AvatarIcon_Candace"
   },
   {
     "id": 1208,
@@ -1597,7 +1615,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nilou"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nilou",
+    "icon": "UI_Gcg_Char_AvatarIcon_Nilou"
   },
   {
     "id": 1209,
@@ -1686,7 +1705,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yelan"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yelan",
+    "icon": "UI_Gcg_Char_AvatarIcon_Yelan"
   },
   {
     "id": 1210,
@@ -1788,7 +1808,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Neuvillette"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Neuvillette",
+    "icon": "UI_Gcg_Char_AvatarIcon_Neuvillette"
   },
   {
     "id": 1211,
@@ -1886,7 +1907,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Furina"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Furina",
+    "icon": "UI_Gcg_Char_AvatarIcon_Furina"
   },
   {
     "id": 1212,
@@ -1980,7 +2002,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_FurinaOusia"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_FurinaOusia",
+    "icon": "UI_Gcg_Char_AvatarIcon_FurinaOusia"
   },
   {
     "id": 1301,
@@ -2059,7 +2082,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diluc"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Diluc",
+    "icon": "UI_Gcg_Char_AvatarIcon_Diluc"
   },
   {
     "id": 1302,
@@ -2136,7 +2160,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiangling"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiangling",
+    "icon": "UI_Gcg_Char_AvatarIcon_Xiangling"
   },
   {
     "id": 1303,
@@ -2215,7 +2240,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Bennett"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Bennett",
+    "icon": "UI_Gcg_Char_AvatarIcon_Bennett"
   },
   {
     "id": 1304,
@@ -2292,7 +2318,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ambor"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ambor",
+    "icon": "UI_Gcg_Char_AvatarIcon_Ambor"
   },
   {
     "id": 1305,
@@ -2369,7 +2396,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yoimiya"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yoimiya",
+    "icon": "UI_Gcg_Char_AvatarIcon_Yoimiya"
   },
   {
     "id": 1306,
@@ -2448,7 +2476,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Klee"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Klee",
+    "icon": "UI_Gcg_Char_AvatarIcon_Klee"
   },
   {
     "id": 1307,
@@ -2525,7 +2554,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Hutao"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Hutao",
+    "icon": "UI_Gcg_Char_AvatarIcon_Hutao"
   },
   {
     "id": 1308,
@@ -2604,7 +2634,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Feiyan"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Feiyan",
+    "icon": "UI_Gcg_Char_AvatarIcon_Feiyan"
   },
   {
     "id": 1309,
@@ -2706,7 +2737,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dehya"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dehya",
+    "icon": "UI_Gcg_Char_AvatarIcon_Dehya"
   },
   {
     "id": 1310,
@@ -2804,7 +2836,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Liney"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Liney",
+    "icon": "UI_Gcg_Char_AvatarIcon_Liney"
   },
   {
     "id": 1311,
@@ -2883,7 +2916,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tohma"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tohma",
+    "icon": "UI_Gcg_Char_AvatarIcon_Tohma"
   },
   {
     "id": 1312,
@@ -2962,7 +2996,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xinyan"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xinyan",
+    "icon": "UI_Gcg_Char_AvatarIcon_Xinyan"
   },
   {
     "id": 1401,
@@ -3041,7 +3076,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Fischl"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Fischl",
+    "icon": "UI_Gcg_Char_AvatarIcon_Fischl"
   },
   {
     "id": 1402,
@@ -3120,7 +3156,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Razor"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Razor",
+    "icon": "UI_Gcg_Char_AvatarIcon_Razor"
   },
   {
     "id": 1403,
@@ -3199,7 +3236,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Keqing"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Keqing",
+    "icon": "UI_Gcg_Char_AvatarIcon_Keqing"
   },
   {
     "id": 1404,
@@ -3288,7 +3326,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Cyno"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Cyno",
+    "icon": "UI_Gcg_Char_AvatarIcon_Cyno"
   },
   {
     "id": 1405,
@@ -3377,7 +3416,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Beidou"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Beidou",
+    "icon": "UI_Gcg_Char_AvatarIcon_Beidou"
   },
   {
     "id": 1406,
@@ -3456,7 +3496,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sara"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sara",
+    "icon": "UI_Gcg_Char_AvatarIcon_Sara"
   },
   {
     "id": 1407,
@@ -3543,7 +3584,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shougun"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shougun",
+    "icon": "UI_Gcg_Char_AvatarIcon_Shougun"
   },
   {
     "id": 1408,
@@ -3620,7 +3662,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yae"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yae",
+    "icon": "UI_Gcg_Char_AvatarIcon_Yae"
   },
   {
     "id": 1409,
@@ -3699,7 +3742,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Lisa"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Lisa",
+    "icon": "UI_Gcg_Char_AvatarIcon_Lisa"
   },
   {
     "id": 1410,
@@ -3778,7 +3822,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dori"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Dori",
+    "icon": "UI_Gcg_Char_AvatarIcon_Dori"
   },
   {
     "id": 1411,
@@ -3855,7 +3900,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shinobu"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shinobu",
+    "icon": "UI_Gcg_Char_AvatarIcon_Shinobu"
   },
   {
     "id": 1501,
@@ -3934,7 +3980,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sucrose"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sucrose",
+    "icon": "UI_Gcg_Char_AvatarIcon_Sucrose"
   },
   {
     "id": 1502,
@@ -4011,7 +4058,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qin"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Qin",
+    "icon": "UI_Gcg_Char_AvatarIcon_Qin"
   },
   {
     "id": 1503,
@@ -4090,7 +4138,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Venti"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Venti",
+    "icon": "UI_Gcg_Char_AvatarIcon_Venti"
   },
   {
     "id": 1504,
@@ -4169,7 +4218,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiao"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Xiao",
+    "icon": "UI_Gcg_Char_AvatarIcon_Xiao"
   },
   {
     "id": 1505,
@@ -4258,7 +4308,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kazuha"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kazuha",
+    "icon": "UI_Gcg_Char_AvatarIcon_Kazuha"
   },
   {
     "id": 1506,
@@ -4336,7 +4387,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wanderer"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Wanderer",
+    "icon": "UI_Gcg_Char_AvatarIcon_Wanderer"
   },
   {
     "id": 1507,
@@ -4427,7 +4479,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sayu"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sayu",
+    "icon": "UI_Gcg_Char_AvatarIcon_Sayu"
   },
   {
     "id": 1508,
@@ -4508,7 +4561,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Linette"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Linette",
+    "icon": "UI_Gcg_Char_AvatarIcon_Linette"
   },
   {
     "id": 1509,
@@ -4587,7 +4641,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Faruzan"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Faruzan",
+    "icon": "UI_Gcg_Char_AvatarIcon_Faruzan"
   },
   {
     "id": 1601,
@@ -4666,7 +4721,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ningguang"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Ningguang",
+    "icon": "UI_Gcg_Char_AvatarIcon_Ningguang"
   },
   {
     "id": 1602,
@@ -4745,7 +4801,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Noel"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Noel",
+    "icon": "UI_Gcg_Char_AvatarIcon_Noel"
   },
   {
     "id": 1603,
@@ -4841,7 +4898,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Zhongli"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Zhongli",
+    "icon": "UI_Gcg_Char_AvatarIcon_Zhongli"
   },
   {
     "id": 1604,
@@ -4918,7 +4976,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Albedo"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Albedo",
+    "icon": "UI_Gcg_Char_AvatarIcon_Albedo"
   },
   {
     "id": 1605,
@@ -4997,7 +5056,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Itto"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Itto",
+    "icon": "UI_Gcg_Char_AvatarIcon_Itto"
   },
   {
     "id": 1606,
@@ -5076,7 +5136,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Gorou"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Gorou",
+    "icon": "UI_Gcg_Char_AvatarIcon_Gorou"
   },
   {
     "id": 1607,
@@ -5175,7 +5236,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yunjin"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yunjin",
+    "icon": "UI_Gcg_Char_AvatarIcon_Yunjin"
   },
   {
     "id": 1701,
@@ -5254,7 +5316,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Collei"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Collei",
+    "icon": "UI_Gcg_Char_AvatarIcon_Collei"
   },
   {
     "id": 1702,
@@ -5333,7 +5396,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tighnari"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Tighnari",
+    "icon": "UI_Gcg_Char_AvatarIcon_Tighnari"
   },
   {
     "id": 1703,
@@ -5429,7 +5493,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nahida"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Nahida",
+    "icon": "UI_Gcg_Char_AvatarIcon_Nahida"
   },
   {
     "id": 1704,
@@ -5506,7 +5571,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yaoyao"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Yaoyao",
+    "icon": "UI_Gcg_Char_AvatarIcon_Yaoyao"
   },
   {
     "id": 1705,
@@ -5583,7 +5649,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Baizhuer"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Baizhuer",
+    "icon": "UI_Gcg_Char_AvatarIcon_Baizhuer"
   },
   {
     "id": 1706,
@@ -5662,7 +5729,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Alhatham"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Alhatham",
+    "icon": "UI_Gcg_Char_AvatarIcon_Alhatham"
   },
   {
     "id": 1707,
@@ -5739,7 +5807,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Momoka"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Momoka",
+    "icon": "UI_Gcg_Char_AvatarIcon_Momoka"
   },
   {
     "id": 1708,
@@ -5818,7 +5887,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaveh"
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Kaveh",
+    "icon": "UI_Gcg_Char_AvatarIcon_Kaveh"
   },
   {
     "id": 2101,
@@ -5897,7 +5967,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusMageice"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusMageice",
+    "icon": "UI_Gcg_Char_MonsterIcon_FatuusMageice"
   },
   {
     "id": 2102,
@@ -5996,7 +6067,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_LaSignora"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_LaSignora",
+    "icon": "UI_Gcg_Char_MonsterIcon_LaSignora"
   },
   {
     "id": 2103,
@@ -6085,7 +6157,8 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyice"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyice",
+    "icon": "UI_Gcg_Char_MonsterIcon_Effigyice"
   },
   {
     "id": 6301,
@@ -6172,7 +6245,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_LaSignoraHarbinger"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_LaSignoraHarbinger",
+    "icon": "UI_Gcg_Char_MonsterIcon_LaSignoraHarbinger"
   },
   {
     "id": 2201,
@@ -6264,7 +6338,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Oceanid"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Oceanid",
+    "icon": "UI_Gcg_Char_MonsterIcon_Oceanid"
   },
   {
     "id": 2202,
@@ -6343,7 +6418,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Maidenwater"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Maidenwater",
+    "icon": "UI_Gcg_Char_MonsterIcon_Maidenwater"
   },
   {
     "id": 2203,
@@ -6469,7 +6545,8 @@
     ],
     "hp": 6,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_InvokerHeraldWater"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_InvokerHeraldWater",
+    "icon": "UI_Gcg_Char_MonsterIcon_InvokerHeraldWater"
   },
   {
     "id": 2204,
@@ -6557,7 +6634,8 @@
     ],
     "hp": 5,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ptahur"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ptahur",
+    "icon": "UI_Gcg_Char_MonsterIcon_Ptahur"
   },
   {
     "id": 2301,
@@ -6646,7 +6724,8 @@
     ],
     "hp": 9,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fatuus"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fatuus",
+    "icon": "UI_Gcg_Char_MonsterIcon_Fatuus"
   },
   {
     "id": 2302,
@@ -6745,7 +6824,8 @@
     ],
     "hp": 6,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_DeaconFire"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_DeaconFire",
+    "icon": "UI_Gcg_Char_MonsterIcon_DeaconFire"
   },
   {
     "id": 2303,
@@ -6864,7 +6944,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Muscleman"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Muscleman",
+    "icon": "UI_Gcg_Char_MonsterIcon_Muscleman"
   },
   {
     "id": 2304,
@@ -6973,7 +7054,8 @@
     ],
     "hp": 6,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_HermitCrabPrimo"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_HermitCrabPrimo",
+    "icon": "UI_Gcg_Char_MonsterIcon_HermitCrabPrimo"
   },
   {
     "id": 2401,
@@ -7086,7 +7168,8 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyelectric"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Effigyelectric",
+    "icon": "UI_Gcg_Char_MonsterIcon_Effigyelectric"
   },
   {
     "id": 2402,
@@ -7175,7 +7258,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Raijin"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Raijin",
+    "icon": "UI_Gcg_Char_MonsterIcon_Raijin"
   },
   {
     "id": 2403,
@@ -7274,7 +7358,8 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_SeaHorsePrimo"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_SeaHorsePrimo",
+    "icon": "UI_Gcg_Char_MonsterIcon_SeaHorsePrimo"
   },
   {
     "id": 2404,
@@ -7363,7 +7448,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusSummoner"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_FatuusSummoner",
+    "icon": "UI_Gcg_Char_MonsterIcon_FatuusSummoner"
   },
   {
     "id": 2405,
@@ -7453,7 +7539,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_ScorpionSacred"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_ScorpionSacred",
+    "icon": "UI_Gcg_Char_MonsterIcon_ScorpionSacred"
   },
   {
     "id": 2501,
@@ -7545,7 +7632,8 @@
     ],
     "hp": 10,
     "maxEnergy": 3,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ningyo"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Ningyo",
+    "icon": "UI_Gcg_Char_MonsterIcon_Ningyo"
   },
   {
     "id": 2502,
@@ -7665,7 +7753,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dvalin"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dvalin",
+    "icon": "UI_Gcg_Char_MonsterIcon_Dvalin"
   },
   {
     "id": 2503,
@@ -7765,7 +7854,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_ChrysopeleaSacred"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_ChrysopeleaSacred",
+    "icon": "UI_Gcg_Char_MonsterIcon_ChrysopeleaSacred"
   },
   {
     "id": 2601,
@@ -7855,7 +7945,8 @@
     ],
     "hp": 8,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Bruterock"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Bruterock",
+    "icon": "UI_Gcg_Char_MonsterIcon_Bruterock"
   },
   {
     "id": 2602,
@@ -7944,7 +8035,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dahaka"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Dahaka",
+    "icon": "UI_Gcg_Char_MonsterIcon_Dahaka"
   },
   {
     "id": 6601,
@@ -8046,7 +8138,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaIce"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaIce",
+    "icon": "UI_Gcg_Char_MonsterIcon_DahakaIce"
   },
   {
     "id": 6602,
@@ -8148,7 +8241,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaWater"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaWater",
+    "icon": "UI_Gcg_Char_MonsterIcon_DahakaWater"
   },
   {
     "id": 6603,
@@ -8250,7 +8344,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaFire"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaFire",
+    "icon": "UI_Gcg_Char_MonsterIcon_DahakaFire"
   },
   {
     "id": 6604,
@@ -8352,7 +8447,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaElec"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaElec",
+    "icon": "UI_Gcg_Char_MonsterIcon_DahakaElec"
   },
   {
     "id": 2701,
@@ -8441,7 +8537,8 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fungusgrass"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Fungusgrass",
+    "icon": "UI_Gcg_Char_MonsterIcon_Fungusgrass"
   },
   {
     "id": 2702,
@@ -8528,6 +8625,7 @@
     ],
     "hp": 10,
     "maxEnergy": 2,
-    "cardFace": "UI_Gcg_CardFace_Char_Monster_Apep"
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Apep",
+    "icon": "UI_Gcg_Char_MonsterIcon_Apep"
   }
 ]
