@@ -13,30 +13,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createEffect, createSignal, onMount, onCleanup } from "solid-js";
-import { useUserContext } from "../App";
+import { createSignal, createResource, Switch, Match } from "solid-js";
 import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
-import { DeckBuilder } from "@gi-tcg/deck-builder";
 import { decode, encode, type Deck } from "@gi-tcg/utils";
-import "@gi-tcg/deck-builder/style.css";
-import { A, useBeforeLeave, useNavigate } from "@solidjs/router";
+import { A, useBeforeLeave, useNavigate, useParams } from "@solidjs/router";
+import { SizedDeckBuilder } from "../components/SizedDeckBuilder";
 
-export function NewDeck() {
+export function EditDeck() {
+  const params = useParams();
+  const isNew = params.id === "new";
+  const deckId = Number(params.id);
   const navigate = useNavigate();
+  const [deckName, setDeckName] = createSignal<string>("新建牌组");
   const [deckValue, setDeckValue] = createSignal<Deck>({
     characters: [],
     cards: [],
   });
-  const [dirty, setDirty] = createSignal(false);
-  const [componentWidth, setComponentWidth] = createSignal<number>();
-  const [componentHeight, setComponentHeight] = createSignal<number>();
-  let containerEl!: HTMLDivElement;
-  const observer = new ResizeObserver(() => {
-    setComponentWidth(containerEl.clientWidth);
-    setComponentHeight(containerEl.clientHeight);
+  const [deckData, { refetch }] = createResource(async () => {
+    if (isNew) {
+      return true;
+    }
+    const { data } = await axios.get(`decks/${deckId}`);
+    setDeckValue(data);
+    setDeckName(data.name);
+    return data;
   });
-
+  const [dirty, setDirty] = createSignal(false);
   useBeforeLeave((e) => {
     if (dirty()) {
       e.preventDefault();
@@ -84,7 +87,7 @@ export function NewDeck() {
   const saveDeck = async () => {
     const deck = deckValue();
     try {
-      await axios.post("decks", { ...deck, name: "Untitled" }); // TODO
+      await axios.post("decks", { ...deck, name: deckName() });
       navigate(`..`);
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -93,46 +96,39 @@ export function NewDeck() {
       console.error(e);
     }
   };
-
-  onMount(() => {
-    observer.observe(containerEl);
-  });
-  onCleanup(() => {
-    observer.unobserve(containerEl);
-  });
   return (
     <Layout>
       <div class="container mx-auto h-full flex flex-col">
-        <div class="flex-shrink-0 flex flex-row gap-3 mb-5">
-          <h2 class="text-2xl font-bold">新建牌组</h2>
-          <button class="btn btn-outline-blue" onClick={importCode}>
-            导入分享码
-          </button>
-          <button class="btn btn-outline" onClick={exportCode}>
-            生成分享码
-          </button>
-          <button
-            class="btn btn-solid-green"
-            disabled={!valid()}
-            onClick={saveDeck}
-          >
-            保存牌组
-          </button>
-          <span class="flex-grow" />
-          <A class="btn btn-ghost-blue" href="..">
-            返回牌组列表
-          </A>
-        </div>
-        <div class="flex-grow-1" ref={containerEl!}>
-          <DeckBuilder
-            deck={deckValue()}
-            onChangeDeck={(v) => (setDeckValue(v), setDirty(true))}
-            style={{
-              width: componentWidth() ? `${componentWidth()}px` : void 0,
-              height: componentHeight() ? `${componentHeight()}px` : void 0,
-            }}
-          />
-        </div>
+        <Switch>
+          <Match when={deckData.loading}>正在加载中...</Match>
+          <Match when={deckData.error}>加载失败，请刷新页面重试</Match>
+          <Match when={true}>
+            <div class="flex-shrink-0 flex flex-row gap-3 mb-5">
+              <h2 class="text-2xl font-bold">{deckName()}</h2>
+              <button class="btn btn-outline-blue" onClick={importCode}>
+                导入分享码
+              </button>
+              <button class="btn btn-outline" onClick={exportCode}>
+                生成分享码
+              </button>
+              <button
+                class="btn btn-solid-green"
+                disabled={!valid()}
+                onClick={saveDeck}
+              >
+                保存牌组
+              </button>
+              <span class="flex-grow" />
+              <A class="btn btn-ghost-blue" href="..">
+                返回牌组列表
+              </A>
+            </div>
+            <SizedDeckBuilder
+              deck={deckValue()}
+              onChangeDeck={(v) => (setDeckValue(v), setDirty(true))}
+            />
+          </Match>
+        </Switch>
       </div>
     </Layout>
   );

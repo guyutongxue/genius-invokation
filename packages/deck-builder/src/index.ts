@@ -1,3 +1,3 @@
 import "./index.css";
 
-export { DeckBuilder } from "./DeckBuilder";
+export { type DeckBuilderProps, DeckBuilder } from "./DeckBuilder";

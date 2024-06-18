@@ -29,12 +29,12 @@ export function Decks() {
           <div class="container mx-auto">
             <div class="flex flex-row gap-4 items-center mb-5">
               <h2 class="text-2xl font-bold">我的牌组</h2>
-              <A class="btn btn-outline-green" href="./new">
+              <A class="btn btn-outline-green" href="/decks/new">
                 <i class="i-mdi-plus" /> 添加
               </A>
             </div>
             <Switch>
-              <Match when={decks.loading}>加载中</Match>
+              <Match when={decks.loading}>正在加载中...</Match>
               <Match when={decks.error}>加载失败，请刷新页面重试</Match>
               <Match when={decks()}>
                 {(decks) => (
@@ -45,7 +45,11 @@ export function Decks() {
                         <li class="p-4 text-gray-5">暂无牌组，可点击 + 添加</li>
                       }
                     >
-                      {(deckData) => <div>{deckData.code}</div>}
+                      {(deckData) => (
+                        <div>
+                          <A href={`./${deckData.id}`}>{deckData.code}</A>
+                        </div>
+                      )}
                     </For>
                   </ul>
                 )}

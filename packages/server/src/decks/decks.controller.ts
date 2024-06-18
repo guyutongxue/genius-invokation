@@ -90,6 +90,15 @@ export class DecksController {
     return await this.decks.getAllDecks(userId, pagination);
   }
 
+  @Get(":deckId")
+  async getDeck(
+    @User() userId: number,
+    @Param("deckId", ParseIntPipe) deckId: number,
+  ) {
+    return await this.decks.getDeck(userId, deckId);
+  }
+
+
   @Patch(":deckId")
   async updateDeck(
     @User() userId: number,
