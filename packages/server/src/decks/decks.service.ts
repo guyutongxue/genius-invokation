@@ -69,7 +69,7 @@ export class DecksService {
   }
 
   async getAllDecks(userId: number, { skip = 0, take = 10 }: PaginationDto): Promise<DeckWithDeckModel[]> {
-    const models = await this.prisma.deck.findMany({
+    const [models, count] = await this.prisma.deck.findManyAndCount({
       skip,
       take,
       where: {

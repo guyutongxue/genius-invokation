@@ -47,7 +47,7 @@ export class GamesService {
   }
 
   async getAllGames({ skip = 0, take = 10 }: PaginationDto) {
-    return await this.prisma.game.findMany({
+    const [games, count] = await this.prisma.game.findManyAndCount({
       skip,
       take,
       omit: { data: true },
@@ -68,6 +68,7 @@ export class GamesService {
         createdAt: "desc"
       }
     });
+    return games;
   }
 
   async getGame(gameId: number) {
@@ -92,7 +93,7 @@ export class GamesService {
   }
 
   async gamesHasUser(userId: number, { skip = 0, take = 10 }: PaginationDto) {
-    const results = await this.prisma.playerOnGames.findMany({
+    const [games, count] = await this.prisma.playerOnGames.findManyAndCount({
       skip,
       take,
       where: {
@@ -106,6 +107,6 @@ export class GamesService {
         }
       }
     });
-    return results;
+    return games;
   }
 }
