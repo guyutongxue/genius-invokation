@@ -16,14 +16,27 @@
 import { Show } from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
+import { A } from "@solidjs/router";
 
 export function Home() {
   const { user } = useUserContext();
   return (
     <Layout>
-      Home
       <Show when={user()}>
-        {(user) => <div>Hello {user().name ?? user().id}!</div>}
+        {(user) => (
+          <div class="flex flex-col">
+            <div class="flex-shrink-0 mb-5">
+              <h2 class="text-2xl font-bold">
+                {user().name ?? `旅行者 ${user().id}`}，欢迎你！
+              </h2>
+            </div>
+            <div>
+              <A href="/decks" class="btn btn-solid text-1em gap-0.5em">
+                查看我的牌组
+              </A>
+            </div>
+          </div>
+        )}
       </Show>
     </Layout>
   );

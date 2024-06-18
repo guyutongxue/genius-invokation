@@ -13,25 +13,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createSignal, createResource, Switch, Match } from "solid-js";
+import { createSignal, createResource, Switch, Match, Show } from "solid-js";
 import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
 import { decode, encode, type Deck } from "@gi-tcg/utils";
-import { A, useBeforeLeave, useNavigate, useParams } from "@solidjs/router";
+import {
+  A,
+  useBeforeLeave,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "@solidjs/router";
 import { DeckBuilder } from "@gi-tcg/deck-builder";
 import "@gi-tcg/deck-builder/style.css";
 
 export function EditDeck() {
   const params = useParams();
+  const [searchParams] = useSearchParams();
   const isNew = params.id === "new";
   const deckId = Number(params.id);
   const navigate = useNavigate();
-  const [deckName, setDeckName] = createSignal<string>("新建牌组");
+  const [deckName, setDeckName] = createSignal<string>(
+    searchParams.name ?? "新建牌组",
+  );
+  const [deckNameInput, setDeckNameInput] = createSignal<string>("");
+  const [editingName, setEditingName] = createSignal(false);
+  const [uploading, setUploading] = createSignal(false);
+  const [uploadDone, setUploadDone] = createSignal(false);
   const [deckValue, setDeckValue] = createSignal<Deck>({
     characters: [],
     cards: [],
   });
-  const [deckData, { refetch }] = createResource(async () => {
+  const [deckData] = createResource(async () => {
     if (isNew) {
       return true;
     }
@@ -41,11 +54,13 @@ export function EditDeck() {
     return data;
   });
   const [dirty, setDirty] = createSignal(false);
-  useBeforeLeave((e) => {
+  useBeforeLeave(async (e) => {
     if (dirty()) {
       e.preventDefault();
-      if (window.confirm("您有未保存的更改，确定要离开吗？")) {
-        e.retry(true);
+      if (window.confirm("您有未保存的更改，是否保存？")) {
+        if (await saveDeck()) {
+          e.retry(true);
+        }
       }
     }
   });
@@ -85,45 +100,129 @@ export function EditDeck() {
     }
   };
 
+  const startEditingName = () => {
+    setDeckNameInput(deckName());
+    setEditingName(true);
+  };
+
+  const saveName = async (newName: string) => {
+    const oldName = deckName();
+    if (!isNew) {
+      try {
+        setUploading(true);
+        await axios.patch(`decks/${deckId}`, { name: newName });
+        setDeckName(newName);
+        setEditingName(false);
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          alert(e.response?.data.message);
+          setDeckName(oldName);
+        }
+        console.error(e);
+      } finally {
+        setUploading(false);
+      }
+    } else {
+      setDeckName(newName);
+      setEditingName(false);
+    }
+  };
+
   const saveDeck = async () => {
     const deck = deckValue();
     try {
-      await axios.post("decks", { ...deck, name: deckName() });
-      navigate(`..`);
+      setUploading(true);
+      if (isNew) {
+        const { data } = await axios.post("decks", {
+          ...deck,
+          name: deckName(),
+        });
+        setDirty(false);
+        navigate(`../${data.id}`);
+      } else {
+        await axios.patch(`decks/${deckId}`, { ...deck });
+        setDirty(false);
+        setUploadDone(true);
+        setTimeout(() => setUploadDone(false), 500);
+      }
+      return true;
     } catch (e) {
       if (e instanceof AxiosError) {
         alert(e.response?.data.message);
       }
       console.error(e);
+      return false;
+    } finally {
+      setUploading(false);
     }
   };
+
   return (
     <Layout>
       <div class="container mx-auto h-full flex flex-col min-h-0">
+        <div class="flex-shrink-0 flex flex-row gap-3 mb-5 min-h-0">
+          <Show
+            when={editingName()}
+            fallback={
+              <>
+                <h2 class="text-2xl font-bold">{deckName()}</h2>
+                <button class="btn btn-ghost" onClick={startEditingName}>
+                  <i class="i-mdi-pencil-outline" />
+                </button>
+                <button class="btn btn-outline-blue" onClick={importCode}>
+                  导入分享码
+                </button>
+                <button class="btn btn-outline" onClick={exportCode}>
+                  生成分享码
+                </button>
+                <button
+                  class="btn btn-solid-green min-w-22"
+                  disabled={!valid() || uploading()}
+                  onClick={saveDeck}
+                >
+                  <Switch>
+                    <Match when={uploading()}>
+                      <i class="i-mdi-loading animate-spin" />
+                    </Match>
+                    <Match when={uploadDone()}>
+                      <i class="i-mdi-check" />
+                    </Match>
+                    <Match when={true}>保存牌组</Match>
+                  </Switch>
+                </button>
+              </>
+            }
+          >
+            <input
+              class="input input-outline w-50 h-8"
+              value={deckNameInput()}
+              onInput={(e) => setDeckNameInput(e.currentTarget.value)}
+            />
+            <button
+              class="btn btn-ghost-green min-w-12"
+              disabled={uploading()}
+              onClick={() => saveName(deckNameInput())}
+            >
+              <Show when={uploading()} fallback="保存">
+                <i class="i-mdi-loading animate-spin" />
+              </Show>
+            </button>
+            <button
+              class="btn btn-ghost-red"
+              onClick={() => setEditingName(false)}
+            >
+              取消
+            </button>
+          </Show>
+          <span class="flex-grow" />
+          <A class="btn btn-ghost-blue" href="..">
+            返回牌组列表
+          </A>
+        </div>
         <Switch>
           <Match when={deckData.loading}>正在加载中...</Match>
           <Match when={deckData.error}>加载失败，请刷新页面重试</Match>
           <Match when={true}>
-            <div class="flex-shrink-0 flex flex-row gap-3 mb-5 min-h-0">
-              <h2 class="text-2xl font-bold">{deckName()}</h2>
-              <button class="btn btn-outline-blue" onClick={importCode}>
-                导入分享码
-              </button>
-              <button class="btn btn-outline" onClick={exportCode}>
-                生成分享码
-              </button>
-              <button
-                class="btn btn-solid-green"
-                disabled={!valid()}
-                onClick={saveDeck}
-              >
-                保存牌组
-              </button>
-              <span class="flex-grow" />
-              <A class="btn btn-ghost-blue" href="..">
-                返回牌组列表
-              </A>
-            </div>
             <DeckBuilder
               class="min-h-0 h-full w-full"
               deck={deckValue()}

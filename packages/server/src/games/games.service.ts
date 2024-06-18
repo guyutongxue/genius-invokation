@@ -15,8 +15,8 @@
 
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
-import type { Game as GameModel } from "@prisma/client";
-import type { PaginationDto } from "../utils";
+import type { Game as GameModel, PlayerOnGames } from "@prisma/client";
+import type { PaginationDto, PaginationResult } from "../utils";
 
 export interface AddGameOption {
   playerIds: number[];
@@ -25,6 +25,8 @@ export interface AddGameOption {
   data: string;
   winnerId: number | null;
 }
+
+interface GameNoData extends Omit<GameModel, "data"> {}
 
 @Injectable()
 export class GamesService {
@@ -46,8 +48,11 @@ export class GamesService {
     return game;
   }
 
-  async getAllGames({ skip = 0, take = 10 }: PaginationDto) {
-    const [games, count] = await this.prisma.game.findManyAndCount({
+  async getAllGames({
+    skip = 0,
+    take = 10,
+  }: PaginationDto): Promise<PaginationResult<GameNoData>> {
+    const [data, count] = await this.prisma.game.findManyAndCount({
       skip,
       take,
       omit: { data: true },
@@ -58,17 +63,17 @@ export class GamesService {
               select: {
                 id: true,
                 name: true,
-              }
+              },
             },
             who: true,
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        createdAt: "desc"
-      }
+        createdAt: "desc",
+      },
     });
-    return games;
+    return { count, data };
   }
 
   async getGame(gameId: number) {
@@ -83,17 +88,20 @@ export class GamesService {
               select: {
                 id: true,
                 name: true,
-              }
+              },
             },
             who: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   }
 
-  async gamesHasUser(userId: number, { skip = 0, take = 10 }: PaginationDto) {
-    const [games, count] = await this.prisma.playerOnGames.findManyAndCount({
+  async gamesHasUser(
+    userId: number,
+    { skip = 0, take = 10 }: PaginationDto,
+  ): Promise<PaginationResult<PlayerOnGames & { game: GameNoData }>> {
+    const [data, count] = await this.prisma.playerOnGames.findManyAndCount({
       skip,
       take,
       where: {
@@ -102,11 +110,11 @@ export class GamesService {
       include: {
         game: {
           omit: {
-            data: true
-          }
-        }
-      }
+            data: true,
+          },
+        },
+      },
     });
-    return games;
+    return { data, count };
   }
 }

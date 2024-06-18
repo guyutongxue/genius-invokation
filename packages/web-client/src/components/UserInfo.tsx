@@ -116,7 +116,7 @@ export function UserInfo(props: UserInfoProps) {
         </dl>
         <dl class="flex flex-row gap-4 items-center mb-2">
           <dt class="font-bold">昵称</dt>
-          <dd class="flex flex-row gap-4 items-center">
+          <dd class="flex flex-row gap-4 items-center h-8">
             <Show
               when={editingName()}
               fallback={
@@ -146,13 +146,13 @@ export function UserInfo(props: UserInfoProps) {
                 />
                 <button
                   type="submit"
-                  class="flex-shrink-0 btn btn-ghost-green text-1em gap-0.5em"
+                  class="flex-shrink-0 btn btn-ghost-green"
                 >
                   提交
                 </button>
                 <button
                   type="button"
-                  class="flex-shrink-0 btn btn-ghost-red text-1em gap-0.5em"
+                  class="flex-shrink-0 btn btn-ghost-red"
                   onClick={() => setEditingName(false)}
                 >
                   取消
@@ -220,7 +220,7 @@ export function UserInfo(props: UserInfoProps) {
             when={editingPassword()}
             fallback={
               <button
-                class="btn btn-ghost text-1em gap-0.5em"
+                class="btn btn-ghost"
                 onClick={() => setEditingPassword(true)}
               >
                 修改密码
@@ -232,7 +232,7 @@ export function UserInfo(props: UserInfoProps) {
               onSubmit={submitPassword}
             >
               <input
-                class="input input-outline max-w-80"
+                class="input input-outline max-w-80 h-8"
                 type="password"
                 name="password"
                 minLength={6}
@@ -242,13 +242,13 @@ export function UserInfo(props: UserInfoProps) {
               />
               <button
                 type="submit"
-                class="flex-shrink-0 btn btn-ghost-green text-1em gap-0.5em"
+                class="flex-shrink-0 btn btn-ghost-green"
               >
                 提交
               </button>
               <button
                 type="button"
-                class="flex-shrink-0 btn btn-ghost-red text-1em gap-0.5em"
+                class="flex-shrink-0 btn btn-ghost-red"
                 onClick={() => setEditingPassword(false)}
               >
                 取消

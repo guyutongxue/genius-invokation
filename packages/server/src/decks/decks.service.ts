@@ -18,7 +18,7 @@ import { PrismaService } from "../db/prisma.service";
 import type { CreateDeckDto, UpdateDeckDto } from "./decks.controller";
 import { type Deck, encode, decode } from "@gi-tcg/utils";
 import { type Deck as DeckModel } from "@prisma/client";
-import { DeckVerificationError, PaginationDto, verifyDeck } from "../utils";
+import { DeckVerificationError, PaginationDto, minimumRequiredVersionOfDeck, verifyDeck, type PaginationResult } from "../utils";
 import type { Version } from "@gi-tcg/core";
 
 interface DeckWithVersion extends Deck {
@@ -50,7 +50,7 @@ export class DecksService {
 
   private codeToDeck(code: string): DeckWithVersion {
     const deck = decode(code);
-    const sinceVersion = verifyDeck(deck);
+    const sinceVersion = minimumRequiredVersionOfDeck(deck);
     return {
       ...deck,
       sinceVersion,
@@ -68,7 +68,7 @@ export class DecksService {
     });
   }
 
-  async getAllDecks(userId: number, { skip = 0, take = 10 }: PaginationDto): Promise<DeckWithDeckModel[]> {
+  async getAllDecks(userId: number, { skip = 0, take = 10 }: PaginationDto): Promise<PaginationResult<DeckWithDeckModel>> {
     const [models, count] = await this.prisma.deck.findManyAndCount({
       skip,
       take,
@@ -76,7 +76,7 @@ export class DecksService {
         ownerUserId: userId,
       },
     });
-    return models.map((model) => {
+    const data = models.map((model) => {
       const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
       return {
         id: model.id,
@@ -87,6 +87,7 @@ export class DecksService {
         sinceVersion,
       };
     });
+    return { data, count };
   }
 
   async getDeck(

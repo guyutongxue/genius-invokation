@@ -40,14 +40,20 @@ export function Decks() {
                 {(decks) => (
                   <ul>
                     <For
-                      each={decks().data}
+                      each={decks().data.data}
                       fallback={
                         <li class="p-4 text-gray-5">暂无牌组，可点击 + 添加</li>
                       }
                     >
                       {(deckData) => (
                         <div>
-                          <A href={`./${deckData.id}`}>{deckData.code}</A>
+                          <A
+                            href={`./${deckData.id}?name=${encodeURIComponent(
+                              deckData.name,
+                            )}`}
+                          >
+                            {deckData.code}
+                          </A>
                         </div>
                       )}
                     </For>

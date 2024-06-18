@@ -133,15 +133,31 @@ export function verifyDeck({ characters, cards }: Deck): Version {
       versions.add(card.sinceVersion);
     }
   }
-  const sortedVersion = [...versions.values()]
-    .filter((v): v is string => !!v)
-    .toSorted(semver.order);
-  const miniumRequiredVersion = `v${sortedVersion[sortedVersion.length - 1]}`;
-  if (!VERSIONS.includes(miniumRequiredVersion as Version)) {
+  return maxVersion(versions);
+}
+
+function maxVersion(versions: Iterable<string | undefined>): Version {
+  const ver =
+    "v" +
+    [...versions]
+      .filter((v): v is string => !!v)
+      .toSorted(semver.order)
+      .last();
+  if (!VERSIONS.includes(ver as Version)) {
     return CURRENT_VERSION;
   } else {
-    return miniumRequiredVersion as Version;
+    return ver as Version;
   }
+}
+
+export function minimumRequiredVersionOfDeck({
+  characters,
+  cards,
+}: Deck): Version {
+  return maxVersion([
+    ...characters.map((id) => CHARACTERS_MAP[id]?.sinceVersion),
+    ...cards.map((id) => ACTION_CARDS_MAP[id]?.sinceVersion),
+  ]);
 }
 
 export class PaginationDto {
@@ -152,7 +168,12 @@ export class PaginationDto {
 
   @IsInt()
   @IsPositive()
-  @Max(100)
+  @Max(30)
   @IsOptional()
   take?: number;
+}
+
+export interface PaginationResult<T> {
+  count: number;
+  data: T[];
 }
