@@ -8,6 +8,12 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
 
+    // Bun doesn't recognize tsconfig.node.json
+    // https://github.com/oven-sh/bun/issues/4774
+    // List them here.
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
     "noEmit": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
