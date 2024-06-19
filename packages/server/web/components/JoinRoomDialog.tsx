@@ -1,5 +1,3 @@
-/* @refresh reload */
-
 // Copyright (C) 2024 Guyutongxue
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,30 +13,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { hydrate } from "solid-js/web";
-
-import "./index.css";
-import "@una-ui/preset/una.css";
-import "@unocss/reset/tailwind-compat.css";
-
-import App from "./App";
-import axios from "axios";
-import { BACKEND_BASE_URL } from "./config";
-
-async function main() {
-  axios.defaults.baseURL = BACKEND_BASE_URL;
-  axios.interceptors.request.use((config) => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  });
-  if (!import.meta.env.DEV) {
-    await import("core-js");
-  }
-  const app = document.getElementById("app")!;
-  hydrate(() => <App />, app);
+export interface JoinRoomDialogProps {
+  roomNumber: string;
+  ref: HTMLDialogElement;
 }
 
-main();
+export function JoinRoomDialog(props: JoinRoomDialogProps) {
+  let dialogEl: HTMLDialogElement;
+  const closeDialog = () => {
+    dialogEl.close();
+  };
+
+  return (
+    <dialog ref={(el) => (dialogEl = el) && (props.ref as any)?.(el)} >
+      join {props.roomNumber}
+      <button class="btn btn-ghost-red" onClick={closeDialog}>
+        取消
+      </button>
+    </dialog>
+  );
+}

@@ -4,7 +4,9 @@
   "version": "0.8.4",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build:client": "vite build  --outDir dist/client",
+    "build:server": "vite build --ssr web/entry-server.tsx --outDir dist/server",
+    "build": "bun run build:client && bun run build:server",
     "dev": "bun --watch ./src/main.ts",
     "debug": "nest start --debug --watch",
     "start": "pm2 start pm2.config.cjs"
@@ -27,13 +29,34 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "rxjs": "^7.8.1",
-    "solid-js": "^1.8.17"
+    "@gi-tcg/webui-core": "workspace:*",
+    "@gi-tcg/deck-builder": "workspace:*",
+    "@solidjs/router": "^0.13.5",
+    "@una-ui/preset": "^0.4.0-beta.5",
+    "@unocss/reset": "^0.61.0",
+    "axios": "^1.7.2",
+    "solid-js": "^1.8.15",
+    "core-js": "3.37.0"
   },
   "devDependencies": {
-    "vite": "~5.2.0",
-    "vite-plugin-solid": "^2.10.2",
+    "@babel/core": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
     "@nestjs/cli": "^10.3.2",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@types/core-js": "^2.5.8",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@unocss/postcss": "^0.61.0",
+    "@unocss/preset-icons": "^0.61.0",
+    "eslint": "^9.5.0",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-plugin-solid": "^0.14.0",
     "pm2": "^5.4.0",
-    "prisma": "^5.15.0"
+    "postcss-load-config": "^6.0.1",
+    "postcss-preset-env": "^9.5.14",
+    "prisma": "^5.15.0",
+    "unocss": "^0.61.0",
+    "vite": "~5.2.0",
+    "vite-plugin-solid": "^2.10.2"
   }
 }

@@ -11,12 +11,13 @@ const TEMPLATE_INDEX_HTML_PATH = path.join(
 );
 const PRODUCTION_INDEX_HTML_PATH = path.join(
   import.meta.dirname,
-  "../dist/index.html",
+  "../dist/client/index.html",
 );
 const SSR_MODULE_PATH = path.join(
   import.meta.dirname,
   "../web/entry-server.tsx",
 );
+const PRODUCTION_SSR_MODULE_PATH = path.join(import.meta.dirname, "../dist/server/entry-server.js");
 
 const PRODUCTION_INDEX_HTML = IS_PRODUCTION
   ? await Bun.file(PRODUCTION_INDEX_HTML_PATH).text()
@@ -42,7 +43,10 @@ export async function viteSsr(app: FastifyInstance) {
     (app as any).use(vite.middlewares);
   } else {
     app.register(fastifyStatic, {
-      root: path.join(import.meta.dirname, "../dist"),
+      root: path.join(import.meta.dirname, "../dist/client"),
+      index: false,
+      wildcard: false,
+      prefix: BASE,
     });
   }
   app.get("*", async (request: FastifyRequest, response: FastifyReply) => {
@@ -56,7 +60,7 @@ export async function viteSsr(app: FastifyInstance) {
         render = (await vite.ssrLoadModule(SSR_MODULE_PATH)).render;
       } else {
         template = PRODUCTION_INDEX_HTML!;
-        render = (await import(SSR_MODULE_PATH)).render;
+        render = (await import(PRODUCTION_SSR_MODULE_PATH)).render;
       }
       const rendered = render();
       const head = generateHydrationScript();

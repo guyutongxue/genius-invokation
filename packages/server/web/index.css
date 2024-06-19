@@ -1,3 +1,17 @@
-#root {
-  color: red;
+@unocss;
+
+#app {
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+}
+
+form {
+  input[data-dirty]:invalid {
+    background-color: #fee2e2;
+  }
+}
+
+.bottom-opacity-gradient {
+  mask-image: linear-gradient(0deg, transparent 16px, red 66px)
 }

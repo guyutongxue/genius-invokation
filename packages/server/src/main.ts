@@ -23,6 +23,7 @@ import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { PrismaClientExceptionFilter } from "./db/prisma-exception.filter";
 import { viteSsr } from "./vite";
+import { BASE } from "./config";
 
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
@@ -32,6 +33,7 @@ await app.register(compression);
 app.useGlobalPipes(new ValidationPipe());
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
 await app.register(viteSsr);
+app.setGlobalPrefix(BASE);
 
 if (import.meta.env.NODE_ENV !== "production") {
   app.enableCors({ origin: "*" })

@@ -1,5 +1,3 @@
-/* @refresh reload */
-
 // Copyright (C) 2024 Guyutongxue
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,30 +13,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { hydrate } from "solid-js/web";
+import type { JSX } from "solid-js";
+import { Header } from "../components/Header";
 
-import "./index.css";
-import "@una-ui/preset/una.css";
-import "@unocss/reset/tailwind-compat.css";
-
-import App from "./App";
-import axios from "axios";
-import { BACKEND_BASE_URL } from "./config";
-
-async function main() {
-  axios.defaults.baseURL = BACKEND_BASE_URL;
-  axios.interceptors.request.use((config) => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  });
-  if (!import.meta.env.DEV) {
-    await import("core-js");
-  }
-  const app = document.getElementById("app")!;
-  hydrate(() => <App />, app);
+export interface LayoutProps {
+  children?: JSX.Element;
 }
 
-main();
+export function Layout(props: LayoutProps) {
+  return (
+    <div class="w-full h-full flex flex-col">
+      <Header />
+      <main class="min-h-0 flex-grow w-full p-8 mt-16">
+      {props.children}
+      </main>
+    </div>
+  );
+}
