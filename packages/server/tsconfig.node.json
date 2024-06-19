@@ -1,24 +1,24 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "Bundler",
     "moduleDetection": "force",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowJs": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
 
-    "noEmit": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    
+    // "noEmit": true,
+
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "useDefineForClassFields": true,
     "esModuleInterop": true,
 
     "skipLibCheck": true,
+    "composite": true,
     "strict": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
   },
-  "include": ["web"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["vite.config.ts", "src"]
 }

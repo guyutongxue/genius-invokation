@@ -18,6 +18,7 @@ import {
   FastifyAdapter,
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
+import compression from "@fastify/compress";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { PrismaClientExceptionFilter } from "./db/prisma-exception.filter";
@@ -26,6 +27,7 @@ const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter(),
 );
+await app.register(compression);
 app.useGlobalPipes(new ValidationPipe());
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
 app.setGlobalPrefix("/api");
