@@ -26,7 +26,7 @@ import { createPlayer } from "./index";
 const playerConfig0: PlayerConfig = {
   characters: [1303, 2401, 1101],
   cards: [
-    312010,
+    312010, 323007,
     322016, 322016,
     331804, 321002, 
     321017, 322022, 322024, 322011, 322011,

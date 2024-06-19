@@ -118,6 +118,13 @@ interface HealOption {
   distribution?: boolean;
 }
 
+interface CreateEntityOptions {
+  /** 创建实体时，覆盖默认变量 */
+  overrideVariables?: Partial<EntityVariables>;
+  /** 设定创建实体的 id。仅在打出支援牌和装备牌时直接继承原手牌 id */
+  withId?: number;
+}
+
 type Setter<T> = (draft: Draft<T>) => void;
 
 export type ContextMetaBase = {
@@ -1559,11 +1566,6 @@ export class CharacterBase {
     } while (!player.characters[currentIdx].variables.alive);
     return player.characters[currentIdx].id === this._id;
   }
-}
-
-interface CreateEntityOptions {
-  overrideVariables?: Partial<EntityVariables>;
-  withId?: number;
 }
 
 export class Character<Meta extends ContextMetaBase> extends CharacterBase {
