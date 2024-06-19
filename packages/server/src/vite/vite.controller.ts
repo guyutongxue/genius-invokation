@@ -3,7 +3,7 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 import { BASE, IS_PRODUCTION } from "../config";
 import path from "node:path";
 import { generateHydrationScript } from "solid-js/web";
-import { vite } from "./dev_server";
+import { ViteService } from "./vite.service";
 
 const TEMPLATE_INDEX_HTML_PATH = path.join(
   import.meta.dirname,
@@ -26,16 +26,20 @@ type RenderFn = () => { html: string };
 
 @Controller()
 export class ViteController {
+  constructor(private vite: ViteService) {}
 
   @Get("*")
-  async serveHtml(@Req() request: FastifyRequest, @Res() response: FastifyReply) {
+  async serveHtml(
+    @Req() request: FastifyRequest,
+    @Res() response: FastifyReply,
+  ) {
     const url = request.originalUrl.replace(BASE, "");
     let template: string;
     let render: RenderFn;
-    if (vite) {
+    if (this.vite.devServer) {
       template = await Bun.file(TEMPLATE_INDEX_HTML_PATH).text();
-      template = await vite.transformIndexHtml(url, template);
-      render = (await vite.ssrLoadModule(SSR_MODULE_PATH))
+      template = await this.vite.devServer.transformIndexHtml(url, template);
+      render = (await this.vite.devServer.ssrLoadModule(SSR_MODULE_PATH))
         .render;
     } else {
       template = PRODUCTION_INDEX_HTML!;

@@ -9,7 +9,7 @@ import {
 import { IS_PRODUCTION } from "../config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ViteController } from "./vite.controller";
-import { vite } from "./dev_server";
+import { ViteService } from "./vite.service";
 
 @Module({})
 export class ViteModule implements NestModule {
@@ -25,13 +25,16 @@ export class ViteModule implements NestModule {
     return {
       module: ViteModule,
       imports,
+      providers: [ViteService],
       controllers: [ViteController],
     };
   }
 
+  constructor(private vite: ViteService) {}
+
   configure(consumer: MiddlewareConsumer) {
-    if (vite) {
-      consumer.apply(vite.middlewares);
+    if (this.vite.devServer) {
+      consumer.apply(this.vite.devServer.middlewares);
     }
   }
 }
