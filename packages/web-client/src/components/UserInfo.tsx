@@ -29,6 +29,7 @@ export function UserInfo(props: UserInfoProps) {
   const [invitationCodes, setInvitationCodes] = createSignal<any[]>([]);
   const [editingPassword, setEditingPassword] = createSignal(false);
   const [editingName, setEditingName] = createSignal(false);
+  let nameInputEl: HTMLInputElement;
 
   const refreshInvitationCodes = async () => {
     const { data } = await axios.get("invitationCodes");
@@ -50,6 +51,12 @@ export function UserInfo(props: UserInfoProps) {
       refreshInvitationCodes();
     }
   });
+
+  const startEditingName = () => {
+    setEditingName(true);
+    nameInputEl.value = props.name ?? "";
+    nameInputEl.focus();
+  };
 
   const submitName = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -125,7 +132,7 @@ export function UserInfo(props: UserInfoProps) {
                   <Show when={props.editable}>
                     <button
                       class="btn btn-ghost"
-                      onClick={() => setEditingName(true)}
+                      onClick={startEditingName}
                     >
                       <i class="i-mdi-pencil-outline" />
                     </button>
@@ -142,7 +149,8 @@ export function UserInfo(props: UserInfoProps) {
                   type="input"
                   name="name"
                   maxLength={32}
-                  value={props.name ?? ""}
+                  ref={nameInputEl!}
+                  onFocus={(e) => e.target.select()}
                 />
                 <button
                   type="submit"

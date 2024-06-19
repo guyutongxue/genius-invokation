@@ -18,6 +18,7 @@ import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 import axios from "axios";
 import { A } from "@solidjs/router";
+import { DeckBriefInfo } from "../components/DeckBriefInfo";
 
 export function Decks() {
   const { user } = useUserContext();
@@ -38,24 +39,14 @@ export function Decks() {
               <Match when={decks.error}>加载失败，请刷新页面重试</Match>
               <Match when={decks()}>
                 {(decks) => (
-                  <ul>
+                  <ul class="flex flex-row flex-wrap gap-3">
                     <For
                       each={decks().data.data}
                       fallback={
                         <li class="p-4 text-gray-5">暂无牌组，可点击 + 添加</li>
                       }
                     >
-                      {(deckData) => (
-                        <div>
-                          <A
-                            href={`./${deckData.id}?name=${encodeURIComponent(
-                              deckData.name,
-                            )}`}
-                          >
-                            {deckData.code}
-                          </A>
-                        </div>
-                      )}
+                      {(deckData) => <DeckBriefInfo {...deckData} />}
                     </For>
                   </ul>
                 )}

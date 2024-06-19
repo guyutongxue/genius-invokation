@@ -36,7 +36,7 @@ export function EditDeck() {
   const [deckName, setDeckName] = createSignal<string>(
     searchParams.name ?? "新建牌组",
   );
-  const [deckNameInput, setDeckNameInput] = createSignal<string>("");
+  let nameInputEl: HTMLInputElement;
   const [editingName, setEditingName] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [uploadDone, setUploadDone] = createSignal(false);
@@ -51,7 +51,7 @@ export function EditDeck() {
     const { data } = await axios.get(`decks/${deckId}`);
     setDeckValue(data);
     setDeckName(data.name);
-    setSearchParams({ name: null });
+    setSearchParams({ name: null }, { replace: true });
     return data;
   });
   const [dirty, setDirty] = createSignal(false);
@@ -102,11 +102,15 @@ export function EditDeck() {
   };
 
   const startEditingName = () => {
-    setDeckNameInput(deckName());
     setEditingName(true);
+    nameInputEl.value = deckName();
+    nameInputEl?.focus();
   };
 
-  const saveName = async (newName: string) => {
+  const saveName = async (e: SubmitEvent) => {
+    e.preventDefault();
+    const data = new FormData(e.target as HTMLFormElement);
+    const newName = data.get("name") as string;
     const oldName = deckName();
     if (!isNew) {
       try {
@@ -139,7 +143,8 @@ export function EditDeck() {
           name: deckName(),
         });
         setDirty(false);
-        navigate(`../${data.id}`);
+        // navigate(`../${data.id}`);
+        navigate("..");
       } else {
         await axios.patch(`decks/${deckId}`, { ...deck });
         setDirty(false);
@@ -194,26 +199,30 @@ export function EditDeck() {
               </>
             }
           >
-            <input
-              class="input input-outline w-50 h-8"
-              value={deckNameInput()}
-              onInput={(e) => setDeckNameInput(e.currentTarget.value)}
-            />
-            <button
-              class="btn btn-ghost-green min-w-12"
-              disabled={uploading()}
-              onClick={() => saveName(deckNameInput())}
-            >
-              <Show when={uploading()} fallback="保存">
-                <i class="i-mdi-loading animate-spin" />
-              </Show>
-            </button>
-            <button
-              class="btn btn-ghost-red"
-              onClick={() => setEditingName(false)}
-            >
-              取消
-            </button>
+            <form onSubmit={saveName} class="flex flex-row gap-3">
+              <input
+                required
+                ref={nameInputEl!}
+                onFocus={(e) => e.target.select()}
+                name="name"
+                class="input input-outline w-50 h-8"
+              />
+              <button
+                type="submit"
+                class="btn btn-ghost-green min-w-12"
+                disabled={uploading()}
+              >
+                <Show when={uploading()} fallback="保存">
+                  <i class="i-mdi-loading animate-spin" />
+                </Show>
+              </button>
+              <button
+                class="btn btn-ghost-red"
+                onClick={() => setEditingName(false)}
+              >
+                取消
+              </button>
+            </form>
           </Show>
           <span class="flex-grow" />
           <A class="btn btn-ghost-blue" href="..">

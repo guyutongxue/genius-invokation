@@ -23,8 +23,7 @@ export function CurrentDeck(props: AllCardsProps) {
   createEffect(() => {
     const selectedChs = props.deck.characters
       .map((id) => CHARACTER_CARDS[id])
-      .filter((ch): ch is Character => typeof ch !== "undefined")
-      .toSorted((a, b) => a.i - b.i);
+      .filter((ch): ch is Character => typeof ch !== "undefined");
     const selectedAcs = props.deck.cards
       .map((id) => ACTION_CARDS[id])
       .filter((ac): ac is ActionCard => typeof ac !== "undefined")
