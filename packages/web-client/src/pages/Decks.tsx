@@ -17,12 +17,13 @@ import { For, Match, Show, Switch, createResource, onMount } from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 import axios from "axios";
-import { A } from "@solidjs/router";
+import { A, useNavigate } from "@solidjs/router";
 import { DeckBriefInfo } from "../components/DeckBriefInfo";
 
 export function Decks() {
   const { user } = useUserContext();
-  const [decks] = createResource(() => axios.get("decks"));
+  const navigate = useNavigate();
+  const [decks, { refetch }] = createResource(() => axios.get("decks"));
   return (
     <Layout>
       <Show when={user()}>
@@ -46,7 +47,20 @@ export function Decks() {
                         <li class="p-4 text-gray-5">暂无牌组，可点击 + 添加</li>
                       }
                     >
-                      {(deckData) => <DeckBriefInfo {...deckData} />}
+                      {(deckData) => (
+                        <DeckBriefInfo
+                          editable
+                          onClick={() =>
+                            navigate(
+                              `/decks/${deckData.id}?name=${encodeURIComponent(
+                                deckData.name,
+                              )}`,
+                            )
+                          }
+                          onDelete={() => refetch()}
+                          {...deckData}
+                        />
+                      )}
                     </For>
                   </ul>
                 )}

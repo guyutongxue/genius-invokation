@@ -29,7 +29,7 @@ export function UserInfo(props: UserInfoProps) {
   const [invitationCodes, setInvitationCodes] = createSignal<any[]>([]);
   const [editingPassword, setEditingPassword] = createSignal(false);
   const [editingName, setEditingName] = createSignal(false);
-  let nameInputEl: HTMLInputElement;
+  const [nameInputEl, setNameInputEl] = createSignal<HTMLInputElement>();
 
   const refreshInvitationCodes = async () => {
     const { data } = await axios.get("invitationCodes");
@@ -54,8 +54,11 @@ export function UserInfo(props: UserInfoProps) {
 
   const startEditingName = () => {
     setEditingName(true);
-    nameInputEl.value = props.name ?? "";
-    nameInputEl.focus();
+    const nameInput = nameInputEl();
+    if (nameInput) {
+      nameInput.value = props.name ?? "";
+      nameInput.focus();
+    }
   };
 
   const submitName = async (e: SubmitEvent) => {
@@ -149,7 +152,7 @@ export function UserInfo(props: UserInfoProps) {
                   type="input"
                   name="name"
                   maxLength={32}
-                  ref={nameInputEl!}
+                  ref={setNameInputEl}
                   onFocus={(e) => e.target.select()}
                 />
                 <button

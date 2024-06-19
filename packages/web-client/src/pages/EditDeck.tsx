@@ -36,7 +36,7 @@ export function EditDeck() {
   const [deckName, setDeckName] = createSignal<string>(
     searchParams.name ?? "新建牌组",
   );
-  let nameInputEl: HTMLInputElement;
+  const [nameInputEl, setNameInputEl] = createSignal<HTMLInputElement>();
   const [editingName, setEditingName] = createSignal(false);
   const [uploading, setUploading] = createSignal(false);
   const [uploadDone, setUploadDone] = createSignal(false);
@@ -103,8 +103,11 @@ export function EditDeck() {
 
   const startEditingName = () => {
     setEditingName(true);
-    nameInputEl.value = deckName();
-    nameInputEl?.focus();
+    const nameInput = nameInputEl();
+    if (nameInput) {
+      nameInput.value = deckName();
+      nameInput?.focus();
+    }
   };
 
   const saveName = async (e: SubmitEvent) => {
@@ -171,18 +174,26 @@ export function EditDeck() {
             when={editingName()}
             fallback={
               <>
-                <h2 class="text-2xl font-bold">{deckName()}</h2>
+                <h2 class="text-2xl font-bold min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">
+                  {deckName()}
+                </h2>
                 <button class="btn btn-ghost" onClick={startEditingName}>
                   <i class="i-mdi-pencil-outline" />
                 </button>
-                <button class="btn btn-outline-blue" onClick={importCode}>
+                <button
+                  class="flex-shrink-0 btn btn-outline-blue"
+                  onClick={importCode}
+                >
                   导入分享码
                 </button>
-                <button class="btn btn-outline" onClick={exportCode}>
+                <button
+                  class="flex-shrink-0 btn btn-outline"
+                  onClick={exportCode}
+                >
                   生成分享码
                 </button>
                 <button
-                  class="btn btn-solid-green min-w-22"
+                  class="flex-shrink-0 btn btn-solid-green min-w-22"
                   disabled={!valid() || uploading()}
                   onClick={saveDeck}
                 >
@@ -202,7 +213,7 @@ export function EditDeck() {
             <form onSubmit={saveName} class="flex flex-row gap-3">
               <input
                 required
-                ref={nameInputEl!}
+                ref={setNameInputEl}
                 onFocus={(e) => e.target.select()}
                 name="name"
                 class="input input-outline w-50 h-8"
@@ -225,9 +236,12 @@ export function EditDeck() {
             </form>
           </Show>
           <span class="flex-grow" />
-          <A class="btn btn-ghost-blue" href="..">
-            返回牌组列表
-          </A>
+          <button
+            class="flex-shrink-0 btn btn-ghost-blue"
+            onClick={() => history.back()}
+          >
+            返回
+          </button>
         </div>
         <Switch>
           <Match when={deckData.loading}>正在加载中...</Match>
