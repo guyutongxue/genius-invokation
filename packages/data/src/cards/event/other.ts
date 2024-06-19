@@ -148,6 +148,7 @@ export const ElementalResonanceSoothingWater = card(331202)
   .since("v3.3.0")
   .costHydro(1)
   .tags("resonance")
+  .filter((c) => c.$(`my characters with health < maxHealth`))
   .heal(2, "my active")
   .heal(1, "my standby")
   .done();

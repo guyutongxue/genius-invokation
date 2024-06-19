@@ -18,7 +18,8 @@
 |                         |                                  |
 | `onBeforeUseSkill`      | （使用技能前）                   |
 | `onUseSkill`            | 使用技能后                       |
-| `onBeforePlayCard`      | 打出手牌后（手牌描述执行前）     |
+| `onBeforePlayCard`      | （打出手牌前）                   |
+| `onPlayCard`            | 打出手牌后                       |
 | `onDisposeOrTuneCard`   | 舍弃牌或元素调和时               |
 | `onSwitchActive`        | 切换出战角色后                   |
 |                         |                                  |
