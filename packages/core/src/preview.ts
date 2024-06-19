@@ -130,13 +130,15 @@ export class ActionPreviewer {
         ) {
           break;
         }
-        previewState = applyMutation(previewState, {
-          type: "removeCard",
-          who: this.who,
-          where: "hands",
-          oldState: card,
-          used: true,
-        });
+        if (completed) {
+          previewState = applyMutation(previewState, {
+            type: "removeCard",
+            who: this.who,
+            where: "hands",
+            oldState: card,
+            used: true,
+          });
+        }
         const skillInfo: SkillInfo = {
           caller: activeCh(),
           definition: card.definition.onPlay,
@@ -151,6 +153,13 @@ export class ActionPreviewer {
             previewState,
             skillInfo,
             arg,
+          );
+        }
+        if (completed) {
+          [previewState, completed] = await SkillExecutor.previewEvent(
+            previewState,
+            "onPlayCard",
+            new PlayCardEventArg(previewState, newActionInfo),
           );
         }
         break;

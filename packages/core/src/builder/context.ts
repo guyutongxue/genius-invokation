@@ -805,7 +805,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         return null;
       }
       const initState: EntityState = {
-        id: 0,
+        id: opt.withId ?? 0,
         definition: def,
         variables: Object.fromEntries(
           Object.entries(varConfigs).map(([name, { initialValue }]) => [
@@ -1563,6 +1563,7 @@ export class CharacterBase {
 
 interface CreateEntityOptions {
   overrideVariables?: Partial<EntityVariables>;
+  withId?: number;
 }
 
 export class Character<Meta extends ContextMetaBase> extends CharacterBase {
@@ -1663,7 +1664,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   addStatus(status: StatusHandle, opt?: CreateEntityOptions) {
     this.skillContext.createEntity("status", status, this._area, opt);
   }
-  equip(equipment: EquipmentHandle) {
+  equip(equipment: EquipmentHandle, opt?: CreateEntityOptions) {
     // Remove exist artifact/weapon first
     for (const tag of ["artifact", "weapon"] as const) {
       if (
@@ -1677,7 +1678,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
         }
       }
     }
-    this.skillContext.createEntity("equipment", equipment, this._area);
+    this.skillContext.createEntity("equipment", equipment, this._area, opt);
   }
   removeArtifact(): EntityState | null {
     const entity = this.state.entities.find((v) =>

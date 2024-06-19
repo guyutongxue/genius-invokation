@@ -249,7 +249,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "createCard": {
       return produce(state, (draft) => {
-        m.value.id = draft.iterators.id--;
+        if (m.value.id === 0) {
+          m.value.id = draft.iterators.id--;
+        }
         const value = m.value as Draft<CardState>;
         const target = draft.players[m.who][m.target];
         if (typeof m.targetIndex === "number") {
@@ -261,7 +263,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "createCharacter": {
       return produce(state, (draft) => {
-        m.value.id = draft.iterators.id--;
+        if (m.value.id === 0) {
+          m.value.id = draft.iterators.id--;
+        }
         draft.players[m.who].characters.push(m.value as Draft<CharacterState>);
       });
     }
@@ -277,13 +281,17 @@ function doMutation(state: GameState, m: Mutation): GameState {
               `Character ${where.characterId} not found`,
             );
           }
-          value.id = draft.iterators.id--;
+          if (value.id === 0) {
+            value.id = draft.iterators.id--;
+          }
           character.entities.push(value as Draft<EntityState>);
         });
       } else {
         return produce(state, (draft) => {
           const area = draft.players[where.who][where.type];
-          value.id = draft.iterators.id--;
+          if (value.id === 0) {
+            value.id = draft.iterators.id--;
+          }
           area.push(value as Draft<EntityState>);
         });
       }

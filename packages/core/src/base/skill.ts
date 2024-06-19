@@ -906,6 +906,7 @@ export const EVENT_MAP = {
   onBeforeUseSkill: UseSkillEventArg,
   onUseSkill: UseSkillEventArg,
   onBeforePlayCard: PlayCardEventArg,
+  onPlayCard: PlayCardEventArg,
   onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   onSwitchActive: SwitchActiveEventArg,

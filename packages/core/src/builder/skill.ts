@@ -276,8 +276,9 @@ const detailedEventDictionary = {
   action: defineDescriptor("onAction", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
-  playCard: defineDescriptor("onBeforePlayCard", (c, e, r) => {
-    return checkRelative(c.state, { who: e.who }, r);
+  playCard: defineDescriptor("onPlayCard", (c, e, r) => {
+    // 支援牌不触发自身
+    return c.self.id !== e.card.id && checkRelative(c.state, { who: e.who }, r);
   }),
   useSkill: defineDescriptor("onUseSkill", (c, e, r) => {
     return (

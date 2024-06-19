@@ -205,7 +205,10 @@ class CardBuilder<
     this.type("equipment")
       .addTarget(target)
       .do((c) => {
-        c.$("character and @targets.0")?.equip(this.cardId as EquipmentHandle);
+        const ch = c.$("character and @targets.0");
+        ch?.equip(this.cardId as EquipmentHandle, {
+          withId: c.skillInfo.fromCard!.id,
+        });
       })
       .done();
     const builder = equipment(this.cardId);
@@ -225,10 +228,12 @@ class CardBuilder<
     this.do((c, e) => {
       // 支援牌的目标是要弃置的支援区卡牌
       const targets = e.targets as readonly EntityState[];
-      if (targets.length > 0) {
+      if (targets.length > 0 && c.$(`my support with id ${targets[0].id}`)) {
         c.dispose(targets[0]);
       }
-      c.createEntity("support", this.cardId as SupportHandle);
+      c.createEntity("support", this.cardId as SupportHandle, void 0, {
+        withId: c.skillInfo.fromCard!.id,
+      });
     }).done();
     const builder = support(this.cardId).tags(type);
     builder._versionInfo = this._versionInfo;
@@ -423,11 +428,7 @@ class CardBuilder<
     const filterFn: PlayCardFilter = (state, skillInfo, args) => {
       const ctx = new SkillContext<
         ReadonlyMetaOf<StrictBuilderMetaForCard<KindTs, AssociatedExt>>
-      >(
-        state,
-        this._wrapSkillInfoWithExt(skillInfo),
-        args as any,
-      );
+      >(state, this._wrapSkillInfoWithExt(skillInfo), args as any);
       for (const filter of this._filters) {
         if (!filter(ctx, ctx.eventArg)) {
           return false;
@@ -464,11 +465,7 @@ class CardBuilder<
           ) => {
             const ctx = new SkillContext<
               WritableMetaOf<BuilderMetaForCardDispose<AssociatedExt>>
-            >(
-              state,
-              this._wrapSkillInfoWithExt(skillInfo),
-              arg,
-            );
+            >(state, this._wrapSkillInfoWithExt(skillInfo), arg);
             disposeOp(ctx, {});
             ctx._terminate();
             return [ctx.state, ctx.events];
