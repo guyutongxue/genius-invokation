@@ -22,7 +22,7 @@ import compression from "@fastify/compress";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { PrismaClientExceptionFilter } from "./db/prisma-exception.filter";
-import { applyVite } from "./vite";
+import { viteSsr } from "./vite";
 
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
@@ -31,7 +31,7 @@ const app = await NestFactory.create<NestFastifyApplication>(
 await app.register(compression);
 app.useGlobalPipes(new ValidationPipe());
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
-await applyVite(app);
+await app.register(viteSsr);
 
 if (import.meta.env.NODE_ENV !== "production") {
   app.enableCors({ origin: "*" })

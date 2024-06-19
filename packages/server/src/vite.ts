@@ -1,5 +1,4 @@
-import type { NestFastifyApplication } from "@nestjs/platform-fastify";
-import type { FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fastifyStatic from "@fastify/static";
 import { BASE, IS_PRODUCTION } from "./config";
 import path from "node:path";
@@ -35,40 +34,41 @@ if (!IS_PRODUCTION) {
 
 type RenderFn = () => { html: string };
 
-export async function applyVite(app: NestFastifyApplication) {
+export async function viteSsr(app: FastifyInstance) {
   if (vite) {
-    app.use(vite.middlewares);
+    if (!app.hasDecorator("use")) {
+      app.register((await import("@fastify/middie")).fastifyMiddie);
+    }
+    (app as any).use(vite.middlewares);
   } else {
     app.register(fastifyStatic, {
       root: path.join(import.meta.dirname, "../dist"),
     });
   }
-  app
-    .getHttpAdapter()
-    .get("*", async (request: FastifyRequest, response: FastifyReply) => {
-      try {
-        const url = request.originalUrl.replace(BASE, "");
-        let template: string;
-        let render: RenderFn;
-        if (vite) {
-          template = await Bun.file(TEMPLATE_INDEX_HTML_PATH).text();
-          template = await vite.transformIndexHtml(url, template);
-          render = (await vite.ssrLoadModule(SSR_MODULE_PATH)).render;
-        } else {
-          template = PRODUCTION_INDEX_HTML!;
-          render = (await import(SSR_MODULE_PATH)).render;
-        }
-        const rendered = render();
-        const head = generateHydrationScript();
-        const html = template
-          .replace(`<!--app-head-->`, head)
-          .replace(`<!--app-html-->`, rendered.html);
-        return response.type("text/html").send(html);
-      } catch (e) {
-        console.error(e);
-        return response.code(500).send({
-          message: e instanceof Error ? e.message : e,
-        });
+  app.get("*", async (request: FastifyRequest, response: FastifyReply) => {
+    try {
+      const url = request.originalUrl.replace(BASE, "");
+      let template: string;
+      let render: RenderFn;
+      if (vite) {
+        template = await Bun.file(TEMPLATE_INDEX_HTML_PATH).text();
+        template = await vite.transformIndexHtml(url, template);
+        render = (await vite.ssrLoadModule(SSR_MODULE_PATH)).render;
+      } else {
+        template = PRODUCTION_INDEX_HTML!;
+        render = (await import(SSR_MODULE_PATH)).render;
       }
-    });
+      const rendered = render();
+      const head = generateHydrationScript();
+      const html = template
+        .replace(`<!--app-head-->`, head)
+        .replace(`<!--app-html-->`, rendered.html);
+      return response.type("text/html").send(html);
+    } catch (e) {
+      console.error(e);
+      return response.code(500).send({
+        message: e instanceof Error ? e.message : e,
+      });
+    }
+  });
 }
