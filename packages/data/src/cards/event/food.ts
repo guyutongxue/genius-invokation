@@ -122,8 +122,8 @@ export const MushroomPizza = card(333007)
   .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(1, "@targets.0")
   .toStatus("@targets.0", 303305)
+  .duration(2)
   .on("endPhase")
-  .usage(2)
   .heal(1, "@master")
   .done();
 
