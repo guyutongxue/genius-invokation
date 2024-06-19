@@ -269,7 +269,7 @@ class Player implements PlayerIOWithError {
 
 type GameStopHandler = (room: Room, game: InternalGame) => void;
 
-interface RoomInfo {
+export interface RoomInfo {
   id: number;
   started: boolean;
   watchable: boolean;

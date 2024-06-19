@@ -90,7 +90,7 @@ export class PlayerActionResponseDto {
 }
 
 
-@Controller("rooms")
+@Controller("api/rooms")
 export class RoomsController {
   constructor(private rooms: RoomsService) {}
 

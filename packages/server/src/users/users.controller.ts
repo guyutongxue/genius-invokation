@@ -62,7 +62,7 @@ class RegisterDto {
 }
 
 
-@Controller("users")
+@Controller("api/users")
 export class UsersController {
   constructor(
     private users: UsersService,

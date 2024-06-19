@@ -18,7 +18,7 @@ import { GamesService } from './games.service';
 import { User } from '../auth/user.decorator';
 import { PaginationDto } from '../utils';
 
-@Controller('games')
+@Controller('api/games')
 export class GamesController {
   constructor(private games: GamesService) {}
 

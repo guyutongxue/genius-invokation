@@ -71,7 +71,7 @@ export class UpdateDeckDto {
   cards?: number[];
 }
 
-@Controller("decks")
+@Controller("api/decks")
 export class DecksController {
   constructor(private decks: DecksService) {}
 

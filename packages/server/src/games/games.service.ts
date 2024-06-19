@@ -26,7 +26,7 @@ export interface AddGameOption {
   winnerId: number | null;
 }
 
-interface GameNoData extends Omit<GameModel, "data"> {}
+export interface GameNoData extends Omit<GameModel, "data"> {}
 
 @Injectable()
 export class GamesService {

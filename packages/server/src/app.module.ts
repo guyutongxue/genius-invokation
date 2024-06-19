@@ -21,7 +21,6 @@ import { UsersModule } from "./users/users.module";
 import { GamesModule } from "./games/games.module";
 import { DecksModule } from "./decks/decks.module";
 import { RoomsModule } from "./rooms/rooms.module";
-import { ViteModule } from "./vite/vite.module";
 
 @Module({
   controllers: [AppController],
@@ -32,7 +31,6 @@ import { ViteModule } from "./vite/vite.module";
     GamesModule,
     DecksModule,
     RoomsModule,
-    // ViteModule.forRoot(),
   ],
 })
 export class AppModule {}

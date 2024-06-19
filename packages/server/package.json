@@ -4,12 +4,14 @@
   "version": "0.8.4",
   "type": "module",
   "scripts": {
+    "build": "vite build",
     "dev": "bun --watch ./src/main.ts",
     "debug": "nest start --debug --watch",
     "start": "pm2 start pm2.config.cjs"
   },
   "dependencies": {
     "@fastify/compress": "^7.0.3",
+    "@fastify/static": "^7.0.4",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
     "@gi-tcg/static-data": "workspace:*",
@@ -24,11 +26,11 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "rxjs": "^7.8.1",
-    "solid-js": "^1.8.17",
-    "vite": "~5.2.0",
-    "vite-plugin-solid": "^2.10.2"
+    "solid-js": "^1.8.17"
   },
   "devDependencies": {
+    "vite": "~5.2.0",
+    "vite-plugin-solid": "^2.10.2",
     "@nestjs/cli": "^10.3.2",
     "pm2": "^5.4.0",
     "prisma": "^5.15.0"

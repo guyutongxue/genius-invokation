@@ -26,7 +26,7 @@ import {
 import { User } from "../auth/user.decorator";
 import { InvitationService } from "./invitation.service";
 
-@Controller("invitationCodes")
+@Controller("api/invitationCodes")
 export class InvitationController {
   constructor(private invitation: InvitationService) {}
 
