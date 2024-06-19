@@ -18,7 +18,6 @@ import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
 import { decode, encode, type Deck } from "@gi-tcg/utils";
 import {
-  A,
   useBeforeLeave,
   useNavigate,
   useParams,
@@ -79,6 +78,7 @@ export function EditDeck() {
     try {
       const deck = decode(input);
       setDeckValue(deck);
+      setDirty(true);
     } catch (e) {
       if (e instanceof Error) {
         window.alert(e.message);

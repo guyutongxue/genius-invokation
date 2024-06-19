@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { For, Match, Show, Switch, createResource, onMount } from "solid-js";
+import { For, Match, Show, Switch, createResource, createEffect } from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 import axios from "axios";
@@ -22,8 +22,11 @@ import { DeckBriefInfo } from "../components/DeckBriefInfo";
 
 export function Decks() {
   const { user } = useUserContext();
-  const navigate = useNavigate();
   const [decks, { refetch }] = createResource(() => axios.get("decks"));
+  createEffect(() => {
+    console.log(user());
+    // console.log(decks()?.data);
+  })
   return (
     <Layout>
       <Show when={user()}>
@@ -50,13 +53,6 @@ export function Decks() {
                       {(deckData) => (
                         <DeckBriefInfo
                           editable
-                          onClick={() =>
-                            navigate(
-                              `/decks/${deckData.id}?name=${encodeURIComponent(
-                                deckData.name,
-                              )}`,
-                            )
-                          }
                           onDelete={() => refetch()}
                           {...deckData}
                         />

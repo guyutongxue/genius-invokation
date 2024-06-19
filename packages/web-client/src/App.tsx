@@ -50,7 +50,8 @@ function App() {
       data.avatarUrl = await getGravatarUrl(data.email);
       setUser(data);
       console.log(data);
-    } catch {
+    } catch (e) {
+      console.log("!!!", e);
       setUser(null);
     }
   };

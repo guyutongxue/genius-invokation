@@ -14,8 +14,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import type { Deck } from "@gi-tcg/utils";
+import { useNavigate } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
-import { For, Show } from "solid-js";
+import { For, Show, onMount } from "solid-js";
 
 export interface DeckBriefInfo extends Deck {
   name: string;
@@ -23,11 +24,17 @@ export interface DeckBriefInfo extends Deck {
   id: number;
   sinceVersion: string;
   editable: boolean;
-  onClick?: () => void;
   onDelete?: () => void;
 }
 
 export function DeckBriefInfo(props: DeckBriefInfo) {
+  const navigate = useNavigate();
+
+  const viewDeck = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/decks/${props.id}?name=${encodeURIComponent(props.name)}`);
+  };
+
   const copyCode = async (e: MouseEvent) => {
     e.stopPropagation();
     await navigator.clipboard.writeText(props.code);
@@ -51,11 +58,13 @@ export function DeckBriefInfo(props: DeckBriefInfo) {
 
   return (
     <div
-      class="w-60 bg-yellow-800 hover:bg-yellow-700 transition-all flex flex-col p-2 rounded-xl select-none"
-      onClick={() => props.onClick?.()}
+      class="w-60 bg-yellow-800 hover:bg-yellow-700 transition-all flex flex-col p-2 rounded-xl select-none cursor-default"
+      onClick={viewDeck}
     >
       <div class="pl-2 flex flex-row justify-between">
-        <h5 class="font-bold text-yellow-100 overflow-hidden whitespace-nowrap text-ellipsis">{props.name}</h5>
+        <h5 class="font-bold text-yellow-100 overflow-hidden whitespace-nowrap text-ellipsis">
+          {props.name}
+        </h5>
         <div class="flex-shrink-0">
           <button class="btn btn-ghost" title="复制分享码" onClick={copyCode}>
             <i class="i-mdi-clipboard-outline" />

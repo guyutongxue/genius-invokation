@@ -113,20 +113,7 @@ export function Home() {
                               </div>
                             }
                           >
-                            {(deckData) => (
-                              <DeckBriefInfo
-                                onClick={() =>
-                                  navigate(
-                                    `/decks/${
-                                      deckData.id
-                                    }?name=${encodeURIComponent(
-                                      deckData.name,
-                                    )}`,
-                                  )
-                                }
-                                {...deckData}
-                              />
-                            )}
+                            {(deckData) => <DeckBriefInfo {...deckData} />}
                           </For>
                         </div>
                       )}
@@ -162,7 +149,7 @@ export function Home() {
                       />
                       <button
                         type="submit"
-                        class="flex-shrink-0 btn btn-ghost-green text-1em gap-0.5em"
+                        class="flex-shrink-0 btn btn-solid text-1em gap-0.5em"
                         disabled={!roomNumberValid()}
                       >
                         加入房间
