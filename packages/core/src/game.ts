@@ -47,7 +47,7 @@ import {
   ActionEventArg,
   ActionInfo,
   DisposeOrTuneCardEventArg,
-  DrawCardsEventArg,
+  DrawCardEventArg,
   ElementalTuningInfo,
   EventAndRequest,
   EventArg,
@@ -801,10 +801,12 @@ export class Game extends StateMutator {
           cards.push(card);
         }
       }
-      await this.handleEvent(
-        "onDrawCards",
-        new DrawCardsEventArg(this.state, who, cards),
-      );
+      for (const card of cards) {
+        await this.handleEvent(
+          "onDrawCard",
+          new DrawCardEventArg(this.state, who, card),
+        );
+      }
     }
     this.mutate({
       type: "setPlayerFlag",

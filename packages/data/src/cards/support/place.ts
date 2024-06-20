@@ -408,7 +408,7 @@ export const TheMausoleumOfKingDeshretInEffect = combatStatus(301022)
   .oneDuration()
   .on("enter")
   .createPileCards(ForbiddenKnowledge, 2, "top")
-  .on("drawCards")
+  .on("drawCard")
   .createPileCards(ForbiddenKnowledge, 1, "random")
   .done();
 
@@ -423,7 +423,7 @@ export const TheMausoleumOfKingDeshret = card(321020)
   .costSame(1)
   .support("place")
   .variable("drawnCardCount", 0)
-  .on("drawCards", (c, e) => e.who !== c.self.who)
+  .on("drawCard", (c, e) => e.who !== c.self.who)
   .listenToAll()
   .do((c) => {
     c.addVariable("drawnCardCount", 1);

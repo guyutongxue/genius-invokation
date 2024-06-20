@@ -851,19 +851,17 @@ export class TransformDefinitionEventArg extends EventArg {
   }
 }
 
-export class DrawCardsEventArg extends PlayerEventArg {
+export class DrawCardEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     who: 0 | 1,
-    public readonly cards: readonly CardState[],
+    public readonly card: CardState,
   ) {
     super(state, who);
   }
 
   override toString(): string {
-    return `player ${this.who} draw card ${this.cards
-      .map(stringifyState)
-      .join(", ")}`;
+    return `player ${this.who} draw card ${stringifyState(this.card)}`;
   }
 }
 
@@ -910,7 +908,7 @@ export const EVENT_MAP = {
   onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   onSwitchActive: SwitchActiveEventArg,
-  onDrawCards: DrawCardsEventArg,
+  onDrawCard: DrawCardEventArg,
   onReaction: ReactionEventArg,
   onTransformDefinition: TransformDefinitionEventArg,
   onGenerateDice: GenerateDiceEventArg,

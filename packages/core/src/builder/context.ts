@@ -1262,7 +1262,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         }
       }
     }
-    this.emitEvent("onDrawCards", this.state, who, cards);
+    for (const card of cards) {
+      this.emitEvent("onDrawCard", this.state, who, card);
+    }
   }
   createPileCards(
     cardId: CardHandle,
