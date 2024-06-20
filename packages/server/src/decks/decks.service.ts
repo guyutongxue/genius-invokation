@@ -87,7 +87,7 @@ export class DecksService {
       where: {
         ownerUserId: userId,
         requiredVersion: {
-          gte: requiredVersion,
+          lte: requiredVersion,
         }
       },
     });

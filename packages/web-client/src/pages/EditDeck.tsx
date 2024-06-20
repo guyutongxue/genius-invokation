@@ -18,7 +18,6 @@ import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
 import { decode, encode, type Deck } from "@gi-tcg/utils";
 import {
-  useBeforeLeave,
   useNavigate,
   useParams,
   useSearchParams,
@@ -54,16 +53,24 @@ export function EditDeck() {
     return data;
   });
   const [dirty, setDirty] = createSignal(false);
-  useBeforeLeave(async (e) => {
+
+  // useBeforeLeave(async (e) => {
+  //   if (dirty()) {
+  //     e.preventDefault();
+  //     if (window.confirm("您有未保存的更改，是否保存？")) {
+  //       await saveDeck();
+  //     }
+  //     e.retry(true);
+  //   }
+  // });
+  const navigateBack = async () => {
     if (dirty()) {
-      e.preventDefault();
       if (window.confirm("您有未保存的更改，是否保存？")) {
-        if (await saveDeck()) {
-          e.retry(true);
-        }
+        await saveDeck();
       }
     }
-  });
+    history.back();
+  };
 
   const valid = () => {
     const deck = deckValue();
@@ -238,7 +245,7 @@ export function EditDeck() {
           <span class="flex-grow" />
           <button
             class="flex-shrink-0 btn btn-ghost-blue"
-            onClick={() => history.back()}
+            onClick={() => navigateBack()}
           >
             返回
           </button>

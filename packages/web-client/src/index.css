@@ -16,27 +16,18 @@ form {
   mask-image: linear-gradient(0deg, transparent 16px, red 66px)
 }
 
-@keyframes bounce-show {
-  0% {
-    opacity: 0.5;
-    transform: scale(0.5);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+dialog {
+  display: unset;
+  inset: 0;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
-@keyframes bounce-hide {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0.5);
-  }
-
+dialog:not([open]) {
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.5);
 }
 
 dialog[open] {
-  animation: bounce-show 0.3s;
+  transform: scale(1);
 }

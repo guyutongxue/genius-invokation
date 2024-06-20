@@ -26,7 +26,7 @@ const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter(),
 );
-app.useGlobalPipes(new ValidationPipe());
+app.useGlobalPipes(new ValidationPipe({ transform: true }));
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
 app.setGlobalPrefix("/api");
 

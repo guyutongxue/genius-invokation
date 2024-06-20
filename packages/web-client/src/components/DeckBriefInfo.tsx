@@ -14,11 +14,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import type { Deck } from "@gi-tcg/utils";
-import { useNavigate } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
 import { For, Show } from "solid-js";
 
-export interface DeckBriefInfo extends Deck {
+export interface DeckInfoProps extends Deck {
   name: string;
   code: string;
   id: number;
@@ -27,7 +27,7 @@ export interface DeckBriefInfo extends Deck {
   onDelete?: () => void;
 }
 
-export function DeckBriefInfo(props: DeckBriefInfo) {
+export function DeckBriefInfo(props: DeckInfoProps) {
   const navigate = useNavigate();
 
   const viewDeck = (e: MouseEvent) => {

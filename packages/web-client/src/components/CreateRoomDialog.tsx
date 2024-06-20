@@ -13,9 +13,57 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createSignal, createResource, Show, For, createEffect } from "solid-js";
-import axios from "axios";
+import {
+  createSignal,
+  createResource,
+  Show,
+  For,
+  createEffect,
+  JSX,
+  splitProps,
+} from "solid-js";
+import axios, { AxiosError } from "axios";
 import { ToggleSwitch } from "./ToggleSwitch";
+import { DeckInfoProps } from "./DeckBriefInfo";
+
+function SelectableDeckInfo(
+  props: DeckInfoProps & Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "id">,
+) {
+  const [deckInfo, inputProps] = splitProps(props, [
+    "characters",
+    "name",
+    "id",
+  ]);
+  return (
+    <label class="relative group cursor-pointer">
+      <input
+        type="radio"
+        class="w-0 h-0 opacity-0 peer"
+        name="createRoomDeck"
+        {...inputProps}
+      />
+      <div class="pl-10 pr-4 flex flex-row">
+        <div class="flex flex-row items-center gap-1">
+          <For each={deckInfo.characters}>
+            {(id) => (
+              <img
+                class="h-12 w-12 b-2 b-yellow-100 rounded-full"
+                src={`https://gi-tcg-assets.guyutongxue.site/api/v2/images/character_icons/${id}`}
+              />
+            )}
+          </For>
+        </div>
+      </div>
+      <div class="pl-8 pb-1 text-yellow-800 peer-checked:text-yellow-100 transition-colors">
+        {deckInfo.name}
+      </div>
+      <div class="absolute bottom-7 left-0 hidden peer-checked:flex text-6 line-height-6 w-8 h-8  items-center justify-center text-red bg-white b-yellow-800 b-2 rounded-full">
+        &#10003;
+      </div>
+      <div class="absolute bottom-0 left-4 right-0 h-12 bg-white border-yellow-800 b-1 group-hover:bg-yellow-100 group-[_]:peer-checked:bg-yellow-800 rounded-lg z--1 transition-colors" />
+    </label>
+  );
+}
 
 export interface CreateRoomDialogProps {
   ref: HTMLDialogElement;
@@ -61,8 +109,11 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
   const [versionInfo] = createResource(() =>
     axios.get("version").then((res) => res.data),
   );
-  const [version, setVersion] = createSignal(0);
+  const [version, setVersion] = createSignal(-1);
   const [timeConfig, setTimeConfig] = createSignal(TIME_CONFIGS[1]);
+  const [availableDecks, setAvailableDecks] = createSignal<DeckInfoProps[]>([]);
+  const [loadingDecks, setLoadingDecks] = createSignal(true);
+  const [selectedDeck, setSelectedDeck] = createSignal<number | null>(null);
 
   createEffect(() => {
     if (versionInfo()) {
@@ -70,31 +121,55 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
     }
   });
 
+  const updateAvailableDecks = async (version: number) => {
+    setLoadingDecks(true);
+    try {
+      const { data } = await axios.get(`decks?requiredVersion=${version}`);
+      setAvailableDecks(data.data);
+    } catch (e) {
+      setAvailableDecks([]);
+      if (e instanceof AxiosError) {
+        alert(e.response?.data.message);
+      }
+      console.error(e);
+    }
+    const currentSelectedDeckId = selectedDeck();
+    if (!availableDecks().some((deck) => deck.id === currentSelectedDeckId)) {
+      setSelectedDeck(null);
+    }
+    setLoadingDecks(false);
+  };
+
   createEffect(() => {
-    const verIdx = version();
-    console.log(verIdx);
+    const ver = version();
+    if (ver >= 0) {
+      updateAvailableDecks(ver);
+    }
   });
 
   return (
     <dialog
       ref={(el) => (dialogEl = el) && (props.ref as any)?.(el)}
-      class="h-[calc(100vh-6rem)] w-[calc(100vw-6rem)] rounded-xl shadow-xl p-6 relative"
+      class="h-[calc(100vh-6rem)] rounded-xl shadow-xl p-6"
     >
       <div class="flex flex-col h-full w-full gap-5">
         <h3 class="flex-shrink-0 text-xl font-bold">房间配置</h3>
         <div class="flex-grow min-h-0 flex flex-row gap-4">
-          <div class="flex-grow">
+          <div>
             <Show when={versionInfo()}>
-              <div>
+              <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">游戏版本</h4>
-                <select value={version()} onChange={(e) => setVersion(Number(e.target.value))}>
+                <select
+                  value={version()}
+                  onChange={(e) => setVersion(Number(e.target.value))}
+                >
                   <For each={versionInfo().supportedGameVersions}>
                     {(version, idx) => <option value={idx()}>{version}</option>}
                   </For>
                 </select>
               </div>
-              <h4 class="text-lg">思考时间</h4>
-              <div class="flex flex-row gap-2">
+              <h4 class="text-lg mb-3">思考时间</h4>
+              <div class="flex flex-row gap-2 mb-3">
                 <For each={TIME_CONFIGS}>
                   {(config) => (
                     <div
@@ -115,15 +190,43 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
                   )}
                 </For>
               </div>
-              <h4 class="text-lg">公开加入</h4>
-              <ToggleSwitch />
-              <h4 class="text-lg">允许观战</h4>
-              <ToggleSwitch checked />
+              <div class="mb-3 flex flex-row gap-4 items-center">
+                <h4 class="text-lg">公开加入</h4>
+                <ToggleSwitch />
+              </div>
+              <div class="mb-3 flex flex-row gap-4 items-center">
+                <h4 class="text-lg">允许观战</h4>
+                <ToggleSwitch checked />
+              </div>
             </Show>
           </div>
           <div class="b-r-gray-200 b-1" />
-          <div>
-            <h4 class="text-lg">选择出战卡组</h4>
+          <div class="flex flex-col min-w-52 relative">
+            <h4 class="text-lg mb-3">选择出战牌组</h4>
+            <ul class="flex-grow-1 flex flex-col min-h-0 overflow-auto">
+              <For
+                each={availableDecks()}
+                fallback={<li class="text-gray-500">暂无该版本可用牌组</li>}
+              >
+                {(deck) => (
+                  <li>
+                    <SelectableDeckInfo
+                      {...deck}
+                      checked={selectedDeck() === deck.id}
+                      onChange={(e) =>
+                        e.target.checked && setSelectedDeck(deck.id)
+                      }
+                    />
+                  </li>
+                )}
+              </For>
+            </ul>
+            <div
+              class="absolute inset-0 opacity-0 bg-white text-gray-500 pointer-events-none data-[loading=true]:opacity-80 transition flex items-center justify-center"
+              data-loading={loadingDecks()}
+            >
+              加载中…
+            </div>
           </div>
         </div>
         <div class="flex-shrink-0 flex flex-row justify-end gap-4">
@@ -136,8 +239,9 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
           <button
             class="btn btn-solid-green text-1em gap-0.5em"
             onClick={closeDialog}
+            disabled={selectedDeck() === null}
           >
-            创建房间
+            {selectedDeck() === null ? "请先选择牌组" : "创建房间"}
           </button>
         </div>
       </div>

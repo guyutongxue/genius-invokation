@@ -37,8 +37,9 @@ import {
   Min,
 } from "class-validator";
 import { DecksService } from "./decks.service";
-import { PaginationDto } from "../utils";
+import { PaginationDto, parseStringToInt } from "../utils";
 import { VERSIONS, type Version } from "@gi-tcg/core";
+import { Transform } from "class-transformer";
 
 export class CreateDeckDto {
   @Length(1, 64)
@@ -78,6 +79,7 @@ export class QueryDeckDto extends PaginationDto {
   @Min(0)
   @Max(VERSIONS.length - 1)
   @IsOptional()
+  @Transform(parseStringToInt)
   requiredVersion?: number;
 }
 

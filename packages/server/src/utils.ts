@@ -21,6 +21,7 @@ import {
 import { IsInt, IsOptional, IsPositive, Max } from "class-validator";
 import { CURRENT_VERSION, VERSIONS, type Version } from "@gi-tcg/core";
 import { semver } from "bun";
+import { Transform, type TransformFnParams } from "class-transformer";
 
 export enum DeckVerificationErrorCode {
   SizeError = "SizeError",
@@ -138,9 +139,9 @@ export function verifyDeck({ characters, cards }: Deck): Version {
 
 function maxVersion(versions: Iterable<string | undefined>): Version {
   const ver = [...versions]
-      .filter((v): v is string => !!v)
-      .toSorted(semver.order)
-      .last();
+    .filter((v): v is string => !!v)
+    .toSorted(semver.order)
+    .last();
   if (!VERSIONS.includes(ver as Version)) {
     return CURRENT_VERSION;
   } else {
@@ -158,16 +159,22 @@ export function minimumRequiredVersionOfDeck({
   ]);
 }
 
+export function parseStringToInt({ value }: TransformFnParams): number {
+  return typeof value !== "string" || value.trim() === "" ? NaN : Number(value);
+}
+
 export class PaginationDto {
   @IsInt()
   @IsPositive()
   @IsOptional()
+  @Transform(parseStringToInt)
   skip?: number;
 
   @IsInt()
   @IsPositive()
   @Max(30)
   @IsOptional()
+  @Transform(parseStringToInt)
   take?: number;
 }
 

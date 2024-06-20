@@ -23,7 +23,7 @@ import {
 } from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
-import { A, useNavigate } from "@solidjs/router";
+import { A, useLocation, useNavigate } from "@solidjs/router";
 import axios from "axios";
 import { DeckBriefInfo } from "../components/DeckBriefInfo";
 import { CreateRoomDialog } from "../components/CreateRoomDialog";
@@ -32,7 +32,9 @@ import { JoinRoomDialog } from "../components/JoinRoomDialog";
 export function Home() {
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const [decks] = createResource(() => axios.get("decks").then((res) => res.data));
+  const [decks] = createResource(() =>
+    axios.get("decks").then((res) => res.data),
+  );
 
   const [roomNumberValid, setRoomNumberValid] = createSignal(false);
   let createRoomDialogEl: HTMLDialogElement;
@@ -107,7 +109,10 @@ export function Home() {
                             fallback={
                               <div class="text-gray-500">
                                 暂无牌组，
-                                <A href="/decks/new" class="text-blue-500">
+                                <A
+                                  href="/decks/new"
+                                  class="text-blue-500"
+                                >
                                   前往添加
                                 </A>
                               </div>
@@ -131,10 +136,7 @@ export function Home() {
                       创建房间…
                     </button>
                     或者
-                    <form
-                      class="flex-grow flex flex-row"
-                      onSubmit={joinRoom}
-                    >
+                    <form class="flex-grow flex flex-row" onSubmit={joinRoom}>
                       <input
                         class="input input-solid rounded-r-0 b-r-0"
                         name="roomNumber"
@@ -159,11 +161,14 @@ export function Home() {
                   <h4 class="text-xl font-bold mb-5">可观战的对局</h4>
                 </div>
               </div>
+              <CreateRoomDialog ref={createRoomDialogEl!} />
+              <JoinRoomDialog
+                ref={joinRoomDialogEl!}
+                roomNumber={roomNumber()}
+              />
             </div>
           )}
         </Show>
-        <CreateRoomDialog ref={createRoomDialogEl!} />
-        <JoinRoomDialog ref={joinRoomDialogEl!} roomNumber={roomNumber()} />
       </div>
     </Layout>
   );
