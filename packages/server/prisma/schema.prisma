@@ -69,11 +69,12 @@ model InvitationCode {
 }
 
 model Deck {
-  id          Int    @id @default(autoincrement())
-  name        String
-  code        String
-  owner       User   @relation(fields: [ownerUserId], references: [id])
-  ownerUserId Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  name            String
+  code            String
+  requiredVersion Int
+  owner           User     @relation(fields: [ownerUserId], references: [id])
+  ownerUserId     Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

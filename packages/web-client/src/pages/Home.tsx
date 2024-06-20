@@ -132,11 +132,11 @@ export function Home() {
                     </button>
                     或者
                     <form
-                      class="flex-grow flex flex-row gap-3"
+                      class="flex-grow flex flex-row"
                       onSubmit={joinRoom}
                     >
                       <input
-                        class="input input-outline"
+                        class="input input-solid rounded-r-0 b-r-0"
                         name="roomNumber"
                         placeholder="输入房间号"
                         inputmode="numeric"
@@ -149,7 +149,7 @@ export function Home() {
                       />
                       <button
                         type="submit"
-                        class="flex-shrink-0 w-35 btn btn-solid text-1em gap-0.5em"
+                        class="flex-shrink-0 w-35 btn btn-solid text-1em gap-0.5em rounded-l-0"
                         disabled={!roomNumberValid()}
                       >
                         加入房间…

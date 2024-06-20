@@ -137,9 +137,7 @@ export function verifyDeck({ characters, cards }: Deck): Version {
 }
 
 function maxVersion(versions: Iterable<string | undefined>): Version {
-  const ver =
-    "v" +
-    [...versions]
+  const ver = [...versions]
       .filter((v): v is string => !!v)
       .toSorted(semver.order)
       .last();

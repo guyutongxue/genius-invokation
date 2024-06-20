@@ -32,11 +32,13 @@ import {
   ArrayMinSize,
   IsInt,
   IsOptional,
-  IsString,
   Length,
+  Max,
+  Min,
 } from "class-validator";
 import { DecksService } from "./decks.service";
 import { PaginationDto } from "../utils";
+import { VERSIONS, type Version } from "@gi-tcg/core";
 
 export class CreateDeckDto {
   @Length(1, 64)
@@ -71,6 +73,14 @@ export class UpdateDeckDto {
   cards?: number[];
 }
 
+export class QueryDeckDto extends PaginationDto {
+  @IsInt()
+  @Min(0)
+  @Max(VERSIONS.length - 1)
+  @IsOptional()
+  requiredVersion?: number;
+}
+
 @Controller("decks")
 export class DecksController {
   constructor(private decks: DecksService) {}
@@ -86,7 +96,7 @@ export class DecksController {
   }
 
   @Get()
-  async getAllDecks(@User() userId: number, @Query() pagination: PaginationDto) {
+  async getAllDecks(@User() userId: number, @Query() pagination: QueryDeckDto) {
     return await this.decks.getAllDecks(userId, pagination);
   }
 
@@ -105,11 +115,7 @@ export class DecksController {
     @Param("deckId", ParseIntPipe) deckId: number,
     @Body() deck: UpdateDeckDto,
   ) {
-    const result = await this.decks.updateDeck(userId, deckId, deck);
-    return {
-      id: result.id,
-      code: result.code,
-    };
+    return await this.decks.updateDeck(userId, deckId, deck);
   }
 
   @Delete(":deckId")

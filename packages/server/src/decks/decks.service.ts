@@ -15,27 +15,39 @@
 
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
-import type { CreateDeckDto, UpdateDeckDto } from "./decks.controller";
+import type {
+  CreateDeckDto,
+  QueryDeckDto,
+  UpdateDeckDto,
+} from "./decks.controller";
 import { type Deck, encode, decode } from "@gi-tcg/utils";
 import { type Deck as DeckModel } from "@prisma/client";
-import { DeckVerificationError, PaginationDto, minimumRequiredVersionOfDeck, verifyDeck, type PaginationResult } from "../utils";
-import type { Version } from "@gi-tcg/core";
+import {
+  verifyDeck,
+  type PaginationResult,
+} from "../utils";
+import { VERSIONS } from "@gi-tcg/core";
 
 interface DeckWithVersion extends Deck {
-  sinceVersion: Version;
+  code: string;
+  requiredVersion: number;
 }
 
-export interface DeckWithDeckModel extends DeckWithVersion, DeckModel {
-  sinceVersion: Version;
-}
+export interface DeckWithDeckModel extends DeckWithVersion, DeckModel {}
+
 @Injectable()
 export class DecksService {
   constructor(private prisma: PrismaService) {}
 
-  private deckToCode(deck: Deck) {
+  private deckToCode(deck: Deck): DeckWithVersion {
     try {
-      verifyDeck(deck);
-      return encode(deck);
+      const sinceVersion = verifyDeck(deck);
+      const requiredVersion = VERSIONS.indexOf(sinceVersion);
+      return {
+        ...deck,
+        code: encode(deck),
+        requiredVersion,
+      };
     } catch (e) {
       if (e instanceof Error) {
         throw new BadRequestException(e.message);
@@ -45,41 +57,46 @@ export class DecksService {
     }
   }
 
-  private codeToDeck(code: string): DeckWithVersion {
+  private codeToDeck(code: string): Deck {
     const deck = decode(code);
-    const sinceVersion = minimumRequiredVersionOfDeck(deck);
     return {
+      // code,
       ...deck,
-      sinceVersion,
     };
   }
 
   async createDeck(userId: number, deck: CreateDeckDto): Promise<DeckModel> {
-    const code = this.deckToCode(deck);
+    const { code, requiredVersion } = this.deckToCode(deck);
     return await this.prisma.deck.create({
       data: {
         name: deck.name,
         code,
         ownerUserId: userId,
+        requiredVersion,
       },
     });
   }
 
-  async getAllDecks(userId: number, { skip = 0, take = 10 }: PaginationDto): Promise<PaginationResult<DeckWithDeckModel>> {
+  async getAllDecks(
+    userId: number,
+    { skip = 0, take = 10, requiredVersion }: QueryDeckDto,
+  ): Promise<PaginationResult<DeckWithDeckModel>> {
     const [models, count] = await this.prisma.deck.findManyAndCount({
       skip,
       take,
       where: {
         ownerUserId: userId,
+        requiredVersion: {
+          gte: requiredVersion,
+        }
       },
     });
     const data = models.map((model) => {
-      const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
+      const { characters, cards } = this.codeToDeck(model.code);
       return {
         ...model,
         characters,
         cards,
-        sinceVersion,
       };
     });
     return { data, count };
@@ -98,12 +115,11 @@ export class DecksService {
     if (model === null) {
       return null;
     }
-    const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
+    const { characters, cards } = this.codeToDeck(model.code);
     return {
       ...model,
       characters,
       cards,
-      sinceVersion,
     };
   }
 
@@ -111,8 +127,9 @@ export class DecksService {
     userId: number,
     deckId: number,
     deck: UpdateDeckDto,
-  ): Promise<DeckModel> {
+  ) {
     let code: string | undefined;
+    let requiredVersion: number | undefined;
     if (!deck.characters || !deck.cards) {
       if (!deck.characters && !deck.cards) {
         code = void 0;
@@ -122,12 +139,12 @@ export class DecksService {
         );
       }
     } else {
-      code = this.deckToCode({
+      ({ code, requiredVersion } = this.deckToCode({
         characters: deck.characters,
         cards: deck.cards,
-      });
+      }));
     }
-    return await this.prisma.deck.update({
+    const model = await this.prisma.deck.update({
       where: {
         id: deckId,
         ownerUserId: userId,
@@ -135,8 +152,10 @@ export class DecksService {
       data: {
         name: deck.name,
         code,
+        requiredVersion,
       },
     });
+    return model;
   }
 
   async deleteDeck(userId: number, deckId: number) {
