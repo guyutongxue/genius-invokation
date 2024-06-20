@@ -25,10 +25,7 @@ interface DeckWithVersion extends Deck {
   sinceVersion: Version;
 }
 
-export interface DeckWithDeckModel extends DeckWithVersion {
-  id: number;
-  name: string;
-  code: string;
+export interface DeckWithDeckModel extends DeckWithVersion, DeckModel {
   sinceVersion: Version;
 }
 @Injectable()
@@ -79,9 +76,7 @@ export class DecksService {
     const data = models.map((model) => {
       const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
       return {
-        id: model.id,
-        name: model.name,
-        code: model.code,
+        ...model,
         characters,
         cards,
         sinceVersion,
@@ -105,9 +100,7 @@ export class DecksService {
     }
     const { characters, cards, sinceVersion } = this.codeToDeck(model.code);
     return {
-      id: model.id,
-      name: model.name,
-      code: model.code,
+      ...model,
       characters,
       cards,
       sinceVersion,

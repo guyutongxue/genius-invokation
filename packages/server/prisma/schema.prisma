@@ -74,4 +74,6 @@ model Deck {
   code        String
   owner       User   @relation(fields: [ownerUserId], references: [id])
   ownerUserId Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
