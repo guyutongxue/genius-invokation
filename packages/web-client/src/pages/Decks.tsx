@@ -13,58 +13,58 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { For, Match, Show, Switch, createResource, createEffect } from "solid-js";
+import {
+  For,
+  Match,
+  Show,
+  Switch,
+  createResource,
+  createEffect,
+} from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 import axios from "axios";
-import { A, useNavigate } from "@solidjs/router";
+import { A } from "@solidjs/router";
 import { DeckBriefInfo } from "../components/DeckBriefInfo";
 
 export function Decks() {
-  const { user } = useUserContext();
-  const [decks, { refetch }] = createResource(() => axios.get("decks"));
-  createEffect(() => {
-    console.log(user());
-    // console.log(decks()?.data);
-  })
+  const [decks, { refetch }] = createResource(() =>
+    axios.get("decks").then((res) => res.data),
+  );
   return (
     <Layout>
-      <Show when={user()}>
-        {(user) => (
-          <div class="container mx-auto">
-            <div class="flex flex-row gap-4 items-center mb-5">
-              <h2 class="text-2xl font-bold">我的牌组</h2>
-              <A class="btn btn-outline-green" href="/decks/new">
-                <i class="i-mdi-plus" /> 添加
-              </A>
-            </div>
-            <Switch>
-              <Match when={decks.loading}>正在加载中...</Match>
-              <Match when={decks.error}>加载失败，请刷新页面重试</Match>
-              <Match when={decks()}>
-                {(decks) => (
-                  <ul class="flex flex-row flex-wrap gap-3">
-                    <For
-                      each={decks().data.data}
-                      fallback={
-                        <li class="p-4 text-gray-5">暂无牌组，可点击 + 添加</li>
-                      }
-                    >
-                      {(deckData) => (
-                        <DeckBriefInfo
-                          editable
-                          onDelete={() => refetch()}
-                          {...deckData}
-                        />
-                      )}
-                    </For>
-                  </ul>
-                )}
-              </Match>
-            </Switch>
-          </div>
-        )}
-      </Show>
+      <div class="container mx-auto">
+        <div class="flex flex-row gap-4 items-center mb-5">
+          <h2 class="text-2xl font-bold">我的牌组</h2>
+          <A class="btn btn-outline-green" href="/decks/new">
+            <i class="i-mdi-plus" /> 添加
+          </A>
+        </div>
+        <Switch>
+          <Match when={decks.loading}>正在加载中...</Match>
+          <Match when={decks.error}>加载失败，请刷新页面重试</Match>
+          <Match when={decks()}>
+            {(decks) => (
+              <ul class="flex flex-row flex-wrap gap-3">
+                <For
+                  each={decks().data}
+                  fallback={
+                    <li class="p-4 text-gray-5">暂无牌组，可点击 + 添加</li>
+                  }
+                >
+                  {(deckData) => (
+                    <DeckBriefInfo
+                      editable
+                      onDelete={() => refetch()}
+                      {...deckData}
+                    />
+                  )}
+                </For>
+              </ul>
+            )}
+          </Match>
+        </Switch>
+      </div>
     </Layout>
   );
 }

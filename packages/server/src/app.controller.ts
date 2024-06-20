@@ -15,7 +15,7 @@
 
 import { Controller, Get } from "@nestjs/common";
 import { Public } from "./auth/auth.guard";
-import { CORE_VERSION } from "@gi-tcg/core";
+import { CORE_VERSION, CURRENT_VERSION, VERSIONS } from "@gi-tcg/core";
 
 @Controller()
 export class AppController {
@@ -23,8 +23,12 @@ export class AppController {
 
   @Public()
   @Get("/version")
-  getVersion(): string {
-    return CORE_VERSION;
+  getVersion() {
+    return {
+      supportedGameVersions: VERSIONS,
+      currentGameVersion: CURRENT_VERSION,
+      coreVersion: CORE_VERSION,
+    };
   }
 
   @Public()

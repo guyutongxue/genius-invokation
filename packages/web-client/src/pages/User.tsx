@@ -22,7 +22,7 @@ import { UserInfo } from "../components/UserInfo";
 export function User() {
   const params = useParams();
   const userId = Number(params.id);
-  const [userInfo, { refetch }] = createResource(() => axios.get(`users/${userId}`));
+  const [userInfo, { refetch }] = createResource(() => axios.get(`users/${userId}`).then((res) => res.data));
   return (
     <Layout>
       <Switch>
@@ -36,8 +36,8 @@ export function User() {
         <Match when={true}>
           <div class="w-full flex flex-row justify-center">
           <UserInfo
-            {...userInfo()!.data}
-            editable={userInfo()?.data.id === userId}
+            {...userInfo()}
+            editable={userInfo()?.id === userId}
             onUpdate={refetch}
           />
           </div>

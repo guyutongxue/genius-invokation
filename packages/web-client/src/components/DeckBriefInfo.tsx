@@ -16,7 +16,7 @@
 import type { Deck } from "@gi-tcg/utils";
 import { useNavigate } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
-import { For, Show, onMount } from "solid-js";
+import { For, Show } from "solid-js";
 
 export interface DeckBriefInfo extends Deck {
   name: string;

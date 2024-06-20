@@ -32,7 +32,7 @@ import { JoinRoomDialog } from "../components/JoinRoomDialog";
 export function Home() {
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const [decks] = createResource(() => axios.get("decks"));
+  const [decks] = createResource(() => axios.get("decks").then((res) => res.data));
 
   const [roomNumberValid, setRoomNumberValid] = createSignal(false);
   let createRoomDialogEl: HTMLDialogElement;
@@ -40,7 +40,7 @@ export function Home() {
   const [roomNumber, setRoomNumber] = createSignal("");
 
   const createRoom = () => {
-    if (!decks()?.data.count) {
+    if (!decks()?.count) {
       alert("请先创建一组牌组");
       navigate("/decks/new");
       return;
@@ -49,7 +49,7 @@ export function Home() {
   };
   const joinRoom = (e: SubmitEvent) => {
     e.preventDefault();
-    if (!decks()?.data.count) {
+    if (!decks()?.count) {
       alert("请先创建一组牌组");
       navigate("/decks/new");
       return;
@@ -103,7 +103,7 @@ export function Home() {
                       {(decks) => (
                         <div class="flex flex-col gap-2">
                           <For
-                            each={decks().data.data}
+                            each={decks().data}
                             fallback={
                               <div class="text-gray-500">
                                 暂无牌组，
@@ -125,10 +125,10 @@ export function Home() {
                   <h4 class="text-xl font-bold mb-5">开始游戏</h4>
                   <div class="flex flex-row gap-5 items-center mb-8">
                     <button
-                      class="flex-shrink-0 w-[20%] btn btn-solid-green text-1em gap-0.5em"
+                      class="flex-shrink-0 w-35 btn btn-solid-green text-1em gap-0.5em"
                       onClick={createRoom}
                     >
-                      创建房间
+                      创建房间…
                     </button>
                     或者
                     <form
@@ -149,10 +149,10 @@ export function Home() {
                       />
                       <button
                         type="submit"
-                        class="flex-shrink-0 btn btn-solid text-1em gap-0.5em"
+                        class="flex-shrink-0 w-35 btn btn-solid text-1em gap-0.5em"
                         disabled={!roomNumberValid()}
                       >
-                        加入房间
+                        加入房间…
                       </button>
                     </form>
                   </div>
