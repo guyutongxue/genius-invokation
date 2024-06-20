@@ -5,7 +5,7 @@ import babel from "@rollup/plugin-babel";
 export default defineConfig({
   base: "/gi-tcg",
   plugins: [
-    solid(),
+    solid({ ssr: true }),
     babel({
       babelHelpers: "bundled",
     }),

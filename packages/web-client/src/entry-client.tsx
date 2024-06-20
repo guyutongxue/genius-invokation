@@ -17,7 +17,7 @@
 
 import "core-js";
 
-import { render } from "solid-js/web";
+import { hydrate } from "solid-js/web";
 
 import "./index.css";
 import "@una-ui/preset/una.css";
@@ -38,4 +38,4 @@ axios.interceptors.request.use((config) => {
 
 const app = document.getElementById("app")!;
 
-render(() => <App />, app);
+hydrate(() => <App />, app);

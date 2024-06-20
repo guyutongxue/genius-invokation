@@ -34,6 +34,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-solid": "^0.13.1",
+    "express": "^4.19.2",
     "postcss-load-config": "^5.0.3",
     "postcss-preset-env": "^9.3.0",
     "typescript": "^5.2.2",
