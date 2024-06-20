@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createSignal, createResource, Show, For } from "solid-js";
+import { createSignal, createResource, Show, For, createEffect } from "solid-js";
 import axios from "axios";
 import { ToggleSwitch } from "./ToggleSwitch";
 
@@ -61,7 +61,19 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
   const [versionInfo] = createResource(() =>
     axios.get("version").then((res) => res.data),
   );
+  const [version, setVersion] = createSignal(0);
   const [timeConfig, setTimeConfig] = createSignal(TIME_CONFIGS[1]);
+
+  createEffect(() => {
+    if (versionInfo()) {
+      setVersion(versionInfo().supportedGameVersions.length - 1);
+    }
+  });
+
+  createEffect(() => {
+    const verIdx = version();
+    console.log(verIdx);
+  });
 
   return (
     <dialog
@@ -75,9 +87,9 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
             <Show when={versionInfo()}>
               <div>
                 <h4 class="text-lg">游戏版本</h4>
-                <select value={versionInfo().currentGameVersion}>
+                <select value={version()} onChange={(e) => setVersion(Number(e.target.value))}>
                   <For each={versionInfo().supportedGameVersions}>
-                    {(version) => <option value={version}>{version}</option>}
+                    {(version, idx) => <option value={idx()}>{version}</option>}
                   </For>
                 </select>
               </div>
