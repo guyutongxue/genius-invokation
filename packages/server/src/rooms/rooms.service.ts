@@ -87,6 +87,7 @@ interface PlayerIOWithError extends PlayerIO {
 interface PlayerInfo {
   userId: number;
   userName: string | null;
+  userEmail: string;
   deck: Deck;
 }
 
@@ -165,6 +166,7 @@ class Player implements PlayerIOWithError {
     return {
       userId: this.user.id,
       userName: this.user.name,
+      userEmail: this.user.email,
       deck: this.deck,
     };
   }
@@ -307,6 +309,7 @@ type GameStopHandler = (room: Room, game: InternalGame) => void;
 
 interface RoomInfo {
   id: number;
+  config: RoomConfig;
   started: boolean;
   watchable: boolean;
   players: PlayerInfo[];
@@ -316,14 +319,17 @@ class Room {
   public static readonly CORE_VERSION = CORE_VERSION;
   private game: InternalGame | null = null;
   private hostWho: 0 | 1;
+  public readonly config: RoomConfig;
   private host: Player | null = null;
   private guest: Player | null = null;
   private stateLog: GameStateLogEntry[] = [];
   private terminated = false;
   private onStopHandlers: GameStopHandler[] = [];
 
-  constructor(public readonly config: CreateRoomConfig) {
-    this.hostWho = config.hostWho;
+  constructor(createRoomConfig: CreateRoomConfig) {
+    const { hostWho, ...config } = createRoomConfig;
+    this.hostWho = hostWho;
+    this.config = config;
   }
   getHost() {
     return this.host;
@@ -428,6 +434,7 @@ class Room {
   getRoomInfo(id: number): RoomInfo {
     return {
       id,
+      config: this.config,
       started: this.started,
       watchable: this.config.watchable,
       players: this.getPlayers().map((player) => player.playerInfo),
@@ -448,17 +455,22 @@ export class RoomsService {
     private games: GamesService,
   ) {}
 
+  currentRoom(userId: number) {
+    for (let i = 0; i < this.rooms.length; i++) {
+      const room = this.rooms[i];
+      if (room && room.getPlayers().some((player) => player.user.id === userId)) {
+        return room.getRoomInfo(i);
+      }
+    }
+    return null;
+  }
+
   async createRoom(hostUserId: number, params: CreateRoomDto) {
-    const allRooms = this.getAllRooms();
     const user = await this.users.findById(hostUserId);
     if (user === null) {
       throw new NotFoundException(`User ${hostUserId} not found`);
     }
-    if (
-      allRooms.some((room) =>
-        room.players.some((player) => player.userId === hostUserId),
-      )
-    ) {
+    if (this.currentRoom(hostUserId) !== null) {
       throw new ConflictException(`User ${hostUserId} is already in a room`);
     }
     const deck = await this.decks.getDeck(hostUserId, params.hostDeckId);
@@ -495,6 +507,15 @@ export class RoomsService {
       this.rooms[roomId] = null;
     });
     room.setHost(new Player(user, deck));
+    // 闲置五分钟后删除房间
+    setTimeout(
+      () => {
+        if (this.rooms[roomId] === room && !room.started) {
+          this.rooms[roomId] = null;
+        }
+      },
+      5 * 60 * 1000,
+    );
     return room.getRoomInfo(roomId);
   }
 

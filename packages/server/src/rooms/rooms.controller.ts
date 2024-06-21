@@ -107,21 +107,17 @@ export class RoomsController {
     return this.rooms.createRoom(userId, params);
   }
 
+  @Get("current")
+  getCurrentRoom(@User() userId: number) {
+    return this.rooms.currentRoom(userId);
+  }
+
   @Get(":roomId")
   getRoom(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
   ) {
     return this.rooms.getRoom(roomId);
-  }
-
-  // Add this for sendBeacon
-  @Post("delete/:roomId")
-  deleteRoomBeacon(
-    @User() userId: number,
-    @Param("roomId", ParseIntPipe) roomId: number,
-  ) {
-    return this.rooms.deleteRoom(userId, roomId);
   }
 
   @Delete(":roomId")

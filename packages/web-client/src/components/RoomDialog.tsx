@@ -63,14 +63,17 @@ function SelectableDeckInfo(
       <div class="absolute bottom-7 left-0 hidden peer-checked:flex text-6 line-height-6 w-8 h-8  items-center justify-center text-red bg-white b-yellow-800 b-2 rounded-full">
         &#10003;
       </div>
-      <div class="absolute bottom-0 left-4 right-0 h-12 bg-white border-yellow-800 b-1 group-hover:bg-yellow-100 group-[_]:peer-checked:bg-yellow-800 rounded-lg z--1 transition-colors" />
+      <div class="absolute bottom-0 left-4 right-1 h-12 bg-white border-yellow-800 b-1 group-hover:bg-yellow-100 group-[_]:peer-checked:bg-yellow-800 rounded-lg z--1 transition-colors" />
     </label>
   );
 }
 
 export interface RoomDialogProps {
   ref: HTMLDialogElement;
-  joiningRoomCode?: string;
+  joiningRoomInfo?: {
+    id: number;
+    config: TimeConfig & { [k: string]: any };
+  };
 }
 
 interface TimeConfig {
@@ -108,7 +111,7 @@ const TIME_CONFIGS: TimeConfig[] = [
 export function RoomDialog(props: RoomDialogProps) {
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const editable = () => typeof props.joiningRoomCode === "undefined";
+  const editable = () => !props.joiningRoomInfo;
   let dialogEl: HTMLDialogElement;
   const closeDialog = () => {
     dialogEl.close();
@@ -160,7 +163,7 @@ export function RoomDialog(props: RoomDialogProps) {
   const enterRoom = async () => {
     setEntering(true);
     try {
-      if (typeof props.joiningRoomCode === "undefined") {
+      if (typeof props.joiningRoomInfo === "undefined") {
         const { data } = await axios.post("rooms", {
           gameVersion: version(),
           hostDeckId: selectedDeck(),
@@ -172,8 +175,8 @@ export function RoomDialog(props: RoomDialogProps) {
         const roomCode = roomIdToCode(roomId);
         navigate(`/rooms/${roomCode}?user=${user()?.id}&action=1`);
       } else {
-        const roomCode = props.joiningRoomCode;
-        const roomId = roomCodeToId(roomCode);
+        const roomId = props.joiningRoomInfo.id;
+        const roomCode = roomIdToCode(roomId);
         const { data } = await axios.post(`rooms/${roomId}/players`, {
           deckId: selectedDeck(),
         });
@@ -186,6 +189,8 @@ export function RoomDialog(props: RoomDialogProps) {
         alert(e.message);
       }
       console.error(e);
+    } finally {
+      setEntering(false);
     }
   };
 
@@ -206,7 +211,7 @@ export function RoomDialog(props: RoomDialogProps) {
                 <h4 class="text-lg">游戏版本</h4>
                 <select
                   class="disabled:pointer-events-none"
-                  value={version()}
+                  value={props.joiningRoomInfo?.config.gameVersion ?? version()}
                   onChange={(e) => setVersion(Number(e.target.value))}
                   disabled={!editable()}
                 >
@@ -220,11 +225,19 @@ export function RoomDialog(props: RoomDialogProps) {
                 class="flex flex-row gap-2 mb-3 data-[disabled=true]:pointer-events-none"
                 data-disabled={!editable()}
               >
-                <For each={TIME_CONFIGS}>
+                <For
+                  each={
+                    props.joiningRoomInfo
+                      ? [props.joiningRoomInfo.config]
+                      : TIME_CONFIGS
+                  }
+                >
                   {(config) => (
                     <div
                       class="b-1 b-gray-400 rounded-lg p-12px group data-[active=true]:b-slate-500 data-[active=true]:b-2 data-[active=true]:p-11px cursor-pointer data-[active=true]:cursor-default select-none transition-colors"
-                      data-active={config === timeConfig()}
+                      data-active={
+                        !!props.joiningRoomInfo || config === timeConfig()
+                      }
                       onClick={() => setTimeConfig(config)}
                     >
                       <h5 class="font-bold text-gray-400 group-data-[active=true]:text-black transition-colors mb-2">
@@ -243,7 +256,11 @@ export function RoomDialog(props: RoomDialogProps) {
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">公开加入</h4>
                 <ToggleSwitch
-                  checked={isPublic()}
+                  checked={
+                    props.joiningRoomInfo
+                      ? !props.joiningRoomInfo.config.private
+                      : isPublic()
+                  }
                   onChange={(e) => setIsPublic(e.target.checked)}
                   disabled={!editable()}
                 />
@@ -251,7 +268,9 @@ export function RoomDialog(props: RoomDialogProps) {
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">允许观战</h4>
                 <ToggleSwitch
-                  checked={watchable()}
+                  checked={
+                    props.joiningRoomInfo?.config.watchable ?? watchable()
+                  }
                   onChange={(e) => setWatchable(e.target.checked)}
                   disabled={!editable()}
                 />

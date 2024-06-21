@@ -10,6 +10,7 @@ import "@gi-tcg/webui-core/style.css";
 import type { Deck } from "@gi-tcg/utils";
 import EventSourceStream from "@server-sent-stream/web";
 import { RpcMethod } from "@gi-tcg/typings";
+import { BACKEND_BASE_URL } from "../config";
 
 interface InitializedPayload {
   who: 0 | 1;
@@ -36,6 +37,8 @@ export function Room() {
   const id = roomCodeToId(code);
   const [playerIo, setPlayerIo] = createSignal<PlayerIOWithCancellation>();
   const [initialized, setInitialized] = createSignal<InitializedPayload>();
+  const [loading, setLoading] = createSignal(true);
+  const [failed, setFailed] = createSignal(false);
   const [chessboard, setChessboard] = createSignal<JSX.Element>();
 
   const reportStreamError = async (e: Error) => {
@@ -44,7 +47,11 @@ export function Room() {
       if (data && "pipeThrough" in data) {
         const reader = data.pipeThrough(new TextDecoderStream()).getReader();
         const { value, done } = await reader.read();
-        alert(JSON.parse(value ?? "{}").message);
+        if (initialized()) {
+          alert(JSON.parse(value ?? "{}").message);
+        } else {
+          setFailed(true);
+        }
         console.error(value);
       }
     }
@@ -91,6 +98,21 @@ export function Room() {
     }
   };
 
+  const deleteRoom = async () => {
+    if (!window.confirm(`确认删除房间吗？`)) {
+      return;
+    }
+    try {
+      const { data } = await axios.delete(`rooms/${id}`);
+      history.back();
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        alert(e.response?.data.message);
+      }
+      console.error(e);
+    }
+  };
+
   onMount(() => {
     axios
       .get(`rooms/${id}/players/${userId}/notification`, {
@@ -110,6 +132,7 @@ export function Room() {
             break;
           }
           const payload = JSON.parse(value.data);
+          setLoading(false);
           switch (payload.type) {
             case "initialized": {
               setInitialized(payload);
@@ -163,9 +186,20 @@ export function Room() {
   });
   return (
     <Layout>
-      <div class="container mx-auto">
-        <h2 class="text-2xl font-bold">房间号：{code}</h2>
-        {chessboard()}
+      <div class="container mx-auto flex flex-col">
+        <div class="flex flex-row gap-3 items-center mb-3">
+          <h2 class="text-2xl font-bold">房间号：{code}</h2>
+          <Show when={!loading() && !failed() && !initialized()}>
+            <button class="btn btn-outline-red" onClick={deleteRoom}>
+              <i class="i-mdi-delete" />
+            </button>
+          </Show>
+        </div>
+        <Show when={!failed()} fallback={<div>加载房间失败！</div>}>
+          <Show when={initialized()} fallback={<div>等待对手加入房间…</div>}>
+            {chessboard()}
+          </Show>
+        </Show>
       </div>
     </Layout>
   );

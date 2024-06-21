@@ -24,9 +24,11 @@ import {
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 import { A, useNavigate } from "@solidjs/router";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { DeckBriefInfo } from "../components/DeckBriefInfo";
 import { RoomDialog } from "../components/RoomDialog";
+import { roomCodeToId } from "../utils";
+import { RoomInfo } from "../components/RoomInfo";
 
 export function Home() {
   const { user } = useUserContext();
@@ -38,7 +40,11 @@ export function Home() {
   const [roomCodeValid, setRoomCodeValid] = createSignal(false);
   let createRoomDialogEl: HTMLDialogElement;
   let joinRoomDialogEl: HTMLDialogElement;
-  const [roomCode, setRoomCode] = createSignal("");
+  const [joiningRoomInfo, setJoiningRoomInfo] = createSignal<any>();
+
+  const [currentRoom] = createResource(() =>
+    axios.get("rooms/current").then((r) => r.data),
+  );
 
   const createRoom = () => {
     if (!decks()?.count) {
@@ -48,7 +54,7 @@ export function Home() {
     }
     createRoomDialogEl.showModal();
   };
-  const joinRoom = (e: SubmitEvent) => {
+  const joinRoom = async (e: SubmitEvent) => {
     e.preventDefault();
     if (!decks()?.count) {
       alert("请先创建一组牌组");
@@ -56,8 +62,19 @@ export function Home() {
       return;
     }
     const form = new FormData(e.target as HTMLFormElement);
-    setRoomCode(form.get("roomCode") as string);
-    joinRoomDialogEl.showModal();
+    const roomCode = form.get("roomCode") as string;
+    const roomId = roomCodeToId(roomCode);
+    try {
+      const { data } = await axios.get(`rooms/${roomId}`);
+      setJoiningRoomInfo(data);
+      joinRoomDialogEl.showModal();
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        alert(e.response?.data.message);
+      }
+      console.error(e);
+      setJoiningRoomInfo();
+    }
   };
 
   return (
@@ -124,43 +141,52 @@ export function Home() {
                 <div class="b-r-gray-200 b-1" />
                 <div class="flex-grow flex flex-col">
                   <h4 class="text-xl font-bold mb-5">开始游戏</h4>
-                  <div class="flex flex-row gap-5 items-center mb-8">
-                    <button
-                      class="flex-shrink-0 w-35 btn btn-solid-green text-1em gap-0.5em"
-                      onClick={createRoom}
-                    >
-                      创建房间…
-                    </button>
-                    或者
-                    <form class="flex-grow flex flex-row" onSubmit={joinRoom}>
-                      <input
-                        class="input input-solid rounded-r-0 b-r-0"
-                        name="roomCode"
-                        placeholder="输入房间号"
-                        inputmode="numeric"
-                        pattern="\d{6}"
-                        onInput={(e) =>
-                          setRoomCodeValid(e.target.checkValidity())
-                        }
-                        autofocus
-                        required
-                      />
+                  <Show
+                    when={!currentRoom()}
+                    fallback={
+                      <div class="mb-8">
+                        <RoomInfo {...currentRoom()} />
+                      </div>
+                    }
+                  >
+                    <div class="flex flex-row gap-5 items-center mb-8">
                       <button
-                        type="submit"
-                        class="flex-shrink-0 w-35 btn btn-solid text-1em gap-0.5em rounded-l-0"
-                        disabled={!roomCodeValid()}
+                        class="flex-shrink-0 w-35 btn btn-solid-green text-1em gap-0.5em"
+                        onClick={createRoom}
                       >
-                        加入房间…
+                        创建房间…
                       </button>
-                    </form>
-                  </div>
+                      或者
+                      <form class="flex-grow flex flex-row" onSubmit={joinRoom}>
+                        <input
+                          class="input input-solid rounded-r-0 b-r-0"
+                          name="roomCode"
+                          placeholder="输入房间号"
+                          inputmode="numeric"
+                          pattern="\d{6}"
+                          onInput={(e) =>
+                            setRoomCodeValid(e.target.checkValidity())
+                          }
+                          autofocus
+                          required
+                        />
+                        <button
+                          type="submit"
+                          class="flex-shrink-0 w-35 btn btn-solid text-1em gap-0.5em rounded-l-0"
+                          disabled={!roomCodeValid()}
+                        >
+                          加入房间…
+                        </button>
+                      </form>
+                    </div>
+                  </Show>
                   <h4 class="text-xl font-bold mb-5">可观战的对局</h4>
                 </div>
               </div>
               <RoomDialog ref={createRoomDialogEl!} />
               <RoomDialog
                 ref={joinRoomDialogEl!}
-                joiningRoomCode={roomCode()}
+                joiningRoomInfo={joiningRoomInfo()}
               />
             </div>
           )}
