@@ -6,7 +6,7 @@ export default defineConfig({
   esbuild: {
     target: "ES2020",
   },
-  base: "/gi-tcg/",
+  base: "/gi-tcg",
   plugins: [
     solid(),
     babel({
