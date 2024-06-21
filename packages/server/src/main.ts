@@ -25,7 +25,10 @@ import { BASE_PATH, frontend } from "./frontend";
 
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
-  new FastifyAdapter(),
+  new FastifyAdapter({
+    // Oops. https://github.com/oven-sh/bun/issues/8823
+    // http2: true
+  }),
 );
 app.useGlobalPipes(new ValidationPipe({ transform: true }));
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
