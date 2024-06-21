@@ -25,6 +25,9 @@ import {
 import axios, { AxiosError } from "axios";
 import { ToggleSwitch } from "./ToggleSwitch";
 import { DeckInfoProps } from "./DeckBriefInfo";
+import { roomCodeToId, roomIdToCode } from "../utils";
+import { useNavigate } from "@solidjs/router";
+import { useUserContext } from "../App";
 
 function SelectableDeckInfo(
   props: DeckInfoProps & Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "id">,
@@ -67,7 +70,7 @@ function SelectableDeckInfo(
 
 export interface RoomDialogProps {
   ref: HTMLDialogElement;
-  joiningRoomNumber?: string;
+  joiningRoomCode?: string;
 }
 
 interface TimeConfig {
@@ -103,7 +106,9 @@ const TIME_CONFIGS: TimeConfig[] = [
 ];
 
 export function RoomDialog(props: RoomDialogProps) {
-  const editable = () => typeof props.joiningRoomNumber === "undefined";
+  const { user } = useUserContext();
+  const navigate = useNavigate();
+  const editable = () => typeof props.joiningRoomCode === "undefined";
   let dialogEl: HTMLDialogElement;
   const closeDialog = () => {
     dialogEl.close();
@@ -113,9 +118,12 @@ export function RoomDialog(props: RoomDialogProps) {
   );
   const [version, setVersion] = createSignal(-1);
   const [timeConfig, setTimeConfig] = createSignal(TIME_CONFIGS[1]);
+  const [isPublic, setIsPublic] = createSignal(false);
+  const [watchable, setWatchable] = createSignal(true);
   const [availableDecks, setAvailableDecks] = createSignal<DeckInfoProps[]>([]);
   const [loadingDecks, setLoadingDecks] = createSignal(true);
   const [selectedDeck, setSelectedDeck] = createSignal<number | null>(null);
+  const [entering, setEntering] = createSignal(false);
 
   createEffect(() => {
     if (versionInfo()) {
@@ -149,6 +157,38 @@ export function RoomDialog(props: RoomDialogProps) {
     }
   });
 
+  const enterRoom = async () => {
+    setEntering(true);
+    try {
+      if (typeof props.joiningRoomCode === "undefined") {
+        const { data } = await axios.post("rooms", {
+          gameVersion: version(),
+          hostDeckId: selectedDeck(),
+          ...timeConfig(),
+          private: !isPublic(),
+          watchable: watchable(),
+        });
+        const roomId = data.id;
+        const roomCode = roomIdToCode(roomId);
+        navigate(`/rooms/${roomCode}?user=${user()?.id}&action=1`);
+      } else {
+        const roomCode = props.joiningRoomCode;
+        const roomId = roomCodeToId(roomCode);
+        const { data } = await axios.post(`rooms/${roomId}/players`, {
+          deckId: selectedDeck(),
+        });
+        navigate(`/rooms/${roomCode}?user=${user()?.id}&action=1`);
+      }
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        alert(e.response?.data.message);
+      } else if (e instanceof Error) {
+        alert(e.message);
+      }
+      console.error(e);
+    }
+  };
+
   return (
     <dialog
       ref={(el) => (dialogEl = el) && (props.ref as any)?.(el)}
@@ -156,7 +196,10 @@ export function RoomDialog(props: RoomDialogProps) {
     >
       <div class="flex flex-col h-full w-full gap-5">
         <h3 class="flex-shrink-0 text-xl font-bold">房间配置</h3>
-        <div class="flex-grow min-h-0 flex flex-row gap-4 data-[disabled=true]:cursor-not-allowed" data-disabled={!editable()}>
+        <div
+          class="flex-grow min-h-0 flex flex-row gap-4 data-[disabled=true]:cursor-not-allowed"
+          data-disabled={!editable()}
+        >
           <div>
             <Show when={versionInfo()}>
               <div class="mb-3 flex flex-row gap-4 items-center">
@@ -173,7 +216,10 @@ export function RoomDialog(props: RoomDialogProps) {
                 </select>
               </div>
               <h4 class="text-lg mb-3">思考时间</h4>
-              <div class="flex flex-row gap-2 mb-3 data-[disabled=true]:pointer-events-none" data-disabled={!editable()}>
+              <div
+                class="flex flex-row gap-2 mb-3 data-[disabled=true]:pointer-events-none"
+                data-disabled={!editable()}
+              >
                 <For each={TIME_CONFIGS}>
                   {(config) => (
                     <div
@@ -196,11 +242,19 @@ export function RoomDialog(props: RoomDialogProps) {
               </div>
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">公开加入</h4>
-                <ToggleSwitch disabled={!editable()} />
+                <ToggleSwitch
+                  checked={isPublic()}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  disabled={!editable()}
+                />
               </div>
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">允许观战</h4>
-                <ToggleSwitch checked disabled={!editable()} />
+                <ToggleSwitch
+                  checked={watchable()}
+                  onChange={(e) => setWatchable(e.target.checked)}
+                  disabled={!editable()}
+                />
               </div>
             </Show>
           </div>
@@ -242,10 +296,16 @@ export function RoomDialog(props: RoomDialogProps) {
           </button>
           <button
             class="btn btn-solid-green text-1em gap-0.5em"
-            onClick={closeDialog}
-            disabled={selectedDeck() === null}
+            onClick={enterRoom}
+            disabled={selectedDeck() === null || entering()}
           >
-            {selectedDeck() === null ? "请先选择牌组" : "创建房间"}
+            {selectedDeck() === null
+              ? "请先选择牌组"
+              : entering()
+                ? "正在加入房间…"
+                : editable()
+                  ? "创建房间"
+                  : "加入房间"}
           </button>
         </div>
       </div>

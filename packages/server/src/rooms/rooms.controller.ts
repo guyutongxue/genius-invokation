@@ -21,6 +21,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Sse,
   UnauthorizedException,
 } from "@nestjs/common";
 import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, Max, Min } from "class-validator";
@@ -34,9 +35,11 @@ export class CreateRoomDto {
   @IsOptional()
   hostFirst?: boolean;
 
-  @IsIn(VERSIONS)
+  @IsInt()
+  @Min(0)
+  @Max(VERSIONS.length - 1)
   @IsOptional()
-  gameVersion?: Version;
+  gameVersion?: number;
 
   @IsInt()
   hostDeckId!: number;
@@ -138,7 +141,7 @@ export class RoomsController {
     return this.rooms.joinRoom(userId, roomId, deckId);
   }
 
-  @Get(":roomId/players/:userId/notification")
+  @Sse(":roomId/players/:userId/notification")
   getNotification(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
@@ -147,7 +150,7 @@ export class RoomsController {
     return this.rooms.playerNotification(roomId, userId, targetUserId);
   }
 
-  @Get(":roomId/players/:userId/actionRequest")
+  @Sse(":roomId/players/:userId/actionRequest")
   getAction(
     @User() userId: number,
     @Param("roomId", ParseIntPipe) roomId: number,
@@ -186,7 +189,7 @@ export class RoomsController {
     if (userId !== targetUserId) {
       throw new UnauthorizedException(`You can only give up your own game`);
     }
-    this.rooms.receivePlayerGiveUp(userId, roomId);
+    this.rooms.receivePlayerGiveUp(roomId, userId);
     return { message: "given up" };
   }
 }

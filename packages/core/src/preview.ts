@@ -219,7 +219,6 @@ export class ActionPreviewer {
         new ActionEventArg(previewState, newActionInfo),
       );
     }
-    console.log(newActionInfo);
     return {
       ...newActionInfo,
       eventArg: eventArgReal,

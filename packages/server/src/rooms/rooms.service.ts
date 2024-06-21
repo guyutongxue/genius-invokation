@@ -40,11 +40,21 @@ import {
   serializeGameStateLog,
   CORE_VERSION,
   VERSIONS,
-  type Version
+  type Version,
 } from "@gi-tcg/core";
 import data from "@gi-tcg/data";
 import { type Deck, flip } from "@gi-tcg/utils";
-import { BehaviorSubject, Observable, Subject, filter, startWith } from "rxjs";
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  concat,
+  defer,
+  filter,
+  map,
+  of,
+  startWith,
+} from "rxjs";
 import { verifyDeck } from "../utils";
 import type {
   CreateRoomDto,
@@ -61,7 +71,7 @@ interface RoomConfig extends Partial<GameConfig> {
   actionTime: number; // defaults 25
   watchable: boolean; // defaults false
   private: boolean; // defaults false
-  gameVersion?: Version;
+  gameVersion?: number;
 }
 
 interface CreateRoomConfig extends RoomConfig {
@@ -80,6 +90,10 @@ interface PlayerInfo {
   deck: Deck;
 }
 
+export interface SSEWaiting {
+  type: "waiting";
+}
+
 export interface SSEInitialized {
   type: "initialized";
   who: 0 | 1;
@@ -94,7 +108,11 @@ export interface SSEError {
   type: "error";
   message: string;
 }
-export type SSEPayload = SSEInitialized | SSENotification | SSEError;
+export type SSEPayload =
+  | SSEWaiting
+  | SSEInitialized
+  | SSENotification
+  | SSEError;
 
 export interface SSERpc {
   type: "rpc";
@@ -113,11 +131,24 @@ interface RpcResolver {
 }
 
 class Player implements PlayerIOWithError {
-  private readonly notificationSseSource = new Subject<SSEPayload>();
-  public notificationSse$?: Observable<SSEPayload>;
-  private readonly rpcSseSource = new BehaviorSubject<SSERpc | null>(null);
-  public rpcSse$: Observable<SSERpc> = this.rpcSseSource.pipe(
-    filter((rpc): rpc is SSERpc => rpc !== null),
+  private readonly notificationSseSource =
+    new BehaviorSubject<SSEPayload | null>(null);
+  public notificationSse$: Observable<SSEPayload> =
+    this.notificationSseSource.pipe(
+      filter((data): data is SSEPayload => data !== null),
+      startWith<SSEPayload>({ type: "waiting" }),
+    );
+  private readonly rpcSseSource = new Subject<SSERpc>();
+  public rpcSse$: Observable<SSERpc | SSEWaiting> = concat(
+    defer((): Observable<SSERpc | SSEWaiting> => {
+      const currentAction = this.currentAction();
+      if (currentAction === null) {
+        return of({ type: "waiting" });
+      } else {
+        return of(currentAction);
+      }
+    }),
+    this.rpcSseSource,
   );
   constructor(
     public readonly user: UserNoPassword,
@@ -145,9 +176,10 @@ class Player implements PlayerIOWithError {
   resetRoundTimeout() {
     this._roundTimeout = this._timeoutConfig?.roundTotalActionTime ?? Infinity;
   }
-  currentAction() {
+  currentAction(): SSERpc | null {
     if (this._rpcResolver) {
       return {
+        type: "rpc",
         id: this._rpcResolver.id,
         timeout: this._rpcResolver.timeout,
         method: this._rpcResolver.method,
@@ -162,6 +194,7 @@ class Player implements PlayerIOWithError {
     if (!this._rpcResolver) {
       throw new NotFoundException(`No rpc now`);
     } else if (this._rpcResolver.id !== response.id) {
+      console.error(this._rpcResolver, response);
       throw new NotFoundException(`Rpc id not match`);
     }
     this._rpcResolver.resolve(response.response);
@@ -253,12 +286,15 @@ class Player implements PlayerIOWithError {
     this.notificationSseSource.next({ type: "error", message: e.message });
   }
   onInitialized(who: 0 | 1, opp: PlayerInfo) {
+    const initializePayload: SSEPayload = {
+      type: "initialized",
+      who,
+      oppPlayerInfo: opp,
+    };
+    this.notificationSseSource.next(initializePayload);
     this.notificationSse$ = this.notificationSseSource.pipe(
-      startWith<SSEPayload>({
-        type: "initialized",
-        who,
-        oppPlayerInfo: opp,
-      }),
+      filter((data): data is SSEPayload => data !== null),
+      startWith(initializePayload),
     );
   }
   complete() {
@@ -296,7 +332,9 @@ class Room {
     return this.guest;
   }
   private get players(): [Player | null, Player | null] {
-    return this.hostWho === 0 ? [this.host, this.guest] : [this.guest, this.host];
+    return this.hostWho === 0
+      ? [this.host, this.guest]
+      : [this.guest, this.host];
   }
   getPlayer(who: 0 | 1): Player | null {
     return this.players[who];
@@ -335,7 +373,9 @@ class Room {
     player0.setTimeoutConfig(this.config);
     player1.setTimeoutConfig(this.config);
     const game = new InternalGame({
-      data: data(this.config.gameVersion),
+      data: data(
+        this.config.gameVersion ? VERSIONS[this.config.gameVersion]! : void 0,
+      ),
       gameConfig: this.config,
       playerConfigs: [player0.deck, player1.deck],
       io: {
@@ -394,9 +434,6 @@ class Room {
     };
   }
 }
-
-// const A = 48271;
-// const A_INV = 371631; // A^-1 in Z_1000000
 
 @Injectable()
 export class RoomsService {
@@ -458,9 +495,7 @@ export class RoomsService {
       this.rooms[roomId] = null;
     });
     room.setHost(new Player(user, deck));
-    return {
-      roomId,
-    };
+    return room.getRoomInfo(roomId);
   }
 
   deleteRoom(userId: number, roomId: number) {
@@ -541,7 +576,7 @@ export class RoomsService {
     roomId: number,
     visitorUserId: number,
     watchingUserId: number,
-  ): Observable<SSEPayload> {
+  ): Observable<{ data: SSEPayload }> {
     const room = this.rooms[roomId];
     if (!room) {
       throw new NotFoundException(`Room not found`);
@@ -567,16 +602,16 @@ export class RoomsService {
     for (const player of players) {
       if (player.user.id === watchingUserId) {
         const observable = player.notificationSse$;
-        if (!observable) {
-          throw new ConflictException(`Player has not been initialized`);
-        }
-        return observable;
+        return observable.pipe(map((data) => ({ data })));
       }
     }
     throw new InternalServerErrorException("unreachable");
   }
 
-  playerAction(roomId: number, userId: number) {
+  playerAction(
+    roomId: number,
+    userId: number,
+  ): Observable<{ data: SSERpc | SSEWaiting }> {
     const room = this.rooms[roomId];
     if (!room) {
       throw new NotFoundException(`Room not found`);
@@ -584,7 +619,7 @@ export class RoomsService {
     const players = room.getPlayers();
     for (const player of players) {
       if (player.user.id === userId) {
-        return player.rpcSse$;
+        return player.rpcSse$.pipe(map((data) => ({ data })));
       }
     }
     throw new NotFoundException(`User ${userId} not in room`);

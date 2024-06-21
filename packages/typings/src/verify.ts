@@ -37,6 +37,7 @@ export function verifyRpcRequest<M extends RpcMethod>(
 ): asserts params is RpcRequest[M] {
   const validate = ajv.compile(rpcSchema[method].request);
   if (!validate(params)) {
+    console.error(JSON.stringify(params));
     throw new Error(
       `Rpc Request ${method}: ${ajv.errorsText(validate.errors)}`
     );
@@ -49,6 +50,7 @@ export function verifyRpcResponse<M extends RpcMethod>(
 ): asserts response is RpcResponse[M] {
   const validate = ajv.compile(rpcSchema[method].response);
   if (!validate(response)) {
+    console.error(JSON.stringify(response));
     throw new Error(
       `Rpc Response ${method}: ${ajv.errorsText(validate.errors)}`
     );

@@ -24,6 +24,8 @@ import { getGravatarUrl } from "./utils";
 import { User } from "./pages/User";
 import { Decks } from "./pages/Decks";
 import { EditDeck } from "./pages/EditDeck";
+import { Room } from "./pages/Room";
+import { createStore } from "solid-js/store";
 
 export interface UserInfo {
   id: number;
@@ -33,6 +35,8 @@ export interface UserInfo {
   createdAt: string;
   avatarUrl: string;
 }
+
+type UserReadyCallback = (user: UserInfo) => unknown;
 
 export interface UserContextValue {
   user: Accessor<UserInfo | null>;
@@ -51,11 +55,10 @@ function App() {
       setUser(data);
       console.log(data);
     } catch (e) {
-      console.log("!!!", e);
       setUser(null);
     }
   };
-  const userContextValue = {
+  const userContextValue: UserContextValue = {
     user,
     refresh,
   };
@@ -73,6 +76,7 @@ function App() {
           <Route path="/register" component={Register} />
           <Route path="/decks/:id" component={EditDeck} />
           <Route path="/decks" component={Decks} />
+          <Route path="/rooms/:code" component={Room} />
         </Router>
       </div>
     </UserContext.Provider>

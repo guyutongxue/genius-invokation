@@ -35,10 +35,10 @@ export function Home() {
     axios.get("decks").then((res) => res.data),
   );
 
-  const [roomNumberValid, setRoomNumberValid] = createSignal(false);
+  const [roomCodeValid, setRoomCodeValid] = createSignal(false);
   let createRoomDialogEl: HTMLDialogElement;
   let joinRoomDialogEl: HTMLDialogElement;
-  const [roomNumber, setRoomNumber] = createSignal("");
+  const [roomCode, setRoomCode] = createSignal("");
 
   const createRoom = () => {
     if (!decks()?.count) {
@@ -56,7 +56,7 @@ export function Home() {
       return;
     }
     const form = new FormData(e.target as HTMLFormElement);
-    setRoomNumber(form.get("roomNumber") as string);
+    setRoomCode(form.get("roomCode") as string);
     joinRoomDialogEl.showModal();
   };
 
@@ -86,7 +86,7 @@ export function Home() {
                 </h2>
               </div>
               <div class="flex flex-row h-120 gap-8">
-                <div class="h-full w-60 flex flex-col bottom-opacity-gradient">
+                <div class="h-full w-60 flex flex-col items-start bottom-opacity-gradient">
                   <A
                     href="/decks"
                     class="text-xl font-bold text-blue-500 hover:underline mb-4"
@@ -135,12 +135,12 @@ export function Home() {
                     <form class="flex-grow flex flex-row" onSubmit={joinRoom}>
                       <input
                         class="input input-solid rounded-r-0 b-r-0"
-                        name="roomNumber"
+                        name="roomCode"
                         placeholder="输入房间号"
                         inputmode="numeric"
                         pattern="\d{6}"
                         onInput={(e) =>
-                          setRoomNumberValid(e.target.checkValidity())
+                          setRoomCodeValid(e.target.checkValidity())
                         }
                         autofocus
                         required
@@ -148,7 +148,7 @@ export function Home() {
                       <button
                         type="submit"
                         class="flex-shrink-0 w-35 btn btn-solid text-1em gap-0.5em rounded-l-0"
-                        disabled={!roomNumberValid()}
+                        disabled={!roomCodeValid()}
                       >
                         加入房间…
                       </button>
@@ -160,7 +160,7 @@ export function Home() {
               <RoomDialog ref={createRoomDialogEl!} />
               <RoomDialog
                 ref={joinRoomDialogEl!}
-                joiningRoomNumber={roomNumber()}
+                joiningRoomCode={roomCode()}
               />
             </div>
           )}
