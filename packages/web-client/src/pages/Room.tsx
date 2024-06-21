@@ -81,6 +81,7 @@ export function Room() {
   });
 
   const onActionRequested = async (payload: ActionRequestPayload) => {
+    playerIo()?.cancelRpc();
     const response = await playerIo()?.rpc(payload.method, payload.params);
     try {
       const { data } = await axios.post(
