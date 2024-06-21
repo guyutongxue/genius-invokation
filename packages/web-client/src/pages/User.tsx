@@ -18,9 +18,11 @@ import { createResource, Switch, Match } from "solid-js";
 import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
 import { UserInfo } from "../components/UserInfo";
+import { useUserContext } from "../App";
 
 export function User() {
   const params = useParams();
+  const { user: mine } = useUserContext();
   const userId = Number(params.id);
   const [userInfo, { refetch }] = createResource(() => axios.get(`users/${userId}`).then((res) => res.data));
   return (
@@ -33,11 +35,11 @@ export function User() {
             ? userInfo.error.response?.data.message
             : userInfo.error}
         </Match>
-        <Match when={true}>
+        <Match when={userInfo()}>
           <div class="w-full flex flex-row justify-center">
           <UserInfo
             {...userInfo()}
-            editable={userInfo()?.id === userId}
+            editable={userInfo()!.id === mine()?.id}
             onUpdate={refetch}
           />
           </div>
