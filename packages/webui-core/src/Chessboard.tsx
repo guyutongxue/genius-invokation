@@ -625,7 +625,7 @@ interface ChessboardProps extends ComponentProps<"div"> {
 }
 
 function Chessboard(props: ChessboardProps) {
-  const { assetApiEndpoint } = usePlayerContext();
+  const { assetApiEndpoint, assetAltText } = usePlayerContext();
   const [local, restProps] = splitProps(props, [
     "class",
     "stateData",
@@ -647,6 +647,10 @@ function Chessboard(props: ChessboardProps) {
       if (event.type === "triggered") {
         currentFocusing = event.id;
       }
+      if (event.type === "useCommonSkill") {
+        const text = `${event.who === local.who ? '我方' : '对方'} 使用 ${assetAltText(event.skill) ?? event.skill}`;
+        setMutationHintTexts((txts) => [text, ...txts]);
+      }
     }
     setAllDamages(currentDamages);
     setFocusing(currentFocusing);
@@ -658,6 +662,8 @@ function Chessboard(props: ChessboardProps) {
       cached(`${assetApiEndpoint()}/images/${id}?thumb=1`),
     );
   });
+
+  const [mutationHintTexts, setMutationHintTexts] = createStore<string[]>([]);
 
   return (
     <EventContext.Provider value={{ allDamages, focusing }}>
@@ -703,6 +709,13 @@ function Chessboard(props: ChessboardProps) {
           <For each={local.stateData.players[local.who].skills}>
             {(skill) => <SkillButton data={skill} />}
           </For>
+        </div>
+        <div class="absolute top-10 left-15 h-20 w-40 overflow-auto">
+          <ul>
+            <For each={mutationHintTexts}>
+              {(txt) => <li>{txt}</li>}
+            </For>
+          </ul>
         </div>
         {local.children}
         <Show when={local.stateData.phase === "gameEnd"}>
