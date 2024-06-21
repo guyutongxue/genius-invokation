@@ -1,18 +1,3 @@
-// Copyright (C) 2024 Guyutongxue
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import { For, Show, createResource } from "solid-js";
 import { A } from "@solidjs/router";
 import { useUserContext } from "../App";
@@ -20,11 +5,13 @@ import { getGravatarUrl, roomIdToCode } from "../utils";
 
 export interface RoomInfoProps {
   id: number;
+  watchable: boolean;
   players: {
     userId: number;
     userName?: string;
     userEmail: string;
   }[];
+  onJoin?: (roomInfo: RoomInfoProps) => void;
 }
 
 export function RoomInfo(props: RoomInfoProps) {
@@ -51,25 +38,54 @@ export function RoomInfo(props: RoomInfoProps) {
     },
   );
   return (
-    <div class="w-90 bg-yellow-100 rounded-xl p-4">
-      <h4 class="font-semibold mb-3">房间 {code()}</h4>
-      <div class="flex flex-row justify-between items-center">
+    <div class="w-90 bg-yellow-100 rounded-xl p-4 flex flex-col">
+      <div class="flex flex-row items-center gap-2 mb-3">
+        <h4 class="font-semibold">房间 {code()}</h4>
+        <Show when={!props.watchable}>
+          <span title="不可观战">&#8856;</span>
+        </Show>
+      </div>
+      <div
+        class="flex flex-row justify-between items-center group"
+        data-disabled={!insideRoom() && !props.watchable}
+      >
         <Show when={props.players.length > 0}>
           <A
             href={url(props.players[0].userId)}
-            class="flex flex-row items-center h-6 rounded-r-xl pr-2 bg-yellow-800 text-yellow-100 ml-2"
+            class="flex flex-row items-center h-6 rounded-r-xl pr-2 bg-yellow-800 text-yellow-100 ml-2 hover:bg-yellow-700 transition-colors group-data-[disabled=true]:pointer-events-none"
           >
-            <img src={avatarUrl0()} class="rounded-full b-yellow-800 b-1 translate-x--2" />
+            <img
+              src={avatarUrl0()}
+              class="rounded-full b-yellow-800 b-1 translate-x--2"
+            />
             {props.players[0].userName ?? `旅行者 ${props.players[0].userId}`}
           </A>
           <span class="text-xl font-bold">VS</span>
-          <Show when={props.players.length > 1} fallback={<div>???</div>}>
+          <Show
+            when={props.players.length > 1}
+            fallback={
+              <div class="flex flex-row items-center gap-2">
+                ???
+                <Show when={!insideRoom()}>
+                  <button
+                    class="h-30px w-30px rounded-full bg-yellow-800 flex items-center justify-center text-lg text-yellow-100 font-bold select-none hover:bg-yellow-700 transition-colors"
+                    onClick={() => props.onJoin?.(props)}
+                  >
+                    +
+                  </button>
+                </Show>
+              </div>
+            }
+          >
             <A
               href={url(props.players[1].userId)}
-              class="flex flex-row items-center h-6 rounded-l-xl pl-2 bg-yellow-800 text-yellow-100 mr-2"
+              class="flex flex-row items-center h-6 rounded-l-xl pl-2 bg-yellow-800 text-yellow-100 mr-2 hover:bg-yellow-700 transition-colors group-data-[disabled=true]:pointer-events-none"
             >
               {props.players[1].userName ?? `旅行者 ${props.players[1].userId}`}
-              <img src={avatarUrl1()} class="rounded-full b-yellow-800 b-1 translate-x-2" />
+              <img
+                src={avatarUrl1()}
+                class="rounded-full b-yellow-800 b-1 translate-x-2"
+              />
             </A>
           </Show>
         </Show>

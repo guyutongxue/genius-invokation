@@ -43,6 +43,12 @@ interface ActionRequestPayload {
   params: any;
 }
 
+const names: Record<number, string> = {};
+(async () => {
+  const { default: data } = await import("../names.json");
+  Object.assign(names, data);
+})
+
 export function Room() {
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -89,6 +95,7 @@ export function Room() {
             console.error(e);
           }
         },
+        assetAltText: (id) => names[id]
       });
       setChessboard(<Ui />);
       setPlayerIo(io);
