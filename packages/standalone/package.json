@@ -34,7 +34,6 @@
     "eslint-plugin-solid": "^0.13.1",
     "postcss-load-config": "^5.0.3",
     "postcss-preset-env": "^9.3.0",
-    "typescript": "^5.2.2",
     "vite": "^5.0.8",
     "vite-plugin-solid": "^2.8.0"
   }

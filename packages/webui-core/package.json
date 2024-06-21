@@ -38,7 +38,6 @@
     "eslint-plugin-solid": "^0.13.1",
     "rollup-plugin-node-externals": "^7.0.1",
     "solid-devtools": "^0.29.2",
-    "typescript": "^5.2.2",
     "unocss": "^0.58.3",
     "vite": "^5.0.10",
     "vite-plugin-dts": "^3.7.0",

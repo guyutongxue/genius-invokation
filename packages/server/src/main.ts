@@ -21,6 +21,7 @@ import {
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { PrismaClientExceptionFilter } from "./db/prisma-exception.filter";
+import { BASE_PATH, frontend } from "./frontend";
 
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
@@ -28,7 +29,8 @@ const app = await NestFactory.create<NestFastifyApplication>(
 );
 app.useGlobalPipes(new ValidationPipe({ transform: true }));
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
-app.setGlobalPrefix("/api");
+app.setGlobalPrefix(`${BASE_PATH}/api`);
+app.register(frontend);
 
 if (import.meta.env.NODE_ENV !== "production") {
   app.enableCors({ origin: "*" })

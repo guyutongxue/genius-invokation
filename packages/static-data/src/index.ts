@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import a from "./data/action_cards.json" with { type: "json" };
-import c from "./data/characters.json" with { type: "json" };
-import e from "./data/entities.json" with { type: "json" };
-import k from "./data/keywords.json" with { type: "json" };
+import a from "./data/action_cards.json"/*  with { type: "json" } */;
+import c from "./data/characters.json"/*  with { type: "json" } */;
+import e from "./data/entities.json"/*  with { type: "json" } */;
+import k from "./data/keywords.json"/*  with { type: "json" } */;
 
 import type {
   ActionCardRawData,

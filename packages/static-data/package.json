@@ -21,7 +21,6 @@
     "build": "tsup"
   },
   "devDependencies": {
-    "lossless-json": "^4.0.1",
-    "typescript": "^5.3.2"
+    "lossless-json": "^4.0.1"
   }
 }
