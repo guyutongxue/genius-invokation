@@ -35,7 +35,6 @@ import { EntityDefinition, UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
 import { diceCostOfCard, getEntityArea } from "../utils";
-import { VersionInfo } from "./version";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {

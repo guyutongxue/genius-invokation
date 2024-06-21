@@ -122,14 +122,6 @@ export class ActionPreviewer {
             new PlayCardEventArg(previewState, newActionInfo),
           );
         }
-        if (
-          player().combatStatuses.find((st) =>
-            st.definition.tags.includes("disableEvent"),
-          ) &&
-          card.definition.type === "event"
-        ) {
-          break;
-        }
         if (completed) {
           previewState = applyMutation(previewState, {
             type: "removeCard",
@@ -139,21 +131,29 @@ export class ActionPreviewer {
             used: true,
           });
         }
-        const skillInfo: SkillInfo = {
-          caller: activeCh(),
-          definition: card.definition.onPlay,
-          fromCard: card,
-          requestBy: null,
-          charged: false,
-          plunging: false,
-        };
-        const arg = { targets: newActionInfo.targets };
-        if (completed) {
-          [previewState, completed] = await SkillExecutor.previewSkill(
-            previewState,
-            skillInfo,
-            arg,
-          );
+        if (
+          player().combatStatuses.find((st) =>
+            st.definition.tags.includes("disableEvent"),
+          ) &&
+          card.definition.type === "event"
+        ) {
+        } else {
+          const skillInfo: SkillInfo = {
+            caller: activeCh(),
+            definition: card.definition.onPlay,
+            fromCard: card,
+            requestBy: null,
+            charged: false,
+            plunging: false,
+          };
+          const arg = { targets: newActionInfo.targets };
+          if (completed) {
+            [previewState, completed] = await SkillExecutor.previewSkill(
+              previewState,
+              skillInfo,
+              arg,
+            );
+          }
         }
         if (completed) {
           [previewState, completed] = await SkillExecutor.previewEvent(
