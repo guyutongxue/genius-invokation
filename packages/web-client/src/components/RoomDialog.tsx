@@ -65,8 +65,9 @@ function SelectableDeckInfo(
   );
 }
 
-export interface CreateRoomDialogProps {
+export interface RoomDialogProps {
   ref: HTMLDialogElement;
+  joiningRoomNumber?: string;
 }
 
 interface TimeConfig {
@@ -101,7 +102,8 @@ const TIME_CONFIGS: TimeConfig[] = [
   },
 ];
 
-export function CreateRoomDialog(props: CreateRoomDialogProps) {
+export function RoomDialog(props: RoomDialogProps) {
+  const editable = () => typeof props.joiningRoomNumber === "undefined";
   let dialogEl: HTMLDialogElement;
   const closeDialog = () => {
     dialogEl.close();
@@ -154,14 +156,16 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
     >
       <div class="flex flex-col h-full w-full gap-5">
         <h3 class="flex-shrink-0 text-xl font-bold">房间配置</h3>
-        <div class="flex-grow min-h-0 flex flex-row gap-4">
+        <div class="flex-grow min-h-0 flex flex-row gap-4 data-[disabled=true]:cursor-not-allowed" data-disabled={!editable()}>
           <div>
             <Show when={versionInfo()}>
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">游戏版本</h4>
                 <select
+                  class="disabled:pointer-events-none"
                   value={version()}
                   onChange={(e) => setVersion(Number(e.target.value))}
+                  disabled={!editable()}
                 >
                   <For each={versionInfo().supportedGameVersions}>
                     {(version, idx) => <option value={idx()}>{version}</option>}
@@ -169,7 +173,7 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
                 </select>
               </div>
               <h4 class="text-lg mb-3">思考时间</h4>
-              <div class="flex flex-row gap-2 mb-3">
+              <div class="flex flex-row gap-2 mb-3 data-[disabled=true]:pointer-events-none" data-disabled={!editable()}>
                 <For each={TIME_CONFIGS}>
                   {(config) => (
                     <div
@@ -192,11 +196,11 @@ export function CreateRoomDialog(props: CreateRoomDialogProps) {
               </div>
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">公开加入</h4>
-                <ToggleSwitch />
+                <ToggleSwitch disabled={!editable()} />
               </div>
               <div class="mb-3 flex flex-row gap-4 items-center">
                 <h4 class="text-lg">允许观战</h4>
-                <ToggleSwitch checked />
+                <ToggleSwitch checked disabled={!editable()} />
               </div>
             </Show>
           </div>
