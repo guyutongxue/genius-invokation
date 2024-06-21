@@ -718,7 +718,7 @@ function Chessboard(props: ChessboardProps) {
           </ul>
         </div>
         {local.children}
-        <Show when={local.stateData.phase === "gameEnd"}>
+        <Show when={!props.previewing && local.stateData.phase === "gameEnd"}>
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
             {local.stateData.winner === local.who ? "胜利" : "失败"}
           </div>
