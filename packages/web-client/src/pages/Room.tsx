@@ -47,7 +47,7 @@ const names: Record<number, string> = {};
 (async () => {
   const { default: data } = await import("../names.json");
   Object.assign(names, data);
-})
+})();
 
 export function Room() {
   const params = useParams();
