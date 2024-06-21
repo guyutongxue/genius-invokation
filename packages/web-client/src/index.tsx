@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "core-js";
-
 import { render } from "solid-js/web";
 
 import "./index.css";
@@ -27,15 +25,21 @@ import App from "./App";
 import axios from "axios";
 import { BACKEND_BASE_URL } from "./config";
 
-axios.defaults.baseURL = BACKEND_BASE_URL;
-axios.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+async function main() {
+  if (import.meta.env.PROD) {
+    await import("core-js");
   }
-  return config;
-});
+  axios.defaults.baseURL = BACKEND_BASE_URL;
+  axios.interceptors.request.use((config) => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  });
+  
+  const app = document.getElementById("app")!;
+  render(() => <App />, app);
+}
 
-const app = document.getElementById("app")!;
-
-render(() => <App />, app);
+main();

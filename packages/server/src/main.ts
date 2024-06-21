@@ -36,7 +36,7 @@ if (import.meta.env.NODE_ENV !== "production") {
   app.enableCors({ origin: "*" })
 }
 
-await app.listen(3000, (err, address) => {
+await app.listen(process.env.PORT ?? 3000, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);

@@ -28,7 +28,9 @@ export async function frontend(app: FastifyInstance) {
       root: path.join(import.meta.dirname, "../../web-client/dist"),
       prefix: BASE_PATH,
       wildcard: false,
-      index: false,
+    });
+    app.get(BASE_PATH, (_req, reply) => {
+      reply.type("text/html").send(indexHtml);
     });
     app.get(`${BASE_PATH}/*`, (_req, reply) => {
       reply.type("text/html").send(indexHtml);

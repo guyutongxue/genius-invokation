@@ -12,9 +12,10 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Game" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "version" TEXT NOT NULL,
+    "coreVersion" TEXT NOT NULL,
+    "gameVersion" TEXT NOT NULL,
     "data" TEXT NOT NULL,
-    "winnerId" INTEGER NOT NULL,
+    "winnerId" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -37,6 +38,18 @@ CREATE TABLE "InvitationCode" (
     "used" BOOLEAN NOT NULL DEFAULT false,
     "createdByUserId" INTEGER NOT NULL,
     CONSTRAINT "InvitationCode_createdByUserId_fkey" FOREIGN KEY ("createdByUserId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Deck" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "requiredVersion" INTEGER NOT NULL,
+    "ownerUserId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Deck_ownerUserId_fkey" FOREIGN KEY ("ownerUserId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
