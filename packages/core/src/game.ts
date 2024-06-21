@@ -1037,6 +1037,6 @@ export function mergeGameConfigWithDefault(
     maxSummons: 4,
     maxSupports: 4,
     randomSeed: randomSeed(),
-    ...JSON.parse(JSON.stringify(config)),
+    ...JSON.parse(JSON.stringify(config ?? {})),
   };
 }
