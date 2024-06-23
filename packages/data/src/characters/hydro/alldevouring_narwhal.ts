@@ -36,8 +36,12 @@ export const DarkShadow = summon(122043)
     const domain = c.$(`my combat status with definition id ${DeepDevourersDomain}`)!;
     const maxCost = domain.getVariable("totalMaxCost");
     const count = domain.getVariable("totalMaxCostCount");
-    c.setVariable("atk", maxCost);
-    c.setVariable("usage", count);
+    if (count > 0) {
+      c.setVariable("atk", maxCost);
+      c.setVariable("usage", count);
+    } else {
+      c.dispose();
+    }
   })
   .on("endPhase")
   .do((c) => {
