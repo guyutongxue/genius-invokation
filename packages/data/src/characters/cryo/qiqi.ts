@@ -124,7 +124,7 @@ export const RiteOfResurrection = card(211081)
   .usage(2, { autoDispose: false })
   .do((c) => {
     for (const ch of c.$$(`all my defeated characters`)) {
-      ch.heal(2);
+      ch.heal(2, { canRevive: true });
     }
   })
   .done();

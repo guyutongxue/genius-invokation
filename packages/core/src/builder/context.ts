@@ -116,6 +116,8 @@ interface DrawCardsOpt {
 interface HealOption {
   /** 是否为分配生命值导致的治疗 */
   distribution?: boolean;
+  /** 是否允许复苏角色，默认为 false */
+  canRevive?: boolean;
 }
 
 interface CreateEntityOptions {
@@ -423,29 +425,33 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
 
-  /** 治疗角色。若角色已倒下，则复苏该角色。*/
+  /** 治疗角色 */
   heal(
     value: number,
     target: CharacterTargetArg,
-    { distribution = false }: HealOption = {},
+    { distribution = false, canRevive = false }: HealOption = {},
   ) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
       const targetState = t.state;
       if (!targetState.variables.alive) {
-        this.log(
-          DetailLogType.Other,
-          `Before healing ${stringifyState(targetState)}, revive him.`,
-        );
-        this.mutate({
-          type: "modifyEntityVar",
-          state: targetState,
-          varName: "alive",
-          value: 1,
-        });
-        damageType = DamageType.Revive;
-        this.emitEvent("onRevive", this.state, targetState);
+        if (canRevive) {
+          this.log(
+            DetailLogType.Other,
+            `Before healing ${stringifyState(targetState)}, revive him.`,
+          );
+          this.mutate({
+            type: "modifyEntityVar",
+            state: targetState,
+            varName: "alive",
+            value: 1,
+          });
+          damageType = DamageType.Revive;
+          this.emitEvent("onRevive", this.state, targetState);
+        } else {
+          continue;
+        }
       }
       using l = this.subLog(
         DetailLogType.Primitive,
@@ -1657,8 +1663,8 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   gainEnergy(value = 1) {
     this.skillContext.gainEnergy(value, this.state);
   }
-  heal(value: number) {
-    this.skillContext.heal(value, this.state);
+  heal(value: number, opt?: HealOption) {
+    this.skillContext.heal(value, this.state, opt);
   }
   damage(type: Exclude<DamageType, DamageType.Revive>, value: number) {
     this.skillContext.damage(type, value, this.state);
