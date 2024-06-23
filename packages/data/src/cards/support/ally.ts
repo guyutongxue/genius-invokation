@@ -133,6 +133,7 @@ export const Tubby = card(322006)
   .costSame(2)
   .support("ally")
   .on("deductOmniDiceCard", (c, e) => e.hasCardTag("place"))
+  .usagePerRound(1)
   .deductOmniCost(2)
   .done();
 

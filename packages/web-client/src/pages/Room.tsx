@@ -1,3 +1,18 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import { useParams, useSearchParams } from "@solidjs/router";
 import { Layout } from "../layouts/Layout";
 import { roomCodeToId } from "../utils";
@@ -27,6 +42,12 @@ interface ActionRequestPayload {
   method: RpcMethod;
   params: any;
 }
+
+const names: Record<number, string> = {};
+(async () => {
+  const { default: data } = await import("../names.json");
+  Object.assign(names, data);
+})();
 
 export function Room() {
   const params = useParams();
@@ -74,6 +95,7 @@ export function Room() {
             console.error(e);
           }
         },
+        assetAltText: (id) => names[id]
       });
       setChessboard(<Ui />);
       setPlayerIo(io);
@@ -82,6 +104,7 @@ export function Room() {
 
   const onActionRequested = async (payload: ActionRequestPayload) => {
     playerIo()?.cancelRpc();
+    await new Promise((r) => setTimeout(r, 100)); // wait for UI notifications?
     const response = await playerIo()?.rpc(payload.method, payload.params);
     try {
       const { data } = await axios.post(

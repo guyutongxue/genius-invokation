@@ -21,20 +21,25 @@ import {
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { PrismaClientExceptionFilter } from "./db/prisma-exception.filter";
+import { BASE_PATH, frontend } from "./frontend";
 
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
-  new FastifyAdapter(),
+  new FastifyAdapter({
+    // Oops. https://github.com/oven-sh/bun/issues/8823
+    // http2: true
+  }),
 );
 app.useGlobalPipes(new ValidationPipe({ transform: true }));
 app.useGlobalFilters(new PrismaClientExceptionFilter(app.getHttpAdapter()));
-app.setGlobalPrefix("/api");
+app.setGlobalPrefix(`${BASE_PATH}/api`);
+app.register(frontend);
 
 if (import.meta.env.NODE_ENV !== "production") {
   app.enableCors({ origin: "*" })
 }
 
-await app.listen(3000, (err, address) => {
+await app.listen(process.env.PORT ?? 3000, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);

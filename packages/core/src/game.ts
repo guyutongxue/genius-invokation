@@ -715,11 +715,11 @@ export class Game extends StateMutator {
                 targets: actionInfo.targets,
               },
             );
-            await this.handleEvent(
-              "onPlayCard",
-              new PlayCardEventArg(this.state, actionInfo),
-            );
           }
+          await this.handleEvent(
+            "onPlayCard",
+            new PlayCardEventArg(this.state, actionInfo),
+          );
           break;
         }
         case "switchActive": {

@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@gi-tcg/typings": "workspace:*",
-    "@gi-tcg/static-data": "workspace:*",
-    "typescript": "^5.1.3"
+    "@gi-tcg/static-data": "workspace:*"
   }
 }

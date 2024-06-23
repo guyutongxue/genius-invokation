@@ -254,7 +254,7 @@ export function RoomDialog(props: RoomDialogProps) {
                 </For>
               </div>
               <div class="mb-3 flex flex-row gap-4 items-center">
-                <h4 class="text-lg">公开加入</h4>
+                <h4 class="text-lg">公开房间</h4>
                 <ToggleSwitch
                   checked={
                     props.joiningRoomInfo

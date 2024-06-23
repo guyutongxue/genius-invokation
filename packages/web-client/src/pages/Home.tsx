@@ -45,6 +45,9 @@ export function Home() {
   const [currentRoom] = createResource(() =>
     axios.get("rooms/current").then((r) => r.data),
   );
+  const [allRooms, { refetch }] = createResource(() =>
+    axios.get("rooms").then((e) => e.data),
+  );
 
   const createRoom = () => {
     if (!decks()?.count) {
@@ -54,7 +57,7 @@ export function Home() {
     }
     createRoomDialogEl.showModal();
   };
-  const joinRoom = async (e: SubmitEvent) => {
+  const joinRoomBySubmitCode = async (e: SubmitEvent) => {
     e.preventDefault();
     if (!decks()?.count) {
       alert("请先创建一组牌组");
@@ -75,6 +78,15 @@ export function Home() {
       console.error(e);
       setJoiningRoomInfo();
     }
+  };
+  const joinRoomByInfo = (roomInfo: any) => {
+    if (!decks()?.count) {
+      alert("请先创建一组牌组");
+      navigate("/decks/new");
+      return;
+    }
+    setJoiningRoomInfo(roomInfo);
+    joinRoomDialogEl.showModal();
   };
 
   return (
@@ -157,7 +169,7 @@ export function Home() {
                         创建房间…
                       </button>
                       或者
-                      <form class="flex-grow flex flex-row" onSubmit={joinRoom}>
+                      <form class="flex-grow flex flex-row" onSubmit={joinRoomBySubmitCode}>
                         <input
                           class="input input-solid rounded-r-0 b-r-0"
                           name="roomCode"
@@ -180,7 +192,21 @@ export function Home() {
                       </form>
                     </div>
                   </Show>
-                  <h4 class="text-xl font-bold mb-5">可观战的对局</h4>
+                  <h4 class="text-xl font-bold mb-5">当前对局</h4>
+                  <ul class="flex gap-2 flex-row flex-wrap">
+                    <For
+                      each={allRooms()}
+                      fallback={
+                        <div class="text-gray-500">暂无对局</div>
+                      }
+                    >
+                      {(roomInfo) => (
+                        <li>
+                          <RoomInfo {...roomInfo} onJoin={joinRoomByInfo} />
+                        </li>
+                      )}
+                    </For>
+                  </ul>
                 </div>
               </div>
               <RoomDialog ref={createRoomDialogEl!} />

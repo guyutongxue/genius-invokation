@@ -172,7 +172,7 @@ export function UserInfo(props: UserInfoProps) {
             </Show>
           </dd>
         </dl>
-        <Show when={props.rank === 0}>
+        <Show when={props.editable && props.rank === 0}>
           <hr class="h-1 w-full text-gray-4 my-4" />
           <div class="flex flex-row gap-2 mb-2">
             <button

@@ -120,15 +120,16 @@ export function verifyDeck({ characters, cards }: Deck): Version {
           `card id ${cardId} related character not in deck`,
         );
       }
+      const tempCharacterTags = [...characterTags];
       for (const requiredTag of card.relatedCharacterTags) {
-        const idx = characterTags.indexOf(requiredTag);
+        const idx = tempCharacterTags.indexOf(requiredTag);
         if (idx === -1) {
           throw new DeckVerificationError(
             DEC.RelationError,
             `card id ${cardId} related character tags not in deck`,
           );
         }
-        characterTags.splice(idx, 1);
+        tempCharacterTags.splice(idx, 1);
       }
       cardCounts.set(cardId, 1);
       versions.add(card.sinceVersion);

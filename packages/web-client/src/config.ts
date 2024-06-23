@@ -13,4 +13,4 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export const BACKEND_BASE_URL = import.meta.env.DEV ? "http://localhost:3000/api" : `${import.meta.env.BASE_URL}api`;
+export const BACKEND_BASE_URL = import.meta.env.DEV ? "http://localhost:3000/api" : `${import.meta.env.BASE_URL}/api`;
