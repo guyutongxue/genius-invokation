@@ -1172,6 +1172,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       "onGenerateDice",
       this.state,
       this.callerArea.who,
+      this.skillInfo,
       insertedDice,
     );
   }

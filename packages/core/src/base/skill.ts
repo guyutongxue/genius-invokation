@@ -873,6 +873,7 @@ export class GenerateDiceEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     who: 0 | 1,
+    public readonly via: SkillInfo,
     public readonly dice: DiceType[],
   ) {
     super(state, who);
