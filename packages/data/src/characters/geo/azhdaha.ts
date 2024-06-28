@@ -289,8 +289,9 @@ export const LunarCyclesUnending = card(226022)
   .eventTalent([Azhdaha, AzhdahaCryo, AzhdahaHydro, AzhdahaPyro, AzhdahaElectro])
   .characterStatus(StoneFacetsElementalCrystallization, "@master")
   .do((c) => {
-    for (const ch of c.$$("my characters include defeated")) {
-      c.generateDice(ch.element(), 1);
+    const elements = new Set(c.$$(`my characters include defeated`).map((ch) => ch.element()))
+    for (const element of elements) {
+      c.generateDice(element, 1);
     }
   })
   .done();
