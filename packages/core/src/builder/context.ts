@@ -1174,13 +1174,15 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       who: this.callerArea.who,
       value: newDice,
     });
-    this.emitEvent(
-      "onGenerateDice",
-      this.state,
-      this.callerArea.who,
-      this.skillInfo,
-      insertedDice,
-    );
+    for (const d of insertedDice) {
+      this.emitEvent(
+        "onGenerateDice",
+        this.state,
+        this.callerArea.who,
+        this.skillInfo,
+        d,
+      );
+    }
   }
 
   createHandCard(cardId: CardHandle) {

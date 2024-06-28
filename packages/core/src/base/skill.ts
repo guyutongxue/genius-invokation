@@ -874,13 +874,13 @@ export class GenerateDiceEventArg extends PlayerEventArg {
     state: GameState,
     who: 0 | 1,
     public readonly via: SkillInfo,
-    public readonly dice: DiceType[],
+    public readonly dice: DiceType,
   ) {
     super(state, who);
   }
 
   override toString(): string {
-    return `player ${this.who} generate dice ${this.dice.join(", ")}`;
+    return `player ${this.who} generate dice [dice:${this.dice}]`;
   }
 }
 
