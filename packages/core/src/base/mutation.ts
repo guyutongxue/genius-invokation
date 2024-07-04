@@ -324,17 +324,19 @@ function doMutation(state: GameState, m: Mutation): GameState {
         );
       }
       const newState = produce(state, (draft) => {
-        const character = getEntityById(
+        const entity = getEntityById(
           draft,
           m.state.id,
           true,
         ) as Draft<CharacterState>;
-        const { who } = getEntityArea(draft, m.state.id);
-        character.definition = m.newDefinition as Draft<CharacterDefinition>;
-        // 移动 skillLog 到新的定义 id 下
-        const player = draft.players[who];
-        player.roundSkillLog.set(m.newDefinition.id, player.roundSkillLog.get(m.state.definition.id) ?? []);
-        player.roundSkillLog.delete(m.state.definition.id);
+        entity.definition = m.newDefinition as Draft<CharacterDefinition>;
+        // 如果是转换角色形态，则移动 skillLog 到新的定义 id 下
+        if (m.state.definition.type === "character") {
+          const { who } = getEntityArea(draft, m.state.id);
+          const player = draft.players[who];
+          player.roundSkillLog.set(m.newDefinition.id, player.roundSkillLog.get(m.state.definition.id) ?? []);
+          player.roundSkillLog.delete(m.state.definition.id);
+        }
       });
       m.state = getEntityById(newState, m.state.id, true) as CharacterState;
       return newState;

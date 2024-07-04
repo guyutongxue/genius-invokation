@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -17,7 +17,11 @@ import { PhaseType, DiceType } from "@gi-tcg/typings";
 
 import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariableConfigs } from "./character";
-import { EntityDefinition, EntityVariableConfigs, VariableOfConfig } from "./entity";
+import {
+  EntityDefinition,
+  EntityVariableConfigs,
+  VariableOfConfig,
+} from "./entity";
 import { Mutation } from "./mutation";
 import { DamageInfo, HealInfo, SkillInfo } from "./skill";
 import { GameData } from "../builder/registry";
@@ -66,6 +70,10 @@ export interface PlayerState {
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
+  /**
+   * 每回合使用技能列表。
+   * 键为技能发起者的角色定义 id，值为该定义下使用过的技能 id 列表 
+   */
   readonly roundSkillLog: ReadonlyMap<number, number[]>;
 }
 
@@ -95,7 +103,7 @@ export type EntityVariables = VariableOfConfig<EntityVariableConfigs>;
 export type AnyState = CharacterState | EntityState;
 
 export interface ExtensionState {
-  readonly definition: ExtensionDefinition
+  readonly definition: ExtensionDefinition;
   readonly state: unknown;
 }
 
