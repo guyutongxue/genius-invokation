@@ -25,7 +25,7 @@ import {
   PlayerState,
   stringifyState,
 } from "./state";
-import { removeEntity, getEntityById, sortDice } from "../utils";
+import { removeEntity, getEntityById, sortDice, getEntityArea } from "../utils";
 import { EntityArea, EntityDefinition, stringifyEntityArea } from "./entity";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError } from "../error";
@@ -152,10 +152,15 @@ export interface MutateExtensionStateM {
   readonly extensionId: number;
   readonly newState: unknown;
 }
-export interface MutateRoundSkillLogM {
-  readonly type: "mutateRoundSkillLog";
+export interface PushRoundSkillLogM {
+  readonly type: "pushRoundSkillLog";
   readonly who: 0 | 1;
-  readonly skillIdOrZero: number;
+  readonly caller: CharacterState;
+  readonly skillId: number;
+}
+export interface ClearRoundSkillLogM {
+  readonly type: "clearRoundSkillLog";
+  readonly who: 0 | 1;
 }
 
 export type Mutation =
@@ -176,7 +181,8 @@ export type Mutation =
   | ResetDiceM
   | SetPlayerFlagM
   | MutateExtensionStateM
-  | MutateRoundSkillLogM;
+  | PushRoundSkillLogM
+  | ClearRoundSkillLogM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -323,7 +329,12 @@ function doMutation(state: GameState, m: Mutation): GameState {
           m.state.id,
           true,
         ) as Draft<CharacterState>;
+        const { who } = getEntityArea(draft, m.state.id);
         character.definition = m.newDefinition as Draft<CharacterDefinition>;
+        // 移动 skillLog 到新的定义 id 下
+        const player = draft.players[who];
+        player.roundSkillLog.set(m.newDefinition.id, player.roundSkillLog.get(m.state.definition.id) ?? []);
+        player.roundSkillLog.delete(m.state.definition.id);
       });
       m.state = getEntityById(newState, m.state.id, true) as CharacterState;
       return newState;
@@ -351,14 +362,20 @@ function doMutation(state: GameState, m: Mutation): GameState {
         extension.state = m.newState;
       });
     }
-    case "mutateRoundSkillLog": {
+    case "pushRoundSkillLog": {
+      const key = m.caller.definition.id;
       return produce(state, (draft) => {
-        if (m.skillIdOrZero) {
-          draft.players[m.who].roundSkillLog.push(m.skillIdOrZero);
-        } else {
-          draft.players[m.who].roundSkillLog = [];
+        const player = draft.players[m.who];
+        if (!player.roundSkillLog.has(key)) {
+          player.roundSkillLog.set(key, []);
         }
-      })
+        player.roundSkillLog.get(key)!.push(m.skillId);
+      });
+    }
+    case "clearRoundSkillLog": {
+      return produce(state, (draft) => {
+        draft.players[m.who].roundSkillLog.clear();
+      });
     }
     default: {
       const _: never = m;
@@ -415,15 +432,18 @@ export function stringifyMutation(m: Mutation): string | null {
       }`;
     }
     case "transformDefinition": {
-      return `Transform definition of ${stringifyState(
-        m.state,
-      )} to [${m.newDefinition.type}:${m.newDefinition.id}]`;
+      return `Transform definition of ${stringifyState(m.state)} to [${
+        m.newDefinition.type
+      }:${m.newDefinition.id}]`;
     }
     case "resetDice": {
       return `Reset dice of player ${m.who} to ${JSON.stringify(m.value)}`;
     }
     case "setPlayerFlag": {
       return `Set player ${m.who} flag ${m.flagName} to ${m.value}`;
+    }
+    case "pushRoundSkillLog": {
+      return `Push round skill log ${m.skillId} into ${stringifyState(m.caller)} of player ${m.who}`;
     }
     default: {
       return null;

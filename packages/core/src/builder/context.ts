@@ -322,12 +322,21 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
     return ext.state;
   }
-  /** 本回合我方已经使用了几次某技能 */
-  countOfSkill(
-    skillId: SkillHandle = this.skillInfo.definition.id as SkillHandle,
-  ): number {
-    return this.player.roundSkillLog.filter((entry) => entry === skillId)
-      .length;
+  /** 本回合已使用多少次本技能（仅限角色主动技能）。 */
+  countOfSkill(): number;
+  /**
+   * 本回合我方 `characterId` 角色已使用了多少次技能 `skillId`。
+   * 
+   * `characterId` 是定义 id 而非实体 id。
+   */
+  countOfSkill(characterId: CharacterHandle, skillId: SkillHandle): number;
+  countOfSkill(characterId?: number, skillId?: number): number {
+    characterId ??= this.callerState.definition.id;
+    skillId ??= this.skillInfo.definition.id;
+    return (
+      this.player.roundSkillLog.get(characterId)?.filter((e) => e === skillId)
+        .length ?? 0
+    );
   }
   /** 我方原本元素骰费用最多的手牌列表 */
   getMaxCostHands(): CardState[] {

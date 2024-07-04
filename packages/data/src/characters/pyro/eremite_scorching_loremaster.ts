@@ -56,7 +56,8 @@ export const SpiritOfOmenPyroScorpion01 = summon(123032)
   .on("endPhase")
   .usage(2)
   .do((c) => {
-    if (c.countOfSkill(SearingGlare) > 0 || c.countOfSkill(BlazingStrike) > 0) {
+    if (c.countOfSkill(EremiteScorchingLoremaster, SearingGlare) > 0 ||
+      c.countOfSkill(EremiteScorchingLoremaster, BlazingStrike) > 0) {
       c.damage(DamageType.Pyro, 2);
     } else {
       c.damage(DamageType.Pyro, 1);

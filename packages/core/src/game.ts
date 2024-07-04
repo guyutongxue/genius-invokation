@@ -130,7 +130,7 @@ function initPlayerState(
     hasDefeated: false,
     legendUsed: false,
     skipNextTurn: false,
-    roundSkillLog: [],
+    roundSkillLog: new Map(),
   };
 }
 
@@ -657,9 +657,10 @@ export class Game extends StateMutator {
           );
           await this.executeSkill(actionInfo.skill);
           this.mutate({
-            type: "mutateRoundSkillLog",
+            type: "pushRoundSkillLog",
             who,
-            skillIdOrZero: actionInfo.skill.definition.id,
+            caller: actionInfo.skill.caller as CharacterState,
+            skillId: actionInfo.skill.definition.id,
           });
           await this.handleEvent(
             "onUseSkill",
@@ -833,14 +834,12 @@ export class Game extends StateMutator {
       value: false,
     });
     this.mutate({
-      type: "mutateRoundSkillLog",
+      type: "clearRoundSkillLog",
       who: 0,
-      skillIdOrZero: 0,
     });
     this.mutate({
-      type: "mutateRoundSkillLog",
+      type: "clearRoundSkillLog",
       who: 1,
-      skillIdOrZero: 0,
     });
     this.mutate({
       type: "changePhase",

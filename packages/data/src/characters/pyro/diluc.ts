@@ -101,7 +101,7 @@ export const FlowingFlame = card(213011)
   .useSkill(SearingOnslaught)
   .on("deductElementDiceSkill", (c, e) =>
     e.action.skill.definition.id === SearingOnslaught && 
-    [1, 2].includes(c.countOfSkill(SearingOnslaught)) &&
+    [1, 2].includes(c.countOfSkill(Diluc, SearingOnslaught)) &&
     e.canDeductCostOfType(DiceType.Pyro))
   .deductCost(DiceType.Pyro, 1)
   .done();
