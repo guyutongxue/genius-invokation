@@ -656,12 +656,6 @@ export class Game extends StateMutator {
             new UseSkillEventArg(this.state, who, actionInfo.skill),
           );
           await this.executeSkill(actionInfo.skill);
-          this.mutate({
-            type: "pushRoundSkillLog",
-            who,
-            caller: actionInfo.skill.caller as CharacterState,
-            skillId: actionInfo.skill.definition.id,
-          });
           await this.handleEvent(
             "onUseSkill",
             new UseSkillEventArg(this.state, who, actionInfo.skill),

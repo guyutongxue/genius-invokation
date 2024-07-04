@@ -300,29 +300,37 @@ export class SkillExecutor extends StateMutator {
       }
     }
 
-    if (
-      skillDef.gainEnergy &&
-      skillInfo.caller.definition.type === "character"
-    ) {
+    if (skillInfo.caller.definition.type === "character") {
+      // 增加此回合技能计数
       const ch = getEntityById(
         this.state,
         skillInfo.caller.id,
         true,
       ) as CharacterState;
-      if (ch.variables.alive) {
-        this.log(
-          DetailLogType.Other,
-          `using skill gain 1 energy for ${stringifyState(ch)}`,
-        );
-        const currentEnergy = ch.variables.energy;
-        const newEnergy = Math.min(currentEnergy + 1, ch.variables.maxEnergy);
-        this.mutate({
-          type: "modifyEntityVar",
-          state: ch,
-          varName: "energy",
-          value: newEnergy,
-        });
-        await this.notifyAndPause();
+      this.mutate({
+        type: "pushRoundSkillLog",
+        // intentional bug here: 使用技能发起时的定义 id 而非当前的定义 id
+        // e.g. 艾琳不会对导致变身的若陀龙王的技能计数
+        caller: /* ch */ skillInfo.caller as CharacterState,
+        skillId: skillInfo.definition.id,
+      });
+      // 增加充能
+      if (skillDef.gainEnergy) {
+        if (ch.variables.alive) {
+          this.log(
+            DetailLogType.Other,
+            `using skill gain 1 energy for ${stringifyState(ch)}`,
+          );
+          const currentEnergy = ch.variables.energy;
+          const newEnergy = Math.min(currentEnergy + 1, ch.variables.maxEnergy);
+          this.mutate({
+            type: "modifyEntityVar",
+            state: ch,
+            varName: "energy",
+            value: newEnergy,
+          });
+          await this.notifyAndPause();
+        }
       }
     }
 

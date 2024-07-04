@@ -137,24 +137,14 @@ export interface SetPlayerFlagM {
   readonly value: boolean;
 }
 
-export type ExtraValueName =
-  | "disposedSupportCount"
-  | "damagedTypeBitset"
-  | "azhdahaAbsorbedBitset";
-export interface SetPlayerExtraValueM {
-  readonly type: "setPlayerExtraValue";
-  readonly who: 0 | 1;
-  readonly name: ExtraValueName;
-  readonly value: number;
-}
 export interface MutateExtensionStateM {
   readonly type: "mutateExtensionState";
   readonly extensionId: number;
   readonly newState: unknown;
 }
+
 export interface PushRoundSkillLogM {
   readonly type: "pushRoundSkillLog";
-  readonly who: 0 | 1;
   readonly caller: CharacterState;
   readonly skillId: number;
 }
@@ -366,8 +356,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "pushRoundSkillLog": {
       const key = m.caller.definition.id;
+      const { who } = getEntityArea(state, m.caller.id);
       return produce(state, (draft) => {
-        const player = draft.players[m.who];
+        const player = draft.players[who];
         if (!player.roundSkillLog.has(key)) {
           player.roundSkillLog.set(key, []);
         }
@@ -445,7 +436,7 @@ export function stringifyMutation(m: Mutation): string | null {
       return `Set player ${m.who} flag ${m.flagName} to ${m.value}`;
     }
     case "pushRoundSkillLog": {
-      return `Push round skill log ${m.skillId} into ${stringifyState(m.caller)} of player ${m.who}`;
+      return `Push round skill log ${m.skillId} into ${stringifyState(m.caller)}`;
     }
     default: {
       return null;
