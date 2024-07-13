@@ -38,7 +38,7 @@ export enum DamageType {
   Dendro,
   Piercing = 8,
   Heal = 9,
-  Revive = 10,
+  // Revive = 10,
 }
 
 export enum Aura {

@@ -267,7 +267,8 @@ export class SkillExecutor extends StateMutator {
         );
         const healValue = arg._immuneInfo.newHealth;
         const healInfo: HealInfo = {
-          type: DamageType.Revive,
+          type: DamageType.Heal,
+          healKind: "revive",
           source: arg._immuneInfo.skill.caller,
           via: arg._immuneInfo.skill,
           target: arg.target,
@@ -275,7 +276,6 @@ export class SkillExecutor extends StateMutator {
           value: healValue,
           causeDefeated: false,
           fromReaction: null,
-          isDistribution: false,
         };
         this.mutate({
           type: "modifyEntityVar",

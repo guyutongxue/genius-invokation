@@ -368,7 +368,7 @@ export class EntityBuilder<
    * @returns
    */
   endPhaseDamage(
-    type: Exclude<DamageType, DamageType.Revive> | "swirledAnemo",
+    type: DamageType | "swirledAnemo",
     value: number,
     target?: string,
   ): BuilderWithShortcut<

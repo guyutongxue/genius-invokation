@@ -419,7 +419,7 @@ export const WaterAndJustice = card(331805)
       if (currentHealth > expectHealth) {
         c.damage(DamageType.Piercing, currentHealth - expectHealth, chs[i].state);
       } else if (currentHealth < expectHealth) {
-        c.heal(expectHealth - currentHealth, chs[i].state);
+        c.heal(expectHealth - currentHealth, chs[i].state, { kind: "distribution" });
       }
     }
     c.heal(1, "all my characters");

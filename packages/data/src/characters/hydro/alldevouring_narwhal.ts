@@ -79,7 +79,7 @@ export const AnomalousAnatomy = status(122042)
       varName: "maxHealth",
       value: master.variables.maxHealth + 1,
     });
-    c.heal(1, master);
+    c.heal(1, master, { kind: "increaseMaxHealth" });
   })
   .on("dispose")
   .do((c) => {

@@ -38,6 +38,7 @@ import {
   EventAndRequestNames,
   EventArgOf,
   HealInfo,
+  HealKind,
   InlineEventNames,
   ModifyDamage0EventArg,
   ModifyDamage1EventArg,
@@ -114,10 +115,7 @@ interface DrawCardsOpt {
 }
 
 interface HealOption {
-  /** 是否为分配生命值导致的治疗 */
-  distribution?: boolean;
-  /** 是否允许复苏角色，默认为 false */
-  canRevive?: boolean;
+  kind?: HealKind;
 }
 
 interface CreateEntityOptions {
@@ -326,7 +324,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   countOfSkill(): number;
   /**
    * 本回合我方 `characterId` 角色已使用了多少次技能 `skillId`。
-   * 
+   *
    * `characterId` 是定义 id 而非实体 id。
    */
   countOfSkill(characterId: CharacterHandle, skillId: SkillHandle): number;
@@ -438,14 +436,14 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   heal(
     value: number,
     target: CharacterTargetArg,
-    { distribution = false, canRevive = false }: HealOption = {},
+    { kind = "common" }: HealOption = {},
   ) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      let damageType: DamageType.Heal | DamageType.Revive = DamageType.Heal;
+      const damageType = DamageType.Heal;
       const targetState = t.state;
       if (!targetState.variables.alive) {
-        if (canRevive) {
+        if (kind === "revive") {
           this.log(
             DetailLogType.Other,
             `Before healing ${stringifyState(targetState)}, revive him.`,
@@ -456,7 +454,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             varName: "alive",
             value: 1,
           });
-          damageType = DamageType.Revive;
           this.emitEvent("onRevive", this.state, targetState);
         } else {
           continue;
@@ -479,12 +476,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         type: damageType,
         expectedValue: value,
         value: finalValue,
+        healKind: kind,
         source: this.callerState,
         via: this.skillInfo,
         target: targetState,
         causeDefeated: false,
         fromReaction: null,
-        isDistribution: distribution,
       };
       const modifier = new ModifyHealEventArg(this.state, healInfo);
       this.handleInlineEvent("modifyHeal", modifier);
@@ -510,7 +507,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   damage(
-    type: Exclude<DamageType, DamageType.Revive>,
+    type: DamageType,
     value: number,
     target: CharacterTargetArg = "opp active",
   ) {
@@ -1677,7 +1674,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   heal(value: number, opt?: HealOption) {
     this.skillContext.heal(value, this.state, opt);
   }
-  damage(type: Exclude<DamageType, DamageType.Revive>, value: number) {
+  damage(type: DamageType, value: number) {
     this.skillContext.damage(type, value, this.state);
   }
   apply(type: AppliableDamageType) {

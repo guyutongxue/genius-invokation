@@ -168,7 +168,7 @@ export const TeyvatFriedEgg = card(333009)
   .tags("food")
   .filter((c) => !c.$(`my combat status with definition id ${ReviveOnCooldown}`))
   .addTarget("my defeated characters")
-  .heal(1, "@targets.0", { canRevive: true })
+  .heal(1, "@targets.0", { kind: "revive" })
   .characterStatus(Satiated, "@targets.0")
   .combatStatus(ReviveOnCooldown)
   .done();

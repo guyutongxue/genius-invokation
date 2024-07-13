@@ -86,7 +86,7 @@ export interface SkillInfo {
 }
 
 export interface DamageInfo {
-  readonly type: Exclude<DamageType, DamageType.Heal | DamageType.Revive>;
+  readonly type: Exclude<DamageType, DamageType.Heal>;
   readonly value: number;
   readonly source: CharacterState | EntityState;
   readonly via: SkillInfo;
@@ -96,17 +96,23 @@ export interface DamageInfo {
   readonly log?: string;
 }
 
+export type HealKind =
+  | "common" // 常规治疗
+  | "revive" // 复苏
+  | "distribution" // 平衡生命值（水与正义）
+  | "increaseMaxHealth"; // 增加最大生命值（吞星之鲸）
+
 export interface HealInfo {
-  readonly type: DamageType.Heal | DamageType.Revive;
+  readonly type: DamageType.Heal;
   readonly expectedValue: number;
   readonly value: number;
+  readonly healKind: HealKind;
   readonly source: CharacterState | EntityState;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly fromReaction: null;
   readonly causeDefeated: false;
   readonly log?: string;
-  readonly isDistribution: boolean;
 }
 
 export interface ReactionInfo {
@@ -562,10 +568,7 @@ export class DamageOrHealEventArg<
     return !this.isDamageTypeHeal();
   }
   isDamageTypeHeal() {
-    return (
-      this._damageInfo.type === DamageType.Heal ||
-      this._damageInfo.type === DamageType.Revive
-    );
+    return this._damageInfo.type === DamageType.Heal;
   }
 
   get source() {
@@ -1020,15 +1023,13 @@ export type SkillDefinition =
   | TriggeredSkillDefinition;
 
 export function stringifyDamageInfo(damage: DamageInfo | HealInfo): string {
-  if (damage.type === DamageType.Heal || damage.type === DamageType.Revive) {
+  if (damage.type === DamageType.Heal) {
     let result = `${stringifyState(damage.source)} heal ${
       damage.value
     } to ${stringifyState(damage.target)}, via skill [skill:${
       damage.via.definition.id
     }]`;
-    if (damage.type === DamageType.Revive) {
-      result += ` (revive)`;
-    }
+    result += ` (${damage.healKind})`;
     return result;
   } else {
     let result = `${stringifyState(damage.source)} deal ${
