@@ -31,6 +31,7 @@ export const VERSIONS = [
   "v4.6.0",
   "v4.6.1",
   "v4.7.0",
+  "v4.8.0"
 ] as const;
 
 export type Version = (typeof VERSIONS)[number];

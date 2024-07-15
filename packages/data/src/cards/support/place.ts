@@ -71,6 +71,8 @@ export const JadeChamber = card(321003)
  * @id 321004
  * @name 晨曦酒庄
  * @description
+ * 我方执行「切换角色」行动时：少花费1个元素骰。（每回合至多2次）
+ * @outdated
  * 我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）
  */
 export const DawnWinery = card(321004)
@@ -438,6 +440,8 @@ export const TheMausoleumOfKingDeshret = card(321020)
  * @id 321021
  * @name 中央实验室遗址
  * @description
+ * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。
+ * @outdated
  * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。
  */
 export const CentralLaboratoryRuins = card(321021)

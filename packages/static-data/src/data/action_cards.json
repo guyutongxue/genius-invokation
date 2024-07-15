@@ -1527,6 +1527,74 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Xinyan"
   },
   {
+    "id": 113131,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "超量装药弹头",
+    "englishName": "Overcharged Ball",
+    "tags": [
+      "GCG_TAG_SLOWLY"
+    ],
+    "targetList": [
+      {
+        "id": 159,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "ENEMY",
+        "tags": [],
+        "rawHintText": "对敌方出战角色生效",
+        "hintText": "对敌方出战角色生效"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_PYRO",
+        "count": 2
+      }
+    ],
+    "rawDescription": "$[K1]：对敌方「出战角色」造成1点$[K103]。\\n<color=#FFFFFFFF>此牌被$[K56]时：</color>对敌方「出战角色」造成1点$[K103]。",
+    "description": "战斗行动：对敌方「出战角色」造成1点火元素伤害。\n此牌被舍弃时：对敌方「出战角色」造成1点火元素伤害。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Chevreuse"
+  },
+  {
+    "id": 213131,
+    "shareId": 398,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "尖兵协同战法",
+    "englishName": "Vanguard's Coordinated Tactics",
+    "tags": [
+      "GCG_TAG_TALENT"
+    ],
+    "targetList": [
+      {
+        "id": 11313,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给我方的<color=#FFD780FF>夏沃蕾</color>",
+        "hintText": "装备给我方的夏沃蕾"
+      }
+    ],
+    "relatedCharacterId": 1313,
+    "relatedCharacterTags": [],
+    "storyTitle": "夏沃蕾·尖兵协同战法",
+    "storyText": "「特巡队专门应对各类危急凶案和恶劣罪犯，所以，我们在执法时会相对…强硬一些。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_PYRO",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>队伍中包含<color=#FF9999FF>{SPRITE_PRESET#2103}火元素角色</color>和<color=#FFACFFFF>{SPRITE_PRESET#2104}雷元素角色</color>且不包含其他元素的角色，才能打出：</color>将此牌装备给<color=#FFFFFFFF>$[A1313]</color>。\\n装备有此牌的<color=#FFFFFFFF>$[A1313]</color>在场，敌方角色受到超载反应伤害后：我方接下来造成的2次$[K103]或$[K104]+1。（包括扩散反应造成的$[K103]或$[K104]）\\n（牌组中包含$[A1313]，才能加入牌组）",
+    "description": "队伍中包含火元素角色和雷元素角色且不包含其他元素的角色，才能打出：将此牌装备给夏沃蕾。\n装备有此牌的夏沃蕾在场，敌方角色受到超载反应伤害后：我方接下来造成的2次火元素伤害或雷元素伤害+1。（包括扩散反应造成的火元素伤害或雷元素伤害）\n（牌组中包含夏沃蕾，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A1313]</color>在场，敌方角色受到超载反应伤害后：我方接下来造成的2次$[K103]或$[K104]+1。（包括扩散反应造成的$[K103]或$[K104]）",
+    "playingDescription": "装备有此牌的夏沃蕾在场，敌方角色受到超载反应伤害后：我方接下来造成的2次火元素伤害或雷元素伤害+1。（包括扩散反应造成的火元素伤害或雷元素伤害）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Chevreuse"
+  },
+  {
     "id": 214011,
     "shareId": 86,
     "sinceVersion": "v3.3.0",
@@ -1704,10 +1772,10 @@
         "count": 3
       }
     ],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1404]</color>时，装备此牌。\\n$[A1404]装备此牌后，立刻使用一次<color=#FFD780FF>$[S14042]</color>。\\n装备有此牌的$[A1404]在<color=#FFFFFFFF>$[C114041]</color>的「凭依」级数为偶数时，使用<color=#FFFFFFFF>$[S14042]</color>造成的伤害+1。\\n（牌组中包含$[A1404]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为赛诺时，装备此牌。\n赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。\n装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。\n（牌组中包含赛诺，才能加入牌组）",
-    "rawPlayingDescription": "装备有此牌的$[A1404]在<color=#FFFFFFFF>$[C114041]</color>的「凭依」级数为偶数时，使用<color=#FFFFFFFF>$[S14042]</color>造成的伤害+1。",
-    "playingDescription": "装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1404]</color>时，装备此牌。\\n$[A1404]装备此牌后，立刻使用一次<color=#FFD780FF>$[S14042]</color>。\\n装备有此牌的$[A1404]在<color=#FFFFFFFF>$[C114041]</color>的「凭依」级数至少为2时，使用<color=#FFFFFFFF>$[S14042]</color>造成的伤害+2。（每回合1次）\\n（牌组中包含$[A1404]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为赛诺时，装备此牌。\n赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。\n装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+2。（每回合1次）\n（牌组中包含赛诺，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1404]在<color=#FFFFFFFF>$[C114041]</color>的「凭依」级数至少为2时，使用<color=#FFFFFFFF>$[S14042]</color>造成的伤害+2。（每回合1次）",
+    "playingDescription": "装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+2。（每回合1次）",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Cyno"
   },
   {
@@ -2457,10 +2525,10 @@
         "count": 5
       }
     ],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1603]</color>时，装备此牌。\\n$[A1603]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16033]</color>。\\n我方出战角色在$[K6]角色状态或$[K6]出战状态的保护下时，我方召唤物造成的$[K106]+1。\\n（牌组中包含$[A1603]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为钟离时，装备此牌。\n钟离装备此牌后，立刻使用一次地心·磐礴。\n我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。\n（牌组中包含钟离，才能加入牌组）",
-    "rawPlayingDescription": "我方出战角色在$[K6]角色状态或$[K6]出战状态的保护下时，我方召唤物造成的$[K106]+1。",
-    "playingDescription": "我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1603]</color>时，装备此牌。\\n$[A1603]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16033]</color>。\\n装备有此牌的$[A1603]生命值至少为7时，$[A1603]造成的伤害和我方召唤物造成的$[K106]+1。\\n（牌组中包含$[A1603]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为钟离时，装备此牌。\n钟离装备此牌后，立刻使用一次地心·磐礴。\n装备有此牌的钟离生命值至少为7时，钟离造成的伤害和我方召唤物造成的岩元素伤害+1。\n（牌组中包含钟离，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1603]生命值至少为7时，$[A1603]造成的伤害和我方召唤物造成的$[K106]+1。",
+    "playingDescription": "装备有此牌的钟离生命值至少为7时，钟离造成的伤害和我方召唤物造成的岩元素伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Zhongli"
   },
   {
@@ -2495,10 +2563,10 @@
         "count": 3
       }
     ],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1604]</color>时，装备此牌。\\n$[A1604]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16042]</color>。\\n装备有此牌的$[A1604]在场时，如果我方场上存在<color=#FFFFFFFF>$[C116041]</color>，则我方角色进行$[K52]时造成的伤害+1。\\n（牌组中包含$[A1604]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为阿贝多时，装备此牌。\n阿贝多装备此牌后，立刻使用一次创生法·拟造阳华。\n装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时造成的伤害+1。\n（牌组中包含阿贝多，才能加入牌组）",
-    "rawPlayingDescription": "装备有此牌的$[A1604]在场时，如果我方场上存在<color=#FFFFFFFF>$[C116041]</color>，则我方角色进行$[K52]时造成的伤害+1。",
-    "playingDescription": "装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时造成的伤害+1。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1604]</color>时，装备此牌。\\n$[A1604]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16042]</color>。\\n装备有此牌的$[A1604]在场时，如果我方场上存在<color=#FFFFFFFF>$[C116041]</color>，则我方角色进行$[K52]时少花费1个$[K309]，并且造成的伤害+1。\\n（牌组中包含$[A1604]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为阿贝多时，装备此牌。\n阿贝多装备此牌后，立刻使用一次创生法·拟造阳华。\n装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时少花费1个无色元素，并且造成的伤害+1。\n（牌组中包含阿贝多，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1604]在场时，如果我方场上存在<color=#FFFFFFFF>$[C116041]</color>，则我方角色进行$[K52]时少花费1个$[K309]，并且造成的伤害+1。",
+    "playingDescription": "装备有此牌的阿贝多在场时，如果我方场上存在阳华，则我方角色进行下落攻击时少花费1个无色元素，并且造成的伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Constellation_Albedo"
   },
   {
@@ -2617,11 +2685,78 @@
         "count": 2
       }
     ],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1607]</color>时，装备此牌。\\n$[A1607]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16073]</color>。\\n装备有此牌的$[A1607]在场时，如果我方没有手牌，则<color=#FFFFFFFF>$[C116073]</color>会使普通攻击造成的伤害额外+2。\\n（牌组中包含$[A1607]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为云堇时，装备此牌。\n云堇装备此牌后，立刻使用一次破嶂见旌仪。\n装备有此牌的云堇在场时，如果我方没有手牌，则飞云旗阵会使普通攻击造成的伤害额外+2。\n（牌组中包含云堇，才能加入牌组）",
-    "rawPlayingDescription": "装备有此牌的$[A1607]在场时，如果我方没有手牌，则<color=#FFFFFFFF>$[C116073]</color>会使普通攻击造成的伤害额外+2。",
-    "playingDescription": "装备有此牌的云堇在场时，如果我方没有手牌，则飞云旗阵会使普通攻击造成的伤害额外+2。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1607]</color>时，装备此牌。\\n$[A1607]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16073]</color>。\\n装备有此牌的$[A1607]在场，且我方触发<color=#FFFFFFFF>$[C116073]</color>时：如果我方没有手牌，则使此次技能伤害+2。\\n（牌组中包含$[A1607]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为云堇时，装备此牌。\n云堇装备此牌后，立刻使用一次破嶂见旌仪。\n装备有此牌的云堇在场，且我方触发飞云旗阵时：如果我方没有手牌，则使此次技能伤害+2。\n（牌组中包含云堇，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1607]在场，且我方触发<color=#FFFFFFFF>$[C116073]</color>时：如果我方没有手牌，则使此次技能伤害+2。",
+    "playingDescription": "装备有此牌的云堇在场，且我方触发飞云旗阵时：如果我方没有手牌，则使此次技能伤害+2。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Yunjin"
+  },
+  {
+    "id": 116081,
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "裂晶弹片",
+    "englishName": "Crystal Shrapnel",
+    "tags": [],
+    "targetList": [
+      {
+        "id": 159,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "ENEMY",
+        "tags": [],
+        "rawHintText": "对敌方出战角色生效",
+        "hintText": "对敌方出战角色生效"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "对敌方「出战角色」造成1点$[K100]，抓1张牌。",
+    "description": "对敌方「出战角色」造成1点物理伤害，抓1张牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Navia_Bullet"
+  },
+  {
+    "id": 216081,
+    "shareId": 399,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "不明流通渠道",
+    "englishName": "Undisclosed Distribution Channels",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "targetList": [
+      {
+        "id": 11608,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给出战中的<color=#FFD780FF>娜维娅</color>",
+        "hintText": "装备给出战中的娜维娅"
+      }
+    ],
+    "relatedCharacterId": 1608,
+    "relatedCharacterTags": [],
+    "storyTitle": "娜维娅·不明流通渠道",
+    "storyText": "「哪来的？！」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_GEO",
+        "count": 3
+      }
+    ],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1608]</color>时，装备此牌。\\n$[A1608]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16082]</color>。\\n装备有此牌的$[A1608]使用技能后：抓2张<color=#FFFFFFFF>$[C116081]</color>。（每回合1次）\\n（牌组中包含$[A1608]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为娜维娅时，装备此牌。\n娜维娅装备此牌后，立刻使用一次典仪式晶火。\n装备有此牌的娜维娅使用技能后：抓2张裂晶弹片。（每回合1次）\n（牌组中包含娜维娅，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1608]使用技能后：抓2张<color=#FFFFFFFF>$[C116081]</color>。（每回合1次）",
+    "playingDescription": "装备有此牌的娜维娅使用技能后：抓2张裂晶弹片。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Navia"
   },
   {
     "id": 217011,
@@ -3052,6 +3187,44 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_EffigyIce"
   },
   {
+    "id": 221041,
+    "shareId": 400,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "冰雅刺剑",
+    "englishName": "Rimeflow Rapier",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "targetList": [
+      {
+        "id": 12104,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给出战中的<color=#FFD780FF>愚人众·霜役人</color>",
+        "hintText": "装备给出战中的愚人众·霜役人"
+      }
+    ],
+    "relatedCharacterId": 2104,
+    "relatedCharacterTags": [],
+    "storyTitle": "霜役人·冰雅刺剑",
+    "storyText": "「恕我之前招待不周。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_CRYO",
+        "count": 3
+      }
+    ],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2104]</color>时，装备此牌。\\n$[A2104]装备此牌后，立刻使用一次<color=#FFD780FF>$[S21042]</color>。\\n装备有此牌的<color=#FFFFFFFF>$[A2104]</color>触发<color=#FFFFFFFF>$[S21044]</color>后：使敌方出战角色的<color=#FFFFFFFF>$[C122]</color>层数翻倍。\\n（牌组中包含$[A2104]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为愚人众·霜役人时，装备此牌。\n愚人众·霜役人装备此牌后，立刻使用一次霜刃截击。\n装备有此牌的愚人众·霜役人触发血契掠影后：使敌方出战角色的生命之契层数翻倍。\n（牌组中包含愚人众·霜役人，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2104]</color>触发<color=#FFFFFFFF>$[S21044]</color>后：使敌方出战角色的<color=#FFFFFFFF>$[C122]</color>层数翻倍。",
+    "playingDescription": "装备有此牌的愚人众·霜役人触发血契掠影后：使敌方出战角色的生命之契层数翻倍。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_EscadronIce"
+  },
+  {
     "id": 222011,
     "shareId": 113,
     "sinceVersion": "v3.3.0",
@@ -3125,10 +3298,10 @@
         "count": 3
       }
     ],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2202]</color>时，装备此牌。\\n$[A2202]装备此牌后，立刻使用一次<color=#FFD780FF>$[S22022]</color>。\\n装备有此牌的$[A2202]生成的<color=#FFFFFFFF>$[C122021]</color>获得以下效果：\\n初始$[K4]+1，并且会使所附属角色切换到其他角色时元素骰费用+1。\\n（牌组中包含$[A2202]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为愚人众·藏镜仕女时，装备此牌。\n愚人众·藏镜仕女装备此牌后，立刻使用一次潋波绽破。\n装备有此牌的愚人众·藏镜仕女生成的水光破镜获得以下效果：\n初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。\n（牌组中包含愚人众·藏镜仕女，才能加入牌组）",
-    "rawPlayingDescription": "装备有此牌的$[A2202]生成的<color=#FFFFFFFF>$[C122021]</color>获得以下效果：\\n初始$[K4]+1，并且会使所附属角色切换到其他角色时元素骰费用+1。",
-    "playingDescription": "装备有此牌的愚人众·藏镜仕女生成的水光破镜获得以下效果：\n初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2202]</color>时，装备此牌。\\n$[A2202]装备此牌后，立刻使用一次<color=#FFD780FF>$[S22022]</color>。\\n装备有此牌的$[A2202]生成的<color=#FFFFFFFF>$[C122021]</color>初始$[K4]+1，并且会使所附属角色受到的$[K102]+1。\\n（牌组中包含$[A2202]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为愚人众·藏镜仕女时，装备此牌。\n愚人众·藏镜仕女装备此牌后，立刻使用一次潋波绽破。\n装备有此牌的愚人众·藏镜仕女生成的水光破镜初始持续回合+1，并且会使所附属角色受到的水元素伤害+1。\n（牌组中包含愚人众·藏镜仕女，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A2202]生成的<color=#FFFFFFFF>$[C122021]</color>初始$[K4]+1，并且会使所附属角色受到的$[K102]+1。",
+    "playingDescription": "装备有此牌的愚人众·藏镜仕女生成的水光破镜初始持续回合+1，并且会使所附属角色受到的水元素伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Maidenwater"
   },
   {
@@ -3515,8 +3688,8 @@
     "relatedCharacterId": null,
     "relatedCharacterTags": [],
     "playCost": [],
-    "rawDescription": "随机$[K56]1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「{SPRITE_PRESET#3506}圣骸兽」角色，则使其获得1点$[K310]。（每回合最多打出1张）",
-    "description": "随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）",
+    "rawDescription": "随机$[K56]1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。（每回合最多打出1张）",
+    "description": "随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。（每回合最多打出1张）",
     "cardFace": "UI_Gcg_CardFace_Summon_ScorpionSacred"
   },
   {
@@ -4476,10 +4649,10 @@
         "count": 2
       }
     ],
-    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于初始牌组中的行动牌后：</color>此牌累积1点<color=#FFFFFFFF>「渔猎」</color>。（最多累积2点，每回合最多累积2点）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「渔猎」</color>，则消耗所有<color=#FFFFFFFF>「渔猎」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「渔猎」</color>就抓1张牌。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3202}弓」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
-    "description": "我方打出名称不存在于初始牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点，每回合最多累积2点）\n角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
-    "rawPlayingDescription": "<color=#FFFFFFFF>我方打出名称不存在于初始牌组中的行动牌后：</color>此牌累积1点<color=#FFFFFFFF>「渔猎」</color>。（最多累积2点）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「渔猎」</color>，则消耗所有<color=#FFFFFFFF>「渔猎」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「渔猎」</color>就抓1张牌。",
-    "playingDescription": "我方打出名称不存在于初始牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点）\n角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。",
+    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组中的行动牌后：</color>此牌累积1点<color=#FFFFFFFF>「渔猎」</color>。（最多累积2点，每回合最多累积2点）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「渔猎」</color>，则消耗所有<color=#FFFFFFFF>「渔猎」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「渔猎」</color>就抓1张牌。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3202}弓」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "我方打出名称不存在于本局最初牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点，每回合最多累积2点）\n角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组中的行动牌后：</color>此牌累积1点<color=#FFFFFFFF>「渔猎」</color>。（最多累积2点）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「渔猎」</color>，则消耗所有<color=#FFFFFFFF>「渔猎」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「渔猎」</color>就抓1张牌。",
+    "playingDescription": "我方打出名称不存在于本局最初牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点）\n角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。",
     "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Jieze"
   },
   {
@@ -4761,6 +4934,46 @@
     "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
     "playingDescription": "角色造成的伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Shenlinwangqi"
+  },
+  {
+    "id": 311308,
+    "shareId": 401,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "「究极霸王超级魔剑」",
+    "englishName": "\"Ultimate Overlord's Mega Magic Sword\"",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_CLAYMORE"
+    ],
+    "targetList": [
+      {
+        "id": 113,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [
+          "GCG_TAG_WEAPON_CLAYMORE"
+        ],
+        "rawHintText": "请选择要装备<color=#FFD780FF>双手剑</color>的角色",
+        "hintText": "请选择要装备双手剑的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "加油·「究极霸王超级魔剑」",
+    "storyText": "「…才不是什么便宜纸板大剑呢！那个、这个…呃…这可是过去曾经战胜螃蟹大帝的…究极霸王超级魔剑！」\n经过短暂的商议，各位美露莘一致决定，将这柄曾经在过去的映影中大放异彩的，海沫村最强大的剑送给究极无敌的勇者，作为友谊的纪念。",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为<color=#FFFFFFFF>「声援」</color>。\\n如果此牌的<color=#FFFFFFFF>「声援」</color>至少为2/4/8，则<color=#FFFFFFFF>角色造成的伤害+1/2/3</color>。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3203}双手剑」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。\n如果此牌的「声援」至少为2/4/8，则角色造成的伤害+1/2/3。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为<color=#FFFFFFFF>「声援」</color>。\\n如果此牌的<color=#FFFFFFFF>「声援」</color>至少为2/4/8，则<color=#FFFFFFFF>角色造成的伤害+1/2/3</color>。",
+    "playingDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。\n如果此牌的「声援」至少为2/4/8，则角色造成的伤害+1/2/3。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BaWangJian"
   },
   {
     "id": 311401,
@@ -5081,6 +5294,46 @@
     "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「元素爆发」造成的伤害+2</color>。\\n<color=#FFFFFFFF>我方出战角色受到伤害或治疗后：</color>累积1点<color=#FFFFFFFF>「公义之理」</color>。如果此牌已累积3点<color=#FFFFFFFF>「公义之理」</color>，则消耗3点<color=#FFFFFFFF>「公义之理」</color>，使角色获得1点$[K310]。",
     "playingDescription": "角色使用「元素爆发」造成的伤害+2。\n我方出战角色受到伤害或治疗后：累积1点「公义之理」。如果此牌已累积3点「公义之理」，则消耗3点「公义之理」，使角色获得1点充能。",
     "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Gongyichoubao"
+  },
+  {
+    "id": 311409,
+    "shareId": 402,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "勘探钻机",
+    "englishName": "Prospector's Drill",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_POLE"
+    ],
+    "targetList": [
+      {
+        "id": 114,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [
+          "GCG_TAG_WEAPON_POLE"
+        ],
+        "rawHintText": "请选择要装备<color=#FFD780FF>长柄武器</color>的角色",
+        "hintText": "请选择要装备长柄武器的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "石匠号子·勘探钻机",
+    "storyText": "「这种长柄钻的穿刺、削切能力无可比拟。\n既然它能够如同热刀刺入黄油般深深没入岩石，\n那对付不若岩石坚硬的东西的话更是不在话下。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点<color=#FFFFFFFF>「团结」</color>。（每回合最多触发2次）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「团结」</color>，则消耗所有<color=#FFFFFFFF>「团结」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「团结」</color>就抓1张牌。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3204}长柄武器」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「团结」。（每回合最多触发2次）\n角色使用技能时：如果此牌已有「团结」，则消耗所有「团结」，使此技能伤害+1，并且每消耗1点「团结」就抓1张牌。\n（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点<color=#FFFFFFFF>「团结」</color>。（每回合最多触发2次）\\n<color=#FFFFFFFF>角色使用技能时：</color>如果此牌已有<color=#FFFFFFFF>「团结」</color>，则消耗所有<color=#FFFFFFFF>「团结」</color>，使此技能伤害+1，并且每消耗1点<color=#FFFFFFFF>「团结」</color>就抓1张牌。",
+    "playingDescription": "所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「团结」。（每回合最多触发2次）\n角色使用技能时：如果此牌已有「团结」，则消耗所有「团结」，使此技能伤害+1，并且每消耗1点「团结」就抓1张牌。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_KanTanQiang"
   },
   {
     "id": 311501,
@@ -6424,6 +6677,38 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Artifact_ZijinghuaguanDa"
   },
   {
+    "id": 312029,
+    "shareId": 403,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "角斗士的凯旋",
+    "englishName": "Gladiator's Triumphus",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "targetList": [
+      {
+        "id": 110,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>圣遗物</color>的角色",
+        "hintText": "请选择要装备圣遗物的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "百战不败·角斗士的凯旋",
+    "storyText": "「只有在胜利时刻，奴隶仿佛成为了主人，自由的辉光却被虚荣掩盖。\n在凯旋时分，战士真正见识牢房外的天地，赎身的希望又多了半分。」",
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>角色使用「普通攻击」时：</color>如果我方手牌数量不多于2，则少消耗1个元素骰。（每回合1次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "角色使用「普通攻击」时：如果我方手牌数量不多于2，则少消耗1个元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色使用「普通攻击」时：</color>如果我方手牌数量不多于2，则少消耗1个元素骰。（每回合1次）",
+    "playingDescription": "角色使用「普通攻击」时：如果我方手牌数量不多于2，则少消耗1个元素骰。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_JiaoDouShiXiao"
+  },
+  {
     "id": 312101,
     "shareId": 165,
     "sinceVersion": "v3.3.0",
@@ -7033,8 +7318,8 @@
         "count": 2
       }
     ],
-    "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>少花费1个元素骰。（每回合1次）",
-    "description": "我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）",
+    "rawDescription": "<color=#FFFFFFFF>我方执行「切换角色」行动时：</color>少花费1个元素骰。（每回合至多2次）",
+    "description": "我方执行「切换角色」行动时：少花费1个元素骰。（每回合至多2次）",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Chenxijiuzhuang"
   },
   {
@@ -7482,8 +7767,8 @@
         "count": 1
       }
     ],
-    "rawDescription": "<color=#FFFFFFFF>我方$[K56]或$[K57]1张牌后：</color>此牌累积1点<color=#FFFFFFFF>「实验进展」</color>。每当<color=#FFFFFFFF>「实验进展」</color>达到3点、6点、9点时，就获得1个万能元素骰。然后，如果<color=#FFFFFFFF>「实验进展」</color>至少为9点，则弃置此牌。",
-    "description": "我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。",
+    "rawDescription": "<color=#FFFFFFFF>我方$[K56]或$[K57]1张牌后：</color>此牌累积1点<color=#FFFFFFFF>「实验进展」</color>。每当<color=#FFFFFFFF>「实验进展」</color>达到3点、6点、9点时，就获得1个$[K411]。然后，如果<color=#FFFFFFFF>「实验进展」</color>至少为9点，则弃置此牌。",
+    "description": "我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_FontaineSci"
   },
   {
@@ -8161,6 +8446,212 @@
     "cardFace": "UI_Gcg_CardFace_Assist_NPC_MrArthur"
   },
   {
+    "id": 322027,
+    "shareId": 404,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_ASSIST",
+    "name": "瑟琳",
+    "englishName": "Serene",
+    "tags": [
+      "GCG_TAG_ALLY"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "瑟琳",
+    "storyText": "「今天也要认真解决大家的烦恼！」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_VOID",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>每回合自动触发1次：</color>将1张随机的<color=#FFFFFFFF>「$[C302218]」</color>放入我方手牌。\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "description": "每回合自动触发1次：将1张随机的「美露莘的声援」放入我方手牌。\n可用次数：3",
+    "cardFace": "UI_Gcg_CardFace_Assist_NPC_Seling"
+  },
+  {
+    "id": 302206,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "瑟琳的声援",
+    "englishName": "Serene's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "随机将2张美露莘推荐的「{SPRITE_PRESET#3101}料理」加入手牌。",
+    "description": "随机将2张美露莘推荐的「料理」加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302207,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "洛梅的声援",
+    "englishName": "Laume's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "随机将2张美露莘好奇的「{SPRITE_PRESET#3004}圣遗物」加入手牌。",
+    "description": "随机将2张美露莘好奇的「圣遗物」加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302208,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "柯莎的声援",
+    "englishName": "Cosanzeana's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "随机将2张美露莘称赞的「{SPRITE_PRESET#3003}武器」加入手牌。",
+    "description": "随机将2张美露莘称赞的「武器」加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302209,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "夏诺蒂拉的声援",
+    "englishName": "Canotila's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "随机将2张美露莘看好的超棒事件牌加入手牌。",
+    "description": "随机将2张美露莘看好的超棒事件牌加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302210,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "希洛娜的声援",
+    "englishName": "Thirona's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "接下来3个回合结束时，各将1张美露莘看好的超棒事件牌加入手牌。",
+    "description": "接下来3个回合结束时，各将1张美露莘看好的超棒事件牌加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302211,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "希露艾的声援",
+    "englishName": "Sluasi's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "复制对方牌库顶部的3张牌，加入手牌。",
+    "description": "复制对方牌库顶部的3张牌，加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302212,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "薇尔妲的声援",
+    "englishName": "Virda's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_VOID",
+        "count": 2
+      }
+    ],
+    "rawDescription": "随机将2张「{SPRITE_PRESET#3007}秘传」卡牌加入你的手牌，并恢复双方牌手的「{SPRITE_PRESET#3007}秘传」卡牌使用机会。",
+    "description": "随机将2张「秘传」卡牌加入你的手牌，并恢复双方牌手的「秘传」卡牌使用机会。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302213,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "芙佳的声援",
+    "englishName": "Puca's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "随机生成「{SPRITE_PRESET#3103}伙伴」到场上，直到填满双方支援区。",
+    "description": "随机生成「伙伴」到场上，直到填满双方支援区。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302214,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "托皮娅的声援",
+    "englishName": "Topyas's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "抓2张牌，双方获得以下效果：「本回合打出手牌后，随机$[K56]1张牌或抓1张牌。」",
+    "description": "抓2张牌，双方获得以下效果：「本回合打出手牌后，随机舍弃1张牌或抓1张牌。」",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302215,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "卢蒂妮的声援",
+    "englishName": "Lutine's Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "抓2张牌，双方获得以下效果：「角色使用技能后，随机受到2点治疗或2点$[K5]。$[K3]：2」",
+    "description": "抓2张牌，双方获得以下效果：「角色使用技能后，随机受到2点治疗或2点穿透伤害。可用次数：2」",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
+    "id": 302218,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "美露莘的声援",
+    "englishName": "Melusine Support",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "效果随机的超棒贴纸，凝聚了美露莘们的心意。",
+    "description": "效果随机的超棒贴纸，凝聚了美露莘们的心意。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Seling"
+  },
+  {
     "id": 323001,
     "shareId": 214,
     "sinceVersion": "v3.3.0",
@@ -8331,8 +8822,8 @@
     "storyText": "「但愿它能如同掌心的小太阳一样，为黑暗中的跋涉带来些许光亮、些许慰藉。」",
     "playCost": [
       {
-        "type": "GCG_COST_DICE_SAME",
-        "count": 2
+        "type": "GCG_COST_DICE_VOID",
+        "count": 3
       }
     ],
     "rawDescription": "<color=#FFFFFFFF>我方打出行动牌后：</color>如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个$[K411]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
@@ -8357,9 +8848,14 @@
     "relatedCharacterTags": [],
     "storyTitle": "苦舍桓",
     "storyText": "「苦舍桓」呀，「苦舍桓」~♪\n记忆和梦的容器，里面满是力量。\n是开花的植物结出的果，也是新的种子，有全新的生命。\n是兰那罗记忆的暂居所，会给兰那罗力气。",
-    "playCost": [],
-    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>$[K56]最多2张元素骰费用最高的手牌，每$[K56]1张，此牌就累积1点<color=#FFFFFFFF>「记忆和梦」</color>。（最多2点）\\n<color=#FFFFFFFF>我方角色使用技能时：</color>如果我方本回合未打出过行动牌，则消耗1点<color=#FFFFFFFF>「记忆和梦」</color>，以使此技能少花费1个元素骰。",
-    "description": "行动阶段开始时：舍弃最多2张元素骰费用最高的手牌，每舍弃1张，此牌就累积1点「记忆和梦」。（最多2点）\n我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>$[K56]最多2张原本元素骰费用最高的手牌，每$[K56]1张，此牌就累积1点<color=#FFFFFFFF>「记忆和梦」</color>。（最多2点）\\n<color=#FFFFFFFF>我方角色使用技能时：</color>如果我方本回合未打出过行动牌，则消耗1点<color=#FFFFFFFF>「记忆和梦」</color>，以使此技能少花费1个元素骰。",
+    "description": "行动阶段开始时：舍弃最多2张原本元素骰费用最高的手牌，每舍弃1张，此牌就累积1点「记忆和梦」。（最多2点）\n我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。",
     "cardFace": "UI_Gcg_CardFace_Assist_Prop_KuSheHeng"
   },
   {
@@ -9128,8 +9624,8 @@
         "count": 2
       }
     ],
-    "rawDescription": "将所花费的元素骰转换为2个$[K411]。",
-    "description": "将所花费的元素骰转换为2个万能元素。",
+    "rawDescription": "生成2个$[K411]。",
+    "description": "生成2个万能元素。",
     "cardFace": "UI_Gcg_CardFace_Event_Event_BestAibo"
   },
   {
@@ -9744,8 +10240,8 @@
     "storyTitle": "琴音之诗",
     "storyText": "「诗与歌的传统，在清澈动人的旋律中往复流转。」",
     "playCost": [],
-    "rawDescription": "将一个我方角色所装备的「{SPRITE_PRESET#3004}圣遗物」返回手牌。\\n<color=#FFFFFFFF>本回合中，我方下次打出「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>少花费2个元素骰。",
-    "description": "将一个我方角色所装备的「圣遗物」返回手牌。\n本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。",
+    "rawDescription": "将一个我方角色所装备的「{SPRITE_PRESET#3004}圣遗物」返回手牌。\\n<color=#FFFFFFFF>本回合中，我方下次打出「{SPRITE_PRESET#3004}圣遗物」手牌时：</color>少花费1个元素骰。如果打出此牌前我方未打出过其他行动牌，则改为少花费2个元素骰。",
+    "description": "将一个我方角色所装备的「圣遗物」返回手牌。\n本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。如果打出此牌前我方未打出过其他行动牌，则改为少花费2个元素骰。",
     "cardFace": "UI_Gcg_CardFace_Event_Event_Wangfu"
   },
   {
@@ -9781,12 +10277,7 @@
     "relatedCharacterTags": [],
     "storyTitle": "坍陷与契机",
     "storyText": "坠入陷坑的意外，亦是揭露尘封往事的契机。",
-    "playCost": [
-      {
-        "type": "GCG_COST_DICE_SAME",
-        "count": 1
-      }
-    ],
+    "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：</color>本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。",
     "description": "我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。",
     "cardFace": "UI_Gcg_CardFace_Event_Event_Tanta"
@@ -9934,8 +10425,8 @@
     "relatedCharacterId": null,
     "relatedCharacterTags": [],
     "playCost": [],
-    "rawDescription": "治疗我方出战角色1点，生成1个随机基础元素骰。",
-    "description": "治疗我方出战角色1点，生成1个随机基础元素骰。",
+    "rawDescription": "生成1个随机基础元素骰，治疗我方出战角色1点。（每个角色每回合最多受到1次来自本效果的治疗）",
+    "description": "生成1个随机基础元素骰，治疗我方出战角色1点。（每个角色每回合最多受到1次来自本效果的治疗）",
     "cardFace": "UI_Gcg_CardFace_Summon_Xunbao"
   },
   {
@@ -10016,6 +10507,44 @@
     "rawDescription": "将我方所有元素骰转换为$[K411]，抓4张牌。",
     "description": "将我方所有元素骰转换为万能元素，抓4张牌。",
     "cardFace": "UI_Gcg_CardFace_Event_Event_MagicCount0"
+  },
+  {
+    "id": 332036,
+    "shareId": 405,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "「看到那小子挣钱…」",
+    "englishName": "\"I'd Rather Lose Money Myself...\"",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "「看到那小子挣钱…」",
+    "storyText": "「…比我自己亏钱还难受！」",
+    "playCost": [],
+    "rawDescription": "本回合中，每当对方获得2个元素骰，你就获得1个$[K411]。（此效果提供的元素骰除外）",
+    "description": "本回合中，每当对方获得2个元素骰，你就获得1个万能元素。（此效果提供的元素骰除外）",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_ZhuanQian"
+  },
+  {
+    "id": 332037,
+    "shareId": 406,
+    "sinceVersion": "4.7.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "噔噔！",
+    "englishName": "Tada!",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "噔噔！",
+    "storyText": "「惊喜。」",
+    "playCost": [],
+    "rawDescription": "对我方「出战角色」造成1点$[K100]。本回合的结束阶段时，抓1张牌。",
+    "description": "对我方「出战角色」造成1点物理伤害。本回合的结束阶段时，抓1张牌。",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_DengDeng"
   },
   {
     "id": 333001,
@@ -10693,6 +11222,21 @@
     "playCost": [],
     "rawDescription": "我方角色受到的元素伤害+1。\\n<color=#FFFFFFFF>我方角色受到元素伤害后：</color>如果对方的支援区未满，则将此牌转移到对方的支援区。",
     "description": "我方角色受到的元素伤害+1。\n我方角色受到元素伤害后：如果对方的支援区未满，则将此牌转移到对方的支援区。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_DimaiZhenshi"
+  },
+  {
+    "id": 421014,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·敷药作战",
+    "englishName": "Ley Line Disorder: Medical Operation",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>敌方角色使用「元素战技」后：</color>治疗所有角色2点，然后对所有角色造成2点$[K5]。",
+    "description": "敌方角色使用「元素战技」后：治疗所有角色2点，然后对所有角色造成2点穿透伤害。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_DimaiZhenshi"
   },
   {
@@ -12359,6 +12903,81 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素反应伤害后：</color>抓2张牌，生成1个$[K411]。（每回合至多生效2次）",
     "description": "敌方角色受到元素反应伤害后：抓2张牌，生成1个万能元素。（每回合至多生效2次）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423056,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·烈性连锁",
+    "englishName": "Mastery Talisman: Searing Chains",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素反应伤害后：</color>对所有敌方角色造成1点$[K5]。如果发生的元素反应是$[K213]，再获得1个$[K411]。（每回合至多生效3次）",
+    "description": "敌方角色受到元素反应伤害后：对所有敌方角色造成1点穿透伤害。如果发生的元素反应是火元素相关反应，再获得1个万能元素。（每回合至多生效3次）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423057,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·持盾冲锋",
+    "englishName": "Mastery Talisman: Shield Rush",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>如果我方出战角色在$[K6]状态或出战状态的保护下，则使本回合中我方角色造成的伤害+1。（可叠加，最多叠加到+3）",
+    "description": "我方角色使用技能后：如果我方出战角色在护盾状态或出战状态的保护下，则使本回合中我方角色造成的伤害+1。（可叠加，最多叠加到+3）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423058,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·娴熟战技",
+    "englishName": "Mastery Talisman: Skill Adept",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方角色使用「元素战技」时：</color>少花费1个元素骰。然后，此牌改为对「普通攻击」生效。",
+    "description": "我方角色使用「元素战技」时：少花费1个元素骰。然后，此牌改为对「普通攻击」生效。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423059,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·娴熟攻击",
+    "englishName": "Mastery Talisman: Attack Adept",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方角色进行「普通攻击」时：</color>少花费1个元素骰。然后，此牌改为对「元素战技」生效。",
+    "description": "我方角色进行「普通攻击」时：少花费1个元素骰。然后，此牌改为对「元素战技」生效。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423060,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·秘密惊喜",
+    "englishName": "Mastery Talisman: Secret Surprise",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方每打出3张名称不存在于初始牌组中的行动牌后：</color>生成2个$[K411]。",
+    "description": "我方每打出3张名称不存在于初始牌组中的行动牌后：生成2个万能元素。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
   }
 ]

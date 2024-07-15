@@ -157,7 +157,7 @@ export async function generateCharacters() {
       name: ch.name,
       description: ch.storyText ?? "",
       code: `export const ${pascalCase(ch.englishName)} = character(${ch.id})
-  .since("${NEW_VERSION}.0")
+  .since("${NEW_VERSION}")
   .tags(${tagCode})
   .health(${ch.hp})
   .energy(${ch.maxEnergy})

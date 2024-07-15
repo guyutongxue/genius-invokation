@@ -636,3 +636,17 @@ export const SirArthur = card(322026)
     c.createHandCard(top.definition.id as CardHandle);
   })
   .done();
+
+/**
+ * @id 322027
+ * @name 瑟琳
+ * @description
+ * 每回合自动触发1次：将1张随机的「美露莘的声援」放入我方手牌。
+ * 可用次数：3
+ */
+export const Serene = card(322027)
+  .costVoid(2)
+  .support("ally")
+  .since("v4.8.0")
+  // TODO
+  .done();

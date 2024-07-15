@@ -214,6 +214,9 @@ export const FurinaPneuma = character(1211)
  * @name 独舞之邀
  * @description
  * 造成2点物理伤害。
+ * 每回合1次：生成手牌圣俗杂座。
+ * @outdated
+ * 造成2点物理伤害。
  * 每回合1次：：生成手牌圣俗杂座。
  */
 export const SoloistsSolicitationOusia = skill(12121)

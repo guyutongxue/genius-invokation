@@ -15,8 +15,8 @@
 
 import path from "node:path";
 
-export const OLD_VERSION = "v4.7.0";
-export const NEW_VERSION = "v4.8.0";
+export const OLD_VERSION = "v4.8.0";
+export const NEW_VERSION = "v5.0.0";
 export const SAVE_OLD_CODES = true;
 
 export const BASE_PATH = path.resolve(

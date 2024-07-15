@@ -245,7 +245,7 @@ export async function writeSourceCode(
         newComment,
       );
       offset += newComment.length - (item.range.end - item.range.pos);
-      console.log("=====\n",item.code);
+      // console.log("=====\n",item.code);
       if (SAVE_OLD_CODES) {
       await appendFile(
         OLD_VERSION_PATH, `

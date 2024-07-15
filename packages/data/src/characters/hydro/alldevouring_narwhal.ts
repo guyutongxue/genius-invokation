@@ -114,6 +114,9 @@ export const DevourersInstinct = status(122044)
  * @id 122041
  * @name 深噬之域
  * @description
+ * 我方舍弃或调和的卡牌，会被吞噬。
+ * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
+ * @outdated
  * 我方舍弃或调和的手牌，会被吞噬。
  * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
  */
@@ -179,6 +182,8 @@ export const ShatteringWaves = skill(22041)
  * @id 22042
  * @name 迸落星雨
  * @description
+ * 造成2点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+4）。然后舍弃1张原本元素骰费用最高的手牌。
+ * @outdated
  * 造成2点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+5）。然后舍弃1张原本元素骰费用最高的手牌。
  */
 export const StarfallShower = skill(22042)
@@ -201,6 +206,8 @@ export const StarfallShower = skill(22042)
  * @id 22043
  * @name 横噬鲸吞
  * @description
+ * 造成1点物理伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。
+ * @outdated
  * 造成1点水元素伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。
  */
 export const RavagingDevourer = skill(22043)

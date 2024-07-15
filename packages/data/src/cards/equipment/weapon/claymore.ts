@@ -196,3 +196,18 @@ export const ForestRegalia = card(311307)
   .on("enter")
   .characterStatus(ForestRegaliaInEffect, "@master")
   .done();
+
+/**
+ * @id 311308
+ * @name 「究极霸王超级魔剑」
+ * @description
+ * 此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。
+ * 如果此牌的「声援」至少为2/4/8，则角色造成的伤害+1/2/3。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+export const UltimateOverlordsMegaMagicSword = card(311308)
+  .costSame(2)
+  .weapon("claymore")
+  .since("v4.8.0")
+  // TODO
+  .done();

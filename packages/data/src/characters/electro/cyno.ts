@@ -19,6 +19,11 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * @id 114041
  * @name 启途誓使
  * @description
+ * 结束阶段：累积1级「凭依」。如果「凭依」级数至少为8，则「凭依」级数-6。
+ * 根据「凭依」级数，提供效果：
+ * 大于等于2级：物理伤害转化为雷元素伤害；
+ * 大于等于4级：造成的伤害+2。
+ * @outdated
  * 结束阶段：累积1级「凭依」。
  * 根据「凭依」级数，提供效果：
  * 大于等于2级：物理伤害转化为雷元素伤害；
@@ -59,6 +64,9 @@ export const InvokersSpear = skill(14041)
  * @id 14042
  * @name 秘仪·律渊渡魂
  * @description
+ * 造成3点雷元素伤害，
+ * 启途誓使的「凭依」级数+1。
+ * @outdated
  * 造成3点雷元素伤害。
  */
 export const SecretRiteChasmicSoulfarer = skill(14042)
@@ -71,6 +79,9 @@ export const SecretRiteChasmicSoulfarer = skill(14042)
  * @id 14043
  * @name 圣仪·煟煌随狼行
  * @description
+ * 造成4点雷元素伤害，
+ * 启途誓使的「凭依」级数+2。
+ * @outdated
  * 造成4点雷元素伤害，
  * 启途誓使的[凭依]级数+2。
  */
@@ -122,6 +133,11 @@ export const Cyno = character(1404)
  * @id 214041
  * @name 落羽的裁择
  * @description
+ * 战斗行动：我方出战角色为赛诺时，装备此牌。
+ * 赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。
+ * 装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+2。（每回合1次）
+ * （牌组中包含赛诺，才能加入牌组）
+ * @outdated
  * 战斗行动：我方出战角色为赛诺时，装备此牌。
  * 赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。
  * 装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。

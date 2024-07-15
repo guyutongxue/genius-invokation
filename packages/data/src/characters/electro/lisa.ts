@@ -80,6 +80,8 @@ export const VioletArc: SkillHandle = skill(14092)
  * @id 14093
  * @name 蔷薇的雷光
  * @description
+ * 造成2点雷元素伤害，召唤蔷薇雷光，使敌方出战角色附属引雷。
+ * @outdated
  * 造成2点雷元素伤害，召唤蔷薇雷光。
  */
 export const LightningRose = skill(14093)

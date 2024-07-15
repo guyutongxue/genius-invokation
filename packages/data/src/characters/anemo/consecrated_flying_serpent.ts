@@ -61,6 +61,8 @@ export const WhirlingTail = skill(25031)
  * @id 25032
  * @name 盘绕风引
  * @description
+ * 造成3点风元素伤害，抓1张牌。
+ * @outdated
  * 造成2点风元素伤害，抓1张噬骸能量块；然后，手牌中每有1张噬骸能量块，抓1张牌（每回合最多抓2张)。
  */
 export const SwirlingSquall = skill(25032)
@@ -81,6 +83,8 @@ export const SwirlingSquall = skill(25032)
  * @id 25033
  * @name 错落风涡
  * @description
+ * 造成2点物理伤害，舍弃手牌中所有的噬骸能量块，每舍弃2张，此次伤害翻倍1次。
+ * @outdated
  * 造成2点风元素伤害，舍弃手牌中所有的噬骸能量块，每舍弃2张，此次伤害翻倍1次。
  */
 export const ScattershotVortex = skill(25033)

@@ -187,6 +187,8 @@ export const LifeStream = skill(27022)
  * @id 27023
  * @name 终景迸落
  * @description
+ * 造成2点物理伤害，抓1张唤醒眷属，生成2层绿洲之滋养。
+ * @outdated
  * 造成2点草元素伤害，抓1张唤醒眷属，生成2层绿洲之滋养。
  */
 export const TheEndFalls = skill(27023)

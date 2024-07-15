@@ -882,3 +882,16 @@ export const FlowerOfParadiseLost = card(312028)
     }
   })
   .done();
+
+/**
+ * @id 312029
+ * @name 角斗士的凯旋
+ * @description
+ * 角色使用「普通攻击」时：如果我方手牌数量不多于2，则少消耗1个元素骰。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const GladiatorsTriumphus = card(312029)
+  .artifact()
+  .since("v4.8.0")
+  // TODO
+  .done();

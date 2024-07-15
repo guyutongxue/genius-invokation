@@ -430,6 +430,8 @@ export const WaterAndJustice = card(331805)
  * @id 332001
  * @name 最好的伙伴！
  * @description
+ * 生成2个万能元素。
+ * @outdated
  * 将所花费的元素骰转换为2个万能元素。
  */
 export const TheBestestTravelCompanion = card(332001)
@@ -823,6 +825,9 @@ export const Pankration = card(332023)
  * @name 琴音之诗
  * @description
  * 将一个我方角色所装备的「圣遗物」返回手牌。
+ * 本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。如果打出此牌前我方未打出过其他行动牌，则改为少花费2个元素骰。
+ * @outdated
+ * 将一个我方角色所装备的「圣遗物」返回手牌。
  * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
  */
 export const Lyresong = card(332024)
@@ -996,6 +1001,8 @@ export const CalledInForCleanup = card(302203)
  * @id 303230
  * @name 海底宝藏
  * @description
+ * 生成1个随机基础元素骰，治疗我方出战角色1点。（每个角色每回合最多受到1次来自本效果的治疗）
+ * @outdated
  * 治疗我方出战角色1点，生成1个随机基础元素骰。
  */
 export const UnderseaTreasure = card(303230)
@@ -1047,6 +1054,8 @@ export const BonecrunchersEnergyBlockCombatStatus = combatStatus(124053)
  * @id 124051
  * @name 噬骸能量块
  * @description
+ * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。（每回合最多打出1张）
+ * @outdated
  * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）
  */
 export const BonecrunchersEnergyBlock = card(124051)
@@ -1167,4 +1176,176 @@ export const TheShowBegins = card(332035)
     c.generateDice(DiceType.Omni, count);
     c.drawCards(4);
   })
+  .done();
+
+/**
+ * @id 113131
+ * @name 超量装药弹头
+ * @description
+ * 战斗行动：对敌方「出战角色」造成1点火元素伤害。
+ * 此牌被舍弃时：对敌方「出战角色」造成1点火元素伤害。
+ */
+export const OverchargedBall = card(113131)
+  .costPyro(2)
+  .tags("action")
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 116081
+ * @name 裂晶弹片
+ * @description
+ * 对敌方「出战角色」造成1点物理伤害，抓1张牌。
+ */
+export const CrystalShrapnel = card(116081)
+  .costSame(1)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302206
+ * @name 瑟琳的声援
+ * @description
+ * 随机将2张美露莘推荐的「料理」加入手牌。
+ */
+export const SerenesSupport = card(302206)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302207
+ * @name 洛梅的声援
+ * @description
+ * 随机将2张美露莘好奇的「圣遗物」加入手牌。
+ */
+export const LaumesSupport = card(302207)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302208
+ * @name 柯莎的声援
+ * @description
+ * 随机将2张美露莘称赞的「武器」加入手牌。
+ */
+export const CosanzeanasSupport = card(302208)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302209
+ * @name 夏诺蒂拉的声援
+ * @description
+ * 随机将2张美露莘看好的超棒事件牌加入手牌。
+ */
+export const CanotilasSupport = card(302209)
+  .costSame(1)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302210
+ * @name 希洛娜的声援
+ * @description
+ * 接下来3个回合结束时，各将1张美露莘看好的超棒事件牌加入手牌。
+ */
+export const ThironasSupport = card(302210)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302211
+ * @name 希露艾的声援
+ * @description
+ * 复制对方牌库顶部的3张牌，加入手牌。
+ */
+export const SluasisSupport = card(302211)
+  .costSame(1)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302212
+ * @name 薇尔妲的声援
+ * @description
+ * 随机将2张「秘传」卡牌加入你的手牌，并恢复双方牌手的「秘传」卡牌使用机会。
+ */
+export const VirdasSupport = card(302212)
+  .costVoid(2)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302213
+ * @name 芙佳的声援
+ * @description
+ * 随机生成「伙伴」到场上，直到填满双方支援区。
+ */
+export const PucasSupport = card(302213)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302214
+ * @name 托皮娅的声援
+ * @description
+ * 抓2张牌，双方获得以下效果：「本回合打出手牌后，随机舍弃1张牌或抓1张牌。」
+ */
+export const TopyassSupport = card(302214)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302215
+ * @name 卢蒂妮的声援
+ * @description
+ * 抓2张牌，双方获得以下效果：「角色使用技能后，随机受到2点治疗或2点穿透伤害。可用次数：2」
+ */
+export const LutinesSupport = card(302215)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 302218
+ * @name 美露莘的声援
+ * @description
+ * 效果随机的超棒贴纸，凝聚了美露莘们的心意。
+ */
+export const MelusineSupport = card(302218)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 332036
+ * @name 「看到那小子挣钱…」
+ * @description
+ * 本回合中，每当对方获得2个元素骰，你就获得1个万能元素。（此效果提供的元素骰除外）
+ */
+export const IdRatherLoseMoneyMyself = card(332036)
+  .since("v4.8.0")
+  // TODO
+  .done();
+
+/**
+ * @id 332037
+ * @name 噔噔！
+ * @description
+ * 对我方「出战角色」造成1点物理伤害。本回合的结束阶段时，抓1张牌。
+ */
+export const Tada = card(332037)
+  .since("v4.8.0")
+  // TODO
   .done();

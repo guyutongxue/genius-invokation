@@ -55,6 +55,8 @@ export const DanceOnFire = skill(13121)
  * @id 13122
  * @name 热情拂扫
  * @description
+ * 造成2点物理伤害，随机舍弃1张原本元素骰费用最高的手牌，生成热情护盾。
+ * @outdated
  * 造成2点火元素伤害，随机舍弃1张原本元素骰费用最高的手牌，生成热情护盾。
  */
 export const SweepingFervor = skill(13122)
