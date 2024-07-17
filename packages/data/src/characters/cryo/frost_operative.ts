@@ -24,7 +24,10 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const OnslaughtStance = status(121042)
   .since("v4.8.0")
-  // TODO
+  // todo 定义生命之契
+  .duration(1)
+  .on("endPhase", (c) => c.self.master().health >= 6)
+  .damage(DamageType.Piercing, 2, "@master")
   .done();
 
 /**
@@ -37,7 +40,7 @@ export const SwiftPoint = skill(21041)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -49,7 +52,7 @@ export const SwiftPoint = skill(21041)
 export const FrostyInterjection = skill(21042)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 3)
   .done();
 
 /**
@@ -62,7 +65,8 @@ export const ThornyOnslaught = skill(21043)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 4)
+  .characterStatus(OnslaughtStance, "@self")
   .done();
 
 /**
@@ -73,7 +77,8 @@ export const ThornyOnslaught = skill(21043)
  */
 export const BloodbondedShadow = skill(21044)
   .type("passive")
-  // TODO
+  // TODO 最终伤害值？
+  // 天赋牌翻倍生命之契
   .done();
 
 /**
@@ -103,5 +108,6 @@ export const RimeflowRapier = card(221041)
   .costCryo(3)
   .talent(FrostOperative)
   .since("v4.8.0")
-  // TODO
+  .on("enter")
+  .useSkill(FrostyInterjection)
   .done();

@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { CardHandle, CharacterHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
-import { CalledInForCleanup, TaroumarusSavings } from "../event/other";
+import { CalledInForCleanup, CanotilasSupport, CosanzeanasSupport, LaumesSupport, LutinesSupport, MelusineSupport, PucasSupport, SerenesSupport, SluasisSupport, TaroumarusSavings, ThironasSupport, TopyassSupport, VirdasSupport } from "../event/other";
 
 /**
  * @id 322001
@@ -648,5 +648,21 @@ export const Serene = card(322027)
   .costVoid(2)
   .support("ally")
   .since("v4.8.0")
-  // TODO
+  .usage(3)
+  .on("endPhase")
+  .do((c) => {
+    const supports = [SerenesSupport,
+      LaumesSupport,
+      CosanzeanasSupport,
+      CanotilasSupport,
+      ThironasSupport,
+      SluasisSupport,
+      VirdasSupport,
+      PucasSupport,
+      TopyassSupport,
+      LutinesSupport,
+      MelusineSupport];
+    const card = c.random(supports);
+    c.createHandCard(card.id as CardHandle);
+  })
   .done();

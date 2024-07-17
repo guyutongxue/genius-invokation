@@ -1189,7 +1189,12 @@ export const OverchargedBall = card(113131)
   .costPyro(2)
   .tags("action")
   .since("v4.8.0")
-  // TODO
+  .tags("action")
+  .damage(DamageType.Pyro, 1, "opp active")
+  // TODO 诡异，写在角色里？
+  // .on("discard", (c) => {
+  //   c.deductDamage(DamageType.Fire, 1, "my active");
+  // })
   .done();
 
 /**

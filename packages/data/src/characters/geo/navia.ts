@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { CrystalShrapnel } from "../../cards/event/other";
 
 /**
  * @id 116082
@@ -24,7 +25,10 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  */
 export const RosulaDorataSalute = summon(116082)
   .since("v4.8.0")
-  // TODO
+  .on("endPhase")
+  .usage(2)
+  .damage(DamageType.Geo, 1)
+  .drawCards(1, { withDefinition: CrystalShrapnel })
   .done();
 
 /**
@@ -36,7 +40,9 @@ export const RosulaDorataSalute = summon(116082)
  */
 export const GeoInfusion = status(116084)
   .since("v4.8.0")
-  // TODO
+  .duration(2)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Cryo)
   .done();
 
 /**
@@ -49,7 +55,7 @@ export const BluntRefusal = skill(16081)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -62,6 +68,10 @@ export const CeremonialCrystalshot = skill(16082)
   .type("elemental")
   .costGeo(3)
   // TODO
+  .do((c) => {
+    c.characterStatus(GeoInfusion);
+    c.damage(DamageType.Geo, 3);
+  })
   .done();
 
 /**
@@ -74,6 +84,8 @@ export const AsTheSunlitSkysSingingSalute = skill(16083)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
+  .damage(DamageType.Geo, 1)
+  .summon(RosulaDorataSalute)
   // TODO
   .done();
 

@@ -893,5 +893,7 @@ export const FlowerOfParadiseLost = card(312028)
 export const GladiatorsTriumphus = card(312029)
   .artifact()
   .since("v4.8.0")
-  // TODO
+  .on("deductOmniDiceSkill", (c, e) => e.isSkillType("normal") && c.player.hands.length <= 2)
+  .usagePerRound(1)
+  .deductOmniCost(1)
   .done();
