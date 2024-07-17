@@ -80,7 +80,7 @@ export const DawnWinery = card(321004)
   .costSame(2)
   .support("place")
   .on("deductOmniDiceSwitch")
-  .usagePerRound(1)
+  .usagePerRound(2)
   .deductOmniCost(1)
   .done();
 

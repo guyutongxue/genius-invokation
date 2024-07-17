@@ -790,7 +790,7 @@ const StarfallShower = skill(22042)
   .costHydro(3)
   .do((c) => {
     const st = c.self.hasStatus(AnomalousAnatomy);
-    const extraDmg = st ? Math.floor(c.of(st).getVariable("extraMaxHealth") / 3) : 0;
+    const extraDmg = st ? Math.min(Math.floor(c.of(st).getVariable("extraMaxHealth") / 3), 5) : 0;
     c.damage(DamageType.Hydro, 2 + extraDmg);
     const cards = c.getMaxCostHands();
     const card = c.random(cards);

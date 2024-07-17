@@ -39,7 +39,7 @@ export const BurstScan = combatStatus(117082)
       const pileTop = c.player.piles[0];
       const cost = diceCostOfCard(pileTop.definition);
       c.disposeCard(pileTop);
-      c.damage(DamageType.Dendro, cost + 1);
+      c.damage(DamageType.Dendro, cost);
       if (c.$(`my equipment with definition id ${TheArtOfBudgeting}`)) {
         c.createHandCard(pileTop.definition.id as CardHandle);
         if (pileTop.definition.tags.includes("place")) {

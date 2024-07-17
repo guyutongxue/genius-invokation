@@ -98,6 +98,7 @@ export const IcefangRush = skill(11112)
  * 造成2点冰元素伤害，生成余威冰锥。
  * 本角色在本回合中受到伤害或治疗每累计到2次时：此技能少花费1个元素骰（最多少花费2个）。
  */
+// todo 数据源错误
 export const DarkgoldWolfbite = skill(11113)
   .type("burst")
   .costCryo(3)

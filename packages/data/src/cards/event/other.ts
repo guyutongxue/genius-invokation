@@ -1007,6 +1007,7 @@ export const CalledInForCleanup = card(302203)
  */
 export const UnderseaTreasure = card(303230)
   .since("v4.6.0")
+  // TODO 冷却中
   .heal(1, "my active")
   .generateDice("randomElement", 1)
   .done();
@@ -1067,9 +1068,6 @@ export const BonecrunchersEnergyBlock = card(124051)
     c.disposeCard(selected);
     const activeCh = c.$("my active")!;
     c.generateDice(activeCh.element(), 1);
-    if (activeCh.definition.tags.includes("sacread")) {
-      c.gainEnergy(1, activeCh.state);
-    }
     c.combatStatus(BonecrunchersEnergyBlockCombatStatus)
   })
   .done();
@@ -1206,7 +1204,8 @@ export const OverchargedBall = card(113131)
 export const CrystalShrapnel = card(116081)
   .costSame(1)
   .since("v4.8.0")
-  // TODO
+  .damage(DamageType.Physical, 1, "opp active")
+  .drawCards(1)
   .done();
 
 /**
@@ -1217,7 +1216,12 @@ export const CrystalShrapnel = card(116081)
  */
 export const SerenesSupport = card(302206)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("food"));
+    const cards = c.random(candidates, 2);
+    c.createHandCard(card[0].id as CardHandle);
+    c.createHandCard(card[1].id as CardHandle);
+  })
   .done();
 
 /**
@@ -1274,7 +1278,11 @@ export const ThironasSupport = card(302210)
 export const SluasisSupport = card(302211)
   .costSame(1)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    c.oppPlayer.piles.slice(0, 3).forEach((card: CardHandle) => {
+      c.createHandCard(card.definition.id);
+    });
+  })
   .done();
 
 /**
@@ -1308,7 +1316,8 @@ export const PucasSupport = card(302213)
  */
 export const TopyassSupport = card(302214)
   .since("v4.8.0")
-  // TODO
+  .drawCards(2)
+  // TODO 队伍状态
   .done();
 
 /**
@@ -1319,7 +1328,8 @@ export const TopyassSupport = card(302214)
  */
 export const LutinesSupport = card(302215)
   .since("v4.8.0")
-  // TODO
+  .drawCards(2)
+  // TODO 队伍状态
   .done();
 
 /**
@@ -1330,7 +1340,7 @@ export const LutinesSupport = card(302215)
  */
 export const MelusineSupport = card(302218)
   .since("v4.8.0")
-  // TODO
+  // TODO ？
   .done();
 
 /**
@@ -1341,7 +1351,19 @@ export const MelusineSupport = card(302218)
  */
 export const IdRatherLoseMoneyMyself = card(332036)
   .since("v4.8.0")
-  // TODO
+  // TODO 此效果提供的元素骰除外？
+  .done();
+
+/**
+ * @id 303237
+ * @name 噔噔！（生效中）
+ * @description
+ * 本回合的结束阶段时，抓1张牌。
+ */
+export const TadaStatus = combatStatus(303237)
+  .oneDuration()
+  .on("endPhase")
+  .drawCards(1)
   .done();
 
 /**
@@ -1352,5 +1374,6 @@ export const IdRatherLoseMoneyMyself = card(332036)
  */
 export const Tada = card(332037)
   .since("v4.8.0")
-  // TODO
+  .damage(DamageType.Physical, 1, "my active")
+  .combatStatus(TadaStatus)
   .done();
