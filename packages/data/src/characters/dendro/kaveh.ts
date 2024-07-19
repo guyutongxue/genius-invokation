@@ -108,8 +108,6 @@ export const ArtisticIngenuity = skill(17082)
  * @id 17083
  * @name 繁绘隅穹
  * @description
- * 造成3点物理伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。
- * @outdated
  * 造成3点草元素伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。
  */
 export const PaintedDome = skill(17083)

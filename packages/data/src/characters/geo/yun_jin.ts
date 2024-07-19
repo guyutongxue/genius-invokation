@@ -109,8 +109,6 @@ export const OpeningFlourish = skill(16072)
  * @id 16073
  * @name 破嶂见旌仪
  * @description
- * 造成2点物理伤害，生成3层飞云旗阵。
- * @outdated
  * 造成2点岩元素伤害，生成3层飞云旗阵。
  */
 export const CliffbreakersBanner = skill(16073)

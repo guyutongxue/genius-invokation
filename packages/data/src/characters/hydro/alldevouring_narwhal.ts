@@ -204,8 +204,6 @@ export const StarfallShower = skill(22042)
  * @id 22043
  * @name 横噬鲸吞
  * @description
- * 造成1点物理伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。
- * @outdated
  * 造成1点水元素伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。
  */
 export const RavagingDevourer = skill(22043)
