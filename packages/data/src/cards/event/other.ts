@@ -872,7 +872,6 @@ export const TheBoarPrincess = card(332025)
  */
 export const FallsAndFortune = card(332026)
   .since("v4.3.0")
-  .costSame(1)
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
   .toCombatStatus(303226)
   .oneDuration()

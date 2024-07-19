@@ -7,7 +7,7 @@ import { LightningRoseSummon } from "../characters/electro/lisa";
 import { DominusLapidisStrikingStone, Zhongli } from "../characters/geo/zhongli";
 import { AutumnWhirlwind } from "../characters/anemo/kaedehara_kazuha";
 import { AbiogenesisSolarIsotoma, Albedo } from "../characters/geo/albedo";
-import { YunJin } from "../characters/geo/yun_jin";
+import { CliffbreakersBanner, YunJin } from "../characters/geo/yun_jin";
 import { DendroCore } from "../commons";
 import { BountifulCore } from "../characters/hydro/nilou";
 import { MehraksAssistance, TheArtOfBudgeting, TheArtOfBudgetingInEffect } from "../characters/dendro/kaveh";
@@ -17,52 +17,6 @@ import { AlldevouringNarwhal, AnomalousAnatomy, DarkShadow, LightlessFeeding } f
 import { ThunderboreTrap } from "../characters/electro/consecrated_scorpion";
 import { BonecrunchersEnergyBlockAccumulated } from "../characters/anemo/consecrated_flying_serpent";
 import { AwakenMyKindred, OasisNourishment } from "../characters/dendro/guardian_of_apeps_oasis";
-
-/**
- * @id 311207
- * @name 竭泽
- * @description
- * 我方打出名称不存在于初始牌组中的行动牌后：此牌累积1点「渔猎」。（最多累积2点，每回合最多累积2点）
- * 角色使用技能时：如果此牌已有「渔猎」，则消耗所有「渔猎」，使此技能伤害+1，并且每消耗1点「渔猎」就抓1张牌。
- * （「弓」角色才能装备。角色最多装备1件「武器」）
- */
-const EndOfTheLine = card(311207)
-  .until("v4.7.0")
-  .costSame(2)
-  .weapon("bow")
-  .variable("fishing", 0)
-  .variable("additivePerRound", 0, { visible: false })
-  .on("roundBegin")
-  .setVariable("additivePerRound", 0)
-  .on("playCard", (c, e) => !c.player.initialPiles.find((def) => e.card.definition.id === def.id))
-  .do((c) => {
-    if (c.getVariable("additivePerRound") < 2) {
-      c.addVariableWithMax("fishing", 1, 2);
-      c.addVariable("additivePerRound", 1);
-    }
-  })
-  .on("modifySkillDamage")
-  .do((c, e) => {
-    const fishing = c.getVariable("fishing");
-    if (fishing > 0) {
-      e.increaseDamage(1)
-      c.drawCards(fishing);
-      c.setVariable("fishing", 0);
-    }
-  })
-  .done();
-
-/**
- * @id 332001
- * @name 最好的伙伴！
- * @description
- * 将所花费的元素骰转换为2个万能元素。
- */
-const TheBestestTravelCompanion = card(332001)
-  .until("v4.7.0")
-  .costVoid(2)
-  .generateDice(DiceType.Omni, 2)
-  .done();
 
 /**
  * @id 321004
@@ -77,6 +31,31 @@ const DawnWinery = card(321004)
   .on("deductOmniDiceSwitch")
   .usagePerRound(1)
   .deductOmniCost(1)
+  .done();
+
+/**
+ * @id 323007
+ * @name 流明石触媒
+ * @description
+ * 我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）
+ * 可用次数：3
+ * 【此卡含描述变量】
+ */
+export const LumenstoneAdjuvant = card(323007)
+  .since("v4.5.0")
+  .costSame(2)
+  .support("item")
+  .variable("playedCard", 0, { visible: false })
+  .replaceDescription("[GCG_TOKEN_COUNTER]", (st, self) => self.variables.playedCard)
+  .on("playCard")
+  .addVariable("playedCard", 1)
+  .on("playCard", (c) => c.getVariable("playedCard") === 3)
+  .usagePerRound(1)
+  .usage(3)
+  .drawCards(1)
+  .generateDice(DiceType.Omni, 1)
+  .on("actionPhase")
+  .setVariable("playedCard", 0)
   .done();
 
 /**
@@ -127,27 +106,20 @@ const Lyresong = card(332024)
   .done();
 
 /**
- * @id 321021
- * @name 中央实验室遗址
+ * @id 332026
+ * @name 坍陷与契机
  * @description
- * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。
+ * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。
  */
-const CentralLaboratoryRuins = card(321021)
-  .until("v4.7.0")
+export const FallsAndFortune = card(332026)
+  .since("v4.3.0")
   .costSame(1)
-  .support("place")
-  .variable("progress", 0)
-  .on("disposeOrTuneCard")
-  .do((c) => {
-    c.addVariable("progress", 1);
-    const progress = c.getVariable("progress");
-    if (progress % 3 === 0) {
-      c.generateDice(DiceType.Omni, 1);
-    }
-    if (progress >= 9) {
-      c.dispose();
-    }
-  })
+  .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
+  .toCombatStatus(303226)
+  .oneDuration()
+  .on("addDice", (c, e) => e.action.type === "switchActive")
+  .listenToAll()
+  .addCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -182,86 +154,6 @@ const BonecrunchersEnergyBlock = card(124051)
     }
     c.combatStatus(BonecrunchersEnergyBlockCombatStatus)
   })
-  .done();
-
-/**
- * @id 111111
- * @name 寒烈的惩裁
- * @description
- * 角色进行普通攻击时：如果角色生命至少为6，则此技能少花费1个冰元素，伤害+1，且对自身造成1点穿透伤害。
- * 如果角色生命不多于5，则使此伤害+1，并且技能结算后治疗角色2点。
- * 可用次数：2
- */
-const ChillingPenalty = status(111111)
-  .until("v4.7.0")
-  .variable("healAfterUseSkill", 0, { visible: false })
-  .on("deductElementDiceSkill", (c, e) => c.self.master().health >= 6 &&
-    e.isSkillType("normal") && 
-    e.canDeductCostOfType(DiceType.Cryo))
-  .deductCost(DiceType.Cryo, 1)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
-  .usage(2)
-  .do((c, e) => {
-    if (c.self.master().health >= 6) {
-      e.increaseDamage(1);
-      c.damage(DamageType.Piercing, 1, "@master");
-    } else /* if (c.self.master().health <= 5) */ {
-      e.increaseDamage(1);
-      c.setVariable("healAfterUseSkill", 1);
-    }
-  })
-  .on("useSkill", (c) => c.getVariable("healAfterUseSkill"))
-  .heal(2, "@master")
-  .setVariable("healAfterUseSkill", 0)
-  .done();
-
-/**
- * @id 11113
- * @name 黑金狼噬
- * @description
- * 造成2点冰元素伤害，生成余威冰锥。
- * 本角色在本回合中受到伤害或治疗每累计到2次时：此技能少花费1个元素骰（最多少花费2个）。
- */
-const DarkgoldWolfbite = skill(11113)
-  .until("v4.7.0")
-  .type("burst")
-  .costCryo(3)
-  .costEnergy(3)
-  .damage(DamageType.Cryo, 2)
-  .combatStatus(LingeringIcicles)
-  .done();
-
-/**
- * @id 12121
- * @name 独舞之邀
- * @description
- * 造成2点物理伤害。
- * 每回合1次：：生成手牌圣俗杂座。
- */
-const SoloistsSolicitationOusia = skill(12121)
-  .until("v4.7.0")
-  .type("normal")
-  .costHydro(1)
-  .costVoid(2)
-  .damage(DamageType.Physical, 2)
-  .done();
-
-/**
- * @id 13122
- * @name 热情拂扫
- * @description
- * 造成2点火元素伤害，随机舍弃1张原本元素骰费用最高的手牌，生成热情护盾。
- */
-const SweepingFervor = skill(13122)
-  .until("v4.7.0")
-  .type("elemental")
-  .costPyro(3)
-  .damage(DamageType.Pyro, 2)
-  .do((c) => {
-    const cards = c.getMaxCostHands();
-    c.disposeCard(c.random(cards));
-  })
-  .combatStatus(ShieldOfPassion)
   .done();
 
 /**
@@ -585,23 +477,6 @@ const FlyingCloudFlagFormation = combatStatus(116073)
   .done();
 
 /**
- * @id 16073
- * @name 破嶂见旌仪
- * @description
- * 造成2点岩元素伤害，生成3层飞云旗阵。
- */
-const CliffbreakersBanner = skill(16073)
-  .until("v4.7.0")
-  .type("burst")
-  .costGeo(3)
-  .costEnergy(2)
-  .damage(DamageType.Geo, 2)
-  .combatStatus(FlyingCloudFlagFormation, "my", {
-    overrideVariables: { usage: 3 }
-  })
-  .done();
-
-/**
  * @id 216071
  * @name 庄谐并举
  * @description
@@ -652,23 +527,6 @@ const BurstScan = combatStatus(117082)
   })
   .done();
 
-/**
- * @id 17083
- * @name 繁绘隅穹
- * @description
- * 造成3点草元素伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。
- */
-const PaintedDome = skill(17083)
-  .until("v4.7.0")
-  .type("burst")
-  .costDendro(3)
-  .costEnergy(2)
-  .damage(DamageType.Dendro, 3)
-  .characterStatus(MehraksAssistance, "@self")
-  .combatStatus(BurstScan, "my", {
-    overrideVariables: { usage: 2 }
-  })
-  .done();
 
 /**
  * @id 122022
@@ -726,59 +584,6 @@ const MirrorCage = card(222021)
   .done();
 
 /**
- * @id 122041
- * @name 深噬之域
- * @description
- * 我方舍弃或调和的手牌，会被吞噬。
- * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
- */
-const DeepDevourersDomain = combatStatus(122041)
-  .until("v4.7.0")
-  .variable("cardCount", 0)
-  .variable("totalMaxCost", 0, { visible: false })
-  .variable("totalMaxCostCount", 0, { visible: false })
-  .variable("card0Cost", 0, { visible: false })
-  .variable("card1Cost", 0, { visible: false })
-  .on("disposeOrTuneCard")
-  .do((c, e) => {
-    const cost = e.diceCost();
-    c.addVariable("cardCount", 1);
-    switch (c.getVariable("cardCount")) {
-      case 1: {
-        c.setVariable("card0Cost", cost);
-        break;
-      }
-      case 2: {
-        c.setVariable("card1Cost", cost);
-        break;
-      }
-      case 3: {
-        const card0Cost = c.getVariable("card0Cost");
-        const card1Cost = c.getVariable("card1Cost");
-        const card2Cost = cost;
-        const distinctCostCount = new Set([card0Cost, card1Cost, card2Cost]).size;
-        const extraMaxHealth = 4 - distinctCostCount;
-        const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
-        if (narwhal) {
-          for (let i = 0; i < extraMaxHealth; i++) {
-            narwhal.addStatus(AnomalousAnatomy);
-          }
-        }
-        c.setVariable("cardCount", 0);
-        break;
-      }
-    }
-    const previousTotalMaxCost = c.getVariable("totalMaxCost");
-    if (cost === previousTotalMaxCost) {
-      c.addVariable("totalMaxCostCount", 1);
-    } else if (cost > previousTotalMaxCost) {
-      c.setVariable("totalMaxCost", cost);
-      c.setVariable("totalMaxCostCount", 1);
-    }
-  })
-  .done();
-
-/**
  * @id 22042
  * @name 迸落星雨
  * @description
@@ -802,59 +607,6 @@ const StarfallShower = skill(22042)
   .done();
 
 /**
- * @id 22043
- * @name 横噬鲸吞
- * @description
- * 造成1点水元素伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。
- */
-const RavagingDevourer = skill(22043)
-  .until("v4.7.0")
-  .type("burst")
-  .costHydro(3)
-  .costEnergy(2)
-  .damage(DamageType.Piercing, 1, "opp standby")
-  .damage(DamageType.Hydro, 1)
-  .summon(DarkShadow)
-  .done();
-
-/**
- * @id 24052
- * @name 蝎尾锥刺
- * @description
- * 造成3点雷元素伤害。
- * 生成1张噬骸能量块，随机置入我方牌库顶部2张牌之中。
- */
-const StingingSpine = skill(24052)
-  .until("v4.7.0")
-  .type("elemental")
-  .costElectro(3)
-  .damage(DamageType.Electro, 3)
-  .createPileCards(BonecrunchersEnergyBlock, 1, "topRange2")
-  .done();
-
-/**
- * @id 24053
- * @name 雷锥散射
- * @description
- * 造成3点雷元素伤害，舍弃手牌中最多3张噬骸能量块，在对方场上生成雷锥陷阱。
- */
-const ThunderboreBlast = skill(24053)
-  .until("v4.7.0")
-  .type("burst")
-  .costElectro(3)
-  .costEnergy(2)
-  .do((c) => {
-    c.damage(DamageType.Electro, 3);
-    const all = c.player.hands.filter((card) => card.definition.id === BonecrunchersEnergyBlock);
-    const cards = c.randomN(all, 3);
-    c.disposeCard(...cards);
-    c.combatStatus(ThunderboreTrap, "opp", {
-      overrideVariables: { usage: cards.length }
-    });
-  })
-  .done();
-
-/**
  * @id 25032
  * @name 盘绕风引
  * @description
@@ -872,45 +624,5 @@ const SwirlingSquall = skill(25032)
     const count = Math.min(cards.length, 2 - drawn);
     c.drawCards(count);
     c.self.addVariable("elementalSkillDrawCardsCount", count);
-  })
-  .done();
-
-/**
- * @id 25033
- * @name 错落风涡
- * @description
- * 造成2点风元素伤害，舍弃手牌中所有的噬骸能量块，每舍弃2张，此次伤害翻倍1次。
- */
-const ScattershotVortex = skill(25033)
-  .until("v4.7.0")
-  .type("burst")
-  .costAnemo(3)
-  .costEnergy(2)
-  .do((c) => {
-    const cards = c.player.hands.filter((card) => card.definition.id === BonecrunchersEnergyBlock);
-    const stack = Math.floor(cards.length / 2);
-    c.characterStatus(BonecrunchersEnergyBlockAccumulated, "@self", {
-      overrideVariables: { stack }
-    });
-    c.damage(DamageType.Anemo, 2);
-    c.disposeCard(...cards);
-  })
-  .done();
-
-/**
- * @id 27023
- * @name 终景迸落
- * @description
- * 造成2点草元素伤害，抓1张唤醒眷属，生成2层绿洲之滋养。
- */
-const TheEndFalls = skill(27023)
-  .until("v4.7.0")
-  .type("burst")
-  .costDendro(3)
-  .costEnergy(2)
-  .damage(DamageType.Dendro, 2)
-  .drawCards(1, { withDefinition: AwakenMyKindred })
-  .combatStatus(OasisNourishment, "my", {
-    overrideVariables: { usage: 2 }
   })
   .done();

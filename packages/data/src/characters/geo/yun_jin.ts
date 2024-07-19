@@ -110,14 +110,12 @@ export const OpeningFlourish = skill(16072)
  * @name 破嶂见旌仪
  * @description
  * 造成3点岩元素伤害，生成3层飞云旗阵。
- * @outdated
- * 造成2点岩元素伤害，生成3层飞云旗阵。
  */
 export const CliffbreakersBanner = skill(16073)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
-  .damage(DamageType.Geo, 2)
+  .damage(DamageType.Geo, 3)
   .combatStatus(FlyingCloudFlagFormation, "my", {
     overrideVariables: { usage: 3 }
   })

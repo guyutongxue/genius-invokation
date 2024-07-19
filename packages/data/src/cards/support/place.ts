@@ -439,8 +439,6 @@ export const TheMausoleumOfKingDeshret = card(321020)
  * @name 中央实验室遗址
  * @description
  * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。
- * @outdated
- * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素骰。然后，如果「实验进展」至少为9点，则弃置此牌。
  */
 export const CentralLaboratoryRuins = card(321021)
   .since("v4.7.0")
