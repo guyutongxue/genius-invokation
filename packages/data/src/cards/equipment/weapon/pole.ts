@@ -234,9 +234,9 @@ export const ProspectorsDrill = card(311409)
     c.disposeCard(c.random(cards));
     c.addVariable("unity", 1);
   })
-  .on("modifyDamage0")
+  .on("modifyDamage")
   .do((c, e) => {
-    c.increaseDamage(1);
+    e.increaseDamage(1);
     c.drawCards(c.getVariable("unity"));
     c.setVariable("unity", 0);
   })

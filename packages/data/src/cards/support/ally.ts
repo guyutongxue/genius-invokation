@@ -663,6 +663,6 @@ export const Serene = card(322027)
       LutinesSupport,
       MelusineSupport];
     const card = c.random(supports);
-    c.createHandCard(card.id as CardHandle);
+    c.createHandCard(card as CardHandle);
   })
   .done();
