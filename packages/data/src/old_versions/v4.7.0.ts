@@ -197,29 +197,6 @@ const SecretRiteChasmicSoulfarer = skill(14042)
   .damage(DamageType.Electro, 3)
   .done();
 
-/**
- * @id 14043
- * @name 圣仪·煟煌随狼行
- * @description
- * 造成4点雷元素伤害，
- * 启途誓使的[凭依]级数+2。
- */
-const SacredRiteWolfsSwiftness = skill(14043)
-  .until("v4.7.0")
-  .type("burst")
-  .costElectro(4)
-  .costEnergy(2)
-  .damage(DamageType.Electro, 4)
-  .do((c) => {
-    const status = c.self.hasStatus(PactswornPathclearer)!;
-    const newVal = c.getVariable("reliance", status) + 2;
-    if (newVal >= 6) {
-      c.setVariable("reliance", newVal - 4, status);
-    } else {
-      c.setVariable("reliance", newVal, status);
-    }
-  })
-  .done();
 
 /**
  * @id 214041
