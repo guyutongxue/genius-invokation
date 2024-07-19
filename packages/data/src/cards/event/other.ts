@@ -1210,7 +1210,7 @@ export const SerenesSupport = card(302206)
   .since("v4.8.0")
   .do((c) => {
     const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("food"));
-    // todo 似乎是“有放回抽样”，两张牌可重
+    // TODO 似乎是“有放回抽样”，两张牌可重
     const cards = c.randomN(candidates, 2);
     c.createHandCard(cards[0].id as CardHandle);
     c.createHandCard(cards[1].id as CardHandle);
@@ -1273,7 +1273,7 @@ export const SluasisSupport = card(302211)
   .since("v4.8.0")
   .do((c) => {
     c.oppPlayer.piles.slice(0, 3).forEach((card) => {
-      // todo
+      // TODO
       c.createHandCard(card as unknown as CardHandle);
     });
   })

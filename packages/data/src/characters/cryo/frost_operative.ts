@@ -24,7 +24,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const OnslaughtStance = status(121042)
   .since("v4.8.0")
-  // todo 定义生命之契
+  // TODO 定义生命之契
   .duration(1)
   .on("endPhase", (c) => c.self.master().health >= 6)
   .damage(DamageType.Piercing, 2, "@master")
