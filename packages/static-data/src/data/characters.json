@@ -883,7 +883,7 @@
         "englishName": "Darkgold Wolfbite",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成<color=#FFFFFFFF>$[C111112]</color>。\\n<color=#FFFFFFFF>本角色在本回合中受到伤害或治疗每累计到2次时：</color>此技能少花费1个元素骰（最多少花费2个）。",
-        "description": "造成2点物理伤害，生成余威冰锥。\n本角色在本回合中受到伤害或治疗每累计到2次时：此技能少花费1个元素骰（最多少花费2个）。",
+        "description": "造成2点冰元素伤害，生成余威冰锥。\n本角色在本回合中受到伤害或治疗每累计到2次时：此技能少花费1个元素骰（最多少花费2个）。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_CRYO",
@@ -895,7 +895,7 @@
           }
         ],
         "baseDamage": 2,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_CRYO",
         "icon": "Skill_E_Wriothesley_01_HD"
       },
       {
@@ -2961,7 +2961,7 @@
         "englishName": "Sweeping Fervor",
         "type": "GCG_SKILL_TAG_E",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，随机$[K56]1张原本元素骰费用最高的手牌，生成<color=#FFFFFFFF>$[C113121]</color>。",
-        "description": "造成2点物理伤害，随机舍弃1张原本元素骰费用最高的手牌，生成热情护盾。",
+        "description": "造成2点火元素伤害，随机舍弃1张原本元素骰费用最高的手牌，生成热情护盾。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_PYRO",
@@ -2969,7 +2969,7 @@
           }
         ],
         "baseDamage": 2,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_PYRO",
         "icon": "Skill_S_Xinyan_01"
       },
       {
@@ -3050,7 +3050,8 @@
           }
         ],
         "baseDamage": 2,
-        "baseElement": "GCG_ELEMENT_PYRO"
+        "baseElement": "GCG_ELEMENT_PYRO",
+        "icon": "Skill_S_Chevreuse_01"
       },
       {
         "id": 13133,
@@ -3070,7 +3071,8 @@
           }
         ],
         "baseDamage": 2,
-        "baseElement": "GCG_ELEMENT_PYRO"
+        "baseElement": "GCG_ELEMENT_PYRO",
+        "icon": "Skill_E_Chevreuse_01_HD"
       },
       {
         "id": 13134,
@@ -3079,7 +3081,8 @@
         "type": "GCG_SKILL_TAG_PASSIVE",
         "rawDescription": "【被动】<color=#FFFFFFFF>敌方角色受到超载反应伤害后：</color>生成手牌<color=#FFFFFFFF>$[C113131]</color>（每回合1次）",
         "description": "【被动】敌方角色受到超载反应伤害后：生成手牌超量装药弹头（每回合1次）",
-        "playCost": []
+        "playCost": [],
+        "icon": "Skill_S_Chevreuse_02"
       },
       {
         "id": 13135,
@@ -3090,7 +3093,8 @@
         "description": "造成3点火元素伤害。\n此技能结算后：如果我方手牌中含有超量装药弹头，则舍弃1张并治疗我方受伤最多的角色1点。",
         "playCost": [],
         "baseDamage": 3,
-        "baseElement": "GCG_ELEMENT_PYRO"
+        "baseElement": "GCG_ELEMENT_PYRO",
+        "icon": "Skill_S_Chevreuse_01"
       }
     ],
     "hp": 10,
@@ -5295,7 +5299,7 @@
         "englishName": "Cliffbreaker's Banner",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成3层<color=#FFFFFFFF>$[C116073]</color>。",
-        "description": "造成2点物理伤害，生成3层飞云旗阵。",
+        "description": "造成3点岩元素伤害，生成3层飞云旗阵。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_GEO",
@@ -5306,8 +5310,8 @@
             "count": 2
           }
         ],
-        "baseDamage": 2,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseDamage": 3,
+        "baseElement": "GCG_ELEMENT_GEO",
         "icon": "Skill_E_Yunjin_01_HD"
       },
       {
@@ -5389,7 +5393,8 @@
           }
         ],
         "baseDamage": 3,
-        "baseElement": "GCG_ELEMENT_GEO"
+        "baseElement": "GCG_ELEMENT_GEO",
+        "icon": "Skill_S_Navia_01"
       },
       {
         "id": 16083,
@@ -5409,7 +5414,8 @@
           }
         ],
         "baseDamage": 1,
-        "baseElement": "GCG_ELEMENT_GEO"
+        "baseElement": "GCG_ELEMENT_GEO",
+        "icon": "Skill_E_Navia_01_HD"
       },
       {
         "id": 16084,
@@ -5418,7 +5424,8 @@
         "type": "GCG_SKILL_TAG_PASSIVE",
         "rawDescription": "【被动】<color=#FFFFFFFF>敌方角色受到结晶反应伤害后：</color>生成3张<color=#FFFFFFFF>$[C116081]</color>，随机置入我方牌库中。",
         "description": "【被动】敌方角色受到结晶反应伤害后：生成3张裂晶弹片，随机置入我方牌库中。",
-        "playCost": []
+        "playCost": [],
+        "icon": "Skill_S_Navia_02"
       }
     ],
     "hp": 10,
@@ -6056,7 +6063,7 @@
         "englishName": "Painted Dome",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，本角色附属<color=#FFFFFFFF>$[C117081]</color>，生成2层<color=#FFFFFFFF>$[C117082]</color>。",
-        "description": "造成3点物理伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。",
+        "description": "造成3点草元素伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_DENDRO",
@@ -6068,7 +6075,7 @@
           }
         ],
         "baseDamage": 3,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_DENDRO",
         "icon": "Skill_E_Kaveh_01_HD"
       }
     ],
@@ -6397,7 +6404,8 @@
           }
         ],
         "baseDamage": 3,
-        "baseElement": "GCG_ELEMENT_CRYO"
+        "baseElement": "GCG_ELEMENT_CRYO",
+        "icon": "MonsterSkill_S_EscadronIce_01"
       },
       {
         "id": 21043,
@@ -6417,7 +6425,8 @@
           }
         ],
         "baseDamage": 4,
-        "baseElement": "GCG_ELEMENT_CRYO"
+        "baseElement": "GCG_ELEMENT_CRYO",
+        "icon": "MonsterSkill_E_EscadronIce_01_HD"
       },
       {
         "id": 21044,
@@ -6426,7 +6435,8 @@
         "type": "GCG_SKILL_TAG_PASSIVE",
         "rawDescription": "【被动】<color=#FFFFFFFF>本角色使用技能后：</color>对敌方出战角色附属$[K3]为（本技能最终伤害值-2）的<color=#FFFFFFFF>$[C122]</color>。（最多5层）",
         "description": "【被动】本角色使用技能后：对敌方出战角色附属可用次数为（本技能最终伤害值-2）的生命之契。（最多5层）",
-        "playCost": []
+        "playCost": [],
+        "icon": "MonsterSkill_S_EscadronIce_02"
       }
     ],
     "hp": 10,
@@ -6880,7 +6890,7 @@
         "englishName": "Ravaging Devourer",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，对敌方所有后台角色造成1点$[K5]。召唤<color=#FFFFFFFF>$[C122043]</color>。",
-        "description": "造成1点物理伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。",
+        "description": "造成1点水元素伤害，对敌方所有后台角色造成1点穿透伤害。召唤黑色幻影。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_HYDRO",
@@ -6892,7 +6902,7 @@
           }
         ],
         "baseDamage": 1,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_HYDRO",
         "icon": "MonsterSkill_E_Ptahur_01_HD"
       },
       {
@@ -7768,7 +7778,7 @@
         "englishName": "Stinging Spine",
         "type": "GCG_SKILL_TAG_E",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。\\n生成1张<color=#FFFFFFFF>$[C124051]</color>，随机置入我方牌库顶部2张牌之中。",
-        "description": "造成3点物理伤害。\n生成1张噬骸能量块，随机置入我方牌库顶部2张牌之中。",
+        "description": "造成3点雷元素伤害。\n生成1张噬骸能量块，随机置入我方牌库顶部2张牌之中。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ELECTRO",
@@ -7776,7 +7786,7 @@
           }
         ],
         "baseDamage": 3,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_ELECTRO",
         "icon": "MonsterSkill_S_ScorpionSacred_01"
       },
       {
@@ -7785,7 +7795,7 @@
         "englishName": "Thunderbore Blast",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，$[K56]手牌中最多3张<color=#FFFFFFFF>$[C124051]</color>，在对方场上生成<color=#FFFFFFFF>$[C124052]</color>。",
-        "description": "造成3点物理伤害，舍弃手牌中最多3张噬骸能量块，在对方场上生成雷锥陷阱。",
+        "description": "造成3点雷元素伤害，舍弃手牌中最多3张噬骸能量块，在对方场上生成雷锥陷阱。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ELECTRO",
@@ -7797,7 +7807,7 @@
           }
         ],
         "baseDamage": 3,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_ELECTRO",
         "icon": "MonsterSkill_E_ScorpionSacred_01_HD"
       },
       {
@@ -8073,14 +8083,14 @@
         "englishName": "Swirling Squall",
         "type": "GCG_SKILL_TAG_E",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，抓1张牌。",
-        "description": "造成3点风元素伤害，抓1张牌。",
+        "description": "造成2点风元素伤害，抓1张牌。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ANEMO",
             "count": 3
           }
         ],
-        "baseDamage": 3,
+        "baseDamage": 2,
         "baseElement": "GCG_ELEMENT_ANEMO",
         "icon": "MonsterSkill_S_ChrysopeleaSacred_01"
       },
@@ -8090,7 +8100,7 @@
         "englishName": "Scattershot Vortex",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，$[K56]手牌中所有的<color=#FFFFFFFF>$[C124051]</color>，每$[K56]2张，此次伤害翻倍1次。",
-        "description": "造成2点物理伤害，舍弃手牌中所有的噬骸能量块，每舍弃2张，此次伤害翻倍1次。",
+        "description": "造成2点风元素伤害，舍弃手牌中所有的噬骸能量块，每舍弃2张，此次伤害翻倍1次。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ANEMO",
@@ -8102,7 +8112,7 @@
           }
         ],
         "baseDamage": 2,
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_ANEMO",
         "icon": "MonsterSkill_E_ChrysopeleaSacred_01_HD"
       },
       {
@@ -8862,7 +8872,7 @@
         "englishName": "The End Falls",
         "type": "GCG_SKILL_TAG_Q",
         "rawDescription": "造成$[D__KEY__DAMAGE_2]点$[D__KEY__ELEMENT]，抓1张<color=#FFFFFFFF>$[C127021]</color>，生成2层<color=#FFFFFFFF>$[C127026]</color>。",
-        "description": "造成2点物理伤害，抓1张唤醒眷属，生成2层绿洲之滋养。",
+        "description": "造成2点草元素伤害，抓1张唤醒眷属，生成2层绿洲之滋养。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_DENDRO",
@@ -8873,7 +8883,7 @@
             "count": 2
           }
         ],
-        "baseElement": "GCG_ELEMENT_NONE",
+        "baseElement": "GCG_ELEMENT_DENDRO",
         "icon": "MonsterSkill_E_Apep_01_HD"
       },
       {

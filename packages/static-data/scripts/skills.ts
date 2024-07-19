@@ -1,15 +1,15 @@
 // Copyright (C) 2024 theBowja, Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -46,6 +46,8 @@ tcgSkillKeyMap.ELEMENTVALUEPROP = Object.entries(tmpo["476224977"]).find(
 if (!tcgSkillKeyMap.DAMAGEVALUEPROP || !tcgSkillKeyMap.ELEMENTVALUEPROP)
   console.log("ERROR: loadTcgSkillKeyMap is missing a property map!");
 
+console.log(tcgSkillKeyMap.ELEMENTVALUEPROP);
+
 for (const filename of filelist) {
   if (!filename.endsWith(".json")) continue;
 
@@ -63,14 +65,15 @@ for (const filename of filelist) {
       switch (key) {
         case "-2060930438": // extract baseDamage
           tcgSkillKeyMap[dataname].baseDamage =
-            kobj["value"] || kobj[tcgSkillKeyMap.DAMAGEVALUEPROP];
+            kobj["value"] ?? kobj[tcgSkillKeyMap.DAMAGEVALUEPROP];
           if (tcgSkillKeyMap[dataname].baseDamage === undefined)
             console.log("loadTcgSkillKeyMap failed to extract baseDamage");
           break;
         case "476224977": // extract baseElement
           tcgSkillKeyMap[dataname].baseElement =
-            kobj["ratio"] ||
-            kobj[tcgSkillKeyMap.ELEMENTVALUEPROP] ||
+            kobj["value"] ??
+            kobj["ratio"] ??
+            kobj[tcgSkillKeyMap.ELEMENTVALUEPROP] ??
             "GCG_ELEMENT_NONE";
           if (tcgSkillKeyMap[dataname].baseElement === undefined)
             console.log("loadTcgSkillKeyMap failed to extract baseElement");
@@ -105,7 +108,10 @@ export interface SkillRawData {
   icon?: string;
 }
 
-export async function collateSkill(langCode: string, skillId: number): Promise<SkillRawData> {
+export async function collateSkill(
+  langCode: string,
+  skillId: number,
+): Promise<SkillRawData> {
   const locale = getLanguage(langCode);
   const english = getLanguage("EN");
   const skillObj = xskill.find((e) => e.id === skillId)!;
@@ -154,6 +160,6 @@ export async function collateSkill(langCode: string, skillId: number): Promise<S
     playCost,
     baseDamage,
     baseElement,
-    icon
+    icon,
   };
 }
