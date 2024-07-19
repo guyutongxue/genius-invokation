@@ -46,8 +46,6 @@ tcgSkillKeyMap.ELEMENTVALUEPROP = Object.entries(tmpo["476224977"]).find(
 if (!tcgSkillKeyMap.DAMAGEVALUEPROP || !tcgSkillKeyMap.ELEMENTVALUEPROP)
   console.log("ERROR: loadTcgSkillKeyMap is missing a property map!");
 
-console.log(tcgSkillKeyMap.ELEMENTVALUEPROP);
-
 for (const filename of filelist) {
   if (!filename.endsWith(".json")) continue;
 
@@ -56,7 +54,10 @@ for (const filename of filelist) {
   );
 
   try {
-    const dataname = fileObj.name ?? filename.replace(".json", "");
+    const dataname = fileObj.name;
+    if (`${dataname}.json` !== filename) {
+      continue;
+    }
     const uncutmap: any = Object.values(fileObj)[1];
 
     tcgSkillKeyMap[dataname] = {};
@@ -71,7 +72,6 @@ for (const filename of filelist) {
           break;
         case "476224977": // extract baseElement
           tcgSkillKeyMap[dataname].baseElement =
-            kobj["value"] ??
             kobj["ratio"] ??
             kobj[tcgSkillKeyMap.ELEMENTVALUEPROP] ??
             "GCG_ELEMENT_NONE";

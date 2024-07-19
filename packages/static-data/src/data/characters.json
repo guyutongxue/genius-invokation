@@ -8083,14 +8083,14 @@
         "englishName": "Swirling Squall",
         "type": "GCG_SKILL_TAG_E",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，抓1张牌。",
-        "description": "造成2点风元素伤害，抓1张牌。",
+        "description": "造成3点风元素伤害，抓1张牌。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ANEMO",
             "count": 3
           }
         ],
-        "baseDamage": 2,
+        "baseDamage": 3,
         "baseElement": "GCG_ELEMENT_ANEMO",
         "icon": "MonsterSkill_S_ChrysopeleaSacred_01"
       },
