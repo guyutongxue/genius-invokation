@@ -62,8 +62,6 @@ export const WhirlingTail = skill(25031)
  * @name 盘绕风引
  * @description
  * 造成3点风元素伤害，抓1张牌。
- * @outdated
- * 造成2点风元素伤害，抓1张噬骸能量块；然后，手牌中每有1张噬骸能量块，抓1张牌（每回合最多抓2张)。
  */
 export const SwirlingSquall = skill(25032)
   .type("elemental")

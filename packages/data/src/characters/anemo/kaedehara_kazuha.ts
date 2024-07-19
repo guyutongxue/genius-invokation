@@ -221,6 +221,7 @@ export const Chihayaburu = skill(15052)
     }
     c.characterStatus(midareRanzan);
   })
+  // todo 重写万叶
   .damage(DamageType.Anemo, 1)
   .done();
 

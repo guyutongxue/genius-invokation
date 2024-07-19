@@ -431,8 +431,6 @@ export const WaterAndJustice = card(331805)
  * @name 最好的伙伴！
  * @description
  * 生成2个万能元素。
- * @outdated
- * 将所花费的元素骰转换为2个万能元素。
  */
 export const TheBestestTravelCompanion = card(332001)
   .since("v3.3.0")
@@ -1056,8 +1054,6 @@ export const BonecrunchersEnergyBlockCombatStatus = combatStatus(124053)
  * @name 噬骸能量块
  * @description
  * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。（每回合最多打出1张）
- * @outdated
- * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）
  */
 export const BonecrunchersEnergyBlock = card(124051)
   .since("v4.7.0")
@@ -1189,10 +1185,7 @@ export const OverchargedBall = card(113131)
   .since("v4.8.0")
   .tags("action")
   .damage(DamageType.Pyro, 1, "opp active")
-  // TODO 诡异，写在角色里？
-  // .on("discard", (c) => {
-  //   c.deductDamage(DamageType.Fire, 1, "my active");
-  // })
+  .doSameWhenDisposed()
   .done();
 
 /**

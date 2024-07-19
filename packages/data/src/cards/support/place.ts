@@ -72,8 +72,6 @@ export const JadeChamber = card(321003)
  * @name 晨曦酒庄
  * @description
  * 我方执行「切换角色」行动时：少花费1个元素骰。（每回合至多2次）
- * @outdated
- * 我方执行「切换角色」行动时：少花费1个元素骰。（每回合1次）
  */
 export const DawnWinery = card(321004)
   .since("v3.3.0")
