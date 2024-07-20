@@ -163,6 +163,9 @@ class CardBuilder<
     this._versionInfo = { predicate: "until", version };
     return this;
   }
+  
+  /** 此定义未被使用。 */
+  reserve(): void {}
 
   replaceDescription(
     key: DescriptionDictionaryKey,

@@ -41,7 +41,7 @@ const DawnWinery = card(321004)
  * 可用次数：3
  * 【此卡含描述变量】
  */
-export const LumenstoneAdjuvant = card(323007)
+const LumenstoneAdjuvant = card(323007)
   .until("v4.7.0")
   .costSame(2)
   .support("item")
@@ -111,7 +111,7 @@ const Lyresong = card(332024)
  * @description
  * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。
  */
-export const FallsAndFortune = card(332026)
+const FallsAndFortune = card(332026)
   .until("v4.7.0")
   .costSame(1)
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
@@ -315,6 +315,30 @@ const MidareRanzanPyro = status(115055)
   .dispose()
   .done();
 
+
+/**
+ * @id 15051
+ * @name 我流剑术
+ * @description
+ * 造成2点物理伤害。
+ */
+const GaryuuBladework = skill(15051)
+  .until("v4.7.0")
+  .type("normal")
+  .costAnemo(1)
+  .costVoid(2)
+  .damage(DamageType.Physical, 2)
+  .do((c) => {
+    const midareSt = c.$(`
+      my status with definition id ${MidareRanzan} or 
+      my status with definition id ${MidareRanzanCryo} or
+      my status with definition id ${MidareRanzanElectro} or
+      my status with definition id ${MidareRanzanHydro} or
+      my status with definition id ${MidareRanzanPyro}`);
+    midareSt?.dispose();
+  })
+  .done();
+  
 /**
  * @id 15052
  * @name 千早振

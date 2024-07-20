@@ -362,6 +362,7 @@ const detailedEventDictionary = {
 type OverrideEventArgType = {
   deductOmniDiceSwitch: ModifyAction2EventArg<SwitchActiveInfo>;
   deductOmniDiceCard: ModifyAction2EventArg<PlayCardInfo>;
+  beforeFastSwitch: ModifyAction2EventArg<SwitchActiveInfo>;
   deductAllDiceCard: ModifyAction3EventArg<PlayCardInfo>;
   deductVoidDiceSkill: ModifyAction0EventArg<UseSkillInfo>;
   deductElementDiceSkill: ModifyAction1EventArg<UseSkillInfo>;

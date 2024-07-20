@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, diceCostOfCard, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, diceCostOfCard, status, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -995,6 +995,16 @@ export const CalledInForCleanup = card(302203)
   .done();
 
 /**
+ * @id 303231
+ * @name 海底宝藏（冷却中）
+ * @description
+ * 本回合此角色不会再受到来自「海底宝藏」的治疗。
+ */
+const UnderseaTreasureOnCD = status(303231)
+  .oneDuration()
+  .done()
+
+/**
  * @id 303230
  * @name 海底宝藏
  * @description
@@ -1004,7 +1014,7 @@ export const CalledInForCleanup = card(302203)
  */
 export const UnderseaTreasure = card(303230)
   .since("v4.6.0")
-  // TODO 冷却中
+  .if((c) => !c.$(`my active has status with definition id ${UnderseaTreasureOnCD}`))
   .heal(1, "my active")
   .generateDice("randomElement", 1)
   .done();
@@ -1226,7 +1236,13 @@ export const SerenesSupport = card(302206)
  */
 export const LaumesSupport = card(302207)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("artifact"));
+    const card0 = c.random(candidates);
+    const card1 = c.random(candidates);
+    c.createHandCard(card0.id as CardHandle);
+    c.createHandCard(card1.id as CardHandle);
+  })
   .done();
 
 /**
@@ -1237,7 +1253,14 @@ export const LaumesSupport = card(302207)
  */
 export const CosanzeanasSupport = card(302208)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("weapon"));
+    // 似乎是“有放回抽样”，两张牌可重
+    const card0 = c.random(candidates);
+    const card1 = c.random(candidates);
+    c.createHandCard(card0.id as CardHandle);
+    c.createHandCard(card1.id as CardHandle);
+  })
   .done();
 
 /**
@@ -1249,7 +1272,14 @@ export const CosanzeanasSupport = card(302208)
 export const CanotilasSupport = card(302209)
   .costSame(1)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((c) => c.type === "event");
+    // 似乎是“有放回抽样”，两张牌可重
+    const card0 = c.random(candidates);
+    const card1 = c.random(candidates);
+    c.createHandCard(card0.id as CardHandle);
+    c.createHandCard(card1.id as CardHandle);
+  })
   .done();
 
 /**
@@ -1273,10 +1303,9 @@ export const SluasisSupport = card(302211)
   .costSame(1)
   .since("v4.8.0")
   .do((c) => {
-    c.oppPlayer.piles.slice(0, 3).forEach((card) => {
-      // TODO
-      c.createHandCard(card as unknown as CardHandle);
-    });
+    for (const card of c.oppPlayer.piles.slice(0, 3)) {
+      c.createHandCard(card.id as CardHandle);
+    };
   })
   .done();
 
@@ -1334,9 +1363,28 @@ export const LutinesSupport = card(302215)
  * 效果随机的超棒贴纸，凝聚了美露莘们的心意。
  */
 export const MelusineSupport = card(302218)
-  .since("v4.8.0")
-  // TODO ？
-  .done();
+  .reserve();
+
+/**
+ * @id 303236
+ * @name 「看到那小子挣钱…」（生效中）
+ * @description
+ * 本回合中，每当对方获得2个元素骰时：你获得1个万能元素。（此效果提供的元素骰除外）
+ */
+export const IdRatherLoseMoneyMyselfInEffect = combatStatus(303236)
+  .oneDuration()
+  .variable("count", 0)
+  .on("generateDice", (c, e) => e.who !== c.self.who && e.via.caller.definition.id !== c.self.definition.id)
+  .listenToAll()
+  .do((c) => {
+    c.addVariable("count", 1);
+    if (c.getVariable("count") === 2) {
+      c.generateDice(DiceType.Omni, 1);
+      c.setVariable("count", 0);
+    }
+  })
+  .done()
+
 
 /**
  * @id 332036
@@ -1346,18 +1394,19 @@ export const MelusineSupport = card(302218)
  */
 export const IdRatherLoseMoneyMyself = card(332036)
   .since("v4.8.0")
-  // TODO 此效果提供的元素骰除外？
+  .combatStatus(IdRatherLoseMoneyMyselfInEffect)
   .done();
 
 /**
  * @id 303237
  * @name 噔噔！（生效中）
  * @description
- * 本回合的结束阶段时，抓1张牌。
+ * 结束阶段：抓1张牌。
+ * 可用次数：1
  */
-export const TadaStatus = combatStatus(303237)
-  .oneDuration()
+export const TadaInEffect = combatStatus(303237)
   .on("endPhase")
+  .usage(1)
   .drawCards(1)
   .done();
 
@@ -1370,5 +1419,5 @@ export const TadaStatus = combatStatus(303237)
 export const Tada = card(332037)
   .since("v4.8.0")
   .damage(DamageType.Physical, 1, "my active")
-  .combatStatus(TadaStatus)
+  .combatStatus(TadaInEffect)
   .done();

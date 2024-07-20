@@ -662,7 +662,6 @@ export const Serene = card(322027)
       PucasSupport,
       TopyassSupport,
       LutinesSupport,
-      MelusineSupport,
     ];
     const card = c.random(supports);
     c.createHandCard(card);

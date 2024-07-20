@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType, Aura } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, Aura, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 115052
@@ -34,16 +34,14 @@ export const AutumnWhirlwind = summon(115052)
  * @description
  * 我方下次通过「切换角色」行动切换到所附属角色时：将此次切换视为「快速行动」而非「战斗行动」。
  * 我方选择行动前：如果所附属角色为「出战角色」，则直接使用「普通攻击」；本次「普通攻击」造成的物理伤害变为风元素伤害，结算后移除此效果。
- * @outdated
- * 所附属角色进行下落攻击时：造成的物理伤害变为风元素伤害，且伤害+1。
- * 角色使用技能后：移除此效果。
  */
 export const MidareRanzan = status(115051)
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .setFastAction()
+  .on("beforeAction", (c, e) => c.self.master().isActive())
+  .useSkill(15051 as SkillHandle)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
   .changeDamageType(DamageType.Anemo)
-  .increaseDamage(1)
-  .on("useSkill")
-  .dispose()
   .done();
 
 /**
@@ -52,16 +50,14 @@ export const MidareRanzan = status(115051)
  * @description
  * 我方下次通过「切换角色」行动切换到所附属角色时：将此次切换视为「快速行动」而非「战斗行动」。
  * 我方选择行动前：如果所附属角色为「出战角色」，则直接使用「普通攻击」；本次「普通攻击」造成的物理伤害变为冰元素伤害，结算后移除此效果。
- * @outdated
- * 所附属角色进行下落攻击时：造成的物理伤害变为冰元素伤害，且伤害+1。
- * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanCryo = status(115053)
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .setFastAction()
+  .on("beforeAction", (c, e) => c.self.master().isActive())
+  .useSkill(15051 as SkillHandle)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
   .changeDamageType(DamageType.Cryo)
-  .increaseDamage(1)
-  .on("useSkill")
-  .dispose()
   .done();
 
 /**
@@ -70,16 +66,14 @@ export const MidareRanzanCryo = status(115053)
  * @description
  * 我方下次通过「切换角色」行动切换到所附属角色时：将此次切换视为「快速行动」而非「战斗行动」。
  * 我方选择行动前：如果所附属角色为「出战角色」，则直接使用「普通攻击」；本次「普通攻击」造成的物理伤害变为雷元素伤害，结算后移除此效果。
- * @outdated
- * 所附属角色进行下落攻击时：造成的物理伤害变为雷元素伤害，且伤害+1。
- * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanElectro = status(115056)
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .setFastAction()
+  .on("beforeAction", (c, e) => c.self.master().isActive())
+  .useSkill(15051 as SkillHandle)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
   .changeDamageType(DamageType.Electro)
-  .increaseDamage(1)
-  .on("useSkill")
-  .dispose()
   .done();
 
 /**
@@ -93,11 +87,12 @@ export const MidareRanzanElectro = status(115056)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanHydro = status(115054)
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .setFastAction()
+  .on("beforeAction", (c, e) => c.self.master().isActive())
+  .useSkill(15051 as SkillHandle)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
   .changeDamageType(DamageType.Hydro)
-  .increaseDamage(1)
-  .on("useSkill")
-  .dispose()
   .done();
 
 /**
@@ -111,11 +106,12 @@ export const MidareRanzanHydro = status(115054)
  * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanPyro = status(115055)
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .setFastAction()
+  .on("beforeAction", (c, e) => c.self.master().isActive())
+  .useSkill(15051 as SkillHandle)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
   .changeDamageType(DamageType.Pyro)
-  .increaseDamage(1)
-  .on("useSkill")
-  .dispose()
   .done();
 
 /**
@@ -181,6 +177,15 @@ export const GaryuuBladework = skill(15051)
   .costAnemo(1)
   .costVoid(2)
   .damage(DamageType.Physical, 2)
+  .do((c) => {
+    const midareSt = c.$(`
+      my status with definition id ${MidareRanzan} or 
+      my status with definition id ${MidareRanzanCryo} or
+      my status with definition id ${MidareRanzanElectro} or
+      my status with definition id ${MidareRanzanHydro} or
+      my status with definition id ${MidareRanzanPyro}`);
+    midareSt?.dispose();
+  })
   .done();
 
 /**
@@ -221,7 +226,6 @@ export const Chihayaburu = skill(15052)
     }
     c.characterStatus(midareRanzan);
   })
-  // TODO 重写万叶
   .damage(DamageType.Anemo, 1)
   .done();
 
@@ -230,8 +234,6 @@ export const Chihayaburu = skill(15052)
  * @name 万叶之一刀
  * @description
  * 造成1点风元素伤害，召唤流风秋野。
- * @outdated
- * 造成3点风元素伤害，召唤流风秋野。
  */
 export const KazuhaSlash = skill(15053)
   .type("burst")
