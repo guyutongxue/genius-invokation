@@ -89,8 +89,9 @@ export const SingerOfManyWaters = summon(112112)
  */
 export const CenterOfAttention = status(112116)
   .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
-  .usage(1)
   .changeDamageType(DamageType.Hydro)
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
+  .usage(1)
   .do((c, e) => {
     if (c.self.master().definition.id === FurinaPneuma) {
       c.heal(1, "my standby characters");
