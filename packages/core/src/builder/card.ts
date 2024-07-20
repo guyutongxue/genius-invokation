@@ -280,7 +280,7 @@ class CardBuilder<
   addTarget<Q extends TargetQuery>(
     targetQuery: Q,
   ): BuilderWithShortcut<
-    CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>]>
+    CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>], AssociatedExt>
   > {
     this._targetQueries = [...this._targetQueries, targetQuery];
     return this as any;

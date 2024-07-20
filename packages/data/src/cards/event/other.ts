@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, diceCostOfCard, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, diceCostOfCard, extension, pair, status, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -818,27 +818,56 @@ export const Pankration = card(332023)
   })
   .done();
 
+const LyresongIsFirstExtension = extension(332024, { first: pair(false) })
+  .mutateWhen("onRoundBegin", (c) => c.first = pair(true))
+  .mutateWhen("onPlayCard", (c, e) => c.first[e.who] = true)
+  .done();
+
+/**
+ * @id 303232
+ * @name 琴音之诗（生效中）
+ * @description
+ * 本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。
+ */
+const LyresongInEffect1 = combatStatus(303232)
+  .oneDuration()
+  .once("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .deductOmniCost(1)
+  .done();
+
+
+/**
+ * @id 303224
+ * @name 琴音之诗（生效中）
+ * @description
+ * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
+ */
+const LyresongInEffect2 = combatStatus(303232)
+  .oneDuration()
+  .once("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
+  .deductOmniCost(2)
+  .done();
+
 /**
  * @id 332024
  * @name 琴音之诗
  * @description
  * 将一个我方角色所装备的「圣遗物」返回手牌。
  * 本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。如果打出此牌前我方未打出过其他行动牌，则改为少花费2个元素骰。
- * @outdated
- * 将一个我方角色所装备的「圣遗物」返回手牌。
- * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
  */
 export const Lyresong = card(332024)
   .since("v4.2.0")
+  .associateExtension(LyresongIsFirstExtension)
   .addTarget("my character has equipment with tag (artifact)")
   .do((c, e) => {
     const { definition } = c.of(e.targets[0]).removeArtifact()!;
     c.createHandCard(definition.id as CardHandle);
+    if (c.getExtensionState().first[c.self.who]) {
+      c.combatStatus(LyresongInEffect2);
+    } else {
+      c.combatStatus(LyresongInEffect1);
+    }
   })
-  .toCombatStatus(303224)
-  .oneDuration()
-  .once("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
-  .deductOmniCost(2)
   .done();
 
 /**
