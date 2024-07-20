@@ -53,7 +53,7 @@ export const DarkShadow = summon(122043)
     c.damage(DamageType.Electro, c.getVariable("atk"));
     c.consumeUsage();
   })
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive())
+  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
   .decreaseDamage(1)
   .consumeUsage(2)
   .done();

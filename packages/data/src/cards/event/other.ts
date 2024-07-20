@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, card, combatStatus, diceCostOfCard, extension, pair, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, combatStatus, diceCostOfCard, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -1284,6 +1284,23 @@ export const CosanzeanasSupport = card(302208)
   })
   .done();
 
+const MELUSINE_EVENT_CARDS = [
+  331102, // ElementalResonanceShatteringIce
+  331202, // ElementalResonanceSoothingWater
+  331302, // ElementalResonanceFerventFlames
+  331402, // ElementalResonanceHighVoltage
+  331502, // ElementalResonanceImpetuousWinds
+  331602, // ElementalResonanceEnduringRock
+  331702, // ElementalResonanceSprawlingGreenery
+  331801, // WindAndFreedom
+  331802, // StoneAndContracts
+  331803, // ThunderAndEternity
+  331804, // NatureAndWisdom
+  331805, // WaterAndJustice
+  // 331806, 
+  // 331807, 
+] as CardHandle[];
+
 /**
  * @id 302209
  * @name 夏诺蒂拉的声援
@@ -1294,12 +1311,10 @@ export const CanotilasSupport = card(302209)
   .costSame(1)
   .since("v4.8.0")
   .do((c) => {
-    const candidates = [...c.state.data.cards.values()].filter((c) => c.type === "event");
-    // 似乎是“有放回抽样”，两张牌可重
-    const card0 = c.random(candidates);
-    const card1 = c.random(candidates);
-    c.createHandCard(card0.id as CardHandle);
-    c.createHandCard(card1.id as CardHandle);
+    const card0 = c.random(MELUSINE_EVENT_CARDS);
+    const card1 = c.random(MELUSINE_EVENT_CARDS);
+    c.createHandCard(card0);
+    c.createHandCard(card1);
   })
   .done();
 
@@ -1350,7 +1365,25 @@ export const VirdasSupport = card(302212)
  */
 export const PucasSupport = card(302213)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const allies = [...c.state.data.cards.values()].filter((card) => card.tags.includes("ally"));
+    const count = c.state.config.maxSupports - c.player.supports.length;
+    for (let i = 0; i < count; i++) {
+      const ally = c.random(allies);
+      c.createEntity("support", ally.id as SupportHandle, {
+        type: "supports",
+        who: c.self.who
+      });
+    }
+    const oppCount = c.state.config.maxSupports - c.oppPlayer.supports.length;
+    for (let i = 0; i < oppCount; i++) {
+      const ally = c.random(allies);
+      c.createEntity("support", ally.id as SupportHandle, {
+        type: "supports",
+        who: flip(c.self.who)
+      });
+    }
+  })
   .done();
 
 /**

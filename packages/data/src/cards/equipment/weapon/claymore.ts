@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { card, combatStatus, status } from "@gi-tcg/core/builder";
+import { card, combatStatus, extension, pair, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 311301
@@ -197,6 +197,14 @@ export const ForestRegalia = card(311307)
   .characterStatus(ForestRegaliaInEffect, "@master")
   .done();
 
+const NonInitialPlayedCardExtension = extension(311308, { count: pair(0) })
+  .mutateWhen("onPlayCard", (c, e) => {
+    if (e._state.players[e.who].initialPiles.every((card) => card.id !== e.card.definition.id)) {
+      c.count[e.who]++;
+    }
+  })
+  .done();
+
 /**
  * @id 311308
  * @name 「究极霸王超级魔剑」
@@ -209,5 +217,25 @@ export const UltimateOverlordsMegaMagicSword = card(311308)
   .costSame(2)
   .weapon("claymore")
   .since("v4.8.0")
-  // TODO
+  .variable("supp", 0)
+  .associateExtension(NonInitialPlayedCardExtension)
+  .on("enter")
+  .do((c) => {
+    c.setVariable("supp", c.getExtensionState().count[c.self.who]);
+  })
+  .on("playCard")
+  .do((c) => {
+    c.setVariable("supp", c.getExtensionState().count[c.self.who]);
+  })
+  .on("modifySkillDamage")
+  .do((c, e) => {
+    const supp = c.getVariable("supp");
+    if (supp >= 8) {
+      e.increaseDamage(3);
+    } else if (supp >= 4) {
+      e.increaseDamage(2);
+    } else if (supp >= 2) {
+      e.increaseDamage(1);
+    }
+  })
   .done();
