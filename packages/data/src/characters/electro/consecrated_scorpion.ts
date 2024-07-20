@@ -46,9 +46,6 @@ export const ScorpionStrike = skill(24051)
  * @id 24052
  * @name 蝎尾锥刺
  * @description
- * 造成3点物理伤害。
- * 生成1张噬骸能量块，随机置入我方牌库顶部2张牌之中。
- * @outdated
  * 造成3点雷元素伤害。
  * 生成1张噬骸能量块，随机置入我方牌库顶部2张牌之中。
  */
@@ -63,8 +60,6 @@ export const StingingSpine = skill(24052)
  * @id 24053
  * @name 雷锥散射
  * @description
- * 造成3点物理伤害，舍弃手牌中最多3张噬骸能量块，在对方场上生成雷锥陷阱。
- * @outdated
  * 造成3点雷元素伤害，舍弃手牌中最多3张噬骸能量块，在对方场上生成雷锥陷阱。
  */
 export const ThunderboreBlast = skill(24053)

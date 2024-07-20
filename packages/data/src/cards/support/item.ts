@@ -171,7 +171,7 @@ export const MementoLens = card(323006)
  */
 export const LumenstoneAdjuvant = card(323007)
   .since("v4.5.0")
-  .costSame(2)
+  .costVoid(3)
   .support("item")
   .variable("playedCard", 0, { visible: false })
   .replaceDescription("[GCG_TOKEN_COUNTER]", (st, self) => self.variables.playedCard)
@@ -192,12 +192,10 @@ export const LumenstoneAdjuvant = card(323007)
  * @description
  * 行动阶段开始时：舍弃最多2张原本元素骰费用最高的手牌，每舍弃1张，此牌就累积1点「记忆和梦」。（最多2点）
  * 我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。
- * @outdated
- * 行动阶段开始时：舍弃最多2张元素骰费用最高的手牌，每舍弃1张，此牌就累积1点「记忆和梦」。（最多2点）
- * 我方角色使用技能时：如果我方本回合未打出过行动牌，则消耗1点「记忆和梦」，以使此技能少花费1个元素骰。
  */
 export const Kusava = card(323008)
   .since("v4.7.0")
+  .costSame(1)
   .support("item")
   .variable("memory", 0)
   .variable("cardPlayed", 0, { visible: false })

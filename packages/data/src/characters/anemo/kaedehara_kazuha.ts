@@ -221,7 +221,8 @@ export const Chihayaburu = skill(15052)
     }
     c.characterStatus(midareRanzan);
   })
-  .damage(DamageType.Anemo, 3)
+  // TODO 重写万叶
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -236,7 +237,7 @@ export const KazuhaSlash = skill(15053)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  .damage(DamageType.Anemo, 3)
+  .damage(DamageType.Anemo, 1)
   .summon(AutumnWhirlwind)
   .done();
 

@@ -226,5 +226,18 @@ export const ProspectorsDrill = card(311409)
   .costSame(2)
   .weapon("pole")
   .since("v4.8.0")
-  // TODO
+  .variable("unity", 0)
+  .on("beforeDamaged", (c, e) => c.player.hands.length !== 0)
+  .usagePerRound(2)
+  .do((c, e) => {
+    const cards = c.getMaxCostHands();
+    c.disposeCard(c.random(cards));
+    c.addVariable("unity", 1);
+  })
+  .on("modifyDamage")
+  .do((c, e) => {
+    e.increaseDamage(1);
+    c.drawCards(c.getVariable("unity"));
+    c.setVariable("unity", 0);
+  })
   .done();

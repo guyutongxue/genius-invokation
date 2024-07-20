@@ -23,9 +23,6 @@ import { DendroCore } from "../../commons";
  * @description
  * 双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌原本元素骰费用的草元素伤害。
  * 可用次数：1（可叠加，最多叠加到3次）
- * @outdated
- * 双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌原本元素骰费用+1的草元素伤害。
- * 可用次数：1（可叠加，最多叠加到3次）
  */
 export const BurstScan = combatStatus(117082)
   .on("beforeAction")
@@ -39,7 +36,7 @@ export const BurstScan = combatStatus(117082)
       const pileTop = c.player.piles[0];
       const cost = diceCostOfCard(pileTop.definition);
       c.disposeCard(pileTop);
-      c.damage(DamageType.Dendro, cost + 1);
+      c.damage(DamageType.Dendro, cost);
       if (c.$(`my equipment with definition id ${TheArtOfBudgeting}`)) {
         c.createHandCard(pileTop.definition.id as CardHandle);
         if (pileTop.definition.tags.includes("place")) {
@@ -111,8 +108,6 @@ export const ArtisticIngenuity = skill(17082)
  * @id 17083
  * @name 繁绘隅穹
  * @description
- * 造成3点物理伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。
- * @outdated
  * 造成3点草元素伤害，本角色附属梅赫拉克的助力，生成2层迸发扫描。
  */
 export const PaintedDome = skill(17083)

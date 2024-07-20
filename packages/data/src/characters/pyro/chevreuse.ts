@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { OverchargedBall } from "../../cards/event/other";
+import { character, skill, status, combatStatus, card, DamageType, Reaction } from "@gi-tcg/core/builder";
 
 /**
  * @id 113135
@@ -23,7 +24,9 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  */
 export const VerticalForceCoordination = status(113135)
   .since("v4.8.0")
-  // TODO
+  .on("reaction", (c, e) => e.type === Reaction.Overloaded)
+  .usagePerRound(1)
+  .createHandCard(OverchargedBall)
   .done();
 
 /**
@@ -35,7 +38,9 @@ export const VerticalForceCoordination = status(113135)
  */
 export const SecondaryExplosiveShells = combatStatus(113132)
   .since("v4.8.0")
-  // TODO
+  .on("switchActive")
+  .usage(2)
+  .damage(DamageType.Pyro, 1, "@event.switchTo")
   .done();
 
 /**
@@ -48,6 +53,8 @@ export const SecondaryExplosiveShells = combatStatus(113132)
 export const VanguardsCoordinatedTacticsInEffect = combatStatus(113134)
   .since("v4.8.0")
   // TODO
+  // .on("modifyDamage", (e) => e.type === DamageType.Pyro || e.type === DamageType.Electro)
+  // .increaseDamage(1)
   .done();
 
 /**
@@ -60,7 +67,7 @@ export const LineBayonetThrustEx = skill(13131)
   .type("normal")
   .costPyro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -73,6 +80,7 @@ export const LineBayonetThrustEx = skill(13131)
 export const ShortrangeRapidInterdictionFire = skill(13132)
   .type("elemental")
   .costPyro(3)
+  .damage(DamageType.Pyro, 2)
   // TODO
   .done();
 
@@ -86,7 +94,8 @@ export const RingOfBurstingGrenades = skill(13133)
   .type("burst")
   .costPyro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Pyro, 2)
+  .combatStatus(SecondaryExplosiveShells, "opp")
   .done();
 
 /**
@@ -97,7 +106,9 @@ export const RingOfBurstingGrenades = skill(13133)
  */
 export const VerticalForceCoordinationPassive = skill(13134)
   .type("passive")
-  // TODO
+  .on("reaction", (c, e) => e.type === Reaction.Overloaded)
+  .usagePerRound(1, { name: "usagePerRound1" })
+  .createHandCard(OverchargedBall)
   .done();
 
 /**
@@ -109,6 +120,8 @@ export const VerticalForceCoordinationPassive = skill(13134)
  */
 export const ShortrangeRapidInterdictionFirePassive = skill(13135)
   .type("elemental")
+  .costPyro(3)
+  .damage(DamageType.Pyro, 3)
   // TODO
   .done();
 

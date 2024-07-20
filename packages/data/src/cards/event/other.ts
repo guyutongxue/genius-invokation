@@ -431,8 +431,6 @@ export const WaterAndJustice = card(331805)
  * @name 最好的伙伴！
  * @description
  * 生成2个万能元素。
- * @outdated
- * 将所花费的元素骰转换为2个万能元素。
  */
 export const TheBestestTravelCompanion = card(332001)
   .since("v3.3.0")
@@ -874,7 +872,6 @@ export const TheBoarPrincess = card(332025)
  */
 export const FallsAndFortune = card(332026)
   .since("v4.3.0")
-  .costSame(1)
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
   .toCombatStatus(303226)
   .oneDuration()
@@ -1007,6 +1004,7 @@ export const CalledInForCleanup = card(302203)
  */
 export const UnderseaTreasure = card(303230)
   .since("v4.6.0")
+  // TODO 冷却中
   .heal(1, "my active")
   .generateDice("randomElement", 1)
   .done();
@@ -1055,8 +1053,6 @@ export const BonecrunchersEnergyBlockCombatStatus = combatStatus(124053)
  * @name 噬骸能量块
  * @description
  * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。（每回合最多打出1张）
- * @outdated
- * 随机舍弃1张原本元素骰费用最高的手牌，生成1个我方出战角色类型的元素骰。如果我方出战角色是「圣骸兽」角色，则使其获得1点充能。（每回合最多打出1张）
  */
 export const BonecrunchersEnergyBlock = card(124051)
   .since("v4.7.0")
@@ -1067,9 +1063,6 @@ export const BonecrunchersEnergyBlock = card(124051)
     c.disposeCard(selected);
     const activeCh = c.$("my active")!;
     c.generateDice(activeCh.element(), 1);
-    if (activeCh.definition.tags.includes("sacread")) {
-      c.gainEnergy(1, activeCh.state);
-    }
     c.combatStatus(BonecrunchersEnergyBlockCombatStatus)
   })
   .done();
@@ -1189,7 +1182,9 @@ export const OverchargedBall = card(113131)
   .costPyro(2)
   .tags("action")
   .since("v4.8.0")
-  // TODO
+  .tags("action")
+  .damage(DamageType.Pyro, 1, "opp active")
+  .doSameWhenDisposed()
   .done();
 
 /**
@@ -1201,7 +1196,8 @@ export const OverchargedBall = card(113131)
 export const CrystalShrapnel = card(116081)
   .costSame(1)
   .since("v4.8.0")
-  // TODO
+  .damage(DamageType.Physical, 1, "opp active")
+  .drawCards(1)
   .done();
 
 /**
@@ -1212,7 +1208,13 @@ export const CrystalShrapnel = card(116081)
  */
 export const SerenesSupport = card(302206)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("food"));
+    // TODO 似乎是“有放回抽样”，两张牌可重
+    const cards = c.randomN(candidates, 2);
+    c.createHandCard(cards[0].id as CardHandle);
+    c.createHandCard(cards[1].id as CardHandle);
+  })
   .done();
 
 /**
@@ -1269,7 +1271,12 @@ export const ThironasSupport = card(302210)
 export const SluasisSupport = card(302211)
   .costSame(1)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    c.oppPlayer.piles.slice(0, 3).forEach((card) => {
+      // TODO
+      c.createHandCard(card as unknown as CardHandle);
+    });
+  })
   .done();
 
 /**
@@ -1303,7 +1310,8 @@ export const PucasSupport = card(302213)
  */
 export const TopyassSupport = card(302214)
   .since("v4.8.0")
-  // TODO
+  .drawCards(2)
+  // TODO 队伍状态
   .done();
 
 /**
@@ -1314,7 +1322,8 @@ export const TopyassSupport = card(302214)
  */
 export const LutinesSupport = card(302215)
   .since("v4.8.0")
-  // TODO
+  .drawCards(2)
+  // TODO 队伍状态
   .done();
 
 /**
@@ -1325,7 +1334,7 @@ export const LutinesSupport = card(302215)
  */
 export const MelusineSupport = card(302218)
   .since("v4.8.0")
-  // TODO
+  // TODO ？
   .done();
 
 /**
@@ -1336,7 +1345,19 @@ export const MelusineSupport = card(302218)
  */
 export const IdRatherLoseMoneyMyself = card(332036)
   .since("v4.8.0")
-  // TODO
+  // TODO 此效果提供的元素骰除外？
+  .done();
+
+/**
+ * @id 303237
+ * @name 噔噔！（生效中）
+ * @description
+ * 本回合的结束阶段时，抓1张牌。
+ */
+export const TadaStatus = combatStatus(303237)
+  .oneDuration()
+  .on("endPhase")
+  .drawCards(1)
   .done();
 
 /**
@@ -1347,5 +1368,6 @@ export const IdRatherLoseMoneyMyself = card(332036)
  */
 export const Tada = card(332037)
   .since("v4.8.0")
-  // TODO
+  .damage(DamageType.Physical, 1, "my active")
+  .combatStatus(TadaStatus)
   .done();

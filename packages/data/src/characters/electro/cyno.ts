@@ -81,9 +81,6 @@ export const SecretRiteChasmicSoulfarer = skill(14042)
  * @description
  * 造成4点雷元素伤害，
  * 启途誓使的「凭依」级数+2。
- * @outdated
- * 造成4点雷元素伤害，
- * 启途誓使的[凭依]级数+2。
  */
 export const SacredRiteWolfsSwiftness = skill(14043)
   .type("burst")
