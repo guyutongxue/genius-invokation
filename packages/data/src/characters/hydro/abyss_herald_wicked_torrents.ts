@@ -67,7 +67,7 @@ export const SurgingShield = status(122035)
 export const WateryRebirthHoned = status(122037)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
-  .on("modifySkillDamage", (c, e) => e.type === DamageType.Hydro)
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
   .done();
 

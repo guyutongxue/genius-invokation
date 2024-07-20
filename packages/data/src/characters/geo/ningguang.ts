@@ -23,10 +23,10 @@ import { character, skill, combatStatus, card, DamageType, CombatStatusHandle } 
  * 可用次数：2
  */
 export const JadeScreenStatus: CombatStatusHandle = combatStatus(116011)
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 2)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 2)
   .usage(2)
   .decreaseDamage(1)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Geo && 
+  .on("increaseDamage", (c, e) => e.type === DamageType.Geo && 
     c.$(`my equipment with definition id ${StrategicReserve}`))
   .listenToPlayer()
   .increaseDamage(1)

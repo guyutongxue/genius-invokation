@@ -36,7 +36,7 @@ export const GrinmalkinHat = summon(113101)
  */
 export const PropSurplus = status(113102)
   .variable("surplus", 1)
-  .on("modifySkillDamage", (c, e) => e.via.definition.id === BewilderingLights)
+  .on("increaseSkillDamage", (c, e) => e.via.definition.id === BewilderingLights)
   .do((c, e) => {
     e.increaseDamage(c.getVariable("surplus"));
   })
@@ -149,7 +149,7 @@ export const ConclusiveOvation = card(213101)
   .talent(Lyney)
   .on("enter")
   .useSkill(PropArrow)
-  .on("modifySkillDamage", (c, e) =>
+  .on("increaseSkillDamage", (c, e) =>
     [Lyney as number, GrinmalkinHat as number].includes(e.source.definition.id) && 
     c.of(e.target).aura === Aura.Pyro)
   .usagePerRound(1)

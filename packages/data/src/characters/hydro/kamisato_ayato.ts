@@ -26,7 +26,7 @@ import { character, skill, summon, status, card, DamageType, StatusHandle } from
 export const GardenOfPurity = summon(112062)
   .endPhaseDamage(DamageType.Hydro, 2)
   .usage(2)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -40,7 +40,7 @@ export const GardenOfPurity = summon(112062)
 export const TakimeguriKanka: StatusHandle = status(112061)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .usage(3)
   .increaseDamage(1)
   .if((c, e) => c.self.master().hasEquipment(KyoukaFuushi) && c.of(e.target).health <= 6)

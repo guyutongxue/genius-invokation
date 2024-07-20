@@ -26,7 +26,7 @@ import { character, skill, summon, combatStatus, card, DamageType, SkillHandle }
 export const TalismanSpirit = summon(111073)
   .endPhaseDamage(DamageType.Cryo, 1)
   .usage(2)
-  .on("beforeDamaged", (c, e) => !c.of(e.target).isMine() && [DamageType.Cryo, DamageType.Physical].includes(e.type))
+  .on("increaseDamaged", (c, e) => !c.of(e.target).isMine() && [DamageType.Cryo, DamageType.Physical].includes(e.type))
   .listenToAll()
   .increaseDamage(1)
   .done();
@@ -44,7 +44,7 @@ export const IcyQuill01 = combatStatus(111072)
   .variable("noUsageEffect", 1, { visible: false }) // 每回合一次不消耗可用次数
   .on("roundBegin")
   .setVariable("noUsageEffect", 1)
-  .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
+  .on("increaseDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
   .usage(2, { autoDecrease: false })
   .increaseDamage(1)
   .do((c, e) => {
@@ -65,7 +65,7 @@ export const IcyQuill01 = combatStatus(111072)
  */
 export const IcyQuill = combatStatus(111071)
   .conflictWith(111072)
-  .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
+  .on("increaseDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
   .usage(2)
   .increaseDamage(1)
   .done();

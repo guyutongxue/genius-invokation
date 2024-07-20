@@ -110,7 +110,7 @@ export const DescentOfDivinity = card(216041)
   .talent(Albedo)
   .on("enter")
   .useSkill(AbiogenesisSolarIsotoma)
-  .on("modifySkillDamage", (c, e) =>
+  .on("increaseSkillDamage", (c, e) =>
     c.$(`my summons with definition id ${SolarIsotoma}`) &&
     e.viaPlungingAttack())
   .listenToPlayer()

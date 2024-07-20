@@ -26,7 +26,7 @@ export const DandelionField: SummonHandle = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 1)
   .usage(2)
   .heal(1, "my active")
-  .on("modifyDamage", (c, e) => 
+  .on("increaseDamage", (c, e) => 
     c.$(`my equipment with definition id ${LandsOfDandelion}`) && // 装备有天赋的琴在场时
     e.type === DamageType.Anemo
   )

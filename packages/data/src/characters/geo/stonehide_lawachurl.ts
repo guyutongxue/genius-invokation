@@ -26,7 +26,7 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
 export const StoneForce = status(126012)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Geo)
-  .on("modifySkillDamage")
+  .on("increaseSkillDamage")
   .usagePerRound(1)
   .increaseDamage(1)
   .on("dispose", (c, e) => e.entity.definition.id === Stonehide)
@@ -41,7 +41,7 @@ export const StoneForce = status(126012)
  * 可用次数：3
  */
 export const Stonehide = status(126011)
-  .on("beforeDamaged", (c, e) => e.value > 0)
+  .on("decreaseDamaged", (c, e) => e.value > 0)
   .usage(3)
   .decreaseDamage(1)
   .if((c, e) => e.type === DamageType.Geo)

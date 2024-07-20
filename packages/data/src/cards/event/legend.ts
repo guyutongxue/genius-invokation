@@ -151,7 +151,7 @@ export const DayOfResistanceMomentOfShatteredDreams = card(330007)
   .addTarget("my character")
   .toStatus("@targets.0", 300004)
   .oneDuration()
-  .on("beforeDamaged", (c, e) => e.value > 0)
+  .on("decreaseDamaged", (c, e) => e.value > 0)
   .usage(4)
   .decreaseDamage(1)
   .done();

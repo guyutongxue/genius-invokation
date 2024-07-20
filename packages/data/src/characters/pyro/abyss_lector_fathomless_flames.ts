@@ -51,7 +51,7 @@ export const AegisOfAbyssalFlame = status(123024)
  * 角色造成的火元素伤害+1。
  */
 export const FieryRebirthHoned = status(123026)
-  .on("modifySkillDamage", (c, e) => e.type === DamageType.Pyro)
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Pyro)
   .increaseDamage(1)
   .done();
 

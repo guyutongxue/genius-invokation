@@ -33,7 +33,7 @@ export const ChillingPenalty = status(111111)
     e.isSkillType("normal") && 
     e.canDeductCostOfType(DiceType.Cryo))
   .deductCost(DiceType.Cryo, 1)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .usage(2)
   .do((c, e) => {
     if (c.self.master().health >= 6) {
@@ -178,7 +178,7 @@ export const TerrorForTheEvildoers = card(211111)
   .useSkill(ForcefulFistsOfFrost)
   .on("damagedOrHealed")
   .addVariable("count", 1)
-  .on("modifySkillDamage", (c) => c.getVariable("count") >= 3)
+  .on("increaseSkillDamage", (c) => c.getVariable("count") >= 3)
   .addVariable("count", -3)
   .increaseDamage(1)
   .done();

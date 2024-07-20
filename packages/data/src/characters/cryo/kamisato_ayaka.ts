@@ -39,7 +39,7 @@ export const CryoElementalInfusion01 = status(111053)
   .oneDuration()
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Cryo)
-  .on("modifySkillDamage", (c, e) => e.type === DamageType.Cryo)
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Cryo)
   .increaseDamage(1)
   .done();
 

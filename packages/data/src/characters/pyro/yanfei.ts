@@ -23,7 +23,7 @@ import { character, skill, status, card, DamageType, DiceType } from "@gi-tcg/co
  * 可用次数：1（可叠加，最多叠加到2次）
  */
 export const ScarletSeal = status(113081)
-  .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
+  .on("increaseSkillDamage", (c, e) => e.viaChargedAttack())
   .usageCanAppend(1, 2)
   .increaseDamage(2)
   .done();
@@ -117,7 +117,7 @@ export const RightOfFinalInterpretation = card(213081)
   .variable("triggerSeal", 0)
   .on("enter")
   .useSkill(SealOfApproval)
-  .on("modifySkillDamage", (c, e) => e.viaChargedAttack() && c.of(e.target).health <= 6)
+  .on("increaseSkillDamage", (c, e) => e.viaChargedAttack() && c.of(e.target).health <= 6)
   .increaseDamage(1)
   .if((c) => c.self.master().hasStatus(ScarletSeal))
   .setVariable("triggerSeal", 1)

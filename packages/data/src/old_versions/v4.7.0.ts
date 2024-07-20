@@ -180,7 +180,7 @@ const PactswornPathclearer = status(114041)
   })
   .on("modifySkillDamageType", (c, e) => c.getVariable("reliance") >= 2 && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Electro)
-  .on("modifySkillDamage", (c, e) => c.getVariable("reliance") >= 4)
+  .on("increaseSkillDamage", (c, e) => c.getVariable("reliance") >= 4)
   .increaseDamage(2)
   .done();
 
@@ -213,7 +213,7 @@ const FeatherfallJudgment = card(214041)
   .talent(Cyno)
   .on("enter")
   .useSkill(SecretRiteChasmicSoulfarer)
-  .on("modifySkillDamage", (c, e) => {
+  .on("increaseSkillDamage", (c, e) => {
     const status = c.self.master().hasStatus(PactswornPathclearer)!;
     return c.getVariable("reliance", status) % 2 === 0 && e.via.definition.id === SecretRiteChasmicSoulfarer;
   })
@@ -407,7 +407,7 @@ const DominanceOfEarth = card(216031)
   .talent(Zhongli)
   .on("enter")
   .useSkill(DominusLapidisStrikingStone)
-  .on("modifyDamage", (c, e) => {
+  .on("increaseDamage", (c, e) => {
     return e.type === DamageType.Geo &&
       e.source.definition.type === "summon" &&
       !!c.$(`(my combat status with tag (shield)) or (status with tag (shield) at my active)`);
@@ -447,7 +447,7 @@ const DescentOfDivinity = card(216041)
   .talent(Albedo)
   .on("enter")
   .useSkill(AbiogenesisSolarIsotoma)
-  .on("modifySkillDamage", (c, e) =>
+  .on("increaseSkillDamage", (c, e) =>
     c.$(`my summons with definition id ${SolarIsotoma}`) &&
     e.viaPlungingAttack())
   .listenToPlayer()
@@ -466,7 +466,7 @@ const FlyingCloudFlagFormation = combatStatus(116073)
   .until("v4.7.0")
   .on("deductOmniDiceSkill", (c, e) => e.isSkillType("normal") && c.player.hands.length <= 1)
   .deductOmniCost(1)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .usageCanAppend(1, 4)
   .do((c, e) => {
     if (c.$(`my equipment with definition id ${DecorousHarmony}`) && c.player.hands.length === 0) {
@@ -543,7 +543,7 @@ const Refraction01 = status(122022)
   .conflictWith(122021)
   .unique(122021)
   .duration(3)
-  .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
+  .on("increaseDamaged", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
   .on("addDice", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
   .addCost(DiceType.Void, 1)
@@ -562,7 +562,7 @@ const Refraction = status(122021)
   .conflictWith(122022)
   .unique(122022)
   .duration(2)
-  .on("beforeDamaged", (c, e) => e.type === DamageType.Hydro)
+  .on("increaseDamaged", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
   .done();
 

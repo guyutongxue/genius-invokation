@@ -59,7 +59,7 @@ export const BurstScan = combatStatus(117082)
  */
 export const MehraksAssistance = status(117081)
   .duration(2)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Dendro)

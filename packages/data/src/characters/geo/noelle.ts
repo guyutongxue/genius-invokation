@@ -30,7 +30,7 @@ export const SweepingTimeStatus = status(116022)
   .deductCost(DiceType.Geo, 1)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Geo)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(2)
   .done();
 
@@ -43,7 +43,7 @@ export const SweepingTimeStatus = status(116022)
  */
 export const FullPlate = combatStatus(116021)
   .shield(2)
-  .on("beforeDamaged", (c, e) => e.type === DamageType.Physical)
+  .on("multiplyDamaged", (c, e) => e.type === DamageType.Physical)
   .divideDamage(2)
   .done();
 

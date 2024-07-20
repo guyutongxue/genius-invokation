@@ -34,7 +34,7 @@ const FieryRebirthStatus = status(123022)
 const AegisOfAbyssalFlame = status(123024)
   .until("v4.5.0")
   .shield(3)
-  .on("modifySkillDamage", (c, e) => e.type === DamageType.Pyro)
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Pyro)
   .increaseDamage(1)
   .done();
 

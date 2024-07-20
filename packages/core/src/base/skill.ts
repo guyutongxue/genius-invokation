@@ -653,21 +653,39 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
   }
 }
 
-export class ModifyDamage1EventArg<
+export class ModifyDamage3EventArg<
   InfoT extends DamageInfo,
 > extends DamageOrHealEventArg<InfoT> {
-  private _increased = 0;
-  private _multiplied: number | null = null;
-  private _divider = 1;
   private _decreased = 0;
   protected _log = super.damageInfo.log ?? "";
 
-  increaseDamage(value: number) {
+  decreaseDamage(value: number) {
     this._log += `${stringifyState(
       this.caller,
-    )} increase damage by ${value}.\n`;
-    this._increased += value;
+    )} decrease damage by ${value}.\n`;
+    this._decreased += value;
   }
+
+  override get damageInfo(): InfoT {
+    const damageInfo = super.damageInfo;
+    const value = Math.max(0, damageInfo.value - this._decreased);
+    return {
+      ...damageInfo,
+      value,
+      causeDefeated:
+        !!damageInfo.target.variables.alive &&
+        damageInfo.target.variables.health <= value,
+      log: this._log,
+    };
+  }
+}
+
+export class ModifyDamage2EventArg<
+  InfoT extends DamageInfo,
+> extends ModifyDamage3EventArg<InfoT> {
+  private _multiplied: number | null = null;
+  private _divider = 1;
+
   multiplyDamage(multiplier: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -681,22 +699,37 @@ export class ModifyDamage1EventArg<
     )} divide damage by ${divider}.\n`;
     this._divider *= divider;
   }
-  decreaseDamage(value: number) {
-    this._log += `${stringifyState(
-      this.caller,
-    )} decrease damage by ${value}.\n`;
-    this._decreased += value;
-  }
 
   override get damageInfo(): InfoT {
     const damageInfo = super.damageInfo;
     const multiplier = (this._multiplied ?? 1) * this._divider;
-    const value = Math.max(
-      0,
-      Math.ceil(
-        (damageInfo.value + this._increased) * multiplier - this._decreased,
-      ),
-    );
+    const value = Math.ceil(damageInfo.value * multiplier);
+    return {
+      ...damageInfo,
+      value,
+      causeDefeated:
+        !!damageInfo.target.variables.alive &&
+        damageInfo.target.variables.health <= value,
+      log: this._log,
+    };
+  }
+}
+
+export class ModifyDamage1EventArg<
+  InfoT extends DamageInfo,
+> extends ModifyDamage2EventArg<InfoT> {
+  private _increased = 0;
+
+  increaseDamage(value: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} increase damage by ${value}.\n`;
+    this._increased += value;
+  }
+
+  override get damageInfo(): InfoT {
+    const damageInfo = super.damageInfo;
+    const value = damageInfo.value + this._increased;
     return {
       ...damageInfo,
       value,
@@ -916,8 +949,10 @@ export const EVENT_MAP = {
   onTransformDefinition: TransformDefinitionEventArg,
   onGenerateDice: GenerateDiceEventArg,
 
-  modifyDamage0: ModifyDamage0EventArg,
-  modifyDamage1: ModifyDamage1EventArg,
+  modifyDamage0: ModifyDamage0EventArg, // 类型
+  modifyDamage1: ModifyDamage1EventArg, // 加
+  modifyDamage2: ModifyDamage2EventArg, // 乘除
+  modifyDamage3: ModifyDamage3EventArg, // 减
   modifyHeal: ModifyHealEventArg,
   onDamageOrHeal: DamageOrHealEventArg,
 

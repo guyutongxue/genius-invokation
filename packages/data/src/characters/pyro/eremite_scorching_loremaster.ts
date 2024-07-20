@@ -23,7 +23,7 @@ import { character, skill, summon, status, card, DamageType, SkillHandle, Status
  */
 export const PyroScorpionGuardianStance01: StatusHandle = status(123034)
   .conflictWith(123033)
-  .on("beforeDamaged", (c, e) => e.value > 0 &&
+  .on("decreaseDamaged", (c, e) => e.value > 0 &&
     c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
   .usagePerRound(2)
   .decreaseDamage(1)
@@ -37,7 +37,7 @@ export const PyroScorpionGuardianStance01: StatusHandle = status(123034)
  */
 export const PyroScorpionGuardianStance: StatusHandle = status(123033)
   .conflictWith(123034)
-  .on("beforeDamaged", (c, e) => e.value > 0 &&
+  .on("decreaseDamaged", (c, e) => e.value > 0 &&
     c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
   .usagePerRound(1)
   .decreaseDamage(1)

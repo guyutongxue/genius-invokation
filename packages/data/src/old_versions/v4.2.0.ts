@@ -101,7 +101,7 @@ const OceanicMimicFrog = summon(122013)
   .until("v4.2.0")
   .hintIcon(DamageType.Hydro)
   .hintText("2")
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
   .usage(2, { autoDispose: false })
   .decreaseDamage(1)
   .on("endPhase", (c) => c.getVariable("usage") <= 0)
@@ -149,7 +149,7 @@ const OceanhuedClam = card(312016)
     c.addVariableWithMax("bubble", generatedBubbleCount, 2);
     c.setVariable("healedPts", restPts);
   })
-  .on("modifySkillDamage")
+  .on("increaseSkillDamage")
   .do((c, e) => {
     const bubbleCount = c.getVariable("bubble");
     c.setVariable("bubble", 0);

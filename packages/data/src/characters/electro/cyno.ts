@@ -43,7 +43,7 @@ export const PactswornPathclearer = status(114041)
   })
   .on("modifySkillDamageType", (c, e) => c.getVariable("reliance") >= 2 && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Electro)
-  .on("modifySkillDamage", (c, e) => c.getVariable("reliance") >= 4)
+  .on("increaseSkillDamage", (c, e) => c.getVariable("reliance") >= 4)
   .increaseDamage(2)
   .done();
 
@@ -146,7 +146,7 @@ export const FeatherfallJudgment = card(214041)
   .talent(Cyno)
   .on("enter")
   .useSkill(SecretRiteChasmicSoulfarer)
-  .on("modifySkillDamage", (c, e) => {
+  .on("increaseSkillDamage", (c, e) => {
     const status = c.self.master().hasStatus(PactswornPathclearer)!;
     return c.getVariable("reliance", status) % 2 === 0 && e.via.definition.id === SecretRiteChasmicSoulfarer;
   })

@@ -51,7 +51,7 @@ export const LightfallSword = summon(111062)
  * 所附属角色使用冰潮的涡旋时：移除此状态，使本次伤害+3。
  */
 export const Grimheart = status(111061)
-  .on("modifySkillDamage", (c, e) => e.damageInfo.via.definition.id === IcetideVortex)
+  .on("increaseSkillDamage", (c, e) => e.damageInfo.via.definition.id === IcetideVortex)
   .increaseDamage(3)
   .dispose()
   .done();

@@ -39,7 +39,7 @@ export const GeneralsGlory = summon(116062)
  */
 export const GeneralsWarBanner = combatStatus(116061)
   .duration(2, { append: { limit: 3 } })
-  .on("modifySkillDamage", (c, e) => e.type === DamageType.Geo)
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Geo)
   .increaseDamage(1)
   .done();
 

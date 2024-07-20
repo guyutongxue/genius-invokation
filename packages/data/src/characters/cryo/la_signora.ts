@@ -186,7 +186,7 @@ export const PainForPain = card(221021)
   .do((c) => {
     c.generateDice(c.self.master().element(), 3);
   })
-  .on("beforeDamaged", (c, e) => e.value >= 3)
+  .on("decreaseDamaged", (c, e) => e.value >= 3)
   .usagePerRound(1)
   .decreaseDamage(1)
   .do((c) => {

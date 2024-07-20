@@ -238,14 +238,14 @@ const detailedEventDictionary = {
       e.damageInfo.fromReaction === null
     );
   }),
-  modifyDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
+  increaseDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
       e.type !== DamageType.Piercing &&
       checkRelative(c.state, e.source.id, r) &&
       !isDebuff(c.state, e.damageInfo)
     );
   }),
-  modifySkillDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
+  increaseSkillDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
       e.type !== DamageType.Piercing &&
       checkRelative(c.state, e.source.id, r) &&
@@ -253,7 +253,24 @@ const detailedEventDictionary = {
       e.damageInfo.fromReaction === null
     );
   }),
-  beforeDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
+  multiplyDamage: defineDescriptor("modifyDamage2", (c, e, r) => {
+    return (
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.source.id, r) &&
+      !isDebuff(c.state, e.damageInfo)
+    );
+  }),
+  increaseDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
+    return (
+      e.type !== DamageType.Piercing && checkRelative(c.state, e.target.id, r)
+    );
+  }),
+  multiplyDamaged: defineDescriptor("modifyDamage2", (c, e, r) => {
+    return (
+      e.type !== DamageType.Piercing && checkRelative(c.state, e.target.id, r)
+    );
+  }),
+  decreaseDamaged: defineDescriptor("modifyDamage3", (c, e, r) => {
     return (
       e.type !== DamageType.Piercing && checkRelative(c.state, e.target.id, r)
     );

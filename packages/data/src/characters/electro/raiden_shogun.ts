@@ -26,7 +26,7 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
 export const EyeOfStormyJudgment = summon(114071)
   .endPhaseDamage(DamageType.Electro, 1)
   .usage(3)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("burst"))
   .increaseDamage(1)
   .done();
 
@@ -42,7 +42,7 @@ export const ChakraDesiderataStatus = status(114072)
   .on("useSkill", (c, e) => e.isSkillType("burst") && e.skill.caller.id !== c.self.master().id)
   .listenToPlayer()
   .addVariableWithMax("chakra", 1, 3)
-  .on("modifySkillDamage", (c, e) => e.via.definition.id === SecretArtMusouShinsetsu)
+  .on("increaseSkillDamage", (c, e) => e.via.definition.id === SecretArtMusouShinsetsu)
   .do((c, e) => {
     const currentVal = c.getVariable("chakra");
     if (c.self.master().hasEquipment(WishesUnnumbered)) {

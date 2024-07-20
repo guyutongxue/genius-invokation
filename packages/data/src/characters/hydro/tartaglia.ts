@@ -30,10 +30,10 @@ export const MeleeStance = status(112042)
   .conflictWith(112041)
   .on("modifySkillDamageType", (c, e) =>e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
-  .on("modifySkillDamage", (c, e) => c.of(e.target).hasStatus(Riptide))
+  .on("increaseSkillDamage", (c, e) => c.of(e.target).hasStatus(Riptide))
   .increaseDamage(1)
-  // 此处使用 modifySkillDamage; 因为官方实现中，此穿透伤害是与增伤同时发生的，而非“使用技能后”
-  .on("modifySkillDamage", (c, e) => c.of(e.target).hasStatus(Riptide))
+  // 此处使用 increaseSkillDamage; 因为官方实现中，此穿透伤害是与增伤同时发生的，而非“使用技能后”
+  .on("increaseSkillDamage", (c, e) => c.of(e.target).hasStatus(Riptide))
   .usagePerRound(2)
   .damage(DamageType.Piercing, 1, "opp next")
   .done();

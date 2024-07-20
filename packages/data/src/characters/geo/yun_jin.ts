@@ -67,7 +67,7 @@ export const SpearFlourishStatus = status(116072)
 export const FlyingCloudFlagFormation = combatStatus(116073)
   .on("deductOmniDiceSkill", (c, e) => e.isSkillType("normal") && c.player.hands.length <= 1)
   .deductOmniCost(1)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .usageCanAppend(1, 4)
   .do((c, e) => {
     if (c.$(`my equipment with definition id ${DecorousHarmony}`) && c.player.hands.length === 0) {

@@ -78,7 +78,7 @@ export const ThunderbeastsTarge = combatStatus(114053)
   .duration(2)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .damage(DamageType.Electro, 1)
-  .on("beforeDamaged", (c, e) => e.value >= 3)
+  .on("decreaseDamaged", (c, e) => e.value >= 3)
   .decreaseDamage(1)
   .done();
 

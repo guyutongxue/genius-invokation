@@ -23,7 +23,7 @@ import { character, skill, summon, status, card, DamageType, SkillHandle } from 
  * 可用次数：2
  */
 export const CrowfeatherCover = status(114063)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("elemental") || e.viaSkillType("burst"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("elemental") || e.viaSkillType("burst"))
   .usage(2)
   .increaseDamage(1)
   .if((c) => c.$(`my equipment with definition id ${SinOfPride}`))

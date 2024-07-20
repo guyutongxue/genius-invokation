@@ -131,7 +131,7 @@ export const DominanceOfEarth = card(216031)
   .talent(Zhongli)
   .on("enter")
   .useSkill(DominusLapidisStrikingStone)
-  .on("modifyDamage", (c, e) => {
+  .on("increaseDamage", (c, e) => {
     return e.type === DamageType.Geo &&
       (e.source.definition.id === Zhongli || e.source.definition.type === "summon") && 
       c.$(`@master with health >= 7`);

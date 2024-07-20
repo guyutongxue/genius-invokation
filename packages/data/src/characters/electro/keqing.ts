@@ -27,7 +27,7 @@ export const ElectroElementalInfusion01 = status(114034)
   .duration(3)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Electro)
-  .on("modifySkillDamage", (c, e) => e.type === DamageType.Electro)
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Electro)
   .increaseDamage(1)
   .done();
 

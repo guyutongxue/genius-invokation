@@ -65,7 +65,7 @@ const TheScentRemained = card(212021)
 const RainSword01 = combatStatus(112023)
   .until("v4.1.0")
   .conflictWith(112021)
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 3)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 3)
   .usage(3)
   .decreaseDamage(1)
   .done();
@@ -311,7 +311,7 @@ const FeatherfallJudgment = card(214041)
   .talent(Cyno)
   .on("enter")
   .useSkill(SecretRiteChasmicSoulfarer)
-  .on("modifySkillDamage", (c, e) => {
+  .on("increaseSkillDamage", (c, e) => {
     const status = c.self.master().hasStatus(PactswornPathclearer)!;
     const reliance = c.getVariable("reliance", status);
     return (reliance === 3 || reliance === 5) && e.via.definition.id === SecretRiteChasmicSoulfarer;
@@ -385,7 +385,7 @@ const DandelionField: SummonHandle = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 2)
   .usage(2)
   .heal(1, "my active")
-  .on("modifyDamage", (c, e) => 
+  .on("increaseDamage", (c, e) => 
     c.$(`my equipment with definition id ${LandsOfDandelion}`) && // 装备有天赋的琴在场时
     e.type === DamageType.Anemo
   )
@@ -448,7 +448,7 @@ const LandsOfDandelion = card(215021)
  */
 const ScarletSeal = status(113081)
   .until("v4.1.0")
-  .on("modifySkillDamage", (c, e) => e.viaChargedAttack())
+  .on("increaseSkillDamage", (c, e) => e.viaChargedAttack())
   .usage(1)
   .increaseDamage(2)
   .done();
@@ -470,7 +470,7 @@ const RightOfFinalInterpretation = card(213081)
   .variable("triggerSeal", 0)
   .on("enter")
   .useSkill(SealOfApproval)
-  .on("modifySkillDamage", (c, e) => e.viaChargedAttack() && c.of(e.target).health <= 6)
+  .on("increaseSkillDamage", (c, e) => e.viaChargedAttack() && c.of(e.target).health <= 6)
   .increaseDamage(1)
   .done();
 
@@ -488,7 +488,7 @@ const IcyQuill01 = combatStatus(111072)
   .variable("noUsageEffect", 1, { visible: false }) // 每回合一次不消耗可用次数
   .on("roundBegin")
   .setVariable("noUsageEffect", 1)
-  .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
+  .on("increaseDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
   .usage(3, { autoDecrease: false })
   .increaseDamage(1)
   .do((c, e) => {
@@ -510,7 +510,7 @@ const IcyQuill01 = combatStatus(111072)
 const IcyQuill = combatStatus(111071)
   .until("v4.1.0")
   .conflictWith(111072)
-  .on("modifyDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
+  .on("increaseDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
   .usage(3)
   .increaseDamage(1)
   .done();
@@ -549,7 +549,7 @@ export const RagingOniKing = status(116053)
   .duration(2)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Geo)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(2)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usagePerRound(1)

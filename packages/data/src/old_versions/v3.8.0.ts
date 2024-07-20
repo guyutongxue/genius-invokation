@@ -329,7 +329,7 @@ const ShimenawasReminiscence = card(312014)
   .on("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .usagePerRound(1)
   .deductOmniCost(1)
-  .on("modifySkillDamage", (c, e) =>
+  .on("increaseSkillDamage", (c, e) =>
     c.self.master().energy >= 2 &&
     (e.viaSkillType("normal") || e.viaSkillType("elemental")))
   .increaseDamage(1)
@@ -366,7 +366,7 @@ const EmblemOfSeveredFate = card(312008)
   .on("useSkill", (c, e) => e.skill.caller.id !== c.self.master().id && e.isSkillType("burst"))
   .listenToPlayer()
   .gainEnergy(1, "@master")
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("burst"))
   .increaseDamage(2)
   .done();
 

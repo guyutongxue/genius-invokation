@@ -117,6 +117,6 @@ export const RockinInAFlamingWorld = card(213121)
   .talent(Xinyan)
   .on("enter")
   .useSkill(DanceOnFire)
-  .on("modifySkillDamage", (c) => c.player.hands.length <= 1)
+  .on("increaseSkillDamage", (c) => c.player.hands.length <= 1)
   .increaseDamage(2)
   .done();

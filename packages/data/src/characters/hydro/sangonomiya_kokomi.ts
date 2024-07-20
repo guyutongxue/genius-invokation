@@ -44,7 +44,7 @@ export const BakeKurage: SummonHandle = summon(112051)
  */
 export const CeremonialGarment = status(112052)
   .duration(2)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
   .heal(1, "all my characters")

@@ -68,7 +68,7 @@ export const SecondaryExplosiveShells = combatStatus(113132)
 export const VanguardsCoordinatedTacticsInEffect = combatStatus(113134)
   .since("v4.8.0")
   .usage(2)
-  .on("modifyDamage", (c, e) => e.type === DamageType.Pyro || e.type === DamageType.Electro)
+  .on("increaseDamage", (c, e) => e.type === DamageType.Pyro || e.type === DamageType.Electro)
   .increaseDamage(1)
   .done();
 

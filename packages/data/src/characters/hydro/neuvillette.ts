@@ -53,7 +53,7 @@ export const EquitableJudgmentStatus = status(112102)
  * 可用次数：2
  */
 export const PastDraconicGlories = status(112103)
-  .on("modifySkillDamage")
+  .on("increaseSkillDamage")
   .usage(2)
   .increaseDamage(1)
   .done();

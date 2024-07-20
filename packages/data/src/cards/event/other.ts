@@ -133,7 +133,7 @@ export const ElementalResonanceShatteringIce = card(331102)
   .tags("resonance")
   .toStatus("my active", 303112)
   .oneDuration()
-  .once("modifySkillDamage")
+  .once("increaseSkillDamage")
   .increaseDamage(2)
   .done();
 
@@ -166,7 +166,7 @@ export const ElementalResonanceFerventFlames = card(331302)
   .tags("resonance")
   .toStatus("my active", 303132)
   .oneDuration()
-  .once("modifySkillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Pyro))
+  .once("increaseSkillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Pyro))
   .increaseDamage(3)
   .done();
 
@@ -239,7 +239,7 @@ export const ElementalResonanceSprawlingGreenery = card(331702)
   })
   .toCombatStatus(303172)
   .oneDuration()
-  .once("modifyDamage", (c, e) => e.getReaction())
+  .once("increaseDamage", (c, e) => e.getReaction())
   .increaseDamage(2)
   .done();
 
@@ -727,7 +727,7 @@ export const HeavyStrike = card(332018)
   .costSame(1)
   .toStatus("my active", 303220)
   .oneDuration()
-  .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .once("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .if((c, e) => e.viaChargedAttack())
   .increaseDamage(1)
@@ -1008,7 +1008,7 @@ export const TaroumarusSavings = card(302202)
  */
 export const CalledInForCleanupStatus = combatStatus(302204)
   .variableCanAppend("damage", 1, 2)
-  .once("modifySkillDamage")
+  .once("increaseSkillDamage")
   .do((c, e) => {
     e.increaseDamage(c.getVariable("damage"));
   })

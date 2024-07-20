@@ -46,7 +46,7 @@ const VourukashasGlow = card(312022)
 const LightningRod = status(124022)
   .until("v4.3.0")
   .unique()
-  .on("beforeDamaged", (c, e) => [
+  .on("increaseDamaged", (c, e) => [
       ThunderManifestation as number, 
       ThunderingShacklesSummon as number
     ].includes(e.source.definition.id))

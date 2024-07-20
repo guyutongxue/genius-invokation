@@ -24,7 +24,7 @@ import { character, skill, summon, card, DamageType } from "@gi-tcg/core/builder
  * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点火元素伤害。
  */
 export const BaronBunny = summon(113041)
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
   .usage(1, { autoDispose: false })
   .decreaseDamage(2)
   .on("endPhase", (c) => c.getVariable("usage") <= 0)

@@ -105,6 +105,6 @@ export const ToWardWeakness = card(214111)
   .on("beforeDefeated")
   .usagePerRound(1)
   .immune(1)
-  .on("modifySkillDamage", (c, e) => e.source.variables.health <= 5)
+  .on("increaseSkillDamage", (c, e) => e.source.variables.health <= 5)
   .increaseDamage(1)
   .done();

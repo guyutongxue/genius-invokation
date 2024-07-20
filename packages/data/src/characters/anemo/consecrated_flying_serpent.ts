@@ -24,7 +24,7 @@ import { BonecrunchersEnergyBlock } from "../../cards/event/other";
  */
 export const BonecrunchersEnergyBlockAccumulated = status(125031)
   .variable("stack", 0)
-  .once("modifySkillDamage")
+  .once("increaseSkillDamage")
   .do((c, e) => {
     e.multiplyDamage(2 ** c.getVariable("stack"));
   })

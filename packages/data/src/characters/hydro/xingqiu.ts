@@ -37,7 +37,7 @@ export const RainbowBladework = combatStatus(112022)
  */
 export const RainSword01 = combatStatus(112023)
   .conflictWith(112021)
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 2)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 2)
   .usage(3)
   .decreaseDamage(1)
   .done();
@@ -51,7 +51,7 @@ export const RainSword01 = combatStatus(112023)
  */
 export const RainSword = combatStatus(112021)
   .conflictWith(112023)
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 3)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value >= 3)
   .usage(2)
   .decreaseDamage(1)
   .done();

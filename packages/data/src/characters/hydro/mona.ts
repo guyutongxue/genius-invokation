@@ -26,7 +26,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
 export const Reflection = summon(112031)
   .endPhaseDamage(DamageType.Hydro, 1)
   .dispose()
-  .on("beforeDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .done();
@@ -38,7 +38,7 @@ export const Reflection = summon(112031)
  * 我方造成技能伤害时：移除此状态，使本次伤害加倍。
  */
 export const IllusoryBubble = combatStatus(112032)
-  .on("modifySkillDamage")
+  .on("increaseSkillDamage")
   .multiplyDamage(2)
   .dispose()
   .done();
@@ -123,7 +123,7 @@ export const ProphecyOfSubmersion = card(212031)
   .costHydro(3)
   .costEnergy(3)
   .talent(Mona)
-  .on("modifyDamage", (c, e) => e.isReactionRelatedTo(DamageType.Hydro))
+  .on("increaseDamage", (c, e) => e.isReactionRelatedTo(DamageType.Hydro))
   .listenToPlayer()
   .increaseDamage(2)
   .done();

@@ -38,7 +38,7 @@ export const Descent = status(115062)
  * 可用次数：2
  */
 export const Windfavored = status(115061)
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .usage(2)
   .increaseDamage(2)
   .done();

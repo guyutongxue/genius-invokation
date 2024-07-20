@@ -22,7 +22,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Skill
  * 当净焰剑狱领域在场且迪希雅在我方后台，我方出战角色受到伤害时：抵消1点伤害；然后，如果迪希雅生命值至少为7，则其受到1点穿透伤害。（每回合1次）
  */
 export const FierySanctumsProtection = combatStatus(113094)
-  .on("beforeDamaged", (c, e) =>
+  .on("decreaseDamaged", (c, e) =>
     c.of(e.target).isActive() &&
     e.value > 0 &&
     c.$(`my standby characters with definition id ${Dehya}`))

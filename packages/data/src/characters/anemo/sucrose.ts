@@ -28,7 +28,7 @@ export const LargeWindSpirit01 = summon(115012)
   .conflictWith(115011)
   .endPhaseDamage("swirledAnemo", 2)
   .usage(3)
-  .on("modifyDamage", (c, e) => {
+  .on("increaseDamage", (c, e) => {
     const color = c.getVariable("hintIcon");
     return color !== DamageType.Anemo && color === e.type;
   })

@@ -28,7 +28,7 @@ export const JueyunGuoba = card(333001)
   .food()
   .toStatus("@targets.0", 303301)
   .oneDuration()
-  .once("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .once("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -45,7 +45,7 @@ export const AdeptusTemptation = card(333002)
   .food()
   .toStatus("@targets.0", 303302)
   .oneDuration()
-  .once("modifySkillDamage", (c, e) => e.viaSkillType("burst"))
+  .once("increaseSkillDamage", (c, e) => e.viaSkillType("burst"))
   .increaseDamage(3)
   .done();
 
@@ -62,7 +62,7 @@ export const LotusFlowerCrisp = card(333003)
   .food()
   .toStatus("@targets.0", 303303)
   .oneDuration()
-  .once("beforeDamaged", (c, e) => e.value > 0)
+  .once("decreaseDamaged", (c, e) => e.value > 0)
   .decreaseDamage(3)
   .done();
 
@@ -186,7 +186,7 @@ export const SashimiPlatter = card(333010)
   .food()
   .toStatus("@targets.0", 303308)
   .oneDuration()
-  .on("modifySkillDamage", (c, e) => e.viaSkillType("normal"))
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .increaseDamage(1)
   .done();
 
@@ -203,7 +203,7 @@ export const TandooriRoastChicken = card(333011)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303309)
   .oneDuration()
-  .once("modifySkillDamage", (c, e) => e.viaSkillType("elemental"))
+  .once("increaseSkillDamage", (c, e) => e.viaSkillType("elemental"))
   .increaseDamage(2)
   .done();
 
@@ -220,7 +220,7 @@ export const ButterCrab = card(333012)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303310)
   .oneDuration()
-  .once("beforeDamaged", (c, e) => e.value > 0)
+  .once("decreaseDamaged", (c, e) => e.value > 0)
   .decreaseDamage(2)
   .done();
 

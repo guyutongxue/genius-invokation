@@ -104,7 +104,7 @@ export const OasissAegis = status(127028)
  * 所附属角色使用技能后：移除我方场上的绿洲之滋养，每移除1层就治疗所附属角色1点。
  */
 export const ReignitedHeartOfOasis = status(127027)
-  .on("modifySkillDamage")
+  .on("increaseSkillDamage")
   .increaseDamage(3)
   .on("useSkill")
   .do((c) => {
@@ -242,7 +242,7 @@ export const AThousandYoung = card(227021)
   .since("v4.7.0")
   .costDendro(2)
   .talent(GuardianOfApepsOasis, "none")
-  .on("modifyDamage", (c, e) => 
+  .on("increaseDamage", (c, e) => 
     [
       ProliferatedOrganism01,
       ProliferatedOrganism02,

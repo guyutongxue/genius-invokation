@@ -24,7 +24,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Comba
  */
 export const LightningRod = status(124022)
   .unique()
-  .on("beforeDamaged", (c, e) => [
+  .on("increaseDamaged", (c, e) => [
       ThunderManifestation as number, 
       ThunderingShacklesSummon as number
     ].includes(e.source.definition.id))

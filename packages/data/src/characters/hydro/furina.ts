@@ -109,7 +109,7 @@ export const CenterOfAttention = status(112116)
  * 可用次数：1（可叠加，没有上限）
  */
 export const Revelry = combatStatus(112115)
-  .on("modifyDamage")
+  .on("increaseDamage")
   .usageCanAppend(1, Infinity)
   .increaseDamage(1)
   .done();

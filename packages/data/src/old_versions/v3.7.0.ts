@@ -118,7 +118,7 @@ const Razor = character(1402)
  */
 const Grimheart = status(111061)
   .until("v3.7.0")
-  .on("modifySkillDamage", (c, e) => e.damageInfo.via.definition.id === IcetideVortex)
+  .on("increaseSkillDamage", (c, e) => e.damageInfo.via.definition.id === IcetideVortex)
   .increaseDamage(2)
   .dispose()
   .done();

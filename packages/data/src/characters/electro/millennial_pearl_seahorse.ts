@@ -50,7 +50,7 @@ export const FontemerPearl = status(124032)
   .variable("decreaseDamageFromSummon", 0)
   .on("roundBegin")
   .setVariable("decreaseDamageFromSummon", 0)
-  .on("beforeDamaged", (c, e) => e.value > 0)
+  .on("decreaseDamaged", (c, e) => e.value > 0)
   .usage(2, { autoDecrease: false })
   .decreaseDamage(1)
   .do((c, e) => {

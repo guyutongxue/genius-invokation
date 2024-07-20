@@ -39,7 +39,7 @@ export const Conductive = status(114091)
   .variableCanAppend("conductive", 2, 4, 1)
   .on("endPhase")
   .addVariableWithMax("conductive", 1, 4)
-  .on("beforeDamaged", (c, e) => e.via.definition.id === VioletArc)
+  .on("increaseDamaged", (c, e) => e.via.definition.id === VioletArc)
   .do((c, e) => {
     e.increaseDamage(c.getVariable("conductive"));
     c.dispose();
