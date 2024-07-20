@@ -37,7 +37,7 @@ export const WhiteTassel = card(311401)
  * 根据「璃月」角色的数量提供护盾，保护所附属的角色。
  */
 export const LithicGuard = status(301101)
-  .shield(0)
+  .shield(0, 3)
   .done();
 
 /**

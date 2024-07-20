@@ -653,38 +653,59 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
   }
 }
 
-export class ModifyDamage3EventArg<
-  InfoT extends DamageInfo,
-> extends DamageOrHealEventArg<InfoT> {
-  private _decreased = 0;
-  protected _log = super.damageInfo.log ?? "";
-
-  decreaseDamage(value: number) {
-    this._log += `${stringifyState(
-      this.caller,
-    )} decrease damage by ${value}.\n`;
-    this._decreased += value;
-  }
+export class ModifyDamageEventArgBase<InfoT extends DamageInfo> extends DamageOrHealEventArg<InfoT> {
+  protected _newDamageType: DamageType | null = null;
+  protected _increased = 0;
+  protected _multiplied: number | null = null;
+  protected _divider = 1;
+  protected _decreased = 0;
+  protected _log = "";
 
   override get damageInfo(): InfoT {
-    const damageInfo = super.damageInfo;
-    const value = Math.max(0, damageInfo.value - this._decreased);
+    const type = this._newDamageType ?? super.damageInfo.type;
+    let value = super.damageInfo.value;
+    value = value + this._increased;               // 加
+    const multiplier = (this._multiplied ?? 1) * this._divider;
+    value = Math.ceil(value * multiplier);         // 乘除
+    value = Math.max(0, value - this._decreased);  // 减
     return {
-      ...damageInfo,
+      ...super.damageInfo,
+      type,
       value,
-      causeDefeated:
-        !!damageInfo.target.variables.alive &&
-        damageInfo.target.variables.health <= value,
-      log: this._log,
     };
+  }
+}
+
+export class ModifyDamage0EventArg<
+  InfoT extends DamageInfo,
+> extends ModifyDamageEventArgBase<InfoT> {
+  changeDamageType(type: DamageType) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} change damage type from [damage:${
+      super.damageInfo.type
+    }] to [damage:${type}].\n`;
+    if (this._newDamageType !== null) {
+      console.warn("Potential error: damage type already changed");
+    }
+    this._newDamageType = type;
+  }
+}
+
+export class ModifyDamage1EventArg<
+  InfoT extends DamageInfo,
+> extends ModifyDamageEventArgBase<InfoT> {
+  increaseDamage(value: number) {
+    this._log += `${stringifyState(
+      this.caller,
+    )} increase damage by ${value}.\n`;
+    this._increased += value;
   }
 }
 
 export class ModifyDamage2EventArg<
   InfoT extends DamageInfo,
-> extends ModifyDamage3EventArg<InfoT> {
-  private _multiplied: number | null = null;
-  private _divider = 1;
+> extends ModifyDamageEventArgBase<InfoT> {
 
   multiplyDamage(multiplier: number) {
     this._log += `${stringifyState(
@@ -699,70 +720,16 @@ export class ModifyDamage2EventArg<
     )} divide damage by ${divider}.\n`;
     this._divider *= divider;
   }
-
-  override get damageInfo(): InfoT {
-    const damageInfo = super.damageInfo;
-    const multiplier = (this._multiplied ?? 1) * this._divider;
-    const value = Math.ceil(damageInfo.value * multiplier);
-    return {
-      ...damageInfo,
-      value,
-      causeDefeated:
-        !!damageInfo.target.variables.alive &&
-        damageInfo.target.variables.health <= value,
-      log: this._log,
-    };
-  }
 }
 
-export class ModifyDamage1EventArg<
+export class ModifyDamage3EventArg<
   InfoT extends DamageInfo,
-> extends ModifyDamage2EventArg<InfoT> {
-  private _increased = 0;
-
-  increaseDamage(value: number) {
+> extends ModifyDamageEventArgBase<InfoT> {
+  decreaseDamage(value: number) {
     this._log += `${stringifyState(
       this.caller,
-    )} increase damage by ${value}.\n`;
-    this._increased += value;
-  }
-
-  override get damageInfo(): InfoT {
-    const damageInfo = super.damageInfo;
-    const value = damageInfo.value + this._increased;
-    return {
-      ...damageInfo,
-      value,
-      causeDefeated:
-        !!damageInfo.target.variables.alive &&
-        damageInfo.target.variables.health <= value,
-      log: this._log,
-    };
-  }
-}
-
-export class ModifyDamage0EventArg<
-  InfoT extends DamageInfo,
-> extends ModifyDamage1EventArg<InfoT> {
-  private _newDamageType: DamageType | null = null;
-
-  changeDamageType(type: DamageType) {
-    this._log += `${stringifyState(
-      this.caller,
-    )} change damage type from [damage:${
-      super.damageInfo.type
-    }] to [damage:${type}].\n`;
-    if (this._newDamageType !== null) {
-      console.warn("Potential error: damage type already changed");
-    }
-    this._newDamageType = type;
-  }
-
-  override get damageInfo(): InfoT {
-    return {
-      ...super.damageInfo,
-      type: this._newDamageType ?? super.damageInfo.type,
-    };
+    )} decrease damage by ${value}.\n`;
+    this._decreased += value;
   }
 }
 
@@ -966,7 +933,7 @@ export const EVENT_MAP = {
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
 
-export type InlineEventNames = "modifyDamage0" | "modifyDamage1" | "modifyHeal";
+export type InlineEventNames = "modifyDamage0" | "modifyDamage1" | "modifyDamage2" | "modifyDamage3" | "modifyHeal";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 

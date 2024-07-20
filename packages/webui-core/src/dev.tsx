@@ -24,9 +24,9 @@ import { decode } from "@gi-tcg/utils";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
-  characters: [1201, 2602, 1101],
+  characters: [1603, 1202, 1607],
   cards: [
-    322010,
+    311402, 311402, 333012,
     321017, 322022, 322024, 322011, 322011,
     331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
     332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
@@ -37,7 +37,7 @@ const playerConfig0: PlayerConfig = {
   alwaysOmni: import.meta.env.DEV,
 };
 const playerConfig1: PlayerConfig = {
-  characters: [1502, 1201, 1303],
+  characters: [2502, 1201, 1303],
   cards: [
     332013, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
     331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
@@ -54,11 +54,13 @@ function App() {
   const [io1, Chessboard1] = createPlayer(1);
 
   const io: GameIO = {
-    pause: async () => { },
+    pause: async () => {
+      console.log(game.detailLog);
+    },
     players: [io0, io1],
   };
   const game = new Game({
-    data: data("v4.6.1"),
+    data: data(),
     io,
     playerConfigs: [playerConfig0, playerConfig1],
   });
