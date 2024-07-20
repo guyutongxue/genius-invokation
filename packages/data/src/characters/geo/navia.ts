@@ -14,7 +14,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
-import { CrystalShrapnel } from "../../cards/event/other";
+
+/**
+ * @id 116081
+ * @name 裂晶弹片
+ * @description
+ * 对敌方「出战角色」造成1点物理伤害，抓1张牌。
+ */
+export const CrystalShrapnel = card(116081)
+  .costSame(1)
+  .since("v4.8.0")
+  .damage(DamageType.Physical, 1, "opp active")
+  .drawCards(1)
+  .done();
 
 /**
  * @id 116082

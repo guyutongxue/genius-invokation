@@ -1009,14 +1009,16 @@ const UnderseaTreasureOnCD = status(303231)
  * @name 海底宝藏
  * @description
  * 生成1个随机基础元素骰，治疗我方出战角色1点。（每个角色每回合最多受到1次来自本效果的治疗）
- * @outdated
- * 治疗我方出战角色1点，生成1个随机基础元素骰。
  */
 export const UnderseaTreasure = card(303230)
   .since("v4.6.0")
-  .if((c) => !c.$(`my active has status with definition id ${UnderseaTreasureOnCD}`))
-  .heal(1, "my active")
   .generateDice("randomElement", 1)
+  .do((c) => {
+    if (!c.$(`my active has status with definition id ${UnderseaTreasureOnCD}`)) {
+      c.heal(1, "my active")
+      c.characterStatus(UnderseaTreasureOnCD, "my active");
+    }
+  })
   .done();
 
 /**
@@ -1188,14 +1190,7 @@ export const TheShowBegins = card(332035)
  * 战斗行动：对敌方「出战角色」造成1点火元素伤害。
  * 此牌被舍弃时：对敌方「出战角色」造成1点火元素伤害。
  */
-export const OverchargedBall = card(113131)
-  .costPyro(2)
-  .tags("action")
-  .since("v4.8.0")
-  .tags("action")
-  .damage(DamageType.Pyro, 1, "opp active")
-  .doSameWhenDisposed()
-  .done();
+const OverchargedBall = void 0; // move to chevreuse
 
 /**
  * @id 116081
@@ -1203,12 +1198,7 @@ export const OverchargedBall = card(113131)
  * @description
  * 对敌方「出战角色」造成1点物理伤害，抓1张牌。
  */
-export const CrystalShrapnel = card(116081)
-  .costSame(1)
-  .since("v4.8.0")
-  .damage(DamageType.Physical, 1, "opp active")
-  .drawCards(1)
-  .done();
+const CrystalShrapnel = void 0; // move to navia
 
 /**
  * @id 302206

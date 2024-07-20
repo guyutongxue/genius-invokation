@@ -13,8 +13,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { OverchargedBall } from "../../cards/event/other";
 import { character, skill, status, combatStatus, card, DamageType, Reaction } from "@gi-tcg/core/builder";
+
+/**
+ * @id 113131
+ * @name 超量装药弹头
+ * @description
+ * 战斗行动：对敌方「出战角色」造成1点火元素伤害。
+ * 此牌被舍弃时：对敌方「出战角色」造成1点火元素伤害。
+ */
+export const OverchargedBall = card(113131)
+  .costPyro(2)
+  .tags("action")
+  .since("v4.8.0")
+  .tags("action")
+  .damage(DamageType.Pyro, 1, "opp active")
+  .doSameWhenDisposed()
+  .done();
 
 /**
  * @id 113135

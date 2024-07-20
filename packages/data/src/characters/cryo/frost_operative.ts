@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { BondOfLife } from "../../commons";
 
 /**
  * @id 121042
@@ -24,10 +25,9 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const OnslaughtStance = status(121042)
   .since("v4.8.0")
-  // TODO 定义生命之契
-  .duration(1)
-  .on("endPhase", (c) => c.self.master().health >= 6)
-  .damage(DamageType.Piercing, 2, "@master")
+  .duration(2)
+  .on("endPhase")
+  .damage(DamageType.Piercing, 2, `opp characters has status with definition id ${BondOfLife}`)
   .done();
 
 /**
@@ -77,8 +77,25 @@ export const ThornyOnslaught = skill(21043)
  */
 export const BloodbondedShadow = skill(21044)
   .type("passive")
-  // TODO 最终伤害值？
-  // 天赋牌翻倍生命之契
+  .variable("damageValue", 0)
+  .on("skillDamage")
+  .do((c, e) => c.setVariable("damageValue", e.damageInfo.value))
+  .on("useSkill")
+  .do((c) => {
+    const usage = c.getVariable("damageValue") - 2;
+    if (usage > 0) {
+      c.characterStatus(BondOfLife, "opp active", {
+        overrideVariables: { usage }
+      })
+    }
+    if (c.self.hasEquipment(RimeflowRapier)) {
+      const bondSt = c.$(`status with definition id ${BondOfLife} at opp active`);
+      if (bondSt) {
+        const bondValue = Math.min((1 << 32) - 1, bondSt.getVariable("usage") * 2);
+        bondSt.setVariable("usage", bondValue);
+      }
+    }
+  })
   .done();
 
 /**

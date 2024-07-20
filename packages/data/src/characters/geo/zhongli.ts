@@ -124,11 +124,6 @@ export const Zhongli = character(1603)
  * 钟离装备此牌后，立刻使用一次地心·磐礴。
  * 装备有此牌的钟离生命值至少为7时，钟离造成的伤害和我方召唤物造成的岩元素伤害+1。
  * （牌组中包含钟离，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为钟离时，装备此牌。
- * 钟离装备此牌后，立刻使用一次地心·磐礴。
- * 我方出战角色在护盾角色状态或护盾出战状态的保护下时，我方召唤物造成的岩元素伤害+1。
- * （牌组中包含钟离，才能加入牌组）
  */
 export const DominanceOfEarth = card(216031)
   .since("v3.7.0")
@@ -138,8 +133,8 @@ export const DominanceOfEarth = card(216031)
   .useSkill(DominusLapidisStrikingStone)
   .on("modifyDamage", (c, e) => {
     return e.type === DamageType.Geo &&
-      e.source.definition.type === "summon" &&
-      !!c.$(`(my combat status with tag (shield)) or (status with tag (shield) at my active)`);
+      (e.source.definition.id === Zhongli || e.source.definition.type === "summon") && 
+      c.$(`@master with health >= 7`);
   })
   .increaseDamage(1)
   .done();

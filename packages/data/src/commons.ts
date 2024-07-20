@@ -83,6 +83,23 @@ export const CatalyzingField = combatStatus(117)
   .done();
 
 /**
+ * @id 122
+ * @name 生命之契
+ * @description
+ * 所附属角色受到治疗时：此效果每有1次可用次数，就消耗1次，以抵消1点所受到的治疗。（无法抵消复苏、获得最大生命值或分配生命值引发的治疗）
+ * 可用次数：1（可叠加，没有上限）
+ */
+export const BondOfLife = status(122)
+  .on("beforeHealed", (c, e) => e.damageInfo.healKind === "common")
+  .usageCanAppend(1)
+  .do((c, e) => {
+    const deducted = Math.max(c.getVariable("usage"), e.damageInfo.value);
+    e.decreaseHeal(deducted);
+    c.consumeUsage(deducted);
+  })
+  .done();
+
+/**
  * @id 303300
  * @name 饱腹
  * @description
