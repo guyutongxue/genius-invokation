@@ -830,6 +830,7 @@ const LyresongIsFirstExtension = extension(332024, { first: pair(false) })
  * 本回合中，我方下次打出「圣遗物」手牌时：少花费1个元素骰。
  */
 const LyresongInEffect1 = combatStatus(303232)
+  .conflictWith(303224)
   .oneDuration()
   .once("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
   .deductOmniCost(1)
@@ -842,7 +843,8 @@ const LyresongInEffect1 = combatStatus(303232)
  * @description
  * 本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。
  */
-const LyresongInEffect2 = combatStatus(303232)
+const LyresongInEffect2 = combatStatus(303224)
+  .conflictWith(303232)
   .oneDuration()
   .once("deductOmniDiceCard", (c, e) => e.hasCardTag("artifact"))
   .deductOmniCost(2)
