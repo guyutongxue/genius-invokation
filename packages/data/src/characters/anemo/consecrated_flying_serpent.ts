@@ -81,7 +81,6 @@ export const SwirlingSquall = skill(25032)
  * 造成2点风元素伤害，舍弃手牌中所有的噬骸能量块，每舍弃2张，此次伤害翻倍1次。
  */
 export const ScattershotVortex = skill(25033)
-  // TODO 数据源错误？
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)

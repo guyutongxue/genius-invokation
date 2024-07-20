@@ -651,7 +651,8 @@ export const Serene = card(322027)
   .usage(3)
   .on("endPhase")
   .do((c) => {
-    const supports = [SerenesSupport,
+    const supports = [
+      SerenesSupport,
       LaumesSupport,
       CosanzeanasSupport,
       CanotilasSupport,
@@ -661,8 +662,9 @@ export const Serene = card(322027)
       PucasSupport,
       TopyassSupport,
       LutinesSupport,
-      MelusineSupport];
+      MelusineSupport,
+    ];
     const card = c.random(supports);
-    c.createHandCard(card as CardHandle);
+    c.createHandCard(card);
   })
   .done();

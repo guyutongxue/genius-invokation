@@ -1210,10 +1210,11 @@ export const SerenesSupport = card(302206)
   .since("v4.8.0")
   .do((c) => {
     const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("food"));
-    // TODO 似乎是“有放回抽样”，两张牌可重
-    const cards = c.randomN(candidates, 2);
-    c.createHandCard(cards[0].id as CardHandle);
-    c.createHandCard(cards[1].id as CardHandle);
+    // 似乎是“有放回抽样”，两张牌可重
+    const card0 = c.random(candidates);
+    const card1 = c.random(candidates);
+    c.createHandCard(card0.id as CardHandle);
+    c.createHandCard(card1.id as CardHandle);
   })
   .done();
 
