@@ -253,10 +253,11 @@ const detailedEventDictionary = {
       e.damageInfo.fromReaction === null
     );
   }),
-  multiplyDamage: defineDescriptor("modifyDamage2", (c, e, r) => {
+  multiplySkillDamage: defineDescriptor("modifyDamage2", (c, e, r) => {
     return (
       e.type !== DamageType.Piercing &&
       checkRelative(c.state, e.source.id, r) &&
+      isCharacterInitiativeSkill(e.via.definition) &&
       !isDebuff(c.state, e.damageInfo)
     );
   }),

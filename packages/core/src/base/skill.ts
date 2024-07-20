@@ -931,9 +931,9 @@ export const EVENT_MAP = {
   replaceAction: EventArg,
 
   onBeforeAction: PlayerEventArg,
-  modifyAction0: ModifyAction0EventArg, // 快速行动、增骰、减无色
+  modifyAction0: ModifyAction0EventArg, // 增骰、减无色
   modifyAction1: ModifyAction1EventArg, // 减有色
-  modifyAction2: ModifyAction2EventArg, // 减任意
+  modifyAction2: ModifyAction2EventArg, // 减任意、快速行动
   modifyAction3: ModifyAction3EventArg, // 蒂玛乌斯 & 瓦格纳
   onAction: ActionEventArg,
 

@@ -38,7 +38,7 @@ export const Reflection = summon(112031)
  * 我方造成技能伤害时：移除此状态，使本次伤害加倍。
  */
 export const IllusoryBubble = combatStatus(112032)
-  .on("increaseSkillDamage")
+  .on("multiplySkillDamage")
   .multiplyDamage(2)
   .dispose()
   .done();
