@@ -42,7 +42,7 @@ const DawnWinery = card(321004)
  * 【此卡含描述变量】
  */
 export const LumenstoneAdjuvant = card(323007)
-  .since("v4.5.0")
+  .until("v4.7.0")
   .costSame(2)
   .support("item")
   .variable("playedCard", 0, { visible: false })
@@ -112,7 +112,7 @@ const Lyresong = card(332024)
  * 我方至少剩余8个元素骰，且对方未宣布结束时，才能打出：本回合中，双方牌手进行「切换角色」行动时需要额外花费1个元素骰。
  */
 export const FallsAndFortune = card(332026)
-  .since("v4.3.0")
+  .until("v4.7.0")
   .costSame(1)
   .filter((c) => c.player.dice.length >= 8 && !c.oppPlayer.declaredEnd)
   .toCombatStatus(303226)
