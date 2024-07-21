@@ -34,7 +34,7 @@ import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { EntityDefinition, UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
-import { diceCostOfCard, getEntityArea } from "../utils";
+import { diceCostOfCard, getEntityArea, mixins } from "../utils";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {
@@ -341,7 +341,7 @@ export class ActionEventArg<
   }
 }
 
-export class ModifyAction0EventArg<
+export class ModifyActionEventArgBase<
   InfoT extends ActionInfoBase,
 > extends ActionEventArg<InfoT> {
   protected _cost: DiceType[];
@@ -374,6 +374,17 @@ export class ModifyAction0EventArg<
   canDeductVoidCost() {
     return this.cost.includes(DiceType.Void);
   }
+  canDeductCostOfType(type: Exclude<DiceType, DiceType.Omni | DiceType.Void>) {
+    return this.cost.includes(type) || this.cost.includes(DiceType.Void);
+  }
+  canDeductCost() {
+    return this.cost.length > 0;
+  }
+}
+
+export class ModifyAction0EventArg<
+  InfoT extends ActionInfoBase,
+> extends ModifyActionEventArgBase<InfoT> {
   deductVoidCost(count: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -410,9 +421,6 @@ export class ModifyAction0EventArg<
 export class ModifyAction1EventArg<
   InfoT extends ActionInfoBase,
 > extends ModifyAction0EventArg<InfoT> {
-  canDeductCostOfType(type: Exclude<DiceType, DiceType.Omni | DiceType.Void>) {
-    return this.cost.includes(type) || this.cost.includes(DiceType.Void);
-  }
   deductCost(type: Exclude<DiceType, DiceType.Omni>, count: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -435,10 +443,7 @@ export class ModifyAction1EventArg<
 
 export class ModifyAction2EventArg<
   InfoT extends ActionInfoBase,
-> extends ModifyAction1EventArg<InfoT> {
-  canDeductCost() {
-    return this.cost.length > 0;
-  }
+> extends ModifyActionEventArgBase<InfoT> {
   deductOmniCost(count: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -456,12 +461,19 @@ export class ModifyAction2EventArg<
 
 export class ModifyAction3EventArg<
   InfoT extends ActionInfoBase,
-> extends ModifyAction2EventArg<InfoT> {
+> extends ModifyActionEventArgBase<InfoT> {
   deductAllCost() {
     this._log += `${stringifyState(this.caller)} deduct all cost.\n`;
     this._cost = [];
   }
 }
+
+export const GenericModifyActionEventArg = mixins(ModifyActionEventArgBase, [
+  ModifyAction0EventArg,
+  ModifyAction1EventArg,
+  ModifyAction2EventArg,
+  ModifyAction3EventArg,
+]);
 
 export class SwitchActiveEventArg extends EventArg {
   constructor(
@@ -653,7 +665,9 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
   }
 }
 
-export class ModifyDamageEventArgBase<InfoT extends DamageInfo> extends DamageOrHealEventArg<InfoT> {
+export class ModifyDamageEventArgBase<
+  InfoT extends DamageInfo,
+> extends DamageOrHealEventArg<InfoT> {
   protected _newDamageType: DamageType | null = null;
   protected _increased = 0;
   protected _multiplied: number | null = null;
@@ -664,10 +678,10 @@ export class ModifyDamageEventArgBase<InfoT extends DamageInfo> extends DamageOr
   override get damageInfo(): InfoT {
     const type = this._newDamageType ?? super.damageInfo.type;
     let value = super.damageInfo.value;
-    value = value + this._increased;               // 加
+    value = value + this._increased; // 加
     const multiplier = (this._multiplied ?? 1) * this._divider;
-    value = Math.ceil(value * multiplier);         // 乘除
-    value = Math.max(0, value - this._decreased);  // 减
+    value = Math.ceil(value * multiplier); // 乘除
+    value = Math.max(0, value - this._decreased); // 减
     return {
       ...super.damageInfo,
       type,
@@ -706,7 +720,6 @@ export class ModifyDamage1EventArg<
 export class ModifyDamage2EventArg<
   InfoT extends DamageInfo,
 > extends ModifyDamageEventArgBase<InfoT> {
-
   multiplyDamage(multiplier: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -732,6 +745,13 @@ export class ModifyDamage3EventArg<
     this._decreased += value;
   }
 }
+
+export const GenericModifyDamageEventArg = mixins(ModifyDamageEventArgBase, [
+  ModifyDamage0EventArg,
+  ModifyDamage1EventArg,
+  ModifyDamage2EventArg,
+  ModifyDamage3EventArg,
+]);
 
 export class EntityEventArg extends EventArg {
   public readonly who: 0 | 1;
@@ -933,7 +953,12 @@ export const EVENT_MAP = {
 export type EventMap = typeof EVENT_MAP;
 export type EventNames = keyof EventMap;
 
-export type InlineEventNames = "modifyDamage0" | "modifyDamage1" | "modifyDamage2" | "modifyDamage3" | "modifyHeal";
+export type InlineEventNames =
+  | "modifyDamage0"
+  | "modifyDamage1"
+  | "modifyDamage2"
+  | "modifyDamage3"
+  | "modifyHeal";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 

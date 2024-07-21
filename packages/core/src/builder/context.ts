@@ -37,6 +37,7 @@ import {
   EventAndRequestConstructorArgs,
   EventAndRequestNames,
   EventArgOf,
+  GenericModifyDamageEventArg,
   HealInfo,
   HealKind,
   InlineEventNames,
@@ -535,7 +536,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         fromReaction: this.fromReaction,
       };
       if (damageInfo.type !== DamageType.Piercing) {
-        const modifier = new ModifyDamage0EventArg(this.state, damageInfo);
+        const modifier = new GenericModifyDamageEventArg(this.state, damageInfo);
         this.handleInlineEvent("modifyDamage0", modifier);
         damageInfo = modifier.damageInfo;
 
@@ -577,13 +578,10 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           }
         }
 
-        const modifier1 = new ModifyDamage1EventArg(this.state, damageInfo);
-        this.handleInlineEvent("modifyDamage1", modifier1);
-        const modifier2 = new ModifyDamage2EventArg(this.state, modifier1.damageInfo);
-        this.handleInlineEvent("modifyDamage2", modifier2);
-        const modifier3 = new ModifyDamage3EventArg(this.state, modifier2.damageInfo);
-        this.handleInlineEvent("modifyDamage3", modifier3);
-        damageInfo = modifier3.damageInfo;
+        this.handleInlineEvent("modifyDamage1", modifier);
+        this.handleInlineEvent("modifyDamage2", modifier);
+        this.handleInlineEvent("modifyDamage3", modifier);
+        damageInfo = modifier.damageInfo;
       }
       this.log(
         DetailLogType.Other,

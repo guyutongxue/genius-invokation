@@ -19,7 +19,7 @@ import {
   ActionEventArg,
   ActionInfo,
   DisposeOrTuneCardEventArg,
-  ModifyAction3EventArg,
+  GenericModifyActionEventArg,
   PlayCardEventArg,
   SkillInfo,
   SwitchActiveEventArg,
@@ -30,7 +30,7 @@ import { SkillExecutor } from "./skill_executor";
 import { Writable, allEntities, getActiveCharacterIndex } from "./utils";
 
 export type ActionInfoWithModification = ActionInfo & {
-  eventArg: ModifyAction3EventArg<ActionInfo>;
+  eventArg: InstanceType<typeof GenericModifyActionEventArg>;
 };
 
 /**
@@ -47,8 +47,8 @@ export class ActionPreviewer {
   ): Promise<ActionInfoWithModification> {
     // eventArg_PreCalc 为预计算，只应用 ActionInfo 的副作用
     // eventArg_Real 行动后使用，然后传入 handleEvent 使其真正发生
-    const eventArgPreCalc = new ModifyAction3EventArg(this.originalState, actionInfo);
-    const eventArgReal = new ModifyAction3EventArg(this.originalState, actionInfo);
+    const eventArgPreCalc = new GenericModifyActionEventArg(this.originalState, actionInfo);
+    const eventArgReal = new GenericModifyActionEventArg(this.originalState, actionInfo);
     let [previewState, completed] = await SkillExecutor.previewEvent(
       this.originalState,
       "modifyAction0",

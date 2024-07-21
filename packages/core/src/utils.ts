@@ -366,3 +366,46 @@ export function shuffle<T>(arr: readonly T[]): readonly T[] {
   }
   return result;
 }
+
+// Mixins
+
+type AbstractConstructor = abstract new (...args: any[]) => any;
+type Constructor = new (...args: any[]) => any;
+
+type InstanceOfConstructors<Ts extends AbstractConstructor[]> = Ts extends [
+  infer Car extends AbstractConstructor,
+  ...infer Cdr extends AbstractConstructor[],
+]
+  ? InstanceType<Car> & InstanceOfConstructors<Cdr>
+  : {};
+
+type MixinResult<
+  T extends Constructor,
+  Us extends AbstractConstructor[],
+> = new (...args: ConstructorParameters<T>) => InstanceType<T> &
+  InstanceOfConstructors<Us>;
+
+export function mixins<
+  T extends Constructor,
+  const Us extends AbstractConstructor[],
+>(derivedCtor: T, constructors: Us): MixinResult<T, Us> {
+  class Mixed extends derivedCtor {
+    constructor(...args: any[]) {
+      super(...args);
+      for (const baseCtor of constructors) {
+        for (const name of Object.getOwnPropertyNames(baseCtor.prototype)) {
+          if (name === "constructor") {
+            continue;
+          }
+          Object.defineProperty(
+            Mixed.prototype,
+            name,
+            Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+              Object.create(null),
+          );
+        }
+      }
+    }
+  }
+  return Mixed as any;
+}
