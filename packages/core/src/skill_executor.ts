@@ -300,7 +300,10 @@ export class SkillExecutor extends StateMutator {
       }
     }
 
-    if (skillInfo.caller.definition.type === "character") {
+    if (
+      skillInfo.caller.definition.type === "character" &&
+      skillDef.triggerOn === null
+    ) {
       // 增加此回合技能计数
       const ch = getEntityById(
         this.state,
