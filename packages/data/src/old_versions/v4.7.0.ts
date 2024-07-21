@@ -1,22 +1,15 @@
 import { Aura, CardHandle, DamageType, DiceType, card, combatStatus, diceCostOfCard, skill, status, summon } from "@gi-tcg/core/builder";
 import { BonecrunchersEnergyBlockCombatStatus } from "../cards/event/other";
-import { LingeringIcicles } from "../characters/cryo/wriothesley";
-import { ShieldOfPassion } from "../characters/pyro/xinyan";
 import { Cyno } from "../characters/electro/cyno";
 import { LightningRoseSummon } from "../characters/electro/lisa";
 import { DominusLapidisStrikingStone, Zhongli } from "../characters/geo/zhongli";
 import { AutumnWhirlwind } from "../characters/anemo/kaedehara_kazuha";
 import { AbiogenesisSolarIsotoma, Albedo } from "../characters/geo/albedo";
-import { CliffbreakersBanner, YunJin } from "../characters/geo/yun_jin";
+import { DecorousHarmony } from "../characters/geo/yun_jin";
 import { DendroCore } from "../commons";
 import { BountifulCore } from "../characters/hydro/nilou";
-import { MehraksAssistance, TheArtOfBudgeting, TheArtOfBudgetingInEffect } from "../characters/dendro/kaveh";
-import { MirrorMaiden } from "../characters/hydro/mirror_maiden";
-import { InfluxBlast } from "./v3.6.0";
-import { AlldevouringNarwhal, AnomalousAnatomy, DarkShadow, LightlessFeeding } from "../characters/hydro/alldevouring_narwhal";
-import { ThunderboreTrap } from "../characters/electro/consecrated_scorpion";
-import { BonecrunchersEnergyBlockAccumulated } from "../characters/anemo/consecrated_flying_serpent";
-import { AwakenMyKindred, OasisNourishment } from "../characters/dendro/guardian_of_apeps_oasis";
+import { TheArtOfBudgeting, TheArtOfBudgetingInEffect } from "../characters/dendro/kaveh";
+import { AnomalousAnatomy, LightlessFeeding } from "../characters/hydro/alldevouring_narwhal";
 
 /**
  * @id 321004
@@ -197,6 +190,29 @@ const SecretRiteChasmicSoulfarer = skill(14042)
   .damage(DamageType.Electro, 3)
   .done();
 
+/**
+ * @id 14043
+ * @name 圣仪·煟煌随狼行
+ * @description
+ * 造成4点雷元素伤害，
+ * 启途誓使的「凭依」级数+2。
+ */
+const SacredRiteWolfsSwiftness = skill(14043)
+  .until("v4.7.0")
+  .type("burst")
+  .costElectro(4)
+  .costEnergy(2)
+  .damage(DamageType.Electro, 4)
+  .do((c) => {
+    const status = c.self.hasStatus(PactswornPathclearer)!;
+    const newVal = c.getVariable("reliance", status) + 2;
+    if (newVal >= 6) {
+      c.setVariable("reliance", newVal - 4, status);
+    } else {
+      c.setVariable("reliance", newVal, status);
+    }
+  })
+  .done();
 
 /**
  * @id 214041
@@ -483,24 +499,6 @@ const FlyingCloudFlagFormation = combatStatus(116073)
   .done();
 
 /**
- * @id 216071
- * @name 庄谐并举
- * @description
- * 战斗行动：我方出战角色为云堇时，装备此牌。
- * 云堇装备此牌后，立刻使用一次破嶂见旌仪。
- * 装备有此牌的云堇在场时，如果我方没有手牌，则飞云旗阵会使普通攻击造成的伤害额外+2。
- * （牌组中包含云堇，才能加入牌组）
- */
-const DecorousHarmony = card(216071)
-  .until("v4.7.0")
-  .costGeo(3)
-  .costEnergy(2)
-  .talent(YunJin)
-  .on("enter")
-  .useSkill(CliffbreakersBanner)
-  .done();
-
-/**
  * @id 117082
  * @name 迸发扫描
  * @description
@@ -533,27 +531,6 @@ const BurstScan = combatStatus(117082)
   })
   .done();
 
-
-/**
- * @id 122022
- * @name 水光破镜
- * @description
- * 所附属角色受到的水元素伤害+1。
- * 所附属角色切换到其他角色时，元素骰费用+1。
- * 持续回合：3
- * （同一方场上最多存在一个此状态）
- */
-const Refraction01 = status(122022)
-  .until("v4.7.0")
-  .conflictWith(122021)
-  .unique(122021)
-  .duration(3)
-  .on("increaseDamaged", (c, e) => e.type === DamageType.Hydro)
-  .increaseDamage(1)
-  .on("addDice", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
-  .addCost(DiceType.Void, 1)
-  .done();
-
 /**
  * @id 122021
  * @name 水光破镜
@@ -569,24 +546,6 @@ const Refraction = status(122021)
   .duration(2)
   .on("increaseDamaged", (c, e) => e.type === DamageType.Hydro)
   .increaseDamage(1)
-  .done();
-
-/**
- * @id 222021
- * @name 镜锢之笼
- * @description
- * 战斗行动：我方出战角色为愚人众·藏镜仕女时，装备此牌。
- * 愚人众·藏镜仕女装备此牌后，立刻使用一次潋波绽破。
- * 装备有此牌的愚人众·藏镜仕女生成的水光破镜获得以下效果：
- * 初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。
- * （牌组中包含愚人众·藏镜仕女，才能加入牌组）
- */
-const MirrorCage = card(222021)
-  .until("v4.7.0")
-  .costHydro(3)
-  .talent(MirrorMaiden)
-  .on("enter")
-  .useSkill(InfluxBlast)
   .done();
 
 /**

@@ -23,11 +23,6 @@ import { character, skill, status, card, DamageType, DiceType, SkillHandle } fro
  * 所附属角色切换到其他角色时：需要多花费1个元素骰。
  * 持续回合：3
  * （同一方场上最多存在一个此状态）
- * @outdated
- * 所附属角色受到的水元素伤害+1。
- * 所附属角色切换到其他角色时，元素骰费用+1。
- * 持续回合：3
- * （同一方场上最多存在一个此状态）
  */
 export const Refraction01 = status(122022)
   .conflictWith(122021)
@@ -46,17 +41,13 @@ export const Refraction01 = status(122022)
  * 所附属角色切换到其他角色时：需要多花费1个元素骰。
  * 持续回合：2
  * （同一方场上最多存在一个此状态）
- * @outdated
- * 所附属角色受到的水元素伤害+1。
- * 持续回合：2
- * （同一方场上最多存在一个此状态）
  */
 export const Refraction = status(122021)
   .conflictWith(122022)
   .unique(122022)
   .duration(2)
-  .on("increaseDamaged", (c, e) => e.type === DamageType.Hydro)
-  .increaseDamage(1)
+  .on("addDice", (c, e) => e.action.type === "switchActive" && c.self.master().id === e.action.from.id)
+  .addCost(DiceType.Void, 1)
   .done();
 
 /**
@@ -122,12 +113,6 @@ export const MirrorMaiden = character(2202)
  * 战斗行动：我方出战角色为愚人众·藏镜仕女时，装备此牌。
  * 愚人众·藏镜仕女装备此牌后，立刻使用一次潋波绽破。
  * 装备有此牌的愚人众·藏镜仕女生成的水光破镜初始持续回合+1，并且会使所附属角色受到的水元素伤害+1。
- * （牌组中包含愚人众·藏镜仕女，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为愚人众·藏镜仕女时，装备此牌。
- * 愚人众·藏镜仕女装备此牌后，立刻使用一次潋波绽破。
- * 装备有此牌的愚人众·藏镜仕女生成的水光破镜获得以下效果：
- * 初始持续回合+1，并且会使所附属角色切换到其他角色时元素骰费用+1。
  * （牌组中包含愚人众·藏镜仕女，才能加入牌组）
  */
 export const MirrorCage = card(222021)

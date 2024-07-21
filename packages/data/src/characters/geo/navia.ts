@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, Reaction } from "@gi-tcg/core/builder";
 
 /**
  * @id 116081
@@ -79,10 +79,12 @@ export const BluntRefusal = skill(16081)
 export const CeremonialCrystalshot = skill(16082)
   .type("elemental")
   .costGeo(3)
-  // TODO
   .do((c) => {
     c.characterStatus(GeoInfusion);
-    c.damage(DamageType.Geo, 3);
+    const shrapnels = c.player.hands.filter((card) => card.definition.id === CrystalShrapnel).slice(0, 5);
+    c.damage(DamageType.Geo, 3 + shrapnels.length);
+    c.disposeCard(...shrapnels);
+    c.drawCards(shrapnels.length);
   })
   .done();
 
@@ -96,9 +98,10 @@ export const AsTheSunlitSkysSingingSalute = skill(16083)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
+  .damage(DamageType.Piercing, 1, "opp standby")
   .damage(DamageType.Geo, 1)
   .summon(RosulaDorataSalute)
-  // TODO
+  .createHandCard(CrystalShrapnel)
   .done();
 
 /**
@@ -109,7 +112,14 @@ export const AsTheSunlitSkysSingingSalute = skill(16083)
  */
 export const MutualAssistanceNetwork = skill(16084)
   .type("passive")
-  // TODO
+  .on("damaged", (c, e) => [
+    Reaction.CrystallizeCryo, 
+    Reaction.CrystallizeElectro, 
+    Reaction.CrystallizeHydro, 
+    Reaction.CrystallizePyro
+  ].includes(e.getReaction()!) && !c.of(e.target).isMine())
+  .listenToAll()
+  .createPileCards(CrystalShrapnel, 3, "random")
   .done();
 
 /**
@@ -139,5 +149,9 @@ export const UndisclosedDistributionChannels = card(216081)
   .costGeo(3)
   .talent(Navia)
   .since("v4.8.0")
-  // TODO
+  .on("enter")
+  .useSkill(CeremonialCrystalshot)
+  .on("useSkill")
+  .usagePerRound(1)
+  .drawCards(2, { withDefinition: CrystalShrapnel })
   .done();

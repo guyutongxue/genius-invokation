@@ -23,20 +23,14 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  * 根据「凭依」级数，提供效果：
  * 大于等于2级：物理伤害转化为雷元素伤害；
  * 大于等于4级：造成的伤害+2。
- * @outdated
- * 结束阶段：累积1级「凭依」。
- * 根据「凭依」级数，提供效果：
- * 大于等于2级：物理伤害转化为雷元素伤害；
- * 大于等于4级：造成的伤害+2；
- * 大于等于6级时：「凭依」级数-4。
  */
 export const PactswornPathclearer = status(114041)
   .variable("reliance", 0)
   .on("endPhase")
   .do((c) => {
     const newVal = c.getVariable("reliance") + 1;
-    if (newVal >= 6) {
-      c.setVariable("reliance", newVal - 4);
+    if (newVal >= 8) {
+      c.setVariable("reliance", newVal - 6);
     } else {
       c.setVariable("reliance", newVal);
     }
@@ -66,13 +60,20 @@ export const InvokersSpear = skill(14041)
  * @description
  * 造成3点雷元素伤害，
  * 启途誓使的「凭依」级数+1。
- * @outdated
- * 造成3点雷元素伤害。
  */
 export const SecretRiteChasmicSoulfarer = skill(14042)
   .type("elemental")
   .costElectro(3)
   .damage(DamageType.Electro, 3)
+  .do((c) => {
+    const status = c.self.hasStatus(PactswornPathclearer)!;
+    const newVal = c.getVariable("reliance", status) + 1;
+    if (newVal >= 8) {
+      c.setVariable("reliance", newVal - 6, status);
+    } else {
+      c.setVariable("reliance", newVal, status);
+    }
+  })
   .done();
 
 /**
@@ -90,8 +91,8 @@ export const SacredRiteWolfsSwiftness = skill(14043)
   .do((c) => {
     const status = c.self.hasStatus(PactswornPathclearer)!;
     const newVal = c.getVariable("reliance", status) + 2;
-    if (newVal >= 6) {
-      c.setVariable("reliance", newVal - 4, status);
+    if (newVal >= 8) {
+      c.setVariable("reliance", newVal - 6, status);
     } else {
       c.setVariable("reliance", newVal, status);
     }
@@ -134,11 +135,6 @@ export const Cyno = character(1404)
  * 赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。
  * 装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+2。（每回合1次）
  * （牌组中包含赛诺，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为赛诺时，装备此牌。
- * 赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。
- * 装备有此牌的赛诺在启途誓使的「凭依」级数为偶数时，使用秘仪·律渊渡魂造成的伤害+1。
- * （牌组中包含赛诺，才能加入牌组）
  */
 export const FeatherfallJudgment = card(214041)
   .since("v3.3.0")
@@ -148,7 +144,8 @@ export const FeatherfallJudgment = card(214041)
   .useSkill(SecretRiteChasmicSoulfarer)
   .on("increaseSkillDamage", (c, e) => {
     const status = c.self.master().hasStatus(PactswornPathclearer)!;
-    return c.getVariable("reliance", status) % 2 === 0 && e.via.definition.id === SecretRiteChasmicSoulfarer;
+    return c.getVariable("reliance", status) >=2 && e.via.definition.id === SecretRiteChasmicSoulfarer;
   })
-  .increaseDamage(1)
+  .usagePerRound(1)
+  .increaseDamage(2)
   .done();

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, combatStatus, card, DamageType, Reaction } from "@gi-tcg/core/builder";
+import { character, skill, status, combatStatus, card, DamageType, Reaction, DiceType } from "@gi-tcg/core/builder";
 
 /**
  * @id 113131
@@ -67,8 +67,8 @@ export const SecondaryExplosiveShells = combatStatus(113132)
  */
 export const VanguardsCoordinatedTacticsInEffect = combatStatus(113134)
   .since("v4.8.0")
-  .usage(2)
   .on("increaseDamage", (c, e) => e.type === DamageType.Pyro || e.type === DamageType.Electro)
+  .usage(2)
   .increaseDamage(1)
   .done();
 
@@ -96,7 +96,6 @@ export const ShortrangeRapidInterdictionFire = skill(13132)
   .type("elemental")
   .costPyro(3)
   .damage(DamageType.Pyro, 2)
-  // TODO
   .done();
 
 /**
@@ -134,10 +133,15 @@ export const VerticalForceCoordinationPassive = skill(13134)
  * 此技能结算后：如果我方手牌中含有超量装药弹头，则舍弃1张并治疗我方受伤最多的角色1点。
  */
 export const ShortrangeRapidInterdictionFirePassive = skill(13135)
-  .type("elemental")
-  .costPyro(3)
-  .damage(DamageType.Pyro, 3)
-  // TODO
+  .type("passive")
+  .on("useSkill", (c, e) => e.skill.definition.id === ShortrangeRapidInterdictionFire)
+  .do((c) => {
+    const ball = c.player.hands.find((c) => c.definition.id === OverchargedBall);
+    if (ball) {
+      c.disposeCard(ball);
+      c.heal(1, "my characters order by health - maxHealth limit 1");
+    }
+  })
   .done();
 
 /**
@@ -164,7 +168,13 @@ export const Chevreuse = character(1313)
  */
 export const VanguardsCoordinatedTactics = card(213131)
   .costPyro(2)
-  .talent(Chevreuse)
+  .filter((c) => {
+    const elements = new Set(c.$$(`all my characters include defeated`).map((c) => c.element()));
+    return elements.size === 2 && elements.has(DiceType.Pyro) && elements.has(DiceType.Electro);
+  })
+  .talent(Chevreuse, "none")
   .since("v4.8.0")
-  // TODO
+  .on("damaged", (c, e) => e.getReaction() === Reaction.Overloaded && !c.of(e.target).isMine())
+  .listenToAll()
+  .combatStatus(VanguardsCoordinatedTacticsInEffect)
   .done();

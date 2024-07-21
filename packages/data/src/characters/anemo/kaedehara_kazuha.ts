@@ -82,9 +82,6 @@ export const MidareRanzanElectro = status(115056)
  * @description
  * 我方下次通过「切换角色」行动切换到所附属角色时：将此次切换视为「快速行动」而非「战斗行动」。
  * 我方选择行动前：如果所附属角色为「出战角色」，则直接使用「普通攻击」；本次「普通攻击」造成的物理伤害变为水元素伤害，结算后移除此效果。
- * @outdated
- * 所附属角色进行下落攻击时：造成的物理伤害变为水元素伤害，且伤害+1。
- * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanHydro = status(115054)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
@@ -101,9 +98,6 @@ export const MidareRanzanHydro = status(115054)
  * @description
  * 我方下次通过「切换角色」行动切换到所附属角色时：将此次切换视为「快速行动」而非「战斗行动」。
  * 我方选择行动前：如果所附属角色为「出战角色」，则直接使用「普通攻击」；本次「普通攻击」造成的物理伤害变为火元素伤害，结算后移除此效果。
- * @outdated
- * 所附属角色进行下落攻击时：造成的物理伤害变为火元素伤害，且伤害+1。
- * 所附属角色使用技能后：移除此效果。
  */
 export const MidareRanzanPyro = status(115055)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
@@ -195,10 +189,6 @@ export const GaryuuBladework = skill(15051)
  * 造成1点风元素伤害，本角色附属乱岚拨止。
  * 如果此技能引发了扩散，则将乱岚拨止转换为被扩散的元素。
  * 此技能结算后：我方切换到下一个角色。
- * @outdated
- * 造成3点风元素伤害，本角色附属乱岚拨止。
- * 如果此技能引发了扩散，则将乱岚拨止转换为被扩散的元素。
- * 此技能结算后：我方切换到后一个角色。
  */
 export const Chihayaburu = skill(15052)
   .type("elemental")

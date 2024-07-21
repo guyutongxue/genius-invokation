@@ -62,14 +62,12 @@ export const WhirlingTail = skill(25031)
  * @name 盘绕风引
  * @description
  * 造成2点风元素伤害，抓1张牌。
- * @outdated
- * 造成3点风元素伤害，抓1张牌。
  */
 export const SwirlingSquall = skill(25032)
   .type("elemental")
   .costAnemo(3)
   .do((c) => {
-    c.damage(DamageType.Anemo, 3);
+    c.damage(DamageType.Anemo, 2);
     c.drawCards(1, { withDefinition: BonecrunchersEnergyBlock });
   })
   .done();

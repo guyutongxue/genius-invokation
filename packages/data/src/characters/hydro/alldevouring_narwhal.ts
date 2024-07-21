@@ -116,9 +116,6 @@ export const DevourersInstinct = status(122044)
  * @description
  * 我方舍弃或调和的卡牌，会被吞噬。
  * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
- * @outdated
- * 我方舍弃或调和的手牌，会被吞噬。
- * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
  */
 export const DeepDevourersDomain = combatStatus(122041)
   .variable("cardCount", 0)

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardHandle, DamageType, DiceType, SkillHandle, SupportHandle, card, combatStatus, diceCostOfCard, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
+import { CardHandle, CharacterState, DamageType, DiceType, SkillHandle, SupportHandle, card, combatStatus, diceCostOfCard, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
 
 /**
  * @id 303211
@@ -1319,6 +1319,22 @@ export const CanotilasSupport = card(302209)
   .done();
 
 /**
+ * @id 302219
+ * @name 希洛娜的心意
+ * @description
+ * 回合结束时：随机将1张超棒事件牌加入手牌。
+ * 可用次数：3
+ */
+const ThironasGoodWill = combatStatus(302219)
+  .on("endPhase")
+  .usage(3)
+  .do((c) => {
+    const card = c.random(MELUSINE_EVENT_CARDS);
+    c.createHandCard(card);
+  })
+  .done();
+
+/**
  * @id 302210
  * @name 希洛娜的声援
  * @description
@@ -1326,7 +1342,7 @@ export const CanotilasSupport = card(302209)
  */
 export const ThironasSupport = card(302210)
   .since("v4.8.0")
-  // TODO
+  .combatStatus(ThironasGoodWill)
   .done();
 
 /**
@@ -1354,7 +1370,25 @@ export const SluasisSupport = card(302211)
 export const VirdasSupport = card(302212)
   .costVoid(2)
   .since("v4.8.0")
-  // TODO
+  .do((c) => {
+    const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("legend"));
+    const card0 = c.random(candidates);
+    const card1 = c.random(candidates);
+    c.createHandCard(card0.id as CardHandle);
+    c.createHandCard(card1.id as CardHandle);
+    c.mutate({
+      type: "setPlayerFlag",
+      who: 0,
+      flagName: "legendUsed",
+      value: false
+    });
+    c.mutate({
+      type: "setPlayerFlag",
+      who: 1,
+      flagName: "legendUsed",
+      value: false
+    });
+  })
   .done();
 
 /**
@@ -1387,6 +1421,39 @@ export const PucasSupport = card(302213)
   .done();
 
 /**
+ * @id 302216
+ * @name 托皮娅的心意
+ * @description
+ * 本回合打出手牌后，随机舍弃1张牌或抓1张牌。
+ */
+const TopyassGoodwill = combatStatus(302216)
+  .oneDuration()
+  .on("playCard")
+  .do((c) => {
+    let doDrawCard: boolean;
+    if (c.player.piles.length === 0 && c.player.hands.length === 0) {
+      // 啥也做不了
+      return;
+    } else if (c.player.piles.length === 0) {
+      // 只能舍弃
+      doDrawCard = false;
+    } else if (c.player.hands.length === 0) {
+      // 只能抽牌
+      doDrawCard = true;
+    } else {
+      // 随机
+      doDrawCard = c.random([true, false]);
+    }
+    if (doDrawCard) {
+      c.drawCards(1);
+    } else {
+      const target = c.random(c.player.hands);
+      c.disposeCard(target);
+    }
+  })
+  .done();
+
+/**
  * @id 302214
  * @name 托皮娅的声援
  * @description
@@ -1395,7 +1462,27 @@ export const PucasSupport = card(302213)
 export const TopyassSupport = card(302214)
   .since("v4.8.0")
   .drawCards(2)
-  // TODO 队伍状态
+  .combatStatus(TopyassGoodwill, "my")
+  .combatStatus(TopyassGoodwill, "opp")
+  .done();
+
+/**
+ * @id 302217
+ * @name 卢蒂妮的心意
+ * @description
+ * 我方角色使用技能后：受到2点治疗或2点穿透伤害。
+ * 可用次数：2
+ */
+const LutinesGoodwill = combatStatus(302217)
+  .on("useSkill")
+  .usage(2)
+  .do((c, e) => {
+    if (c.random([true, false])) {
+      c.heal(2, e.skill.caller as CharacterState);
+    } else {
+      c.damage(DamageType.Piercing, 2, e.skill.caller as CharacterState);
+    }
+  })
   .done();
 
 /**
@@ -1407,7 +1494,8 @@ export const TopyassSupport = card(302214)
 export const LutinesSupport = card(302215)
   .since("v4.8.0")
   .drawCards(2)
-  // TODO 队伍状态
+  .combatStatus(LutinesGoodwill, "my")
+  .combatStatus(LutinesGoodwill, "opp")
   .done();
 
 /**

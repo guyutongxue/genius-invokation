@@ -22,31 +22,20 @@ import { character, skill, status, combatStatus, card, DamageType, DiceType } fr
  * 所附属角色进行普通攻击时：造成的伤害+1。如果角色生命至少为6，则此技能少花费1个冰元素。
  * 技能结算后，如果角色生命至少为6，则对角色造成1点穿透伤害；如果角色生命不多于5，则治疗角色2点。
  * 可用次数：2
- * @outdated
- * 角色进行普通攻击时：如果角色生命至少为6，则此技能少花费1个冰元素，伤害+1，且对自身造成1点穿透伤害。
- * 如果角色生命不多于5，则使此伤害+1，并且技能结算后治疗角色2点。
- * 可用次数：2
  */
 export const ChillingPenalty = status(111111)
-  .variable("healAfterUseSkill", 0, { visible: false })
   .on("deductElementDiceSkill", (c, e) => c.self.master().health >= 6 &&
     e.isSkillType("normal") && 
     e.canDeductCostOfType(DiceType.Cryo))
   .deductCost(DiceType.Cryo, 1)
   .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
   .usage(2)
-  .do((c, e) => {
-    if (c.self.master().health >= 6) {
-      e.increaseDamage(1);
-      c.damage(DamageType.Piercing, 1, "@master");
-    } else /* if (c.self.master().health <= 5) */ {
-      e.increaseDamage(1);
-      c.setVariable("healAfterUseSkill", 1);
-    }
-  })
-  .on("useSkill", (c) => c.getVariable("healAfterUseSkill"))
+  .if((c) => c.self.master().health >= 6)
+  .damage(DamageType.Piercing, 1, "@master")
+  .if((c) => c.self.master().health <= 5)
   .heal(2, "@master")
-  .setVariable("healAfterUseSkill", 0)
   .done();
 
 /**
