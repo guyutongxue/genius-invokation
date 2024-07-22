@@ -44,8 +44,10 @@
 | `modifyAction2`    | 修改玩家行动属性（第三次，快速行动、减任意元素骰） |
 | `modifyAction3`    | 修改玩家行动属性（第四次，尝试免费使用行动）       |
 |                    |                                                    |
-| `modifyDamage0`    | 修改伤害（第一次，可修改伤害类型）                 |
-| `modifyDamage1`    | 修改伤害（第二次，只可修改伤害数值）               |
+| `modifyDamage0`    | 修改伤害（第一次，修改伤害类型）                   |
+| `modifyDamage1`    | 修改伤害（第二次，增伤）                           |
+| `modifyDamage2`    | 修改伤害（第三次，乘除伤）                         |
+| `modifyDamage3`    | 修改伤害（第四次，减伤）                           |
 |                    |                                                    |
 | `modifyZeroHealth` | 角色击倒前（免于被击倒）                           |
 
@@ -79,11 +81,13 @@
 | `deductOmniDiceSwitch`   | `modifyAction2`       | 我方尝试减少切换角色行动的骰子时            |
 | `deductOmniDiceCard`     | `modifyAction2`       | 我方尝试减少打出手牌的骰子时                |
 | `deductAllDiceCard`      | `modifyAction3`       | 我方尝试免费打出手牌时                      |
-| `modifyDamageType`       | `modifyDamage0`       | 我方/所附着角色造成伤害（第一次修改）       |
-| `modifySkillDamageType`  | `modifyDamage0`       | 我方/所附着角色技能造成伤害（第一次修改）   |
-| `modifyDamage`           | `modifyDamage1`       | 我方/所附着角色造成伤害（第二次修改）       |
-| `modifySkillDamage`      | `modifyDamage1`       | 我方/所附着角色技能造成伤害（第二次修改）   |
-| `beforeDamaged`          | `modifyDamage1`       | 我方/所附着角色受到伤害（第二次修改）       |
+| `modifyDamageType`       | `modifyDamage0`       | 修改我方/所附着角色造成伤害类型             |
+| `modifySkillDamageType`  | `modifyDamage0`       | 修改我方/所附着角色技能造成伤害类型         |
+| `increaseDamage`         | `modifyDamage1`       | 增加我方/所附着角色造成伤害                 |
+| `increaseSkillDamage`    | `modifyDamage1`       | 增加我方/所附着角色技能造成伤害             |
+| `increaseDamaged`        | `modifyDamage1`       | 增加我方/所附着角色技能受到的伤害           |
+| `multiplySkillDamage`    | `modifyDamage2`       | 对我方/所附着角色技能造成伤害做乘除法       |
+| `decreaseDamaged`        | `modifyDamage3`       | 减少我方/所附着角色受到的伤害               |
 | `beforeDefeated`         | `modifyZeroHealth`    | 我方/所附着角色免于被击倒                   |
 | `battleBegin`            | `onBattleBegin`       | 等价                                        |
 | `roundBegin`             | `onRoundBegin`        | 等价                                        |
