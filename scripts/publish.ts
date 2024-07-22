@@ -23,7 +23,7 @@ import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
 const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.8.5";
+const VERSION = "0.9.1";
 
 let doPublish = false;
 if ((await $`which npm`.nothrow().quiet()).exitCode === 0) {
