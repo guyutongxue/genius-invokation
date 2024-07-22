@@ -114,5 +114,10 @@
   "7359759295113426951": "UI_Gcg_Buff_Xinyan_E",
   "16040592587013004153": "UI_Gcg_Debuff_Faruzan_E",
   "3162112013737036324": "UI_Gcg_Debuff_Common_Element_Physics",
-  "1740465556921293923": "UI_Gcg_Buff_Common_Element_Heal"
+  "1740465556921293923": "UI_Gcg_Buff_Common_Element_Heal",
+  "17411196798091326019": "UI_Gcg_Debuff_Common_HpDebts",
+  "18380481944665116805": "UI_Gcg_Debuff_Chevreuse_E",
+  "11353914616627406301": "UI_Gcg_Buff_Element_Enchant_Rock",
+  "17599960341260580867": "UI_Gcg_Buff_EscadronIce_E",
+  "15093776786381158242": "UI_Gcg_Buff_Event_Sticker"
 }
