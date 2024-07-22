@@ -183,6 +183,7 @@
     "description": "所附属角色受到治疗时：此效果每有1次可用次数，就消耗1次，以抵消1点所受到的治疗。（无法抵消复苏、获得最大生命值或分配生命值引发的治疗）\n可用次数：1（可叠加，没有上限）。",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Common_HpDebts",
     "buffIconHash": "17411196798091326019"
   },
   {
@@ -1950,6 +1951,7 @@
     "buffType": "GCG_STATE_BUFF_NEGATIVE",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Chevreuse_E",
     "buffIconHash": "18380481944665116805"
   },
   {
@@ -3456,6 +3458,7 @@
     "description": "所附属角色造成的物理伤害，变为岩元素伤害。\n持续回合：2",
     "shownToken": "GCG_TOKEN_ROUND_COUNT",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Enchant_Rock",
     "buffIconHash": "11353914616627406301"
   },
   {
@@ -4235,6 +4238,7 @@
     "buffType": "GCG_STATE_BUFF_CRYO",
     "shownToken": "GCG_TOKEN_ROUND_COUNT",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_EscadronIce_E",
     "buffIconHash": "17599960341260580867"
   },
   {
@@ -8863,6 +8867,7 @@
     "rawDescription": "本回合打出手牌后，随机$[K56]1张牌或抓1张牌。",
     "description": "本回合打出手牌后，随机舍弃1张牌或抓1张牌。",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Event_Sticker",
     "buffIconHash": "15093776786381158242"
   },
   {
@@ -8875,6 +8880,7 @@
     "description": "我方角色使用技能后：受到2点治疗或2点穿透伤害。\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Event_Sticker",
     "buffIconHash": "15093776786381158242"
   },
   {
@@ -8887,6 +8893,7 @@
     "description": "回合结束时：随机将1张超棒事件牌加入手牌。\n可用次数：3",
     "shownToken": "GCG_TOKEN_ROUND_COUNT",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Event_Sticker",
     "buffIconHash": "15093776786381158242"
   },
   {
