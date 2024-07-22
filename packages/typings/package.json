@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/typings",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Typings for Genius Invokation TCG",
   "type": "module",
   "types": "./dist/index.d.ts",

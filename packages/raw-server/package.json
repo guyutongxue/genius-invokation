@@ -1,7 +1,7 @@
 {
   "name": "@gi-tcg/raw-server",
   "private": true,
-  "version": "0.9.3",
+  "version": "0.9.4",
   "type": "module",
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.0.21",

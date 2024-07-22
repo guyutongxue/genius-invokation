@@ -1,15 +1,15 @@
 // Copyright (C) 2024 theBowja, Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -43,7 +43,41 @@ export interface CharacterRawData {
   icon: string;
 }
 
-export async function collateCharacters(langCode: string): Promise<CharacterRawData[]> {
+// https://github.com/LPSim/frontend/blob/master/collector/splitter/split.py
+const AVATAR_ICON_NAMES: Record<string, string> = {
+  "ALbedo.png": "Albedo.png",
+  "Amber.png": "Ambor.png",
+  "BruteAxeElec.png": "BruteEleAxe.png",
+  "BruteAxeFire.png": "BruteAxe.png",
+  "EffigyElectric.png": "Effigyelectric.png",
+  "FatuusMageIce.png": "FatuusMageice.png",
+  "HiliRangeElec.png": "HiliElectric.png",
+  "InvokerDeaconFire.png": "DeaconFire.png",
+  "KairagiElec.png": "KairagiEle.png",
+  "SamuraiRonin01.png": "RoninWater.png",
+  "SamuraiRonin02.png": "RoninFire.png",
+  "SamuraiRonin03.png": "RoninEle.png",
+  "SkirmisherIce.png": "Skirnisherfatice.png",
+  "SkirmisherWater.png": "Skirnisherfatwater.png",
+  "SkirmisherWind.png": "Skirnisherstrongwind.png",
+  "SlimeElec.png": "SlimeEle.png",
+  "UnuAnudattaGrass.png": "UnDeltaGrass.png",
+  "EremiteOracle.png": "Muscleman.png",
+  "GargoyleGround.png": "Formathr.png",
+  "EremiteGlaive.png": "Eremiteice.png",
+  "EremiteKatar.png": "Eremiterock.png",
+  "EremitePushDagger.png": "Eremitewater.png",
+};
+const CARDFACE_TO_AVATAR_MAP = Object.fromEntries(
+  [...Object.entries(AVATAR_ICON_NAMES)].map(([k, v]) => [
+    v.slice(0, -4),
+    k.slice(0, -4),
+  ]),
+);
+
+export async function collateCharacters(
+  langCode: string,
+): Promise<CharacterRawData[]> {
   const locale = getLanguage(langCode);
   const english = getLanguage("EN");
   const result: CharacterRawData[] = [];
@@ -82,17 +116,22 @@ export async function collateCharacters(langCode: string): Promise<CharacterRawD
     const hp = obj.hp;
     const maxEnergy = obj.maxEnergy;
 
-    const tags: string[] = obj.tagList.filter(
-      (e: any) => e !== "GCG_TAG_NONE",
-    );
+    const tags: string[] = obj.tagList.filter((e: any) => e !== "GCG_TAG_NONE");
     const skills: SkillRawData[] = [];
     for (const skillId of obj.skillList) {
       skills.push(await collateSkill(langCode, skillId));
     }
 
-    const cardPrefabName = xcardview.find((e) => e.id === obj.id)!.cardPrefabName;
+    const cardPrefabName = xcardview.find(
+      (e) => e.id === obj.id,
+    )!.cardPrefabName;
     const cardFace = `UI_${cardPrefabName}`;
-    const icon = cardFace.replace(/CardFace_Char_([a-zA-Z]+)_/, "Char_$1Icon_");
+    const icon = cardFace.replace(
+      /CardFace_Char_([a-zA-Z]+)_([a-zA-z]+)$/,
+      (match, p1, p2) => {
+        return `Char_${p1}Icon_${CARDFACE_TO_AVATAR_MAP[p2] ?? p2}`;
+      },
+    );
 
     result.push({
       id,
