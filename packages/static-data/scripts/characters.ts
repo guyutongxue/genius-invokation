@@ -49,6 +49,7 @@ const AVATAR_ICON_NAMES: Record<string, string> = {
   "Amber.png": "Ambor.png",
   "BruteAxeElec.png": "BruteEleAxe.png",
   "BruteAxeFire.png": "BruteAxe.png",
+  "EffigyIce.png": "Effigyice.png",
   "EffigyElectric.png": "Effigyelectric.png",
   "FatuusMageIce.png": "FatuusMageice.png",
   "HiliRangeElec.png": "HiliElectric.png",

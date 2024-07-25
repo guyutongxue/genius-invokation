@@ -553,7 +553,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
               damageInfo = {
                 ...damageInfo,
                 value: damageInfo.value + 2,
-                log: `${damageInfo.log}Reaction (${reaction}) increase damage by 2\n`,
+                log: `${damageInfo.log ?? ""}Reaction (${reaction}) increase damage by 2\n`,
               };
               break;
             case Reaction.Superconduct:
