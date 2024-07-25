@@ -536,9 +536,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         fromReaction: this.fromReaction,
       };
       if (damageInfo.type !== DamageType.Piercing) {
-        const modifier = new GenericModifyDamageEventArg(this.state, damageInfo);
-        this.handleInlineEvent("modifyDamage0", modifier);
-        damageInfo = modifier.damageInfo;
+        const preModifier = new GenericModifyDamageEventArg(this.state, damageInfo);
+        this.handleInlineEvent("modifyDamage0", preModifier);
+        damageInfo = preModifier.damageInfo;
 
         if (
           damageInfo.type !== DamageType.Physical &&
@@ -578,10 +578,11 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           }
         }
 
-        this.handleInlineEvent("modifyDamage1", modifier);
-        this.handleInlineEvent("modifyDamage2", modifier);
-        this.handleInlineEvent("modifyDamage3", modifier);
-        damageInfo = modifier.damageInfo;
+        const postModifier = new GenericModifyDamageEventArg(this.state, damageInfo);
+        this.handleInlineEvent("modifyDamage1", postModifier);
+        this.handleInlineEvent("modifyDamage2", postModifier);
+        this.handleInlineEvent("modifyDamage3", postModifier);
+        damageInfo = postModifier.damageInfo;
       }
       this.log(
         DetailLogType.Other,
