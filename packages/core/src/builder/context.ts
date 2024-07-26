@@ -536,53 +536,13 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         fromReaction: this.fromReaction,
       };
       if (damageInfo.type !== DamageType.Piercing) {
-        const preModifier = new GenericModifyDamageEventArg(this.state, damageInfo);
-        this.handleInlineEvent("modifyDamage0", preModifier);
-        damageInfo = preModifier.damageInfo;
-
-        if (
-          damageInfo.type !== DamageType.Physical &&
-          damageInfo.type !== DamageType.Piercing
-        ) {
-          const [, reaction] =
-            REACTION_MAP[targetState.variables.aura][damageInfo.type];
-          switch (reaction) {
-            case Reaction.Melt:
-            case Reaction.Vaporize:
-            case Reaction.Overloaded:
-              damageInfo = {
-                ...damageInfo,
-                value: damageInfo.value + 2,
-                log: `${damageInfo.log ?? ""}Reaction (${reaction}) increase damage by 2\n`,
-              };
-              break;
-            case Reaction.Superconduct:
-            case Reaction.ElectroCharged:
-            case Reaction.Frozen:
-            case Reaction.CrystallizeCryo:
-            case Reaction.CrystallizeHydro:
-            case Reaction.CrystallizePyro:
-            case Reaction.CrystallizeElectro:
-            case Reaction.Burning:
-            case Reaction.Bloom:
-            case Reaction.Quicken:
-              damageInfo = {
-                ...damageInfo,
-                value: damageInfo.value + 1,
-                log: `${damageInfo.log}\nReaction (${reaction}) increase damage by 1`,
-              };
-              break;
-            default:
-              // do nothing
-              break;
-          }
-        }
-
-        const postModifier = new GenericModifyDamageEventArg(this.state, damageInfo);
-        this.handleInlineEvent("modifyDamage1", postModifier);
-        this.handleInlineEvent("modifyDamage2", postModifier);
-        this.handleInlineEvent("modifyDamage3", postModifier);
-        damageInfo = postModifier.damageInfo;
+        const modifier = new GenericModifyDamageEventArg(this.state, damageInfo);
+        this.handleInlineEvent("modifyDamage0", modifier);
+        modifier.increaseDamageByReaction();
+        this.handleInlineEvent("modifyDamage1", modifier);
+        this.handleInlineEvent("modifyDamage2", modifier);
+        this.handleInlineEvent("modifyDamage3", modifier);
+        damageInfo = modifier.damageInfo;
       }
       this.log(
         DetailLogType.Other,

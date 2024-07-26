@@ -24,6 +24,7 @@ import {
 } from "./state";
 import { CardTag, PlayCardSkillDefinition } from "./card";
 import {
+  REACTION_MAP,
   REACTION_RELATIVES,
   getReaction,
   isReactionRelatedTo,
@@ -665,17 +666,16 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
   }
 }
 
-export class ModifyDamageEventArgBase<
-  InfoT extends DamageInfo,
-> extends DamageOrHealEventArg<InfoT> {
-  protected _newDamageType: DamageType | null = null;
+export class ModifyDamageEventArgBase extends DamageOrHealEventArg<DamageInfo> {
+  protected _newDamageType: Exclude<DamageType, DamageType.Heal> | null = null;
   protected _increased = 0;
   protected _multiplied: number | null = null;
   protected _divider = 1;
   protected _decreased = 0;
   protected _log = "";
 
-  override get damageInfo(): InfoT {
+  override get damageInfo(): DamageInfo {
+    const targetHealth = super.damageInfo.target.variables.health;
     const type = this._newDamageType ?? super.damageInfo.type;
     let value = super.damageInfo.value;
     value = value + this._increased; // 加
@@ -686,14 +686,14 @@ export class ModifyDamageEventArgBase<
       ...super.damageInfo,
       type,
       value,
+      causeDefeated: value >= targetHealth,
+      log: this._log,
     };
   }
 }
 
-export class ModifyDamage0EventArg<
-  InfoT extends DamageInfo,
-> extends ModifyDamageEventArgBase<InfoT> {
-  changeDamageType(type: DamageType) {
+export class ModifyDamage0EventArg extends ModifyDamageEventArgBase {
+  changeDamageType(type: Exclude<DamageType, DamageType.Heal>) {
     this._log += `${stringifyState(
       this.caller,
     )} change damage type from [damage:${
@@ -706,9 +706,47 @@ export class ModifyDamage0EventArg<
   }
 }
 
-export class ModifyDamage1EventArg<
-  InfoT extends DamageInfo,
-> extends ModifyDamageEventArgBase<InfoT> {
+export class ModifyDamageByReactionEventArg extends ModifyDamageEventArgBase {
+  increaseDamageByReaction() {
+    const damageInfo = super.damageInfo;
+    const targetAura = damageInfo.target.variables.aura;
+    if (
+      damageInfo.type === DamageType.Physical ||
+      damageInfo.type === DamageType.Piercing
+    ) {
+      return;
+    }
+    const [, reaction] = REACTION_MAP[targetAura][damageInfo.type];
+    switch (reaction) {
+      case Reaction.Melt:
+      case Reaction.Vaporize:
+      case Reaction.Overloaded:
+        this._increased += 2;
+        this._log += `${
+          damageInfo.log ?? ""
+        }Reaction (${reaction}) increase damage by 2\n`;
+        break;
+      case Reaction.Superconduct:
+      case Reaction.ElectroCharged:
+      case Reaction.Frozen:
+      case Reaction.CrystallizeCryo:
+      case Reaction.CrystallizeHydro:
+      case Reaction.CrystallizePyro:
+      case Reaction.CrystallizeElectro:
+      case Reaction.Burning:
+      case Reaction.Bloom:
+      case Reaction.Quicken:
+        this._increased += 1;
+        this._log += `${damageInfo.log}\nReaction (${reaction}) increase damage by 1`;
+        break;
+      default:
+        // do nothing
+        break;
+    }
+  }
+}
+
+export class ModifyDamage1EventArg extends ModifyDamageEventArgBase {
   increaseDamage(value: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -717,9 +755,7 @@ export class ModifyDamage1EventArg<
   }
 }
 
-export class ModifyDamage2EventArg<
-  InfoT extends DamageInfo,
-> extends ModifyDamageEventArgBase<InfoT> {
+export class ModifyDamage2EventArg extends ModifyDamageEventArgBase {
   multiplyDamage(multiplier: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -735,9 +771,7 @@ export class ModifyDamage2EventArg<
   }
 }
 
-export class ModifyDamage3EventArg<
-  InfoT extends DamageInfo,
-> extends ModifyDamageEventArgBase<InfoT> {
+export class ModifyDamage3EventArg extends ModifyDamageEventArgBase {
   decreaseDamage(value: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -748,6 +782,7 @@ export class ModifyDamage3EventArg<
 
 export const GenericModifyDamageEventArg = mixins(ModifyDamageEventArgBase, [
   ModifyDamage0EventArg,
+  ModifyDamageByReactionEventArg,
   ModifyDamage1EventArg,
   ModifyDamage2EventArg,
   ModifyDamage3EventArg,
@@ -835,7 +870,7 @@ export interface ImmuneInfo {
   newHealth: number;
 }
 
-export class ZeroHealthEventArg extends ModifyDamage1EventArg<DamageInfo> {
+export class ZeroHealthEventArg extends ModifyDamage1EventArg {
   _immuneInfo: null | ImmuneInfo = null;
   _log = "";
 
