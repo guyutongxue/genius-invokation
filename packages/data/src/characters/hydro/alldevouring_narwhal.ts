@@ -179,7 +179,7 @@ export const ShatteringWaves = skill(22041)
  * @id 22042
  * @name 迸落星雨
  * @description
- * 造成2点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+4）。然后舍弃1张原本元素骰费用最高的手牌。
+ * 造成1点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+4）。然后舍弃1张原本元素骰费用最高的手牌。
  */
 export const StarfallShower = skill(22042)
   .type("elemental")
@@ -187,7 +187,7 @@ export const StarfallShower = skill(22042)
   .do((c) => {
     const st = c.self.hasStatus(AnomalousAnatomy);
     const extraDmg = st ? Math.min(Math.floor(c.of(st).getVariable("extraMaxHealth") / 3), 4) : 0;
-    c.damage(DamageType.Hydro, 2 + extraDmg);
+    c.damage(DamageType.Hydro, 1 + extraDmg);
     const cards = c.getMaxCostHands();
     const card = c.random(cards);
     c.disposeCard(card);
