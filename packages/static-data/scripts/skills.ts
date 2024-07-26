@@ -31,20 +31,23 @@ const filelist = fs.readdirSync(
   `${config.input}/BinOutput/GCG/Gcg_DeclaredValueSet`,
 );
 
+const D__KEY__DAMAGE = "-2060930438";
+const D__KEY__ELEMENT = "476224977";
+const D__KEY__DAMAGE_2 = "1428448537";
+const D__KEY__DAMAGE_5 = "1428448540";
+
 // Find DAMAGEVALUEPROP and ELEMENTVALUEPROP
-const tmpf = readJson(
+const { declaredValueMap } = readJson(
   `${config.input}/BinOutput/GCG/Gcg_DeclaredValueSet/Char_Skill_13023.json`,
 );
-const tmpo: any = Object.values(tmpf)[1];
-tcgSkillKeyMap.DAMAGEVALUEPROP = Object.entries(tmpo["-2060930438"]).find(
-  ([key, val]) => typeof val === "number",
-)![0];
-tcgSkillKeyMap.ELEMENTVALUEPROP = Object.entries(tmpo["476224977"]).find(
-  ([key, val]) => typeof val === "string" && val.startsWith("GCG"),
-)![0];
-// console.log(tcgSkillKeyMap);
-if (!tcgSkillKeyMap.DAMAGEVALUEPROP || !tcgSkillKeyMap.ELEMENTVALUEPROP)
-  console.log("ERROR: loadTcgSkillKeyMap is missing a property map!");
+export const PROP_D__KEY__DAMAGE = Object.entries(
+  declaredValueMap[D__KEY__DAMAGE],
+).find(([key, val]) => typeof val === "number")![0];
+export const PROP_D__KEY__DAMAGE_2 = PROP_D__KEY__DAMAGE;
+export const PROP_D__KEY__DAMAGE_5 = PROP_D__KEY__DAMAGE;
+export const PROP_D__KEY_ELEMENT = Object.entries(
+  declaredValueMap[D__KEY__ELEMENT],
+).find(([key, val]) => typeof val === "string" && val.startsWith("GCG"))![0];
 
 for (const filename of filelist) {
   if (!filename.endsWith(".json")) continue;
@@ -64,24 +67,26 @@ for (const filename of filelist) {
 
     for (let [key, kobj] of Object.entries(uncutmap) as [string, any][]) {
       switch (key) {
-        case "-2060930438": // extract baseDamage
-          tcgSkillKeyMap[dataname].baseDamage =
-            kobj["value"] ?? kobj[tcgSkillKeyMap.DAMAGEVALUEPROP];
-          if (tcgSkillKeyMap[dataname].baseDamage === undefined)
-            console.log("loadTcgSkillKeyMap failed to extract baseDamage");
+        case D__KEY__DAMAGE:
+          tcgSkillKeyMap[dataname].D__KEY__DAMAGE = kobj[PROP_D__KEY__DAMAGE];
+          if (tcgSkillKeyMap[dataname].D__KEY__DAMAGE === undefined)
+            console.log("loadTcgSkillKeyMap failed to extract D__KEY__DAMAGE");
           break;
-        case "476224977": // extract baseElement
-          tcgSkillKeyMap[dataname].baseElement =
-            kobj["ratio"] ??
-            kobj[tcgSkillKeyMap.ELEMENTVALUEPROP] ??
-            "GCG_ELEMENT_NONE";
-          if (tcgSkillKeyMap[dataname].baseElement === undefined)
-            console.log("loadTcgSkillKeyMap failed to extract baseElement");
+        case D__KEY__ELEMENT:
+          tcgSkillKeyMap[dataname].D__KEY__ELEMENT = kobj[PROP_D__KEY_ELEMENT];
+          // if (tcgSkillKeyMap[dataname].D__KEY__ELEMENT === undefined)
+          //   console.log("loadTcgSkillKeyMap failed to extract D__KEY__ELEMENT");
           break;
-        // case '-1197212178': // effectnum
-        // 	tcgSkillKeyMap[dataname].effectnum = kobj['value'] || kobj[tcgSkillKeyMap.EFFECTNUMVALUEPROP];
-        // 	if (tcgSkillKeyMap[dataname].effectnum === undefined) console.log('loadTcgSkillKeyMap failed to extract effectnum');
-        // 	break;
+        case D__KEY__DAMAGE_2:
+          tcgSkillKeyMap[dataname].D__KEY__DAMAGE_2 = kobj[PROP_D__KEY__DAMAGE_2];
+          if (tcgSkillKeyMap[dataname].D__KEY__DAMAGE_2 === undefined)
+            console.log("loadTcgSkillKeyMap failed to extract D__KEY__DAMAGE_2");
+          break;
+        case D__KEY__DAMAGE_5:
+          tcgSkillKeyMap[dataname].D__KEY__DAMAGE_5 = kobj[PROP_D__KEY__DAMAGE_5];
+          if (tcgSkillKeyMap[dataname].D__KEY__DAMAGE_5 === undefined)
+            console.log("loadTcgSkillKeyMap failed to extract D__KEY__DAMAGE_5");
+          break;
       }
     }
   } catch (e) {
@@ -103,8 +108,7 @@ export interface SkillRawData {
   rawDescription: string;
   description: string;
   playCost: PlayCost[];
-  baseDamage?: number;
-  baseElement?: string;
+  keyMap: Record<string, any>;
   icon?: string;
 }
 
@@ -123,20 +127,8 @@ export async function collateSkill(
   );
 
   const rawDescription = locale[skillObj.descTextMapHash] ?? "";
-  let baseDamage: number | undefined = void 0;
-  let baseElement: string | undefined = void 0;
-  if (tcgSkillKeyMap[skillObj.skillJson]) {
-    if (rawDescription.includes("D__KEY__DAMAGE")) {
-      baseDamage = tcgSkillKeyMap[skillObj.skillJson].baseDamage;
-    }
-    if (rawDescription.includes("D__KEY__ELEMENT")) {
-      baseElement = tcgSkillKeyMap[skillObj.skillJson].baseElement;
-    }
-  }
-  const descriptionReplaced = getDescriptionReplaced(rawDescription, locale, {
-    baseElement,
-    baseDamage,
-  });
+  const keyMap = tcgSkillKeyMap[skillObj.skillJson];
+  const descriptionReplaced = getDescriptionReplaced(rawDescription, locale, keyMap);
   const description = sanitizeDescription(descriptionReplaced, true);
 
   const playCost = skillObj.costList
@@ -158,8 +150,7 @@ export async function collateSkill(
     rawDescription,
     description,
     playCost,
-    baseDamage,
-    baseElement,
+    keyMap,
     icon,
   };
 }

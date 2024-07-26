@@ -8,7 +8,7 @@ const existingVersion = Object.fromEntries(
 );
 
 const giIndex = packageJsonVersion.indexOf("gi-");
-const newVersion = packageJsonVersion.substring(giIndex + 3).replace(/-/g, ".");
+const newVersion = "v" + packageJsonVersion.substring(giIndex + 3).replace(/-/g, ".");
 
 let newVersionChecked = false;
 function checkNewVersion() {
