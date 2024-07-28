@@ -637,6 +637,20 @@ export const SirArthur = card(322026)
   })
   .done();
 
+
+const SERENE_SUPPORTS = [
+  SerenesSupport,
+  LaumesSupport,
+  CosanzeanasSupport,
+  CanotilasSupport,
+  ThironasSupport,
+  SluasisSupport,
+  VirdasSupport,
+  PucasSupport,
+  TopyassSupport,
+  LutinesSupport,
+];
+
 /**
  * @id 322027
  * @name 瑟琳
@@ -648,22 +662,15 @@ export const Serene = card(322027)
   .costVoid(2)
   .support("ally")
   .since("v4.8.0")
-  .usage(3)
-  .on("endPhase")
+  .on("enter")
   .do((c) => {
-    const supports = [
-      SerenesSupport,
-      LaumesSupport,
-      CosanzeanasSupport,
-      CanotilasSupport,
-      ThironasSupport,
-      SluasisSupport,
-      VirdasSupport,
-      PucasSupport,
-      TopyassSupport,
-      LutinesSupport,
-    ];
-    const card = c.random(supports);
+    const card = c.random(SERENE_SUPPORTS);
+    c.createHandCard(card);
+  })
+  .on("actionPhase")
+  .usage(2)
+  .do((c) => {
+    const card = c.random(SERENE_SUPPORTS);
     c.createHandCard(card);
   })
   .done();
