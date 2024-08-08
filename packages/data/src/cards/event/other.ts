@@ -1102,8 +1102,7 @@ export const BonecrunchersEnergyBlock = card(124051)
   .filter((c) => !c.$(`my combat status with definition id ${BonecrunchersEnergyBlockCombatStatus}`))
   .do((c) => {
     const hands = c.getMaxCostHands();
-    const selected = c.random(hands);
-    c.disposeCard(selected);
+    c.disposeRandomCard(hands);
     const activeCh = c.$("my active")!;
     c.generateDice(activeCh.element(), 1);
     c.combatStatus(BonecrunchersEnergyBlockCombatStatus)

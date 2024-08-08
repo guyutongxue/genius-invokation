@@ -105,6 +105,7 @@ import {
 } from "../mutator";
 import { CharacterDefinition } from "../base/character";
 import { Draft, produce } from "immer";
+import { nextRandom } from "../random";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -1392,6 +1393,20 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
   }
 
+  /**
+   * 在 `cards` 中随机弃置 `count` 张行动牌。**不会**步进随机迭代器。
+   * @param cards 
+   * @param count 默认为 1
+   */
+  disposeRandomCard(cards: CardState[], count = 1) {
+    const tb = (card: CardState) => {
+      return nextRandom(card.id) ^ this.state.iterators.random;
+    }
+    const disposed = cards.toSorted((a, b) => tb(a) - tb(b)).slice(0, count);
+    this.disposeCard(...disposed);
+    return disposed;
+  }
+
   setExtensionState(setter: Setter<Meta["associatedExtension"]["type"]>) {
     const oldState = this.getExtensionState();
     const newState = produce(oldState, (d) => {
@@ -1426,19 +1441,6 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     };
     this.mutate(mutation);
     return items[mutation.value % items.length];
-  }
-
-  shuffle<T>(array: readonly T[]): T[] {
-    const result = [...array];
-    for (let i = result.length - 1; i > 0; i--) {
-      const j = this.random(Array.from({ length: i }, (_, i) => i));
-      [result[i], result[j]] = [result[j], result[i]];
-    }
-    return result;
-  }
-
-  randomN<T>(items: readonly T[], n: number): T[] {
-    return this.shuffle(items).slice(0, n);
   }
 }
 
