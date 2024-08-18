@@ -58,6 +58,7 @@ export const ElectroCrystalCore02 = status(124016)
 export const ElectroCrystalCore = status(124014)
   .on("beforeDefeated")
   .immune(1)
+  .dispose()
   .done();
 
 /**

@@ -189,8 +189,7 @@ export const StarfallShower = skill(22042)
     const extraDmg = st ? Math.min(Math.floor(c.of(st).getVariable("extraMaxHealth") / 3), 4) : 0;
     c.damage(DamageType.Hydro, 1 + extraDmg);
     const cards = c.getMaxCostHands();
-    const card = c.random(cards);
-    c.disposeCard(card);
+    const [card] = c.disposeRandomCard(cards);
     if (c.self.hasEquipment(LightlessFeeding)) {
       c.heal(diceCostOfCard(card.definition), "@self");
     }

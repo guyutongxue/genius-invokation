@@ -22,8 +22,7 @@ const BonecrunchersEnergyBlock = card(124051)
   .filter((c) => !c.$(`my combat status with definition id ${BonecrunchersEnergyBlockCombatStatus}`))
   .do((c) => {
     const hands = c.getMaxCostHands();
-    const selected = c.random(hands);
-    c.disposeCard(selected);
+    c.disposeRandomCard(hands);
     const activeCh = c.$("my active")!;
     c.generateDice(activeCh.element(), 1);
     if (activeCh.definition.tags.includes("sacread")) {
@@ -125,8 +124,7 @@ const StarfallShower = skill(22042)
     const extraDmg = st ? Math.min(Math.floor(c.of(st).getVariable("extraMaxHealth") / 3), 5) : 0;
     c.damage(DamageType.Hydro, 1 + extraDmg);
     const cards = c.getMaxCostHands();
-    const card = c.random(cards);
-    c.disposeCard(card);
+    const [card] = c.disposeRandomCard(cards);
     if (c.self.hasEquipment(LightlessFeeding)) {
       c.heal(diceCostOfCard(card.definition), "@self");
     }
@@ -579,9 +577,8 @@ const Kusava = card(323008)
   .variable("cardPlayed", 0, { visible: false })
   .on("roundBegin")
   .do((c) => {
-    const cards = c.randomN(c.getMaxCostHands(), 2);
-    const count = cards.length;
-    c.disposeCard(...cards);
+    const disposed = c.disposeRandomCard(c.getMaxCostHands(), 2);
+    const count = disposed.length;
     c.addVariableWithMax("memory", count, 2);
     c.setVariable("cardPlayed", 0)
   })

@@ -295,7 +295,7 @@ export class SkillExecutor extends StateMutator {
             },
           ],
         });
-        const healEventArg = new DamageOrHealEventArg(this.state, healInfo);
+        const healEventArg = new DamageOrHealEventArg(arg._state, healInfo);
         await this.handleEvent(["onDamageOrHeal", healEventArg]);
       }
     }

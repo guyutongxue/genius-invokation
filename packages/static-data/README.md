@@ -14,3 +14,7 @@ import {
   keywords
 } from "@gi-tcg/static-data";
 ```
+
+## Build instructions
+
+Set environment variable `GENSHIN_DATA` to the latest `Dimbreath/AnimeData` repository path, then run `bun generate`.

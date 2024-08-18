@@ -62,6 +62,7 @@ export const ThunderingShacklesSummon = summon(124023)
  */
 export const LightningStrikeProbe: CombatStatusHandle = combatStatus(124021)
   .on("useSkill")
+  .usagePerRound(1)
   .characterStatus(LightningRod, "my active")
   .done();
 

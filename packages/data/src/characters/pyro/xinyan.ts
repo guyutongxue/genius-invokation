@@ -62,8 +62,7 @@ export const SweepingFervor = skill(13122)
   .costPyro(3)
   .damage(DamageType.Pyro, 2)
   .do((c) => {
-    const cards = c.getMaxCostHands();
-    c.disposeCard(c.random(cards));
+    c.disposeRandomCard(c.getMaxCostHands());
   })
   .combatStatus(ShieldOfPassion)
   .done();
