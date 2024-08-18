@@ -54,6 +54,7 @@ export const SeatsSacredAndSecular = card(112113)
  */
 export const SalonMembers = summon(112111)
   .endPhaseDamage(DamageType.Hydro, 1)
+  .on("endPhase") // 将两段伤害拆成两个技能，从而中间可以插入第一段伤害引发的事件（如缤纷马卡龙）
   .usageCanAppend(2, 4)
   .do((c) => {
     if (c.$(`my character with health >= 6`)) {
