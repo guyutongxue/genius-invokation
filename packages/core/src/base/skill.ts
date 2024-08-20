@@ -1037,10 +1037,21 @@ class UseSkillRequestArg extends RequestArg {
   }
 }
 
+class TriggerEndPhaseSkillRequestArg extends RequestArg {
+  constructor(
+    requestBy: SkillInfo,
+    public readonly who: 0 | 1,
+    public readonly requestedEntity: EntityState,
+  ) {
+    super(requestBy);
+  }
+}
+
 const REQUEST_MAP = {
   requestSwitchHands: SwitchHandsRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
+  requestTriggerEndPhaseSkill: TriggerEndPhaseSkillRequestArg,
 } satisfies Record<string, new (...args: any[]) => RequestArg>;
 type RequestMap = typeof REQUEST_MAP;
 type RequestNames = keyof RequestMap;

@@ -480,6 +480,22 @@ export class SkillExecutor extends StateMutator {
           "onUseSkill",
           new UseSkillEventArg(this.state, arg.who, skillInfo),
         ]);
+      } else if (name === "requestTriggerEndPhaseSkill") {
+        using l = this.subLog(DetailLogType.Event, `Triggering end phase skills of ${arg.requestedEntity}`);
+        for (const skills of arg.requestedEntity.definition.skills) {
+          if (skills.triggerOn !== "onEndPhase") {
+            continue;
+          }
+          const skillInfo: SkillInfo = {
+            caller: arg.requestedEntity,
+            definition: skills,
+            fromCard: null,
+            requestBy: arg.via,
+            charged: false,
+            plunging: false,
+          };
+          await this.finalizeSkill(skillInfo, void 0);
+        }
       } else {
         using l = this.subLog(
           DetailLogType.Event,
