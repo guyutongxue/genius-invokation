@@ -238,7 +238,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       }
       if (
         "filter" in info.definition &&
-        !(0, info.definition.filter)(this.state, info, arg)
+        !(0, info.definition.filter)(this.state, info, arg as any)
       ) {
         continue;
       }
@@ -1227,7 +1227,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         const chosen = this.random(candidates);
         this.mutate({
           type: "transferCard",
-          path: "pilesToHands",
+          from: "piles",
+          to: "hands",
           who,
           value: chosen,
         });

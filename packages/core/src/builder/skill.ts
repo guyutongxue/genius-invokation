@@ -21,7 +21,7 @@ import {
   EventNames,
   SkillInfo,
   TriggeredSkillDefinition,
-  TriggeredSkillFilter,
+  SkillActionFilter,
   PlayCardInfo,
   SwitchActiveInfo,
   UseSkillInfo,
@@ -712,7 +712,7 @@ export class TriggeredSkillBuilder<
       }
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
-    const filter: TriggeredSkillFilter<any> = (state, skillInfo, arg) => {
+    const filter: SkillActionFilter<any> = (state, skillInfo, arg) => {
       const ctx = new SkillContext(
         state,
         this._wrapSkillInfoWithExt(skillInfo),
@@ -893,6 +893,7 @@ class InitiativeSkillBuilder<
         skillType: this._skillType,
         id: this.skillId,
         triggerOn: null,
+        filter: () => true,
         requiredCost: this._cost,
         gainEnergy: this._gainEnergy,
         prepared: this._prepared,

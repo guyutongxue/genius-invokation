@@ -453,6 +453,7 @@ class CardBuilder<
       skillType: "playCard",
       id: this.cardId,
       triggerOn: null,
+      filter: () => true,
       requiredCost: this._cost,
       gainEnergy: false,
       prepared: false,
@@ -481,6 +482,7 @@ class CardBuilder<
         requiredCost: [],
         gainEnergy: false,
         prepared: false,
+        filter: () => true,
         action: disposeAction,
       };
       onDispose = disposeDef;

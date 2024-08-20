@@ -131,8 +131,9 @@ export abstract class StateMutator {
     }
     this.mutate({
       type: "transferCard",
-      path: "pilesToHands",
       who,
+      from: "piles",
+      to: "hands",
       value: candidate,
     });
     if (this.state.players[who].hands.length > this.state.config.maxHands) {
@@ -178,7 +179,8 @@ export abstract class StateMutator {
       const index = mutation.value % (player().piles.length + 1);
       this.mutate({
         type: "transferCard",
-        path: "handsToPiles",
+        from: "hands",
+        to: "piles",
         who,
         value: card,
         targetIndex: index,
@@ -202,7 +204,8 @@ export abstract class StateMutator {
       }
       this.mutate({
         type: "transferCard",
-        path: "pilesToHands",
+        from: "piles",
+        to: "hands",
         who,
         value: candidate,
       });

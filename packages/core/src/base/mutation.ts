@@ -62,9 +62,10 @@ export interface SetWinnerM {
 
 export interface TransferCardM {
   readonly type: "transferCard";
-  readonly path: "pilesToHands" | "handsToPiles";
   readonly targetIndex?: number;
   readonly who: 0 | 1;
+  readonly from: "piles" | "hands";
+  readonly to: "piles" | "hands" | "oppPiles" | "oppHands";
   readonly value: CardState;
 }
 
@@ -206,8 +207,41 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "transferCard": {
       return produce(state, (draft) => {
         const player = draft.players[m.who];
-        const src = m.path === "pilesToHands" ? player.piles : player.hands;
-        const dst = m.path === "pilesToHands" ? player.hands : player.piles;
+        const oppPlayer = draft.players[flip(m.who)];
+        let src: CardState[];
+        switch (m.from) {
+          case "piles":
+            src = player.piles;
+            break;
+          case "hands":
+            src = player.hands;
+            break;
+          default: {
+            const _: never = m.from;
+            throw new GiTcgCoreInternalError(`Unknown source of transferCard`);
+          }
+        }
+        let dst: CardState[];
+        switch (m.to) {
+          case "piles":
+            dst = player.piles;
+            break;
+          case "hands":
+            dst = player.hands;
+            break;
+          case "oppPiles":
+            dst = oppPlayer.piles;
+            break;
+          case "oppHands":
+            dst = oppPlayer.hands;
+            break;
+          default: {
+            const _: never = m.to;
+            throw new GiTcgCoreInternalError(
+              `Unknown destination of transferCard`,
+            );
+          }
+        }
         const cardIdx = src.findIndex((c) => c.id === m.value.id);
         if (cardIdx === -1) {
           throw new GiTcgCoreInternalError(
@@ -324,7 +358,10 @@ function doMutation(state: GameState, m: Mutation): GameState {
         if (m.state.definition.type === "character") {
           const { who } = getEntityArea(draft, m.state.id);
           const player = draft.players[who];
-          player.roundSkillLog.set(m.newDefinition.id, player.roundSkillLog.get(m.state.definition.id) ?? []);
+          player.roundSkillLog.set(
+            m.newDefinition.id,
+            player.roundSkillLog.get(m.state.definition.id) ?? [],
+          );
           player.roundSkillLog.delete(m.state.definition.id);
         }
       });
@@ -391,9 +428,9 @@ export function stringifyMutation(m: Mutation): string | null {
       return `Set winner to ${m.winner}`;
     }
     case "transferCard": {
-      return `Transfer card ${stringifyState(m.value)} ${m.path} of player ${
+      return `Transfer card ${stringifyState(m.value)} ${m.from} of player ${
         m.who
-      }`;
+      } to ${m.to}`;
     }
     case "switchActive": {
       return `Switch active of player ${m.who} to ${stringifyState(m.value)}`;
@@ -436,7 +473,9 @@ export function stringifyMutation(m: Mutation): string | null {
       return `Set player ${m.who} flag ${m.flagName} to ${m.value}`;
     }
     case "pushRoundSkillLog": {
-      return `Push round skill log ${m.skillId} into ${stringifyState(m.caller)}`;
+      return `Push round skill log ${m.skillId} into ${stringifyState(
+        m.caller,
+      )}`;
     }
     default: {
       return null;

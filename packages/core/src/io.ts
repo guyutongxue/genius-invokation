@@ -79,8 +79,9 @@ export function exposeMutation(
     case "transferCard": {
       return {
         type: "transferCard",
-        path: m.path,
         who: m.who,
+        from: m.from,
+        to: m.to,
         id: m.value.id,
         definitionId: m.who === who ? m.value.definition.id : 0,
       };

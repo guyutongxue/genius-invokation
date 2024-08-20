@@ -42,6 +42,7 @@ export interface SkillDefinitionBase<Arg> {
   readonly type: "skill";
   readonly id: number;
   readonly action: SkillDescription<Arg>;
+  readonly filter: SkillActionFilter<Arg>;
 }
 
 export type SkillResult = readonly [GameState, EventAndRequest[]];
@@ -54,6 +55,12 @@ export type SkillDescription<Arg> = (
 
 export type CommonSkillType = "normal" | "elemental" | "burst";
 export type SkillType = CommonSkillType | "playCard" | "disposeCard";
+
+export type InitiativeSkillFilter = (
+  state: GameState,
+  skillInfo: SkillInfo,
+  arg?: unknown,
+) => boolean;
 
 export interface InitiativeSkillDefinition<Arg = void>
   extends SkillDefinitionBase<Arg> {
@@ -1063,17 +1070,16 @@ export type EventAndRequest = {
   [E in EventAndRequestNames]: [E, EventAndRequestArgOf<E>];
 }[EventAndRequestNames];
 
-export type TriggeredSkillFilter<E extends EventNames> = (
+export type SkillActionFilter<Arg> = (
   state: GameState,
   skillInfo: SkillInfo,
-  arg: EventArgOf<E>,
+  arg: Arg,
 ) => boolean;
 
 export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
   extends SkillDefinitionBase<EventArgOf<E>> {
   readonly skillType: null;
   readonly triggerOn: E;
-  readonly filter: TriggeredSkillFilter<E>;
   readonly requiredCost: readonly [];
   readonly gainEnergy: false;
   readonly usagePerRoundVariableName: UsagePerRoundVariableNames | null;

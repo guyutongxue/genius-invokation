@@ -38,8 +38,9 @@ interface SetWinnerEM {
 
 interface TransferCardEM {
   readonly type: "transferCard";
-  readonly path: "pilesToHands" | "handsToPiles";
   readonly who: 0 | 1;
+  readonly from: "piles" | "hands";
+  readonly to: "piles" | "hands" | "oppPiles" | "oppHands";
   readonly id: number;
   readonly definitionId: number;
 }
