@@ -381,6 +381,20 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (from.id === switchToTarget.id) {
       return;
     }
+    let disableSwitchFromStatus: EntityState | undefined;
+    if (
+      (disableSwitchFromStatus = from.entities.find((st) =>
+        st.definition.tags.includes("disableSwitchFrom"),
+      ))
+    ) {
+      this.log(
+        DetailLogType.Other,
+        `Switch active from ${stringifyState(from)} to ${stringifyState(
+          switchToTarget.state,
+        )}, but ${stringifyState(disableSwitchFromStatus)} disabled this!`,
+      );
+      return;
+    }
     using l = this.subLog(
       DetailLogType.Primitive,
       `Switch active from ${stringifyState(from)} to ${stringifyState(
@@ -537,7 +551,10 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         fromReaction: this.fromReaction,
       };
       if (damageInfo.type !== DamageType.Piercing) {
-        const modifier = new GenericModifyDamageEventArg(this.state, damageInfo);
+        const modifier = new GenericModifyDamageEventArg(
+          this.state,
+          damageInfo,
+        );
         this.handleInlineEvent("modifyDamage0", modifier);
         modifier.increaseDamageByReaction();
         this.handleInlineEvent("modifyDamage1", modifier);
@@ -1396,13 +1413,13 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
 
   /**
    * 在 `cards` 中随机弃置 `count` 张行动牌。**不会**步进随机迭代器。
-   * @param cards 
+   * @param cards
    * @param count 默认为 1
    */
   disposeRandomCard(cards: CardState[], count = 1) {
     const tb = (card: CardState) => {
       return nextRandom(card.id) ^ this.state.iterators.random;
-    }
+    };
     const disposed = cards.toSorted((a, b) => tb(a) - tb(b)).slice(0, count);
     this.disposeCard(...disposed);
     return disposed;

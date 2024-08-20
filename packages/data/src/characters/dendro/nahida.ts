@@ -29,7 +29,6 @@ import { character, skill, status, combatStatus, card, DamageType, StatusHandle 
  * 可用次数：2
  */
 export const SeedOfSkandha: StatusHandle = status(117031)
-  .tags("debuff")
   .usage(2)
   .on("damaged", (c, e) => e.getReaction() !== null)
   .do((c) => {

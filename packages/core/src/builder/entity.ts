@@ -465,6 +465,7 @@ export class EntityBuilder<
         visibleVarName: this._visibleVarName,
         varConfigs: this._varConfigs,
         hintText: this._hintText,
+        initiativeSkills: [],
         skills: this._skillList,
         tags: this._tags,
         type: this._type,

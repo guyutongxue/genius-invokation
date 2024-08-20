@@ -15,15 +15,15 @@
 
 import { GameState, EntityState } from "./state";
 import { EquipmentTag, SupportTag } from "./card";
-import { TriggeredSkillDefinition } from "./skill";
+import { InitiativeSkillDefinition, TriggeredSkillDefinition } from "./skill";
 import { VersionInfo } from "./version";
 
 export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
   | "immuneControl" // 免疫冻结石化眩晕（仅出战状态）
   | "shield" // 护盾
-  | "debuff" // 自伤（不计入增伤）
   | "disableEvent" // 禁用事件牌效果（仅出战状态）
+  | "disableSwitchFrom" // 禁止角色因效果被切走（仅角色状态）
   | EquipmentTag
   | SupportTag;
 
@@ -45,6 +45,7 @@ export interface EntityDefinition {
   readonly tags: readonly EntityTag[];
   readonly hintText: string | null;
   readonly varConfigs: EntityVariableConfigs;
+  readonly initiativeSkills: readonly InitiativeSkillDefinition[];
   readonly skills: readonly TriggeredSkillDefinition[];
   readonly descriptionDictionary: DescriptionDictionary;
 }
