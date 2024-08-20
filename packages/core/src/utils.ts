@@ -129,10 +129,10 @@ interface CallerAndSkill {
 
 /**
  * 显示当前玩家的主动技能列表。含当前出战角色的主动技能，和所装备的特技提供的技能。
- * 
+ *
  * 不考虑是否可以打出。不含准备技能。
- * @param player 
- * @returns 
+ * @param player
+ * @returns
  */
 export function initiativeSkillsOfPlayer(player: PlayerState) {
   const activeCh = player.characters.find(
@@ -265,10 +265,14 @@ export function removeEntity(state: Draft<GameState>, id: number) {
 
 export function isCharacterInitiativeSkill(
   skillDef: SkillDefinition,
+  allowTechnique = false,
 ): skillDef is InitiativeSkillDefinition {
-  const commonSkillType: SkillType[] = ["normal", "elemental", "burst"];
+  const allowSkillType: SkillType[] = ["normal", "elemental", "burst"];
+  if (allowTechnique) {
+    allowSkillType.push("technique");
+  }
   return (
-    skillDef.triggerOn === null && commonSkillType.includes(skillDef.skillType)
+    skillDef.triggerOn === null && allowSkillType.includes(skillDef.skillType)
   );
 }
 

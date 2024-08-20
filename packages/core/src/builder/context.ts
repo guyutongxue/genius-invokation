@@ -41,10 +41,6 @@ import {
   HealInfo,
   HealKind,
   InlineEventNames,
-  ModifyDamage0EventArg,
-  ModifyDamage1EventArg,
-  ModifyDamage2EventArg,
-  ModifyDamage3EventArg,
   ModifyHealEventArg,
   ReactionInfo,
   SkillDescription,
@@ -62,7 +58,6 @@ import {
   stringifyState,
 } from "../base/state";
 import {
-  allEntities,
   allEntitiesAtArea,
   allSkills,
   diceCostOfCard,
@@ -128,6 +123,13 @@ interface CreateEntityOptions {
   /** 设定创建实体的 id。仅在打出支援牌和装备牌时直接继承原手牌 id */
   withId?: number;
 }
+
+type CreatePileCardsStrategy =
+  | "top"
+  | "bottom"
+  | "random"
+  | "spaceAround"
+  | `topRange${number}`;
 
 type Setter<T> = (draft: Draft<T>) => void;
 
@@ -1268,7 +1270,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   createPileCards(
     cardId: CardHandle,
     count: number,
-    strategy: "top" | "random" | "spaceAround" | `topRange${number}`,
+    strategy: CreatePileCardsStrategy,
   ) {
     const who = this.callerArea.who;
     using l = this.subLog(
@@ -1292,6 +1294,18 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             target: "piles",
             value: { ...cardTemplate },
             targetIndex: 0,
+          });
+        }
+        break;
+      case "bottom":
+        for (let i = 0; i < count; i++) {
+          const targetIndex = this.player.piles.length;
+          this.mutate({
+            type: "createCard",
+            who,
+            target: "piles",
+            value: { ...cardTemplate },
+            targetIndex,
           });
         }
         break;
@@ -1354,6 +1368,17 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       }
     }
   }
+
+  stealHandCard(card: CardState) {
+    this.mutate({
+      type: "transferCard",
+      from: "hands",
+      to: "oppHands",
+      who: flip(this.callerArea.who),
+      value: card,
+    });
+  }
+
   /** 弃置一张行动牌，并触发其“弃置时”效果。 */
   disposeCard(...cards: CardState[]) {
     const player = this.player;

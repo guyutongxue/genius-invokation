@@ -141,10 +141,15 @@ function defineDescriptor<E extends EventNames>(
  * 1. 该技能为主动技能；且
  * 2. 该技能不是准备技能触发的。
  * 3. Note: 通过使用卡牌（天赋等）触发的技能也适用。
+ *
+ * @param allowTechnique 是否允许特技
  */
-export function commonInitiativeSkillCheck(skillInfo: SkillInfo): boolean {
+export function commonInitiativeSkillCheck(
+  skillInfo: SkillInfo,
+  allowTechnique = false,
+): boolean {
   return (
-    isCharacterInitiativeSkill(skillInfo.definition) &&
+    isCharacterInitiativeSkill(skillInfo.definition, allowTechnique) &&
     !skillInfo.definition.prepared
   );
 }
@@ -302,6 +307,12 @@ const detailedEventDictionary = {
     return (
       checkRelative(c.state, e.skill.caller.id, r) &&
       commonInitiativeSkillCheck(e.skill)
+    );
+  }),
+  useSkillOrTechnique: defineDescriptor("onUseSkill", (c, e, r) => {
+    return (
+      checkRelative(c.state, e.skill.caller.id, r) &&
+      commonInitiativeSkillCheck(e.skill, true)
     );
   }),
   declareEnd: defineDescriptor("onAction", (c, e, r) => {
@@ -869,7 +880,7 @@ class InitiativeSkillBuilder<
       builder._versionInfo = this._versionInfo;
       return builder;
     }
-    if (type === "burst") {
+    if (type === "burst" || type === "technique") {
       this._gainEnergy = false;
     }
     this._skillType = type;
@@ -898,7 +909,7 @@ class InitiativeSkillBuilder<
         gainEnergy: this._gainEnergy,
         prepared: this._prepared,
         action,
-      }
+      },
     });
     return this.skillId as SkillHandle;
   }
