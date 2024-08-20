@@ -41,6 +41,7 @@ import {
   shuffle,
   sortDice,
   isSkillDisabled,
+  initiativeSkillsOfPlayer,
 } from "./utils";
 import { GameData } from "./builder/registry";
 import {
@@ -851,10 +852,7 @@ export class Game extends StateMutator {
     if (isSkillDisabled(activeCh)) {
       // Use skill is disabled, skip
     } else {
-      for (const skill of activeCh.definition.initiativeSkills) {
-        if (skill.prepared) {
-          continue;
-        }
+      for (const skill of initiativeSkillsOfPlayer(player)) {
         const skillInfo = {
           caller: activeCh,
           definition: skill,
@@ -863,6 +861,9 @@ export class Game extends StateMutator {
           charged: skill.skillType === "normal" && player.dice.length % 2 === 0,
           plunging: skill.skillType === "normal" && player.canPlunging,
         };
+        if (!skill.filter(this.state, skillInfo)) {
+          continue;
+        }
         const actionInfo: ActionInfo = {
           type: "useSkill",
           who,

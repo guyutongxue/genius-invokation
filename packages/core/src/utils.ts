@@ -128,6 +128,26 @@ interface CallerAndSkill {
 }
 
 /**
+ * 显示当前玩家的主动技能列表。含当前出战角色的主动技能，和所装备的特技提供的技能。
+ * 
+ * 不考虑是否可以打出。不含准备技能。
+ * @param player 
+ * @returns 
+ */
+export function initiativeSkillsOfPlayer(player: PlayerState) {
+  const activeCh = player.characters.find(
+    (ch) => player.activeCharacterId === ch.id,
+  );
+  if (!activeCh) {
+    return [];
+  }
+  return [
+    ...activeCh.entities.flatMap((st) => st.definition.initiativeSkills),
+    ...activeCh.definition.initiativeSkills,
+  ].filter((sk) => !sk.prepared);
+}
+
+/**
  * 检索 `state` 中所有响应 `triggerOn` 的技能。包括扩展点。
  * @param state
  * @param triggerOn
@@ -382,8 +402,9 @@ type InstanceOfConstructors<Ts extends AbstractConstructor[]> = Ts extends [
 type MixinResult<
   T extends Constructor,
   Us extends AbstractConstructor[],
-> = new (...args: ConstructorParameters<T>) => InstanceType<T> &
-  InstanceOfConstructors<Us>;
+> = new (
+  ...args: ConstructorParameters<T>
+) => InstanceType<T> & InstanceOfConstructors<Us>;
 
 export function mixins<
   T extends Constructor,

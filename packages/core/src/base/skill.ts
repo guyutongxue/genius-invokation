@@ -53,7 +53,7 @@ export type SkillDescription<Arg> = (
   arg: Arg,
 ) => SkillResult;
 
-export type CommonSkillType = "normal" | "elemental" | "burst";
+export type CommonSkillType = "normal" | "elemental" | "burst" | "technique";
 export type SkillType = CommonSkillType | "playCard" | "disposeCard";
 
 export type InitiativeSkillFilter = (

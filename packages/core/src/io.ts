@@ -37,6 +37,7 @@ import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
 import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
+import { initiativeSkillsOfPlayer } from "./utils";
 
 export interface PlayerIO {
   giveUp: boolean;
@@ -254,9 +255,7 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
     roundNumber: state.roundNumber,
     winner: state.winner,
     players: state.players.map<PlayerData>((p, i) => {
-      const skills =
-        p.characters.find((ch) => p.activeCharacterId === ch.id)?.definition
-          .initiativeSkills ?? [];
+      const skills = initiativeSkillsOfPlayer(p);
       return {
         activeCharacterId: p.activeCharacterId,
         piles: p.piles.map((c) => exposeCard(state, c, true)),
@@ -266,10 +265,7 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
         combatStatuses: p.combatStatuses.map((e) => exposeEntity(state, e)),
         supports: p.supports.map((e) => exposeEntity(state, e)),
         summons: p.summons.map((e) => exposeEntity(state, e)),
-        skills:
-          i === who
-            ? skills.filter((sk) => !sk.prepared).map(exposeInitiativeSkill)
-            : [],
+        skills: i === who ? skills.map(exposeInitiativeSkill) : [],
         declaredEnd: p.declaredEnd,
         legendUsed: p.legendUsed,
       };
