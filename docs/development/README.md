@@ -1,6 +1,6 @@
 # 开发说明
 
-**建议阅读：[slices](https://kdocs.cn/l/chWGWwQNLHGo)**
+**建议阅读：[slides](https://kdocs.cn/l/chWGWwQNLHGo)**
 
 本项目目前使用 monorepo 划分和管理包，共有如下包：
 
