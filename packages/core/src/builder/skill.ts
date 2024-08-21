@@ -303,6 +303,12 @@ const detailedEventDictionary = {
     // 支援牌不触发自身
     return c.self.id !== e.card.id && checkRelative(c.state, { who: e.who }, r);
   }),
+  modifySkill: defineDescriptor("modifyUseSKill", (c, e, r) => {
+    return (
+      checkRelative(c.state, e.skill.caller.id, r) &&
+      commonInitiativeSkillCheck(e.skill)
+    );
+  }),
   useSkill: defineDescriptor("onUseSkill", (c, e, r) => {
     return (
       checkRelative(c.state, e.skill.caller.id, r) &&

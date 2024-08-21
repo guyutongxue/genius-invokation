@@ -505,9 +505,12 @@ export class UseSkillEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     public readonly who: 0 | 1,
-    public readonly skill: SkillInfo,
+    protected readonly _skillInfo: SkillInfo,
   ) {
     super(state, who);
+  }
+  get skill() {
+    return this._skillInfo;
   }
   override toString(): string {
     return `use skill [skill:${this.skill.definition.id}]`;
@@ -520,6 +523,27 @@ export class UseSkillEventArg extends PlayerEventArg {
   }
   isPlungingAttack(): this is ActionEventArg<UseSkillInfo> {
     return this.skill.plunging;
+  }
+}
+
+export class ModifyUseSkillEventArg extends UseSkillEventArg {
+  private _forcePlunging = false;
+  private _forceCharged = false;
+
+  forcePlunging() {
+    this._forcePlunging = true;
+  }
+  forceCharged() {
+    this._forceCharged = true;
+  }
+
+  override get skill() {
+    const skillInfo = super.skill;
+    return {
+      ...skillInfo,
+      charged: this._forceCharged || skillInfo.charged,
+      plunging: this._forcePlunging || skillInfo.plunging,
+    }
   }
 }
 
@@ -967,6 +991,7 @@ export const EVENT_MAP = {
   onAction: ActionEventArg,
 
   onBeforeUseSkill: UseSkillEventArg,
+  modifyUseSKill: ModifyUseSkillEventArg,
   onUseSkill: UseSkillEventArg,
   onBeforePlayCard: PlayCardEventArg,
   onPlayCard: PlayCardEventArg,
