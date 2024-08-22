@@ -545,6 +545,7 @@ export const Starsigns = card(332008)
 export const CalxsArts = card(332009)
   .since("v3.3.0")
   .costSame(1)
+  .filter((c) => c.$(`my standby with energy > 0`) && c.$(`my active with energy < maxEnergy`))
   .do((c) => {
     const chs = c.$$("my standby characters limit 2");
     let count = 0;
