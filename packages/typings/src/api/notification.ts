@@ -115,7 +115,7 @@ export interface EntityData {
   /**
    * 实体是否为装备。若是武器、圣遗物，则为 weapon 或 artifact 字符串
    */
-  equipment: "weapon" | "artifact" | boolean;
+  equipment: "weapon" | "artifact" | "technique" | boolean;
 }
 
 export interface CardData {

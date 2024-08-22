@@ -171,12 +171,14 @@ export function exposeMutation(
 }
 
 function exposeEntity(state: GameState, e: EntityState): EntityData {
-  let equipment: boolean | "weapon" | "artifact";
+  let equipment: EntityData["equipment"];
   if (e.definition.type === "equipment") {
     if (e.definition.tags.includes("artifact")) {
       equipment = "artifact";
     } else if (e.definition.tags.includes("weapon")) {
       equipment = "weapon";
+    } else if (e.definition.tags.includes("technique")) {
+      equipment = "technique";
     } else {
       equipment = true;
     }

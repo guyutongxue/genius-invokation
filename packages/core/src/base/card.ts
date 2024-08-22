@@ -21,7 +21,7 @@ import { VersionInfo } from "./version";
 
 export type WeaponCardTag = Exclude<WeaponTag, "other">;
 
-export type EquipmentTag = "talent" | "artifact" | "weapon" | WeaponCardTag;
+export type EquipmentTag = "talent" | "artifact" | "technique" | "weapon" | WeaponCardTag;
 
 export type SupportTag = "ally" | "place" | "item";
 

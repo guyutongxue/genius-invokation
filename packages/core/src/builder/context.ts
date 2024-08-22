@@ -1694,8 +1694,8 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
     this.skillContext.createEntity("status", status, this._area, opt);
   }
   equip(equipment: EquipmentHandle, opt?: CreateEntityOptions) {
-    // Remove exist artifact/weapon first
-    for (const tag of ["artifact", "weapon"] as const) {
+    // Remove existing artifact/weapon/technique first
+    for (const tag of ["artifact", "weapon", "technique"] as const) {
       if (
         this.skillContext.state.data.entities.get(equipment)?.tags.includes(tag)
       ) {

@@ -13,7 +13,7 @@
     "@microsoft/api-extractor": "^7.40.4",
     "@types/bun": "^1.0.12",
     "bun": "^1.1.15",
-    "tsup": "^8.0.2",
+    "tsup": "^8.2.4",
     "type-fest": "^4.10.2",
     "typescript": "^5.5.2"
   },
