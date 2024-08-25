@@ -33,7 +33,7 @@ import {
 import "@gi-tcg/webui-core/style.css";
 import { For, Show, createSignal, onCleanup, onMount } from "solid-js";
 import { decode as decodeShareCode } from "@gi-tcg/utils";
-import { DetailLogViewer } from "./DetailLogViewer";
+import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { getName } from "./names";
 
 export interface StandaloneParentProps {
@@ -326,9 +326,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
       </button>
       <button onClick={showDetail}>显示细节</button>
       <dialog ref={detailDialog!}>
-        <For each={detailLog()}>
-          {log => <DetailLogViewer log={log} />}
-        </For>
+        <DetailLogViewer logs={detailLog()} names={getName} />
         <button onClick={closeDetail}>关闭</button>
       </dialog>
     </div>

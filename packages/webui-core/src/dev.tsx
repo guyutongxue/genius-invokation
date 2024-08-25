@@ -15,12 +15,13 @@
 
 /* @refresh reload */
 // import "solid-devtools";
+import { createEffect, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";
-import { Game, GameIO, PlayerConfig } from "@gi-tcg/core";
+import { DetailLogEntry, Game, GameIO, PlayerConfig } from "@gi-tcg/core";
 import { decode } from "@gi-tcg/utils";
-
+import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
@@ -52,10 +53,15 @@ const playerConfig1: PlayerConfig = {
 function App() {
   const [io0, Chessboard0] = createPlayer(0);
   const [io1, Chessboard1] = createPlayer(1);
+  const [detailLog, setDetailLog] = createSignal<readonly DetailLogEntry[]>([]);
+
+  createEffect(() => {
+    console.log(detailLog());
+  });
 
   const io: GameIO = {
     pause: async () => {
-      console.log(game.detailLog);
+      setDetailLog([...game.detailLog]);
     },
     players: [io0, io1],
   };
@@ -71,6 +77,7 @@ function App() {
     <div class="min-w-180 flex flex-col gap-2">
       <Chessboard0 />
       <Chessboard1 />
+      <DetailLogViewer logs={detailLog()} />
     </div>
   );
 }

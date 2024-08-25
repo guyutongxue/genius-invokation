@@ -1,9 +1,8 @@
 {
-  "name": "@gi-tcg/webui-core",
-  "version": "0.9.6",
-  "description": "Core component of @gi-tcg/webui",
+  "name": "@gi-tcg/detail-log-viewer",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -12,31 +11,17 @@
     },
     "./style.css": "./dist/style.css"
   },
-  "sideEffects": [
-    "**/*.css"
-  ],
   "scripts": {
-    "dev": "bunx --bun vite",
     "check": "tsc --noEmit",
     "build": "vite build"
-  },
-  "dependencies": {
-    "@gi-tcg/utils": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.8.15"
   },
   "devDependencies": {
     "@gi-tcg/core": "workspace:*",
-    "@gi-tcg/data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
-    "@gi-tcg/detail-log-viewer": "workspace:*",
-    "@typescript-eslint/eslint-plugin": "^6.18.0",
-    "@typescript-eslint/parser": "^6.18.0",
     "@unocss/postcss": "^0.58.5",
-    "eslint": "^8.56.0",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-plugin-solid": "^0.13.1",
     "rollup-plugin-node-externals": "^7.0.1",
     "solid-devtools": "^0.29.2",
     "unocss": "^0.58.3",
