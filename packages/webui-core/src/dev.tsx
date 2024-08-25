@@ -24,7 +24,7 @@ import { decode } from "@gi-tcg/utils";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
-  characters: [1603, 1202, 1607],
+  characters: [1505, 1201, 1607],
   cards: [
     333011, 311402, 311402, 333012,
     321017, 322022, 322024, 322011, 322011,

@@ -72,7 +72,7 @@ export const DazzlingPolyhedron01 = summon(115096)
 export const ManifestGale = status(115091)
   .on("deductVoidDiceSkill", (c, e) => e.isChargedAttack())
   .deductVoidCost(1)
-  .on("modifySkillDamageType", (c, e) => e.viaChargedAttack())
+  .on("modifySkillDamageType", (c, e) => e.viaChargedAttack() && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Anemo)
   .do((c, e) => {
     c.characterStatus(PressurizedCollapse, e.target);

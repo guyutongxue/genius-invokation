@@ -155,7 +155,7 @@ const LightningRose = skill(14093)
  */
 const MidareRanzan = status(115051)
   .until("v4.7.0")
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack() && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Anemo)
   .on("increaseSkillDamage", (c, e) => e.viaPlungingAttack())
   .increaseDamage(1)
@@ -172,7 +172,7 @@ const MidareRanzan = status(115051)
  */
 const MidareRanzanCryo = status(115053)
   .until("v4.7.0")
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack() && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Cryo)
   .on("increaseSkillDamage", (c, e) => e.viaPlungingAttack())
   .increaseDamage(1)
@@ -189,7 +189,7 @@ const MidareRanzanCryo = status(115053)
  */
 const MidareRanzanElectro = status(115056)
   .until("v4.7.0")
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack() && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Electro)
   .on("increaseSkillDamage", (c, e) => e.viaPlungingAttack())
   .increaseDamage(1)
@@ -206,7 +206,7 @@ const MidareRanzanElectro = status(115056)
  */
 const MidareRanzanHydro = status(115054)
   .until("v4.7.0")
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack() && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
   .on("increaseSkillDamage", (c, e) => e.viaPlungingAttack())
   .increaseDamage(1)
@@ -223,36 +223,12 @@ const MidareRanzanHydro = status(115054)
  */
 const MidareRanzanPyro = status(115055)
   .until("v4.7.0")
-  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack())
+  .on("modifySkillDamageType", (c, e) => e.viaPlungingAttack() && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Pyro)
   .on("increaseSkillDamage", (c, e) => e.viaPlungingAttack())
   .increaseDamage(1)
   .on("useSkill")
   .dispose()
-  .done();
-
-
-/**
- * @id 15051
- * @name 我流剑术
- * @description
- * 造成2点物理伤害。
- */
-const GaryuuBladework = skill(15051)
-  .until("v4.7.0")
-  .type("normal")
-  .costAnemo(1)
-  .costVoid(2)
-  .damage(DamageType.Physical, 2)
-  .do((c) => {
-    const midareSt = c.$(`
-      my status with definition id ${MidareRanzan} or 
-      my status with definition id ${MidareRanzanCryo} or
-      my status with definition id ${MidareRanzanElectro} or
-      my status with definition id ${MidareRanzanHydro} or
-      my status with definition id ${MidareRanzanPyro}`);
-    midareSt?.dispose();
-  })
   .done();
   
 /**

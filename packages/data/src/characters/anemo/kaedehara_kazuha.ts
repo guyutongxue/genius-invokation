@@ -29,6 +29,19 @@ export const AutumnWhirlwind = summon(115052)
   .done();
 
 /**
+ * @id 15051
+ * @name 我流剑术
+ * @description
+ * 造成2点物理伤害。
+ */
+export const GaryuuBladework = skill(15051)
+  .type("normal")
+  .costAnemo(1)
+  .costVoid(2)
+  .damage(DamageType.Physical, 2)
+  .done();
+
+/**
  * @id 115051
  * @name 乱岚拨止
  * @description
@@ -37,11 +50,14 @@ export const AutumnWhirlwind = summon(115052)
  */
 export const MidareRanzan = status(115051)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .usage(1, { autoDispose: false })
   .setFastAction()
-  .on("beforeAction", (c, e) => c.self.master().isActive())
-  .useSkill(15051 as SkillHandle)
-  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .on("replaceAction", (c, e) => c.self.master().isActive())
+  .useSkill(GaryuuBladework)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Anemo)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .dispose()
   .done();
 
 /**
@@ -53,11 +69,14 @@ export const MidareRanzan = status(115051)
  */
 export const MidareRanzanCryo = status(115053)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .usage(1, { autoDispose: false })
   .setFastAction()
-  .on("beforeAction", (c, e) => c.self.master().isActive())
-  .useSkill(15051 as SkillHandle)
-  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .on("replaceAction", (c, e) => c.self.master().isActive())
+  .useSkill(GaryuuBladework)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Cryo)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .dispose()
   .done();
 
 /**
@@ -69,11 +88,14 @@ export const MidareRanzanCryo = status(115053)
  */
 export const MidareRanzanElectro = status(115056)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .usage(1, { autoDispose: false })
   .setFastAction()
-  .on("beforeAction", (c, e) => c.self.master().isActive())
-  .useSkill(15051 as SkillHandle)
-  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .on("replaceAction", (c, e) => c.self.master().isActive())
+  .useSkill(GaryuuBladework)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Electro)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .dispose()
   .done();
 
 /**
@@ -85,11 +107,14 @@ export const MidareRanzanElectro = status(115056)
  */
 export const MidareRanzanHydro = status(115054)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .usage(1, { autoDispose: false })
   .setFastAction()
-  .on("beforeAction", (c, e) => c.self.master().isActive())
-  .useSkill(15051 as SkillHandle)
-  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .on("replaceAction", (c, e) => c.self.master().isActive())
+  .useSkill(GaryuuBladework)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .dispose()
   .done();
 
 /**
@@ -101,11 +126,14 @@ export const MidareRanzanHydro = status(115054)
  */
 export const MidareRanzanPyro = status(115055)
   .on("beforeFastSwitch", (c, e) => c.self.master().id === e.action.to.id)
+  .usage(1, { autoDispose: false })
   .setFastAction()
-  .on("beforeAction", (c, e) => c.self.master().isActive())
-  .useSkill(15051 as SkillHandle)
-  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .on("replaceAction", (c, e) => c.self.master().isActive())
+  .useSkill(GaryuuBladework)
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Pyro)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .dispose()
   .done();
 
 /**
@@ -158,28 +186,6 @@ export const PoeticsOfFuubutsuPyro = combatStatus(115059)
   .on("increaseDamage", (c, e) => ["character", "summon"].includes(e.source.definition.type) && e.type === DamageType.Pyro)
   .usage(2)
   .increaseDamage(1)
-  .done();
-
-/**
- * @id 15051
- * @name 我流剑术
- * @description
- * 造成2点物理伤害。
- */
-export const GaryuuBladework = skill(15051)
-  .type("normal")
-  .costAnemo(1)
-  .costVoid(2)
-  .damage(DamageType.Physical, 2)
-  .do((c) => {
-    const midareSt = c.$(`
-      my status with definition id ${MidareRanzan} or 
-      my status with definition id ${MidareRanzanCryo} or
-      my status with definition id ${MidareRanzanElectro} or
-      my status with definition id ${MidareRanzanHydro} or
-      my status with definition id ${MidareRanzanPyro}`);
-    midareSt?.dispose();
-  })
   .done();
 
 /**

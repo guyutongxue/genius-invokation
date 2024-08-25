@@ -89,7 +89,7 @@ export const SingerOfManyWaters = summon(112112)
  * 可用次数：1
  */
 export const CenterOfAttention = status(112116)
-  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal") && e.type === DamageType.Physical)
   .changeDamageType(DamageType.Hydro)
   .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
   .usage(1)
