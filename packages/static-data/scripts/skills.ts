@@ -38,11 +38,6 @@ const PROPERTIES_KEY_MAP = {
   "476224977": "D__KEY__ELEMENT",
 } as Record<string, string>;
 
-// Find DAMAGEVALUEPROP and ELEMENTVALUEPROP
-const { declaredValueMap } = readJson(
-  `${config.input}/BinOutput/GCG/Gcg_DeclaredValueSet/Char_Skill_13023.json`,
-);
-
 type ValueGrabber<T = any> = (obj: object) => T;
 
 const numberGrabber: ValueGrabber<number> = (obj) =>

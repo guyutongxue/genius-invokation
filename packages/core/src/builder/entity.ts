@@ -116,6 +116,7 @@ export class EntityBuilder<
   private _hintText: string | null = null;
   private _descriptionDictionary: Writable<DescriptionDictionary> = {};
   _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
+  _initiativeSkillIds: SkillHandle[] = [];
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -166,6 +167,11 @@ export class EntityBuilder<
       Vars,
       ExtensionHandle<NewExtT>
     >;
+  }
+
+  provideSkills(...skills: SkillHandle[]) {
+    this._initiativeSkillIds.push(...skills);
+    return this;
   }
 
   conflictWith(id: number) {
@@ -465,7 +471,7 @@ export class EntityBuilder<
         visibleVarName: this._visibleVarName,
         varConfigs: this._varConfigs,
         hintText: this._hintText,
-        initiativeSkills: [],
+        initiativeSkillIds: this._initiativeSkillIds,
         skills: this._skillList,
         tags: this._tags,
         type: this._type,

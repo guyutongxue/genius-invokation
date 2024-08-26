@@ -93,8 +93,8 @@ export async function collateEntities(langCode: string) {
 
     const tags = obj.tagList.filter((e: any) => e !== "GCG_TAG_NONE");
     const skills: SkillRawData[] = [];
-    if (Math.floor(id / 1000) === 313) {
-      // 当这是一张特技装备时，查找特技的技能定义
+    // 当这是一张特技装备时，查找特技的技能定义
+    if (tags.includes("GCG_TAG_VEHICLE")) {
       for (const skillId of obj.skillList) {
         const data = await collateSkill(langCode, skillId);
         if (data) {

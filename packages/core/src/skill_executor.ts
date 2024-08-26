@@ -466,6 +466,12 @@ export class SkillExecutor extends StateMutator {
           );
           continue;
         }
+        const plunging =
+          skillDef.skillType === "normal" &&
+          (player.canPlunging ||
+            activeCh.entities.some((et) =>
+              et.definition.tags.includes("normalAsPlunging"),
+            ));
         const skillInfo: SkillInfo = {
           caller: activeCh,
           definition: skillDef,
@@ -473,7 +479,7 @@ export class SkillExecutor extends StateMutator {
           requestBy: arg.via,
           charged:
             skillDef.skillType === "normal" && player.dice.length % 2 === 0,
-          plunging: skillDef.skillType === "normal" && player.canPlunging,
+          plunging,
         };
         await this.finalizeSkill(skillInfo, void 0);
         await this.handleEvent([
@@ -481,7 +487,10 @@ export class SkillExecutor extends StateMutator {
           new UseSkillEventArg(this.state, arg.who, skillInfo),
         ]);
       } else if (name === "requestTriggerEndPhaseSkill") {
-        using l = this.subLog(DetailLogType.Event, `Triggering end phase skills of ${arg.requestedEntity}`);
+        using l = this.subLog(
+          DetailLogType.Event,
+          `Triggering end phase skills of ${arg.requestedEntity}`,
+        );
         for (const skills of arg.requestedEntity.definition.skills) {
           if (skills.triggerOn !== "onEndPhase") {
             continue;

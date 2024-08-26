@@ -53,6 +53,10 @@ interface CharacterEntry
   skillIds: readonly number[];
 }
 
+interface EntityEntry extends Omit<EntityDefinition, "initiativeSkills"> {
+  initiativeSkillIds: readonly number[];
+}
+
 interface CharacterPassiveSkillEntry {
   __definition: "passiveSkills";
   id: number;
@@ -72,7 +76,7 @@ interface CharacterInitiativeSkillEntry {
 
 type DefinitionMap = {
   characters: CharacterEntry;
-  entities: EntityDefinition;
+  entities: EntityEntry;
   cards: CardDefinition;
   extensions: ExtensionDefinition;
   initiativeSkills: CharacterInitiativeSkillEntry;
@@ -137,7 +141,7 @@ function register<C extends RegisterCategory>(
 export function registerCharacter(value: CharacterEntry) {
   register("characters", value);
 }
-export function registerEntity(value: EntityDefinition) {
+export function registerEntity(value: EntityEntry) {
   register("entities", value);
 }
 export function registerPassiveSkill(value: CharacterPassiveSkillEntry) {
@@ -196,19 +200,29 @@ export function endRegistration(): GameDataGetter {
     const data: GameData = {
       version,
       extensions: selectVersion(version, store.extensions),
-      entities: selectVersion(version, store.entities),
+      entities: selectVersion(version, store.entities, (correctEntity) => {
+        const initiativeSkills = correctEntity.initiativeSkillIds
+          .map((id) => store.initiativeSkills.get(id))
+          .filter((e) => !!e)
+          .map((e) => getCorrectVersion(e, version))
+          .filter((e) => !!e);
+        return {
+          ...correctEntity,
+          initiativeSkills: initiativeSkills.map((e) => e.skill),
+        }
+      }),
       cards: selectVersion(version, store.cards),
       characters: selectVersion(version, store.characters, (correctCh) => {
         const initiativeSkills = correctCh.skillIds
           .map((id) => store.initiativeSkills.get(id))
-          .filter((e): e is CharacterInitiativeSkillEntry[] => !!e)
+          .filter((e) => !!e)
           .map((e) => getCorrectVersion(e, version))
-          .filter((e): e is CharacterInitiativeSkillEntry => !!e);
+          .filter((e) => !!e);
         const passiveSkills = correctCh.skillIds
           .map((id) => store.passiveSkills.get(id))
-          .filter((e): e is CharacterPassiveSkillEntry[] => !!e)
+          .filter((e) => !!e)
           .map((e) => getCorrectVersion(e, version))
-          .filter((e): e is CharacterPassiveSkillEntry => !!e);
+          .filter((e) => !!e);
         const passiveSkillVarConfigs = passiveSkills.reduce(
           (acc, { varConfigs }) => combineObject(acc, varConfigs),
           <Record<string, VariableConfig>>{},

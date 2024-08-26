@@ -383,17 +383,17 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (from.id === switchToTarget.id) {
       return;
     }
-    let disableSwitchFromStatus: EntityState | undefined;
+    let immuneControlStatus: EntityState | undefined;
     if (
-      (disableSwitchFromStatus = from.entities.find((st) =>
-        st.definition.tags.includes("disableSwitchFrom"),
+      (immuneControlStatus = from.entities.find((st) =>
+        st.definition.tags.includes("immuneControl"),
       ))
     ) {
       this.log(
         DetailLogType.Other,
         `Switch active from ${stringifyState(from)} to ${stringifyState(
           switchToTarget.state,
-        )}, but ${stringifyState(disableSwitchFromStatus)} disabled this!`,
+        )}, but ${stringifyState(immuneControlStatus)} disabled this!`,
       );
       return;
     }

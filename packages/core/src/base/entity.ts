@@ -20,10 +20,10 @@ import { VersionInfo } from "./version";
 
 export type EntityTag =
   | "disableSkill" // 禁用技能（仅角色状态）
-  | "immuneControl" // 免疫冻结石化眩晕（仅出战状态）
+  | "immuneControl" // 免疫冻结石化眩晕，禁用效果切人（仅角色状态）
   | "shield" // 护盾
   | "disableEvent" // 禁用事件牌效果（仅出战状态）
-  | "disableSwitchFrom" // 禁止角色因效果被切走（仅角色状态）
+  | "normalAsPlunging" // 普通攻击视为下落攻击
   | EquipmentTag
   | SupportTag;
 
