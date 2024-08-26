@@ -53,9 +53,9 @@ interface CharacterEntry
   skillIds: readonly number[];
 }
 
-interface EntityEntry extends Omit<EntityDefinition, "initiativeSkills"> {
-  initiativeSkillIds: readonly number[];
-}
+// interface EntityEntry extends Omit<EntityDefinition, "initiativeSkills"> {
+//   initiativeSkillIds: readonly number[];
+// }
 
 interface CharacterPassiveSkillEntry {
   __definition: "passiveSkills";
@@ -76,7 +76,7 @@ interface CharacterInitiativeSkillEntry {
 
 type DefinitionMap = {
   characters: CharacterEntry;
-  entities: EntityEntry;
+  entities: EntityDefinition;
   cards: CardDefinition;
   extensions: ExtensionDefinition;
   initiativeSkills: CharacterInitiativeSkillEntry;
@@ -141,7 +141,7 @@ function register<C extends RegisterCategory>(
 export function registerCharacter(value: CharacterEntry) {
   register("characters", value);
 }
-export function registerEntity(value: EntityEntry) {
+export function registerEntity(value: EntityDefinition) {
   register("entities", value);
 }
 export function registerPassiveSkill(value: CharacterPassiveSkillEntry) {
@@ -200,17 +200,7 @@ export function endRegistration(): GameDataGetter {
     const data: GameData = {
       version,
       extensions: selectVersion(version, store.extensions),
-      entities: selectVersion(version, store.entities, (correctEntity) => {
-        const initiativeSkills = correctEntity.initiativeSkillIds
-          .map((id) => store.initiativeSkills.get(id))
-          .filter((e) => !!e)
-          .map((e) => getCorrectVersion(e, version))
-          .filter((e) => !!e);
-        return {
-          ...correctEntity,
-          initiativeSkills: initiativeSkills.map((e) => e.skill),
-        }
-      }),
+      entities: selectVersion(version, store.entities),
       cards: selectVersion(version, store.cards),
       characters: selectVersion(version, store.characters, (correctCh) => {
         const initiativeSkills = correctCh.skillIds
