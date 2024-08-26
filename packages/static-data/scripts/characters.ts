@@ -120,7 +120,11 @@ export async function collateCharacters(
     const tags: string[] = obj.tagList.filter((e: any) => e !== "GCG_TAG_NONE");
     const skills: SkillRawData[] = [];
     for (const skillId of obj.skillList) {
-      skills.push(await collateSkill(langCode, skillId));
+      const data = await collateSkill(langCode, skillId);
+      if (data) {
+        skills.push(data);
+      }
+      skills.push();
     }
 
     const cardPrefabName = xcardview.find(

@@ -237,5 +237,11 @@
   "2020210631828362296": "Skill_S_Navia_02",
   "8991248673410884228": "MonsterSkill_S_EscadronIce_01",
   "13724123840271963914": "MonsterSkill_E_EscadronIce_01_HD",
-  "7195544720368213972": "MonsterSkill_S_EscadronIce_02"
+  "7195544720368213972": "MonsterSkill_S_EscadronIce_02",
+  "13690321684014446285": "Skill_S_Freminet_01",
+  "17898193344751156876": "Skill_E_Freminet_01_HD",
+  "9971337504846734928": "Skill_S_Liuyun_01",
+  "3571882431383427246": "Skill_E_Liuyun_01_HD",
+  "5180328434217960458": "MonsterSkill_S_HilistrayWater_01",
+  "18351762814073801092": "MonsterSkill_E_HilistrayWater_01_HD"
 }

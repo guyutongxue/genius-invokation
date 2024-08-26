@@ -98,6 +98,13 @@
     "description": "为了进行元素调和，而将行动牌从手牌中弃置。"
   },
   {
+    "id": 58,
+    "rawName": "<color=#FFFFFFFF>{SPRITE_PRESET#3008}特技</color>",
+    "name": "特技",
+    "rawDescription": "出战角色装备有「{SPRITE_PRESET#3008}特技」卡牌时，就可以使用对应的「{SPRITE_PRESET#3008}特技」。\\n使用「{SPRITE_PRESET#3008}特技」是一种「战斗行动」。角色因冻结、石化、眩晕等原因无法使用技能时，也会同时无法使用「{SPRITE_PRESET#3008}特技」。\\n角色使用「{SPRITE_PRESET#3008}特技」时不视为使用技能，无法触发「使用技能后」「角色引发元素反应后」等效果；角色使用「{SPRITE_PRESET#3008}特技」造成的伤害不被视为角色造成的伤害。",
+    "description": "出战角色装备有「特技」卡牌时，就可以使用对应的「特技」。\n使用「特技」是一种「战斗行动」。角色因冻结、石化、眩晕等原因无法使用技能时，也会同时无法使用「特技」。\n角色使用「特技」时不视为使用技能，无法触发「使用技能后」「角色引发元素反应后」等效果；角色使用「特技」造成的伤害不被视为角色造成的伤害。"
+  },
+  {
     "id": 100,
     "rawName": "{SPRITE_PRESET#2100}<color=#FFFFFFFF>物理伤害</color>",
     "name": "物理伤害",
@@ -577,8 +584,8 @@
     "id": 1033,
     "rawName": "<color=#FFFFFFFF>迸发扫描</color>",
     "name": "迸发扫描",
-    "rawDescription": "<color=#FFFFFFFF>双方选择行动前：</color>如果我方场上存在草原核或丰穰之核，则使其<color=#FFFFFFFF>可用次数</color>-1，并<color=#FFFFFFFF>舍弃</color>我方牌库顶的1张卡牌。然后，造成所<color=#FFFFFFFF>舍弃</color>卡牌的元素骰费用+1的{SPRITE_PRESET#2107}<color=#7EC236FF>草元素伤害</color>。\\n<color=#FFFFFFFF><color=#FFFFFFFF>可用次数</color>：1</color>（可叠加，最多叠加到3次）",
-    "description": "双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌的元素骰费用+1的草元素伤害。\n可用次数：1（可叠加，最多叠加到3次）"
+    "rawDescription": "<color=#FFFFFFFF>双方选择行动前：</color>如果我方场上存在草原核或丰穰之核，则使其<color=#FFFFFFFF>可用次数</color>-1，并<color=#FFFFFFFF>舍弃</color>我方牌库顶的1张卡牌。然后，造成所<color=#FFFFFFFF>舍弃</color>卡牌的元素骰费用的{SPRITE_PRESET#2107}<color=#7EC236FF>草元素伤害</color>。\\n<color=#FFFFFFFF><color=#FFFFFFFF>可用次数</color>：1</color>（可叠加，最多叠加到3次）",
+    "description": "双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌的元素骰费用的草元素伤害。\n可用次数：1（可叠加，最多叠加到3次）"
   },
   {
     "id": 2001,

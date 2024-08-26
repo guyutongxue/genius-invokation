@@ -994,6 +994,93 @@
     "icon": "UI_Gcg_Char_AvatarIcon_Wriothesley"
   },
   {
+    "id": 1112,
+    "shareId": 407,
+    "sinceVersion": "v5.0.0",
+    "obtainable": true,
+    "name": "菲米尼",
+    "englishName": "Freminet",
+    "tags": [
+      "GCG_TAG_ELEMENT_CRYO",
+      "GCG_TAG_WEAPON_CLAYMORE",
+      "GCG_TAG_NATION_FONTAINE",
+      "GCG_TAG_CAMP_FATUI",
+      "GCG_TAG_ARKHE_OUSIA"
+    ],
+    "storyTitle": "潜怀遐梦·菲米尼",
+    "storyText": "繁星丽天，孤怀寒芒。",
+    "skills": [
+      {
+        "id": 11121,
+        "name": "洑流剑",
+        "englishName": "Flowing Eddies",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_CRYO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_04"
+      },
+      {
+        "id": 11122,
+        "name": "浮冰增压",
+        "englishName": "Pressurized Floe",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，若角色未附属<color=#FFFFFFFF>$[C111121]</color>，则使其附属<color=#FFFFFFFF>$[C111121]</color>。",
+        "description": "造成2点冰元素伤害，若角色未附属佩伊刻计，则使其附属佩伊刻计。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_CRYO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_CRYO",
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_S_Freminet_01"
+      },
+      {
+        "id": 11123,
+        "name": "猎影潜袭",
+        "englishName": "Shadowhunter's Ambush",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，本角色附属<color=#FFFFFFFF>$[C111122]</color>。",
+        "description": "造成4点冰元素伤害，本角色附属潜猎模式。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_CRYO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_CRYO",
+          "D__KEY__DAMAGE": 4
+        },
+        "icon": "Skill_E_Freminet_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Freminet",
+    "icon": "UI_Gcg_Char_AvatarIcon_Freminet"
+  },
+  {
     "id": 1201,
     "shareId": 9,
     "sinceVersion": "v3.3.0",
@@ -5066,6 +5153,92 @@
     "icon": "UI_Gcg_Char_AvatarIcon_Faruzan"
   },
   {
+    "id": 1510,
+    "shareId": 408,
+    "sinceVersion": "v5.0.0",
+    "obtainable": true,
+    "name": "闲云",
+    "englishName": "Xianyun",
+    "tags": [
+      "GCG_TAG_ELEMENT_ANEMO",
+      "GCG_TAG_WEAPON_CATALYST",
+      "GCG_TAG_NATION_LIYUE"
+    ],
+    "storyTitle": "鸾音鹤信·闲云",
+    "storyText": "侠中影，云里客。",
+    "skills": [
+      {
+        "id": 15101,
+        "name": "清风散花词",
+        "englishName": "Word of Wind and Flower",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成1点风元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ANEMO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ANEMO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_A_Catalyst_MD"
+      },
+      {
+        "id": 15102,
+        "name": "朝起鹤云",
+        "englishName": "White Clouds at Dawn",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成<color=#FFFFFFFF>$[C115101]</color>，本角色附属<color=#FFFFFFFF>$[C115104]</color>。",
+        "description": "造成2点风元素伤害，生成步天梯，本角色附属闲云冲击波。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ANEMO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ANEMO",
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_S_Liuyun_01"
+      },
+      {
+        "id": 15103,
+        "name": "暮集竹星",
+        "englishName": "Stars Gather at Dusk",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，治疗所有我方角色1点，生成手牌<color=#FFFFFFFF>$[C115102]</color>。\\n（装备有<color=#FFFFFFFF>$[C115102]</color>的角色可以使用特技：<color=#FFFFFFFF>$[S1151021]</color>）",
+        "description": "造成1点风元素伤害，治疗所有我方角色1点，生成手牌竹星。\n（装备有竹星的角色可以使用特技：仙力助推）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ANEMO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ANEMO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_E_Liuyun_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Liuyun",
+    "icon": "UI_Gcg_Char_AvatarIcon_Liuyun"
+  },
+  {
     "id": 1601,
     "shareId": 42,
     "sinceVersion": "v3.3.0",
@@ -7339,8 +7512,8 @@
         "name": "迸落星雨",
         "englishName": "Starfall Shower",
         "type": "GCG_SKILL_TAG_E",
-        "rawDescription": "造成$[D__KEY__DAMAGE_2]点$[D__KEY__ELEMENT]，此角色每有3点<color=#FFFFFFFF>$[S22044]</color>提供的额外最大生命，此伤害+1（最多+4）。然后$[K56]1张原本元素骰费用最高的手牌。",
-        "description": "造成1点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+4）。然后舍弃1张原本元素骰费用最高的手牌。",
+        "rawDescription": "造成$[D__KEY__DAMAGE_2]点$[D__KEY__ELEMENT]，此角色每有3点<color=#FFFFFFFF>$[S22044]</color>提供的额外最大生命，此伤害+1（最多+3）。然后$[K56]1张原本元素骰费用最高的手牌。",
+        "description": "造成1点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+3）。然后舍弃1张原本元素骰费用最高的手牌。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_HYDRO",
@@ -7393,6 +7566,102 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Monster_Ptahur",
     "icon": "UI_Gcg_Char_MonsterIcon_Ptahur"
+  },
+  {
+    "id": 2205,
+    "shareId": 409,
+    "sinceVersion": "v5.0.0",
+    "obtainable": true,
+    "name": "丘丘水行游侠",
+    "englishName": "Hydro Hilichurl Rogue",
+    "tags": [
+      "GCG_TAG_ELEMENT_HYDRO",
+      "GCG_TAG_WEAPON_NONE",
+      "GCG_TAG_CAMP_MONSTER",
+      "GCG_TAG_CAMP_HILICHURL"
+    ],
+    "storyTitle": "锐波漫游·丘丘水行游侠",
+    "storyText": "不属于任何部族的丘丘人流浪者，如同自我流放一般在荒野中四处漫游。",
+    "skills": [
+      {
+        "id": 22051,
+        "name": "镰刀旋斩",
+        "englishName": "Whirling Scythe",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_00"
+      },
+      {
+        "id": 22052,
+        "name": "狂澜镰击",
+        "englishName": "Slash of Surging Tides",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。\\n如果有敌方角色附属有<color=#FFFFFFFF>$[C106]</color>或<color=#FFFFFFFF>$[C122052]</color>，则本角色获得1点$[K310]。（每回合1次）",
+        "description": "造成3点水元素伤害。\n如果有敌方角色附属有冻结或水泡围困，则本角色获得1点充能。（每回合1次）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 3
+        },
+        "icon": "MonsterSkill_S_HilistrayWater_01"
+      },
+      {
+        "id": 22053,
+        "name": "浮泡攻势",
+        "englishName": "Bubblefloat Blitz",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成手牌<color=#FFFFFFFF>$[C122051]</color>。\\n（装备有<color=#FFFFFFFF>$[C122051]</color>的角色可以使用特技：<color=#FFFFFFFF>$[S1220511]</color>）",
+        "description": "造成3点水元素伤害，生成手牌水泡史莱姆。\n（装备有水泡史莱姆的角色可以使用特技：水泡战法）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 3
+        },
+        "icon": "MonsterSkill_E_HilistrayWater_01_HD"
+      },
+      {
+        "id": 22054,
+        "name": "狂澜镰击",
+        "englishName": "Slash of Surging Tides",
+        "type": "GCG_SKILL_TAG_NONE",
+        "rawDescription": "",
+        "description": "",
+        "playCost": [],
+        "keyMap": {}
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_HilistrayWater",
+    "icon": "UI_Gcg_Char_MonsterIcon_HilistrayWater"
   },
   {
     "id": 2301,

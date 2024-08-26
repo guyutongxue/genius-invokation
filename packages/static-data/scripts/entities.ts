@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { readJson } from "./json";
+import { collateSkill, type SkillRawData } from "./skills";
 import {
   getExcel,
   getLanguage,
@@ -33,6 +34,7 @@ export interface EntityRawData {
   name: string;
   englishName: string;
   tags: string[];
+  skills: SkillRawData[];
   rawDescription: string;
   description: string;
   rawPlayingDescription?: string;
@@ -56,7 +58,7 @@ function getBuffIconFileName(iconHash?: number | bigint): string | undefined {
   return iconHash ? data[String(iconHash)] : void 0;
 }
 
-export function collateEntities(langCode: string) {
+export async function collateEntities(langCode: string) {
   const locale = getLanguage(langCode);
   const english = getLanguage("EN");
   const result: EntityRawData[] = [];
@@ -90,6 +92,16 @@ export function collateEntities(langCode: string) {
     }
 
     const tags = obj.tagList.filter((e: any) => e !== "GCG_TAG_NONE");
+    const skills: SkillRawData[] = [];
+    if (Math.floor(id / 1000) === 313) {
+      // 当这是一张特技装备时，查找特技的技能定义
+      for (const skillId of obj.skillList) {
+        const data = await collateSkill(langCode, skillId);
+        if (data) {
+          skills.push(data);
+        }
+      }
+    }
 
     const rawDescription = locale[obj.descTextMapHash] ?? "";
     const descriptionReplaced = getDescriptionReplaced(rawDescription, locale);
@@ -124,6 +136,7 @@ export function collateEntities(langCode: string) {
       name,
       englishName,
       tags,
+      skills,
       rawDescription,
       description,
       rawPlayingDescription,

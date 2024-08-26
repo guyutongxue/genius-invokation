@@ -31,23 +31,32 @@ const filelist = fs.readdirSync(
   `${config.input}/BinOutput/GCG/Gcg_DeclaredValueSet`,
 );
 
-const D__KEY__DAMAGE = "-2060930438";
-const D__KEY__ELEMENT = "476224977";
-const D__KEY__DAMAGE_2 = "1428448537";
-const D__KEY__DAMAGE_5 = "1428448540";
+const PROPERTIES_KEY_MAP = {
+  "-2060930438": "D__KEY__DAMAGE",
+  "1428448537": "D__KEY__DAMAGE_2",
+  "1428448540": "D__KEY__DAMAGE_5",
+  "476224977": "D__KEY__ELEMENT",
+} as Record<string, string>;
 
 // Find DAMAGEVALUEPROP and ELEMENTVALUEPROP
 const { declaredValueMap } = readJson(
   `${config.input}/BinOutput/GCG/Gcg_DeclaredValueSet/Char_Skill_13023.json`,
 );
-export const PROP_D__KEY__DAMAGE = Object.entries(
-  declaredValueMap[D__KEY__DAMAGE],
-).find(([key, val]) => typeof val === "number")![0];
-export const PROP_D__KEY__DAMAGE_2 = PROP_D__KEY__DAMAGE;
-export const PROP_D__KEY__DAMAGE_5 = PROP_D__KEY__DAMAGE;
-export const PROP_D__KEY_ELEMENT = Object.entries(
-  declaredValueMap[D__KEY__ELEMENT],
-).find(([key, val]) => typeof val === "string" && val.startsWith("GCG"))![0];
+
+type ValueGrabber<T = any> = (obj: object) => T;
+
+const numberGrabber: ValueGrabber<number> = (obj) =>
+  Object.values(obj).find((val) => typeof val === "number")! as number;
+
+const VALUE_GRABBER = {
+  D__KEY__DAMAGE: numberGrabber,
+  D__KEY__DAMAGE_2: numberGrabber,
+  D__KEY__DAMAGE_5: numberGrabber,
+  D__KEY__ELEMENT: (obj: object) =>
+    Object.values(obj).find(
+      (val) => typeof val === "string" && val.startsWith("GCG"),
+    )! as string,
+} as Record<string, ValueGrabber>;
 
 for (const filename of filelist) {
   if (!filename.endsWith(".json")) continue;
@@ -57,36 +66,33 @@ for (const filename of filelist) {
   );
 
   try {
-    const dataname = fileObj.name;
-    if (`${dataname}.json` !== filename) {
+    const dataName = fileObj.name;
+    if (`${dataName}.json` !== filename) {
       continue;
     }
     const uncutmap: any = Object.values(fileObj)[1];
 
-    tcgSkillKeyMap[dataname] = {};
+    tcgSkillKeyMap[dataName] = {};
 
     for (let [key, kobj] of Object.entries(uncutmap) as [string, any][]) {
-      switch (key) {
-        case D__KEY__DAMAGE:
-          tcgSkillKeyMap[dataname].D__KEY__DAMAGE = kobj[PROP_D__KEY__DAMAGE];
-          if (tcgSkillKeyMap[dataname].D__KEY__DAMAGE === undefined)
-            console.log("loadTcgSkillKeyMap failed to extract D__KEY__DAMAGE");
-          break;
-        case D__KEY__ELEMENT:
-          tcgSkillKeyMap[dataname].D__KEY__ELEMENT = kobj[PROP_D__KEY_ELEMENT];
-          // if (tcgSkillKeyMap[dataname].D__KEY__ELEMENT === undefined)
-          //   console.log("loadTcgSkillKeyMap failed to extract D__KEY__ELEMENT");
-          break;
-        case D__KEY__DAMAGE_2:
-          tcgSkillKeyMap[dataname].D__KEY__DAMAGE_2 = kobj[PROP_D__KEY__DAMAGE_2];
-          if (tcgSkillKeyMap[dataname].D__KEY__DAMAGE_2 === undefined)
-            console.log("loadTcgSkillKeyMap failed to extract D__KEY__DAMAGE_2");
-          break;
-        case D__KEY__DAMAGE_5:
-          tcgSkillKeyMap[dataname].D__KEY__DAMAGE_5 = kobj[PROP_D__KEY__DAMAGE_5];
-          if (tcgSkillKeyMap[dataname].D__KEY__DAMAGE_5 === undefined)
-            console.log("loadTcgSkillKeyMap failed to extract D__KEY__DAMAGE_5");
-          break;
+      if (key in PROPERTIES_KEY_MAP) {
+        let value = VALUE_GRABBER[PROPERTIES_KEY_MAP[key]](kobj);
+        if (typeof value === "undefined") {
+          // D__KEY__ELEMENT 可空（即物理伤害）
+          if (PROPERTIES_KEY_MAP[key] !== "D__KEY__ELEMENT") {
+            console.log(
+              `loadTcgSkillKeyMap ${dataName}.json failed to extract ${PROPERTIES_KEY_MAP[key]}`,
+            );
+          }
+          continue;
+        }
+        // 特判时间！妈蛋
+        if (dataName === "Char_Skill_16073" && PROPERTIES_KEY_MAP[key] === "D__KEY__DAMAGE") {
+          value = 3;
+        } else if (dataName === "Char_Skill_25032" && PROPERTIES_KEY_MAP[key] === "D__KEY__DAMAGE") {
+          value = 3;
+        }
+        tcgSkillKeyMap[dataName][PROPERTIES_KEY_MAP[key]] = value;
       }
     }
   } catch (e) {
@@ -115,20 +121,27 @@ export interface SkillRawData {
 export async function collateSkill(
   langCode: string,
   skillId: number,
-): Promise<SkillRawData> {
+): Promise<SkillRawData | null> {
   const locale = getLanguage(langCode);
   const english = getLanguage("EN");
   const skillObj = xskill.find((e) => e.id === skillId)!;
 
   const id = skillId;
   const type = skillObj.skillTagList[0];
+  if (type === "GCG_TAG_NONE") {
+    return null;
+  }
   const [name, englishName] = [locale, english].map((lc) =>
     sanitizeName(lc[skillObj.nameTextMapHash] ?? ""),
   );
 
   const rawDescription = locale[skillObj.descTextMapHash] ?? "";
   const keyMap = tcgSkillKeyMap[skillObj.skillJson];
-  const descriptionReplaced = getDescriptionReplaced(rawDescription, locale, keyMap);
+  const descriptionReplaced = getDescriptionReplaced(
+    rawDescription,
+    locale,
+    keyMap,
+  );
   const description = sanitizeDescription(descriptionReplaced, true);
 
   const playCost = skillObj.costList
