@@ -3388,7 +3388,23 @@
     "tags": [
       "GCG_TAG_VEHICLE"
     ],
-    "skills": [],
+    "skills": [
+      {
+        "id": 1151021,
+        "name": "仙力助推",
+        "englishName": "Adeptal Assistance",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "治疗所附属角色2点，并使其下次普通攻击视为$[K52]，伤害+1，并且技能结算后造成1点$[K105]。",
+        "description": "治疗所附属角色2点，并使其下次普通攻击视为下落攻击，伤害+1，并且技能结算后造成1点风元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_SAME",
+            "count": 1
+          }
+        ],
+        "keyMap": {}
+      }
+    ],
     "rawDescription": "$[K58]：$[S1151021]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
     "description": "特技：仙力助推\n可用次数：2\n（角色最多装备1个「特技」）",
     "rawPlayingDescription": "$[K58]：$[S1151021]\\n<color=#FFFFFFFF>$[K3]：2</color>",
@@ -5052,7 +5068,49 @@
     "tags": [
       "GCG_TAG_VEHICLE"
     ],
-    "skills": [],
+    "skills": [
+      {
+        "id": 1220511,
+        "name": "水泡战法",
+        "englishName": "Bubble Battle Tactics",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "（需准备1个行动轮）造成1点$[K102]，敌方出战角色附属<color=#FFFFFFFF>$[C122052]</color>。",
+        "description": "（需准备1个行动轮）造成1点水元素伤害，敌方出战角色附属水泡围困。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_SAME",
+            "count": 1
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 1
+        }
+      },
+      {
+        "id": 1220512,
+        "name": "水泡封锁",
+        "englishName": "Mist Bubble Lockdown",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "造成1点$[K102]，敌方出战角色附属<color=#FFFFFFFF>$[C122052]</color>。",
+        "description": "造成1点水元素伤害，敌方出战角色附属水泡围困。",
+        "playCost": [],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 1
+        }
+      },
+      {
+        "id": 1220513,
+        "name": "水泡封锁",
+        "englishName": "Mist Bubble Lockdown",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "造成1点$[K102]，敌方出战角色附属<color=#FFFFFFFF>$[C122052]</color>。",
+        "description": "造成1点水元素伤害，敌方出战角色附属水泡围困。",
+        "playCost": [],
+        "keyMap": {}
+      }
+    ],
     "rawDescription": "$[K58]：$[S1220511]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
     "description": "特技：水泡战法\n可用次数：2\n（角色最多装备1个「特技」）",
     "rawPlayingDescription": "$[K58]：$[S1220511]\\n<color=#FFFFFFFF>$[K3]：2</color>",
