@@ -200,8 +200,9 @@ export function App() {
               type="radio"
               name="gameModeTab"
               id="multiplayerInput"
+              disabled
             />
-            <label class="tab__header" for="multiplayerInput">
+            <label class="tab__header" style={{ cursor: "not-allowed" }} title="敬请期待" for="multiplayerInput">
               多人对战
             </label>
             <div class="tab__content config-panel">
