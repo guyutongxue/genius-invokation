@@ -22,7 +22,7 @@ import {
   GameState,
   stringifyState,
 } from "./state";
-import { CardTag, PlayCardSkillDefinition } from "./card";
+import { CardTag, CardDefinition } from "./card";
 import {
   REACTION_MAP,
   REACTION_RELATIVES,
@@ -59,16 +59,27 @@ export type SkillType = CommonSkillType | "playCard" | "disposeCard";
 export type InitiativeSkillFilter = (
   state: GameState,
   skillInfo: SkillInfo,
-  arg?: unknown,
+  arg: InitiativeSkillEventArg,
 ) => boolean;
 
-export interface InitiativeSkillDefinition<Arg = void>
-  extends SkillDefinitionBase<Arg> {
+
+export interface InitiativeSkillEventArg {
+  targets: AnyState[];
+}
+
+export type InitiativeSkillTargetGetter = (
+  state: GameState,
+  skillInfo: SkillInfo,
+) => InitiativeSkillEventArg[];
+
+export interface InitiativeSkillDefinition
+  extends SkillDefinitionBase<InitiativeSkillEventArg> {
   readonly skillType: SkillType;
   readonly requiredCost: readonly DiceType[];
   readonly gainEnergy: boolean;
   readonly prepared: boolean;
   readonly triggerOn: null;
+  readonly getTarget: InitiativeSkillTargetGetter;
 }
 
 export interface SkillInfo {
@@ -277,7 +288,7 @@ export class ActionEventArg<
         (d) => d !== DiceType.Energy,
       );
     } else if (this.isPlayCard()) {
-      return this.action.card.definition.onPlay.requiredCost.filter(
+      return this.action.card.definition.requiredCost.filter(
         (d) => d !== DiceType.Energy,
       );
     } else {
@@ -1123,7 +1134,7 @@ export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
 
 export type SkillDefinition =
   | InitiativeSkillDefinition
-  | PlayCardSkillDefinition
+  | CardDefinition
   | TriggeredSkillDefinition;
 
 export function stringifyDamageInfo(damage: DamageInfo | HealInfo): string {

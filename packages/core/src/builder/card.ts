@@ -21,32 +21,33 @@ import {
 } from "../base/state";
 import {
   CardTag,
-  CardSkillEventArg,
-  CardTargetKind,
+  InitiativeSkillTargetKind,
   CardType,
-  PlayCardFilter,
-  PlayCardTargetGetter,
   SupportTag,
   WeaponCardTag,
-  PlayCardSkillDefinition,
   CardDefinition,
-  DisposeCardSkillDefinition,
 } from "../base/card";
-import { CharacterTag } from "../base/character";
 import {
   DescriptionDictionary,
   DescriptionDictionaryEntry,
   DescriptionDictionaryKey,
   ExEntityType,
 } from "../base/entity";
-import { SkillDescription, SkillInfo } from "../base/skill";
+import {
+  InitiativeSkillDefinition,
+  InitiativeSkillEventArg,
+  InitiativeSkillFilter,
+  InitiativeSkillTargetGetter,
+  SkillDescription,
+  SkillInfo,
+} from "../base/skill";
 import { registerCard } from "./registry";
 import { SkillContext } from "./context";
 import {
   SkillBuilderWithCost,
   enableShortcut,
   BuilderWithShortcut,
-  SkillFilter,
+  SkillOperationFilter,
   ReadonlyMetaOf,
   SkillOperation,
   WritableMetaOf,
@@ -66,10 +67,10 @@ import { GiTcgDataError } from "../error";
 import { Writable } from "../utils";
 import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
-type StateOf<TargetKindTs extends CardTargetKind> =
+type StateOf<TargetKindTs extends InitiativeSkillTargetKind> =
   TargetKindTs extends readonly [
     infer First extends ExEntityType,
-    ...infer Rest extends CardTargetKind,
+    ...infer Rest extends InitiativeSkillTargetKind,
   ]
     ? readonly [
         First extends "character" ? CharacterState : EntityState,
@@ -77,19 +78,14 @@ type StateOf<TargetKindTs extends CardTargetKind> =
       ]
     : readonly [];
 
-interface StrictCardSkillEventArg<TargetKindTs extends CardTargetKind> {
+interface StrictCardSkillEventArg<
+  TargetKindTs extends InitiativeSkillTargetKind,
+> {
   targets: StateOf<TargetKindTs>;
 }
 
-type LooseBuilderMetaForCard = {
-  callerType: "character";
-  callerVars: never;
-  eventArgType: CardSkillEventArg;
-  associatedExtension: never;
-};
-
-type StrictBuilderMetaForCard<
-  KindTs extends CardTargetKind,
+type InitiativeSkillBuilderMeta<
+  KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle,
 > = {
   callerType: "character";
@@ -98,23 +94,23 @@ type StrictBuilderMetaForCard<
   associatedExtension: AssociatedExt;
 };
 
-type BuilderMetaForCardDispose<AssociatedExt extends ExtensionHandle> = {
+type DisposeCardBuilderMeta<AssociatedExt extends ExtensionHandle> = {
   callerType: "character";
   callerVars: never;
-  eventArgType: void;
+  eventArgType: InitiativeSkillEventArg;
   associatedExtension: AssociatedExt;
 };
 
-type StrictCardSkillFilter<
-  KindTs extends CardTargetKind,
+type StrictInitiativeSkillFilter<
+  KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle,
-> = SkillFilter<StrictBuilderMetaForCard<KindTs, AssociatedExt>>;
+> = SkillOperationFilter<InitiativeSkillBuilderMeta<KindTs, AssociatedExt>>;
 
-type TargetQuery =
+export type TargetQuery =
   | `${string}character${string}`
   | `${string}summon${string}`
   | `${string}support${string}`;
-type TargetKindOfQuery<Q extends TargetQuery> = GuessedTypeOfQuery<Q>;
+export type TargetKindOfQuery<Q extends TargetQuery> = GuessedTypeOfQuery<Q>;
 
 const SATIATED_ID = 303300 as StatusHandle;
 
@@ -132,17 +128,17 @@ type CardDescriptionDictionaryGetter<AssociatedExt extends ExtensionHandle> = (
 ) => string | number;
 
 class CardBuilder<
-  KindTs extends CardTargetKind,
+  KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle = never,
 > extends SkillBuilderWithCost<{
-  callerType: "character",
-  callerVars: never,
-  eventArgType: StrictCardSkillEventArg<KindTs>,
-  associatedExtension: AssociatedExt
+  callerType: "character";
+  callerVars: never;
+  eventArgType: StrictCardSkillEventArg<KindTs>;
+  associatedExtension: AssociatedExt;
 }> {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
-  private _filters: StrictCardSkillFilter<KindTs, AssociatedExt>[] = [];
+  private _filters: StrictInitiativeSkillFilter<KindTs, AssociatedExt>[] = [];
   /**
    * 在料理卡牌的行动结尾添加“设置饱腹状态”操作的目标；
    * `null` 表明不添加（不是料理牌或者手动指定）
@@ -150,9 +146,8 @@ class CardBuilder<
   private _satiatedTarget: string | null = null;
   private _doSameWhenDisposed = false;
   private _disposeOperation: SkillOperation<
-    BuilderMetaForCardDispose<AssociatedExt>
+    DisposeCardBuilderMeta<AssociatedExt>
   > | null = null;
-  private _targetQueries: string[] = [];
   private _descriptionDictionary: Writable<DescriptionDictionary> = {};
   private _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
 
@@ -168,7 +163,7 @@ class CardBuilder<
     this._versionInfo = { predicate: "until", version };
     return this;
   }
-  
+
   /** 此定义未被使用。 */
   reserve(): void {}
 
@@ -291,7 +286,7 @@ class CardBuilder<
   ): BuilderWithShortcut<
     CardBuilder<readonly [...KindTs, TargetKindOfQuery<Q>], AssociatedExt>
   > {
-    this._targetQueries = [...this._targetQueries, targetQuery];
+    this.addTargetImpl(targetQuery);
     return this as any;
   }
 
@@ -352,7 +347,7 @@ class CardBuilder<
     return this.addTarget(targetQuery);
   }
 
-  filter(pred: StrictCardSkillFilter<KindTs, AssociatedExt>): this {
+  filter(pred: StrictInitiativeSkillFilter<KindTs, AssociatedExt>): this {
     this._filters.push(pred);
     return this;
   }
@@ -371,31 +366,6 @@ class CardBuilder<
     return this.tags("food").addTarget(target as "character");
   }
 
-  private generateTargetList(
-    state: GameState,
-    skillInfo: SkillInfo,
-    known: AnyState[],
-    targetQuery: string[],
-  ): AnyState[][] {
-    if (targetQuery.length === 0) {
-      return [[]];
-    }
-    const [first, ...rest] = targetQuery;
-    const ctx = new SkillContext<ReadonlyMetaOf<LooseBuilderMetaForCard>>(
-      state,
-      this._wrapSkillInfoWithExt(skillInfo),
-      {
-        targets: known,
-      },
-    );
-    const states = ctx.$$(first).map((c) => c.state);
-    return states.flatMap((st) =>
-      this.generateTargetList(state, skillInfo, [...known, st], rest).map(
-        (l) => [st, ...l],
-      ),
-    );
-  }
-
   doSameWhenDisposed() {
     if (this._disposeOperation !== null) {
       throw new GiTcgDataError(
@@ -410,7 +380,7 @@ class CardBuilder<
     this._doSameWhenDisposed = true;
     return this;
   }
-  onDispose(op: SkillOperation<BuilderMetaForCardDispose<AssociatedExt>>) {
+  onDispose(op: SkillOperation<DisposeCardBuilderMeta<AssociatedExt>>) {
     if (this._doSameWhenDisposed) {
       throw new GiTcgDataError(
         `Cannot specify dispose action when using .doSameWhenDisposed().`,
@@ -430,60 +400,27 @@ class CardBuilder<
       const target = this._satiatedTarget;
       this.operations.push((c) => c.characterStatus(SATIATED_ID, target));
     }
-    const action: SkillDescription<CardSkillEventArg> = (
-      state,
-      skillInfo,
-      arg,
-    ) => {
-      return this.applyActions(state, skillInfo, arg as any);
-    };
-    const filterFn: PlayCardFilter = (state, skillInfo, args) => {
-      const ctx = new SkillContext<
-        ReadonlyMetaOf<StrictBuilderMetaForCard<KindTs, AssociatedExt>>
-      >(state, this._wrapSkillInfoWithExt(skillInfo), args as any);
-      for (const filter of this._filters) {
-        if (!filter(ctx, ctx.eventArg)) {
-          return false;
-        }
-      }
-      return true;
-    };
-    const targetGetter: PlayCardTargetGetter = (state, skillInfo) => {
-      const targetIdsList = this.generateTargetList(
-        state,
-        skillInfo,
-        [],
-        this._targetQueries,
-      );
-      return targetIdsList.map((targets) => ({ targets }));
-    };
-    const skillDef: PlayCardSkillDefinition = {
-      type: "skill",
-      skillType: "playCard",
-      id: this.cardId,
-      triggerOn: null,
-      filter: () => true,
-      requiredCost: this._cost,
-      gainEnergy: false,
-      prepared: false,
-      action,
-    };
-    let onDispose: DisposeCardSkillDefinition | undefined = void 0;
+    const targetGetter = this.buildTargetGetter();
+    let onDispose: InitiativeSkillDefinition | undefined = void 0;
+    const action = this.buildAction<InitiativeSkillEventArg>();
+    const filter = this.buildFilter<InitiativeSkillEventArg>();
     if (this._doSameWhenDisposed || this._disposeOperation !== null) {
       const disposeOp = this._disposeOperation;
-      const disposeAction = disposeOp ? <SkillDescription<void>>((
+      const disposeAction = disposeOp
+        ? <SkillDescription<InitiativeSkillEventArg>>((
             state,
             skillInfo,
             arg,
           ) => {
             const ctx = new SkillContext<
-              WritableMetaOf<BuilderMetaForCardDispose<AssociatedExt>>
+              WritableMetaOf<DisposeCardBuilderMeta<AssociatedExt>>
             >(state, this._wrapSkillInfoWithExt(skillInfo), arg);
-            disposeOp(ctx, {});
+            disposeOp(ctx, { targets: [] });
             ctx._terminate();
             return [ctx.state, ctx.events];
-          }) : (action as unknown as SkillDescription<void>);
-      const disposeDef: DisposeCardSkillDefinition = {
+          })
+        : action;
+      const disposeDef: InitiativeSkillDefinition = {
         type: "skill",
         skillType: "disposeCard",
         id: this.cardId + 0.01,
@@ -492,21 +429,28 @@ class CardBuilder<
         gainEnergy: false,
         prepared: false,
         filter: () => true,
+        getTarget: () => [],
         action: disposeAction,
       };
       onDispose = disposeDef;
     }
     const cardDef: CardDefinition = {
       __definition: "cards",
+      type: "skill",
+      skillType: "playCard",
+      cardType: this._type,
       id: this.cardId,
-      type: this._type,
-      version: this._versionInfo,
       tags: this._tags,
+      version: this._versionInfo,
+      triggerOn: null,
+      requiredCost: this._cost,
+      gainEnergy: false,
+      prepared: false,
+      filter,
+      action,
       getTarget: targetGetter,
-      filter: filterFn,
-      onPlay: skillDef,
-      onDispose: onDispose,
-      descriptionDictionary: {}, // TODO
+      onDispose,
+      descriptionDictionary: this._descriptionDictionary,
     };
     registerCard(cardDef);
     return this.cardId as CardHandle;

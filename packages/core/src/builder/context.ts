@@ -348,9 +348,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     const maxCost = Math.max(
       ...player.hands.map((c) => diceCostOfCard(c.definition)),
     );
-    return player.hands.filter(
-      (c) => diceCostOfCard(c.definition) === maxCost,
-    );
+    return player.hands.filter((c) => diceCostOfCard(c.definition) === maxCost);
   }
 
   // MUTATIONS
@@ -1426,7 +1424,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           logger: this.skillInfo.logger,
           onNotify: (opt) => this.onNotify(opt),
         };
-        const [newState, newEvents] = disposeDef.action(this.state, skillInfo);
+        const [newState, newEvents] = disposeDef.action(this.state, skillInfo, {
+          targets: [],
+        });
         this.notify();
         this.resetState(newState);
         this.eventAndRequests.push(...newEvents);

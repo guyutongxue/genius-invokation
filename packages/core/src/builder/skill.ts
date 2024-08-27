@@ -35,8 +35,11 @@ import {
   SkillResult,
   ElementalTuningInfo,
   InitiativeSkillDefinition,
+  InitiativeSkillEventArg,
+  InitiativeSkillFilter,
+  InitiativeSkillTargetGetter,
 } from "../base/skill";
-import { EntityVariables, GameState } from "../base/state";
+import { AnyState, EntityVariables, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
 import { ExtensionHandle, SkillHandle } from "./type";
 import {
@@ -50,6 +53,8 @@ import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
 import { createVariable } from "./utils";
 import { registerInitiativeSkill } from "./registry";
+import { InitiativeSkillTargetKind } from "../base/card";
+import { TargetKindOfQuery, TargetQuery } from "./card";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -64,7 +69,7 @@ export type SkillOperation<Meta extends BuilderMetaBase> = (
   e: Omit<Meta["eventArgType"], `_${string}`>,
 ) => void;
 
-export type SkillFilter<Meta extends BuilderMetaBase> = (
+export type SkillOperationFilter<Meta extends BuilderMetaBase> = (
   c: TypedSkillContext<ReadonlyMetaOf<Meta>>,
   e: Omit<Meta["eventArgType"], `_${string}`>,
 ) => unknown;
@@ -420,17 +425,17 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   declare [BUILDER_META_TYPE]: Meta;
 
   protected operations: SkillOperation<Meta>[] = [];
-  protected filters: SkillFilter<Meta>[] = [];
+  protected filters: SkillOperationFilter<Meta>[] = [];
   protected associatedExtensionId: number | undefined = void 0;
   constructor(protected readonly id: number) {}
   private applyIfFilter = false;
-  private _ifFilter: SkillFilter<Meta> = () => true;
+  private _ifFilter: SkillOperationFilter<Meta> = () => true;
 
   protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfo {
     return { ...skillInfo, associatedExtensionId: this.associatedExtensionId };
   }
 
-  if(filter: SkillFilter<Meta>): this {
+  if(filter: SkillOperationFilter<Meta>): this {
     this._ifFilter = filter;
     this.applyIfFilter = true;
     return this;
@@ -462,35 +467,35 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
    *
    * @returns 即 `SkillDescription` 的返回值
    */
-  protected applyActions(
-    state: GameState,
-    skillInfo: SkillInfo,
-    arg: Meta["eventArgType"],
-  ): SkillResult {
-    const ctx = new SkillContext<WritableMetaOf<Meta>>(
-      state,
-      this._wrapSkillInfoWithExt(skillInfo),
-      arg,
-    );
-    for (const op of this.operations) {
-      op(ctx, ctx.eventArg);
-    }
-    ctx._terminate();
-    return [ctx.state, ctx.events] as const;
+  protected buildAction<Arg = Meta["eventArgType"]>(): SkillDescription<Arg> {
+    return (state: GameState, skillInfo: SkillInfo, arg: Arg): SkillResult => {
+      const ctx = new SkillContext<WritableMetaOf<Meta>>(
+        state,
+        this._wrapSkillInfoWithExt(skillInfo),
+        arg,
+      );
+      for (const op of this.operations) {
+        op(ctx, ctx.eventArg);
+      }
+      ctx._terminate();
+      return [ctx.state, ctx.events] as const;
+    };
   }
 
-  protected applyFilters(state: GameState, skillInfo: SkillInfo, arg: Meta["eventArgType"]) {
-    const ctx = new SkillContext<ReadonlyMetaOf<Meta>>(
-      state,
-      this._wrapSkillInfoWithExt(skillInfo),
-      arg,
-    );
-    for (const filter of this.filters) {
-      if (!filter(ctx as any, ctx.eventArg)) {
-        return false;
+  protected buildFilter<Arg = Meta["eventArgType"]>(): SkillActionFilter<Arg> {
+    return (state: GameState, skillInfo: SkillInfo, arg: Arg) => {
+      const ctx = new SkillContext<ReadonlyMetaOf<Meta>>(
+        state,
+        this._wrapSkillInfoWithExt(skillInfo),
+        arg,
+      );
+      for (const filter of this.filters) {
+        if (!filter(ctx as any, ctx.eventArg)) {
+          return false;
+        }
       }
-    }
-    return true;
+      return true;
+    };
   }
 }
 
@@ -585,18 +590,18 @@ export class TriggeredSkillBuilder<
       Meta["callerVars"],
       Meta["associatedExtension"]
     >,
-    triggerFilter: SkillFilter<Meta> = () => true,
+    triggerFilter: SkillOperationFilter<Meta> = () => true,
   ) {
     super(id);
     this.associatedExtensionId = this.parent._associatedExtensionId;
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
     this.filters.push((c, e) => {
       const { area, state } = c.self;
-      return         filterDescriptor(c as any, e as any, {
-          callerArea: area,
-          callerId: state.id,
-          listenTo: this._listenTo,
-        });
+      return filterDescriptor(c as any, e as any, {
+        callerArea: area,
+        callerId: state.id,
+        listenTo: this._listenTo,
+      });
     });
   }
   private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
@@ -705,12 +710,6 @@ export class TriggeredSkillBuilder<
       }
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
-    const filter: SkillActionFilter<any> = (state, skillInfo, arg) => {
-      return this.applyFilters(state, skillInfo, arg as any);
-    };
-    const action: SkillDescription<any> = (state, skillInfo, arg) => {
-      return this.applyActions(state, skillInfo, arg as any);
-    };
     const def: TriggeredSkillDefinition = {
       type: "skill",
       skillType: null,
@@ -718,8 +717,8 @@ export class TriggeredSkillBuilder<
       triggerOn: eventName,
       requiredCost: [],
       gainEnergy: false,
-      filter,
-      action,
+      filter: this.buildFilter(),
+      action: this.buildAction(),
       usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
     };
     this.parent._skillList.push(def);
@@ -731,7 +730,7 @@ export class TriggeredSkillBuilder<
   }
   on<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<{
+    filter?: SkillOperationFilter<{
       eventArgType: DetailedEventArgOf<E>;
       callerType: Meta["callerType"];
       callerVars: Meta["callerVars"];
@@ -743,7 +742,7 @@ export class TriggeredSkillBuilder<
   }
   once<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<{
+    filter?: SkillOperationFilter<{
       eventArgType: DetailedEventArgOf<E>;
       callerType: Meta["callerType"];
       callerVars: Meta["callerVars"];
@@ -763,6 +762,49 @@ export class TriggeredSkillBuilder<
 export abstract class SkillBuilderWithCost<
   Meta extends BuilderMetaBase,
 > extends SkillBuilder<Meta> {
+  protected _targetQueries: string[] = [];
+
+  protected addTargetImpl(targetQuery: string) {
+    this._targetQueries = [...this._targetQueries, targetQuery];
+  }
+
+  private generateTargetList(
+    state: GameState,
+    skillInfo: SkillInfo,
+    known: AnyState[],
+    targetQuery: string[],
+  ): AnyState[][] {
+    if (targetQuery.length === 0) {
+      return [[]];
+    }
+    const [first, ...rest] = targetQuery;
+    const ctx = new SkillContext<ReadonlyMetaOf<BuilderMetaBase>>(
+      state,
+      this._wrapSkillInfoWithExt(skillInfo),
+      {
+        targets: known,
+      },
+    );
+    const states = ctx.$$(first).map((c) => c.state);
+    return states.flatMap((st) =>
+      this.generateTargetList(state, skillInfo, [...known, st], rest).map(
+        (l) => [st, ...l],
+      ),
+    );
+  }
+
+  protected buildTargetGetter(): InitiativeSkillTargetGetter {
+    return (state, skillInfo) => {
+      const targetIdsList = this.generateTargetList(
+        state,
+        skillInfo,
+        [],
+        this._targetQueries,
+      );
+      return targetIdsList.map((targets) => ({ targets }));
+    };
+  }
+
   constructor(skillId: number) {
     super(skillId);
   }
@@ -807,8 +849,8 @@ class InitiativeSkillBuilder<
   AssociatedExt extends ExtensionHandle,
 > extends SkillBuilderWithCost<{
   callerType: "character";
-  eventArgType: void;
   callerVars: never;
+  eventArgType: InitiativeSkillEventArg;
   associatedExtension: AssociatedExt;
 }> {
   private _skillType: SkillType = "normal";
@@ -867,12 +909,6 @@ class InitiativeSkillBuilder<
   reserve(): void {}
 
   done(): SkillHandle {
-    const action: SkillDescription<void> = (state, skillInfo) => {
-      return this.applyActions(state, skillInfo, void 0);
-    };
-    const filter: SkillActionFilter<void> = (state, skillInfo) => {
-      return this.applyFilters(state, skillInfo, void 0);
-    };
     registerInitiativeSkill({
       __definition: "initiativeSkills",
       type: "initiativeSkill",
@@ -883,11 +919,12 @@ class InitiativeSkillBuilder<
         skillType: this._skillType,
         id: this.skillId,
         triggerOn: null,
-        filter,
         requiredCost: this._cost,
         gainEnergy: this._gainEnergy,
         prepared: this._prepared,
-        action,
+        action: this.buildAction(),
+        filter: this.buildFilter(),
+        getTarget: this.buildTargetGetter(),
       },
     });
     return this.skillId as SkillHandle;
@@ -896,11 +933,12 @@ class InitiativeSkillBuilder<
 
 export class TechniqueBuilder<
   Vars extends string,
+  KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle,
 > extends SkillBuilderWithCost<{
   callerType: "equipment";
-  eventArgType: void;
   callerVars: Vars;
+  eventArgType: InitiativeSkillEventArg;
   associatedExtension: AssociatedExt;
 }> {
   private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
@@ -917,10 +955,25 @@ export class TechniqueBuilder<
     this.associatedExtensionId = this.parent._associatedExtensionId;
   }
 
+  addTarget<Q extends TargetQuery>(
+    targetQuery: Q,
+  ): BuilderWithShortcut<
+    TechniqueBuilder<
+      Vars,
+      readonly [...KindTs, TargetKindOfQuery<Q>],
+      AssociatedExt
+    >
+  > {
+    this.addTargetImpl(targetQuery);
+    return this as any;
+  }
+
   usage<VarName extends string = "usage">(
     count: number,
     opt?: UsageOptions<VarName>,
-  ): BuilderWithShortcut<TechniqueBuilder<Vars | VarName, AssociatedExt>> {
+  ): BuilderWithShortcut<
+    TechniqueBuilder<Vars | VarName, KindTs, AssociatedExt>
+  > {
     const perRound = opt?.perRound ?? false;
     const autoDecrease = opt?.autoDecrease ?? true;
     const name = this.parent._setUsage(count, opt);
@@ -971,12 +1024,6 @@ export class TechniqueBuilder<
         });
       }
     }
-    const filter: SkillActionFilter<any> = (state, skillInfo, arg) => {
-      return this.applyFilters(state, skillInfo, arg as any);
-    };
-    const action: SkillDescription<any> = (state, skillInfo, arg) => {
-      return this.applyActions(state, skillInfo, arg as any);
-    };
     const def: InitiativeSkillDefinition = {
       type: "skill",
       skillType: "technique",
@@ -985,8 +1032,9 @@ export class TechniqueBuilder<
       requiredCost: [],
       gainEnergy: false,
       prepared: false,
-      filter,
-      action,
+      filter: this.buildFilter(),
+      action: this.buildAction(),
+      getTarget: this.buildTargetGetter(),
     };
     this.parent._initiativeSkills.push(def);
   }

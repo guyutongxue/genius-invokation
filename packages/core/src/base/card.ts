@@ -15,13 +15,22 @@
 
 import { CharacterTag, WeaponTag } from "./character";
 import { DescriptionDictionary } from "./entity";
-import { InitiativeSkillDefinition, SkillInfo } from "./skill";
+import {
+  InitiativeSkillDefinition,
+  InitiativeSkillEventArg,
+  SkillInfo,
+} from "./skill";
 import { AnyState, GameState } from "./state";
 import { VersionInfo } from "./version";
 
 export type WeaponCardTag = Exclude<WeaponTag, "other">;
 
-export type EquipmentTag = "talent" | "artifact" | "technique" | "weapon" | WeaponCardTag;
+export type EquipmentTag =
+  | "talent"
+  | "artifact"
+  | "technique"
+  | "weapon"
+  | WeaponCardTag;
 
 export type SupportTag = "ally" | "place" | "item";
 
@@ -36,34 +45,13 @@ export type CardTag =
 
 export type CardType = "event" | "support" | "equipment";
 
-export type CardTargetKind = readonly ("character" | "summon")[];
+export type InitiativeSkillTargetKind = readonly ("character" | "summon")[];
 
-export interface CardSkillEventArg {
-  targets: AnyState[];
-}
-
-export type PlayCardSkillDefinition =
-  InitiativeSkillDefinition<CardSkillEventArg>;
-export type DisposeCardSkillDefinition = InitiativeSkillDefinition<void>;
-export type PlayCardFilter = (
-  state: GameState,
-  skillInfo: SkillInfo,
-  arg: CardSkillEventArg,
-) => boolean;
-export type PlayCardTargetGetter = (
-  state: GameState,
-  skillInfo: SkillInfo,
-) => CardSkillEventArg[];
-
-export interface CardDefinition {
+export interface CardDefinition extends InitiativeSkillDefinition {
   readonly __definition: "cards";
-  readonly id: number;
-  readonly type: CardType;
+  readonly cardType: CardType;
   readonly version: VersionInfo;
   readonly tags: readonly CardTag[];
-  readonly getTarget: PlayCardTargetGetter;
-  readonly filter: PlayCardFilter;
-  readonly onPlay: PlayCardSkillDefinition;
-  readonly onDispose?: DisposeCardSkillDefinition;
+  readonly onDispose?: InitiativeSkillDefinition;
   readonly descriptionDictionary: DescriptionDictionary;
 }

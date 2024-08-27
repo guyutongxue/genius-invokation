@@ -31,7 +31,7 @@ import {
   BuilderWithShortcut,
   DetailedEventArgOf,
   DetailedEventNames,
-  SkillFilter,
+  SkillOperationFilter,
   TechniqueBuilder,
   TriggeredSkillBuilder,
   UsageOptions,
@@ -211,7 +211,7 @@ export class EntityBuilder<
 
   on<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<
+    filter?: SkillOperationFilter<
       BuilderMetaOfEntity<E, CallerType, Vars, AssociatedExt>
     >,
   ) {
@@ -227,7 +227,7 @@ export class EntityBuilder<
   }
   once<E extends DetailedEventNames>(
     event: E,
-    filter?: SkillFilter<
+    filter?: SkillOperationFilter<
       BuilderMetaOfEntity<E, CallerType, Vars, AssociatedExt>
     >,
   ) {
