@@ -457,3 +457,19 @@ export const CentralLaboratoryRuins = card(321021)
     }
   })
   .done();
+
+/**
+ * @id 321022
+ * @name 圣火竞技场
+ * @description
+ * 我方使用技能或特技后：此牌累积1点「角逐之焰」。
+ * 「角逐之焰」达到2时：生成1个随机基础元素骰。
+ * 达到4时：治疗我方出战角色2点。
+ * 达到6时：弃置此牌，使当前的我方出战角色在2回合内造成的伤害+1。
+ */
+export const StadiumOfTheSacredFlame = card(321022)
+  .costSame(2)
+  .support("place")
+  .since("v5.0.0")
+  // TODO
+  .done();

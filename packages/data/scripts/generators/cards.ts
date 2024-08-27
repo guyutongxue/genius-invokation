@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -17,7 +17,7 @@ import { pascalCase } from "case-anything";
 
 import { getCostCode, isLegend } from "./cost";
 import { SourceInfo, writeSourceCode } from "./source";
-import { ActionCardRawData, actionCards } from "@gi-tcg/static-data";
+import { ActionCardRawData, actionCards, entities } from "@gi-tcg/static-data";
 import { NEW_VERSION } from "./config";
 
 export function getCardTypeAndTags(card: ActionCardRawData) {
@@ -36,6 +36,7 @@ export function getCardTypeAndTags(card: ActionCardRawData) {
     GCG_TAG_WEAPON_POLE: "pole",
     GCG_TAG_ITEM: "item",
     GCG_TAG_WEAPON_CLAYMORE: "claymore",
+    GCG_TAG_VEHICLE: "technique",
   };
   const tags = (card.tags as any[]).map((t) => TAG_MAP[t]).filter((t) => t);
   const TYPE_MAP: Record<string, string> = {
@@ -54,6 +55,8 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
     const tag = tags.shift();
     if (tag === "artifact") {
       typeCode = `\n  .artifact()`;
+    } else if (tag === "technique") {
+      typeCode = `\n  .technique()`;
     } else if (
       tag &&
       ["bow", "sword", "catalyst", "pole", "claymore"].includes(tag)
@@ -71,7 +74,9 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
   const tagCode =
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playCost);
-  return `export const ${pascalCase(card.englishName)} = card(${card.id})${cost}${tagCode}${extra}${typeCode}
+  return `export const ${pascalCase(card.englishName)} = card(${
+    card.id
+  })${cost}${tagCode}${extra}${typeCode}
   .since("${NEW_VERSION}")
   // TODO
   .done();`;
@@ -86,6 +91,7 @@ export async function generateCards() {
     pole: [],
     claymore: [],
     artifact: [],
+    technique: [],
   };
   const supportCode: Record<string, SourceInfo[]> = {
     ally: [],
@@ -127,7 +133,13 @@ export async function generateCards() {
     }
     let description = card.description;
     if (card.playingDescription && card.playingDescription.includes("$")) {
-      description += "\n【此卡含描述变量】"
+      description += "\n【此卡含描述变量】";
+    }
+    if (card.tags.includes("GCG_TAG_VEHICLE")) {
+      const et = entities.find((et) => et.id === card.id)!;
+      for (const skill of et.skills) {
+        description += `\n【${skill.name}】${skill.description}`;
+      }
     }
     target.push({
       id: card.id,
@@ -169,6 +181,11 @@ export async function generateCards() {
       "cards/equipment/artifacts.ts",
       INIT_CARD_CODE,
       equipsCode.artifact,
+    ),
+    writeSourceCode(
+      "cards/equipment/techniques.ts",
+      INIT_CARD_CODE,
+      equipsCode.technique
     ),
     writeSourceCode("cards/support/ally.ts", INIT_CARD_CODE, supportCode.ally),
     writeSourceCode(

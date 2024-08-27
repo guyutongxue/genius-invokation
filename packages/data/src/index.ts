@@ -19,6 +19,7 @@
 import "./begin";
 
 import "./cards/equipment/artifacts";
+import "./cards/equipment/techniques";
 import "./cards/equipment/weapon/bow";
 import "./cards/equipment/weapon/catalyst";
 import "./cards/equipment/weapon/claymore";
@@ -41,6 +42,7 @@ import "./characters/anemo/sayu";
 import "./characters/anemo/sucrose";
 import "./characters/anemo/venti";
 import "./characters/anemo/wanderer";
+import "./characters/anemo/xianyun";
 import "./characters/anemo/xiao";
 import "./characters/cryo/charlotte";
 import "./characters/cryo/chongyun";
@@ -48,6 +50,7 @@ import "./characters/cryo/cryo_hypostasis";
 import "./characters/cryo/diona";
 import "./characters/cryo/eula";
 import "./characters/cryo/fatui_cryo_cicin_mage";
+import "./characters/cryo/freminet";
 import "./characters/cryo/frost_operative";
 import "./characters/cryo/ganyu";
 import "./characters/cryo/kaeya";
@@ -98,6 +101,7 @@ import "./characters/hydro/alldevouring_narwhal";
 import "./characters/hydro/barbara";
 import "./characters/hydro/candace";
 import "./characters/hydro/furina";
+import "./characters/hydro/hydro_hilichurl_rogue";
 import "./characters/hydro/kamisato_ayato";
 import "./characters/hydro/mirror_maiden";
 import "./characters/hydro/mona";
@@ -140,5 +144,6 @@ import "./old_versions/v4.5.0";
 import "./old_versions/v4.6.0";
 import "./old_versions/v4.6.1";
 import "./old_versions/v4.7.0";
+import "./old_versions/v4.8.0";
 
 export { default } from "./end";

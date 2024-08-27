@@ -874,6 +874,9 @@ export const Lyresong = card(332024)
  * @name 野猪公主
  * @description
  * 本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）
+ * （角色被击倒时弃置装备牌，或者覆盖装备「武器」「圣遗物」或「特技」，都可以触发此效果）
+ * @outdated
+ * 本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）
  * （角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）
  */
 export const TheBoarPrincess = card(332025)
@@ -1558,4 +1561,15 @@ export const Tada = card(332037)
   .since("v4.8.0")
   .damage(DamageType.Physical, 1, "my active")
   .combatStatus(TadaInEffect)
+  .done();
+
+/**
+ * @id 332039
+ * @name 龙伙伴的聚餐
+ * @description
+ * 选择一个装备在我方角色的「特技」装备牌，使其可用次数+1。
+ */
+export const SaurianDiningBuddies = card(332039)
+  .since("v5.0.0")
+  // TODO
   .done();

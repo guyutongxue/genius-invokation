@@ -170,3 +170,16 @@ export const ViciousAncientBattle = card(330008)
     c.$("opp active")!.loseEnergy(1);
   })
   .done();
+
+/**
+ * @id 330009
+ * @name 赦免宣告
+ * @description
+ * 本回合中，目标角色免疫冻结、眩晕、石化等无法使用技能的效果，并且该角色为「出战角色」时不会因效果而切换。
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ */
+export const EdictOfAbsolution = card(330009)
+  .legend()
+  .since("v5.0.0")
+  // TODO
+  .done();

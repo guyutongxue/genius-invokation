@@ -674,3 +674,16 @@ export const Serene = card(322027)
     c.createHandCard(card);
   })
   .done();
+
+/**
+ * @id 322028
+ * @name 阿伽娅
+ * @description
+ * 我方使用「特技」时：少花费1个元素骰。（每回合1次）
+ */
+export const Atea = card(322028)
+  .costSame(1)
+  .support("ally")
+  .since("v5.0.0")
+  // TODO
+  .done();
