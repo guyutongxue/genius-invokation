@@ -134,7 +134,9 @@ interface CallerAndSkill {
  * @param player
  * @returns
  */
-export function initiativeSkillsOfPlayer(player: PlayerState) {
+export function initiativeSkillsOfPlayer(
+  player: PlayerState,
+): { caller: AnyState; definition: InitiativeSkillDefinition }[] {
   const activeCh = player.characters.find(
     (ch) => player.activeCharacterId === ch.id,
   );
@@ -142,9 +144,19 @@ export function initiativeSkillsOfPlayer(player: PlayerState) {
     return [];
   }
   return [
-    ...activeCh.entities.flatMap((st) => st.definition.initiativeSkills),
-    ...activeCh.definition.initiativeSkills,
-  ].filter((sk) => !sk.prepared);
+    ...activeCh.entities.flatMap((st) =>
+      st.definition.initiativeSkills.map((sk) => ({
+        caller: st,
+        definition: sk,
+      })),
+    ),
+    ...activeCh.definition.initiativeSkills
+      .filter((sk) => !sk.prepared)
+      .map((sk) => ({
+        caller: activeCh,
+        definition: sk,
+      })),
+  ];
 }
 
 /**

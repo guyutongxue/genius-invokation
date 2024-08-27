@@ -34,6 +34,7 @@ import {
   DamageInfo,
   SkillResult,
   ElementalTuningInfo,
+  InitiativeSkillDefinition,
 } from "../base/skill";
 import { EntityVariables, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
@@ -419,24 +420,25 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   declare [BUILDER_META_TYPE]: Meta;
 
   protected operations: SkillOperation<Meta>[] = [];
+  protected filters: SkillFilter<Meta>[] = [];
   protected associatedExtensionId: number | undefined = void 0;
   constructor(protected readonly id: number) {}
-  protected applyFilter = false;
-  protected _filter: SkillFilter<Meta> = () => true;
+  private applyIfFilter = false;
+  private _ifFilter: SkillFilter<Meta> = () => true;
 
   protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfo {
     return { ...skillInfo, associatedExtensionId: this.associatedExtensionId };
   }
 
   if(filter: SkillFilter<Meta>): this {
-    this._filter = filter;
-    this.applyFilter = true;
+    this._ifFilter = filter;
+    this.applyIfFilter = true;
     return this;
   }
 
   do(op: SkillOperation<Meta>): this {
-    if (this.applyFilter) {
-      const ifFilter = this._filter;
+    if (this.applyIfFilter) {
+      const ifFilter = this._ifFilter;
       this.operations.push((c, e) => {
         if (!ifFilter(c as any, e)) return;
         return op(c, e);
@@ -444,14 +446,14 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
     } else {
       this.operations.push(op);
     }
-    this.applyFilter = false;
+    this.applyIfFilter = false;
     return this;
   }
 
   else(): this {
-    const ifFilter = this._filter;
-    this._filter = (c, e) => !ifFilter(c, e);
-    this.applyFilter = true;
+    const ifFilter = this._ifFilter;
+    this._ifFilter = (c, e) => !ifFilter(c, e);
+    this.applyIfFilter = true;
     return this;
   }
 
@@ -475,6 +477,20 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
     }
     ctx._terminate();
     return [ctx.state, ctx.events] as const;
+  }
+
+  protected applyFilters(state: GameState, skillInfo: SkillInfo, arg: Meta["eventArgType"]) {
+    const ctx = new SkillContext<ReadonlyMetaOf<Meta>>(
+      state,
+      this._wrapSkillInfoWithExt(skillInfo),
+      arg,
+    );
+    for (const filter of this.filters) {
+      if (!filter(ctx as any, ctx.eventArg)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
@@ -547,7 +563,7 @@ export function enableShortcut<T extends SkillBuilder<any>>(
   return proxy as any;
 }
 
-interface UsageOptions<Name extends string> extends VariableOptions {
+export interface UsageOptions<Name extends string> extends VariableOptions {
   name?: Name;
   /** 是否为“每回合使用次数”。默认值为 `false`。 */
   perRound?: boolean;
@@ -561,7 +577,6 @@ export class TriggeredSkillBuilder<
   Meta extends BuilderMetaBase,
   EventName extends DetailedEventNames,
 > extends SkillBuilder<Meta> {
-  private _triggerFilter: SkillFilter<Meta>;
   constructor(
     id: number,
     private readonly triggerOn: EventName,
@@ -575,16 +590,14 @@ export class TriggeredSkillBuilder<
     super(id);
     this.associatedExtensionId = this.parent._associatedExtensionId;
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
-    this._triggerFilter = (c, e) => {
+    this.filters.push((c, e) => {
       const { area, state } = c.self;
-      return (
-        filterDescriptor(c as any, e as any, {
+      return         filterDescriptor(c as any, e as any, {
           callerArea: area,
           callerId: state.id,
           listenTo: this._listenTo,
-        }) && triggerFilter(c, e)
-      );
-    };
+        });
+    });
   }
   private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
   private _usagePerRoundOpt: {
@@ -618,30 +631,7 @@ export class TriggeredSkillBuilder<
   > {
     const perRound = opt?.perRound ?? false;
     const autoDecrease = opt?.autoDecrease ?? true;
-    let name: string;
-    if (opt?.name) {
-      name = opt.name;
-    } else {
-      if (this.parent._type === "character") {
-        throw new GiTcgDataError(
-          `You must explicitly set the name of usage when defining passive skill. Be careful that different passive skill should have distinct usage name.`,
-        );
-      }
-      if (perRound) {
-        if (
-          this.parent._usagePerRoundIndex >=
-          USAGE_PER_ROUND_VARIABLE_NAMES.length
-        ) {
-          throw new GiTcgCoreInternalError(
-            `Cannot specify more than ${USAGE_PER_ROUND_VARIABLE_NAMES.length} usagePerRound.`,
-          );
-        }
-        name = USAGE_PER_ROUND_VARIABLE_NAMES[this.parent._usagePerRoundIndex];
-        this.parent._usagePerRoundIndex++;
-      } else {
-        name = "usage";
-      }
-    }
+    const name = this.parent._setUsage(count, opt);
     if (perRound) {
       if (this._usagePerRoundOpt !== null) {
         throw new GiTcgDataError("Cannot specify usagePerRound twice.");
@@ -653,17 +643,8 @@ export class TriggeredSkillBuilder<
       }
       this._usageOpt = { name, autoDecrease };
     }
-    const autoDispose = name === "usage" && opt?.autoDispose !== false;
-    this.parent.variable(name, count, opt);
-    if (autoDispose) {
-      this.parent._varConfigs.disposeWhenUsageIsZero = createVariable(1);
-    }
     // 增加“检查可用次数”的技能触发条件
-    const oldFilter = this._triggerFilter;
-    this._triggerFilter = (c, e) => {
-      if (!oldFilter(c, e)) return false;
-      return c.getVariable(name) > 0;
-    };
+    this.filters.push((c) => c.self.getVariable(name) > 0);
     return this as any;
   }
   /**
@@ -690,11 +671,6 @@ export class TriggeredSkillBuilder<
     return this.usage<VarName>(count, {
       append: { limit: appendLimit, value: appendValue },
     });
-  }
-
-  private listenToMySelf(): this {
-    this._listenTo = ListenTo.Myself;
-    return this;
   }
 
   listenToPlayer(): this {
@@ -730,12 +706,7 @@ export class TriggeredSkillBuilder<
     }
     const [eventName] = detailedEventDictionary[this.triggerOn];
     const filter: SkillActionFilter<any> = (state, skillInfo, arg) => {
-      const ctx = new SkillContext(
-        state,
-        this._wrapSkillInfoWithExt(skillInfo),
-        arg,
-      );
-      return !!this._triggerFilter(ctx as any, arg);
+      return this.applyFilters(state, skillInfo, arg as any);
     };
     const action: SkillDescription<any> = (state, skillInfo, arg) => {
       return this.applyActions(state, skillInfo, arg as any);
@@ -790,14 +761,8 @@ export class TriggeredSkillBuilder<
 }
 
 export abstract class SkillBuilderWithCost<
-  EventArg,
-  AssociatedExt extends ExtensionHandle,
-> extends SkillBuilder<{
-  callerType: "character";
-  callerVars: never;
-  eventArgType: EventArg;
-  associatedExtension: AssociatedExt;
-}> {
+  Meta extends BuilderMetaBase,
+> extends SkillBuilder<Meta> {
   constructor(skillId: number) {
     super(skillId);
   }
@@ -840,7 +805,12 @@ export abstract class SkillBuilderWithCost<
 
 class InitiativeSkillBuilder<
   AssociatedExt extends ExtensionHandle,
-> extends SkillBuilderWithCost<void, AssociatedExt> {
+> extends SkillBuilderWithCost<{
+  callerType: "character";
+  eventArgType: void;
+  callerVars: never;
+  associatedExtension: AssociatedExt;
+}> {
   private _skillType: SkillType = "normal";
   private _gainEnergy = true;
   protected _cost: DiceType[] = [];
@@ -900,6 +870,9 @@ class InitiativeSkillBuilder<
     const action: SkillDescription<void> = (state, skillInfo) => {
       return this.applyActions(state, skillInfo, void 0);
     };
+    const filter: SkillActionFilter<void> = (state, skillInfo) => {
+      return this.applyFilters(state, skillInfo, void 0);
+    };
     registerInitiativeSkill({
       __definition: "initiativeSkills",
       type: "initiativeSkill",
@@ -910,7 +883,7 @@ class InitiativeSkillBuilder<
         skillType: this._skillType,
         id: this.skillId,
         triggerOn: null,
-        filter: () => true,
+        filter,
         requiredCost: this._cost,
         gainEnergy: this._gainEnergy,
         prepared: this._prepared,
@@ -918,6 +891,114 @@ class InitiativeSkillBuilder<
       },
     });
     return this.skillId as SkillHandle;
+  }
+}
+
+export class TechniqueBuilder<
+  Vars extends string,
+  AssociatedExt extends ExtensionHandle,
+> extends SkillBuilderWithCost<{
+  callerType: "equipment";
+  eventArgType: void;
+  callerVars: Vars;
+  associatedExtension: AssociatedExt;
+}> {
+  private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
+  private _usagePerRoundOpt: {
+    name: UsagePerRoundVariableNames;
+    autoDecrease: boolean;
+  } | null = null;
+
+  constructor(
+    id: number,
+    private readonly parent: EntityBuilder<"equipment", Vars, AssociatedExt>,
+  ) {
+    super(id);
+    this.associatedExtensionId = this.parent._associatedExtensionId;
+  }
+
+  usage<VarName extends string = "usage">(
+    count: number,
+    opt?: UsageOptions<VarName>,
+  ): BuilderWithShortcut<TechniqueBuilder<Vars | VarName, AssociatedExt>> {
+    const perRound = opt?.perRound ?? false;
+    const autoDecrease = opt?.autoDecrease ?? true;
+    const name = this.parent._setUsage(count, opt);
+    if (perRound) {
+      if (this._usagePerRoundOpt !== null) {
+        throw new GiTcgDataError("Cannot specify usagePerRound twice.");
+      }
+      this._usagePerRoundOpt = { name: name as any, autoDecrease };
+    } else {
+      if (this._usageOpt !== null) {
+        throw new GiTcgDataError("Cannot specify usage twice.");
+      }
+      this._usageOpt = { name, autoDecrease };
+    }
+    // 增加“检查可用次数”的技能触发条件
+    this.filters.push((c) => c.self.getVariable(name) > 0);
+    return this as any;
+  }
+  usagePerRound<VarName extends UsagePerRoundVariableNames = "usagePerRound">(
+    count: number,
+    opt?: Omit<UsageOptions<VarName>, "perRound">,
+  ) {
+    return this.usage<VarName>(count, {
+      ...opt,
+      perRound: true,
+      visible: false,
+    });
+  }
+
+  private buildSkill() {
+    if (this._usagePerRoundOpt?.autoDecrease) {
+      this.do((c) => {
+        c.consumeUsagePerRound();
+      });
+    }
+    if (this._usageOpt?.autoDecrease) {
+      if (this._usageOpt.name === "usage") {
+        // 若变量名为 usage，则消耗可用次数时可能调用 c.dispose
+        // 使用 consumeUsage 方法实现相关操作
+        this.do((c) => {
+          c.consumeUsage();
+        });
+      } else {
+        // 否则手动扣除使用次数
+        const name = this._usageOpt.name;
+        this.do((c) => {
+          c.self.addVariable(name, -1);
+        });
+      }
+    }
+    const filter: SkillActionFilter<any> = (state, skillInfo, arg) => {
+      return this.applyFilters(state, skillInfo, arg as any);
+    };
+    const action: SkillDescription<any> = (state, skillInfo, arg) => {
+      return this.applyActions(state, skillInfo, arg as any);
+    };
+    const def: InitiativeSkillDefinition = {
+      type: "skill",
+      skillType: "technique",
+      triggerOn: null,
+      id: this.id,
+      requiredCost: [],
+      gainEnergy: false,
+      prepared: false,
+      filter,
+      action,
+    };
+    this.parent._initiativeSkills.push(def);
+  }
+
+  endTechnique() {
+    this.buildSkill();
+    return this.parent;
+  }
+
+  done() {
+    this.buildSkill();
+    return this.parent.done();
   }
 }
 

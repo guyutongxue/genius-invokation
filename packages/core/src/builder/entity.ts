@@ -25,14 +25,16 @@ import {
   USAGE_PER_ROUND_VARIABLE_NAMES,
   VariableConfig,
 } from "../base/entity";
-import { TriggeredSkillDefinition } from "../base/skill";
+import { InitiativeSkillDefinition, TriggeredSkillDefinition } from "../base/skill";
 import { registerEntity, registerPassiveSkill } from "./registry";
 import {
   BuilderWithShortcut,
   DetailedEventArgOf,
   DetailedEventNames,
   SkillFilter,
+  TechniqueBuilder,
   TriggeredSkillBuilder,
+  UsageOptions,
   enableShortcut,
 } from "./skill";
 import {
@@ -41,7 +43,7 @@ import {
   PassiveSkillHandle,
   SkillHandle,
 } from "./type";
-import { GiTcgDataError } from "../error";
+import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
 import { Writable, getEntityArea, getEntityById } from "../utils";
 import { EntityState, GameState } from "../base/state";
@@ -116,7 +118,7 @@ export class EntityBuilder<
   private _hintText: string | null = null;
   private _descriptionDictionary: Writable<DescriptionDictionary> = {};
   _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
-  _initiativeSkillIds: SkillHandle[] = [];
+  _initiativeSkills: InitiativeSkillDefinition[] = [];
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -169,9 +171,12 @@ export class EntityBuilder<
     >;
   }
 
-  provideSkills(...skills: SkillHandle[]) {
-    this._initiativeSkillIds.push(...skills);
-    return this;
+  provideSkill(id: number) {
+    if (this._type !== "equipment") {
+      throw new GiTcgDataError("Only equipment can have technique skill");
+    }
+    const self = this as unknown as EntityBuilder<"equipment", Vars, AssociatedExt>;
+    return enableShortcut(new TechniqueBuilder(id, self));
   }
 
   conflictWith(id: number) {
@@ -297,6 +302,46 @@ export class EntityBuilder<
         ...appendOrOpt,
       });
     }
+  }
+
+  /**
+   * 当 skill builder 指定 .usage 时，上层 entity builder 的操作
+   * @param count 
+   * @param opt 
+   * @returns usage 变量名
+   */
+  _setUsage(count: number, opt?: UsageOptions<string>): string {
+    const perRound = opt?.perRound ?? false;
+    let name: string;
+    if (opt?.name) {
+      name = opt.name;
+    } else {
+      if (this._type === "character") {
+        throw new GiTcgDataError(
+          `You must explicitly set the name of usage when defining passive skill. Be careful that different passive skill should have distinct usage name.`,
+        );
+      }
+      if (perRound) {
+        if (
+          this._usagePerRoundIndex >=
+          USAGE_PER_ROUND_VARIABLE_NAMES.length
+        ) {
+          throw new GiTcgCoreInternalError(
+            `Cannot specify more than ${USAGE_PER_ROUND_VARIABLE_NAMES.length} usagePerRound.`,
+          );
+        }
+        name = USAGE_PER_ROUND_VARIABLE_NAMES[this._usagePerRoundIndex];
+        this._usagePerRoundIndex++;
+      } else {
+        name = "usage";
+      }
+    }
+    const autoDispose = name === "usage" && opt?.autoDispose !== false;
+    this.variable(name, count, opt);
+    if (autoDispose) {
+      this._varConfigs.disposeWhenUsageIsZero = createVariable(1);
+    }
+    return name;
   }
 
   duration(count: number, opt?: VariableOptions) {
@@ -471,7 +516,7 @@ export class EntityBuilder<
         visibleVarName: this._visibleVarName,
         varConfigs: this._varConfigs,
         hintText: this._hintText,
-        initiativeSkillIds: this._initiativeSkillIds,
+        initiativeSkills: this._initiativeSkills,
         skills: this._skillList,
         tags: this._tags,
         type: this._type,

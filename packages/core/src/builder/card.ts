@@ -134,7 +134,12 @@ type CardDescriptionDictionaryGetter<AssociatedExt extends ExtensionHandle> = (
 class CardBuilder<
   KindTs extends CardTargetKind,
   AssociatedExt extends ExtensionHandle = never,
-> extends SkillBuilderWithCost<StrictCardSkillEventArg<KindTs>, AssociatedExt> {
+> extends SkillBuilderWithCost<{
+  callerType: "character",
+  callerVars: never,
+  eventArgType: StrictCardSkillEventArg<KindTs>,
+  associatedExtension: AssociatedExt
+}> {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
   private _filters: StrictCardSkillFilter<KindTs, AssociatedExt>[] = [];
@@ -226,6 +231,10 @@ class CardBuilder<
   artifact() {
     return this.tags("artifact").equipment("my characters").tags("artifact");
   }
+  technique() {
+    return this.tags("technique").equipment("my characters").tags("technique");
+  }
+
   support(type: SupportTag) {
     this.type("support").tags(type);
     this.do((c, e) => {

@@ -852,16 +852,24 @@ export class Game extends StateMutator {
     if (isSkillDisabled(activeCh)) {
       // Use skill is disabled, skip
     } else {
-      for (const skill of initiativeSkillsOfPlayer(player)) {
+      for (const { caller, definition } of initiativeSkillsOfPlayer(player)) {
+        const charged =
+          definition.skillType === "normal" && player.dice.length % 2 === 0;
+        const plunging =
+          definition.skillType === "normal" &&
+          (player.canPlunging ||
+            activeCh.entities.some((et) =>
+              et.definition.tags.includes("normalAsPlunging"),
+            ));
         const skillInfo = {
-          caller: activeCh,
-          definition: skill,
+          caller,
+          definition,
           fromCard: null,
           requestBy: null,
-          charged: skill.skillType === "normal" && player.dice.length % 2 === 0,
-          plunging: skill.skillType === "normal" && player.canPlunging,
+          charged,
+          plunging,
         };
-        if (!skill.filter(this.state, skillInfo)) {
+        if (!(0, definition.filter)(this.state, skillInfo)) {
           continue;
         }
         const actionInfo: ActionInfo = {
@@ -869,7 +877,7 @@ export class Game extends StateMutator {
           who,
           skill: skillInfo,
           fast: false,
-          cost: [...skill.requiredCost],
+          cost: [...definition.requiredCost],
         };
         result.push(actionInfo);
       }

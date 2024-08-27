@@ -257,7 +257,9 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
     roundNumber: state.roundNumber,
     winner: state.winner,
     players: state.players.map<PlayerData>((p, i) => {
-      const skills = initiativeSkillsOfPlayer(p);
+      const skills = initiativeSkillsOfPlayer(p).map(
+        ({ definition }) => definition,
+      );
       return {
         activeCharacterId: p.activeCharacterId,
         piles: p.piles.map((c) => exposeCard(state, c, true)),
