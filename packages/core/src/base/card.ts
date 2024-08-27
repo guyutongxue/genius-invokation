@@ -13,14 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CharacterTag, WeaponTag } from "./character";
+import { WeaponTag } from "./character";
 import { DescriptionDictionary } from "./entity";
-import {
-  InitiativeSkillDefinition,
-  InitiativeSkillEventArg,
-  SkillInfo,
-} from "./skill";
-import { AnyState, GameState } from "./state";
+import { InitiativeSkillDefinition } from "./skill";
 import { VersionInfo } from "./version";
 
 export type WeaponCardTag = Exclude<WeaponTag, "other">;
@@ -45,7 +40,11 @@ export type CardTag =
 
 export type CardType = "event" | "support" | "equipment";
 
-export type InitiativeSkillTargetKind = readonly ("character" | "summon")[];
+export type InitiativeSkillTargetKind = readonly (
+  | "character"
+  | "summon"
+  | "support"
+)[];
 
 export interface CardDefinition extends InitiativeSkillDefinition {
   readonly __definition: "cards";
