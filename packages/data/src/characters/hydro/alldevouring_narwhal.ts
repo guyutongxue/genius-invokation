@@ -117,9 +117,6 @@ export const DevourersInstinct = status(122044)
  * 我方舍弃或调和的卡牌，会被吞噬。
  * 每吞噬3张牌：吞星之鲸在回合结束时获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
  * 【此卡含描述变量】
- * @outdated
- * 我方舍弃或调和的卡牌，会被吞噬。
- * 每吞噬3张牌：吞星之鲸获得1点额外最大生命；如果其中存在原本元素骰费用值相同的牌，则额外获得1点；如果3张均相同，再额外获得1点。
  */
 export const DeepDevourersDomain = combatStatus(122041)
   .variable("cardCount", 0)
@@ -127,6 +124,8 @@ export const DeepDevourersDomain = combatStatus(122041)
   .variable("totalMaxCostCount", 0, { visible: false })
   .variable("card0Cost", 0, { visible: false })
   .variable("card1Cost", 0, { visible: false })
+  .variable("extraMaxHealth", 0)
+  .replaceDescription("[GCG_TOKEN_SHIELD]", (_, self) => self.variables.extraMaxHealth)
   .on("disposeOrTuneCard")
   .do((c, e) => {
     const cost = e.diceCost();
@@ -146,12 +145,7 @@ export const DeepDevourersDomain = combatStatus(122041)
         const card2Cost = cost;
         const distinctCostCount = new Set([card0Cost, card1Cost, card2Cost]).size;
         const extraMaxHealth = 4 - distinctCostCount;
-        const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
-        if (narwhal) {
-          for (let i = 0; i < extraMaxHealth; i++) {
-            narwhal.addStatus(AnomalousAnatomy);
-          }
-        }
+        c.setVariable("extraMaxHealth", extraMaxHealth);
         c.setVariable("cardCount", 0);
         break;
       }
@@ -163,6 +157,17 @@ export const DeepDevourersDomain = combatStatus(122041)
       c.setVariable("totalMaxCost", cost);
       c.setVariable("totalMaxCostCount", 1);
     }
+  })
+  .on("endPhase")
+  .do((c, e) => {
+    const extraMaxHealth = c.getVariable("extraMaxHealth");
+    const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
+    if (narwhal) {
+      narwhal.addStatus(AnomalousAnatomy, {
+        overrideVariables: { extraMaxHealth }
+      });
+    }
+    c.setVariable("extraMaxHealth", 0);
   })
   .done();
 
@@ -184,15 +189,13 @@ export const ShatteringWaves = skill(22041)
  * @name 迸落星雨
  * @description
  * 造成1点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+3）。然后舍弃1张原本元素骰费用最高的手牌。
- * @outdated
- * 造成1点水元素伤害，此角色每有3点无尽食欲提供的额外最大生命，此伤害+1（最多+4）。然后舍弃1张原本元素骰费用最高的手牌。
  */
 export const StarfallShower = skill(22042)
   .type("elemental")
   .costHydro(3)
   .do((c) => {
     const st = c.self.hasStatus(AnomalousAnatomy);
-    const extraDmg = st ? Math.min(Math.floor(c.of(st).getVariable("extraMaxHealth") / 3), 4) : 0;
+    const extraDmg = st ? Math.min(Math.floor(c.of(st).getVariable("extraMaxHealth") / 3), 3) : 0;
     c.damage(DamageType.Hydro, 1 + extraDmg);
     const cards = c.getMaxCostHands();
     const [card] = c.disposeRandomCard(cards);

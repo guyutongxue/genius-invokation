@@ -135,11 +135,6 @@ export const Cyno = character(1404)
  * 赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。
  * 装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+1。（每回合至多2次）
  * （牌组中包含赛诺，才能加入牌组）
- * @outdated
- * 战斗行动：我方出战角色为赛诺时，装备此牌。
- * 赛诺装备此牌后，立刻使用一次秘仪·律渊渡魂。
- * 装备有此牌的赛诺在启途誓使的「凭依」级数至少为2时，使用秘仪·律渊渡魂造成的伤害+2。（每回合1次）
- * （牌组中包含赛诺，才能加入牌组）
  */
 export const FeatherfallJudgment = card(214041)
   .since("v3.3.0")
@@ -151,6 +146,6 @@ export const FeatherfallJudgment = card(214041)
     const status = c.self.master().hasStatus(PactswornPathclearer)!;
     return c.getVariable("reliance", status) >=2 && e.via.definition.id === SecretRiteChasmicSoulfarer;
   })
-  .usagePerRound(1)
-  .increaseDamage(2)
+  .usagePerRound(2)
+  .increaseDamage(1)
   .done();
