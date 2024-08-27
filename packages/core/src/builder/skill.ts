@@ -991,7 +991,7 @@ export class TechniqueBuilder<
     this.parent._initiativeSkills.push(def);
   }
 
-  endTechnique() {
+  endProvide() {
     this.buildSkill();
     return this.parent;
   }

@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { card } from "@gi-tcg/core/builder";
+import { card, DamageType, skill, status } from "@gi-tcg/core/builder";
+import { MistBubblePrison } from "../../characters/hydro/hydro_hilichurl_rogue";
 
 /**
  * @id 115102
@@ -27,7 +28,31 @@ import { card } from "@gi-tcg/core/builder";
 export const Starwicker = card(115102)
   .since("v5.0.0")
   .technique()
+  .provideSkill(1151021)
+  .costSame(1)
+  .usage(2)
   // TODO
+  .done();
+
+/**
+ * @id 1220512
+ * @name 水泡封锁
+ * @description
+ * 造成1点水元素伤害，敌方出战角色附属水泡围困。
+ */
+export const MistBubbleLockdown = skill(1220512)
+  .damage(DamageType.Hydro, 1)
+  .characterStatus(MistBubblePrison, "opp active")
+  .done();
+
+/**
+ * @id 122053
+ * @name 水泡封锁（准备中）
+ * @description
+ * 本角色将在下次行动时，直接使用技能：水泡封锁。
+ */
+export const MistBubbleLockdownPreparing = status(122053)
+  .prepare(MistBubbleLockdown)
   .done();
 
 /**
@@ -44,7 +69,10 @@ export const Starwicker = card(115102)
 export const MistBubbleSlime = card(122051)
   .since("v5.0.0")
   .technique()
-  // TODO
+  .provideSkill(1220511)
+  .costSame(1)
+  .usage(2)
+  .characterStatus(MistBubbleLockdownPreparing)
   .done();
 
 /**
@@ -59,7 +87,10 @@ export const MistBubbleSlime = card(122051)
 export const XenochromaticHuntersRay = card(313001)
   .since("v5.0.0")
   .technique()
-  // TODO
+  .provideSkill(3130011)
+  .costVoid(2)
+  .usage(2)
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -77,7 +108,16 @@ export const Yumkasaurus = card(313002)
   .since("v5.0.0")
   .costSame(1)
   .technique()
-  // TODO
+  .on("deductOmniDiceSkill", (c, e) => e.action.skill.definition.id === 3130021 && c.player.hands.length <= 2)
+  .deductOmniCost(1)
+  .endOn()
+  .provideSkill(3130021)
+  .costSame(2)
+  .damage(DamageType.Physical, 1)
+  .do((c) => {
+    const [card] = c.getMaxCostHands("opp");
+    c.stealHandCard(card);
+  })
   .done();
 
 /**

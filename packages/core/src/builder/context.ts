@@ -342,12 +342,13 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         .length ?? 0
     );
   }
-  /** 我方原本元素骰费用最多的手牌列表 */
-  getMaxCostHands(): CardState[] {
+  /** 我方或对方原本元素骰费用最多的手牌列表 */
+  getMaxCostHands(who: "my" | "opp" = "my"): CardState[] {
+    const player = who === "my" ? this.player : this.oppPlayer;
     const maxCost = Math.max(
-      ...this.player.hands.map((c) => diceCostOfCard(c.definition)),
+      ...player.hands.map((c) => diceCostOfCard(c.definition)),
     );
-    return this.player.hands.filter(
+    return player.hands.filter(
       (c) => diceCostOfCard(c.definition) === maxCost,
     );
   }
