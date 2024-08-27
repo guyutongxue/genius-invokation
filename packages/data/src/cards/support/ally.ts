@@ -659,9 +659,9 @@ const SERENE_SUPPORTS = [
  * 可用次数：3
  */
 export const Serene = card(322027)
+  .since("v4.8.0")
   .costVoid(2)
   .support("ally")
-  .since("v4.8.0")
   .on("enter")
   .do((c) => {
     const card = c.random(SERENE_SUPPORTS);
@@ -682,8 +682,8 @@ export const Serene = card(322027)
  * 我方使用「特技」时：少花费1个元素骰。（每回合1次）
  */
 export const Atea = card(322028)
+  .since("v5.0.0")
   .costSame(1)
   .support("ally")
-  .since("v5.0.0")
   // TODO
   .done();

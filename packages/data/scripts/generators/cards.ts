@@ -76,8 +76,8 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
   const cost = getCostCode(card.playCost);
   return `export const ${pascalCase(card.englishName)} = card(${
     card.id
-  })${cost}${tagCode}${extra}${typeCode}
-  .since("${NEW_VERSION}")
+  })
+  .since("${NEW_VERSION}")${cost}${tagCode}${extra}${typeCode}
   // TODO
   .done();`;
 }
@@ -138,7 +138,7 @@ export async function generateCards() {
     if (card.tags.includes("GCG_TAG_VEHICLE")) {
       const et = entities.find((et) => et.id === card.id)!;
       for (const skill of et.skills) {
-        description += `\n【${skill.name}】${skill.description}`;
+        description += `\n【${skill.id}: ${skill.name}】${skill.description}`;
       }
     }
     target.push({

@@ -22,8 +22,8 @@ import { character, skill, summon, status, card, DamageType, Reaction } from "@g
  * 对敌方「出战角色」造成1点物理伤害，抓1张牌。
  */
 export const CrystalShrapnel = card(116081)
-  .costSame(1)
   .since("v4.8.0")
+  .costSame(1)
   .damage(DamageType.Physical, 1, "opp active")
   .drawCards(1)
   .done();
@@ -146,9 +146,9 @@ export const Navia = character(1608)
  * （牌组中包含娜维娅，才能加入牌组）
  */
 export const UndisclosedDistributionChannels = card(216081)
+  .since("v4.8.0")
   .costGeo(3)
   .talent(Navia)
-  .since("v4.8.0")
   .on("enter")
   .useSkill(CeremonialCrystalshot)
   .on("useSkill")

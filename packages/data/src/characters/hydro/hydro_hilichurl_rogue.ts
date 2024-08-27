@@ -112,8 +112,8 @@ export const HydroHilichurlRogue = character(2205)
  * （牌组中包含丘丘水行游侠，才能加入牌组）
  */
 export const FeatherweightFoam = card(222051)
+  .since("v5.0.0")
   .costHydro(3)
   .talent(HydroHilichurlRogue)
-  .since("v5.0.0")
   // TODO
   .done();

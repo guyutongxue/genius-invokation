@@ -227,9 +227,9 @@ export const RightfulReward = card(311408)
  * （「长柄武器」角色才能装备。角色最多装备1件「武器」）
  */
 export const ProspectorsDrill = card(311409)
+  .since("v4.8.0")
   .costSame(2)
   .weapon("pole")
-  .since("v4.8.0")
   .variable("unity", 0)
   .on("decreaseDamaged", (c, e) => c.player.hands.length !== 0)
   .usagePerRound(2)

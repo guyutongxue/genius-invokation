@@ -23,9 +23,9 @@ import { character, skill, status, combatStatus, card, DamageType, Reaction, Dic
  * 此牌被舍弃时：对敌方「出战角色」造成1点火元素伤害。
  */
 export const OverchargedBall = card(113131)
+  .since("v4.8.0")
   .costPyro(2)
   .tags("action")
-  .since("v4.8.0")
   .tags("action")
   .damage(DamageType.Pyro, 1, "opp active")
   .doSameWhenDisposed()

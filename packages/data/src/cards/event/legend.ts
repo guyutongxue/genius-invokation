@@ -179,7 +179,7 @@ export const ViciousAncientBattle = card(330008)
  * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
  */
 export const EdictOfAbsolution = card(330009)
-  .legend()
   .since("v5.0.0")
+  .legend()
   // TODO
   .done();

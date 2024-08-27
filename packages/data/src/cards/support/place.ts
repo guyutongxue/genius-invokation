@@ -468,8 +468,8 @@ export const CentralLaboratoryRuins = card(321021)
  * 达到6时：弃置此牌，使当前的我方出战角色在2回合内造成的伤害+1。
  */
 export const StadiumOfTheSacredFlame = card(321022)
+  .since("v5.0.0")
   .costSame(2)
   .support("place")
-  .since("v5.0.0")
   // TODO
   .done();

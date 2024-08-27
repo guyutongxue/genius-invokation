@@ -114,8 +114,8 @@ export const Freminet = character(1112)
  * （牌组中包含菲米尼，才能加入牌组）
  */
 export const MomentOfWakingAndResolve = card(211121)
+  .since("v5.0.0")
   .costCryo(3)
   .talent(Freminet)
-  .since("v5.0.0")
   // TODO
   .done();

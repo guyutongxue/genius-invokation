@@ -115,8 +115,8 @@ export const Xianyun = character(1510)
  * （牌组中包含闲云，才能加入牌组）
  */
 export const TheyCallHerCloudRetainer = card(215101)
+  .since("v5.0.0")
   .costAnemo(3)
   .talent(Xianyun)
-  .since("v5.0.0")
   // TODO
   .done();

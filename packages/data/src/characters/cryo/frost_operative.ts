@@ -122,9 +122,9 @@ export const FrostOperative = character(2104)
  * （牌组中包含愚人众·霜役人，才能加入牌组）
  */
 export const RimeflowRapier = card(221041)
+  .since("v4.8.0")
   .costCryo(3)
   .talent(FrostOperative)
-  .since("v4.8.0")
   .on("enter")
   .useSkill(FrostyInterjection)
   .done();

@@ -1307,8 +1307,8 @@ const MELUSINE_EVENT_CARDS = [
  * 随机将2张美露莘看好的超棒事件牌加入手牌。
  */
 export const CanotilasSupport = card(302209)
-  .costSame(1)
   .since("v4.8.0")
+  .costSame(1)
   .do((c) => {
     const card0 = c.random(MELUSINE_EVENT_CARDS);
     const card1 = c.random(MELUSINE_EVENT_CARDS);
@@ -1351,8 +1351,8 @@ export const ThironasSupport = card(302210)
  * 复制对方牌库顶部的3张牌，加入手牌。
  */
 export const SluasisSupport = card(302211)
-  .costSame(1)
   .since("v4.8.0")
+  .costSame(1)
   .do((c) => {
     for (const card of c.oppPlayer.piles.slice(0, 3)) {
       c.createHandCard(card.id as CardHandle);
@@ -1367,8 +1367,8 @@ export const SluasisSupport = card(302211)
  * 随机将2张「秘传」卡牌加入你的手牌，并恢复双方牌手的「秘传」卡牌使用机会。
  */
 export const VirdasSupport = card(302212)
-  .costVoid(2)
   .since("v4.8.0")
+  .costVoid(2)
   .do((c) => {
     const candidates = [...c.state.data.cards.values()].filter((c) => c.tags.includes("legend"));
     const card0 = c.random(candidates);

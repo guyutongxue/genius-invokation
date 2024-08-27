@@ -214,9 +214,9 @@ const NonInitialPlayedCardExtension = extension(311308, { count: pair(0) })
  * （「双手剑」角色才能装备。角色最多装备1件「武器」）
  */
 export const UltimateOverlordsMegaMagicSword = card(311308)
+  .since("v4.8.0")
   .costSame(2)
   .weapon("claymore")
-  .since("v4.8.0")
   .variable("supp", 0)
   .associateExtension(NonInitialPlayedCardExtension)
   .on("enter")
