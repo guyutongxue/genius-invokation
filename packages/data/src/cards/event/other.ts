@@ -699,13 +699,12 @@ export const PlungingStrike = card(332017)
   .since("v3.7.0")
   .costSame(3)
   .tags("action")
-  .addTarget("my characters")
+  .addTarget("my characters and not has status with tag (disableSkill)")
   .switchActive("@targets.0")
   .do((c, e) => {
     const target = e.targets[0];
-    const skills = c.of(target).definition.skills;
-    const normalSkill = skills.find((sk) => sk.skillType === "normal");
     c.switchActive(target);
+    const normalSkill = c.$("my active")!.definition.skills.find((sk) => sk.skillType === "normal");
     if (normalSkill) {
       c.useSkill(normalSkill.id as SkillHandle);
     }
