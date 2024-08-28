@@ -1004,7 +1004,7 @@ export const EVENT_MAP = {
   onAction: ActionEventArg,
 
   onBeforeUseSkill: UseSkillEventArg,
-  // modifyUseSKill: ModifyUseSkillEventArg,
+  // modifyUseSkill: ModifyUseSkillEventArg,
   onUseSkill: UseSkillEventArg,
   onBeforePlayCard: PlayCardEventArg,
   onPlayCard: PlayCardEventArg,
