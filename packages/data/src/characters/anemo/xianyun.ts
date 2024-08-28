@@ -24,7 +24,12 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  */
 export const SoaringOnTheWind = status(115103)
   .since("v5.0.0")
-  // TODO
+  .tags("normalAsPlunging")
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
+  .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usage(1)
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -49,6 +54,25 @@ export const DriftcloudWave = status(115104)
 export const Skyladder = combatStatus(115101)
   .since("v5.0.0")
   // TODO
+  .done();
+
+/**
+ * @id 115102
+ * @name 竹星
+ * @description
+ * 特技：仙力助推
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * 【1151021: 仙力助推】治疗所附属角色2点，并使其下次普通攻击视为下落攻击，伤害+1，并且技能结算后造成1点风元素伤害。
+ */
+export const Starwicker = card(115102)
+  .since("v5.0.0")
+  .technique()
+  .provideSkill(1151021)
+  .costSame(1)
+  .usage(2)
+  .heal(2, "@master")
+  .characterStatus(SoaringOnTheWind, "@master")
   .done();
 
 /**

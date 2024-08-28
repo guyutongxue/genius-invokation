@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { card, DamageType, skill, status } from "@gi-tcg/core/builder";
-import { MistBubbleLockdownPreparing } from "../../characters/hydro/hydro_hilichurl_rogue";
+import { card, DamageType } from "@gi-tcg/core/builder";
 
 /**
  * @id 115102
@@ -25,14 +24,7 @@ import { MistBubbleLockdownPreparing } from "../../characters/hydro/hydro_hilich
  * （角色最多装备1个「特技」）
  * 【1151021: 仙力助推】治疗所附属角色2点，并使其下次普通攻击视为下落攻击，伤害+1，并且技能结算后造成1点风元素伤害。
  */
-export const Starwicker = card(115102)
-  .since("v5.0.0")
-  .technique()
-  .provideSkill(1151021)
-  .costSame(1)
-  .usage(2)
-  // TODO
-  .done();
+const Starwicker = void 0; // moved to xianyun
 
 /**
  * @id 122051
@@ -45,14 +37,7 @@ export const Starwicker = card(115102)
  * 【1220512: 水泡封锁】造成1点水元素伤害，敌方出战角色附属水泡围困。
  * 【1220513: 水泡封锁】造成1点水元素伤害，敌方出战角色附属水泡围困。
  */
-export const MistBubbleSlime = card(122051)
-  .since("v5.0.0")
-  .technique()
-  .provideSkill(1220511)
-  .costSame(1)
-  .usage(2)
-  .characterStatus(MistBubbleLockdownPreparing)
-  .done();
+const MistBubbleSlime = void 0; // moved to hydro_hilichurl_rogue
 
 /**
  * @id 313001
@@ -122,5 +107,4 @@ export const Koholasaurus = card(313003)
   .do((c, e) => {
     c.requestTriggerEndPhaseSkill(e.targets[0])
   })
-  // TODO
   .done();

@@ -24,6 +24,7 @@ import {
 import {
   EntityArea,
   EntityDefinition,
+  EntityTag,
   EntityType,
   ExEntityType,
   USAGE_PER_ROUND_VARIABLE_NAMES,
@@ -1470,7 +1471,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
   requestTriggerEndPhaseSkill(target: EntityState) {
-    this.emitEvent("requestTriggerEndPhaseSkill", this.skillInfo, this.callerArea.who, target);
+    this.emitEvent(
+      "requestTriggerEndPhaseSkill",
+      this.skillInfo,
+      this.callerArea.who,
+      target,
+    );
   }
   useSkill(skillId: SkillHandle) {
     this.emitEvent(
@@ -1645,21 +1651,22 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   element(): DiceType {
     return elementOfCharacter(this.state.definition);
   }
-  hasArtifact() {
-    return this.state.entities.find(
-      (v) =>
-        v.definition.type === "equipment" &&
-        v.definition.tags.includes("artifact"),
-    );
-  }
-  hasWeapon(): EntityState | null {
+  private hasEquipmentWithTag(tag: EntityTag): EntityState | null {
     return (
       this.state.entities.find(
         (v) =>
-          v.definition.type === "equipment" &&
-          v.definition.tags.includes("weapon"),
+          v.definition.type === "equipment" && v.definition.tags.includes(tag),
       ) ?? null
     );
+  }
+  hasArtifact() {
+    return this.hasEquipmentWithTag("artifact");
+  }
+  hasWeapon() {
+    return this.hasEquipmentWithTag("weapon");
+  }
+  hasTechnique() {
+    return this.hasEquipmentWithTag("technique");
   }
   hasEquipment(id: EquipmentHandle): EntityState | null {
     return (

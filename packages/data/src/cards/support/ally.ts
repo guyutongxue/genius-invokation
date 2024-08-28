@@ -685,5 +685,7 @@ export const Atea = card(322028)
   .since("v5.0.0")
   .costSame(1)
   .support("ally")
-  // TODO
+  .on("deductOmniDiceSkill", (c, e) => e.isSkillType("technique"))
+  .usagePerRound(1)
+  .deductOmniCost(1)
   .done();

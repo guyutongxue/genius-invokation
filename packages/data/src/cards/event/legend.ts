@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card, flip } from "@gi-tcg/core/builder";
+import { DiceType, card, flip, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 330001
@@ -172,6 +172,17 @@ export const ViciousAncientBattle = card(330008)
   .done();
 
 /**
+ * @id 300005
+ * @name 赦免宣告（生效中）
+ * @description
+ * 本回合中，所附属角色免疫冻结、眩晕、石化等无法使用技能的效果，并且该角色为「出战角色」时不会因效果而切换。
+ */
+export const EdictOfAbsolutionInEffect = status(300005)
+  .tags("immuneControl")
+  .oneDuration()
+  .done();
+
+/**
  * @id 330009
  * @name 赦免宣告
  * @description
@@ -181,5 +192,6 @@ export const ViciousAncientBattle = card(330008)
 export const EdictOfAbsolution = card(330009)
   .since("v5.0.0")
   .legend()
-  // TODO
+  .addTarget("my characters")
+  .characterStatus(EdictOfAbsolutionInEffect, "@targets.0")
   .done();

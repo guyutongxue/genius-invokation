@@ -49,6 +49,26 @@ export const MistBubbleLockdownPreparing = status(122053)
   .done();
 
 /**
+ * @id 122051
+ * @name 水泡史莱姆
+ * @description
+ * 特技：水泡战法
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * 【1220511: 水泡战法】（需准备1个行动轮）造成1点水元素伤害，敌方出战角色附属水泡围困。
+ * 【1220512: 水泡封锁】造成1点水元素伤害，敌方出战角色附属水泡围困。
+ * 【1220513: 水泡封锁】造成1点水元素伤害，敌方出战角色附属水泡围困。
+ */
+export const MistBubbleSlime = card(122051)
+  .since("v5.0.0")
+  .technique()
+  .provideSkill(1220511)
+  .costSame(1)
+  .usage(2)
+  .characterStatus(MistBubbleLockdownPreparing)
+  .done();
+
+/**
  * @id 22051
  * @name 镰刀旋斩
  * @description

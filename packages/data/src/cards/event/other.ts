@@ -1567,5 +1567,11 @@ export const Tada = card(332037)
  */
 export const SaurianDiningBuddies = card(332039)
   .since("v5.0.0")
-  // TODO
+  .addTarget("my character has equipment with tag (technique)")
+  .do((c, e) => {
+    const technique = c.of(e.targets[0]).hasTechnique();
+    if (technique) {
+      c.addVariable("usage", 1, technique);
+    }
+  })
   .done();

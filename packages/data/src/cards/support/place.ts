@@ -459,6 +459,19 @@ export const CentralLaboratoryRuins = card(321021)
   .done();
 
 /**
+ * @id 301023
+ * @name 圣火竞技场（生效中）
+ * @description
+ * 角色造成的伤害+1。
+ * 持续回合：2
+ */
+export const StadiumOfTheSacredFlameInEffect = combatStatus(301023)
+  .duration(2)
+  .on("increaseSkillDamage")
+  .increaseDamage(1)
+  .done();
+
+/**
  * @id 321022
  * @name 圣火竞技场
  * @description
@@ -471,5 +484,25 @@ export const StadiumOfTheSacredFlame = card(321022)
   .since("v5.0.0")
   .costSame(2)
   .support("place")
-  // TODO
+  .variable("flame", 0)
+  .on("useSkillOrTechnique")
+  .addVariable("flame", 1)
+  .do((c) => {
+    const flame = c.getVariable("flame");
+    switch (flame) {
+      case 2: {
+        c.generateDice("randomElement", 1);
+        break;
+      }
+      case 4: {
+        c.heal(2, "my active");
+        break;
+      }
+      case 6: {
+        c.combatStatus(StadiumOfTheSacredFlameInEffect);
+        c.dispose();
+        break;
+      }
+    }
+  })
   .done();
