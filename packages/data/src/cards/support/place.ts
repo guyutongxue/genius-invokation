@@ -339,7 +339,7 @@ export const OperaEpiclese = card(321017)
 export const StrictProhibited = combatStatus(301018)
   .tags("disableEvent")
   .oneDuration()
-  .on("playCard", (c, e) => e.card.definition.type === "event")
+  .on("playCard", (c, e) => e.card.definition.cardType === "event")
   .usage(1)
   .done();
 

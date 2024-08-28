@@ -956,7 +956,7 @@ export const SunyataFlower = card(332029)
   .addTarget("my supports")
   .dispose("@targets.0")
   .do((c) => {
-    const candidates = [...c.state.data.cards.values()].filter((card) => card.type === "support");
+    const candidates = [...c.state.data.cards.values()].filter((card) => card.cardType === "support");
     const card0 = c.random(candidates);
     const card1 = c.random(candidates);
     c.createHandCard(card0.id as CardHandle);
@@ -964,7 +964,7 @@ export const SunyataFlower = card(332029)
   })
   .toCombatStatus(303229)
   .oneDuration()
-  .once("deductOmniDiceCard", (c, e) => e.action.card.definition.type === "support")
+  .once("deductOmniDiceCard", (c, e) => e.action.card.definition.cardType === "support")
   .deductOmniCost(1)
   .done();
 

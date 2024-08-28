@@ -20,14 +20,13 @@ import { QueryArgs, doSemanticQueryAction } from "./semantic";
 import { allEntities, getEntityArea } from "../utils";
 import { CharacterState, EntityState, GameState } from "../base/state";
 import {
-  ActionEventArg,
+  InitiativeSkillEventArg,
   DamageOrHealEventArg,
   DamageInfo,
   SwitchActiveEventArg,
   UseSkillInfo,
   UseSkillEventArg,
 } from "../base/skill";
-import { CardSkillEventArg } from "../base/card";
 import { GiTcgDataError } from "../error";
 
 export function executeQuery<
@@ -70,7 +69,7 @@ export function executeQuery<
           .fill(0)
           .map((_, i) => [
             `${i}`,
-            () => (ctx.eventArg as CardSkillEventArg).targets[i].id,
+            () => (ctx.eventArg as InitiativeSkillEventArg).targets[i].id,
           ]),
       ),
     },

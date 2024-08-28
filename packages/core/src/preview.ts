@@ -94,6 +94,7 @@ export class ActionPreviewer {
           [previewState, completed] = await SkillExecutor.previewSkill(
             previewState,
             skillInfo,
+            { targets: newActionInfo.targets },
           );
         }
         if (completed) {
@@ -135,12 +136,12 @@ export class ActionPreviewer {
           player().combatStatuses.find((st) =>
             st.definition.tags.includes("disableEvent"),
           ) &&
-          card.definition.type === "event"
+          card.definition.cardType === "event"
         ) {
         } else {
           const skillInfo: SkillInfo = {
             caller: activeCh(),
-            definition: card.definition.onPlay,
+            definition: card.definition,
             fromCard: card,
             requestBy: null,
             charged: false,

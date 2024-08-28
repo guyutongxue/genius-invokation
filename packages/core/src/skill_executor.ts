@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { CardSkillEventArg } from "./base/card";
 import {
   ActionEventArg,
   DamageInfo,
@@ -21,6 +20,7 @@ import {
   EventAndRequest,
   EventArg,
   HealInfo,
+  InitiativeSkillEventArg,
   SkillInfo,
   SwitchActiveEventArg,
   TriggeredSkillDefinition,
@@ -60,7 +60,7 @@ interface IoAndState extends IoDuringSkillFinalize {
   readonly state: GameState;
 }
 
-export type GeneralSkillArg = EventArg | CardSkillEventArg | void;
+export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
 
 export type PreviewResult = readonly [newState: GameState, completed: boolean];
 
@@ -481,7 +481,7 @@ export class SkillExecutor extends StateMutator {
             skillDef.skillType === "normal" && player.dice.length % 2 === 0,
           plunging,
         };
-        await this.finalizeSkill(skillInfo, void 0);
+        await this.finalizeSkill(skillInfo, { targets: [] });
         await this.handleEvent([
           "onUseSkill",
           new UseSkillEventArg(this.state, arg.who, skillInfo),
@@ -491,19 +491,20 @@ export class SkillExecutor extends StateMutator {
           DetailLogType.Event,
           `Triggering end phase skills of ${arg.requestedEntity}`,
         );
-        for (const skills of arg.requestedEntity.definition.skills) {
-          if (skills.triggerOn !== "onEndPhase") {
+        for (const skill of arg.requestedEntity.definition.skills) {
+          if (skill.triggerOn !== "onEndPhase") {
             continue;
           }
           const skillInfo: SkillInfo = {
             caller: arg.requestedEntity,
-            definition: skills,
+            definition: skill,
             fromCard: null,
             requestBy: arg.via,
             charged: false,
             plunging: false,
           };
-          await this.finalizeSkill(skillInfo, void 0);
+          const eventArg = new EventArg(this.state);
+          await this.finalizeSkill(skillInfo, eventArg);
         }
       } else {
         using l = this.subLog(

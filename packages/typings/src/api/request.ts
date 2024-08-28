@@ -52,6 +52,7 @@ export interface UseSkillAction {
   type: "useSkill";
   skill: number;
   cost: readonly DiceType[];
+  targets: readonly number[];
   preview?: StateData;
 }
 

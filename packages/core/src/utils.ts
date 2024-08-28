@@ -336,7 +336,7 @@ export function isSkillDisabled(character: CharacterState): boolean {
 }
 
 export function diceCostOfCard(card: CardDefinition): number {
-  return card.onPlay.requiredCost.filter((c) => c !== DiceType.Energy).length;
+  return card.requiredCost.filter((c) => c !== DiceType.Energy).length;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

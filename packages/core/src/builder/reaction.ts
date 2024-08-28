@@ -90,9 +90,7 @@ function initialize() {
       super(reaction);
     }
     done() {
-      REACTION_DESCRIPTION[this.reaction] = (st, id, d) => {
-        return this.applyActions(st, id, d);
-      };
+      REACTION_DESCRIPTION[this.reaction] = this.buildAction();
     }
   }
 

@@ -225,7 +225,7 @@ function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
     descriptionDictionary,
     isLegend: !hide && c.definition.tags.includes("legend"),
     definitionId: hide ? 0 : c.definition.id,
-    definitionCost: hide ? [] : [...c.definition.onPlay.requiredCost],
+    definitionCost: hide ? [] : [...c.definition.requiredCost],
   };
 }
 
@@ -284,6 +284,7 @@ export function exposeAction(action: ActionInfo): Action {
         type: "useSkill",
         skill: action.skill.definition.id,
         cost: action.cost,
+        targets: action.targets.map((t) => t.id),
         preview: action.preview
           ? exposeState(action.who, action.preview)
           : void 0,

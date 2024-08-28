@@ -145,6 +145,7 @@ export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
   readonly skill: SkillInfo;
+  readonly targets: AnyState[];
 }
 
 export interface PlayCardInfo {

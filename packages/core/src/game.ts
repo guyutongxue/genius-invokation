@@ -59,8 +59,9 @@ import {
   SwitchActiveEventArg,
   SwitchActiveInfo,
   UseSkillEventArg,
+  InitiativeSkillEventArg,
 } from "./base/skill";
-import { CardDefinition, CardSkillEventArg } from "./base/card";
+import { CardDefinition } from "./base/card";
 import { executeQueryOnState } from "./query";
 import {
   GiTcgCoreInternalError,
@@ -656,7 +657,7 @@ export class Game extends StateMutator {
             "onBeforeUseSkill",
             new UseSkillEventArg(this.state, who, actionInfo.skill),
           );
-          await this.executeSkill(actionInfo.skill);
+          await this.executeSkill(actionInfo.skill, { targets: actionInfo.targets });
           await this.handleEvent(
             "onUseSkill",
             new UseSkillEventArg(this.state, who, actionInfo.skill),
@@ -681,7 +682,7 @@ export class Game extends StateMutator {
             player().combatStatuses.find((st) =>
               st.definition.tags.includes("disableEvent"),
             ) &&
-            actionInfo.card.definition.type === "event"
+            actionInfo.card.definition.cardType === "event"
           ) {
             this.mutate({
               type: "removeCard",
@@ -701,7 +702,7 @@ export class Game extends StateMutator {
             await this.executeSkill(
               {
                 caller: activeCh(),
-                definition: actionInfo.card.definition.onPlay,
+                definition: actionInfo.card.definition,
                 fromCard: actionInfo.card,
                 requestBy: null,
                 charged: false,
@@ -869,26 +870,30 @@ export class Game extends StateMutator {
           charged,
           plunging,
         };
-        if (!(0, definition.filter)(this.state, skillInfo)) {
-          continue;
+        const allTargets = (0, definition.getTarget)(this.state, skillInfo);
+        for (const arg of allTargets) {
+          if (!(0, definition.filter)(this.state, skillInfo, arg)) {
+            continue;
+          }
+          const actionInfo: ActionInfo = {
+            type: "useSkill",
+            who,
+            skill: skillInfo,
+            targets: arg.targets,
+            fast: false,
+            cost: [...definition.requiredCost],
+          };
+          result.push(actionInfo);
         }
-        const actionInfo: ActionInfo = {
-          type: "useSkill",
-          who,
-          skill: skillInfo,
-          fast: false,
-          cost: [...definition.requiredCost],
-        };
-        result.push(actionInfo);
       }
     }
 
     // Cards
     for (const card of player.hands) {
-      let allTargets: CardSkillEventArg[];
+      let allTargets: InitiativeSkillEventArg[];
       const skillInfo: SkillInfo = {
         caller: activeCh,
-        definition: card.definition.onPlay,
+        definition: card.definition,
         fromCard: card,
         requestBy: null,
         charged: false,
@@ -896,7 +901,7 @@ export class Game extends StateMutator {
       };
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
-        card.definition.type === "support" &&
+        card.definition.cardType === "support" &&
         player.supports.length === this.state.config.maxSupports
       ) {
         allTargets = player.supports.map((st) => ({ targets: [st] }));
@@ -910,7 +915,7 @@ export class Game extends StateMutator {
             who,
             card,
             targets: arg.targets,
-            cost: [...card.definition.onPlay.requiredCost],
+            cost: [...card.definition.requiredCost],
             fast: !card.definition.tags.includes("action"),
           };
           result.push(actionInfo);
