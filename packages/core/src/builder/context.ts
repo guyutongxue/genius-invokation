@@ -1469,6 +1469,9 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   rerollDice(times: number) {
     this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
+  requestTriggerEndPhaseSkill(target: EntityState) {
+    this.emitEvent("requestTriggerEndPhaseSkill", this.skillInfo, this.callerArea.who, target);
+  }
   useSkill(skillId: SkillHandle) {
     this.emitEvent(
       "requestUseSkill",

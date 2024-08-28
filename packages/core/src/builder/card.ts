@@ -78,7 +78,7 @@ type StateOf<TargetKindTs extends InitiativeSkillTargetKind> =
       ]
     : readonly [];
 
-interface StrictCardSkillEventArg<
+export interface StrictInitiativeSkillEventArg<
   TargetKindTs extends InitiativeSkillTargetKind,
 > {
   targets: StateOf<TargetKindTs>;
@@ -90,7 +90,7 @@ type InitiativeSkillBuilderMeta<
 > = {
   callerType: "character";
   callerVars: never;
-  eventArgType: StrictCardSkillEventArg<KindTs>;
+  eventArgType: StrictInitiativeSkillEventArg<KindTs>;
   associatedExtension: AssociatedExt;
 };
 
@@ -133,7 +133,7 @@ class CardBuilder<
 > extends SkillBuilderWithCost<{
   callerType: "character";
   callerVars: never;
-  eventArgType: StrictCardSkillEventArg<KindTs>;
+  eventArgType: StrictInitiativeSkillEventArg<KindTs>;
   associatedExtension: AssociatedExt;
 }> {
   private _type: CardType = "event";
@@ -429,8 +429,9 @@ class CardBuilder<
         gainEnergy: false,
         prepared: false,
         filter: () => true,
-        getTarget: () => [],
         action: disposeAction,
+        getTarget: () => [],
+        usagePerRoundVariableName: null,
       };
       onDispose = disposeDef;
     }
@@ -449,6 +450,7 @@ class CardBuilder<
       filter,
       action,
       getTarget: targetGetter,
+      usagePerRoundVariableName: null,
       onDispose,
       descriptionDictionary: this._descriptionDictionary,
     };

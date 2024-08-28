@@ -27,6 +27,17 @@ export const MistBubblePrison = status(122052)
   .done();
 
 /**
+ * @id 1220512
+ * @name 水泡封锁
+ * @description
+ * 造成1点水元素伤害，敌方出战角色附属水泡围困。
+ */
+export const MistBubbleLockdown = skill(1220512)
+  .damage(DamageType.Hydro, 1)
+  .characterStatus(MistBubblePrison, "opp active")
+  .done();
+
+/**
  * @id 122053
  * @name 水泡封锁（准备中）
  * @description
@@ -34,7 +45,7 @@ export const MistBubblePrison = status(122052)
  */
 export const MistBubbleLockdownPreparing = status(122053)
   .since("v5.0.0")
-  // TODO
+  .prepare(MistBubbleLockdown)
   .done();
 
 /**

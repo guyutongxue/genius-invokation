@@ -54,7 +54,7 @@ import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
 import { createVariable } from "./utils";
 import { registerInitiativeSkill } from "./registry";
 import { InitiativeSkillTargetKind } from "../base/card";
-import { TargetKindOfQuery, TargetQuery } from "./card";
+import { StrictInitiativeSkillEventArg, TargetKindOfQuery, TargetQuery } from "./card";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -925,6 +925,7 @@ class InitiativeSkillBuilder<
         action: this.buildAction(),
         filter: this.buildFilter(),
         getTarget: this.buildTargetGetter(),
+        usagePerRoundVariableName: null,
       },
     });
     return this.skillId as SkillHandle;
@@ -938,7 +939,7 @@ export class TechniqueBuilder<
 > extends SkillBuilderWithCost<{
   callerType: "equipment";
   callerVars: Vars;
-  eventArgType: InitiativeSkillEventArg;
+  eventArgType: StrictInitiativeSkillEventArg<KindTs>;
   associatedExtension: AssociatedExt;
 }> {
   private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
@@ -1029,12 +1030,13 @@ export class TechniqueBuilder<
       skillType: "technique",
       triggerOn: null,
       id: this.id,
-      requiredCost: [],
+      requiredCost: this._cost,
       gainEnergy: false,
       prepared: false,
       filter: this.buildFilter(),
       action: this.buildAction(),
       getTarget: this.buildTargetGetter(),
+      usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
     };
     this.parent._initiativeSkills.push(def);
   }

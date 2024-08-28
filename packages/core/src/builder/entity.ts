@@ -176,7 +176,7 @@ export class EntityBuilder<
       throw new GiTcgDataError("Only equipment can have technique skill");
     }
     const self = this as unknown as EntityBuilder<"equipment", Vars, AssociatedExt>;
-    return enableShortcut(new TechniqueBuilder(id, self));
+    return enableShortcut(new TechniqueBuilder<Vars, readonly [], AssociatedExt>(id, self));
   }
 
   conflictWith(id: number) {

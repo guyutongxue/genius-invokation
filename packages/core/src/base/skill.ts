@@ -43,6 +43,7 @@ export interface SkillDefinitionBase<Arg> {
   readonly id: number;
   readonly action: SkillDescription<Arg>;
   readonly filter: SkillActionFilter<Arg>;
+  readonly usagePerRoundVariableName: UsagePerRoundVariableNames | null;
 }
 
 export type SkillResult = readonly [GameState, EventAndRequest[]];
@@ -1130,7 +1131,6 @@ export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
   readonly triggerOn: E;
   readonly requiredCost: readonly [];
   readonly gainEnergy: false;
-  readonly usagePerRoundVariableName: UsagePerRoundVariableNames | null;
 }
 
 export type SkillDefinition =

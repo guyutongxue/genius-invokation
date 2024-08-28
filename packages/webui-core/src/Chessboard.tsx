@@ -40,6 +40,7 @@ import type {
   PlayCardAction,
   DamageData,
   ExposedMutation,
+  UseSkillAction,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -82,9 +83,9 @@ export const DECLARE_END_ID = 0;
 /**  将卡牌作为元素调和素材时的点击行为 ID*/
 export const ELEMENTAL_TUNING_OFFSET = -11072100;
 
-interface PCAWithIndex extends PlayCardAction {
+type ClickableActionWithIndex = (PlayCardAction | UseSkillAction) & {
   index: number;
-}
+};
 type PartialDiceSelectProp = Omit<DiceSelectProps, "value">;
 type DiceAndSelectionState = PartialDiceSelectProp & {
   /** 是否可以进行骰子选择并确认（若置空需设置 DiceSelectProp.disableConfirm） */
@@ -94,14 +95,14 @@ type DiceAndSelectionState = PartialDiceSelectProp & {
 };
 
 /**
- * 构建单个卡牌的状态转移图
+ * 构建单个行动入口的状态转移图
  * @param selected 标记为“已选择”的实体列表
  * @param actions 待处理的事件列表
  * @returns
  */
-function oneCardState(
+function buildClickableTransferIter(
   selected: number[],
-  actions: PCAWithIndex[],
+  actions: ClickableActionWithIndex[],
 ): DiceAndSelectionState {
   switch (actions[0].targets.length) {
     case 0: {
@@ -136,7 +137,7 @@ function oneCardState(
           ...v,
           targets: v.targets.toSpliced(0, 1),
         }));
-        clickable.set(k, oneCardState([...selected, k], newV));
+        clickable.set(k, buildClickableTransferIter([...selected, k], newV));
       }
       return {
         disableConfirm: true,
@@ -152,13 +153,13 @@ function oneCardState(
  * @param cardAction 所有使用卡牌的事件
  * @returns 状态转移图的初始状态结点
  */
-function buildAllCardClickState(
-  cardAction: PCAWithIndex[],
+function buildClickableTransferState(
+  cardAction: ClickableActionWithIndex[],
 ): Map<number, DiceAndSelectionState> {
-  const grouped = groupBy(cardAction, (v) => v.card);
+  const grouped = groupBy(cardAction, (v) => "skill" in v ? v.skill : v.card);
   const result = new Map<number, DiceAndSelectionState>();
   for (const [k, v] of grouped) {
-    result.set(k, oneCardState([k], v));
+    result.set(k, buildClickableTransferIter([k], v));
   }
   return result;
 }
@@ -300,7 +301,7 @@ export function createPlayer(
       const currentEnergy =
         player.characters.find((ch) => ch.id === player.activeCharacterId)
           ?.energy ?? 0;
-      const playCardInfos: PCAWithIndex[] = [];
+      const clickableInfos: ClickableActionWithIndex[] = [];
       const initialClickable = new Map<number, DiceAndSelectionState>();
       const newAllCosts: Record<number, readonly DiceType[]> = {};
       for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
@@ -313,16 +314,12 @@ export function createPlayer(
         }
         switch (action.type) {
           case "useSkill": {
-            initialClickable.set(action.skill, {
-              actionIndex: i,
-              required: action.cost,
-              selected: [],
-            });
+            clickableInfos.push({ ...action, index: i });
             newAllCosts[action.skill] = action.cost;
             break;
           }
           case "playCard": {
-            playCardInfos.push({ ...action, index: i });
+            clickableInfos.push({ ...action, index: i });
             newAllCosts[action.card] = action.cost;
             break;
           }
@@ -356,7 +353,7 @@ export function createPlayer(
           }
         }
       }
-      for (const [k, v] of buildAllCardClickState(playCardInfos)) {
+      for (const [k, v] of buildClickableTransferState(clickableInfos)) {
         initialClickable.set(k, v);
       }
       setAllCosts(newAllCosts);

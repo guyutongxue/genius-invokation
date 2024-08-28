@@ -23,10 +23,9 @@ import {
   GameState,
   PlayerState,
 } from "./base/state";
-import { EntityArea, EntityDefinition } from "./base/entity";
+import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
-import { CardDefinition, CardTag } from "./base/card";
-import { applyMutation } from "./base/mutation";
+import { CardDefinition } from "./base/card";
 import {
   EventNames,
   InitiativeSkillDefinition,
@@ -40,9 +39,6 @@ import {
   GiTcgCoreInternalEntityNotFoundError,
   GiTcgCoreInternalError,
 } from "./error";
-import { NotifyOption } from "./mutator";
-import { Version, getCorrectVersion } from "./base/version";
-import { GameData } from "./builder/registry";
 
 export type Writable<T> = {
   -readonly [P in keyof T]: T[P];

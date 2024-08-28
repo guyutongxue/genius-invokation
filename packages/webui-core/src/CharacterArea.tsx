@@ -32,7 +32,7 @@ interface EnergyBarProps {
 
 function EnergyBar(props: EnergyBarProps) {
   return (
-    <div class="absolute z-1 right-[-10px] top-0 flex flex-col gap-2">
+    <>
       <Index each={Array(props.total).fill(0)}>
         {(_, i) => (
           <svg // 能量点
@@ -51,7 +51,7 @@ function EnergyBar(props: EnergyBarProps) {
           </svg>
         )}
       </Index>
-    </div>
+    </>
   );
 }
 
@@ -85,6 +85,8 @@ export function CharacterArea(props: CharacterAreaProps) {
     props.data.entities.find((et) => et.equipment === "weapon");
   const artifact = () =>
     props.data.entities.find((et) => et.equipment === "artifact");
+  const technique = () =>
+    props.data.entities.find((et) => et.equipment === "technique");
   const otherEquipments = () =>
     props.data.entities.filter((et) => et.equipment === true);
   return (
@@ -102,7 +104,21 @@ export function CharacterArea(props: CharacterAreaProps) {
           <WaterDrop />
           <div class="absolute">{props.data.health}</div>
         </div>
-        <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
+        <div class="absolute z-1 right-[-10px] top-0 flex flex-col gap-2">
+          <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
+          <Show when={technique()}>
+            {(et) => (
+              <Interactive
+                class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
+                id={et().id}
+                definitionId={et().definitionId}
+                dataHighlight={et().usagePerRoundHighlight}
+              >
+                &#129668;
+              </Interactive>
+            )}
+          </Show>
+        </div>
         <div class="absolute z-3 hover:z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
           <Show when={weapon()}>
             {(et) => (
