@@ -27,7 +27,7 @@ import {
 } from "./base/skill";
 import { AnyState, GameState } from "./base/state";
 import { SkillExecutor } from "./skill_executor";
-import { Writable, allEntities, getActiveCharacterIndex } from "./utils";
+import { Writable, allEntities, getActiveCharacterIndex, getEntityArea } from "./utils";
 
 export type ActionInfoWithModification = ActionInfo & {
   eventArg: InstanceType<typeof GenericModifyActionEventArg>;
@@ -83,11 +83,12 @@ export class ActionPreviewer {
     switch (newActionInfo.type) {
       case "useSkill": {
         const skillInfo = newActionInfo.skill;
+        const callerArea = getEntityArea(previewState, activeCh().id);
         if (completed) {
           [previewState, completed] = await SkillExecutor.previewEvent(
             previewState,
             "onBeforeUseSkill",
-            new UseSkillEventArg(previewState, this.who, newActionInfo.skill),
+            new UseSkillEventArg(previewState, callerArea, newActionInfo.skill),
           );
         }
         if (completed) {
@@ -101,7 +102,7 @@ export class ActionPreviewer {
           [previewState, completed] = await SkillExecutor.previewEvent(
             previewState,
             "onUseSkill",
-            new UseSkillEventArg(previewState, this.who, newActionInfo.skill),
+            new UseSkillEventArg(previewState, callerArea, newActionInfo.skill),
           );
         }
         break;

@@ -42,6 +42,7 @@ import {
   sortDice,
   isSkillDisabled,
   initiativeSkillsOfPlayer,
+  getEntityArea,
 } from "./utils";
 import { GameData } from "./builder/registry";
 import {
@@ -653,14 +654,15 @@ export class Game extends StateMutator {
 
       switch (actionInfo.type) {
         case "useSkill": {
+          const callerArea = getEntityArea(this.state, activeCh().id);
           await this.handleEvent(
             "onBeforeUseSkill",
-            new UseSkillEventArg(this.state, who, actionInfo.skill),
+            new UseSkillEventArg(this.state, callerArea, actionInfo.skill),
           );
           await this.executeSkill(actionInfo.skill, { targets: actionInfo.targets });
           await this.handleEvent(
             "onUseSkill",
-            new UseSkillEventArg(this.state, who, actionInfo.skill),
+            new UseSkillEventArg(this.state, callerArea, actionInfo.skill),
           );
           break;
         }

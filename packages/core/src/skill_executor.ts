@@ -433,6 +433,7 @@ export class SkillExecutor extends StateMutator {
         );
         const player = this.state.players[arg.who];
         const activeCh = player.characters[getActiveCharacterIndex(player)];
+        const callerArea = getEntityArea(this.state, activeCh.id);
         if (
           activeCh.entities.find((et) =>
             et.definition.tags.includes("disableSkill"),
@@ -484,7 +485,7 @@ export class SkillExecutor extends StateMutator {
         await this.finalizeSkill(skillInfo, { targets: [] });
         await this.handleEvent([
           "onUseSkill",
-          new UseSkillEventArg(this.state, arg.who, skillInfo),
+          new UseSkillEventArg(this.state, callerArea, skillInfo),
         ]);
       } else if (name === "requestTriggerEndPhaseSkill") {
         using l = this.subLog(

@@ -54,7 +54,11 @@ import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
 import { createVariable } from "./utils";
 import { registerInitiativeSkill } from "./registry";
 import { InitiativeSkillTargetKind } from "../base/card";
-import { StrictInitiativeSkillEventArg, TargetKindOfQuery, TargetQuery } from "./card";
+import {
+  StrictInitiativeSkillEventArg,
+  TargetKindOfQuery,
+  TargetQuery,
+} from "./card";
 
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
@@ -89,36 +93,40 @@ interface RelativeArg {
 
 function checkRelative(
   state: GameState,
-  entityIdOrWhoIntf: number | { who: 0 | 1 },
+  entityIdOrArea: number | { who: 0 | 1 } | EntityArea,
   r: RelativeArg,
 ): boolean {
-  if (typeof entityIdOrWhoIntf === "number") {
-    const entityArea = getEntityArea(state, entityIdOrWhoIntf);
-    switch (r.listenTo) {
-      case ListenTo.Myself:
-        return r.callerId === entityIdOrWhoIntf;
-      // @ts-expect-error fallthrough
-      case ListenTo.SameArea:
-        if (r.callerArea.type === "characters") {
-          return (
-            entityArea.type === "characters" &&
-            r.callerArea.characterId === entityArea.characterId
-          );
-        }
-      case ListenTo.SamePlayer:
-        return r.callerArea.who === entityArea.who;
-      case ListenTo.All:
-        return true;
-      default:
-        const _: never = r.listenTo;
-        throw new GiTcgDataError(`Unknown listenTo: ${_}`);
-    }
-  } else {
+  let entityArea: EntityArea;
+  if (typeof entityIdOrArea !== "number" && !("type" in entityIdOrArea)) {
     if (r.listenTo === ListenTo.All) {
       return true;
     } else {
-      return r.callerArea.who === entityIdOrWhoIntf.who;
+      return r.callerArea.who === entityIdOrArea.who;
     }
+  }
+  if (typeof entityIdOrArea === "number") {
+    entityArea = getEntityArea(state, entityIdOrArea);
+  } else {
+    entityArea = entityIdOrArea;
+  }
+  switch (r.listenTo) {
+    case ListenTo.Myself:
+      return r.callerId === entityIdOrArea;
+    // @ts-expect-error fallthrough
+    case ListenTo.SameArea:
+      if (r.callerArea.type === "characters") {
+        return (
+          entityArea.type === "characters" &&
+          r.callerArea.characterId === entityArea.characterId
+        );
+      }
+    case ListenTo.SamePlayer:
+      return r.callerArea.who === entityArea.who;
+    case ListenTo.All:
+      return true;
+    default:
+      const _: never = r.listenTo;
+      throw new GiTcgDataError(`Unknown listenTo: ${_}`);
   }
 }
 
@@ -311,19 +319,19 @@ const detailedEventDictionary = {
   }),
   // modifySkill: defineDescriptor("modifyUseSKill", (c, e, r) => {
   //   return (
-  //     checkRelative(c.state, e.skill.caller.id, r) &&
+  //     checkRelative(c.state, e.callerArea, r) &&
   //     commonInitiativeSkillCheck(e.skill)
   //   );
   // }),
   useSkill: defineDescriptor("onUseSkill", (c, e, r) => {
     return (
-      checkRelative(c.state, e.skill.caller.id, r) &&
+      checkRelative(c.state, e.callerArea, r) &&
       commonInitiativeSkillCheck(e.skill)
     );
   }),
   useSkillOrTechnique: defineDescriptor("onUseSkill", (c, e, r) => {
     return (
-      checkRelative(c.state, e.skill.caller.id, r) &&
+      checkRelative(c.state, e.callerArea, r) &&
       commonInitiativeSkillCheck(e.skill, true)
     );
   }),
@@ -603,6 +611,7 @@ export class TriggeredSkillBuilder<
         listenTo: this._listenTo,
       });
     });
+    this.filters.push(triggerFilter);
   }
   private _usageOpt: { name: string; autoDecrease: boolean } | null = null;
   private _usagePerRoundOpt: {

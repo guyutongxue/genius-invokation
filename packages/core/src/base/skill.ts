@@ -32,7 +32,7 @@ import {
 } from "../base/reaction";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
-import { EntityDefinition, UsagePerRoundVariableNames } from "./entity";
+import { EntityArea, EntityDefinition, UsagePerRoundVariableNames } from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
 import { diceCostOfCard, getEntityArea, mixins } from "../utils";
@@ -517,10 +517,10 @@ export class SwitchActiveEventArg extends EventArg {
 export class UseSkillEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
-    public readonly who: 0 | 1,
+    public readonly callerArea: EntityArea,
     protected readonly _skillInfo: SkillInfo,
   ) {
-    super(state, who);
+    super(state, callerArea.who);
   }
   get skill() {
     return this._skillInfo;
