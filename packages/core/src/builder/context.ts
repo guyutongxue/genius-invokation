@@ -1481,9 +1481,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   /**
-   * 在 `cards` 中随机弃置 `count` 张行动牌。**不会**步进随机迭代器。
-   * @param cards
-   * @param count 默认为 1
+   * 等价于 `disposeCard(...randomCards(cards, count))`。
    */
   disposeRandomCard(cards: CardState[], count = 1) {
     const disposed = this.randomCard(cards, count);
@@ -1509,7 +1507,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   rerollDice(times: number) {
     this.emitEvent("requestReroll", this.skillInfo, this.callerArea.who, times);
   }
-  requestTriggerEndPhaseSkill(target: EntityState) {
+  triggerEndPhaseSkill(target: EntityState) {
     this.emitEvent(
       "requestTriggerEndPhaseSkill",
       this.skillInfo,
@@ -1562,9 +1560,12 @@ type SkillContextMutativeProps =
   | "absorbDice"
   | "generateDice"
   | "createHandCard"
-  | "drawCards"
   | "createPileCards"
   | "disposeCard"
+  | "disposeRandomCard"
+  | "drawCards"
+  | "undrawCards"
+  | "stealHandCard"
   | "setExtensionState"
   | "switchCards"
   | "reroll"

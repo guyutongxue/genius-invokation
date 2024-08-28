@@ -117,6 +117,30 @@ const TandooriRoastChicken = card(333011)
 
 默认情况下该方法会调用 `.tags("action")` 表明使用此牌是战斗行动。如果这不满足，则显式指明 `.talent(ch, "active")` 或 `.talent(ch, "none")`。`"active"` 指该牌不是战斗行动，但仍然要求天赋角色是出战角色；`"none"` 则和普通装备牌无异，（除限定的使用目标外）没有打出时机的额外要求。
 
+### `.technique()` 特技牌
+
+调用 `.technique()` 声明该牌为特技牌，随后的描述转换为对特技牌实体的定义。使用 `.provideSkill(id)` 表明该特技牌可提供的特技；使用 `.endProvide()` 结束特技描述。
+
+特技描述和[主动技能描述](./character.md#主动技能)拥有类似的结构。特技还可提供如下链方法：
+- `.usage` 和 `.usagePerRound`：限制该特技的使用次数和每回合使用次数。前者再消耗完毕后，特技装备会被弃置。
+
+例：
+
+```ts
+/**
+ * 异色猎刀鳐
+ * 特技：原海水刃：造成2点物理伤害。
+ */
+const XenochromaticHuntersRay = card(313001) // 特技手牌和装备的 id
+//.costOmni(0)                               // 声明打出手牌所需的骰子
+  .technique()                               // 声明此牌为特技牌
+  .provideSkill(3130011)                     // 特技所提供技能的 id
+  .costVoid(2)                     // 声明打出该技能所需的骰子
+  .usage(2)                        // 声明特技技能的可用次数；耗尽时弃置特技装备
+  .damage(DamageType.Physical, 2)  // 下为正常的主动技能定义
+  .done();
+```
+
 ### 其它装备牌？
 
 目前还没有，但可以直接调用 `.equipment(target)` 表明该牌打出后可以选择 `target` 作为目标，并为目标装备实体，随后的 builder chain 转换到该装备的定义。

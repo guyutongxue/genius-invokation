@@ -31,7 +31,7 @@ export class ExtensionBuilder<ExtStateType extends object> {
     idHint: number,
     private readonly initialState: ExtStateType,
   ) {
-    this.id = idHint + 5_000_000;
+    this.id = idHint + 50_000_000;
   }
 
   private generateSkillId() {

@@ -102,15 +102,21 @@ interface SkillContext {
 
   // 在我方牌堆生成 count 张定义为 card 的行动牌
   // strategy 指示插入位置
-  createPileCards(card: CardHandle, count: number, strategy: "top" | "random" | "spaceAround" | `topRange${number}`): void;
+  createPileCards(card: CardHandle, count: number, strategy: InsertPileStrategy): void;
 
-  // 弃置我方或对方的行动牌（从手牌或牌堆）
-  disposeCard(card: CardState, who: "my" | "opp"): void;
+  // 弃置行动牌
+  disposeCard(...cards: CardState[]): void;
 
   // 从牌堆抽取手牌
   // opt.who 决定哪一方抽牌
   // opt.withTag 要求抽出的手牌必须带有的标签
   drawCards(count: number, opt: DrawCardsOpt): void;
+
+  // 将牌从手牌放回牌堆
+  undrawCards(cards: CardState[], strategy: InsertPileStrategy): void;
+
+  // 从对手的手牌中窃取一张牌到我方手牌
+  stealHandCard(card: CardState): void;
 
   // 请求执行“选择任意张手牌切换”
   switchCards(): void;
@@ -120,7 +126,13 @@ interface SkillContext {
 
   // 请求执行“执行另一条技能”
   useSkill(skill: SkillHandle | "normal"): void;
+
+  // 请求“触发 `target` 的回合结束时效果”
+  triggerEndPhaseSkill(target: EntityState): void;
 }
+
+type InsertPileStrategy =
+  "top" | "bottom" | "random" | "spaceAround" | `topRange${number}`;
 
 interface DrawCardsOpt {
   who?: "my" | "opp";
@@ -138,6 +150,10 @@ interface SkillContext {
   // seq 策略指按顺序回收；
   // diff 策略只回收不同颜色的骰子。
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[];
+
+  // 从 `cards` 中以不步进随机数的方式随机选取至多 `count` 张行动牌弃置；
+  // 返回这些被弃置的行动牌。
+  disposeRandomCard(cards: CardState[], count = 1): CardState[];
 }
 ```
 
@@ -183,8 +199,8 @@ interface SkillContext {
   // 步进游戏状态的随机数发生器，随机选择 items 中的一个值
   random<T>(items: T[]): T;
 
-  // 步进游戏状态的随机数发生器，随机选择 items 中的 n 个值
-  randomN<T>(items: T[], n: number): T;
+  // 获取我方或对方原本元素骰费用最多的手牌列表
+  getMaxCostHands(who: "my" | "opp" = "my"): CardState[];
 }
 ```
 
