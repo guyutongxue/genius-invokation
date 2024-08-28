@@ -41,7 +41,9 @@ export const SoaringOnTheWind = status(115103)
  */
 export const DriftcloudWave = status(115104)
   .since("v5.0.0")
-  // TODO
+  .on("switchActive", (c, e) => c.self.master().id === e.switchInfo.to.id)
+  .usageCanAppend(1, 2)
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -53,7 +55,9 @@ export const DriftcloudWave = status(115104)
  */
 export const Skyladder = combatStatus(115101)
   .since("v5.0.0")
-  // TODO
+  .on("deductOmniDiceSwitch")
+  .usageCanAppend(1, 2)
+  .deductOmniCost(1)
   .done();
 
 /**
@@ -85,7 +89,7 @@ export const WordOfWindAndFlower = skill(15101)
   .type("normal")
   .costAnemo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Anemo, 1)
   .done();
 
 /**
@@ -97,7 +101,9 @@ export const WordOfWindAndFlower = skill(15101)
 export const WhiteCloudsAtDawn = skill(15102)
   .type("elemental")
   .costAnemo(3)
-  // TODO
+  .damage(DamageType.Anemo, 2)
+  .combatStatus(Skyladder)
+  .characterStatus(DriftcloudWave)
   .done();
 
 /**
@@ -111,7 +117,9 @@ export const StarsGatherAtDusk = skill(15103)
   .type("burst")
   .costAnemo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Anemo, 1)
+  .heal(1, "all my characters")
+  .createHandCard(Starwicker)
   .done();
 
 /**
@@ -142,5 +150,16 @@ export const TheyCallHerCloudRetainer = card(215101)
   .since("v5.0.0")
   .costAnemo(3)
   .talent(Xianyun)
-  // TODO
+  .variable("feather", 0)
+  .on("enter")
+  .useSkill(WhiteCloudsAtDawn)
+  .on("switchActive")
+  .usagePerRound(2)
+  .addVariable("feather", 1)
+  .on("increaseSkillDamage", (c, e) => e.via.definition.id === WordOfWindAndFlower)
+  .do((c, e) => {
+    const feather = c.getVariable("feather");
+    e.increaseDamage(feather);
+    c.setVariable("feather", 0);
+  })
   .done();

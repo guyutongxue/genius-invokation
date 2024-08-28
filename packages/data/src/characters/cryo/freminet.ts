@@ -24,7 +24,26 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const PersTimer = status(111121)
   .since("v5.0.0")
-  // TODO
+  .variable("level", 0)
+  .on("drawCard")
+  .addVariable("level", 1)
+  .on("deductOmniDiceSkill", (c, e) => c.getVariable("level") >= 2)
+  .deductOmniCost(1)
+  .on("useSkill", (c, e) => c.getVariable("level") >= 2)
+  .if((c) => c.getVariable("level") >= 4)
+  .damage(DamageType.Physical, 2)
+  .dispose()
+  .done();
+
+/**
+ * @id 111123
+ * @name 潜猎护盾
+ * @description
+ * 提供1点护盾，保护所附属角色。（可叠加，最多叠加到2点）
+ */
+export const SubnauticalShield = status(111123)
+  .since("v5.0.0")
+  .shield(1, 2)
   .done();
 
 /**
@@ -38,18 +57,21 @@ export const PersTimer = status(111121)
  */
 export const SubnauticalHunterMode = status(111122)
   .since("v5.0.0")
-  // TODO
-  .done();
-
-/**
- * @id 111123
- * @name 潜猎护盾
- * @description
- * 提供1点护盾，保护所附属角色。（可叠加，最多叠加到2点）
- */
-export const SubnauticalShield = status(111123)
-  .since("v5.0.0")
-  // TODO
+  .duration(2)
+  .variable("drawnCard", 0, { visible: false })
+  .replaceDescription("[GCG_TOKEN_COUNTER]", (st, self) => self.variables.drawnCard)
+  .on("drawCard")
+  .addVariable("drawnCard", 1)
+  .on("drawCard", (c, e) => c.getVariable("drawnCard") === 3)
+  .characterStatus(SubnauticalShield, "@master")
+  .setVariable("drawnCard", 0)
+  .on("useSkill", (c, e) => e.isSkillType("normal") || e.isSkillType("elemental"))
+  .do((c) => {
+    const cards = c.getMaxCostHands();
+    const selected = c.randomCard(cards, 2);
+    c.undrawCards(selected, "bottom");
+    c.drawCards(selected.length);
+  })
   .done();
 
 /**
@@ -62,7 +84,7 @@ export const FlowingEddies = skill(11121)
   .type("normal")
   .costCryo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -74,7 +96,9 @@ export const FlowingEddies = skill(11121)
 export const PressurizedFloe = skill(11122)
   .type("elemental")
   .costCryo(3)
-  // TODO
+  .damage(DamageType.Cryo, 2)
+  .if((c) => !c.self.hasStatus(PersTimer))
+  .characterStatus(PersTimer, "@self")
   .done();
 
 /**
@@ -87,7 +111,8 @@ export const ShadowhuntersAmbush = skill(11123)
   .type("burst")
   .costCryo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Cryo, 4)
+  .characterStatus(SubnauticalHunterMode, "@self")
   .done();
 
 /**
@@ -117,5 +142,9 @@ export const MomentOfWakingAndResolve = card(211121)
   .since("v5.0.0")
   .costCryo(3)
   .talent(Freminet)
-  // TODO
+  .on("enter")
+  .useSkill(PressurizedFloe)
+  .on("useSkill")
+  .usagePerRound(2)
+  .drawCards(1)
   .done();

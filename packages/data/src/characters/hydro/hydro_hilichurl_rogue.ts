@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { Frozen } from "../../commons";
 
 /**
  * @id 122052
@@ -23,7 +24,8 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const MistBubblePrison = status(122052)
   .since("v5.0.0")
-  // TODO
+  .oneDuration()
+  .tags("disableSkill")
   .done();
 
 /**
@@ -78,7 +80,7 @@ export const WhirlingScythe = skill(22051)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -91,7 +93,7 @@ export const WhirlingScythe = skill(22051)
 export const SlashOfSurgingTides = skill(22052)
   .type("elemental")
   .costHydro(3)
-  // TODO
+  .damage(DamageType.Hydro, 3)
   .done();
 
 /**
@@ -105,7 +107,8 @@ export const BubblefloatBlitz = skill(22053)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 3)
+  .createHandCard(MistBubbleSlime)
   .done();
 
 /**
@@ -116,7 +119,10 @@ export const BubblefloatBlitz = skill(22053)
  */
 export const SlashOfSurgingTidesPassive = skill(22054)
   .type("passive")
-  // TODO
+  .on("useSkill", (c, e) => e.skill.definition.id === SlashOfSurgingTides && 
+    c.$(`opp characters has status with definition id ${Frozen} or opp characters has status with definition id ${MistBubblePrison}`))
+  .usagePerRound(1, { name: "usagePerRound1" })
+  .gainEnergy(1, "@self")
   .done();
 
 /**
@@ -146,5 +152,9 @@ export const FeatherweightFoam = card(222051)
   .since("v5.0.0")
   .costHydro(3)
   .talent(HydroHilichurlRogue)
-  // TODO
+  .on("enter")
+  .useSkill(SlashOfSurgingTides)
+  .on("deductOmniDiceSkill", (c, e) => e.isSkillType("technique"))
+  .usagePerRound(1)
+  .deductOmniCost(1)
   .done();

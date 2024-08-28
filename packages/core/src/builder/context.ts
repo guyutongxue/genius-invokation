@@ -30,7 +30,7 @@ import {
   USAGE_PER_ROUND_VARIABLE_NAMES,
   stringifyEntityArea,
 } from "../base/entity";
-import { Mutation } from "../base/mutation";
+import { CreateCardM, Mutation, TransferCardM } from "../base/mutation";
 import {
   DamageInfo,
   DisposeOrTuneMethod,
@@ -125,7 +125,11 @@ interface CreateEntityOptions {
   withId?: number;
 }
 
-type CreatePileCardsStrategy =
+type InsertPilePayload =
+  | Omit<CreateCardM, "targetIndex">
+  | Omit<TransferCardM, "targetIndex">;
+
+type InsertPileStrategy =
   | "top"
   | "bottom"
   | "random"
@@ -1267,44 +1271,26 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       this.emitEvent("onDrawCard", this.state, who, card);
     }
   }
-  createPileCards(
-    cardId: CardHandle,
-    count: number,
-    strategy: CreatePileCardsStrategy,
+
+  private insertPileCards(
+    payloads: InsertPilePayload[],
+    strategy: InsertPileStrategy,
   ) {
-    const who = this.callerArea.who;
-    using l = this.subLog(
-      DetailLogType.Primitive,
-      `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
-    );
-    const cardDef = this.state.data.cards.get(cardId);
-    if (typeof cardDef === "undefined") {
-      throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
-    }
-    const cardTemplate = {
-      id: 0,
-      definition: cardDef,
-    };
+    const count = payloads.length;
     switch (strategy) {
       case "top":
-        for (let i = 0; i < count; i++) {
+        for (const mut of payloads) {
           this.mutate({
-            type: "createCard",
-            who,
-            target: "piles",
-            value: { ...cardTemplate },
+            ...mut,
             targetIndex: 0,
           });
         }
         break;
       case "bottom":
-        for (let i = 0; i < count; i++) {
+        for (const mut of payloads) {
           const targetIndex = this.player.piles.length;
           this.mutate({
-            type: "createCard",
-            who,
-            target: "piles",
-            value: { ...cardTemplate },
+            ...mut,
             targetIndex,
           });
         }
@@ -1318,10 +1304,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           this.mutate(mut);
           const index = mut.value % (this.player.piles.length + 1);
           this.mutate({
-            type: "createCard",
-            who,
-            target: "piles",
-            value: { ...cardTemplate },
+            ...payloads[i],
             targetIndex: index,
           });
         }
@@ -1331,13 +1314,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         const step = Math.floor(this.player.piles.length / spaces);
         const rest = this.player.piles.length % spaces;
         for (let i = 0, j = step; i < count; i++, j += step) {
-          const offset = i + (j < rest ? 1 : 0);
+          if (i < rest) {
+            j++;
+          }
           this.mutate({
-            type: "createCard",
-            who,
-            target: "piles",
-            value: { ...cardTemplate },
-            targetIndex: j + offset,
+            ...payloads[i],
+            targetIndex: i + j,
           });
         }
         break;
@@ -1355,10 +1337,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
             this.mutate(mut);
             const index = mut.value % range;
             this.mutate({
-              type: "createCard",
-              who,
-              target: "piles",
-              value: { ...cardTemplate },
+              ...payloads[i],
               targetIndex: index,
             });
           }
@@ -1367,6 +1346,57 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         }
       }
     }
+  }
+
+  createPileCards(
+    cardId: CardHandle,
+    count: number,
+    strategy: InsertPileStrategy,
+  ) {
+    const who = this.callerArea.who;
+    using l = this.subLog(
+      DetailLogType.Primitive,
+      `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
+    );
+    const cardDef = this.state.data.cards.get(cardId);
+    if (typeof cardDef === "undefined") {
+      throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
+    }
+    const cardTemplate = {
+      id: 0,
+      definition: cardDef,
+    };
+    const payloads = Array.from(
+      { length: count },
+      () =>
+        ({
+          type: "createCard",
+          who,
+          target: "piles",
+          value: { ...cardTemplate },
+        }) as const,
+    );
+    this.insertPileCards(payloads, strategy);
+  }
+  undrawCards(cards: CardState[], strategy: InsertPileStrategy) {
+    const who = this.callerArea.who;
+    using l = this.subLog(
+      DetailLogType.Primitive,
+      `Undraw cards ${cards
+        .map((c) => `[card:${c.definition.id}]`)
+        .join(", ")}, strategy ${strategy}`,
+    );
+    const payloads = cards.map(
+      (card) =>
+        ({
+          type: "transferCard",
+          from: "hands",
+          to: "piles",
+          who,
+          value: card,
+        }) as const,
+    );
+    this.insertPileCards(payloads, strategy);
   }
 
   stealHandCard(card: CardState) {
@@ -1439,15 +1469,24 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   /**
+   * 在 `cards` 中随机选择 `count` 张行动牌。**不会**步进随机迭代器。
+   * @param cards
+   * @param count 默认为 1
+   */
+  randomCard(cards: CardState[], count = 1) {
+    const tb = (card: CardState) => {
+      return nextRandom(card.id) ^ this.state.iterators.random;
+    };
+    return cards.toSorted((a, b) => tb(a) - tb(b)).slice(0, count);
+  }
+
+  /**
    * 在 `cards` 中随机弃置 `count` 张行动牌。**不会**步进随机迭代器。
    * @param cards
    * @param count 默认为 1
    */
   disposeRandomCard(cards: CardState[], count = 1) {
-    const tb = (card: CardState) => {
-      return nextRandom(card.id) ^ this.state.iterators.random;
-    };
-    const disposed = cards.toSorted((a, b) => tb(a) - tb(b)).slice(0, count);
+    const disposed = this.randomCard(cards, count);
     this.disposeCard(...disposed);
     return disposed;
   }
