@@ -138,7 +138,6 @@ class CardBuilder<
 }> {
   private _type: CardType = "event";
   private _tags: CardTag[] = [];
-  private _filters: StrictInitiativeSkillFilter<KindTs, AssociatedExt>[] = [];
   /**
    * 在料理卡牌的行动结尾添加“设置饱腹状态”操作的目标；
    * `null` 表明不添加（不是料理牌或者手动指定）
@@ -348,7 +347,7 @@ class CardBuilder<
   }
 
   filter(pred: StrictInitiativeSkillFilter<KindTs, AssociatedExt>): this {
-    this._filters.push(pred);
+    this.filters.push(pred);
     return this;
   }
 

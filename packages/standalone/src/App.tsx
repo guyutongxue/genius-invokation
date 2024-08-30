@@ -37,17 +37,13 @@ enum GameMode {
   MultiplayerGuest = 3,
 }
 
-let INIT_DECK0 =
-  "EZGQOBoTA4AQ25cPCVBx9jAPE2EBCDMQE4ExOzQTE7FgCsYQDLFgC9UQDdFQEdkRDTAA";
-let INIT_DECK1 =
-  "AFBA1QoUAZGwSZcNE5AB2TATE4ERODETE6Ax9DMPDECQ9ckQDIGgCMoTDbEQTNEUDcAA";
+const INIT_DECK0 =
+  "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA";
+const INIT_DECK1 =
+  "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA";
 
 if (import.meta.env.DEV) {
   // Debug here!
-  INIT_DECK0 =
-    "FpDRyXMNF5AB2XwYCXFwh5cYFICB80gPGEAR9IEPC2EwA7MQGDFRCIUQDIFAisQYDKAA";
-  INIT_DECK1 =
-    "FhDB2WsNFJHxWSwVCZFxOjAOEyAx4kgYFJGBiYEPGEAQ9MQPDGFACMkQDIGQaNEWDYAA";
 }
 
 export function App() {
@@ -202,7 +198,12 @@ export function App() {
               id="multiplayerInput"
               disabled
             />
-            <label class="tab__header" style={{ cursor: "not-allowed" }} title="敬请期待" for="multiplayerInput">
+            <label
+              class="tab__header"
+              style={{ cursor: "not-allowed" }}
+              title="敬请期待"
+              for="multiplayerInput"
+            >
               多人对战
             </label>
             <div class="tab__content config-panel">

@@ -47,9 +47,10 @@ export type NationTag =
   | "hilichurl"
   | "sacread";
 
+// 虽然荒的英文是 Ousia，但是在代码里使用 pneuma 表示荒
 export type ArkheTag =
-  | "pneuma" // 芒
-  | "ousia"; // 荒
+  | "pneuma" // 荒
+  | "ousia"; // 芒
 
 export type CharacterTag = ElementTag | WeaponTag | NationTag | ArkheTag;
 
