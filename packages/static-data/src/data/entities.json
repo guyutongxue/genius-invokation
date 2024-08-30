@@ -823,6 +823,7 @@
     "buffType": "GCG_STATE_BUFF_ANEMO",
     "shownToken": "GCG_TOKEN_ROUND_COUNT",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Freminet_E",
     "buffIconHash": "3076701746796333867"
   },
   {
@@ -3402,7 +3403,8 @@
             "count": 1
           }
         ],
-        "keyMap": {}
+        "keyMap": {},
+        "icon": "Skill_S_Liuyun_04"
       }
     ],
     "rawDescription": "$[K58]：$[S1151021]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
@@ -3411,6 +3413,7 @@
     "playingDescription": "特技：仙力助推\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Liuyun",
     "buffIconHash": "5990260102784795240"
   },
   {
@@ -3427,6 +3430,7 @@
     "buffType": "GCG_STATE_BUFF_ANEMO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Liuyun_E",
     "buffIconHash": "16448307055676686879"
   },
   {
@@ -5085,7 +5089,8 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
           "D__KEY__DAMAGE": 1
-        }
+        },
+        "icon": "MonsterSkill_S_HilistrayWater_02"
       },
       {
         "id": 1220512,
@@ -5098,7 +5103,8 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
           "D__KEY__DAMAGE": 1
-        }
+        },
+        "icon": "MonsterSkill_S_HilistrayWater_02"
       },
       {
         "id": 1220513,
@@ -5108,7 +5114,8 @@
         "rawDescription": "造成1点$[K102]，敌方出战角色附属<color=#FFFFFFFF>$[C122052]</color>。",
         "description": "造成1点水元素伤害，敌方出战角色附属水泡围困。",
         "playCost": [],
-        "keyMap": {}
+        "keyMap": {},
+        "icon": "MonsterSkill_S_HilistrayWater_02"
       }
     ],
     "rawDescription": "$[K58]：$[S1220511]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
@@ -5117,6 +5124,7 @@
     "playingDescription": "特技：水泡战法\n可用次数：2",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_HilistrayWater",
     "buffIconHash": "9106223241565525136"
   },
   {
@@ -9018,7 +9026,8 @@
         ],
         "keyMap": {
           "D__KEY__DAMAGE": 2
-        }
+        },
+        "icon": "Skill_Diving_Slash"
       }
     ],
     "rawDescription": "$[K58]：$[S3130011]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
@@ -9027,6 +9036,7 @@
     "playingDescription": "特技：原海水刃\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_MantaRay",
     "buffIconHash": "8875513956227362946"
   },
   {
@@ -9053,7 +9063,8 @@
         ],
         "keyMap": {
           "D__KEY__DAMAGE": 1
-        }
+        },
+        "icon": "Btn_Natsaurus_Hookwalker_ElementalArt_Free"
       },
       {
         "id": 3130022,
@@ -9071,6 +9082,7 @@
     "playingDescription": "特技：钩物巧技\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Hookwalker",
     "buffIconHash": "18333484455810420104"
   },
   {
@@ -9095,7 +9107,8 @@
             "count": 1
           }
         ],
-        "keyMap": {}
+        "keyMap": {},
+        "icon": "Btn_Natsaurus_Mosasaurus_ElementalArt_01"
       },
       {
         "id": 3130032,
@@ -9113,6 +9126,7 @@
     "playingDescription": "特技：游隙灵道\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Mosasaurus",
     "buffIconHash": "11093104840137801693"
   },
   {

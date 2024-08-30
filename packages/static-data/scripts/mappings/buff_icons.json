@@ -119,5 +119,12 @@
   "18380481944665116805": "UI_Gcg_Debuff_Chevreuse_E",
   "11353914616627406301": "UI_Gcg_Buff_Element_Enchant_Rock",
   "17599960341260580867": "UI_Gcg_Buff_EscadronIce_E",
-  "15093776786381158242": "UI_Gcg_Buff_Event_Sticker"
+  "15093776786381158242": "UI_Gcg_Buff_Event_Sticker",
+  "3076701746796333867": "UI_Gcg_Buff_Freminet_E",
+  "5990260102784795240": "UI_Gcg_Buff_Vehicle_Liuyun",
+  "16448307055676686879": "UI_Gcg_Buff_Liuyun_E",
+  "9106223241565525136": "UI_Gcg_Buff_Vehicle_HilistrayWater",
+  "8875513956227362946": "UI_Gcg_Buff_Vehicle_MantaRay",
+  "18333484455810420104": "UI_Gcg_Buff_Vehicle_Hookwalker",
+  "11093104840137801693": "UI_Gcg_Buff_Vehicle_Mosasaurus"
 }

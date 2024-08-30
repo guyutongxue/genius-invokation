@@ -13,11 +13,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const fetched = new Map<number, any>();
-
 const MAPPING_FILE = `${import.meta.dirname}/mappings/skill_icons.json`;
 
-export async function getSkillIcon(skillId: number, iconHash?: number | bigint): Promise<string | undefined> {
+const doFetch = async (id: number | string) => {
+  const url = `https://api.ambr.top/v2/en/gcg/${id}`;
+  const body = await fetch(url, {
+    proxy: process.env.https_proxy,
+  }).then((r) => r.json() as Promise<any>);
+  return body;
+}
+
+export async function getSkillIcon(skillId: number | string, iconHash?: number | bigint): Promise<string | undefined> {
+  skillId = String(skillId);
   if (typeof iconHash === "undefined") {
     return;
   }
@@ -27,27 +34,49 @@ export async function getSkillIcon(skillId: number, iconHash?: number | bigint):
   }
   console.log(`Skill id ${skillId} has unknown icon hash ${iconHash}, find it on ambr.top...`);
 
-  const chId = Math.floor(skillId / 10);
-  let data: { talent: Record<number, { icon: string | null }> };
-  if (fetched.has(chId)) {
-    data = fetched.get(chId)!;
-  } else {
-    const url = `https://api.ambr.top/v2/en/gcg/${chId}`;
-    const body = await fetch(url, {
-      proxy: process.env.https_proxy,
-    }).then((r) => r.json() as Promise<any>);
+  let skillObj = null;
+  if (skillId.length === 5) {
+    // 角色技能
+    const chId = skillId.slice(0, 4)
+    const body = await doFetch(chId);
     if (body.response !== 200) {
       console.warn(`Failed to fetch ${chId}`);
       return;
     }
-    data = body.data
-  }
-  const skillObj = data.talent[skillId];
-  if (!skillObj) {
-    console.warn(`We do not found skill ${skillId} on character ${chId}`);
+    skillObj = body.data.talent[skillId];
+    if (!skillObj) {
+      console.warn(`We do not found skill ${skillId} on character ${chId}`);
+      return;
+    }
+  } else if (skillId.length === 7) {
+    // 特技
+    if (skillId.startsWith('3')) {
+      // 单独的特技装备牌
+      const cardId = skillId.slice(0, 6);
+      const body = await doFetch(cardId);
+      if (body.response !== 200) {
+        console.warn(`Failed to fetch ${cardId}`);
+        return;
+      }
+      skillObj = body.data.dictionary[`S${skillId}`];
+    } else if (skillId.startsWith('1')) {
+      // 角色衍生装备牌
+      const chId = skillId.slice(1, 5);
+      const body = await doFetch(chId);
+      if (body.response !== 200) {
+        console.warn(`Failed to fetch ${chId}`);
+        return;
+      }
+      skillObj = body.data.dictionary[`S${skillId}`];
+    } else {
+      console.warn(`${skillId} is not a recognizable id, for now.`);
+      return;
+    }
+  } else {
+    console.warn(`${skillId} is not a recognizable id, for now.`);
     return;
   }
-  if (skillObj.icon === null) {
+  if (!skillObj?.icon) {
     console.warn(`No icon provided for ${skillId}`);
     return;
   }
