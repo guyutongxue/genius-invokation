@@ -81,8 +81,8 @@ export const Yumkasaurus = card(313002)
   .damage(DamageType.Physical, 1)
   .do((c) => {
     const hands = c.getMaxCostHands("opp");
-    const [selected] = c.randomCard(hands);
-    c.stealHandCard(selected);
+    // const [selected] = c.randomCard(hands);
+    c.stealHandCard(hands[0]);
   })
   .done();
 
