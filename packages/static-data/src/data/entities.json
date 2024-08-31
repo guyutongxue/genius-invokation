@@ -1915,7 +1915,7 @@
     "description": "本角色将在下次行动时，直接使用技能：炽鬃拳。",
     "buffType": "GCG_STATE_BUFF_PYRO",
     "hidden": false,
-    "buffIcon": "UI_Gcg_Buff_Common_Special",
+    "buffIcon": "UI_Gcg_Buff_Dehya_E",
     "buffIconHash": "6905755991420918351"
   },
   {
@@ -1929,7 +1929,7 @@
     "description": "本角色将在下次行动时，直接使用技能：焚落踢。",
     "buffType": "GCG_STATE_BUFF_PYRO",
     "hidden": false,
-    "buffIcon": "UI_Gcg_Buff_Common_Special",
+    "buffIcon": "UI_Gcg_Buff_Dehya_E",
     "buffIconHash": "6905755991420918351"
   },
   {
