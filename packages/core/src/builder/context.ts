@@ -1455,9 +1455,13 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           logger: this.skillInfo.logger,
           onNotify: (opt) => this.onNotify(opt),
         };
-        const [newState, newEvents] = disposeDef.action(this.state, skillInfo, {
-          targets: [],
-        });
+        const [newState, newEvents] = (0, disposeDef.action)(
+          this.state,
+          skillInfo,
+          {
+            targets: [],
+          },
+        );
         this.notify();
         this.resetState(newState);
         this.eventAndRequests.push(...newEvents);

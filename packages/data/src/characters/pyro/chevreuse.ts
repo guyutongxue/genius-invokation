@@ -26,7 +26,6 @@ export const OverchargedBall = card(113131)
   .since("v4.8.0")
   .costPyro(2)
   .tags("action")
-  .tags("action")
   .damage(DamageType.Pyro, 1, "opp active")
   .doSameWhenDisposed()
   .done();
