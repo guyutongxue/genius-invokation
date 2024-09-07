@@ -1437,35 +1437,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         oldState: card,
         used: false,
       });
-      // Execute card's onDispose handler
-      const cardDef = card.definition;
-      const disposeDef = cardDef.onDispose;
-      if (disposeDef) {
-        using l = this.subLog(
-          DetailLogType.Skill,
-          `Execute onDispose of [card:${cardDef.id}]`,
-        );
-        const skillInfo: SkillInfo = {
-          caller: this.callerState,
-          definition: disposeDef,
-          fromCard: card,
-          requestBy: null,
-          charged: false,
-          plunging: false,
-          logger: this.skillInfo.logger,
-          onNotify: (opt) => this.onNotify(opt),
-        };
-        const [newState, newEvents] = (0, disposeDef.action)(
-          this.state,
-          skillInfo,
-          {
-            targets: [],
-          },
-        );
-        this.notify();
-        this.resetState(newState);
-        this.eventAndRequests.push(...newEvents);
-      }
+      this.emitEvent("requestDisposeCard", this.skillInfo, who, card);
       const method: DisposeOrTuneMethod =
         where === "hands" ? "disposeFromHands" : "disposeFromPiles";
       this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);

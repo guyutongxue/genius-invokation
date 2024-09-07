@@ -487,6 +487,27 @@ export class SkillExecutor extends StateMutator {
           "onUseSkill",
           new UseSkillEventArg(this.state, callerArea, skillInfo),
         ]);
+      } else if (name === "requestDisposeCard") {
+        // Execute card's onDispose handler
+        const cardDef = arg.card.definition;
+        const disposeDef = cardDef.onDispose;
+        if (disposeDef) {
+          using l = this.subLog(
+            DetailLogType.Skill,
+            `Execute onDispose of [card:${cardDef.id}]`,
+          );
+          const player = this.state.players[arg.who];
+          const activeCh = player.characters[getActiveCharacterIndex(player)];
+          const skillInfo: SkillInfo = {
+            caller: activeCh,
+            definition: disposeDef,
+            fromCard: arg.card,
+            requestBy: null,
+            charged: false,
+            plunging: false,
+          };
+          await this.finalizeSkill(skillInfo, { targets: [] });
+        }
       } else if (name === "requestTriggerEndPhaseSkill") {
         using l = this.subLog(
           DetailLogType.Event,

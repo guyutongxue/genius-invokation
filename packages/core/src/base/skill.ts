@@ -1075,6 +1075,17 @@ class UseSkillRequestArg extends RequestArg {
   }
 }
 
+// 请求执行行动牌的舍弃时效果
+class DisposeCardRequestArg extends RequestArg {
+  constructor(
+    requestBy: SkillInfo,
+    public readonly who: 0 | 1,
+    public readonly card: CardState
+  ) {
+    super(requestBy);
+  }
+}
+
 class TriggerEndPhaseSkillRequestArg extends RequestArg {
   constructor(
     requestBy: SkillInfo,
@@ -1089,6 +1100,7 @@ const REQUEST_MAP = {
   requestSwitchHands: SwitchHandsRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
+  requestDisposeCard: DisposeCardRequestArg,
   requestTriggerEndPhaseSkill: TriggerEndPhaseSkillRequestArg,
 } satisfies Record<string, new (...args: any[]) => RequestArg>;
 type RequestMap = typeof REQUEST_MAP;
