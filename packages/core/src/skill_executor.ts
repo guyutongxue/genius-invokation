@@ -153,10 +153,7 @@ export class SkillExecutor extends StateMutator {
 
     await this.notifyAndPause();
 
-    const damageEvents = eventList.filter(
-      (e): e is ["onDamageOrHeal", DamageOrHealEventArg<DamageInfo>] =>
-        e[0] === "onDamageOrHeal",
-    );
+    const damageEvents = eventList.filter((e) => e[0] === "onDamageOrHeal");
     const nonDamageEvents = eventList.filter((e) => e[0] !== "onDamageOrHeal");
 
     const damageEventArgs: DamageOrHealEventArg<DamageInfo | HealInfo>[] = [];
