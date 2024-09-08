@@ -129,6 +129,7 @@ function initPlayerState(
     summons: [],
     supports: [],
     declaredEnd: false,
+    canCharged: false,
     canPlunging: false,
     hasDefeated: false,
     legendUsed: false,
@@ -547,6 +548,12 @@ export class Game extends StateMutator {
     const player = () => this.state.players[who];
     const activeCh = () =>
       player().characters[getActiveCharacterIndex(player())];
+    this.mutate({
+      type: "setPlayerFlag",
+      who,
+      flagName: "canCharged",
+      value: player().dice.length % 2 === 0,
+    });
     let replaceAction: SkillInfo | null;
     if (player().declaredEnd) {
       this.mutate({
@@ -857,7 +864,7 @@ export class Game extends StateMutator {
     } else {
       for (const { caller, definition } of initiativeSkillsOfPlayer(player)) {
         const charged =
-          definition.skillType === "normal" && player.dice.length % 2 === 0;
+          definition.skillType === "normal" && player.canCharged;
         const plunging =
           definition.skillType === "normal" &&
           (player.canPlunging ||

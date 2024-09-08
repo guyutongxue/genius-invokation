@@ -464,6 +464,7 @@ export class SkillExecutor extends StateMutator {
           );
           continue;
         }
+        const charged = skillDef.skillType === "normal" && player.canCharged;
         const plunging =
           skillDef.skillType === "normal" &&
           (player.canPlunging ||
@@ -475,8 +476,7 @@ export class SkillExecutor extends StateMutator {
           definition: skillDef,
           fromCard: null,
           requestBy: arg.via,
-          charged:
-            skillDef.skillType === "normal" && player.dice.length % 2 === 0,
+          charged,
           plunging,
         };
         await this.finalizeSkill(skillInfo, { targets: [] });

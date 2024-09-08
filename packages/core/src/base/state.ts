@@ -67,6 +67,7 @@ export interface PlayerState {
   readonly dice: readonly DiceType[];
   readonly declaredEnd: boolean;
   readonly hasDefeated: boolean;
+  readonly canCharged: boolean;
   readonly canPlunging: boolean;
   readonly legendUsed: boolean;
   readonly skipNextTurn: boolean;
