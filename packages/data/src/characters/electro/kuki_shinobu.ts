@@ -54,7 +54,7 @@ export const SanctifyingRing = skill(14112)
   .costElectro(3)
   .combatStatus(GrassRingOfSanctification)
   .if((c) => c.self.health >= 6)
-  .damage(DamageType.Piercing, 2)
+  .damage(DamageType.Piercing, 2, "@self")
   .done();
 
 /**
