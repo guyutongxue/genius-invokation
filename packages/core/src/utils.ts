@@ -352,6 +352,35 @@ export function elementOfCharacter(ch: CharacterDefinition): DiceType {
   return elementTags[element];
 }
 
+function toSortedBy<T, K extends number[]>(
+  this: readonly T[],
+  projection: (element: T) => K,
+): T[] {
+  return this.toSorted((a, b) => {
+    const projectionA = projection(a);
+    const projectionB = projection(b);
+    for (let i = 0; i < projectionA.length; i++) {
+      if (projectionA[i] < projectionB[i]) {
+        return -1;
+      }
+      if (projectionA[i] > projectionB[i]) {
+        return 1;
+      }
+    }
+    return 0;
+  });
+}
+
+/**
+ * 骰子排序算法。每次修改骰子后都需要重新排序；排序依据是：
+ * 1. 万能骰靠前
+ * 2. 有效骰靠前
+ * 3. 骰子数量多的靠前
+ * 4. 骰子类型编号
+ * @param player 当前玩家的状态，用以获取有效骰信息
+ * @param dice 
+ * @returns 
+ */
 export function sortDice(
   player: PlayerState,
   dice: readonly DiceType[],
@@ -359,24 +388,29 @@ export function sortDice(
   const characterElements = player.characters
     .shiftLeft(getActiveCharacterIndex(player))
     .map((ch) => elementOfCharacter(ch.definition));
-  const value = (d: DiceType) => {
-    if (d === DiceType.Omni) return -1000;
-    const idx = characterElements.indexOf(d);
-    if (idx !== -1) return -100 + idx;
-    return d as number;
-  };
-  return dice.toSorted((a, b) => value(a) - value(b));
+  const countMap = new Map<DiceType, number>();
+  for (const d of dice) {
+    countMap.set(d, (countMap.get(d) ?? 0) + 1);
+  }
+  return dice.toSortedBy((dice) => [
+    dice === DiceType.Omni ? -1 : 0,
+    characterElements.includes(dice) ? -1 : 0,
+    -countMap.get(dice)!,
+    dice,
+  ]);
 }
 
 declare global {
   interface ReadonlyArray<T> {
     shiftLeft: typeof shiftLeft;
     last: typeof arrayLast;
+    toSortedBy: typeof toSortedBy;
   }
   interface Array<T> {
     /** Won't mutate original array. */
     shiftLeft: typeof shiftLeft;
     last: typeof arrayLast;
+    toSortedBy: typeof toSortedBy;
   }
 }
 
@@ -388,6 +422,7 @@ function arrayLast<T>(this: readonly T[]): T {
 }
 Array.prototype.shiftLeft = shiftLeft;
 Array.prototype.last = arrayLast;
+Array.prototype.toSortedBy = toSortedBy;
 
 /** Shuffle an array. No use of state random generator */
 export function shuffle<T>(arr: readonly T[]): readonly T[] {

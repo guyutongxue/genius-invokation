@@ -1081,16 +1081,11 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       countMap.set(dice, (countMap.get(dice) ?? 0) + 1);
     }
     // 万能骰排最后。其余按照数量排序，相等时按照骰子类型排序
-    const sorted = this.player.dice.toSorted((a, b) => {
-      if (a === b) return 0;
-      if (a === DiceType.Omni) return 1;
-      if (b === DiceType.Omni) return -1;
-      const diff = countMap.get(b)! - countMap.get(a)!;
-      if (diff === 0) {
-        return a - b;
-      }
-      return diff;
-    });
+    const sorted = this.player.dice.toSortedBy((dice) => [
+      dice === DiceType.Omni ? 0 : 1,
+      -countMap.get(dice)!,
+      dice
+    ]);
     switch (strategy) {
       case "seq": {
         const newDice = sorted.slice(0, count);
