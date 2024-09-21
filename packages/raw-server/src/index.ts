@@ -301,9 +301,7 @@ let game: WsGame | null = null;
 const app = new Elysia()
   .get("/", ({ set }) => {
     set.headers["Content-Type"] = "text/html; charset=utf8";
-    // use require("node:path").resolve for a workaround of bug:
-    // https://github.com/oven-sh/bun/issues/9852
-    return Bun.file(resolve(indexHtml));
+    return Bun.file(indexHtml);
   })
   .get(
     "/api/notify/:id",
