@@ -24,7 +24,6 @@ import {
 import data from "@gi-tcg/data";
 import { Elysia, t } from "elysia";
 import { parseArgs } from "node:util";
-import { resolve } from "node:path";
 import { AgentType, playerIoFromAgent } from "./agents";
 import {
   CLIENT_MESSAGE_T,
@@ -35,7 +34,6 @@ import {
   validateGiveUpParam,
   validateReadyParam,
 } from "./schema";
-import Stream from "@elysiajs/stream";
 import indexHtml from "./index.html";
 
 interface Callbacks {
@@ -305,21 +303,26 @@ const app = new Elysia()
   })
   .get(
     "/api/notify/:id",
-    ({ params, error }) => {
+    async function* ({ params, error }) {
       if (game === null) {
         return error(404, "Game not started");
       }
-      const stream = new Stream();
       const id = Number(params.id) as 0 | 1;
-      const sub = game.subscribeNotification(id, (n) => {
-        if (n === null) {
-          stream.close();
-          sub.unsubscribe();
-        } else {
-          stream.send(n);
-        }
+      let resolver = Promise.withResolvers<NotificationMessage | null>();
+      const sub = game.subscribeNotification(id, (msg) => {
+        resolver.resolve(msg);
+        resolver = Promise.withResolvers<NotificationMessage | null>();
       });
-      return stream;
+      while (true) {
+        const value = await resolver.promise;
+        if (value === null) {
+          break;
+        }
+        // Generator doesn't implement text/event-stream protocol correctly
+        // Should be fixed by https://github.com/elysiajs/elysia/pull/743 someday
+        yield `event: message\ndata: ${JSON.stringify(value)}\n\n`;
+      }
+      sub.unsubscribe();
     },
     {
       params: t.Object({
