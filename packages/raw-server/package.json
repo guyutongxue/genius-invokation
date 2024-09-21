@@ -5,7 +5,6 @@
   "type": "module",
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.0.21",
-    "@elysiajs/stream": "^1.1.0",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
     "@sinclair/typebox": "^0.32.22",
