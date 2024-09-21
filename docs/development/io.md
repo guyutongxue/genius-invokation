@@ -6,6 +6,9 @@ IO 格式定义于包 `@gi-tcg/typings`。
 
 由四种请求玩家行动的情形：
 
+> **TODO**  
+> 增设 5.1 “选择”语义
+
 ### `rerollDice` 请求重投骰子
 
 - **请求格式**： 无；玩家先前收到的牌局状态中的骰子列表即是可以重投的骰子。
@@ -49,14 +52,15 @@ interface PlayCardAction {
   type: "playCard";
   card: number;                  // 卡牌 id
   cost: DiceType[];
-  targets: number[];             // 该卡牌的作用目标实体 id
+  targets: number[];             // 该卡牌的目标实体 id
   preview?: StateData;           // 可提供效果预览
 }
-// 使用角色技能行动
+// 使用角色技能或特技行动
 interface UseSkillAction {
   type: "useSkill";
-  skill: number;                 // 技能 id
+  skill: number;                 // 技能或特技 id
   cost: DiceType[];
+  targets: number[];             // 该技能（通常是特技）的目标实体 id
   preview?: StateData;           // 可提供效果预览
 }
 // 元素调和行动
@@ -71,7 +75,7 @@ interface DeclareEndAction {
 }
 ```
 
-其中，`PlayCardAction` 的 `targets` 指这个打出手牌行动使用的目标。如果一张卡牌的打出有多种可能的目标，则请求中会生成三份 `Action` 分别指代它们。
+其中，`PlayCardAction` 和 `UseSkillAction` 的 `targets` 指这个行动使用的目标。如果一张卡牌的打出有多种可能的目标，则请求中会生成三份 `Action` 分别指代它们。
 
 #### 响应格式
 

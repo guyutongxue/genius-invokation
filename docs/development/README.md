@@ -9,7 +9,13 @@
   - `@gi-tcg/data` 官方卡牌数据表示
 - **界面部分**
   - `@gi-tcg/webui-core` 基于 Solid 的 Web 用户界面组件
+  - `@gi-tcg/webui` 基于 Web Component 的用户界面包装
   - `@gi-tcg/standalone` 用于调试的集成 Web 用户界面
+- **对战平台相关**
+  - `@gi-tcg/server` 对战平台服务器实现
+  - `@gi-tcg/web-client` 对战平台客户端（网页版）实现
+- **程序互通信组件**
+  - `@gi-tcg/raw-server` 基于 WebSocket 的本地游戏核心服务
 - **其它**
   - `@gi-tcg/static-data` 官方静态数据源
   - `@gi-tcg/typings` 定义基本数据类型前后端通信格式
