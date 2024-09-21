@@ -136,8 +136,9 @@ export const HeartOfOasis = combatStatus(127029)
   .do((c) => {
     c.addVariable("organismCount", 1);
     if (c.getVariable("organismCount") === 4) {
-      c.characterStatus(ReignitedHeartOfOasis, "@master");
-      c.characterStatus(OasissAegis, "@master");
+      const apep = c.$(`my character with definition id ${GuardianOfApepsOasis}`);
+      apep?.addStatus(ReignitedHeartOfOasis);
+      apep?.addStatus(OasissAegis);
       c.dispose();
     }
   })
