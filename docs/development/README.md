@@ -1,6 +1,4 @@
-# 开发说明
-
-**建议阅读：[slides](https://kdocs.cn/l/chWGWwQNLHGo)**
+# 开发文档
 
 本项目目前使用 monorepo 划分和管理包，共有如下包：
 
@@ -20,6 +18,10 @@
   - `@gi-tcg/static-data` 官方静态数据源
   - `@gi-tcg/typings` 定义基本数据类型前后端通信格式
   - `@gi-tcg/utils` 实用工具集合
+
+下一步……
+- 如果你需要在你的程序中**使用这些项目组件**，请参阅下方[使用接口](#使用接口)以及对应包的 `README.md`了解使用方式；
+- 如果你需要**参与本项目的开发**，请参阅下方[参与开发](#参与开发)，其中的例子可供参考；如有疑问可邮件联系或在 [Discussion](https://github.com/guyutongxue/genius-invokation/discussions) 中发起讨论。
 
 ## 使用接口
 
@@ -73,9 +75,9 @@ interface PlayerIO {
 
 每次对局进行到一个“暂停点”处，就会调用一次 `pause`，方便使用方调试。
 
-## 开发环境
+## 参与开发
 
-安装 [Bun](https://bun.sh)，在仓库根目录下执行：
+配置开发环境。安装 [Bun](https://bun.sh)，随后在仓库根目录下执行下述命令既可：
 
 ```sh
 bun install
@@ -84,10 +86,36 @@ bun run build
 
 随后即可调试修改数据定义包、核心包或者其它代码。
 
-## 数据定义
+### 例：启动 `@gi-tcg/standalone` 项目的开发服务器
 
-本项目力求最佳的开发体验，因此定义卡牌数据被设计为“应当”非常简单的操作。参阅 [data](./data/README.md)。
+```
+cd packages/standalone
+bun dev
+```
 
-## 设计细节
+### 例：修改卡牌定义
 
-在阅读源码之前，可以先参阅本项目的[核心数据结构](./state.md)和[结算流程设计](./process.md)。
+定义卡牌数据被设计为“应当”非常简单的操作。请查阅 `@gi-tcg/data` 包的代码。参考文档位于 [data](./data/README.md)。
+
+编辑完成后，可使用 `@gi-tcg/webui-core` 库测试修改。具体来说，可以修改 `webui-core` 库的 `src/dev.tsx` 的 `PlayerConfig` 以包含需要测试的卡牌，并使用 Vite 预览对局。
+
+```sh
+cd packages/webui-core
+# 编辑 src/dev.tsx
+bun dev # 查看效果
+```
+
+### 例：参与游戏核心设计细节
+
+在阅读 `@gi-tcg/core` 的源码之前，可以先参阅下述文档：
+- **[一份全面但过时的 slides](https://kdocs.cn/l/chWGWwQNLHGo)**
+- [核心数据结构](./state.md)
+- [结算流程设计](./process.md)
+
+同样地，可以使用 `@gi-tcg/webui-core` 来测试核心的修改情况，流程与上节相同。
+
+### 例：修改前后端通信数据格式
+
+修改 `@gi-tcg/typings` 中定义的数据结构后，请使用 `bun run build` 生成对应的 JSON Schema 文件。（否则核心可能会校验失败，切记！）
+
+核心库中的 `src/io.ts` 中存在翻译 `GameState` 到对应数据格式的代码，你可能也要一并修改。
