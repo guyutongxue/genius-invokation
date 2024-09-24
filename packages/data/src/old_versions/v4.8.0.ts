@@ -117,8 +117,9 @@ const ProspectorsDrill = card(311409)
   .usagePerRound(2)
   .do((c, e) => {
     const cards = c.getMaxCostHands();
-    c.disposeRandomCard(cards);
-    c.addVariable("unity", 1);
+    if (c.disposeRandomCard(cards).length > 0) {
+      c.addVariable("unity", 1);
+    }
   })
   .on("increaseSkillDamage")
   .do((c, e) => {
