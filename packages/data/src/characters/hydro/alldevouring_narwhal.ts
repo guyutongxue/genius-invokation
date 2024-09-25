@@ -161,13 +161,15 @@ export const DeepDevourersDomain = combatStatus(122041)
   .on("endPhase")
   .do((c, e) => {
     const extraMaxHealth = c.getVariable("extraMaxHealth");
-    const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
-    if (narwhal) {
-      narwhal.addStatus(AnomalousAnatomy, {
-        overrideVariables: { extraMaxHealth }
-      });
+    if (extraMaxHealth) {
+      const narwhal = c.$(`my character with definition id ${AlldevouringNarwhal}`);
+      if (narwhal) {
+        narwhal.addStatus(AnomalousAnatomy, {
+          overrideVariables: { extraMaxHealth }
+        });
+      }
+      c.setVariable("extraMaxHealth", 0);
     }
-    c.setVariable("extraMaxHealth", 0);
   })
   .done();
 
