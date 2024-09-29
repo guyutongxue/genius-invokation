@@ -1,19 +1,24 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { characters, entities, actionCards, EntityRawData } from "@gi-tcg/static-data";
+import {
+  characters,
+  entities,
+  actionCards,
+  EntityRawData,
+} from "@gi-tcg/static-data";
 import { pascalCase, snakeCase } from "case-anything";
 import { writeSourceCode, SourceInfo } from "./source";
 import { getCostCode } from "./cost";
@@ -63,13 +68,15 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
   ].map<SourceInfo>((obj) => {
     let description = obj.description;
     if (obj.playingDescription && obj.playingDescription.includes("$")) {
-      description += "\n【此卡含描述变量】"
+      description += "\n【此卡含描述变量】";
     }
     return {
       id: obj.id,
       name: obj.name,
       description: description,
-      code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${obj.id})
+      code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${
+        obj.id
+      })
   .since("${NEW_VERSION}")
   // TODO
   .done();`,
@@ -98,10 +105,7 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
       id: card.id,
       name: card.name,
       description: card.description,
-      code: getCardCode(
-        card,
-        `\n  .${methodName}(${pascalCase(name)})`,
-      ),
+      code: getCardCode(card, `\n  .${methodName}(${pascalCase(name)})`),
     },
   ];
 }
@@ -146,8 +150,8 @@ export async function generateCharacters() {
       }),
     );
 
-    const tagCode = (ch.tags as any[])
-      .map((t) => t.split("_").pop().toLowerCase())
+    const tagCode = ch.tags
+      .map((t) => t.split("_").pop()!.toLowerCase())
       .filter((s) => s !== "none")
       .map((s) => `"${s}"`)
       .join(", ");

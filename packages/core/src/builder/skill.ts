@@ -991,7 +991,19 @@ export class TechniqueBuilder<
       if (this._usagePerRoundOpt !== null) {
         throw new GiTcgDataError("Cannot specify usagePerRound twice.");
       }
-      this._usagePerRoundOpt = { name: name as any, autoDecrease };
+      if (
+        !USAGE_PER_ROUND_VARIABLE_NAMES.includes(
+          name as UsagePerRoundVariableNames,
+        )
+      ) {
+        throw new GiTcgDataError(
+          `Invalid usagePerRound variable name: ${name} (must be one of USAGE_PER_ROUND_VARIABLE_NAMES)`,
+        );
+      }
+      this._usagePerRoundOpt = {
+        name: name as UsagePerRoundVariableNames,
+        autoDecrease,
+      };
     } else {
       if (this._usageOpt !== null) {
         throw new GiTcgDataError("Cannot specify usage twice.");

@@ -152,7 +152,7 @@ export function exposeMutation(
       };
     }
     case "setPlayerFlag": {
-      if (["declareEnd", "legendUsed"].includes(m.flagName)) {
+      if (["declaredEnd", "legendUsed"].includes(m.flagName)) {
         return {
           type: "setPlayerFlag",
           who: m.who,

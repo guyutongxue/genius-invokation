@@ -38,7 +38,7 @@ export function getCardTypeAndTags(card: ActionCardRawData) {
     GCG_TAG_WEAPON_CLAYMORE: "claymore",
     GCG_TAG_VEHICLE: "technique",
   };
-  const tags = (card.tags as any[]).map((t) => TAG_MAP[t]).filter((t) => t);
+  const tags = card.tags.map((t) => TAG_MAP[t]).filter((t) => t);
   const TYPE_MAP: Record<string, string> = {
     GCG_CARD_ASSIST: "support",
     GCG_CARD_EVENT: "event",
@@ -74,9 +74,7 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
   const tagCode =
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playCost);
-  return `export const ${pascalCase(card.englishName)} = card(${
-    card.id
-  })
+  return `export const ${pascalCase(card.englishName)} = card(${card.id})
   .since("${NEW_VERSION}")${cost}${tagCode}${extra}${typeCode}
   // TODO
   .done();`;
@@ -185,7 +183,7 @@ export async function generateCards() {
     writeSourceCode(
       "cards/equipment/techniques.ts",
       INIT_CARD_CODE,
-      equipsCode.technique
+      equipsCode.technique,
     ),
     writeSourceCode("cards/support/ally.ts", INIT_CARD_CODE, supportCode.ally),
     writeSourceCode(

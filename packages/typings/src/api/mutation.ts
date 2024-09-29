@@ -109,7 +109,7 @@ interface ResetDiceEM {
   readonly value: readonly DiceType[];
 }
 
-type PlayerFlagEM = "declareEnd" | "legendUsed";
+type PlayerFlagEM = "declaredEnd" | "legendUsed";
 
 interface SetPlayerFlagEM {
   readonly type: "setPlayerFlag";

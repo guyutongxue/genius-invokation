@@ -368,7 +368,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   ) {
     const arg = constructEventAndRequestArg(event, ...args);
     this.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
-    this.eventAndRequests.push([event, arg] as any);
+    this.eventAndRequests.push([event, arg] as EventAndRequest);
   }
 
   switchActive(target: CharacterTargetArg) {
