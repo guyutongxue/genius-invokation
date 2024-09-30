@@ -1424,6 +1424,7 @@ export const PucasSupport = card(302213)
 const TopyassGoodwill = combatStatus(302216)
   .oneDuration()
   .on("playCard")
+  .abortPreview()
   .do((c) => {
     let doDrawCard: boolean;
     if (c.player.piles.length === 0 && c.player.hands.length === 0) {
@@ -1471,6 +1472,7 @@ export const TopyassSupport = card(302214)
 const LutinesGoodwill = combatStatus(302217)
   .on("useSkill")
   .usage(2)
+  .abortPreview()
   .do((c, e) => {
     if (c.random([true, false])) {
       c.heal(2, e.skill.caller as CharacterState);
