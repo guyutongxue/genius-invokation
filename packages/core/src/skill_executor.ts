@@ -64,37 +64,42 @@ export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
 
 export type PreviewResult = readonly [newState: GameState, completed: boolean];
 
+interface SkillExecutorConfig {
+  io?: IoDuringSkillFinalize;
+  preview?: boolean;
+}
+
 export class SkillExecutor extends StateMutator {
   private constructor(
     state: GameState,
-    private readonly _io?: IoDuringSkillFinalize,
+    private readonly config: SkillExecutorConfig = {},
   ) {
-    super(state, { logger: _io?.logger });
+    super(state, { logger: config.io?.logger });
   }
 
   private get io() {
-    if (!this._io) {
+    if (!this.config.io) {
       throw new GiTcgIoNotProvideError();
     }
-    return this._io;
+    return this.config.io;
   }
 
   protected override onNotify(opt: InternalNotifyOption) {
-    this._io?.onNotify(opt);
+    this.config.io?.onNotify(opt);
   }
   protected override async onPause(opt: InternalNotifyOption) {
-    await this._io?.onPause(opt);
+    await this.config.io?.onPause(opt);
   }
   protected override async requestReroll(who: 0 | 1): Promise<number[]> {
-    if (this._io) {
-      return this._io.requestReroll(who);
+    if (this.config.io) {
+      return this.config.io.requestReroll(who);
     } else {
       throw new GiTcgIoNotProvideError();
     }
   }
   protected override async requestSwitchCard(who: 0 | 1): Promise<number[]> {
-    if (this._io) {
-      return this._io.requestSwitchCard(who);
+    if (this.config.io) {
+      return this.config.io.requestSwitchCard(who);
     } else {
       throw new GiTcgIoNotProvideError();
     }
@@ -144,7 +149,8 @@ export class SkillExecutor extends StateMutator {
       this.state,
       {
         ...skillInfo,
-        logger: this._io?.logger,
+        isPreview: this.config.preview ?? false,
+        logger: this.config.io?.logger,
         onNotify: (opt) => this.onNotify(opt),
       },
       arg as any,
@@ -570,7 +576,7 @@ export class SkillExecutor extends StateMutator {
     skill: SkillInfo,
     arg: GeneralSkillArg,
   ) {
-    const executor = new SkillExecutor(game.state, game);
+    const executor = new SkillExecutor(game.state, { io: game });
     await executor.finalizeSkill(skill, arg);
     return executor.state;
   }
@@ -579,7 +585,7 @@ export class SkillExecutor extends StateMutator {
     skill: SkillInfo,
     arg: GeneralSkillArg,
   ): Promise<PreviewResult> {
-    const executor = new SkillExecutor(state);
+    const executor = new SkillExecutor(state, { preview: true });
     try {
       await executor.finalizeSkill(skill, arg);
     } catch (e) {
@@ -598,7 +604,7 @@ export class SkillExecutor extends StateMutator {
     state: GameState,
     ...event: EventAndRequest
   ): Promise<PreviewResult> {
-    const executor = new SkillExecutor(state);
+    const executor = new SkillExecutor(state, { preview: true });
     try {
       await executor.handleEvent(event);
     } catch (e) {
@@ -611,7 +617,7 @@ export class SkillExecutor extends StateMutator {
     return [executor.state, true];
   }
   static async handleEvents(game: IoAndState, events: EventAndRequest[]) {
-    const executor = new SkillExecutor(game.state, game);
+    const executor = new SkillExecutor(game.state, { io: game });
     await executor.handleEvent(...events);
     return executor.state;
   }

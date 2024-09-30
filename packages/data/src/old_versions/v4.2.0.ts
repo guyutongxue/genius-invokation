@@ -118,7 +118,7 @@ const OceanicMimicFrog = summon(122013)
  * 飞鸢：结束阶段造成1点水元素伤害，可用3次。
  * 蛙：抵挡1点出战角色受到的伤害，可用2次；耗尽后，在结束阶段造成2点水元素伤害。
  */
-const OceanicMimicFrogPreview = summon(122013) // 这是纯水幻形·蛙的预览版本
+const OceanicMimicFrogPreview = summon(122014) // 这是纯水幻形·蛙的预览版本
   .until("v4.2.0")
   .hintIcon(DamageType.Hydro)
   .hintText("2")

@@ -203,8 +203,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     return super.mutate(mut);
   }
 
-  get isPreview() {
-    return false; // TODO
+  get isPreview(): boolean {
+    return !!this.skillInfo.isPreview;
   }
 
   get player() {
@@ -237,6 +237,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         charged: false,
         plunging: false,
         logger: this.skillInfo.logger,
+        isPreview: this.skillInfo.isPreview,
         onNotify: (opt) => this.onNotify(opt),
       }),
     );

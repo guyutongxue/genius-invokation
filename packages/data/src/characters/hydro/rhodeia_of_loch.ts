@@ -69,7 +69,8 @@ export const OceanicMimicSquirrel = summon(122011)
  */
 export const OceanicMimicRaptorPreview = summon(122010) // 这是纯水幻形·飞鸢的预览版本
   .endPhaseDamage(DamageType.Hydro, 1)
-  .usage(3);
+  .usage(3)
+  .done();
 
 /**
  * @id 122014

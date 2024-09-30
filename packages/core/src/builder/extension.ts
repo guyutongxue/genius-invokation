@@ -25,7 +25,7 @@ type BuilderMetaOfExtension<
 export class ExtensionBuilder<ExtStateType extends object> {
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
-  public readonly id;
+  public readonly id: number;
 
   constructor(
     idHint: number,

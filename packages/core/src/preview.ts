@@ -233,7 +233,6 @@ export class ActionPreviewer {
     const currentRandomIt = this.originalState.iterators.random;
     const previewRandomIt = previewState.iterators.random;
     const randomStepped = currentRandomIt !== previewRandomIt;
-    const currentEntities = allEntities(this.originalState);
     return produce(previewState, (draft) => {
       for (const who of [0, 1] as const) {
         const previewPlayer = draft.players[who];
@@ -248,15 +247,6 @@ export class ActionPreviewer {
             (randomStepped && !currentHandCards.includes(card.id))
           ) {
             card.id = 0;
-          }
-        }
-      }
-      // 若步进了随机数生成器，则隐藏新建实体
-      if (randomStepped) {
-        const previewEntities = allEntities(draft) as Writable<AnyState>[];
-        for (const entity of previewEntities) {
-          if (!currentEntities.find((et) => et.id === entity.id)) {
-            entity.id = 0;
           }
         }
       }

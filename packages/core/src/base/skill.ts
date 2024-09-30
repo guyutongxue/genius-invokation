@@ -97,12 +97,21 @@ export interface SkillInfo {
   readonly requestBy: SkillInfo | null;
   readonly charged: boolean;
   readonly plunging: boolean;
+  /**
+   * @internal
+   * 是否是预览中。部分技能会因是否为预览而采取不同的效果。
+   */
+  readonly isPreview?: boolean;
   /** @internal 技能执行时的日志管理 */
   readonly logger?: IDetailLogger;
   /** @internal 技能执行时发生 notify 的回调 */
   readonly onNotify?: (opt: InternalNotifyOption) => void;
-  /** @internal 当访问 setExtensionState 时操作的扩展点 id */
-  readonly associatedExtensionId?: number;
+  /**
+   * @internal
+   * 当访问 setExtensionState 时操作的扩展点 id。
+   * 核心调用时不必手动指定；在传入 SkillContext 时，由 SkillBuilder 指定好。
+   */
+  readonly associatedExtensionId?: number | null;
 }
 
 export interface DamageInfo {
