@@ -67,8 +67,9 @@ export const OceanicMimicSquirrel = summon(122011)
  * 飞鸢：结束阶段造成1点水元素伤害，可用3次。
  * 蛙：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点水元素伤害。
  */
-export const OceanidMimic00 = summon(122010)
-  .reserve();
+export const OceanicMimicRaptorPreview = summon(122010) // 这是纯水幻形·飞鸢的预览版本
+  .endPhaseDamage(DamageType.Hydro, 1)
+  .usage(3);
 
 /**
  * @id 122014
@@ -79,8 +80,16 @@ export const OceanidMimic00 = summon(122010)
  * 飞鸢：结束阶段造成1点水元素伤害，可用3次。
  * 蛙：抵挡1点出战角色受到的伤害，可用1次；耗尽后，在结束阶段造成2点水元素伤害。
  */
-export const OceanidMimic04 = summon(122014)
-  .reserve();
+export const OceanicMimicFrogPreview = summon(122014) // 这是纯水幻形·蛙的预览版本
+  .hintIcon(DamageType.Hydro)
+  .hintText("2")
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .usage(1, { autoDispose: false })
+  .decreaseDamage(1)
+  .on("endPhase", (c) => c.getVariable("usage") <= 0)
+  .damage(DamageType.Hydro, 2)
+  .dispose()
+  .done();
 
 /**
  * @id 22011
@@ -95,6 +104,10 @@ export const Surge = skill(22011)
   .damage(DamageType.Hydro, 1)
   .done();
 
+export const NORMAL_MIMICS = [OceanicMimicSquirrel, OceanicMimicRaptor, OceanicMimicFrog] as number[];
+
+export const PREVIEW_MIMICS = [OceanicMimicSquirrel, OceanicMimicRaptorPreview, OceanicMimicFrogPreview] as number[];
+
 /**
  * @id 22012
  * @name 纯水幻造
@@ -105,7 +118,7 @@ export const OceanidMimicSummoning = skill(22012)
   .type("elemental")
   .costHydro(3)
   .do((c) => {
-    const mimics = [OceanicMimicFrog, OceanicMimicRaptor, OceanicMimicSquirrel] as number[];
+    const mimics = c.isPreview ? PREVIEW_MIMICS : NORMAL_MIMICS;
     const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
     let target;
     if (exists.length >= 2) {
@@ -128,7 +141,7 @@ export const TheMyriadWilds = skill(22013)
   .type("elemental")
   .costHydro(5)
   .do((c) => {
-    const mimics = [OceanicMimicFrog, OceanicMimicRaptor, OceanicMimicSquirrel] as number[];
+    const mimics = c.isPreview ? PREVIEW_MIMICS : NORMAL_MIMICS;
     const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
     for (let i = 0; i < 2; i++) {
       let target;

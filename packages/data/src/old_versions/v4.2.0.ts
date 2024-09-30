@@ -1,5 +1,5 @@
 import { card, character, DamageType, DiceType, skill, summon, SummonHandle } from "@gi-tcg/core/builder";
-import { OceanicMimicRaptor, OceanicMimicSquirrel } from "../characters/hydro/rhodeia_of_loch";
+import { NORMAL_MIMICS, PREVIEW_MIMICS } from "../characters/hydro/rhodeia_of_loch";
 import { BladeAblaze, Prowl, Stealth, StealthMaster, Thrust } from "../characters/pyro/fatui_pyro_agent";
 
 /**
@@ -49,7 +49,7 @@ export const OceanidMimicSummoning = skill(22012)
   .type("elemental")
   .costHydro(3)
   .do((c) => {
-    const mimics = [OceanicMimicFrog, OceanicMimicRaptor, OceanicMimicSquirrel] as number[];
+    const mimics = c.isPreview ? PREVIEW_MIMICS : NORMAL_MIMICS;
     const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
     let target;
     if (exists.length >= 3) {
@@ -73,7 +73,7 @@ export const TheMyriadWilds = skill(22013)
   .type("elemental")
   .costHydro(5)
   .do((c) => {
-    const mimics = [OceanicMimicFrog, OceanicMimicRaptor, OceanicMimicSquirrel] as number[];
+    const mimics = c.isPreview ? PREVIEW_MIMICS : NORMAL_MIMICS;
     const exists = c.player.summons.map((s) => s.definition.id).filter((id) => mimics.includes(id));
     for (let i = 0; i < 2; i++) {
       let target;
@@ -98,6 +98,27 @@ export const TheMyriadWilds = skill(22013)
  * 结束阶段，如果可用次数已耗尽：弃置此牌，以造成2点水元素伤害。
  */
 const OceanicMimicFrog = summon(122013)
+  .until("v4.2.0")
+  .hintIcon(DamageType.Hydro)
+  .hintText("2")
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .usage(2, { autoDispose: false })
+  .decreaseDamage(1)
+  .on("endPhase", (c) => c.getVariable("usage") <= 0)
+  .damage(DamageType.Hydro, 2)
+  .dispose()
+  .done();
+
+/**
+ * @id 122014
+ * @name 纯水幻形
+ * @description
+ * 「纯水幻形」共有3种：
+ * 花鼠：结束阶段造成2点水元素伤害，可用2次。
+ * 飞鸢：结束阶段造成1点水元素伤害，可用3次。
+ * 蛙：抵挡1点出战角色受到的伤害，可用2次；耗尽后，在结束阶段造成2点水元素伤害。
+ */
+const OceanicMimicFrogPreview = summon(122013) // 这是纯水幻形·蛙的预览版本
   .until("v4.2.0")
   .hintIcon(DamageType.Hydro)
   .hintText("2")

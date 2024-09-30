@@ -203,6 +203,10 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     return super.mutate(mut);
   }
 
+  get isPreview() {
+    return false; // TODO
+  }
+
   get player() {
     return this.state.players[this.callerArea.who];
   }
