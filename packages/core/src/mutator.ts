@@ -5,9 +5,15 @@ import { Mutation, StepRandomM, applyMutation, stringifyMutation } from "./base/
 import { GiTcgCoreInternalError, GiTcgDataError } from ".";
 import { sortDice } from "./utils";
 
-export class GiTcgIoNotProvideError extends GiTcgCoreInternalError {
+export class GiTcgPreviewAbortedError extends GiTcgCoreInternalError {
+  constructor(message?: string) {
+    super(`${message ?? 'Preview aborted.'} This error should be caught.`);
+  }
+}
+
+export class GiTcgIoNotProvideError extends GiTcgPreviewAbortedError {
   constructor() {
-    super("IO is not provided. This error should be caught.");
+    super("IO is not provided.");
   }
 }
 

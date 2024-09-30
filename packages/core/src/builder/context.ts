@@ -95,6 +95,7 @@ import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DetailLogType } from "../log";
 import {
+  GiTcgPreviewAbortedError,
   InternalNotifyOption,
   InternalPauseOption,
   StateMutator,
@@ -374,6 +375,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     const arg = constructEventAndRequestArg(event, ...args);
     this.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
     this.eventAndRequests.push([event, arg] as EventAndRequest);
+  }
+
+  abortPreview() {
+    if (this.isPreview) {
+      throw new GiTcgPreviewAbortedError();
+    }
   }
 
   switchActive(target: CharacterTargetArg) {
