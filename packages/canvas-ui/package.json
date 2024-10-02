@@ -6,6 +6,7 @@
     "preview": "tsc && vite build && vite preview"
   },
   "devDependencies": {
+    "@types/earcut": "^2.1.4",
     "vite": "^5.4.8"
   },
   "dependencies": {
