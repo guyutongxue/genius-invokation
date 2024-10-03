@@ -2,6 +2,7 @@ import {
   Color3,
   Color4,
   DynamicTexture,
+  FadeInOutBehavior,
   Mesh,
   MeshBuilder,
   ParticleSystem,
@@ -28,87 +29,6 @@ export class ActionCard {
   }
   width = 1;
   height = 7.2 / 4.2;
-
-  private showParticle(x: number, y: number, z: number) {
-    const particleSystem = new ParticleSystem("particles", 500, this.scene);
-    // const particleSystem = ParticleHelper.CreateDefault(null, 500, scene);
-    particleSystem.particleTexture = this.flare;
-
-    particleSystem.minSize = 0;
-    particleSystem.maxSize = 0;
-
-    particleSystem.minLifeTime = 1;
-    particleSystem.maxLifeTime = 1;
-
-    particleSystem.emitRate = 500;
-    particleSystem.updateSpeed = 0.05;
-    particleSystem.disposeOnStop = true;
-
-    particleSystem.color1 = new Color4(0.2, 0.2, 0, 0.0);
-    particleSystem.color2 = new Color4(0.8, 0.8, 0.2, 1.0);
-    particleSystem.colorDead = new Color4(1.0, 1.0, 0.7, 1.0);
-
-    const startX = x;
-    const startZ = z;
-    const endX = startX + this.width;
-    const endZ = startZ + this.height;
-
-    particleSystem.startPositionFunction = (worldMatrix, positionToUpdate) => {
-      const x = randomNumber(startX, endX);
-      const z = randomNumber(startZ, endZ);
-      Vector3.TransformCoordinatesFromFloatsToRef(
-        x,
-        y,
-        z,
-        worldMatrix,
-        positionToUpdate,
-      );
-    };
-
-    // const finalSize = 0.5;
-    const sizeStep = 0.03;
-
-    const { promise, resolve, reject } = Promise.withResolvers();
-
-    particleSystem.updateFunction = function (particles) {
-      let retired = 0;
-      // @ts-expect-error private prop
-      const speed = this._scaledUpdateSpeed;
-      // @ts-expect-error private prop
-      const colorStep = this._scaledColorStep;
-      for (let i = 0; i < particles.length; i++) {
-        const particle = particles[i];
-        let multiplier = 1;
-        if (particle.age >= particle.lifeTime) {
-          retired++;
-          continue;
-        } else if (particle.age >= (particle.lifeTime * 2) / 3) {
-          multiplier = -2;
-          resolve();
-        } 
-        particle.age += speed;
-        particle.size += multiplier * sizeStep;
-        if (particle.size < 0) {
-          particle.size = 0;
-        }
-        particle.colorStep.scaleToRef(multiplier * speed, colorStep);
-        particle.color.addInPlace(colorStep);
-        if (particle.color.a < 0) {
-          particle.color.a = 0;
-        }
-        // particle.direction.scaleToRef(this._scaledUpdateSpeed, this._scaledDirection);
-        // particle.position.addInPlace(this._scaledDirection);
-      }
-      if (particles.length > 0 && retired === particles.length) {
-        this.stop();
-        this.dispose();
-      }
-    };
-
-    particleSystem.start();
-
-    return promise;
-  }
 
   private async showCard(x: number, y: number, z: number) {
     const mat = new StandardMaterial("");
@@ -230,12 +150,15 @@ export class ActionCard {
     plane.position.x = x;
     plane.position.y = y;
     plane.position.z = z;
-
     plane.material = mat;
+
+    const fadeIn = new FadeInOutBehavior();
+    fadeIn.init();
+    fadeIn.attach(plane);
+    fadeIn.fadeIn(true);
   }
 
   async show(x: number, y: number, z: number) {
-    await this.showParticle(x, y + 0.01, z);
     await this.showCard(x, y, z);
   }
 }
