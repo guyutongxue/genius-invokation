@@ -42,6 +42,7 @@ import { DetailLogType, IDetailLogger } from "./log";
 import { Writable } from "./utils";
 import {
   GiTcgIoNotProvideError,
+  GiTcgPreviewAbortedError,
   InternalNotifyOption,
   InternalPauseOption,
   StateMutator,
@@ -589,7 +590,7 @@ export class SkillExecutor extends StateMutator {
     try {
       await executor.finalizeSkill(skill, arg);
     } catch (e) {
-      if (e instanceof GiTcgIoNotProvideError) {
+      if (e instanceof GiTcgPreviewAbortedError) {
         return [executor.state, false];
       } else {
         throw e;
@@ -608,7 +609,7 @@ export class SkillExecutor extends StateMutator {
     try {
       await executor.handleEvent(event);
     } catch (e) {
-      if (e instanceof GiTcgIoNotProvideError) {
+      if (e instanceof GiTcgPreviewAbortedError) {
         return [executor.state, false];
       } else {
         throw e;
