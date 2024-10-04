@@ -150,6 +150,16 @@ export class ActionCard {
     plane.position.z = z;
     plane.material = mat;
 
+    const dice = MeshBuilder.CreateGround("dice", { width: 0.25, height: 0.25 });
+    plane.addChild(dice);
+    dice.position.x = 0;
+    dice.position.y = 0.01;
+    dice.position.z = this.height - 0.5;
+    const diceMat = new StandardMaterial("myMaterial", this.scene);
+    diceMat.diffuseColor = new Color3(1,1,0);
+    dice.material = diceMat;
+
+
     this.fadeInOut.attach(plane);
     this.fadeInOut.fadeIn(true);
   }
