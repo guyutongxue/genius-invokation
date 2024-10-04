@@ -71,13 +71,14 @@ function createScene(engine: Engine, canvas: HTMLCanvasElement): Scene {
 
   let shown = false;
   let card: ActionCard | null = null;
-  scene.onPointerUp = () => {
+  scene.onPointerUp = async () => {
     if (!shown) {
       card = new ActionCard(scene);
       card.show(0, 1, 0);
       shown = true;
     } else {
-      card?.hide();
+      await card?.hide();
+      card?.dispose();
       shown = false;
     }
   };

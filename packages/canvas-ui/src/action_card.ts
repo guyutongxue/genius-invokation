@@ -8,11 +8,11 @@ import {
   ParticleSystem,
   Scene,
   StandardMaterial,
-  Texture,
-  Vector3,
   Vector4,
 } from "@babylonjs/core";
 import earcut from "earcut";
+import { loadActionCardTexture } from "./textures/action_card";
+import { createCardShape } from "./mesh/card";
 
 function randomNumber(min: number, max: number) {
   return Math.random() * (max - min) + min;
@@ -20,6 +20,9 @@ function randomNumber(min: number, max: number) {
 
 export class ActionCard {
   readonly fadeInOut = new FadeInOutBehavior();
+  cardTexture: DynamicTexture | null = null;
+  cardMaterial: StandardMaterial | null = null;
+  cardMesh: Mesh | null = null;
 
   constructor(private readonly scene: Scene) {
     this.fadeInOut.init();
@@ -29,138 +32,52 @@ export class ActionCard {
   height = 7.2 / 4.2;
 
   private async showCard(x: number, y: number, z: number) {
-    const mat = new StandardMaterial("");
-    mat.specularPower = 0;
-    mat.specularColor = Color3.Black();
-
-    const dynTexture = new DynamicTexture(
-      "",
-      { width: 420, height: 720 },
-      this.scene,
-      true,
-    );
-    dynTexture.level = 1.6;
-
-    const ctx = dynTexture.getContext();
-
-    const image = new Image();
-    const { promise, resolve } = Promise.withResolvers();
-    image.onload = resolve;
-    image.src =
-      "https://gi-tcg-assets.guyutongxue.site/assets/UI_Gcg_CardFace_Assist_NPC_Paimon.webp";
-    image.crossOrigin = "anonymous";
-    await promise;
-
-    const W = 10;
-
-    ctx.drawImage(image, 0, 0, 420, 720);
-
-    ctx.strokeStyle = "#765f33";
-    ctx.lineWidth = W;
-
-    ctx.beginPath();
-    const R = 30;
-    ctx.moveTo(420 - R - W / 2, W / 2);
-    ctx.arc(420 - R - W / 2, R + W / 2, R, -Math.PI / 2, 0);
-    ctx.lineTo(420 - W / 2, 720 - R - W / 2);
-    ctx.arc(420 - R - W / 2, 720 - R - W / 2, R, 0, Math.PI / 2);
-    ctx.lineTo(R + W / 2, 720 - W / 2);
-    ctx.arc(R + W / 2, 720 - R - W / 2, R, Math.PI / 2, Math.PI);
-    ctx.lineTo(W / 2, R + W / 2);
-    ctx.arc(R + W / 2, R + W / 2, R, -Math.PI, -Math.PI / 2);
-    ctx.closePath();
-    ctx.stroke();
-    // ctx.strokeRect(0, 0, 420, 720);
-
-    dynTexture.update();
+    this.cardTexture ??= await loadActionCardTexture(this.scene, 322001);
 
     // mat.disableLighting = true;
     // mat.emissiveTexture = dynTexture;
     // mat.emissiveTexture.hasAlpha = true;
     // mat.opacityTexture = dynTexture;
-    mat.diffuseTexture = dynTexture;
-    mat.useAlphaFromDiffuseTexture = true
-    const f = new Vector4(0, 0, 1, 1); // front image = half the whole image along the width
-    // const b = new BABYLON.Vector4(0.5,0, 1, 1); // back image = second half along the width
 
-    // const plane = BABYLON.MeshBuilder.CreatePlane("plane", { width: 1, height: 7.2/4.2, frontUVs: f, sideOrientation: BABYLON.Mesh.FRONTSIDE});
+    this.cardMaterial ??= new StandardMaterial("");
+    this.cardMaterial.specularPower = 0;
+    this.cardMaterial.specularColor = Color3.Black();
+    this.cardMaterial.diffuseTexture = this.cardTexture;
+    this.cardMaterial.useAlphaFromDiffuseTexture = true;
 
-    const radius = 0.33 / 4.2;
-    const dTheta = Math.PI / 32;
+    const f = new Vector4(0, 0, 1, 1);
 
     //Polygon shape in XoZ plane
-    const shape = [];
+    const shape = createCardShape(1);
 
-    //bottom left corner
-    let centerX = radius;
-    let centerZ = radius;
-    for (let theta = Math.PI; theta <= 1.5 * Math.PI; theta += dTheta) {
-      shape.push(
-        new Vector3(
-          centerX + radius * Math.cos(theta),
-          0,
-          centerZ + radius * Math.sin(theta),
-        ),
-      );
-    }
+    this.cardMesh ??= MeshBuilder.CreatePolygon(
+      "polygon",
+      {
+        shape,
+        frontUVs: f,
+        sideOrientation: Mesh.FRONTSIDE,
+      },
+      this.scene,
+      earcut,
+    );
+    this.cardMesh.position.x = x;
+    this.cardMesh.position.y = y;
+    this.cardMesh.position.z = z;
+    this.cardMesh.material = this.cardMaterial;
 
-    //bottom right corner
-    centerX = this.width - radius;
-    for (let theta = 1.5 * Math.PI; theta <= 2 * Math.PI; theta += dTheta) {
-      shape.push(
-        new Vector3(
-          centerX + radius * Math.cos(theta),
-          0,
-          centerZ + radius * Math.sin(theta),
-        ),
-      );
-    }
-
-    //top right corner
-    centerZ = this.height - radius;
-    for (let theta = 0; theta <= 0.5 * Math.PI; theta += dTheta) {
-      shape.push(
-        new Vector3(
-          centerX + radius * Math.cos(theta),
-          0,
-          centerZ + radius * Math.sin(theta),
-        ),
-      );
-    }
-
-    //top left corner
-    centerX = radius;
-    for (let theta = 0.5 * Math.PI; theta <= Math.PI; theta += dTheta) {
-      shape.push(
-        new Vector3(
-          centerX + radius * Math.cos(theta),
-          0,
-          centerZ + radius * Math.sin(theta),
-        ),
-      );
-    }
-
-    const plane = MeshBuilder.CreatePolygon("polygon", {
-      shape,
-      frontUVs: f,
-      sideOrientation: Mesh.FRONTSIDE,
-    }, this.scene, earcut);
-    plane.position.x = x;
-    plane.position.y = y;
-    plane.position.z = z;
-    plane.material = mat;
-
-    const dice = MeshBuilder.CreateGround("dice", { width: 0.25, height: 0.25 });
-    plane.addChild(dice);
+    const dice = MeshBuilder.CreateGround("dice", {
+      width: 0.25,
+      height: 0.25,
+    });
+    this.cardMesh.addChild(dice);
     dice.position.x = 0;
     dice.position.y = 0.01;
     dice.position.z = this.height - 0.5;
     const diceMat = new StandardMaterial("myMaterial", this.scene);
-    diceMat.diffuseColor = new Color3(1,1,0);
+    diceMat.diffuseColor = new Color3(1, 1, 0);
     dice.material = diceMat;
 
-
-    this.fadeInOut.attach(plane);
+    this.fadeInOut.attach(this.cardMesh);
     this.fadeInOut.fadeIn(true);
   }
 
@@ -168,7 +85,22 @@ export class ActionCard {
     await this.showCard(x, y, z);
   }
 
+  private static readonly FADE_IN_TIME = 300;
+  private static readonly FADE_OUT_TIME = 300;
+
   async hide() {
+    this.fadeInOut.fadeOutTime = ActionCard.FADE_OUT_TIME;
     this.fadeInOut.fadeOut();
+    await new Promise((r) => setTimeout(r, ActionCard.FADE_OUT_TIME));
+  }
+
+  dispose() {
+    this.cardMesh?.dispose();
+    this.cardMaterial?.dispose();
+    this.cardTexture?.dispose();
+  }
+
+  [Symbol.dispose]() {
+    this.dispose();
   }
 }

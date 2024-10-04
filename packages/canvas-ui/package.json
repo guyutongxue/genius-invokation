@@ -12,6 +12,7 @@
   "dependencies": {
     "@babylonjs/core": "^7.27.3",
     "@babylonjs/inspector": "^7.27.3",
-    "earcut": "^3.0.0"
+    "earcut": "^3.0.0",
+    "@gi-tcg/static-data": "workspace:*"
   }
 }
