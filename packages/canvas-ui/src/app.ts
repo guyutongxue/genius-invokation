@@ -18,6 +18,7 @@ import "@babylonjs/core/Meshes/Builders/groundBuilder";
 import "@babylonjs/core/Meshes/Builders/";
 
 import { ActionCard } from "./action_card";
+import { preloadDiceTextures } from "./textures/dice";
 
 export class App {
   engine: Engine;
@@ -33,6 +34,7 @@ export class App {
   }
 
   async run() {
+    await preloadDiceTextures(this.scene);
     Inspector.Show(this.scene, {});
     this.engine.runRenderLoop(() => {
       this.scene.render();
@@ -71,6 +73,7 @@ function createScene(engine: Engine, canvas: HTMLCanvasElement): Scene {
 
   let shown = false;
   let card: ActionCard | null = null;
+
   scene.onPointerUp = async () => {
     if (!shown) {
       card = new ActionCard(scene);

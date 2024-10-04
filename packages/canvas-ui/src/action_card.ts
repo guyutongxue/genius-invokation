@@ -11,8 +11,11 @@ import {
   Vector4,
 } from "@babylonjs/core";
 import earcut from "earcut";
-import { loadActionCardTexture } from "./textures/action_card";
+import { getActionCardTexture } from "./textures/action_card";
 import { createCardShape } from "./mesh/card";
+import { getActionCardMaterial } from "./materials/action_card";
+import { getDiceTexture } from "./textures/dice";
+import { DiceType } from "@gi-tcg/typings";
 
 function randomNumber(min: number, max: number) {
   return Math.random() * (max - min) + min;
@@ -20,34 +23,27 @@ function randomNumber(min: number, max: number) {
 
 export class ActionCard {
   readonly fadeInOut = new FadeInOutBehavior();
-  cardTexture: DynamicTexture | null = null;
   cardMaterial: StandardMaterial | null = null;
   cardMesh: Mesh | null = null;
 
+  private static readonly FADE_IN_TIME = 300;
+  private static readonly FADE_OUT_TIME = 300;
+
+  private static readonly WIDTH = 1;
+  private static readonly HEIGHT = 7.2 / 4.2;
+
   constructor(private readonly scene: Scene) {
     this.fadeInOut.init();
+    this.fadeInOut.fadeInTime = ActionCard.FADE_IN_TIME;
+    this.fadeInOut.fadeOutTime = ActionCard.FADE_OUT_TIME;
   }
 
-  width = 1;
-  height = 7.2 / 4.2;
-
   private async showCard(x: number, y: number, z: number) {
-    this.cardTexture ??= await loadActionCardTexture(this.scene, 322001);
 
-    // mat.disableLighting = true;
-    // mat.emissiveTexture = dynTexture;
-    // mat.emissiveTexture.hasAlpha = true;
-    // mat.opacityTexture = dynTexture;
-
-    this.cardMaterial ??= new StandardMaterial("");
-    this.cardMaterial.specularPower = 0;
-    this.cardMaterial.specularColor = Color3.Black();
-    this.cardMaterial.diffuseTexture = this.cardTexture;
-    this.cardMaterial.useAlphaFromDiffuseTexture = true;
-
+    this.cardMaterial ??= await getActionCardMaterial(this.scene, 322001);
     const f = new Vector4(0, 0, 1, 1);
 
-    //Polygon shape in XoZ plane
+    // Polygon shape in XoZ plane
     const shape = createCardShape(1);
 
     this.cardMesh ??= MeshBuilder.CreatePolygon(
@@ -66,30 +62,29 @@ export class ActionCard {
     this.cardMesh.material = this.cardMaterial;
 
     const dice = MeshBuilder.CreateGround("dice", {
-      width: 0.25,
-      height: 0.25,
+      width: 0.4,
+      height: 0.4,
     });
     this.cardMesh.addChild(dice);
     dice.position.x = 0;
     dice.position.y = 0.01;
-    dice.position.z = this.height - 0.5;
-    const diceMat = new StandardMaterial("myMaterial", this.scene);
-    diceMat.diffuseColor = new Color3(1, 1, 0);
+    dice.position.z = ActionCard.HEIGHT - 0.5;
+    const diceMat = new StandardMaterial("dice_mat", this.scene);
+    diceMat.diffuseTexture = getDiceTexture(DiceType.Same);
+    diceMat.useAlphaFromDiffuseTexture = true;
+    // diceMat.diffuseColor = new Color3(1, 1, 0);
     dice.material = diceMat;
 
     this.fadeInOut.attach(this.cardMesh);
     this.fadeInOut.fadeIn(true);
   }
-
+  
   async show(x: number, y: number, z: number) {
     await this.showCard(x, y, z);
   }
 
-  private static readonly FADE_IN_TIME = 300;
-  private static readonly FADE_OUT_TIME = 300;
 
   async hide() {
-    this.fadeInOut.fadeOutTime = ActionCard.FADE_OUT_TIME;
     this.fadeInOut.fadeOut();
     await new Promise((r) => setTimeout(r, ActionCard.FADE_OUT_TIME));
   }
@@ -97,7 +92,7 @@ export class ActionCard {
   dispose() {
     this.cardMesh?.dispose();
     this.cardMaterial?.dispose();
-    this.cardTexture?.dispose();
+    // this.cardTexture?.dispose();
   }
 
   [Symbol.dispose]() {

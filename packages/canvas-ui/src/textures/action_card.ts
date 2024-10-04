@@ -26,13 +26,20 @@ const loadImage = async (id: number): Promise<HTMLImageElement> => {
 const ACTION_CARD_WIDTH = 420;
 const ACTION_CARD_HEIGHT = 720;
 
-export async function loadActionCardTexture(scene: Scene, id: number) {
+const loadedActionCardTextures = new Map<number, DynamicTexture>();
+
+export async function getActionCardTexture(scene: Scene, id: number) {
+  const loaded = loadedActionCardTextures.get(id);
+  if (loaded) {
+    return loaded;
+  }
+
   const image = await loadImage(id);
   const width = ACTION_CARD_WIDTH;
   const height = ACTION_CARD_HEIGHT;
 
   const texture = new DynamicTexture(
-    `card_texture_${id}`,
+    `texture_card_${id}`,
     { width, height },
     scene,
     true,
@@ -45,12 +52,13 @@ export async function loadActionCardTexture(scene: Scene, id: number) {
 
   // 描边宽度
   const W = 10;
+  // 圆角半径
+  const R = 30;
 
   ctx.strokeStyle = "#765f33";
   ctx.lineWidth = W;
 
   ctx.beginPath();
-  const R = 30;
   ctx.moveTo(width - R - W / 2, W / 2);
   ctx.arc(width - R - W / 2, R + W / 2, R, -Math.PI / 2, 0);
   ctx.lineTo(width - W / 2, height - R - W / 2);
@@ -64,5 +72,6 @@ export async function loadActionCardTexture(scene: Scene, id: number) {
   // ctx.strokeRect(0, 0, width, height);
 
   texture.update();
+  loadedActionCardTextures.set(id, texture);
   return texture;
 }
