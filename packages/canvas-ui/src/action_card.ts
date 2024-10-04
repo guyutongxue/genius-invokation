@@ -19,14 +19,12 @@ function randomNumber(min: number, max: number) {
 }
 
 export class ActionCard {
-  readonly flare: Texture;
+  readonly fadeInOut = new FadeInOutBehavior();
 
   constructor(private readonly scene: Scene) {
-    this.flare = new Texture(
-      "https://assets.babylonjs.com/textures/flare.png",
-      scene,
-    );
+    this.fadeInOut.init();
   }
+
   width = 1;
   height = 7.2 / 4.2;
 
@@ -152,13 +150,15 @@ export class ActionCard {
     plane.position.z = z;
     plane.material = mat;
 
-    const fadeIn = new FadeInOutBehavior();
-    fadeIn.init();
-    fadeIn.attach(plane);
-    fadeIn.fadeIn(true);
+    this.fadeInOut.attach(plane);
+    this.fadeInOut.fadeIn(true);
   }
 
   async show(x: number, y: number, z: number) {
     await this.showCard(x, y, z);
+  }
+
+  async hide() {
+    this.fadeInOut.fadeOut();
   }
 }

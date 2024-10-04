@@ -17,7 +17,6 @@ import "@babylonjs/core/Meshes/Builders/sphereBuilder";
 import "@babylonjs/core/Meshes/Builders/groundBuilder";
 import "@babylonjs/core/Meshes/Builders/";
 
-
 import { ActionCard } from "./action_card";
 
 export class App {
@@ -41,10 +40,7 @@ export class App {
   }
 }
 
-function createScene(
-  engine: Engine,
-  canvas: HTMLCanvasElement,
-): Scene {
+function createScene(engine: Engine, canvas: HTMLCanvasElement): Scene {
   const scene = new Scene(engine);
 
   const camera = new ArcRotateCamera(
@@ -73,10 +69,18 @@ function createScene(
   //   scene,
   // );
 
+  let shown = false;
+  let card: ActionCard | null = null;
   scene.onPointerUp = () => {
-    const card = new ActionCard(scene);
-    card.show(0,1,0);
-  }
+    if (!shown) {
+      card = new ActionCard(scene);
+      card.show(0, 1, 0);
+      shown = true;
+    } else {
+      card?.hide();
+      shown = false;
+    }
+  };
 
   return scene;
 }
