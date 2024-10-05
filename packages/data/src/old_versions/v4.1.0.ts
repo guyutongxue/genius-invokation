@@ -490,7 +490,7 @@ const IcyQuill01 = combatStatus(111072)
   .until("v4.1.0")
   .conflictWith(111071)
   .variable("noUsageEffect", 1, { visible: false }) // 每回合一次不消耗可用次数
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("noUsageEffect", 1)
   .on("increaseDamage", (c, e) => e.via.caller.definition.type === "character" && e.type === DamageType.Cryo)
   .usage(3, { autoDecrease: false })

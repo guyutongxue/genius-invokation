@@ -125,7 +125,7 @@ export const CountDisposeOrTune = skill(16075)
   .variable("disposeOrTuneCardCount", 0)
   .on("disposeOrTuneCard")
   .addVariable("disposeOrTuneCardCount", 1)
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("disposeOrTuneCardCount", 0)
   .done();
 

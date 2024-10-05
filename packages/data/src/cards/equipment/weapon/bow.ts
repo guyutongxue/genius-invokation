@@ -164,7 +164,7 @@ export const EndOfTheLine = card(311207)
   .weapon("bow")
   .variable("fishing", 0)
   .variable("additivePerRound", 0, { visible: false })
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("additivePerRound", 0)
   .on("playCard", (c, e) => !c.player.initialPiles.find((def) => e.card.definition.id === def.id))
   .do((c) => {

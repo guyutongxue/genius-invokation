@@ -303,7 +303,8 @@ const detailedEventDictionary = {
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),
-  roundBegin: defineDescriptor("onRoundBegin"),
+  // roundBegin: defineDescriptor("onRoundBegin"),
+  roundEnd: defineDescriptor("onRoundEnd"),
   actionPhase: defineDescriptor("onActionPhase"),
   endPhase: defineDescriptor("onEndPhase"),
   beforeAction: defineDescriptor("onBeforeAction", (c, { who }, r) => {

@@ -490,10 +490,10 @@ export class Game extends StateMutator {
       DetailLogType.Phase,
       `In roll phase (round ${this.state.roundNumber}+1):`,
     );
+    // await this.handleEvent("onRoundBegin", new EventArg(this.state));
     this.mutate({
       type: "stepRound",
     });
-    await this.handleEvent("onRoundBegin", new EventArg(this.state));
     if (this.state.roundNumber >= this.config.maxRounds) {
       this.gotWinner(null);
     }
@@ -814,6 +814,7 @@ export class Game extends StateMutator {
         );
       }
     }
+    await this.handleEvent("onRoundEnd", new EventArg(this.state));
     this.mutate({
       type: "setPlayerFlag",
       who: 0,

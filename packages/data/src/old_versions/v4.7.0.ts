@@ -551,7 +551,7 @@ const Kusava = card(323008)
   .support("item")
   .variable("memory", 0)
   .variable("cardPlayed", 0, { visible: false })
-  .on("roundBegin")
+  .on("actionPhase")
   .do((c) => {
     const disposed = c.disposeRandomCard(c.getMaxCostHands(), 2);
     const count = disposed.length;

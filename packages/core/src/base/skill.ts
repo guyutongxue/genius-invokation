@@ -997,7 +997,8 @@ export class GenerateDiceEventArg extends PlayerEventArg {
 
 export const EVENT_MAP = {
   onBattleBegin: EventArg,
-  onRoundBegin: EventArg,
+  // onRoundBegin: EventArg,
+  onRoundEnd: EventArg,
 
   modifyRoll: ModifyRollEventArg,
   onActionPhase: EventArg,

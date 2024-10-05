@@ -180,7 +180,7 @@ export const TomeOfTheEternalFlow = card(311108)
   .on("damagedOrHealed", (c) => c.getVariable("count") === 1)
   .usagePerRound(1)
   .characterStatus(AeonWave, "@master")
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("count", 0)
   .done();
 

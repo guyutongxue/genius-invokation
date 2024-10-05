@@ -112,7 +112,7 @@ export const ImmortalRemnantsAnemo = skill(25034)
 export const SquallDrawCardsCounter = skill(25035)
   .type("passive")
   .variable("elementalSkillDrawCardsCount", 0)
-  .on("roundBegin")
+  .on("battleBegin")
   .setVariable("elementalSkillDrawCardsCount", 0)
   .done();
 

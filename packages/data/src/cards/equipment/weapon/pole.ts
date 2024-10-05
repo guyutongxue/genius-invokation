@@ -178,7 +178,7 @@ export const PrimordialJadeWingedspear = card(311407)
   .costSame(3)
   .weapon("pole")
   .variable("extraDamage", 1)
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("extraDamage", 0)
   .on("increaseSkillDamage")
   .do((c, e) => {

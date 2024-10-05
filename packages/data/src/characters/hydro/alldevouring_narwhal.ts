@@ -158,7 +158,7 @@ export const DeepDevourersDomain = combatStatus(122041)
       c.setVariable("totalMaxCostCount", 1);
     }
   })
-  .on("endPhase")
+  .on("roundEnd")
   .do((c, e) => {
     const extraMaxHealth = c.getVariable("extraMaxHealth");
     if (extraMaxHealth) {

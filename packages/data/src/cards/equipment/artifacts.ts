@@ -729,7 +729,7 @@ export const VeteransVisage = card(312023)
   .costVoid(2)
   .artifact()
   .variable("triggered", 0)
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("triggered", 0)
   .on("damagedOrHealed")
   .do((c) => {
@@ -781,7 +781,7 @@ export const AmethystCrown = card(312027)
   .artifact()
   .variable("generatedCount", 0, { visible: false })
   .variable("crystal", 0)
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("generatedCount", 0)
   .on("damaged", (c, e) =>
     !c.of(e.target).isMine() &&
@@ -865,7 +865,7 @@ export const FlowerOfParadiseLost = card(312028)
   .artifact()
   .variable("crystal", 0)
   .variable("generatedCount", 0, { visible: false })
-  .on("roundBegin")
+  .on("roundEnd")
   .setVariable("generatedCount", 0)
   .on("damaged", (c, e) =>
     c.self.master().isActive() && 
