@@ -47,6 +47,8 @@ export async function preloadDiceTextures(scene: Scene) {
     [...Object.entries(DICE_COLORS)].map(async ([type, color]) => {
       const svg = getSvgSource(color);
       const { promise, resolve, reject } = Promise.withResolvers<void>();
+      // TODO: Load SVG as image into a DynamicTexture canvas context.
+      // We need to use context draw stroked text.
       const texture = Texture.LoadFromDataString(`texture_dice_${type}`, `data:image/svg+xml;utf-8,${svg}`, scene);
       texture.level = 1.6;
       texture.hasAlpha = true;
