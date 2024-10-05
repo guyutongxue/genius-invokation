@@ -479,7 +479,7 @@ export class EntityBuilder<
     );
     const hasDuration = Reflect.has(this._varConfigs, "duration");
     if (usagePerRoundNames.length > 0 || hasDuration) {
-      this.on("roundBegin")
+      this.on("roundEnd")
         .do((c, e) => {
           const self = c.self;
           // 恢复每回合使用次数

@@ -815,7 +815,7 @@ export const Pankration = card(332023)
   .done();
 
 const LyresongIsFirstExtension = extension(332024, { first: pair(false) })
-  .mutateWhen("onRoundBegin", (c) => c.first = pair(true))
+  .mutateWhen("onRoundEnd", (c) => c.first = pair(true))
   .mutateWhen("onPlayCard", (c, e) => c.first[e.who] = true)
   .done();
 
