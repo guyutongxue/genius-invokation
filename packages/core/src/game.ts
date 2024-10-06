@@ -454,11 +454,14 @@ export class Game extends StateMutator {
       who: 1,
       value: a1,
     });
+    await this.handleEvent("onBattleBegin", new EventArg(this.state));
     this.mutate({
       type: "changePhase",
       newPhase: "roll",
     });
-    await this.handleEvent("onBattleBegin", new EventArg(this.state));
+    this.mutate({
+      type: "stepRound",
+    });
   }
 
   /** @internal */
@@ -488,15 +491,8 @@ export class Game extends StateMutator {
   private async rollPhase() {
     using l = this.subLog(
       DetailLogType.Phase,
-      `In roll phase (round ${this.state.roundNumber}+1):`,
+      `In roll phase (round ${this.state.roundNumber}):`,
     );
-    // await this.handleEvent("onRoundBegin", new EventArg(this.state));
-    this.mutate({
-      type: "stepRound",
-    });
-    if (this.state.roundNumber >= this.config.maxRounds) {
-      this.gotWinner(null);
-    }
     // onRoll event
     interface RollParams {
       fixed: readonly DiceType[];
@@ -848,9 +844,16 @@ export class Game extends StateMutator {
       who: 1,
     });
     this.mutate({
-      type: "changePhase",
-      newPhase: "roll",
+      type: "stepRound",
     });
+    if (this.state.roundNumber > this.config.maxRounds) {
+      this.gotWinner(null);
+    } else {
+      this.mutate({
+        type: "changePhase",
+        newPhase: "roll",
+      });
+    }
   }
 
   async availableActions(): Promise<ActionInfoWithModification[]> {
