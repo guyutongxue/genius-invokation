@@ -234,7 +234,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     event: E,
     arg: EventArgOf<E>,
   ) {
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Event,
       `Handling inline event ${event} (${arg.toString()}):`,
     );
@@ -263,7 +263,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       ) {
         continue;
       }
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Skill,
         `Using skill [skill:${info.definition.id}]`,
       );
@@ -381,7 +381,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     ...args: EventAndRequestConstructorArgs<E>
   ) {
     const arg = constructEventAndRequestArg(event, ...args);
-    this.logger?.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
+    this.mutator.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
     this.eventAndRequests.push([event, arg] as EventAndRequest);
   }
 
@@ -413,7 +413,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         st.definition.tags.includes("immuneControl"),
       ))
     ) {
-      this.logger?.log(
+      this.mutator.log(
         DetailLogType.Other,
         `Switch active from ${stringifyState(from)} to ${stringifyState(
           switchToTarget.state,
@@ -421,7 +421,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       );
       return;
     }
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Switch active from ${stringifyState(from)} to ${stringifyState(
         switchToTarget.state,
@@ -458,7 +458,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   gainEnergy(value: number, target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Gain ${value} energy to ${stringifyState(t.state)}`,
       );
@@ -488,7 +488,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       const targetState = t.state;
       if (!targetState.variables.alive) {
         if (kind === "revive") {
-          this.logger?.log(
+          this.mutator.log(
             DetailLogType.Other,
             `Before healing ${stringifyState(targetState)}, revive him.`,
           );
@@ -503,7 +503,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           continue;
         }
       }
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Heal ${value} to ${stringifyState(targetState)}`,
       );
@@ -560,7 +560,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Deal ${value} [damage:${type}] damage to ${stringifyState(t.state)}`,
       );
@@ -588,7 +588,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         this.handleInlineEvent("modifyDamage3", modifier);
         damageInfo = modifier.damageInfo;
       }
-      this.logger?.log(
+      this.mutator.log(
         DetailLogType.Other,
         `Damage info: ${damageInfo.log || "(no modification)"}`,
       );
@@ -634,7 +634,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   apply(type: AppliableDamageType, target: CharacterTargetArg) {
     const characters = this.queryCoerceToCharacters(target);
     for (const ch of characters) {
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Apply [damage:${type}] to ${stringifyState(ch.state)}`,
       );
@@ -663,7 +663,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       value: newAura,
     });
     if (reaction !== null) {
-      this.logger?.log(
+      this.mutator.log(
         DetailLogType.Other,
         `Apply reaction ${reaction} to ${stringifyState(target.state)}`,
       );
@@ -809,7 +809,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       if (target.state.definition.type === "character") {
         throw new GiTcgDataError(`Cannot transfer a character`);
       }
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Transfer ${stringifyState(target.state)} to ${stringifyEntityArea(
           area,
@@ -839,7 +839,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Dispose ${stringifyState(entityState)}`,
       );
@@ -872,7 +872,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   setVariable(prop: Meta["callerVars"], value: number): void;
   setVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Set ${stringifyState(target)}'s variable ${prop} to ${value}`,
     );
@@ -976,7 +976,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown definition id ${newDefId}`);
     }
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Transform ${stringifyState(target)}'s definition to [${def.type}:${
         def.id
@@ -991,7 +991,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
 
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Absorb ${count} dice with strategy ${strategy}`,
     );
@@ -1048,7 +1048,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
   generateDice(type: DiceType | "randomElement", count: number) {
     const maxCount = this.state.config.maxDice - this.player.dice.length;
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Generate ${count}${
         maxCount < count ? ` (only ${maxCount} due to limit)` : ""
@@ -1106,7 +1106,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const { withTag = null, withDefinition = null, who: myOrOpt = "my" } = opt;
     const who =
       myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Player ${who} draw ${count} cards, ${
         withTag ? `(with tag ${withTag})` : ""
@@ -1245,7 +1245,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     strategy: InsertPileStrategy,
   ) {
     const who = this.callerArea.who;
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
     );
@@ -1271,7 +1271,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
   undrawCards(cards: CardState[], strategy: InsertPileStrategy) {
     const who = this.callerArea.who;
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Undraw cards ${cards
         .map((c) => `[card:${c.definition.id}]`)
@@ -1317,7 +1317,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           )} from player ${who}, not found in either hands or piles`,
         );
       }
-      using l = this.logger?.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Primitive,
         `Dispose card ${stringifyState(card)} from player ${who}`,
       );

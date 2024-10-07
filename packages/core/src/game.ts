@@ -143,8 +143,7 @@ export class Game /* extends StateMutator */ {
   private readonly config: GameConfig;
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   private readonly io: GameIO;
-  /** @internal */
-  public readonly logger: DetailLogger;
+  private readonly logger: DetailLogger;
 
   private _terminated = false;
   private finishResolvers: Resolvers<0 | 1 | null> | null = null;
@@ -438,7 +437,7 @@ export class Game /* extends StateMutator */ {
   }
 
   private async initHands() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In initHands phase:`);
+    using l = this.mutator.subLog(DetailLogType.Phase, `In initHands phase:`);
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHands; i++) {
         this.mutator.drawCard(who);
@@ -456,7 +455,7 @@ export class Game /* extends StateMutator */ {
   }
 
   private async initActives() {
-    using l = this.logger.subLog(DetailLogType.Phase, `In initActive phase:`);
+    using l = this.mutator.subLog(DetailLogType.Phase, `In initActive phase:`);
     const [a0, a1] = await Promise.all([
       this.mutator.chooseActive(0),
       this.mutator.chooseActive(1),
@@ -503,7 +502,7 @@ export class Game /* extends StateMutator */ {
   }
 
   private async rollPhase() {
-    using l = this.logger.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Phase,
       `In roll phase (round ${this.state.roundNumber}):`,
     );
@@ -583,7 +582,7 @@ export class Game /* extends StateMutator */ {
       (replaceAction = findReplaceAction(activeCh())) &&
       !isSkillDisabled(activeCh())
     ) {
-      using l = this.logger.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Phase,
         `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}) (replaced action):`,
       );
@@ -592,7 +591,7 @@ export class Game /* extends StateMutator */ {
         type: "switchTurn",
       });
     } else {
-      using l = this.logger.subLog(
+      using l = this.mutator.subLog(
         DetailLogType.Phase,
         `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
       );
@@ -806,7 +805,7 @@ export class Game /* extends StateMutator */ {
     }
   }
   private async endPhase() {
-    using l = this.logger.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Phase,
       `In end phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
     );

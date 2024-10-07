@@ -91,13 +91,13 @@ export class SkillExecutor {
     if (this.state.phase === "gameEnd") {
       return;
     }
-    using l = this.logger?.subLog(
+    using l = this.mutator.subLog(
       DetailLogType.Skill,
       `Using skill [skill:${skillInfo.definition.id}]${
         skillInfo.charged ? " (charged)" : ""
       }${skillInfo.plunging ? " (plunging)" : ""}`,
     );
-    this.logger?.log(
+    this.mutator.log(
       DetailLogType.Other,
       `skill caller: ${stringifyState(skillInfo.caller)}`,
     );
@@ -157,7 +157,7 @@ export class SkillExecutor {
           const ch = getEntityById(this.state, id, true) as CharacterState;
           const { who } = getEntityArea(this.state, id);
           if (ch.variables.alive) {
-            this.logger?.log(
+            this.mutator.log(
               DetailLogType.Primitive,
               `${stringifyState(ch)} is defeated (and no immune available)`,
             );
@@ -200,7 +200,7 @@ export class SkillExecutor {
       }
     }
     if (failedPlayers.size === 2) {
-      this.logger?.log(
+      this.mutator.log(
         DetailLogType.Other,
         `Both player has no alive characters, set winner to null`,
       );
@@ -212,7 +212,7 @@ export class SkillExecutor {
       return;
     } else if (failedPlayers.size === 1) {
       const who = [...failedPlayers.values()][0];
-      this.logger?.log(
+      this.mutator.log(
         DetailLogType.Other,
         `player ${who} has no alive characters, set winner to ${flip(who)}`,
       );
@@ -240,7 +240,7 @@ export class SkillExecutor {
     for (const arg of zeroHealthEventArgs) {
       await this.handleEvent(["modifyZeroHealth", arg]);
       if (arg._immuneInfo !== null) {
-        this.logger?.log(
+        this.mutator.log(
           DetailLogType.Primitive,
           `${stringifyState(arg.target)} is immune to defeated. Revive him to ${
             arg._immuneInfo.newHealth
@@ -301,7 +301,7 @@ export class SkillExecutor {
       // 增加充能
       if (skillDef.gainEnergy) {
         if (ch.variables.alive) {
-          this.logger?.log(
+          this.mutator.log(
             DetailLogType.Other,
             `using skill gain 1 energy for ${stringifyState(ch)}`,
           );
@@ -342,7 +342,7 @@ export class SkillExecutor {
       if (activeCh.variables.alive) {
         continue;
       }
-      this.logger?.log(
+      this.mutator.log(
         DetailLogType.Other,
         `Active character of player ${who} is defeated. Waiting user choice`,
       );
@@ -361,7 +361,7 @@ export class SkillExecutor {
     const currentTurn = this.state.currentTurn;
     for (const arg of args) {
       if (arg) {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Primitive,
           `Player ${arg.switchInfo.who} switch active from ${stringifyState(
             arg.switchInfo.from,
@@ -396,26 +396,26 @@ export class SkillExecutor {
   async handleEvent(...actions: EventAndRequest[]) {
     for (const [name, arg] of actions) {
       if (name === "requestReroll") {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to reroll`,
         );
         await this.mutator.reroll(arg.who, arg.times);
       } else if (name === "requestSwitchHands") {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to switch hands`,
         );
         await this.mutator.switchHands(arg.who);
       } else if (name === "requestSelectCard") {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to select card`,
         );
         const events = await this.mutator.selectCard(arg.who, arg.info);
         await this.handleEvent(...events);
       } else if (name === "requestUseSkill") {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Event,
           `another skill [skill:${arg.requestingSkillId}] is requested:`,
         );
@@ -427,7 +427,7 @@ export class SkillExecutor {
             et.definition.tags.includes("disableSkill"),
           )
         ) {
-          this.logger?.log(
+          this.mutator.log(
             DetailLogType.Other,
             `Skill [skill:${
               arg.requestingSkillId
@@ -443,7 +443,7 @@ export class SkillExecutor {
           (sk) => sk.id === arg.requestingSkillId,
         );
         if (!skillDef) {
-          this.logger?.log(
+          this.mutator.log(
             DetailLogType.Other,
             `Skill [skill:${
               arg.requestingSkillId
@@ -480,7 +480,7 @@ export class SkillExecutor {
         const cardDef = arg.card.definition;
         const disposeDef = cardDef.onDispose;
         if (disposeDef) {
-          using l = this.logger?.subLog(
+          using l = this.mutator.subLog(
             DetailLogType.Skill,
             `Execute onDispose of [card:${cardDef.id}]`,
           );
@@ -497,7 +497,7 @@ export class SkillExecutor {
           await this.finalizeSkill(skillInfo, { targets: [] });
         }
       } else if (name === "requestTriggerEndPhaseSkill") {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Event,
           `Triggering end phase skills of ${arg.requestedEntity}`,
         );
@@ -517,7 +517,7 @@ export class SkillExecutor {
           await this.finalizeSkill(skillInfo, eventArg);
         }
       } else {
-        using l = this.logger?.subLog(
+        using l = this.mutator.subLog(
           DetailLogType.Event,
           `Handling event ${name} (${arg.toString()}):`,
         );

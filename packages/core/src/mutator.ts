@@ -83,7 +83,7 @@ export interface CreateEntityResult {
 }
 
 /**
- * 管理一个状态和状态的修改。
+ * 管理一个状态和状态的修改；同时也进行日志管理。
  *
  * - 当状态发生修改时，向日志输出；
  * - `notify` 方法会附加所有的修改信息。
@@ -104,6 +104,10 @@ export class StateMutator {
   get state() {
     return this._state;
   }
+  get logger() {
+    return this.config.logger;
+  }
+
   resetState(newState: GameState) {
     if (this._mutationsToBeNotified.length > 0) {
       console.warn("Resetting state with pending mutations not notified");
@@ -121,6 +125,7 @@ export class StateMutator {
   subLog(type: DetailLogType, value: string) {
     return this.config.logger?.subLog(type, value);
   }
+
 
   mutate(mutation: Mutation) {
     this._state = applyMutation(this.state, mutation);
