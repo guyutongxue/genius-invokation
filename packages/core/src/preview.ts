@@ -18,6 +18,7 @@ import { applyMutation } from "./base/mutation";
 import {
   ActionEventArg,
   ActionInfo,
+  defineSkillInfo,
   DisposeOrTuneCardEventArg,
   GenericModifyActionEventArg,
   PlayCardEventArg,
@@ -140,14 +141,11 @@ export class ActionPreviewer {
           card.definition.cardType === "event"
         ) {
         } else {
-          const skillInfo: SkillInfo = {
+          const skillInfo = defineSkillInfo({
             caller: activeCh(),
             definition: card.definition,
             fromCard: card,
-            requestBy: null,
-            charged: false,
-            plunging: false,
-          };
+          });
           const arg = { targets: newActionInfo.targets };
           if (completed) {
             [previewState, completed] = await SkillExecutor.previewSkill(

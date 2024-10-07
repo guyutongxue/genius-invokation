@@ -17,6 +17,7 @@ import {
   ActionEventArg,
   DamageInfo,
   DamageOrHealEventArg,
+  defineSkillInfo,
   EventAndRequest,
   EventArg,
   HealInfo,
@@ -54,17 +55,15 @@ export type PreviewResult = readonly [newState: GameState, completed: boolean];
 
 interface SkillExecutorConfig {
   readonly mutatorConfig: MutatorConfig;
-  readonly preview?: boolean;
+  readonly preview: boolean;
 }
 
 export class SkillExecutor {
   private mutator: StateMutator;
-  private logger?: IDetailLogger;
   private constructor(
     state: GameState,
     private readonly config: SkillExecutorConfig,
   ) {
-    this.logger = config.mutatorConfig.logger;
     this.mutator = new StateMutator(state, config.mutatorConfig);
   }
 
@@ -128,7 +127,7 @@ export class SkillExecutor {
       this.state,
       {
         ...skillInfo,
-        isPreview: this.config.preview ?? false,
+        isPreview: this.config.preview,
         mutatorConfig: this.config.mutatorConfig,
       },
       arg as any,
@@ -462,14 +461,13 @@ export class SkillExecutor {
             activeCh.entities.some((et) =>
               et.definition.tags.includes("normalAsPlunging"),
             ));
-        const skillInfo: SkillInfo = {
+        const skillInfo = defineSkillInfo({
           caller: activeCh,
           definition: skillDef,
-          fromCard: null,
           requestBy: arg.via,
           charged,
           plunging,
-        };
+        });
         await this.finalizeSkill(skillInfo, { targets: [] });
         await this.handleEvent([
           "onUseSkill",
@@ -486,14 +484,11 @@ export class SkillExecutor {
           );
           const player = this.state.players[arg.who];
           const activeCh = player.characters[getActiveCharacterIndex(player)];
-          const skillInfo: SkillInfo = {
+          const skillInfo = defineSkillInfo({
             caller: activeCh,
             definition: disposeDef,
             fromCard: arg.card,
-            requestBy: null,
-            charged: false,
-            plunging: false,
-          };
+          });
           await this.finalizeSkill(skillInfo, { targets: [] });
         }
       } else if (name === "requestTriggerEndPhaseSkill") {
@@ -505,14 +500,11 @@ export class SkillExecutor {
           if (skill.triggerOn !== "onEndPhase") {
             continue;
           }
-          const skillInfo: SkillInfo = {
+          const skillInfo = defineSkillInfo({
             caller: arg.requestedEntity,
             definition: skill,
-            fromCard: null,
             requestBy: arg.via,
-            charged: false,
-            plunging: false,
-          };
+          });
           const eventArg = new EventArg(this.state);
           await this.finalizeSkill(skillInfo, eventArg);
         }
@@ -522,14 +514,10 @@ export class SkillExecutor {
           `Handling event ${name} (${arg.toString()}):`,
         );
         for (const { caller, skill } of allSkills(this.state, name)) {
-          const skillInfo: Writable<SkillInfo> = {
+          const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
-            fromCard: null,
-            requestBy: null,
-            charged: false,
-            plunging: false,
-          };
+          }) as Writable<SkillInfo>;
           const currentEntities = allEntities(this.state);
           // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
           if (name === "onDispose" && arg.entity.id === caller.id) {

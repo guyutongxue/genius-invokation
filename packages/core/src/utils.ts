@@ -27,6 +27,7 @@ import { EntityArea } from "./base/entity";
 import { CharacterDefinition, ElementTag } from "./base/character";
 import { CardDefinition } from "./base/card";
 import {
+  defineSkillInfo,
   EventNames,
   InitiativeSkillDefinition,
   SkillDefinition,
@@ -234,14 +235,10 @@ export function allEntitiesAtArea(
 
 export function checkImmune(state: GameState, e: ZeroHealthEventArg) {
   for (const { caller, skill } of allSkills(state, "modifyZeroHealth")) {
-    const skillInfo: SkillInfo = {
+    const skillInfo = defineSkillInfo({
       caller,
       definition: skill,
-      charged: false,
-      plunging: false,
-      fromCard: null,
-      requestBy: null,
-    };
+    });
     const filterResult = (0, skill.filter)(state, skillInfo, e);
     if (filterResult) {
       return true;
@@ -315,14 +312,10 @@ export function findReplaceAction(character: CharacterState): SkillInfo | null {
     return null;
   }
   const [caller, definition] = candidates[0];
-  return {
+  return defineSkillInfo({
     caller,
     definition: definition as SkillDefinition,
-    requestBy: null,
-    fromCard: null,
-    charged: false,
-    plunging: false,
-  };
+  });
 }
 
 export function isSkillDisabled(character: CharacterState): boolean {

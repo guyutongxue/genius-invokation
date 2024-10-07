@@ -46,6 +46,7 @@ import {
   ReactionInfo,
   SkillDescription,
   SkillInfo,
+  SkillInfoOfContextConstruction,
   constructEventAndRequestArg,
 } from "../base/skill";
 import {
@@ -147,8 +148,8 @@ export type ContextMetaBase = {
  * 它们出现在 `.do()` 形式内，将其作为参数传入。
  */
 export class SkillContext<Meta extends ContextMetaBase> {
+  public readonly skillInfo: Required<SkillInfoOfContextConstruction>;
   private readonly mutator: StateMutator;
-  private readonly mutatorConfig: MutatorConfig;
   private readonly eventAndRequests: EventAndRequest[] = [];
   public readonly callerArea: EntityArea;
 
@@ -165,18 +166,22 @@ export class SkillContext<Meta extends ContextMetaBase> {
    */
   constructor(
     state: GameState,
-    public readonly skillInfo: SkillInfo,
+    skillInfo: SkillInfoOfContextConstruction,
     public readonly eventArg: Meta["eventArgType"] extends object
       ? Omit<Meta["eventArgType"], `_${string}`>
       : Meta["eventArgType"],
   ) {
-    this.mutatorConfig = {
-      ...this.skillInfo.mutatorConfig,
+    const mutatorConfig: MutatorConfig = {
+      ...skillInfo.mutatorConfig,
       onNotify: (opt) => this.onNotify(opt),
       onPause: async () => {},
     };
-    this.mutator = new StateMutator(state, this.mutatorConfig);
-    this.callerArea = getEntityArea(state, skillInfo.caller.id);
+    this.skillInfo = {
+      ...skillInfo,
+      mutatorConfig,
+    }
+    this.mutator = new StateMutator(state, mutatorConfig);
+    this.callerArea = getEntityArea(state, this.skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
   }
   /**
@@ -184,7 +189,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
    * @internal
    */
   _terminate() {
-    this.skillInfo.mutatorConfig?.onNotify({
+    this.onNotify({
       canResume: false,
       state: this.state,
       stateMutations: this._stateMutations,
@@ -199,10 +204,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
   private onNotify(opt: InternalNotifyOption): void {
     this._stateMutations.push(...opt.stateMutations);
     this._exposedMutations.push(...opt.exposedMutations);
-  }
-
-  private get logger() {
-    return this.skillInfo.mutatorConfig?.logger;
   }
 
   mutate(mut: Mutation) {
@@ -694,10 +695,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       if (reactionDescription) {
         const [newState, events] = reactionDescription(
           this.state,
-          {
-            ...this.skillInfo,
-            mutatorConfig: this.mutatorConfig,
-          },
+          this.skillInfo,
           reactionDescriptionEventArg,
         );
         this.eventAndRequests.push(...events);

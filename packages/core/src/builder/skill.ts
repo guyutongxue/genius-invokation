@@ -38,6 +38,7 @@ import {
   InitiativeSkillEventArg,
   InitiativeSkillFilter,
   InitiativeSkillTargetGetter,
+  SkillInfoOfContextConstruction,
 } from "../base/skill";
 import { AnyState, EntityVariables, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
@@ -435,12 +436,12 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
 
   protected operations: SkillOperation<Meta>[] = [];
   protected filters: SkillOperationFilter<Meta>[] = [];
-  protected associatedExtensionId: number | undefined = void 0;
+  protected associatedExtensionId: number | null = null;
   constructor(protected readonly id: number) {}
   private applyIfFilter = false;
   private _ifFilter: SkillOperationFilter<Meta> = () => true;
 
-  protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfo {
+  protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfoOfContextConstruction {
     return { ...skillInfo, associatedExtensionId: this.associatedExtensionId };
   }
 
@@ -882,7 +883,7 @@ class InitiativeSkillBuilder<
   }
 
   associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
-    if (typeof this.associatedExtensionId !== "undefined") {
+    if (this.associatedExtensionId !== null) {
       throw new GiTcgDataError(
         `This skill has already associated with extension ${this.id}`,
       );

@@ -61,6 +61,7 @@ import {
   SwitchActiveInfo,
   UseSkillEventArg,
   InitiativeSkillEventArg,
+  defineSkillInfo,
 } from "./base/skill";
 import { CardDefinition } from "./base/card";
 import { executeQueryOnState } from "./query";
@@ -139,7 +140,7 @@ function initPlayerState(
   };
 }
 
-export class Game /* extends StateMutator */ {
+export class Game {
   private readonly config: GameConfig;
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   private readonly io: GameIO;
@@ -720,14 +721,11 @@ export class Game /* extends StateMutator */ {
               used: true,
             });
             await this.executeSkill(
-              {
+              defineSkillInfo({
                 caller: activeCh(),
                 definition: actionInfo.card.definition,
                 fromCard: actionInfo.card,
-                requestBy: null,
-                charged: false,
-                plunging: false,
-              },
+              }),
               {
                 targets: actionInfo.targets,
               },
@@ -889,14 +887,12 @@ export class Game /* extends StateMutator */ {
             activeCh.entities.some((et) =>
               et.definition.tags.includes("normalAsPlunging"),
             ));
-        const skillInfo = {
+        const skillInfo = defineSkillInfo({
           caller,
           definition,
-          fromCard: null,
-          requestBy: null,
           charged,
           plunging,
-        };
+        });
         const allTargets = (0, definition.getTarget)(this.state, skillInfo);
         for (const arg of allTargets) {
           if (!(0, definition.filter)(this.state, skillInfo, arg)) {
@@ -918,14 +914,11 @@ export class Game /* extends StateMutator */ {
     // Cards
     for (const card of player.hands) {
       let allTargets: InitiativeSkillEventArg[];
-      const skillInfo: SkillInfo = {
+      const skillInfo = defineSkillInfo({
         caller: activeCh,
         definition: card.definition,
         fromCard: card,
-        requestBy: null,
-        charged: false,
-        plunging: false,
-      };
+      });
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
         card.definition.cardType === "support" &&

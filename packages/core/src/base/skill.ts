@@ -86,32 +86,55 @@ export interface InitiativeSkillDefinition
   readonly getTarget: InitiativeSkillTargetGetter;
 }
 
+/** 使用 `defineSkillInfo` 创建 */
 export interface SkillInfo {
   readonly caller: CharacterState | EntityState;
+  readonly definition: SkillDefinition;
   /**
    * 仅当此技能是作为卡牌描述的一部分时才有值。
    */
   readonly fromCard: CardState | null;
-  readonly definition: SkillDefinition;
   /**
    * 若此技能通过 `requestSkill` 如准备技能或天赋牌触发，
    * 则此字段指定上述技能的 `SkillInfo`
    */
   readonly requestBy: SkillInfo | null;
+  /** 重击 */
   readonly charged: boolean;
+  /** 下落攻击 */
   readonly plunging: boolean;
   /**
    * 是否是预览中。部分技能会因是否为预览而采取不同的效果。
    */
-  readonly isPreview?: boolean;
-  /** @internal 如何修改状态 */
+  readonly isPreview: boolean;
+  /** @internal SkillContext 内部的 StateMutator 的配置 */
   readonly mutatorConfig?: MutatorConfig;
+}
+
+type RequiredWith<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+type InitSkillInfo = RequiredWith<
+  Partial<Omit<SkillInfo, "isPreview" | "mutatorConfig">>, // this two property will be added by SkillExecutor
+  "caller" | "definition" // This is required for every skill info
+>;
+
+export function defineSkillInfo(init: InitSkillInfo): SkillInfo {
+  return {
+    fromCard: null,
+    requestBy: null,
+    charged: false,
+    plunging: false,
+    isPreview: false,
+    ...init,
+  };
+}
+
+export interface SkillInfoOfContextConstruction extends SkillInfo {
   /**
-   * @internal
    * 当访问 setExtensionState 时操作的扩展点 id。
-   * 核心调用时不必手动指定；在传入 SkillContext 时，由 SkillBuilder 指定好。
+   * 在传入 SkillContext 时，由 SkillBuilder 指定好。
    */
-  readonly associatedExtensionId?: number | null;
+  readonly associatedExtensionId: number | null;
 }
 
 export interface DamageInfo {

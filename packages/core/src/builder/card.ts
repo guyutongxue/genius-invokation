@@ -185,7 +185,7 @@ class CardBuilder<
   }
 
   associateExtension<NewExtT>(ext: ExtensionHandle<NewExtT>) {
-    if (typeof this.associatedExtensionId !== "undefined") {
+    if (this.associatedExtensionId !== null) {
       throw new GiTcgDataError(
         `This card has already associated with extension ${this.id}`,
       );
