@@ -38,7 +38,7 @@ import {
   UsagePerRoundVariableNames,
 } from "./entity";
 import { IDetailLogger } from "../log";
-import { InternalNotifyOption } from "../mutator";
+import { InternalNotifyOption, MutatorConfig } from "../mutator";
 import { diceCostOfCard, getEntityArea, mixins } from "../utils";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
@@ -101,14 +101,11 @@ export interface SkillInfo {
   readonly charged: boolean;
   readonly plunging: boolean;
   /**
-   * @internal
    * 是否是预览中。部分技能会因是否为预览而采取不同的效果。
    */
   readonly isPreview?: boolean;
-  /** @internal 技能执行时的日志管理 */
-  readonly logger?: IDetailLogger;
-  /** @internal 技能执行时发生 notify 的回调 */
-  readonly onNotify?: (opt: InternalNotifyOption) => void;
+  /** @internal 如何修改状态 */
+  readonly mutatorConfig?: MutatorConfig;
   /**
    * @internal
    * 当访问 setExtensionState 时操作的扩展点 id。

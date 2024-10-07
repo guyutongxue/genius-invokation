@@ -1,5 +1,5 @@
 import { DiceType, ExposedMutation } from "@gi-tcg/typings";
-import { CardState, GameState } from "./base/state";
+import { CardState, CharacterState, GameState } from "./base/state";
 import { DetailLogType, IDetailLogger } from "./log";
 import {
   Mutation,
@@ -46,11 +46,26 @@ export interface InternalNotifyOption extends InternalPauseOption {
   exposedMutations: readonly ExposedMutation[];
 }
 
-export interface MutateOption {
+export interface MutatorConfig {
   /**
    * 详细日志输出器。
    */
   logger?: IDetailLogger;
+  
+  /**
+   * `notify` 时调用的接口。
+   */
+  onNotify: (opt: InternalNotifyOption) => void;
+
+  /**
+   * `pause` 时调用的接口。
+   */
+  onPause: (opt: InternalPauseOption) => Promise<void>;
+
+  howToSwitchHands?: (who: 0 | 1) => Promise<number[]>;
+  howToReroll?: (who: 0 | 1) => Promise<number[]>;
+  howToSelectCard?: (who: 0 | 1, cards: readonly number[]) => Promise<number>;
+  howToChooseActive?: (who: 0 | 1, candidates: readonly number[]) => Promise<number>;
 }
 
 export interface CreateEntityOptions {
@@ -73,15 +88,23 @@ export interface CreateEntityResult {
  * - 当状态发生修改时，向日志输出；
  * - `notify` 方法会附加所有的修改信息。
  */
-export abstract class StateMutator {
+export class StateMutator {
   private _state: GameState;
   private _mutationsToBeNotified: Mutation[] = [];
   private _mutationsToBePause: Mutation[] = [];
   private _first = true;
+
+  constructor(
+    initialState: GameState,
+    private config: MutatorConfig,
+  ) {
+    this._state = initialState;
+  }
+
   get state() {
     return this._state;
   }
-  protected resetState(newState: GameState) {
+  resetState(newState: GameState) {
     if (this._mutationsToBeNotified.length > 0) {
       console.warn("Resetting state with pending mutations not notified");
       console.warn(this._mutationsToBeNotified);
@@ -91,19 +114,15 @@ export abstract class StateMutator {
     this._mutationsToBeNotified = [];
     this._mutationsToBePause = [];
   }
-  constructor(
-    initialState: GameState,
-    private opt: MutateOption = {},
-  ) {
-    this._state = initialState;
+  
+  log(type: DetailLogType, value: string): void {
+    return this.config.logger?.log(type, value);
   }
-  protected log(type: DetailLogType, value: string): void {
-    return this.opt.logger?.log(type, value);
+  subLog(type: DetailLogType, value: string) {
+    return this.config.logger?.subLog(type, value);
   }
-  protected subLog(type: DetailLogType, value: string) {
-    return this.opt.logger?.subLog(type, value);
-  }
-  protected mutate(mutation: Mutation) {
+
+  mutate(mutation: Mutation) {
     this._state = applyMutation(this.state, mutation);
     const str = stringifyMutation(mutation);
     if (str) {
@@ -112,6 +131,7 @@ export abstract class StateMutator {
     this._mutationsToBeNotified.push(mutation);
     this._mutationsToBePause.push(mutation);
   }
+
   private createNotifyInternalOption(opt: NotifyOption): InternalNotifyOption {
     const result = {
       state: this.state,
@@ -132,32 +152,26 @@ export abstract class StateMutator {
     this._mutationsToBePause = [];
     return result;
   }
-  protected notify(opt: NotifyOption = {}) {
+
+  notify(opt: NotifyOption = {}) {
     const internalOpt = this.createNotifyInternalOption(opt);
     if (this._first) {
-      this.onNotify(internalOpt);
+      this.config.onNotify(internalOpt);
       this._first = false;
     } else if (
       internalOpt.stateMutations.length > 0 ||
       internalOpt.exposedMutations.length > 0
     ) {
-      this.onNotify(internalOpt);
+      this.config.onNotify(internalOpt);
     }
   }
-  protected async notifyAndPause(opt: NotifyOption = {}) {
+  async notifyAndPause(opt: NotifyOption = {}) {
     this.notify(opt);
     const internalPauseOpt = this.createPauseInternalOption(opt);
-    await this.onPause(internalPauseOpt);
+    await this.config.onPause(internalPauseOpt);
   }
 
-  /**
-   * 当上层调用 `StateMutator.prototype.notify` 时，调用的接口。
-   * 子类重写此接口以实现提示功能
-   */
-  protected abstract onNotify(opt: InternalNotifyOption): void;
-  protected abstract onPause(opt: InternalPauseOption): Promise<void>;
-
-  protected drawCard(who: 0 | 1): CardState | null {
+  drawCard(who: 0 | 1): CardState | null {
     const candidate = this.state.players[who].piles[0];
     if (typeof candidate === "undefined") {
       return null;
@@ -181,21 +195,11 @@ export abstract class StateMutator {
     return candidate;
   }
 
-  protected async requestSwitchCard(who: 0 | 1): Promise<number[]> {
-    throw new GiTcgIoNotProvideError();
-  }
-  protected async requestReroll(who: 0 | 1): Promise<number[]> {
-    throw new GiTcgIoNotProvideError();
-  }
-  protected async requestSelectCard(
-    who: 0 | 1,
-    cards: readonly number[],
-  ): Promise<number> {
-    throw new GiTcgIoNotProvideError();
-  }
-
-  protected async switchCard(who: 0 | 1) {
-    const removedHands = await this.requestSwitchCard(who);
+  async switchHands(who: 0 | 1) {
+    if (!this.config.howToSwitchHands) {
+      throw new GiTcgIoNotProvideError();
+    }
+    const removedHands = await this.config.howToSwitchHands(who);
     const player = () => this.state.players[who];
     // swapIn: 从手牌到牌堆
     // swapOut: 从牌堆到手牌
@@ -252,7 +256,7 @@ export abstract class StateMutator {
     this.notify();
   }
 
-  protected randomDice(
+  randomDice(
     count: number,
     alwaysOmni?: boolean,
   ): readonly DiceType[] {
@@ -271,10 +275,14 @@ export abstract class StateMutator {
     return result;
   }
 
-  protected async reroll(who: 0 | 1, times: number) {
+  async reroll(who: 0 | 1, times: number) {
+    const howToReroll = this.config.howToReroll;
+    if (!howToReroll) {
+      throw new GiTcgIoNotProvideError();
+    }
     for (let i = 0; i < times; i++) {
       const dice = this.state.players[who].dice;
-      const rerollIndexes = await this.requestReroll(who);
+      const rerollIndexes = await howToReroll(who);
       if (rerollIndexes.length === 0) {
         return;
       }
@@ -296,11 +304,31 @@ export abstract class StateMutator {
     }
   }
 
-  protected async selectCard(
+  async chooseActive(who: 0 | 1): Promise<CharacterState> {
+    if (!this.config.howToChooseActive) {
+      throw new GiTcgIoNotProvideError();
+    }
+    const player = this.state.players[who];
+    const candidates = player.characters.filter(
+      (ch) => ch.variables.alive && ch.id !== player.activeCharacterId,
+    );
+    if (candidates.length === 0) {
+      throw new GiTcgCoreInternalError(
+        `No available candidate active character for player ${who}.`,
+      );
+    }
+    const activeChId = await this.config.howToChooseActive(who, candidates.map((c) => c.id));
+    return getEntityById(this.state, activeChId, true) as CharacterState;
+  }
+
+  async selectCard(
     who: 0 | 1,
     info: SelectCardInfo,
   ): Promise<EventAndRequest[]> {
-    const selected = await this.requestSelectCard(
+    if (!this.config.howToSelectCard) {
+      throw new GiTcgIoNotProvideError();
+    }
+    const selected = await this.config.howToSelectCard(
       who,
       info.cards.map((def) => def.id),
     );
@@ -310,7 +338,7 @@ export abstract class StateMutator {
         if (typeof def === "undefined") {
           throw new GiTcgDataError(`Unknown card definition id ${selected}`);
         }
-        this.createHandCardImpl(who, def);
+        this.createHandCard(who, def);
         return [];
       }
       case "createEntity": {
@@ -325,7 +353,7 @@ export abstract class StateMutator {
           who,
           type: "summons",
         };
-        const { oldState, newState } = this.createEntityImpl(def, entityArea);
+        const { oldState, newState } = this.createEntity(def, entityArea);
         if (newState) {
           const enterInfo = {
             overridden: oldState,
@@ -343,7 +371,7 @@ export abstract class StateMutator {
     }
   }
 
-  protected createHandCardImpl(who: 0 | 1, definition: CardDefinition) {
+  createHandCard(who: 0 | 1, definition: CardDefinition) {
     using l = this.subLog(
       DetailLogType.Primitive,
       `Create hand card [card:${definition.id}]`,
@@ -370,7 +398,7 @@ export abstract class StateMutator {
     }
   }
 
-  protected createEntityImpl(
+ createEntity(
     def: EntityDefinition,
     area: EntityArea,
     opt: CreateEntityOptions = {},

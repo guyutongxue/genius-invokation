@@ -41,82 +41,48 @@ import { flip } from "@gi-tcg/utils";
 import { DetailLogType, IDetailLogger } from "./log";
 import { Writable } from "./utils";
 import {
-  GiTcgIoNotProvideError,
   GiTcgPreviewAbortedError,
-  InternalNotifyOption,
-  InternalPauseOption,
+  MutatorConfig as MutatorConfig,
   StateMutator,
 } from "./mutator";
-import { CardDefinition } from "./base/card";
-
-interface IoDuringSkillFinalize {
-  logger: IDetailLogger;
-  requestSwitchCard(who: 0 | 1): Promise<number[]>;
-  requestReroll(who: 0 | 1): Promise<number[]>;
-  requestSelectCard(who: 0 | 1, cards: readonly number[]): Promise<number>;
-  chooseActive(who: 0 | 1, state: GameState): Promise<CharacterState>;
-  onNotify(opt: InternalNotifyOption): void;
-  onPause(opt: InternalPauseOption): Promise<void>;
-}
-
-interface IoAndState extends IoDuringSkillFinalize {
-  readonly state: GameState;
-}
+import { Mutation } from "./base/mutation";
+import { Game } from "./game";
 
 export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
 
 export type PreviewResult = readonly [newState: GameState, completed: boolean];
 
 interface SkillExecutorConfig {
-  io?: IoDuringSkillFinalize;
-  preview?: boolean;
+  readonly mutatorConfig: MutatorConfig;
+  readonly preview?: boolean;
 }
 
-export class SkillExecutor extends StateMutator {
+export class SkillExecutor {
+  private mutator: StateMutator;
+  private logger?: IDetailLogger;
   private constructor(
     state: GameState,
-    private readonly config: SkillExecutorConfig = {},
+    private readonly config: SkillExecutorConfig,
   ) {
-    super(state, { logger: config.io?.logger });
+    this.logger = config.mutatorConfig.logger;
+    this.mutator = new StateMutator(state, config.mutatorConfig);
   }
 
-  private get io() {
-    if (!this.config.io) {
-      throw new GiTcgIoNotProvideError();
-    }
-    return this.config.io;
+  get state() {
+    return this.mutator.state;
   }
 
-  protected override onNotify(opt: InternalNotifyOption) {
-    this.config.io?.onNotify(opt);
+  private mutate(mutation: Mutation) {
+    this.mutator.mutate(mutation);
   }
-  protected override async onPause(opt: InternalNotifyOption) {
-    await this.config.io?.onPause(opt);
-  }
-  protected override async requestReroll(who: 0 | 1): Promise<number[]> {
-    if (this.config.io) {
-      return this.config.io.requestReroll(who);
-    } else {
-      throw new GiTcgIoNotProvideError();
-    }
-  }
-  protected override async requestSwitchCard(who: 0 | 1): Promise<number[]> {
-    if (this.config.io) {
-      return this.config.io.requestSwitchCard(who);
-    } else {
-      throw new GiTcgIoNotProvideError();
-    }
-  }
-  protected override async requestSelectCard(
-    who: 0 | 1,
-    cards: readonly number[],
-  ): Promise<number> {
-    if (this.config.io) {
-      return this.config.io.requestSelectCard(who, cards);
-    } else {
-      throw new GiTcgIoNotProvideError();
-    }
-  }
+
+  private static readonly PREVIEW_CONFIG: SkillExecutorConfig = {
+    preview: false,
+    mutatorConfig: {
+      onNotify: () => {},
+      onPause: async () => {},
+    },
+  };
 
   async finalizeSkill(
     skillInfo: SkillInfo,
@@ -125,13 +91,13 @@ export class SkillExecutor extends StateMutator {
     if (this.state.phase === "gameEnd") {
       return;
     }
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Skill,
       `Using skill [skill:${skillInfo.definition.id}]${
         skillInfo.charged ? " (charged)" : ""
       }${skillInfo.plunging ? " (plunging)" : ""}`,
     );
-    this.log(
+    this.logger?.log(
       DetailLogType.Other,
       `skill caller: ${stringifyState(skillInfo.caller)}`,
     );
@@ -154,7 +120,7 @@ export class SkillExecutor extends StateMutator {
         skill: skillDef.id,
       });
     }
-    this.notify({
+    this.mutator.notify({
       mutations: preExposedMutations,
     });
 
@@ -163,14 +129,13 @@ export class SkillExecutor extends StateMutator {
       {
         ...skillInfo,
         isPreview: this.config.preview ?? false,
-        logger: this.config.io?.logger,
-        onNotify: (opt) => this.onNotify(opt),
+        mutatorConfig: this.config.mutatorConfig,
       },
       arg as any,
     );
-    this.resetState(newState);
+    this.mutator.resetState(newState);
 
-    await this.notifyAndPause();
+    await this.mutator.notifyAndPause();
 
     const damageEvents = eventList.filter((e) => e[0] === "onDamageOrHeal");
     const nonDamageEvents = eventList.filter((e) => e[0] !== "onDamageOrHeal");
@@ -192,7 +157,7 @@ export class SkillExecutor extends StateMutator {
           const ch = getEntityById(this.state, id, true) as CharacterState;
           const { who } = getEntityArea(this.state, id);
           if (ch.variables.alive) {
-            this.log(
+            this.logger?.log(
               DetailLogType.Primitive,
               `${stringifyState(ch)} is defeated (and no immune available)`,
             );
@@ -235,7 +200,7 @@ export class SkillExecutor extends StateMutator {
       }
     }
     if (failedPlayers.size === 2) {
-      this.log(
+      this.logger?.log(
         DetailLogType.Other,
         `Both player has no alive characters, set winner to null`,
       );
@@ -243,11 +208,11 @@ export class SkillExecutor extends StateMutator {
         type: "changePhase",
         newPhase: "gameEnd",
       });
-      await this.notifyAndPause();
+      await this.mutator.notifyAndPause();
       return;
     } else if (failedPlayers.size === 1) {
       const who = [...failedPlayers.values()][0];
-      this.log(
+      this.logger?.log(
         DetailLogType.Other,
         `player ${who} has no alive characters, set winner to ${flip(who)}`,
       );
@@ -259,7 +224,7 @@ export class SkillExecutor extends StateMutator {
         type: "setWinner",
         winner: flip(who),
       });
-      await this.notifyAndPause();
+      await this.mutator.notifyAndPause();
       return;
     }
     const safeDamageEvents = damageEventArgs.filter(
@@ -269,13 +234,13 @@ export class SkillExecutor extends StateMutator {
       (arg) => arg.damageInfo.causeDefeated,
     );
     if (criticalDamageEvents.length > 0) {
-      await this.notifyAndPause();
+      await this.mutator.notifyAndPause();
     }
 
     for (const arg of zeroHealthEventArgs) {
       await this.handleEvent(["modifyZeroHealth", arg]);
       if (arg._immuneInfo !== null) {
-        this.log(
+        this.logger?.log(
           DetailLogType.Primitive,
           `${stringifyState(arg.target)} is immune to defeated. Revive him to ${
             arg._immuneInfo.newHealth
@@ -299,7 +264,7 @@ export class SkillExecutor extends StateMutator {
           varName: "health",
           value: healValue,
         });
-        await this.notifyAndPause({
+        await this.mutator.notifyAndPause({
           mutations: [
             {
               type: "damage",
@@ -336,7 +301,7 @@ export class SkillExecutor extends StateMutator {
       // 增加充能
       if (skillDef.gainEnergy) {
         if (ch.variables.alive) {
-          this.log(
+          this.logger?.log(
             DetailLogType.Other,
             `using skill gain 1 energy for ${stringifyState(ch)}`,
           );
@@ -348,7 +313,7 @@ export class SkillExecutor extends StateMutator {
             varName: "energy",
             value: newEnergy,
           });
-          await this.notifyAndPause();
+          await this.mutator.notifyAndPause();
         }
       }
     }
@@ -377,11 +342,11 @@ export class SkillExecutor extends StateMutator {
       if (activeCh.variables.alive) {
         continue;
       }
-      this.log(
+      this.logger?.log(
         DetailLogType.Other,
         `Active character of player ${who} is defeated. Waiting user choice`,
       );
-      switchEvents[who] = this.io.chooseActive(who, this.state).then(
+      switchEvents[who] = this.mutator.chooseActive(who).then(
         (to) =>
           new SwitchActiveEventArg(this.state, {
             type: "switchActive",
@@ -396,7 +361,7 @@ export class SkillExecutor extends StateMutator {
     const currentTurn = this.state.currentTurn;
     for (const arg of args) {
       if (arg) {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Primitive,
           `Player ${arg.switchInfo.who} switch active from ${stringifyState(
             arg.switchInfo.from,
@@ -407,7 +372,7 @@ export class SkillExecutor extends StateMutator {
           who: arg.switchInfo.who,
           value: arg.switchInfo.to,
         });
-        this.notify({
+        this.mutator.notify({
           mutations: [
             {
               type: "switchActive",
@@ -431,26 +396,26 @@ export class SkillExecutor extends StateMutator {
   async handleEvent(...actions: EventAndRequest[]) {
     for (const [name, arg] of actions) {
       if (name === "requestReroll") {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to reroll`,
         );
-        await this.reroll(arg.who, arg.times);
+        await this.mutator.reroll(arg.who, arg.times);
       } else if (name === "requestSwitchHands") {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to switch hands`,
         );
-        await this.switchCard(arg.who);
+        await this.mutator.switchHands(arg.who);
       } else if (name === "requestSelectCard") {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Event,
           `request player ${arg.who} to select card`,
         );
-        const events = await this.selectCard(arg.who, arg.info);
+        const events = await this.mutator.selectCard(arg.who, arg.info);
         await this.handleEvent(...events);
       } else if (name === "requestUseSkill") {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Event,
           `another skill [skill:${arg.requestingSkillId}] is requested:`,
         );
@@ -462,7 +427,7 @@ export class SkillExecutor extends StateMutator {
             et.definition.tags.includes("disableSkill"),
           )
         ) {
-          this.log(
+          this.logger?.log(
             DetailLogType.Other,
             `Skill [skill:${
               arg.requestingSkillId
@@ -478,7 +443,7 @@ export class SkillExecutor extends StateMutator {
           (sk) => sk.id === arg.requestingSkillId,
         );
         if (!skillDef) {
-          this.log(
+          this.logger?.log(
             DetailLogType.Other,
             `Skill [skill:${
               arg.requestingSkillId
@@ -515,7 +480,7 @@ export class SkillExecutor extends StateMutator {
         const cardDef = arg.card.definition;
         const disposeDef = cardDef.onDispose;
         if (disposeDef) {
-          using l = this.subLog(
+          using l = this.logger?.subLog(
             DetailLogType.Skill,
             `Execute onDispose of [card:${cardDef.id}]`,
           );
@@ -532,7 +497,7 @@ export class SkillExecutor extends StateMutator {
           await this.finalizeSkill(skillInfo, { targets: [] });
         }
       } else if (name === "requestTriggerEndPhaseSkill") {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Event,
           `Triggering end phase skills of ${arg.requestedEntity}`,
         );
@@ -552,7 +517,7 @@ export class SkillExecutor extends StateMutator {
           await this.finalizeSkill(skillInfo, eventArg);
         }
       } else {
-        using l = this.subLog(
+        using l = this.logger?.subLog(
           DetailLogType.Event,
           `Handling event ${name} (${arg.toString()}):`,
         );
@@ -592,11 +557,14 @@ export class SkillExecutor extends StateMutator {
   }
 
   static async executeSkill(
-    game: IoAndState,
+    game: Game,
     skill: SkillInfo,
     arg: GeneralSkillArg,
   ) {
-    const executor = new SkillExecutor(game.state, { io: game });
+    const executor = new SkillExecutor(game.state, {
+      preview: false,
+      mutatorConfig: game.mutatorConfig,
+    });
     await executor.finalizeSkill(skill, arg);
     return executor.state;
   }
@@ -605,7 +573,7 @@ export class SkillExecutor extends StateMutator {
     skill: SkillInfo,
     arg: GeneralSkillArg,
   ): Promise<PreviewResult> {
-    const executor = new SkillExecutor(state, { preview: true });
+    const executor = new SkillExecutor(state, SkillExecutor.PREVIEW_CONFIG);
     try {
       await executor.finalizeSkill(skill, arg);
     } catch (e) {
@@ -617,14 +585,14 @@ export class SkillExecutor extends StateMutator {
     }
     return [executor.state, true];
   }
-  static async handleEvent(game: IoAndState, ...event: EventAndRequest) {
+  static async handleEvent(game: Game, ...event: EventAndRequest) {
     return SkillExecutor.handleEvents(game, [event]);
   }
   static async previewEvent(
     state: GameState,
     ...event: EventAndRequest
   ): Promise<PreviewResult> {
-    const executor = new SkillExecutor(state, { preview: true });
+    const executor = new SkillExecutor(state, SkillExecutor.PREVIEW_CONFIG);
     try {
       await executor.handleEvent(event);
     } catch (e) {
@@ -636,8 +604,11 @@ export class SkillExecutor extends StateMutator {
     }
     return [executor.state, true];
   }
-  static async handleEvents(game: IoAndState, events: EventAndRequest[]) {
-    const executor = new SkillExecutor(game.state, { io: game });
+  static async handleEvents(game: Game, events: EventAndRequest[]) {
+    const executor = new SkillExecutor(game.state, {
+      preview: false,
+      mutatorConfig: game.mutatorConfig,
+    });
     await executor.handleEvent(...events);
     return executor.state;
   }

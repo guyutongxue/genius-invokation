@@ -99,6 +99,7 @@ import {
   GiTcgPreviewAbortedError,
   InternalNotifyOption,
   InternalPauseOption,
+  MutatorConfig,
   StateMutator,
 } from "../mutator";
 import { CharacterDefinition } from "../base/character";
@@ -145,7 +146,9 @@ export type ContextMetaBase = {
  * 用于描述技能的上下文对象。
  * 它们出现在 `.do()` 形式内，将其作为参数传入。
  */
-export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
+export class SkillContext<Meta extends ContextMetaBase> {
+  private readonly mutator: StateMutator;
+  private readonly mutatorConfig: MutatorConfig;
   private readonly eventAndRequests: EventAndRequest[] = [];
   public readonly callerArea: EntityArea;
 
@@ -167,7 +170,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       ? Omit<Meta["eventArgType"], `_${string}`>
       : Meta["eventArgType"],
   ) {
-    super(state, { logger: skillInfo.logger });
+    this.mutatorConfig = {
+      ...this.skillInfo.mutatorConfig,
+      onNotify: (opt) => this.onNotify(opt),
+      onPause: async () => {},
+    };
+    this.mutator = new StateMutator(state, this.mutatorConfig);
     this.callerArea = getEntityArea(state, skillInfo.caller.id);
     this.self = this.of(this.skillInfo.caller);
   }
@@ -176,7 +184,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
    * @internal
    */
   _terminate() {
-    this.skillInfo.onNotify?.({
+    this.skillInfo.mutatorConfig?.onNotify({
       canResume: false,
       state: this.state,
       stateMutations: this._stateMutations,
@@ -186,20 +194,27 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
   private _stateMutations: Mutation[] = [];
   private _exposedMutations: ExposedMutation[] = [];
+
   // 将技能中引发的通知保存下来，最后调用 _terminate 时再整体通知
-  protected override onNotify(opt: InternalNotifyOption): void {
+  private onNotify(opt: InternalNotifyOption): void {
     this._stateMutations.push(...opt.stateMutations);
     this._exposedMutations.push(...opt.exposedMutations);
   }
-  protected override async onPause(opt: InternalPauseOption): Promise<void> {
-    // Do nothing, and we won't call it
+
+  private get logger() {
+    return this.skillInfo.mutatorConfig?.logger;
   }
-  public override mutate(mut: Mutation) {
-    return super.mutate(mut);
+
+  mutate(mut: Mutation) {
+    return this.mutator.mutate(mut);
   }
 
   get isPreview(): boolean {
     return !!this.skillInfo.isPreview;
+  }
+
+  get state() {
+    return this.mutator.state;
   }
 
   get player() {
@@ -219,7 +234,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     event: E,
     arg: EventArgOf<E>,
   ) {
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Event,
       `Handling inline event ${event} (${arg.toString()}):`,
     );
@@ -231,9 +246,8 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         requestBy: null,
         charged: false,
         plunging: false,
-        logger: this.skillInfo.logger,
         isPreview: this.skillInfo.isPreview,
-        onNotify: (opt) => this.onNotify(opt),
+        mutatorConfig: this.skillInfo.mutatorConfig,
       }),
     );
     for (const info of infos) {
@@ -249,14 +263,14 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       ) {
         continue;
       }
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Skill,
         `Using skill [skill:${info.definition.id}]`,
       );
       const desc = info.definition.action as SkillDescription<EventArgOf<E>>;
       const [newState, newEvents] = desc(this.state, info, arg);
-      this.notify();
-      this.resetState(newState);
+      this.mutator.notify();
+      this.mutator.resetState(newState);
       this.eventAndRequests.push(...newEvents);
     }
   }
@@ -367,7 +381,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     ...args: EventAndRequestConstructorArgs<E>
   ) {
     const arg = constructEventAndRequestArg(event, ...args);
-    this.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
+    this.logger?.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
     this.eventAndRequests.push([event, arg] as EventAndRequest);
   }
 
@@ -399,7 +413,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         st.definition.tags.includes("immuneControl"),
       ))
     ) {
-      this.log(
+      this.logger?.log(
         DetailLogType.Other,
         `Switch active from ${stringifyState(from)} to ${stringifyState(
           switchToTarget.state,
@@ -407,7 +421,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       );
       return;
     }
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Switch active from ${stringifyState(from)} to ${stringifyState(
         switchToTarget.state,
@@ -418,7 +432,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       who: playerWho,
       value: switchToTarget.state,
     });
-    this.notify({
+    this.mutator.notify({
       mutations: [
         {
           type: "switchActive",
@@ -444,7 +458,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   gainEnergy(value: number, target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Gain ${value} energy to ${stringifyState(t.state)}`,
       );
@@ -474,7 +488,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       const targetState = t.state;
       if (!targetState.variables.alive) {
         if (kind === "revive") {
-          this.log(
+          this.logger?.log(
             DetailLogType.Other,
             `Before healing ${stringifyState(targetState)}, revive him.`,
           );
@@ -489,7 +503,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           continue;
         }
       }
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Heal ${value} to ${stringifyState(targetState)}`,
       );
@@ -516,7 +530,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       const modifier = new ModifyHealEventArg(this.state, healInfo);
       this.handleInlineEvent("modifyHeal", modifier);
       healInfo = modifier.damageInfo;
-      this.notify({
+      this.mutator.notify({
         mutations: [
           {
             type: "damage",
@@ -546,7 +560,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     }
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Deal ${value} [damage:${type}] damage to ${stringifyState(t.state)}`,
       );
@@ -574,7 +588,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         this.handleInlineEvent("modifyDamage3", modifier);
         damageInfo = modifier.damageInfo;
       }
-      this.log(
+      this.logger?.log(
         DetailLogType.Other,
         `Damage info: ${damageInfo.log || "(no modification)"}`,
       );
@@ -589,7 +603,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         value: finalHealth,
       });
       if (damageInfo.target.variables.alive) {
-        this.notify({
+        this.mutator.notify({
           mutations: [
             {
               type: "damage",
@@ -620,7 +634,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   apply(type: AppliableDamageType, target: CharacterTargetArg) {
     const characters = this.queryCoerceToCharacters(target);
     for (const ch of characters) {
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Apply [damage:${type}] to ${stringifyState(ch.state)}`,
       );
@@ -649,7 +663,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       value: newAura,
     });
     if (reaction !== null) {
-      this.log(
+      this.logger?.log(
         DetailLogType.Other,
         `Apply reaction ${reaction} to ${stringifyState(target.state)}`,
       );
@@ -659,7 +673,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
         via: this.skillInfo,
         fromDamage,
       };
-      this.notify({
+      this.mutator.notify({
         mutations: [
           {
             type: "elementalReaction",
@@ -682,12 +696,12 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           this.state,
           {
             ...this.skillInfo,
-            onNotify: (opt) => this.onNotify(opt),
+            mutatorConfig: this.mutatorConfig,
           },
           reactionDescriptionEventArg,
         );
         this.eventAndRequests.push(...events);
-        this.resetState(newState);
+        this.mutator.resetState(newState);
       }
     }
   }
@@ -729,7 +743,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           );
       }
     }
-    const { oldState, newState } = this.createEntityImpl(def, area, opt);
+    const { oldState, newState } = this.mutator.createEntity(def, area, opt);
     if (newState) {
       this.emitEvent("onEnter", this.state, {
         overridden: oldState,
@@ -795,7 +809,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
       if (target.state.definition.type === "character") {
         throw new GiTcgDataError(`Cannot transfer a character`);
       }
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Transfer ${stringifyState(target.state)} to ${stringifyEntityArea(
           area,
@@ -825,7 +839,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           `Character caller cannot be disposed. You may forget an argument when calling \`dispose\``,
         );
       }
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Dispose ${stringifyState(entityState)}`,
       );
@@ -858,7 +872,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   setVariable(prop: Meta["callerVars"], value: number): void;
   setVariable(prop: any, value: number, target?: CharacterState | EntityState) {
     target ??= this.callerState;
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Set ${stringifyState(target)}'s variable ${prop} to ${value}`,
     );
@@ -962,7 +976,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown definition id ${newDefId}`);
     }
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Transform ${stringifyState(target)}'s definition to [${def.type}:${
         def.id
@@ -977,7 +991,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
 
   absorbDice(strategy: "seq" | "diff", count: number): DiceType[] {
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Absorb ${count} dice with strategy ${strategy}`,
     );
@@ -1034,7 +1048,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
   generateDice(type: DiceType | "randomElement", count: number) {
     const maxCount = this.state.config.maxDice - this.player.dice.length;
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Generate ${count}${
         maxCount < count ? ` (only ${maxCount} due to limit)` : ""
@@ -1085,14 +1099,14 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
-    this.createHandCardImpl(this.callerArea.who, cardDef);
+    this.mutator.createHandCard(this.callerArea.who, cardDef);
   }
 
   drawCards(count: number, opt: DrawCardsOpt = {}) {
     const { withTag = null, withDefinition = null, who: myOrOpt = "my" } = opt;
     const who =
       myOrOpt === "my" ? this.callerArea.who : flip(this.callerArea.who);
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Player ${who} draw ${count} cards, ${
         withTag ? `(with tag ${withTag})` : ""
@@ -1102,7 +1116,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (withTag === null && withDefinition === null) {
       // 如果没有限定，则从牌堆顶部摸牌
       for (let i = 0; i < count; i++) {
-        const card = this.drawCard(who);
+        const card = this.mutator.drawCard(who);
         if (card) {
           cards.push(card);
         }
@@ -1231,7 +1245,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     strategy: InsertPileStrategy,
   ) {
     const who = this.callerArea.who;
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
     );
@@ -1257,7 +1271,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
   }
   undrawCards(cards: CardState[], strategy: InsertPileStrategy) {
     const who = this.callerArea.who;
-    using l = this.subLog(
+    using l = this.logger?.subLog(
       DetailLogType.Primitive,
       `Undraw cards ${cards
         .map((c) => `[card:${c.definition.id}]`)
@@ -1303,7 +1317,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           )} from player ${who}, not found in either hands or piles`,
         );
       }
-      using l = this.subLog(
+      using l = this.logger?.subLog(
         DetailLogType.Primitive,
         `Dispose card ${stringifyState(card)} from player ${who}`,
       );

@@ -76,10 +76,11 @@ import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 import {
   InternalNotifyOption,
   InternalPauseOption,
+  MutatorConfig,
   StateMutator,
 } from "./mutator";
 import { ActionInfoWithModification, ActionPreviewer } from "./preview";
-import { Version } from ".";
+import { Version } from "./base/version";
 
 type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
@@ -138,7 +139,7 @@ function initPlayerState(
   };
 }
 
-export class Game extends StateMutator {
+export class Game /* extends StateMutator */ {
   private readonly config: GameConfig;
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
   private readonly io: GameIO;
@@ -147,6 +148,8 @@ export class Game extends StateMutator {
 
   private _terminated = false;
   private finishResolvers: Resolvers<0 | 1 | null> | null = null;
+  private readonly mutator: StateMutator;
+  public readonly mutatorConfig: MutatorConfig;
 
   constructor(opt: GameOption) {
     const config = mergeGameConfigWithDefault(opt.gameConfig);
@@ -173,9 +176,17 @@ export class Game extends StateMutator {
       ],
       extensions,
     };
-    const logger = new DetailLogger();
-    super(initialState, { logger });
-    this.logger = logger;
+    this.logger = new DetailLogger();
+    this.mutatorConfig = {
+      logger: this.logger,
+      onNotify: (opt) => this.onNotify(opt),
+      onPause: (opt) => this.onPause(opt),
+      howToChooseActive: (who, chs) => this.rpcChooseActive(who, chs),
+      howToReroll: (who) => this.rpcReroll(who),
+      howToSwitchHands: (who) => this.rpcSwitchHands(who),
+      howToSelectCard: (who, cards) => this.rpcSelectCard(who, cards),
+    };
+    this.mutator = new StateMutator(initialState, this.mutatorConfig);
     this.config = mergeGameConfigWithDefault(opt.gameConfig);
     this.playerConfigs = opt.playerConfigs;
     this.io = opt.io;
@@ -191,9 +202,13 @@ export class Game extends StateMutator {
     return this.logger.getLogs();
   }
 
-  protected mutate(mutation: Mutation) {
+  get state() {
+    return this.mutator.state;
+  }
+
+  mutate(mutation: Mutation) {
     if (!this._terminated) {
-      super.mutate(mutation);
+      this.mutator.mutate(mutation);
     }
   }
 
@@ -257,8 +272,8 @@ export class Game extends StateMutator {
       exposedMutations: mutation ? [mutation] : [],
     });
   }
-  /** @internal */
-  override async onNotify(opt: InternalNotifyOption) {
+
+  private async onNotify(opt: InternalNotifyOption) {
     if (this._terminated) {
       return;
     }
@@ -266,8 +281,7 @@ export class Game extends StateMutator {
       this.notifyOneImpl(i, opt);
     }
   }
-  /** @internal */
-  override async onPause(opt: InternalPauseOption) {
+  private async onPause(opt: InternalPauseOption) {
     if (this._terminated) {
       return;
     }
@@ -299,7 +313,7 @@ export class Game extends StateMutator {
     this.logger.clearLogs();
     (async () => {
       try {
-        await this.notifyAndPause({ canResume: true });
+        await this.mutator.notifyAndPause({ canResume: true });
         while (!this._terminated) {
           switch (this.state.phase) {
             case "initHands":
@@ -320,7 +334,7 @@ export class Game extends StateMutator {
             default:
               break;
           }
-          await this.notifyAndPause({ canResume: true });
+          await this.mutator.notifyAndPause({ canResume: true });
         }
       } catch (e) {
         if (e instanceof GiTcgIOError) {
@@ -351,7 +365,7 @@ export class Game extends StateMutator {
         `Game already started. Please use a new Game instance instead of start multiple time.`,
       );
     }
-    this.resetState(state);
+    this.mutator.resetState(state);
     return this.start();
   }
 
@@ -368,7 +382,7 @@ export class Game extends StateMutator {
           winner,
         });
       }
-      await this.notifyAndPause();
+      await this.mutator.notifyAndPause();
     }
     this.finishResolvers?.resolve(winner);
     if (!this._terminated) {
@@ -424,14 +438,17 @@ export class Game extends StateMutator {
   }
 
   private async initHands() {
-    using l = this.subLog(DetailLogType.Phase, `In initHands phase:`);
+    using l = this.logger.subLog(DetailLogType.Phase, `In initHands phase:`);
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHands; i++) {
-        this.drawCard(who);
+        this.mutator.drawCard(who);
       }
     }
-    this.notifyAndPause();
-    await Promise.all([this.switchCard(0), this.switchCard(1)]);
+    this.mutator.notifyAndPause();
+    await Promise.all([
+      this.mutator.switchHands(0),
+      this.mutator.switchHands(1),
+    ]);
     this.mutate({
       type: "changePhase",
       newPhase: "initActives",
@@ -439,10 +456,10 @@ export class Game extends StateMutator {
   }
 
   private async initActives() {
-    using l = this.subLog(DetailLogType.Phase, `In initActive phase:`);
+    using l = this.logger.subLog(DetailLogType.Phase, `In initActive phase:`);
     const [a0, a1] = await Promise.all([
-      this.chooseActive(0),
-      this.chooseActive(1),
+      this.mutator.chooseActive(0),
+      this.mutator.chooseActive(1),
     ]);
     this.mutate({
       type: "switchActive",
@@ -465,34 +482,28 @@ export class Game extends StateMutator {
   }
 
   /** @internal */
-  async chooseActive(who: 0 | 1, state = this.state): Promise<CharacterState> {
-    const player = state.players[who];
-    this.notifyOne(
-      flip(who),
-      {
-        type: "oppChoosingActive",
-      },
-      state,
-    );
-    const candidates = player.characters.filter(
-      (ch) => ch.variables.alive && ch.id !== player.activeCharacterId,
-    );
-    if (candidates.length === 0) {
-      throw new GiTcgCoreInternalError(
-        `No available candidate active character for player ${who}.`,
-      );
-    }
+  async rpcChooseActive(
+    who: 0 | 1,
+    candidates: readonly number[],
+  ): Promise<number> {
+    // this.notifyOne(
+    //   flip(who),
+    //   {
+    //     type: "oppChoosingActive",
+    //   },
+    //   state,
+    // );
     const { active } = await this.rpc(who, "chooseActive", {
-      candidates: candidates.map((c) => c.id),
+      candidates,
     });
-    if (!candidates.some((ch) => ch.id === active)) {
+    if (!candidates.includes(active)) {
       throw new GiTcgIOError(who, `Invalid active character id ${active}`);
     }
-    return getEntityById(state, active, true) as CharacterState;
+    return active;
   }
 
   private async rollPhase() {
-    using l = this.subLog(
+    using l = this.logger.subLog(
       DetailLogType.Phase,
       `In roll phase (round ${this.state.roundNumber}):`,
     );
@@ -516,7 +527,7 @@ export class Game extends StateMutator {
         const { fixed, count } = rollParams[who];
         const initDice = sortDice(this.state.players[who], [
           ...fixed,
-          ...this.randomDice(
+          ...this.mutator.randomDice(
             Math.max(0, this.config.initialDice - fixed.length),
             this.playerConfigs[who].alwaysOmni,
           ),
@@ -527,7 +538,7 @@ export class Game extends StateMutator {
           value: initDice,
         });
         this.notifyOne(who);
-        await this.reroll(who, count);
+        await this.mutator.reroll(who, count);
       }),
     );
     // Change to action phase:
@@ -572,7 +583,7 @@ export class Game extends StateMutator {
       (replaceAction = findReplaceAction(activeCh())) &&
       !isSkillDisabled(activeCh())
     ) {
-      using l = this.subLog(
+      using l = this.logger.subLog(
         DetailLogType.Phase,
         `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}) (replaced action):`,
       );
@@ -581,7 +592,7 @@ export class Game extends StateMutator {
         type: "switchTurn",
       });
     } else {
-      using l = this.subLog(
+      using l = this.logger.subLog(
         DetailLogType.Phase,
         `In action phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
       );
@@ -665,7 +676,9 @@ export class Game extends StateMutator {
             "onBeforeUseSkill",
             new UseSkillEventArg(this.state, callerArea, actionInfo.skill),
           );
-          await this.executeSkill(actionInfo.skill, { targets: actionInfo.targets });
+          await this.executeSkill(actionInfo.skill, {
+            targets: actionInfo.targets,
+          });
           await this.handleEvent(
             "onUseSkill",
             new UseSkillEventArg(this.state, callerArea, actionInfo.skill),
@@ -793,7 +806,7 @@ export class Game extends StateMutator {
     }
   }
   private async endPhase() {
-    using l = this.subLog(
+    using l = this.logger.subLog(
       DetailLogType.Phase,
       `In end phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
     );
@@ -801,7 +814,7 @@ export class Game extends StateMutator {
     for (const who of [0, 1] as const) {
       const cards: CardState[] = [];
       for (let i = 0; i < 2; i++) {
-        const card = this.drawCard(who);
+        const card = this.mutator.drawCard(who);
         if (card) {
           cards.push(card);
         }
@@ -870,8 +883,7 @@ export class Game extends StateMutator {
       // Use skill is disabled, skip
     } else {
       for (const { caller, definition } of initiativeSkillsOfPlayer(player)) {
-        const charged =
-          definition.skillType === "normal" && player.canCharged;
+        const charged = definition.skillType === "normal" && player.canCharged;
         const plunging =
           definition.skillType === "normal" &&
           (player.canPlunging ||
@@ -987,20 +999,17 @@ export class Game extends StateMutator {
     return await Promise.all(result.map((a) => previewer.modifyAndPreview(a)));
   }
 
-  /** @internal */
-  override async requestSwitchCard(who: 0 | 1) {
+  private async rpcSwitchHands(who: 0 | 1) {
     const { removedHands } = await this.rpc(who, "switchHands", {});
     return removedHands;
   }
 
-  /** @internal */
-  override async requestReroll(who: 0 | 1) {
+  private async rpcReroll(who: 0 | 1) {
     const { rerollIndexes } = await this.rpc(who, "rerollDice", {});
     return rerollIndexes;
   }
 
-  /** @internal */
-  override async requestSelectCard(who: 0 | 1, cards: readonly number[]) {
+  private async rpcSelectCard(who: 0 | 1, cards: readonly number[]) {
     const { selected } = await this.rpc(who, "selectCard", { cards });
     if (!cards.includes(selected)) {
       throw new GiTcgIOError(who, `Selected card not in candidates`);
@@ -1017,7 +1026,7 @@ export class Game extends StateMutator {
       who,
       value: to,
     });
-    this.notify({
+    this.mutator.notify({
       mutations: [
         {
           type: "switchActive",
@@ -1041,12 +1050,14 @@ export class Game extends StateMutator {
   }
 
   private async executeSkill(skillInfo: SkillInfo, arg: GeneralSkillArg) {
-    this.notify();
-    this.resetState(await SkillExecutor.executeSkill(this, skillInfo, arg));
+    this.mutator.notify();
+    this.mutator.resetState(
+      await SkillExecutor.executeSkill(this, skillInfo, arg),
+    );
   }
   private async handleEvent(...args: EventAndRequest) {
-    this.notify();
-    this.resetState(await SkillExecutor.handleEvent(this, ...args));
+    this.mutator.notify();
+    this.mutator.resetState(await SkillExecutor.handleEvent(this, ...args));
   }
 }
 
