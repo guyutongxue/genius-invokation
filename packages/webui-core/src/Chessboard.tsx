@@ -42,6 +42,7 @@ import type {
   ExposedMutation,
   UseSkillAction,
   SelectCardResponse,
+  SelectCardRequest,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -56,6 +57,7 @@ import { SwitchHandsView } from "./SwitchHandsView";
 import { SkillButton } from "./SkillButton";
 import { cached } from "./fetch";
 import { AsyncQueue } from "./async_queue";
+import { SelectCardView } from "./SelectCardView";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -157,7 +159,7 @@ function buildClickableTransferIter(
 function buildClickableTransferState(
   cardAction: ClickableActionWithIndex[],
 ): Map<number, DiceAndSelectionState> {
-  const grouped = groupBy(cardAction, (v) => "skill" in v ? v.skill : v.card);
+  const grouped = groupBy(cardAction, (v) => ("skill" in v ? v.skill : v.card));
   const result = new Map<number, DiceAndSelectionState>();
   for (const [k, v] of grouped) {
     result.set(k, buildClickableTransferIter([k], v));
@@ -170,7 +172,7 @@ export interface AgentActions {
   onSwitchHands: () => Promise<SwitchHandsResponse>;
   onChooseActive: (req: ChooseActiveRequest) => Promise<ChooseActiveResponse>;
   onRerollDice: () => Promise<RerollDiceResponse>;
-  onSelectCard: () => Promise<SelectCardResponse>;
+  onSelectCard: (req: SelectCardRequest) => Promise<SelectCardResponse>;
   onAction: (req: ActionRequest) => Promise<ActionResponse>;
 }
 
@@ -229,6 +231,9 @@ export function createPlayer(
   const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
   const [handSwitching, waitHandSwitch, notifyHandSwitched] =
     createWaitNotify<number[]>();
+  const [cardSelecting, waitCardSelect, notifyCardSelected] =
+    createWaitNotify<number>();
+  const [cardToSelect, setCardToSelect] = createSignal<readonly number[]>([]);
   const [, waitDiceSelect, notifyDiceSelected] = createWaitNotify<
     DiceType[] | undefined
   >();
@@ -261,15 +266,16 @@ export function createPlayer(
   };
 
   const action = opt.alternativeAction ?? {
+    onNotify: void 0,
     onSwitchHands: async () => {
       return { removedHands: await waitHandSwitch() };
     },
     onRerollDice: async () => {
       return { rerollIndexes: await waitReroll() };
     },
-    onSelectCard: async () => {
-      // TODO
-      throw new Error("Not implemented");
+    onSelectCard: async ({ cards }) => {
+      setCardToSelect(cards);
+      return { chosen: await waitCardSelect() };
     },
     onChooseActive: async ({ candidates }) => {
       let active = candidates[0];
@@ -482,7 +488,11 @@ export function createPlayer(
             action.onRerollDice().then(sanitize).then(resolve).catch(reject);
             break;
           case "selectCard":
-            action.onSelectCard().then(sanitize).then(resolve).catch(reject);
+            action
+              .onSelectCard(req as SelectCardRequest)
+              .then(sanitize)
+              .then(resolve)
+              .catch(reject);
             break;
           case "action":
             action
@@ -607,6 +617,11 @@ export function createPlayer(
             />
           </div>
         </Show>
+        <Show when={cardSelecting()}>
+          <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
+            <SelectCardView cards={cardToSelect()} />
+          </div>
+        </Show>
         <button
           class="absolute left-2 top-2 z-15 btn btn-red-500"
           onClick={() => setGiveUp(true)}
@@ -654,7 +669,9 @@ function Chessboard(props: ChessboardProps) {
         currentFocusing = event.id;
       }
       if (event.type === "useCommonSkill") {
-        const text = `${event.who === local.who ? '我方' : '对方'} 使用 ${assetAltText(event.skill) ?? event.skill}`;
+        const text = `${event.who === local.who ? "我方" : "对方"} 使用 ${
+          assetAltText(event.skill) ?? event.skill
+        }`;
         setMutationHintTexts((txts) => [text, ...txts]);
       }
     }
@@ -718,9 +735,7 @@ function Chessboard(props: ChessboardProps) {
         </div>
         <div class="absolute top-10 left-15 h-20 w-40 overflow-auto">
           <ul>
-            <For each={mutationHintTexts}>
-              {(txt) => <li>{txt}</li>}
-            </For>
+            <For each={mutationHintTexts}>{(txt) => <li>{txt}</li>}</For>
           </ul>
         </div>
         {local.children}
