@@ -2863,6 +2863,44 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Navia"
   },
   {
+    "id": 216091,
+    "shareId": 423,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "落染五色",
+    "englishName": "In Five Colors Dyed",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "targetList": [
+      {
+        "id": 11609,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给出战中的<color=#FFD780FF>千织</color>",
+        "hintText": "装备给出战中的千织"
+      }
+    ],
+    "relatedCharacterId": 1609,
+    "relatedCharacterTags": [],
+    "storyTitle": "千织·落染五色",
+    "storyText": "「千红零落。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_GEO",
+        "count": 3
+      }
+    ],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1609]</color>时，装备此牌。\\n$[A1609]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16092]</color>。\\n装备有此牌的$[A1609]使用<color=#FFFFFFFF>$[S16092]</color>时：额外召唤1个<color=#FFFFFFFF>$[C116094]</color>，并改为从4个<color=#FFFFFFFF>$[C116097]</color>中$[K59]1个并召唤。\\n（牌组中包含$[A1609]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为千织时，装备此牌。\n千织装备此牌后，立刻使用一次羽袖一触。\n装备有此牌的千织使用羽袖一触时：额外召唤1个平静养神之袖，并改为从4个千织的自动制御人形中挑选1个并召唤。\n（牌组中包含千织，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1609]使用<color=#FFFFFFFF>$[S16092]</color>时：额外召唤1个<color=#FFFFFFFF>$[C116094]</color>，并改为从4个<color=#FFFFFFFF>$[C116097]</color>中$[K59]1个并召唤。",
+    "playingDescription": "装备有此牌的千织使用羽袖一触时：额外召唤1个平静养神之袖，并改为从4个千织的自动制御人形中挑选1个并召唤。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Chiori"
+  },
+  {
     "id": 217011,
     "shareId": 107,
     "sinceVersion": "v3.3.0",
@@ -3625,6 +3663,34 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_DeaconFire"
   },
   {
+    "id": 123031,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "厄灵·炎之魔蝎",
+    "englishName": "Spirit of Omen: Pyro Scorpion",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "targetList": [
+      {
+        "id": 128,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>特技</color>的角色",
+        "hintText": "请选择要装备特技的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，失去1点充能，以抵消1点伤害，然后生成<color=#FFFFFFFF>$[C123032]</color>。（每回合至多2次）\\n$[K58]：$[S1230311]\\n<color=#FFFFFFFF>$[K3]：1</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "所附属角色受到伤害时：如可能，失去1点充能，以抵消1点伤害，然后生成魔蝎祝福。（每回合至多2次）\n特技：炙烧攻势\n可用次数：1\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，失去1点充能，以抵消1点伤害，然后生成<color=#FFFFFFFF>$[C123032]</color>。（每回合至多2次）\\n$[K58]：$[S1230311]\\n<color=#FFFFFFFF>$[K3]：1</color>",
+    "playingDescription": "所附属角色受到伤害时：如可能，失去1点充能，以抵消1点伤害，然后生成魔蝎祝福。（每回合至多2次）\n特技：炙烧攻势\n可用次数：1",
+    "cardFace": "UI_Gcg_CardFace_Summon_Muscleman"
+  },
+  {
     "id": 223031,
     "shareId": 295,
     "sinceVersion": "v4.3.0",
@@ -3654,16 +3720,12 @@
       {
         "type": "GCG_COST_DICE_PYRO",
         "count": 3
-      },
-      {
-        "type": "GCG_COST_ENERGY",
-        "count": 2
       }
     ],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2303]</color>时，装备此牌。\\n$[A2303]装备此牌后，立刻使用一次<color=#FFD780FF>$[S23033]</color>。\\n装备有此牌的$[A2303]生成的<color=#FFFFFFFF>$[C123031]</color>在$[A2303]使用过<color=#FFFFFFFF>「普通攻击」</color>或<color=#FFFFFFFF>「元素战技」</color>的回合中，造成的伤害+1；\\n<color=#FFFFFFFF>$[C123031]</color>的减伤效果改为每回合至多2次。\\n（牌组中包含$[A2303]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。\n镀金旅团·炽沙叙事人装备此牌后，立刻使用一次厄灵苏醒·炎之魔蝎。\n装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；\n厄灵·炎之魔蝎的减伤效果改为每回合至多2次。\n（牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）",
-    "rawPlayingDescription": "装备有此牌的$[A2303]生成的<color=#FFFFFFFF>$[C123031]</color>在$[A2303]使用过<color=#FFFFFFFF>「普通攻击」</color>或<color=#FFFFFFFF>「元素战技」</color>的回合中，造成的伤害+1；\\n<color=#FFFFFFFF>$[C123031]</color>的减伤效果改为每回合至多2次。",
-    "playingDescription": "装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；\n厄灵·炎之魔蝎的减伤效果改为每回合至多2次。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2303]</color>时，装备此牌。\\n$[A2303]装备此牌后，立刻使用一次<color=#FFD780FF>$[S23032]</color>。\\n装备有此牌的$[A2303]在场，我方使用<color=#FFFFFFFF>$[S1230311]</color>击倒敌方角色后：将1张<color=#FFFFFFFF>$[C123031]</color>加入手牌。\\n回合结束时：生成1层<color=#FFFFFFFF>$[C123032]</color>。\\n（牌组中包含$[A2303]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。\n镀金旅团·炽沙叙事人装备此牌后，立刻使用一次炎晶迸击。\n装备有此牌的镀金旅团·炽沙叙事人在场，我方使用炙烧攻势击倒敌方角色后：将1张厄灵·炎之魔蝎加入手牌。\n回合结束时：生成1层魔蝎祝福。\n（牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A2303]在场，我方使用<color=#FFFFFFFF>$[S1230311]</color>击倒敌方角色后：将1张<color=#FFFFFFFF>$[C123031]</color>加入手牌。\\n回合结束时：生成1层<color=#FFFFFFFF>$[C123032]</color>。",
+    "playingDescription": "装备有此牌的镀金旅团·炽沙叙事人在场，我方使用炙烧攻势击倒敌方角色后：将1张厄灵·炎之魔蝎加入手牌。\n回合结束时：生成1层魔蝎祝福。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Muscleman"
   },
   {
@@ -3898,6 +3960,43 @@
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2405]</color>在场，我方打出<color=#FFFFFFFF>$[C124051]</color>后：抓1张牌，然后生成1张<color=#FFFFFFFF>$[C124051]</color>，随机置入我方牌库中。",
     "playingDescription": "装备有此牌的圣骸毒蝎在场，我方打出噬骸能量块后：抓1张牌，然后生成1张噬骸能量块，随机置入我方牌库中。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_ScorpionSacred"
+  },
+  {
+    "id": 224061,
+    "shareId": 424,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "侵雷重闪",
+    "englishName": "Chain Lightning Cascade",
+    "tags": [
+      "GCG_TAG_TALENT"
+    ],
+    "targetList": [
+      {
+        "id": 12406,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给我方的<color=#FFD780FF>深渊咏者·紫电</color>",
+        "hintText": "装备给我方的深渊咏者·紫电"
+      }
+    ],
+    "relatedCharacterId": 2406,
+    "relatedCharacterTags": [],
+    "storyTitle": "深渊咏者·侵雷重闪",
+    "storyText": "「以狂雷将冥冥长夜所扭曲的深黑智慧，灌入不信者的心中，以无边的紫电，昭告侵蚀人智的伟大力量的存在。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_ELECTRO",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>如果装备有此牌的<color=#FFFFFFFF>$[A2406]</color>已触发过<color=#FFFFFFFF>$[C124061]</color>，则使敌方出战角色失去1点$[K310]。\\n装备有此牌的$[A2406]被击倒或触发<color=#FFFFFFFF>$[C124061]</color>时：弃置此牌，使敌方出战角色失去1点$[K310]。\\n（牌组中包含$[A2406]，才能加入牌组）",
+    "description": "入场时：如果装备有此牌的深渊咏者·紫电已触发过雷之新生，则使敌方出战角色失去1点充能。\n装备有此牌的深渊咏者·紫电被击倒或触发雷之新生时：弃置此牌，使敌方出战角色失去1点充能。\n（牌组中包含深渊咏者·紫电，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A2406]被击倒或触发<color=#FFFFFFFF>$[C124061]</color>时：弃置此牌，使敌方出战角色失去1点$[K310]。",
+    "playingDescription": "装备有此牌的深渊咏者·紫电被击倒或触发雷之新生时：弃置此牌，使敌方出战角色失去1点充能。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_InvokerElectric"
   },
   {
     "id": 225011,
@@ -4184,6 +4283,425 @@
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2702]</color>在场时:我方<color=#FFFFFFFF>$[C127022]</color>造成的伤害+1。",
     "playingDescription": "装备有此牌的阿佩普的绿洲守望者在场时:我方增殖生命体造成的伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Apep"
+  },
+  {
+    "id": 127032,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "厄灵·草之灵蛇",
+    "englishName": "Spirit of Omen: Dendro Spirit-Serpent",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "targetList": [
+      {
+        "id": 128,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>特技</color>的角色",
+        "hintText": "请选择要装备特技的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "$[K58]：$[S1270321]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "特技：藤蔓锋鳞\n可用次数：2\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "$[K58]：$[S1270321]\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "playingDescription": "特技：藤蔓锋鳞\n可用次数：2",
+    "cardFace": "UI_Gcg_CardFace_Summon_EremiteGrass"
+  },
+  {
+    "id": 227031,
+    "shareId": 425,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "灵蛇旋嘶",
+    "englishName": "Spirit Serpent's Swirl",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "targetList": [
+      {
+        "id": 12703,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给我方的<color=#FFD780FF>镀金旅团·叶轮舞者</color>",
+        "hintText": "装备给我方的镀金旅团·叶轮舞者"
+      }
+    ],
+    "relatedCharacterId": 2703,
+    "relatedCharacterTags": [],
+    "storyTitle": "叶轮舞者·灵蛇旋嘶",
+    "storyText": "「…如今即使他们的神与王都尽数沉入流沙，舞蹈的记忆依然留存在民族的血脉中。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_DENDRO",
+        "count": 3
+      }
+    ],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2703]</color>时，装备此牌。\\n$[A2703]装备此牌后，立刻使用一次<color=#FFD780FF>$[S27032]</color>。\\n装备有此牌的<color=#FFFFFFFF>$[A2703]</color>在场，我方装备了<color=#FFFFFFFF>$[C127032]</color>的角色切换至出战时：造成1点$[K107]。（每回合1次）\\n（牌组中包含$[A2703]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为镀金旅团·叶轮舞者时，装备此牌。\n镀金旅团·叶轮舞者装备此牌后，立刻使用一次蔓延旋舞。\n装备有此牌的镀金旅团·叶轮舞者在场，我方装备了厄灵·草之灵蛇的角色切换至出战时：造成1点草元素伤害。（每回合1次）\n（牌组中包含镀金旅团·叶轮舞者，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2703]</color>在场，我方装备了<color=#FFFFFFFF>$[C127032]</color>的角色切换至出战时：造成1点$[K107]。（每回合1次）",
+    "playingDescription": "装备有此牌的镀金旅团·叶轮舞者在场，我方装备了厄灵·草之灵蛇的角色切换至出战时：造成1点草元素伤害。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_EremiteGrass"
+  },
+  {
+    "id": 133085,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "唐社尔烤鸡",
+    "englishName": "Tandoori Grilled Chicken",
+    "tags": [
+      "GCG_TAG_FOOD"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_VOID",
+        "count": 2
+      }
+    ],
+    "rawDescription": "本回合中，所有我方角色下一次<color=#FFFFFFFF>「元素战技」</color>造成的伤害+2。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
+    "description": "本回合中，所有我方角色下一次「元素战技」造成的伤害+2。\n（每回合每个角色最多食用1次「料理」）",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Tangduer"
+  },
+  {
+    "id": 133086,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "千岩牢固",
+    "englishName": "Tenacity of the Millelith",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为角色附属<color=#FFFFFFFF>「$[C301201]」</color>。（提供2点$[K6]，保护该角色。）\\n<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为角色附属<color=#FFFFFFFF>「$[C301201]」</color>。（提供2点$[K6]，保护该角色。）\\n<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）",
+    "playingDescription": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Jiangshuai"
+  },
+  {
+    "id": 133087,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "中央实验室旧址",
+    "englishName": "Former Site of the Central Laboratory",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>我方$[K56]或$[K57]1张牌后：</color>此牌累积1点<color=#FFFFFFFF>「实验进展」</color>。每当<color=#FFFFFFFF>「实验进展」</color>达到3点、6点、9点时，就获得1个$[K411]。然后，如果<color=#FFFFFFFF>「实验进展」</color>至少为9点，则弃置此牌。",
+    "description": "我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_FontaineSci"
+  },
+  {
+    "id": 133088,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "西风教堂",
+    "englishName": "Favonius Cathedral",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗我方「出战角色」2点。\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "结束阶段：治疗我方「出战角色」2点。\n可用次数：2",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_FavoniusChurch"
+  },
+  {
+    "id": 133089,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "天空之刀",
+    "englishName": "Skyward Sword",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_SWORD"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3205}单手剑」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
+    "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_SwordDvalin"
+  },
+  {
+    "id": 133090,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "海底寻宝",
+    "englishName": "Underwater Treasure Hunt",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "生成6张<color=#FFFFFFFF>$[K2003]</color>，随机地置入我方牌库中。",
+    "description": "生成6张海底宝藏，随机地置入我方牌库中。",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Xunbao"
+  },
+  {
+    "id": 133091,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "可控性危害化式定向爆破",
+    "englishName": "Controlled Directional Blast",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：</color>双方所有召唤物的可用次数-1。",
+    "description": "对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Kexueyuan"
+  },
+  {
+    "id": 133092,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "王下近待",
+    "englishName": "King's Valet",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_BOW"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>入场时：</color>在本回合中，下次对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「元素战技」时，少花费2个元素骰。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3202}弓」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
+    "playingDescription": "角色造成的伤害+1。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Wangxia"
+  },
+  {
+    "id": 133093,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "阿斯莫之弓",
+    "englishName": "Asmo's Bow",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_BOW"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用原本元素骰费用+充能费用至少为5的技能时，</color>伤害额外+2。（每回合1次）\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3202}弓」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）\n（「弓」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用原本元素骰费用+充能费用至少为5的技能时，</color>伤害额外+2。（每回合1次）",
+    "playingDescription": "角色造成的伤害+1。\n角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Amos"
+  },
+  {
+    "id": 133094,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "温妮莎传说",
+    "englishName": "The Tale of Vennessa",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "生成4个不同类型的基础元素骰。",
+    "description": "生成4个不同类型的基础元素骰。",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Wennisha"
+  },
+  {
+    "id": 133095,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "饰金之梦",
+    "englishName": "Gilded Dreams",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。\\n<color=#FFFFFFFF>所附属角色为出战角色期间，敌方受到元素反应伤害时：</color>抓1张牌。（每回合至多2次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。\n所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色为出战角色期间，敌方受到元素反应伤害时：</color>抓1张牌。（每回合至多2次）",
+    "playingDescription": "所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Chiwangdanjian"
+  },
+  {
+    "id": 133096,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "流明媒触石",
+    "englishName": "Lumenarystone",
+    "tags": [
+      "GCG_TAG_ITEM"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_VOID",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>我方打出行动牌后：</color>如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个$[K411]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "description": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）\n可用次数：3",
+    "rawPlayingDescription": "<color=#FFFFFFFF>我方打出行动牌后：</color>如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个$[K411]。（每回合1次，<color=#D3BC8EFF>当前已打出${[GCG_TOKEN_COUNTER]}张</color>）\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "playingDescription": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次，当前已打出${[GCG_TOKEN_COUNTER]}张）\n可用次数：3",
+    "cardFace": "UI_Gcg_CardFace_Assist_Prop_Liumingshi"
+  },
+  {
+    "id": 133097,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "甜甜酿花鸡",
+    "englishName": "Sweet Ma'am",
+    "tags": [
+      "GCG_TAG_FOOD"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "治疗目标角色1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
+    "description": "治疗目标角色1点。\n（每回合每个角色最多食用1次「料理」）",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Huaniangji"
+  },
+  {
+    "id": 133098,
+    "obtainable": false,
+    "type": "GCG_CARD_EVENT",
+    "name": "美味马卡龙",
+    "englishName": "Delicious Macarons",
+    "tags": [
+      "GCG_TAG_FOOD"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_VOID",
+        "count": 2
+      }
+    ],
+    "rawDescription": "治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
+    "description": "治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。\n（每回合每个角色最多食用1次「料理」）",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "cardFace": "UI_Gcg_CardFace_Event_Food_Macarons"
+  },
+  {
+    "id": 133099,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "万世涌流大典",
+    "englishName": "Tomb of the Eternal Flow",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_CATALYST"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 3
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色受到伤害或治疗后：</color>如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3201}法器」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色受到伤害或治疗后：</color>如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）",
+    "playingDescription": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_Wanshiliuyongdadian"
   },
   {
     "id": 311101,
@@ -5144,6 +5662,46 @@
     "rawPlayingDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为<color=#FFFFFFFF>「声援」</color>。\\n如果此牌的<color=#FFFFFFFF>「声援」</color>至少为2/4/8，则<color=#FFFFFFFF>角色造成的伤害+1/2/3</color>。",
     "playingDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。\n如果此牌的「声援」至少为2/4/8，则角色造成的伤害+1/2/3。",
     "cardFace": "UI_Gcg_CardFace_Modify_Weapon_BaWangJian"
+  },
+  {
+    "id": 311309,
+    "shareId": 426,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "便携动力锯",
+    "englishName": "Portable Power Saw",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_CLAYMORE"
+    ],
+    "targetList": [
+      {
+        "id": 113,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [
+          "GCG_TAG_WEAPON_CLAYMORE"
+        ],
+        "rawHintText": "请选择要装备<color=#FFD780FF>双手剑</color>的角色",
+        "hintText": "请选择要装备双手剑的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "船工号子·便携动力锯",
+    "storyText": "「过去的工人爱用的链锯，用以切割龙骨与管道…双手稳稳地握紧把手，便能将坚硬的钢材切断。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点<color=#FFFFFFFF>「坚忍标记」</color>。（每回合1次）\\n<color=#FFFFFFFF>角色造成伤害时：</color>如果此牌已有<color=#FFFFFFFF>「坚忍标记」</color>，则消耗所有<color=#FFFFFFFF>「坚忍标记」</color>，使此伤害+1，并且每消耗1点<color=#FFFFFFFF>「坚忍标记」</color>就抓1张牌。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3203}双手剑」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「坚忍标记」。（每回合1次）\n角色造成伤害时：如果此牌已有「坚忍标记」，则消耗所有「坚忍标记」，使此伤害+1，并且每消耗1点「坚忍标记」就抓1张牌。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点<color=#FFFFFFFF>「坚忍标记」</color>。（每回合1次）\\n<color=#FFFFFFFF>角色造成伤害时：</color>如果此牌已有<color=#FFFFFFFF>「坚忍标记」</color>，则消耗所有<color=#FFFFFFFF>「坚忍标记」</color>，使此伤害+1，并且每消耗1点<color=#FFFFFFFF>「坚忍标记」</color>就抓1张牌。",
+    "playingDescription": "所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「坚忍标记」。（每回合1次）\n角色造成伤害时：如果此牌已有「坚忍标记」，则消耗所有「坚忍标记」，使此伤害+1，并且每消耗1点「坚忍标记」就抓1张牌。",
+    "cardFace": "UI_Gcg_CardFace_Modify_Weapon_DongliJu"
   },
   {
     "id": 311401,
@@ -6879,6 +7437,43 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Weapon_JiaoDouShiXiao"
   },
   {
+    "id": 312030,
+    "shareId": 427,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "指挥的礼帽",
+    "englishName": "Conductor's Top Hat",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "targetList": [
+      {
+        "id": 110,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>圣遗物</color>的角色",
+        "hintText": "请选择要装备圣遗物的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "古老乐声·指挥的礼帽",
+    "storyText": "「成员们以音符为语言，将所见所闻写下。\n至死仍将流浪乐章掬在手中的便是指挥。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>我方切换到所附属角色后：</color>$[K56]原本元素骰费用最高的1张手牌，将2个元素骰转换为$[K411]，并使角色下次使用技能或打出「{SPRITE_PRESET#3006}天赋」时少花费1个元素骰。（每回合1次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "我方切换到所附属角色后：舍弃原本元素骰费用最高的1张手牌，将2个元素骰转换为万能元素，并使角色下次使用技能或打出「天赋」时少花费1个元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>我方切换到所附属角色后：</color>$[K56]原本元素骰费用最高的1张手牌，将2个元素骰转换为$[K411]，并使角色下次使用技能或打出<color=#FFFFFFFF>「{SPRITE_PRESET#3006}天赋」</color>时少花费1个元素骰。（每回合1次）",
+    "playingDescription": "我方切换到所附属角色后：舍弃原本元素骰费用最高的1张手牌，将2个元素骰转换为万能元素，并使角色下次使用技能或打出「天赋」时少花费1个元素骰。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_DadiYuezhang"
+  },
+  {
     "id": 312101,
     "shareId": 165,
     "sinceVersion": "v3.3.0",
@@ -7503,6 +8098,43 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Vehicle_QiyouLong"
   },
   {
+    "id": 313004,
+    "shareId": 428,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "嵴锋龙",
+    "englishName": "Tepetlisaurus",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "targetList": [
+      {
+        "id": 128,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>特技</color>的角色",
+        "hintText": "请选择要装备特技的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "嵴锋龙·掘进突击",
+    "storyText": "「善于钻入地面，掘地行进的嵴锋龙，偶尔能发现埋藏在地下的惊喜之物…」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "$[K58]：$[S3130041]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "特技：掘进突击\n可用次数：2\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "$[K58]：$[S3130041]\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "playingDescription": "特技：掘进突击\n可用次数：2",
+    "cardFace": "UI_Gcg_CardFace_Modify_Vehicle_JifengLong"
+  },
+  {
     "id": 321001,
     "shareId": 179,
     "sinceVersion": "v3.3.0",
@@ -7870,8 +8502,8 @@
         "count": 2
       }
     ],
-    "rawDescription": "<color=#FFFFFFFF>入场时：</color>从牌组中随机抽取一张「{SPRITE_PRESET#3006}天赋」牌。\\n<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
-    "description": "入场时：从牌组中随机抽取一张「天赋」牌。\n我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>从牌组中随机抽取1张「{SPRITE_PRESET#3006}天赋」牌。\\n<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "description": "入场时：从牌组中随机抽取1张「天赋」牌。\n我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "playingDescription": "我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Fenglong"
@@ -8072,6 +8704,27 @@
     "rawDescription": "<color=#FFFFFFFF>我方使用技能或特技后：</color>此牌累积1点<color=#FFFFFFFF>「角逐之焰」</color>。\\n<color=#FFFFFFFF>「角逐之焰」</color>达到2时：生成1个随机基础元素骰。\\n达到4时：治疗我方出战角色2点。\\n达到6时：弃置此牌，使当前的我方出战角色在2回合内造成的伤害+1。",
     "description": "我方使用技能或特技后：此牌累积1点「角逐之焰」。\n「角逐之焰」达到2时：生成1个随机基础元素骰。\n达到4时：治疗我方出战角色2点。\n达到6时：弃置此牌，使当前的我方出战角色在2回合内造成的伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_JingjiChang"
+  },
+  {
+    "id": 321023,
+    "shareId": 429,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_ASSIST",
+    "name": "特佩利舞台",
+    "englishName": "Stage Tepetl",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "特佩利舞台",
+    "storyText": "「上台来，跳起来，燥起来，成为『钻头热舞』的一员！拿出勇气和决心，你也能成为舞台上的传奇！」",
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组的牌时：</color>此牌累积1点<color=#FFFFFFFF>「瞩目」</color>。\\n<color=#FFFFFFFF>敌方打出名称不存在于本局最初牌组的牌时：</color>此牌扣除1点<color=#FFFFFFFF>「瞩目」</color>。\\n<color=#FFFFFFFF>行动阶段开始时：</color>如果此牌有至少3点<color=#FFFFFFFF>「瞩目」</color>，则生成1个随机基础元素骰；如果此牌有至少1点<color=#FFFFFFFF>「瞩目」</color>，将1个元素骰转换为$[K411]。",
+    "description": "我方打出名称不存在于本局最初牌组的牌时：此牌累积1点「瞩目」。\n敌方打出名称不存在于本局最初牌组的牌时：此牌扣除1点「瞩目」。\n行动阶段开始时：如果此牌有至少3点「瞩目」，则生成1个随机基础元素骰；如果此牌有至少1点「瞩目」，将1个元素骰转换为万能元素。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_DouWuTai"
   },
   {
     "id": 322001,
@@ -10938,6 +11591,30 @@
     "cardFace": "UI_Gcg_CardFace_Event_Event_FeedDrogen"
   },
   {
+    "id": 332040,
+    "shareId": 430,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "镀金旅团的茶歇",
+    "englishName": "Eremite Teatime",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "镀金旅团的茶歇",
+    "storyText": "「加入镀金旅团！拥抱美好生活！」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "如果我方存在相同元素类型的角色，则从3张「{SPRITE_PRESET#3104}场地」中挑选1张加入手牌；\\n如果我方存在相同武器类型的角色，则从3张「{SPRITE_PRESET#3102}道具」中挑选1张加入手牌；\\n如果我方存在相同所属势力的角色，则从3张「{SPRITE_PRESET#3101}料理」中挑选1张加入手牌。",
+    "description": "如果我方存在相同元素类型的角色，则从3张「场地」中挑选1张加入手牌；\n如果我方存在相同武器类型的角色，则从3张「道具」中挑选1张加入手牌；\n如果我方存在相同所属势力的角色，则从3张「料理」中挑选1张加入手牌。",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Caxie"
+  },
+  {
     "id": 333001,
     "shareId": 265,
     "sinceVersion": "v3.3.0",
@@ -11419,6 +12096,36 @@
     "rawDescription": "治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。\n（每回合每个角色最多食用1次「料理」）",
     "cardFace": "UI_Gcg_CardFace_Event_Food_Macarons"
+  },
+  {
+    "id": 333016,
+    "shareId": 431,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "龙龙饼干",
+    "englishName": "Saurus Crackers",
+    "tags": [
+      "GCG_TAG_FOOD"
+    ],
+    "targetList": [
+      {
+        "id": 101,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择一个角色食用<color=#FFD780FF>料理</color>",
+        "hintText": "请选择一个角色食用料理"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "龙龙饼干",
+    "storyText": "小龙造型的饼干。吃起来松松脆脆、香香甜甜，上面的小龙图案非常可爱，能轻而易举地俘获纳塔人的心。",
+    "playCost": [],
+    "rawDescription": "本回合中，目标角色下一次使用「{SPRITE_PRESET#3008}特技」少花费1个元素骰。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
+    "description": "本回合中，目标角色下一次使用「特技」少花费1个元素骰。\n（每回合每个角色最多食用1次「料理」）",
+    "cardFace": "UI_Gcg_CardFace_Event_Food_LonglongCookie"
   },
   {
     "id": 421001,
@@ -12530,6 +13237,96 @@
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
   },
   {
+    "id": 422060,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·虚弱战局",
+    "englishName": "Ley Line Disorder: Position of Weakness",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>所有敌方角色失去1点$[K310]。",
+    "description": "行动阶段开始时：所有敌方角色失去1点充能。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422061,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·雷痹战局",
+    "englishName": "Ley Line Disorder: Position of Electroparalysis",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>对所有敌方角色$[K204]；敌方所有角色距离充能上限每差1点，就治疗$[A4409]1点。",
+    "description": "结束阶段：对所有敌方角色附着雷元素；敌方所有角色距离充能上限每差1点，就治疗深渊咏者·紫电1点。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422062,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·危险猜谜",
+    "englishName": "Ley Line Disorder: Dangerous Riddles",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>每次对方牌手未能识破骗骗花的伪装时：</color>对所有敌方角色造成2点$[K103]。",
+    "description": "每次对方牌手未能识破骗骗花的伪装时：对所有敌方角色造成2点火元素伤害。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422063,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·谜底优势",
+    "englishName": "Ley Line Disorder: The Answer Advantage",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>对方打出名称存在于本局最初牌组中的牌时：</color>治疗我方前台角色1点生命值。",
+    "description": "对方打出名称存在于本局最初牌组中的牌时：治疗我方前台角色1点生命值。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422064,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·遏制原则",
+    "englishName": "Ley Line Disorder: Principles of Restraint",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有我方角色3点。<color=#FFFFFFFF>对方打出1张牌后：</color>本回合此牌造成的治疗量-1。",
+    "description": "结束阶段：治疗所有我方角色3点。对方打出1张牌后：本回合此牌造成的治疗量-1。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422065,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·钳制战法",
+    "englishName": "Ley Line Disorder: Muzzling Tactics",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有我方角色5点。<color=#FFFFFFFF>对方打出1张牌后：</color>本回合此牌造成的治疗量-1。",
+    "description": "结束阶段：治疗所有我方角色5点。对方打出1张牌后：本回合此牌造成的治疗量-1。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
     "id": 423001,
     "obtainable": false,
     "type": "GCG_CARD_ASSIST",
@@ -13474,6 +14271,51 @@
     "playCost": [],
     "rawDescription": "<color=#FFFFFFFF>我方使用「{SPRITE_PRESET#3008}特技」时：</color>少花费2个元素骰，抓1张牌。",
     "description": "我方使用「特技」时：少花费2个元素骰，抓1张牌。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423065,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·以战养战",
+    "englishName": "Mastery Talisman: War Breeds War",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方每打出2张牌：</color>我方出战角色获得1点$[K310]。",
+    "description": "我方每打出2张牌：我方出战角色获得1点充能。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423066,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·识破骗局",
+    "englishName": "Mastery Talisman: Seeing Through the Disguise",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组的牌时：</color>生成1个$[K411]。",
+    "description": "我方打出名称不存在于本局最初牌组的牌时：生成1个万能元素。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423067,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·茶歇时刻",
+    "englishName": "Mastery Talisman: Teatime",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>生成1张$[C332040]，加入我方手牌。",
+    "description": "行动阶段开始时：生成1张镀金旅团的茶歇，加入我方手牌。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
   }
 ]

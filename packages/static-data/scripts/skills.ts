@@ -27,13 +27,14 @@ import { getSkillIcon } from "./skill_icon";
 
 // Goes through binoutput to get data on tcg skill's damage and element
 const tcgSkillKeyMap: Record<string, any> = {};
-const filelist = fs.readdirSync(
+const fileList = fs.readdirSync(
   `${config.input}/BinOutput/GCG/Gcg_DeclaredValueSet`,
 );
 
 const PROPERTIES_KEY_MAP = {
   "-2060930438": "D__KEY__DAMAGE",
   "1428448537": "D__KEY__DAMAGE_2",
+  "1428448538": "D__KEY__DAMAGE_3",
   "1428448540": "D__KEY__DAMAGE_5",
   "476224977": "D__KEY__ELEMENT",
 } as Record<string, string>;
@@ -46,6 +47,7 @@ const numberGrabber: ValueGrabber<number> = (obj) =>
 const VALUE_GRABBER = {
   D__KEY__DAMAGE: numberGrabber,
   D__KEY__DAMAGE_2: numberGrabber,
+  D__KEY__DAMAGE_3: numberGrabber,
   D__KEY__DAMAGE_5: numberGrabber,
   D__KEY__ELEMENT: (obj: object) =>
     Object.values(obj).find(
@@ -53,7 +55,7 @@ const VALUE_GRABBER = {
     )! as string,
 } as Record<string, ValueGrabber>;
 
-for (const filename of filelist) {
+for (const filename of fileList) {
   if (!filename.endsWith(".json")) continue;
 
   const fileObj = readJson(
@@ -63,13 +65,13 @@ for (const filename of filelist) {
   try {
     const dataName = fileObj.name;
     if (`${dataName}.json` !== filename) {
-      continue;
+      // continue;
     }
-    const uncutmap: any = Object.values(fileObj)[1];
+    const declaredValueMap = fileObj.declaredValueMap;
 
     tcgSkillKeyMap[dataName] = {};
 
-    for (let [key, kobj] of Object.entries(uncutmap) as [string, any][]) {
+    for (let [key, kobj] of Object.entries(declaredValueMap) as [string, any][]) {
       if (key in PROPERTIES_KEY_MAP) {
         let value = VALUE_GRABBER[PROPERTIES_KEY_MAP[key]](kobj);
         if (typeof value === "undefined") {
@@ -81,16 +83,12 @@ for (const filename of filelist) {
           }
           continue;
         }
-        // 特判时间！妈蛋
-        if (dataName === "Char_Skill_16073" && PROPERTIES_KEY_MAP[key] === "D__KEY__DAMAGE") {
-          value = 3;
-        } else if (dataName === "Char_Skill_25032" && PROPERTIES_KEY_MAP[key] === "D__KEY__DAMAGE") {
-          value = 3;
-        }
         tcgSkillKeyMap[dataName][PROPERTIES_KEY_MAP[key]] = value;
       }
     }
   } catch (e) {
+    // console.log(`In ${filename}`);
+    // console.error(e);
     continue;
   }
 }

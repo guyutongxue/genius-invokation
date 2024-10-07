@@ -2632,8 +2632,8 @@
     "englishName": "Conductive",
     "tags": [],
     "skills": [],
-    "rawDescription": "此状态初始具有2层「引雷」；重复附属时，叠加1层「引雷」。「引雷」最多可以叠加到4层。\\n<color=#FFFFFFFF>结束阶段：</color>叠加1层「引雷」。\\n\\n<color=#FFFFFFFF>所附属角色受到$[S14092]伤害时：</color>移除此状态，每层「引雷」使此伤害+1。",
-    "description": "此状态初始具有2层「引雷」；重复附属时，叠加1层「引雷」。「引雷」最多可以叠加到4层。\n结束阶段：叠加1层「引雷」。\n\n所附属角色受到苍雷伤害时：移除此状态，每层「引雷」使此伤害+1。",
+    "rawDescription": "此状态初始具有2层「引雷」；重复附属时，叠加1层「引雷」。「引雷」最多可以叠加到4层。\\n<color=#FFFFFFFF>结束阶段：</color>叠加1层「引雷」。\\n\\n<color=#FFFFFFFF>所附属角色受到$[S14092]或$[C114092]的伤害时：</color>移除此状态，每层「引雷」使此伤害+1。",
+    "description": "此状态初始具有2层「引雷」；重复附属时，叠加1层「引雷」。「引雷」最多可以叠加到4层。\n结束阶段：叠加1层「引雷」。\n\n所附属角色受到苍雷或蔷薇雷光的伤害时：移除此状态，每层「引雷」使此伤害+1。",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Debuff",
@@ -3887,6 +3887,133 @@
     "buffIconHash": "3410616192897341730"
   },
   {
+    "id": 116091,
+    "type": "GCG_CARD_SUMMON",
+    "name": "不悦挥刀之袖",
+    "englishName": "Grouchy, Knife-Wielding Tamoto",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n<color=#FFFFFFFF>此牌在场时：</color>我方$[A1609]造成的$[K100]变为$[K106]，且普通攻击造成的$[K106]+1。",
+    "description": "结束阶段：造成1点岩元素伤害。\n可用次数：2\n此牌在场时：我方千织造成的物理伤害变为岩元素伤害，且普通攻击造成的岩元素伤害+1。",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_3"
+  },
+  {
+    "id": 116092,
+    "type": "GCG_CARD_SUMMON",
+    "name": "无事发生之袖",
+    "englishName": "\"Nothing to See Here\" Tamoto",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n<color=#FFFFFFFF>此牌在场时，我方使用技能后：</color>切换至下一个我方角色。（每回合1次）",
+    "description": "结束阶段：造成1点岩元素伤害。\n可用次数：2\n此牌在场时，我方使用技能后：切换至下一个我方角色。（每回合1次）",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_6"
+  },
+  {
+    "id": 116093,
+    "type": "GCG_CARD_SUMMON",
+    "name": "轻松迎敌之袖",
+    "englishName": "Effortlessly Outclassing Opponents Tamoto",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n<color=#FFFFFFFF>此牌在场时，$[A1609]以外的我方角色使用技能后：</color>造成1点$[K106]。（每回合1次）",
+    "description": "结束阶段：造成1点岩元素伤害。\n可用次数：2\n此牌在场时，千织以外的我方角色使用技能后：造成1点岩元素伤害。（每回合1次）",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_5"
+  },
+  {
+    "id": 116094,
+    "type": "GCG_CARD_SUMMON",
+    "name": "平静养神之袖",
+    "englishName": "Tranquilly Taking Ten Tamoto",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]。\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "结束阶段：造成1点岩元素伤害。\n可用次数：2",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_4"
+  },
+  {
+    "id": 116095,
+    "type": "GCG_CARD_SUMMON",
+    "name": "闭目战斗之袖",
+    "englishName": "Fighting With Her Eyes Shut Tamoto",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n<color=#FFFFFFFF>此牌在场时：</color>我方$[A1609]及<color=#FFFFFFFF>$[C116097]</color>造成的$[K106]+1。（每回合2次）",
+    "description": "结束阶段：造成1点岩元素伤害。\n可用次数：2\n此牌在场时：我方千织及千织的自动制御人形造成的岩元素伤害+1。（每回合2次）",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_1"
+  },
+  {
+    "id": 116096,
+    "type": "GCG_CARD_SUMMON",
+    "name": "侧目睥睨之袖",
+    "englishName": "Bombastic Side-Eye Tamoto",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n<color=#FFFFFFFF>$[A1609]进行普通攻击时：</color>少花费1个元素骰。（每回合1次）",
+    "description": "结束阶段：造成1点岩元素伤害。\n可用次数：2\n千织进行普通攻击时：少花费1个元素骰。（每回合1次）",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_2"
+  },
+  {
+    "id": 116097,
+    "type": "GCG_CARD_SUMMON",
+    "name": "千织的自动制御人形",
+    "englishName": "Chiori's Automaton Dolls",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "千织拥有多种自动制御人形，不但能自动发起攻击，还会提供多种增益效果。",
+    "description": "千织拥有多种自动制御人形，不但能自动发起攻击，还会提供多种增益效果。",
+    "hidden": false,
+    "cardFace": "UI_Gcg_CardFace_Summon_Chiori_4"
+  },
+  {
+    "id": 116098,
+    "type": "GCG_CARD_STATE",
+    "name": "岩元素附魔",
+    "englishName": "Geo Infusion",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "所附属角色<color=#FFFFFFFF>普通攻击</color>造成的伤害+1，造成的$[K100]变为$[K106]。",
+    "description": "所附属角色普通攻击造成的伤害+1，造成的物理伤害变为岩元素伤害。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Enchant_Rock",
+    "buffIconHash": "11353914616627406301"
+  },
+  {
+    "id": 216091,
+    "type": "GCG_CARD_MODIFY",
+    "name": "落染五色",
+    "englishName": "In Five Colors Dyed",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "skills": [],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1609]</color>时，装备此牌。\\n$[A1609]装备此牌后，立刻使用一次<color=#FFD780FF>$[S16092]</color>。\\n装备有此牌的$[A1609]使用<color=#FFFFFFFF>$[S16092]</color>时：额外召唤1个<color=#FFFFFFFF>$[C116094]</color>，并改为从4个<color=#FFFFFFFF>$[C116097]</color>中$[K59]1个并召唤。\\n（牌组中包含$[A1609]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为千织时，装备此牌。\n千织装备此牌后，立刻使用一次羽袖一触。\n装备有此牌的千织使用羽袖一触时：额外召唤1个平静养神之袖，并改为从4个千织的自动制御人形中挑选1个并召唤。\n（牌组中包含千织，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1609]使用<color=#FFFFFFFF>$[S16092]</color>时：额外召唤1个<color=#FFFFFFFF>$[C116094]</color>，并改为从4个<color=#FFFFFFFF>$[C116097]</color>中$[K59]1个并召唤。",
+    "playingDescription": "装备有此牌的千织使用羽袖一触时：额外召唤1个平静养神之袖，并改为从4个千织的自动制御人形中挑选1个并召唤。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
+  },
+  {
     "id": 117011,
     "type": "GCG_CARD_SUMMON",
     "name": "柯里安巴",
@@ -4425,7 +4552,7 @@
     "id": 121012,
     "type": "GCG_CARD_ONSTAGE",
     "name": "流萤护罩",
-    "englishName": "Flowing Cicin Shield",
+    "englishName": "Flowing Cicin Ward",
     "tags": [
       "GCG_TAG_SHEILD"
     ],
@@ -4913,7 +5040,7 @@
     "id": 122035,
     "type": "GCG_CARD_STATE",
     "name": "涌流护罩",
-    "englishName": "Surging Shield",
+    "englishName": "Surging Ward",
     "tags": [],
     "skills": [],
     "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>。\\n此状态提供2次<color=#80C0FFFF>水元素附着</color>（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色<color=#FFFFFFFF>无法使用技能</color>且在结束阶段受到6点$[K5]。",
@@ -5251,7 +5378,7 @@
     "id": 123023,
     "type": "GCG_CARD_STATE",
     "name": "涌火护罩",
-    "englishName": "Shield of Surging Flame",
+    "englishName": "Ward of Surging Flame",
     "tags": [],
     "skills": [],
     "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>。\\n此状态提供2次<color=#FF9999FF>火元素附着</color>（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色<color=#FFFFFFFF>无法使用技能</color>且在结束阶段受到6点$[K5]。",
@@ -5339,31 +5466,62 @@
   },
   {
     "id": 123031,
-    "type": "GCG_CARD_SUMMON",
+    "type": "GCG_CARD_MODIFY",
     "name": "厄灵·炎之魔蝎",
     "englishName": "Spirit of Omen: Pyro Scorpion",
-    "tags": [],
-    "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K103]。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n\\n<color=#FFFFFFFF>入场时和行动阶段开始：</color>使我方$[A2303]附属$[C123033]。（$[C123031]在场时每回合1次，使角色受到的伤害-1。）",
-    "description": "结束阶段：造成1点火元素伤害。\n可用次数：2\n\n入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合1次，使角色受到的伤害-1。）",
-    "hintType": "GCG_HINT_PYRO",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "skills": [
+      {
+        "id": 1230311,
+        "name": "炙烧攻势",
+        "englishName": "Burning Assault",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "造成2点$[K103]。",
+        "description": "造成2点火元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_SAME",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_PYRO",
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "MonsterSkill_S_EremiteOracle_03"
+      },
+      {
+        "id": 1230312,
+        "name": "",
+        "englishName": "",
+        "type": "GCG_SKILL_TAG_NONE",
+        "rawDescription": "",
+        "description": "",
+        "playCost": []
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，失去1点充能，以抵消1点伤害，然后生成<color=#FFFFFFFF>$[C123032]</color>。（每回合至多2次）\\n$[K58]：$[S1230311]\\n<color=#FFFFFFFF>$[K3]：1</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "所附属角色受到伤害时：如可能，失去1点充能，以抵消1点伤害，然后生成魔蝎祝福。（每回合至多2次）\n特技：炙烧攻势\n可用次数：1\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，失去1点充能，以抵消1点伤害，然后生成<color=#FFFFFFFF>$[C123032]</color>。（每回合至多2次）\\n$[K58]：$[S1230311]\\n<color=#FFFFFFFF>$[K3]：1</color>",
+    "playingDescription": "所附属角色受到伤害时：如可能，失去1点充能，以抵消1点伤害，然后生成魔蝎祝福。（每回合至多2次）\n特技：炙烧攻势\n可用次数：1",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
-    "cardFace": "UI_Gcg_CardFace_Summon_Muscleman"
+    "buffIconHash": "13787791603732109330"
   },
   {
     "id": 123032,
-    "type": "GCG_CARD_SUMMON",
-    "name": "厄灵·炎之魔蝎",
-    "englishName": "Spirit of Omen: Pyro Scorpion",
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "魔蝎祝福",
+    "englishName": "Scorpion Blessing",
     "tags": [],
     "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K103]；如果本回合中$[A2303]使用过<color=#FFFFFFFF>「普通攻击」</color>或<color=#FFFFFFFF>「元素战技」</color>，则此伤害+1。\\n<color=#FFFFFFFF>$[K3]：2</color>\\n\\n<color=#FFFFFFFF>入场时和行动阶段开始：</color>使我方$[A2303]附属$[C123034]。（$[C123032]在场时每回合至多2次，使角色受到的伤害-1。）",
-    "description": "结束阶段：造成1点火元素伤害；如果本回合中镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」，则此伤害+1。\n可用次数：2\n\n入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合至多2次，使角色受到的伤害-1。）",
-    "hintType": "GCG_HINT_PYRO",
-    "shownToken": "GCG_TOKEN_LIFE",
+    "rawDescription": "<color=#FFFFFFFF>我方使用$[C123031]的$[K58]时：</color>移除此效果，每有1层<color=#FFFFFFFF>「魔蝎祝福」</color>，就使此$[K58]造成的伤害+1。\\n（<color=#FFFFFFFF>「魔蝎祝福」</color>的层数可叠加，没有上限）",
+    "description": "我方使用厄灵·炎之魔蝎的特技时：移除此效果，每有1层「魔蝎祝福」，就使此特技造成的伤害+1。\n（「魔蝎祝福」的层数可叠加，没有上限）",
+    "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
-    "cardFace": "UI_Gcg_CardFace_Summon_Muscleman"
+    "buffIconHash": "15978828407713369411"
   },
   {
     "id": 123033,
@@ -5387,7 +5545,7 @@
     "tags": [],
     "skills": [],
     "rawDescription": "<color=#FFFFFFFF>$[C123032]在场时：</color>所附属角色受到的伤害-1。（每回合至多2次）",
-    "description": "厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合至多2次）",
+    "description": "魔蝎祝福在场时：所附属角色受到的伤害-1。（每回合至多2次）",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Barrier",
@@ -5403,10 +5561,10 @@
       "GCG_TAG_SLOWLY"
     ],
     "skills": [],
-    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2303]</color>时，装备此牌。\\n$[A2303]装备此牌后，立刻使用一次<color=#FFD780FF>$[S23033]</color>。\\n装备有此牌的$[A2303]生成的<color=#FFFFFFFF>$[C123031]</color>在$[A2303]使用过<color=#FFFFFFFF>「普通攻击」</color>或<color=#FFFFFFFF>「元素战技」</color>的回合中，造成的伤害+1；\\n<color=#FFFFFFFF>$[C123031]</color>的减伤效果改为每回合至多2次。\\n（牌组中包含$[A2303]，才能加入牌组）",
-    "description": "战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。\n镀金旅团·炽沙叙事人装备此牌后，立刻使用一次厄灵苏醒·炎之魔蝎。\n装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；\n厄灵·炎之魔蝎的减伤效果改为每回合至多2次。\n（牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）",
-    "rawPlayingDescription": "装备有此牌的$[A2303]生成的<color=#FFFFFFFF>$[C123031]</color>在$[A2303]使用过<color=#FFFFFFFF>「普通攻击」</color>或<color=#FFFFFFFF>「元素战技」</color>的回合中，造成的伤害+1；\\n<color=#FFFFFFFF>$[C123031]</color>的减伤效果改为每回合至多2次。",
-    "playingDescription": "装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；\n厄灵·炎之魔蝎的减伤效果改为每回合至多2次。",
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2303]</color>时，装备此牌。\\n$[A2303]装备此牌后，立刻使用一次<color=#FFD780FF>$[S23032]</color>。\\n装备有此牌的$[A2303]在场，我方使用<color=#FFFFFFFF>$[S1230311]</color>击倒敌方角色后：将1张<color=#FFFFFFFF>$[C123031]</color>加入手牌。\\n回合结束时：生成1层<color=#FFFFFFFF>$[C123032]</color>。\\n（牌组中包含$[A2303]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。\n镀金旅团·炽沙叙事人装备此牌后，立刻使用一次炎晶迸击。\n装备有此牌的镀金旅团·炽沙叙事人在场，我方使用炙烧攻势击倒敌方角色后：将1张厄灵·炎之魔蝎加入手牌。\n回合结束时：生成1层魔蝎祝福。\n（牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A2303]在场，我方使用<color=#FFFFFFFF>$[S1230311]</color>击倒敌方角色后：将1张<color=#FFFFFFFF>$[C123031]</color>加入手牌。\\n回合结束时：生成1层<color=#FFFFFFFF>$[C123032]</color>。",
+    "playingDescription": "装备有此牌的镀金旅团·炽沙叙事人在场，我方使用炙烧攻势击倒敌方角色后：将1张厄灵·炎之魔蝎加入手牌。\n回合结束时：生成1层魔蝎祝福。",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Equip_Talent",
     "buffIconHash": "3410616192897341730"
@@ -5727,7 +5885,7 @@
     "id": 124042,
     "type": "GCG_CARD_ONSTAGE",
     "name": "雷萤护罩",
-    "englishName": "Electro Cicin Shield",
+    "englishName": "Electro Cicin Ward",
     "tags": [
       "GCG_TAG_SHEILD"
     ],
@@ -5825,6 +5983,93 @@
     "description": "入场时：生成1张噬骸能量块，置入我方手牌。\n装备有此牌的圣骸毒蝎在场，我方打出噬骸能量块后：抓1张牌，然后生成1张噬骸能量块，随机置入我方牌库中。\n（牌组中包含圣骸毒蝎，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2405]</color>在场，我方打出<color=#FFFFFFFF>$[C124051]</color>后：抓1张牌，然后生成1张<color=#FFFFFFFF>$[C124051]</color>，随机置入我方牌库中。",
     "playingDescription": "装备有此牌的圣骸毒蝎在场，我方打出噬骸能量块后：抓1张牌，然后生成1张噬骸能量块，随机置入我方牌库中。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
+  },
+  {
+    "id": 124061,
+    "type": "GCG_CARD_STATE",
+    "name": "雷之新生",
+    "englishName": "Electric Rebirth",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>所附属角色被击倒时：</color>移除此效果，使角色$[K54]，并治疗该角色到4点生命值。此效果触发后，角色造成的$[K104]+1。",
+    "description": "所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到4点生命值。此效果触发后，角色造成的雷元素伤害+1。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Revive",
+    "buffIconHash": "9832078061011610217"
+  },
+  {
+    "id": 124062,
+    "type": "GCG_CARD_STATE",
+    "name": "雷之新生·锐势",
+    "englishName": "Electric Rebirth: Honed",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "角色造成的$[K104]+1。",
+    "description": "角色造成的雷元素伤害+1。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Atk_Up_Elec",
+    "buffIconHash": "12298399737515936658"
+  },
+  {
+    "id": 124063,
+    "type": "GCG_CARD_STATE",
+    "name": "轰霆护罩",
+    "englishName": "Thunderous Ward",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>。\\n此状态提供2次<color=#FFACFFFF>雷元素附着</color>（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色<color=#FFFFFFFF>无法使用技能</color>且在结束阶段受到6点$[K5]。",
+    "description": "所附属角色免疫所有伤害。\n此状态提供2次雷元素附着（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色无法使用技能且在结束阶段受到6点穿透伤害。",
+    "buffType": "GCG_STATE_BUFF_ELECTRO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Shield_Elec",
+    "buffIconHash": "852857840842551511"
+  },
+  {
+    "id": 124064,
+    "type": "GCG_CARD_STATE",
+    "name": "深渊滚雷",
+    "englishName": "Rolling Abyssal Thunder",
+    "tags": [
+      "GCG_TAG_FORBIDDEN_ATTACK"
+    ],
+    "skills": [],
+    "rawDescription": "所附属角色<color=#FFFFFFFF>无法使用技能</color>。\\n<color=#FFFFFFFF>结束阶段：</color>对所附属角色造成6点$[K5]，然后移除此效果。",
+    "description": "所附属角色无法使用技能。\n结束阶段：对所附属角色造成6点穿透伤害，然后移除此效果。",
+    "buffType": "GCG_STATE_BUFF_NEGATIVE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Daze",
+    "buffIconHash": "13588942201462459600"
+  },
+  {
+    "id": 124065,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "侵雷重闪",
+    "englishName": "",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "",
+    "description": "",
+    "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
+  },
+  {
+    "id": 224061,
+    "type": "GCG_CARD_MODIFY",
+    "name": "侵雷重闪",
+    "englishName": "Chain Lightning Cascade",
+    "tags": [
+      "GCG_TAG_TALENT"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>如果装备有此牌的<color=#FFFFFFFF>$[A2406]</color>已触发过<color=#FFFFFFFF>$[C124061]</color>，则使敌方出战角色失去1点$[K310]。\\n装备有此牌的$[A2406]被击倒或触发<color=#FFFFFFFF>$[C124061]</color>时：弃置此牌，使敌方出战角色失去1点$[K310]。\\n（牌组中包含$[A2406]，才能加入牌组）",
+    "description": "入场时：如果装备有此牌的深渊咏者·紫电已触发过雷之新生，则使敌方出战角色失去1点充能。\n装备有此牌的深渊咏者·紫电被击倒或触发雷之新生时：弃置此牌，使敌方出战角色失去1点充能。\n（牌组中包含深渊咏者·紫电，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A2406]被击倒或触发<color=#FFFFFFFF>$[C124061]</color>时：弃置此牌，使敌方出战角色失去1点$[K310]。",
+    "playingDescription": "装备有此牌的深渊咏者·紫电被击倒或触发雷之新生时：弃置此牌，使敌方出战角色失去1点充能。",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Equip_Talent",
     "buffIconHash": "3410616192897341730"
@@ -6232,8 +6477,8 @@
       "GCG_TAG_SHEILD"
     ],
     "skills": [],
-    "rawDescription": "提供2点$[K6]，保护所附属角色。",
-    "description": "提供2点护盾，保护所附属角色。",
+    "rawDescription": "提供1点$[K6]，保护所附属角色。",
+    "description": "提供1点护盾，保护所附属角色。",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Shield",
@@ -6246,8 +6491,8 @@
     "englishName": "Heart of Oasis",
     "tags": [],
     "skills": [],
-    "rawDescription": "我方召唤4个<color=#FFFFFFFF>$[C127022]</color>后，我方<color=#FFFFFFFF>$[A2702]</color>附属<color=#FFFFFFFF>$[C127027]</color>，并获得2点<color=#FFFFFFFF>$[K6]</color>。",
-    "description": "我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得2点护盾。",
+    "rawDescription": "我方召唤4个<color=#FFFFFFFF>$[C127022]</color>后，我方<color=#FFFFFFFF>$[A2702]</color>附属<color=#FFFFFFFF>$[C127027]</color>，并获得1点<color=#FFFFFFFF>$[K6]</color>。",
+    "description": "我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得1点护盾。",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Apep_E",
@@ -6292,6 +6537,86 @@
     "description": "入场时：生成4张唤醒眷属，随机置入我方牌库。\n装备有此牌的阿佩普的绿洲守望者在场时:我方增殖生命体造成的伤害+1。\n（牌组中包含阿佩普的绿洲守望者，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2702]</color>在场时:我方<color=#FFFFFFFF>$[C127022]</color>造成的伤害+1。",
     "playingDescription": "装备有此牌的阿佩普的绿洲守望者在场时:我方增殖生命体造成的伤害+1。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
+  },
+  {
+    "id": 127032,
+    "type": "GCG_CARD_MODIFY",
+    "name": "厄灵·草之灵蛇",
+    "englishName": "Spirit of Omen: Dendro Spirit-Serpent",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "skills": [
+      {
+        "id": 1270321,
+        "name": "藤蔓锋鳞",
+        "englishName": "Viny Razorscale",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "造成1点$[K107]。",
+        "description": "造成1点草元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 1
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_DENDRO",
+          "D__KEY__DAMAGE": 2
+        }
+      },
+      {
+        "id": 2270312,
+        "name": "",
+        "englishName": "",
+        "type": "GCG_SKILL_TAG_NONE",
+        "rawDescription": "",
+        "description": "",
+        "playCost": []
+      }
+    ],
+    "rawDescription": "$[K58]：$[S1270321]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "特技：藤蔓锋鳞\n可用次数：2\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "$[K58]：$[S1270321]\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "playingDescription": "特技：藤蔓锋鳞\n可用次数：2",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIconHash": "13372367094953574110"
+  },
+  {
+    "id": 127033,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "灵蛇祝福",
+    "englishName": "Spirit-Serpent's Blessing",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方使用$[C127032]的$[K58]时：</color>此$[K58]造成的伤害+1，并且不消耗$[C127032]的$[K3]。\\n<color=#FFFFFFFF>$[K3]：1</color>（可叠加，没有上限）",
+    "description": "我方使用厄灵·草之灵蛇的特技时：此特技造成的伤害+1，并且不消耗厄灵·草之灵蛇的可用次数。\n可用次数：1（可叠加，没有上限）",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIconHash": "12038387700517931029"
+  },
+  {
+    "id": 227031,
+    "type": "GCG_CARD_MODIFY",
+    "name": "灵蛇旋嘶",
+    "englishName": "Spirit Serpent's Swirl",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "skills": [],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2703]</color>时，装备此牌。\\n$[A2703]装备此牌后，立刻使用一次<color=#FFD780FF>$[S27032]</color>。\\n装备有此牌的<color=#FFFFFFFF>$[A2703]</color>在场，我方装备了<color=#FFFFFFFF>$[C127032]</color>的角色切换至出战时：造成1点$[K107]。（每回合1次）\\n（牌组中包含$[A2703]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为镀金旅团·叶轮舞者时，装备此牌。\n镀金旅团·叶轮舞者装备此牌后，立刻使用一次蔓延旋舞。\n装备有此牌的镀金旅团·叶轮舞者在场，我方装备了厄灵·草之灵蛇的角色切换至出战时：造成1点草元素伤害。（每回合1次）\n（牌组中包含镀金旅团·叶轮舞者，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的<color=#FFFFFFFF>$[A2703]</color>在场，我方装备了<color=#FFFFFFFF>$[C127032]</color>的角色切换至出战时：造成1点$[K107]。（每回合1次）",
+    "playingDescription": "装备有此牌的镀金旅团·叶轮舞者在场，我方装备了厄灵·草之灵蛇的角色切换至出战时：造成1点草元素伤害。（每回合1次）",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Equip_Talent",
     "buffIconHash": "3410616192897341730"
@@ -6502,7 +6827,7 @@
     "id": 131031,
     "type": "GCG_CARD_STATE",
     "name": "冰元素护罩",
-    "englishName": "Cryo Shield",
+    "englishName": "Cryo Ward",
     "tags": [],
     "skills": [],
     "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>，并且不会被冻结。\\n此状态提供2次<color=#99FFFFFF>冰元素附着</color>（可被元素反应消耗）：耗尽后移除此状态，并使所附属角色直到本回合结束前<color=#FFFFFFFF>无法使用技能</color>。",
@@ -6606,7 +6931,7 @@
     "id": 132012,
     "type": "GCG_CARD_STATE",
     "name": "水元素护罩",
-    "englishName": "Hydro Shield",
+    "englishName": "Hydro Ward",
     "tags": [],
     "skills": [],
     "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>。\\n此状态会提供2次<color=#80C0FFFF>水元素附着</color>（可被元素反应消耗），耗尽后移除此状态，并使所附属角色直到本回合结束前<color=#FFFFFFFF>无法使用技能</color>。",
@@ -6765,7 +7090,7 @@
     "id": 133011,
     "type": "GCG_CARD_STATE",
     "name": "火元素护罩",
-    "englishName": "Pyro Shield",
+    "englishName": "Pyro Ward",
     "tags": [],
     "skills": [],
     "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>。\\n此状态提供2次<color=#FF9999FF>火元素附着</color>（可被元素反应消耗）：耗尽后移除此状态，并使所附属角色直到本回合结束前<color=#FFFFFFFF>无法使用技能</color>。",
@@ -6902,6 +7227,145 @@
     "buffIconHash": "8657799657419530802"
   },
   {
+    "id": 133086,
+    "type": "GCG_CARD_MODIFY",
+    "name": "千岩牢固",
+    "englishName": "Tenacity of the Millelith",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为角色附属<color=#FFFFFFFF>「$[C301201]」</color>。（提供2点$[K6]，保护该角色。）\\n<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>为角色附属<color=#FFFFFFFF>「$[C301201]」</color>。（提供2点$[K6]，保护该角色。）\\n<color=#FFFFFFFF>角色受到伤害后：</color>如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）",
+    "playingDescription": "行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）\n角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）",
+    "hidden": false
+  },
+  {
+    "id": 133087,
+    "type": "GCG_CARD_ASSIST",
+    "name": "中央实验室旧址",
+    "englishName": "Former Site of the Central Laboratory",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方$[K56]或$[K57]1张牌后：</color>此牌累积1点<color=#FFFFFFFF>「实验进展」</color>。每当<color=#FFFFFFFF>「实验进展」</color>达到3点、6点、9点时，就获得1个$[K411]。然后，如果<color=#FFFFFFFF>「实验进展」</color>至少为9点，则弃置此牌。",
+    "description": "我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "hidden": false
+  },
+  {
+    "id": 133088,
+    "type": "GCG_CARD_ASSIST",
+    "name": "西风教堂",
+    "englishName": "Favonius Cathedral",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗我方「出战角色」2点。\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "结束阶段：治疗我方「出战角色」2点。\n可用次数：2",
+    "rawPlayingDescription": "咦…这张牌好像有点不对劲？",
+    "playingDescription": "咦…这张牌好像有点不对劲？",
+    "hidden": false
+  },
+  {
+    "id": 133089,
+    "type": "GCG_CARD_MODIFY",
+    "name": "天空之刀",
+    "englishName": "Skyward Sword",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_SWORD"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3205}单手剑」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>每回合1次：</color>角色使用<color=#FFFFFFFF>「普通攻击」</color>造成的伤害额外+1。",
+    "playingDescription": "角色造成的伤害+1。\n每回合1次：角色使用「普通攻击」造成的伤害额外+1。",
+    "hidden": false
+  },
+  {
+    "id": 133092,
+    "type": "GCG_CARD_MODIFY",
+    "name": "王下近待",
+    "englishName": "King's Valet",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_BOW"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>入场时：</color>在本回合中，下次对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用「元素战技」时，少花费2个元素骰。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3202}弓」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。\n（「弓」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。",
+    "playingDescription": "角色造成的伤害+1。",
+    "hidden": false
+  },
+  {
+    "id": 133093,
+    "type": "GCG_CARD_MODIFY",
+    "name": "阿斯莫之弓",
+    "englishName": "Asmo's Bow",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_BOW"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用原本元素骰费用+充能费用至少为5的技能时，</color>伤害额外+2。（每回合1次）\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3202}弓」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）\n（「弓」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色使用原本元素骰费用+充能费用至少为5的技能时，</color>伤害额外+2。（每回合1次）",
+    "playingDescription": "角色造成的伤害+1。\n角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）",
+    "hidden": false
+  },
+  {
+    "id": 133095,
+    "type": "GCG_CARD_MODIFY",
+    "name": "饰金之梦",
+    "englishName": "Gilded Dreams",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。\\n<color=#FFFFFFFF>所附属角色为出战角色期间，敌方受到元素反应伤害时：</color>抓1张牌。（每回合至多2次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。\n所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色为出战角色期间，敌方受到元素反应伤害时：</color>抓1张牌。（每回合至多2次）",
+    "playingDescription": "所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）",
+    "hidden": false
+  },
+  {
+    "id": 133096,
+    "type": "GCG_CARD_ASSIST",
+    "name": "流明媒触石",
+    "englishName": "Lumenarystone",
+    "tags": [
+      "GCG_TAG_ITEM"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方打出行动牌后：</color>如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个$[K411]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "description": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）\n可用次数：3",
+    "rawPlayingDescription": "<color=#FFFFFFFF>我方打出行动牌后：</color>如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个$[K411]。（每回合1次，<color=#D3BC8EFF>当前已打出${[GCG_TOKEN_COUNTER]}张</color>）\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "playingDescription": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次，当前已打出${[GCG_TOKEN_COUNTER]}张）\n可用次数：3",
+    "hidden": false
+  },
+  {
+    "id": 133099,
+    "type": "GCG_CARD_MODIFY",
+    "name": "万世涌流大典",
+    "englishName": "Tomb of the Eternal Flow",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_CATALYST"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色受到伤害或治疗后：</color>如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3201}法器」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>角色造成的伤害+1</color>。\\n<color=#FFFFFFFF>角色受到伤害或治疗后：</color>如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）",
+    "playingDescription": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）",
+    "hidden": false
+  },
+  {
     "id": 134011,
     "type": "GCG_CARD_STATE",
     "name": "惟神召符·煌",
@@ -6988,7 +7452,7 @@
     "id": 134042,
     "type": "GCG_CARD_STATE",
     "name": "雷元素护罩",
-    "englishName": "Electro Shield",
+    "englishName": "Electro Ward",
     "tags": [],
     "skills": [],
     "rawDescription": "所附属角色<color=#FFFFFFFF>免疫所有伤害</color>。\\n此状态提供2次<color=#FFACFFFF>雷元素附着</color>（可被元素反应消耗）：耗尽后移除此状态，并使所附属角色直到本回合结束前<color=#FFFFFFFF>无法使用技能</color>。",
@@ -7203,7 +7667,7 @@
     "id": 136042,
     "type": "GCG_CARD_ONSTAGE",
     "name": "晶岩护罩",
-    "englishName": "Crystal Shield",
+    "englishName": "Crystal Ward",
     "tags": [],
     "skills": [],
     "rawDescription": "<color=#FFFFFFFF>我方角色受到伤害时：</color>抵消1点伤害。\\n<color=#FFFFFFFF>$[K3]：3</color>\\n<color=#FFFFFFFF>$[C136041]离场时：</color>移除此状态。",
@@ -7769,6 +8233,25 @@
     "description": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。\n如果此牌的「声援」至少为2/4/8，则角色造成的伤害+1/2/3。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
     "rawPlayingDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为<color=#FFFFFFFF>「声援」</color>。\\n如果此牌的<color=#FFFFFFFF>「声援」</color>至少为2/4/8，则<color=#FFFFFFFF>角色造成的伤害+1/2/3</color>。",
     "playingDescription": "此牌会记录本局游戏中你打出过的名称不存在于本局最初牌组中的不同名的行动牌数量，称为「声援」。\n如果此牌的「声援」至少为2/4/8，则角色造成的伤害+1/2/3。",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Weapon",
+    "buffIconHash": "7531918440982790537"
+  },
+  {
+    "id": 311309,
+    "type": "GCG_CARD_MODIFY",
+    "name": "便携动力锯",
+    "englishName": "Portable Power Saw",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_CLAYMORE"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点<color=#FFFFFFFF>「坚忍标记」</color>。（每回合1次）\\n<color=#FFFFFFFF>角色造成伤害时：</color>如果此牌已有<color=#FFFFFFFF>「坚忍标记」</color>，则消耗所有<color=#FFFFFFFF>「坚忍标记」</color>，使此伤害+1，并且每消耗1点<color=#FFFFFFFF>「坚忍标记」</color>就抓1张牌。\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3203}双手剑」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「坚忍标记」。（每回合1次）\n角色造成伤害时：如果此牌已有「坚忍标记」，则消耗所有「坚忍标记」，使此伤害+1，并且每消耗1点「坚忍标记」就抓1张牌。\n（「双手剑」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>所附属角色受到伤害时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点<color=#FFFFFFFF>「坚忍标记」</color>。（每回合1次）\\n<color=#FFFFFFFF>角色造成伤害时：</color>如果此牌已有<color=#FFFFFFFF>「坚忍标记」</color>，则消耗所有<color=#FFFFFFFF>「坚忍标记」</color>，使此伤害+1，并且每消耗1点<color=#FFFFFFFF>「坚忍标记」</color>就抓1张牌。",
+    "playingDescription": "所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「坚忍标记」。（每回合1次）\n角色造成伤害时：如果此牌已有「坚忍标记」，则消耗所有「坚忍标记」，使此伤害+1，并且每消耗1点「坚忍标记」就抓1张牌。",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Equip_Weapon",
@@ -8736,6 +9219,23 @@
     "buffIconHash": "15282951538599148947"
   },
   {
+    "id": 312030,
+    "type": "GCG_CARD_MODIFY",
+    "name": "指挥的礼帽",
+    "englishName": "Conductor's Top Hat",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方切换到所附属角色后：</color>$[K56]原本元素骰费用最高的1张手牌，将2个元素骰转换为$[K411]，并使角色下次使用技能或打出「{SPRITE_PRESET#3006}天赋」时少花费1个元素骰。（每回合1次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "我方切换到所附属角色后：舍弃原本元素骰费用最高的1张手牌，将2个元素骰转换为万能元素，并使角色下次使用技能或打出「天赋」时少花费1个元素骰。（每回合1次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>我方切换到所附属角色后：</color>$[K56]原本元素骰费用最高的1张手牌，将2个元素骰转换为$[K411]，并使角色下次使用技能或打出<color=#FFFFFFFF>「{SPRITE_PRESET#3006}天赋」</color>时少花费1个元素骰。（每回合1次）",
+    "playingDescription": "我方切换到所附属角色后：舍弃原本元素骰费用最高的1张手牌，将2个元素骰转换为万能元素，并使角色下次使用技能或打出「天赋」时少花费1个元素骰。（每回合1次）",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Relic",
+    "buffIconHash": "15282951538599148947"
+  },
+  {
     "id": 301201,
     "type": "GCG_CARD_STATE",
     "name": "重嶂不移",
@@ -8763,6 +9263,19 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Atk_Up",
     "buffIconHash": "1717076279127341445"
+  },
+  {
+    "id": 301204,
+    "type": "GCG_CARD_STATE",
+    "name": "指挥的礼帽（生效中）",
+    "englishName": "Conductor's Top Hat (In Effect)",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个元素骰。\\n<color=#FFFFFFFF>$[K3]：1</color>",
+    "description": "对角色打出「天赋」或角色使用技能时：少花费1个元素骰。\n可用次数：1",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Buff",
+    "buffIconHash": "10756566743744805222"
   },
   {
     "id": 312101,
@@ -9130,6 +9643,55 @@
     "buffIconHash": "11093104840137801693"
   },
   {
+    "id": 313004,
+    "type": "GCG_CARD_MODIFY",
+    "name": "嵴锋龙",
+    "englishName": "Tepetlisaurus",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "skills": [
+      {
+        "id": 3130041,
+        "name": "掘进突击",
+        "englishName": "Burrowing Assault",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "抓2张牌。然后，如果手牌中存在名称不存在于本局最初牌组中的牌，则提供2点$[K6]保护所附属角色。",
+        "description": "抓2张牌。然后，如果手牌中存在名称不存在于本局最初牌组中的牌，则提供2点护盾保护所附属角色。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {}
+      }
+    ],
+    "rawDescription": "$[K58]：$[S3130041]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "特技：掘进突击\n可用次数：2\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "$[K58]：$[S3130041]\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "playingDescription": "特技：掘进突击\n可用次数：2",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIconHash": "13876857398019034662"
+  },
+  {
+    "id": 301301,
+    "type": "GCG_CARD_STATE",
+    "name": "掘进的收获",
+    "englishName": "Digging Down to Paydirt",
+    "tags": [
+      "GCG_TAG_SHEILD"
+    ],
+    "skills": [],
+    "rawDescription": "提供2点$[K6]，保护所附属角色。",
+    "description": "提供2点护盾，保护所附属角色。",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Shield",
+    "buffIconHash": "3779803221919782355"
+  },
+  {
     "id": 321001,
     "type": "GCG_CARD_ASSIST",
     "name": "璃月港口",
@@ -9334,8 +9896,8 @@
       "GCG_TAG_PLACE"
     ],
     "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>入场时：</color>从牌组中随机抽取一张「{SPRITE_PRESET#3006}天赋」牌。\\n<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
-    "description": "入场时：从牌组中随机抽取一张「天赋」牌。\n我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>从牌组中随机抽取1张「{SPRITE_PRESET#3006}天赋」牌。\\n<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "description": "入场时：从牌组中随机抽取1张「天赋」牌。\n我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
     "rawPlayingDescription": "<color=#FFFFFFFF>我方打出「{SPRITE_PRESET#3006}天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：</color>少花费1个元素骰。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：3</color>",
     "playingDescription": "我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）\n可用次数：3",
     "shownToken": "GCG_TOKEN_LIFE",
@@ -9509,6 +10071,20 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Atk_Up",
     "buffIconHash": "1717076279127341445"
+  },
+  {
+    "id": 321023,
+    "type": "GCG_CARD_ASSIST",
+    "name": "特佩利舞台",
+    "englishName": "Stage Tepetl",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组的牌时：</color>此牌累积1点<color=#FFFFFFFF>「瞩目」</color>。\\n<color=#FFFFFFFF>敌方打出名称不存在于本局最初牌组的牌时：</color>此牌扣除1点<color=#FFFFFFFF>「瞩目」</color>。\\n<color=#FFFFFFFF>行动阶段开始时：</color>如果此牌有至少3点<color=#FFFFFFFF>「瞩目」</color>，则生成1个随机基础元素骰；如果此牌有至少1点<color=#FFFFFFFF>「瞩目」</color>，将1个元素骰转换为$[K411]。",
+    "description": "我方打出名称不存在于本局最初牌组的牌时：此牌累积1点「瞩目」。\n敌方打出名称不存在于本局最初牌组的牌时：此牌扣除1点「瞩目」。\n行动阶段开始时：如果此牌有至少3点「瞩目」，则生成1个随机基础元素骰；如果此牌有至少1点「瞩目」，将1个元素骰转换为万能元素。",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
   },
   {
     "id": 322001,
@@ -10827,6 +11403,19 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Heal",
     "buffIconHash": "10356428210303428719"
+  },
+  {
+    "id": 303314,
+    "type": "GCG_CARD_STATE",
+    "name": "龙龙饼干（生效中）",
+    "englishName": "Saurus Crackers (In Effect)",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "本回合中，该角色下一次使用「{SPRITE_PRESET#3008}特技」少花费1个元素骰。",
+    "description": "本回合中，该角色下一次使用「特技」少花费1个元素骰。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Buff",
+    "buffIconHash": "10756566743744805222"
   },
   {
     "id": 401001,
@@ -12538,6 +13127,74 @@
     "hidden": false
   },
   {
+    "id": 422060,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·虚弱战局",
+    "englishName": "Ley Line Disorder: Position of Weakness",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>所有敌方角色失去1点$[K310]。",
+    "description": "行动阶段开始时：所有敌方角色失去1点充能。",
+    "hidden": false
+  },
+  {
+    "id": 422061,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·雷痹战局",
+    "englishName": "Ley Line Disorder: Position of Electroparalysis",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>对所有敌方角色$[K204]；敌方所有角色距离充能上限每差1点，就治疗$[A4409]1点。",
+    "description": "结束阶段：对所有敌方角色附着雷元素；敌方所有角色距离充能上限每差1点，就治疗深渊咏者·紫电1点。",
+    "hidden": false
+  },
+  {
+    "id": 422062,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·危险猜谜",
+    "englishName": "Ley Line Disorder: Dangerous Riddles",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>每次对方牌手未能识破骗骗花的伪装时：</color>对所有敌方角色造成2点$[K103]。",
+    "description": "每次对方牌手未能识破骗骗花的伪装时：对所有敌方角色造成2点火元素伤害。",
+    "hidden": false
+  },
+  {
+    "id": 422063,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·谜底优势",
+    "englishName": "Ley Line Disorder: The Answer Advantage",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>对方打出名称存在于本局最初牌组中的牌时：</color>治疗我方前台角色1点生命值。",
+    "description": "对方打出名称存在于本局最初牌组中的牌时：治疗我方前台角色1点生命值。",
+    "hidden": false
+  },
+  {
+    "id": 422064,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·遏制原则",
+    "englishName": "Ley Line Disorder: Principles of Restraint",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有我方角色3点。<color=#FFFFFFFF>对方打出1张牌后：</color>本回合此牌造成的治疗量-1。",
+    "description": "结束阶段：治疗所有我方角色3点。对方打出1张牌后：本回合此牌造成的治疗量-1。",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
+  },
+  {
+    "id": 422065,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·钳制战法",
+    "englishName": "Ley Line Disorder: Muzzling Tactics",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>治疗所有我方角色5点。<color=#FFFFFFFF>对方打出1张牌后：</color>本回合此牌造成的治疗量-1。",
+    "description": "结束阶段：治疗所有我方角色5点。对方打出1张牌后：本回合此牌造成的治疗量-1。",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
+  },
+  {
     "id": 423001,
     "type": "GCG_CARD_ASSIST",
     "name": "元素晶球",
@@ -13258,6 +13915,40 @@
     "skills": [],
     "rawDescription": "<color=#FFFFFFFF>我方使用「{SPRITE_PRESET#3008}特技」时：</color>少花费2个元素骰，抓1张牌。",
     "description": "我方使用「特技」时：少花费2个元素骰，抓1张牌。",
+    "hidden": false
+  },
+  {
+    "id": 423065,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·以战养战",
+    "englishName": "Mastery Talisman: War Breeds War",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方每打出2张牌：</color>我方出战角色获得1点$[K310]。",
+    "description": "我方每打出2张牌：我方出战角色获得1点充能。",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
+  },
+  {
+    "id": 423066,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·识破骗局",
+    "englishName": "Mastery Talisman: Seeing Through the Disguise",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组的牌时：</color>生成1个$[K411]。",
+    "description": "我方打出名称不存在于本局最初牌组的牌时：生成1个万能元素。",
+    "hidden": false
+  },
+  {
+    "id": 423067,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·茶歇时刻",
+    "englishName": "Mastery Talisman: Teatime",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>行动阶段开始时：</color>生成1张$[C332040]，加入我方手牌。",
+    "description": "行动阶段开始时：生成1张镀金旅团的茶歇，加入我方手牌。",
     "hidden": false
   },
   {

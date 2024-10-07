@@ -16,7 +16,7 @@
 const MAPPING_FILE = `${import.meta.dirname}/mappings/skill_icons.json`;
 
 const doFetch = async (id: number | string) => {
-  const url = `https://api.ambr.top/v2/en/gcg/${id}`;
+  const url = `https://gi.yatta.moe/api/v2/en/gcg/${id}`;
   const body = await fetch(url, {
     proxy: process.env.https_proxy,
   }).then((r) => r.json() as Promise<any>);

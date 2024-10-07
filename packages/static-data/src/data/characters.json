@@ -4129,8 +4129,8 @@
         "name": "指尖雷暴",
         "englishName": "Lightning Touch",
         "type": "GCG_SKILL_TAG_A",
-        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]；\\n如果此技能为$[K51]，则使敌方出战角色附属<color=#FFFFFFFF>$[C114091]</color>。",
-        "description": "造成1点雷元素伤害；\n如果此技能为重击，则使敌方出战角色附属引雷。",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，并使敌方出战角色附属<color=#FFFFFFFF>$[C114091]</color>。",
+        "description": "造成1点雷元素伤害，并使敌方出战角色附属引雷。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ELECTRO",
@@ -5973,6 +5973,90 @@
     "icon": "UI_Gcg_Char_AvatarIcon_Navia"
   },
   {
+    "id": 1609,
+    "shareId": 420,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "name": "千织",
+    "englishName": "Chiori",
+    "tags": [
+      "GCG_TAG_ELEMENT_GEO",
+      "GCG_TAG_WEAPON_SWORD",
+      "GCG_TAG_NATION_INAZUMA"
+    ],
+    "storyTitle": "鸣雷的裁锦师·千织",
+    "storyText": "千红曙染，裁锦缀织。",
+    "skills": [
+      {
+        "id": 16091,
+        "name": "心织刀流",
+        "englishName": "Weaving Blade",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_GEO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_01"
+      },
+      {
+        "id": 16092,
+        "name": "羽袖一触",
+        "englishName": "Fluttering Hasode",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "从3个<color=#FFFFFFFF>$[C116097]</color>中挑选1个召唤。",
+        "description": "从3个千织的自动制御人形中挑选1个召唤。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_GEO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_S_Chiori_01"
+      },
+      {
+        "id": 16093,
+        "name": "二刀之形·比翼",
+        "englishName": "Hiyoku: Twin Blades",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成5点岩元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_GEO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_GEO",
+          "D__KEY__DAMAGE": 5
+        },
+        "icon": "Skill_E_Chiori_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Chiori",
+    "icon": "UI_Gcg_Char_AvatarIcon_Chiori"
+  },
+  {
     "id": 1701,
     "shareId": 47,
     "sinceVersion": "v3.3.0",
@@ -7237,6 +7321,7 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
           "D__KEY__DAMAGE_2": 6,
+          "D__KEY__DAMAGE_3": 7,
           "D__KEY__DAMAGE": 4
         },
         "icon": "MonsterSkill_E_Oceanid_01_HD"
@@ -7445,7 +7530,7 @@
       {
         "id": 22037,
         "name": "护罩碎裂",
-        "englishName": "Broken Shield",
+        "englishName": "Broken Ward",
         "type": "GCG_SKILL_TAG_PASSIVE",
         "rawDescription": "",
         "description": "",
@@ -7523,6 +7608,7 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
           "D__KEY__DAMAGE_2": 1,
+          "D__KEY__DAMAGE_3": 2,
           "D__KEY__DAMAGE_5": 4
         },
         "icon": "MonsterSkill_S_Ptahur_01"
@@ -7910,8 +7996,8 @@
         "name": "炎晶迸击",
         "englishName": "Blazing Strike",
         "type": "GCG_SKILL_TAG_E",
-        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
-        "description": "造成3点火元素伤害。",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成1层<color=#FFFFFFFF>$[C123032]</color>。",
+        "description": "造成3点火元素伤害，生成1层魔蝎祝福。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_PYRO",
@@ -7929,8 +8015,8 @@
         "name": "厄灵苏醒·炎之魔蝎",
         "englishName": "Spirit of Omen's Awakening: Pyro Scorpion",
         "type": "GCG_SKILL_TAG_Q",
-        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，召唤<color=#FFFFFFFF>$[C123031]</color>。",
-        "description": "造成2点火元素伤害，召唤厄灵·炎之魔蝎。",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。整场牌局限制1次，将1张<color=#FFFFFFFF>$[C123031]</color>加入我方手牌。\\n（装备有<color=#FFFFFFFF>$[C123031]</color>的角色可以使用特技：<color=#FFFFFFFF>$[S1230311]</color>）",
+        "description": "造成3点火元素伤害。整场牌局限制1次，将1张厄灵·炎之魔蝎加入我方手牌。\n（装备有厄灵·炎之魔蝎的角色可以使用特技：炙烧攻势）",
         "playCost": [
           {
             "type": "GCG_COST_DICE_PYRO",
@@ -7943,7 +8029,7 @@
         ],
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_PYRO",
-          "D__KEY__DAMAGE": 2
+          "D__KEY__DAMAGE": 3
         },
         "icon": "MonsterSkill_E_EremiteOracle_01_HD"
       },
@@ -7952,41 +8038,8 @@
         "name": "厄灵之能",
         "englishName": "Spirit of Omen's Power",
         "type": "GCG_SKILL_TAG_PASSIVE",
-        "rawDescription": "【被动】<color=#FFFFFFFF>此角色受到伤害后：</color>如果此角色生命值不多于7，则获得1点$[K310]。（整场牌局限制1次）",
-        "description": "【被动】此角色受到伤害后：如果此角色生命值不多于7，则获得1点充能。（整场牌局限制1次）",
-        "playCost": [],
-        "keyMap": {},
-        "icon": "MonsterSkill_S_EremiteOracle_02"
-      },
-      {
-        "id": 23035,
-        "name": "",
-        "englishName": "",
-        "type": "GCG_SKILL_TAG_NONE",
-        "rawDescription": "每回合开始将此角色计数器清零",
-        "description": "每回合开始将此角色计数器清零",
-        "playCost": [],
-        "keyMap": {},
-        "icon": "MonsterSkill_S_EremiteOracle_02"
-      },
-      {
-        "id": 23036,
-        "name": "炎之魔蝎·守势",
-        "englishName": "Pyro Scorpion: Guardian Stance",
-        "type": "GCG_SKILL_TAG_NONE",
-        "rawDescription": "每回合开始如果场上存在召唤物刷新盾",
-        "description": "每回合开始如果场上存在召唤物刷新盾",
-        "playCost": [],
-        "keyMap": {},
-        "icon": "MonsterSkill_S_EremiteOracle_02"
-      },
-      {
-        "id": 23037,
-        "name": "炎之魔蝎·守势",
-        "englishName": "Pyro Scorpion: Guardian Stance",
-        "type": "GCG_SKILL_TAG_NONE",
-        "rawDescription": "每回合开始如果场上存在召唤物刷新盾（天赋）",
-        "description": "每回合开始如果场上存在召唤物刷新盾（天赋）",
+        "rawDescription": "【被动】<color=#FFFFFFFF>此角色受到伤害后：</color>如果此角色生命值不多于7，则获得1点$[K310]。（每回合1次）",
+        "description": "【被动】此角色受到伤害后：如果此角色生命值不多于7，则获得1点充能。（每回合1次）",
         "playCost": [],
         "keyMap": {},
         "icon": "MonsterSkill_S_EremiteOracle_02"
@@ -8640,6 +8693,113 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Monster_ScorpionSacred",
     "icon": "UI_Gcg_Char_MonsterIcon_ScorpionSacred"
+  },
+  {
+    "id": 2406,
+    "shareId": 421,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "name": "深渊咏者·紫电",
+    "englishName": "Abyss Lector: Violet Lightning",
+    "tags": [
+      "GCG_TAG_ELEMENT_ELECTRO",
+      "GCG_TAG_WEAPON_NONE",
+      "GCG_TAG_CAMP_MONSTER"
+    ],
+    "storyTitle": "深渊咏者·紫电",
+    "storyText": "高颂渊薮，侵蚀之智。",
+    "skills": [
+      {
+        "id": 24061,
+        "name": "渊薮落雷",
+        "englishName": "Den of Thunder",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成1点雷元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ELECTRO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ELECTRO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_A_Catalyst_MD"
+      },
+      {
+        "id": 24062,
+        "name": "秘渊虚霆",
+        "englishName": "Shock of the Enigmatic Abyss",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。\\n如果目标已附着雷元素，则夺取对方1点充能。（如果夺取时此角色充能已满，则改为由下一个充能未满的角色获得充能）",
+        "description": "造成3点雷元素伤害。\n如果目标已附着雷元素，则夺取对方1点充能。（如果夺取时此角色充能已满，则改为由下一个充能未满的角色获得充能）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ELECTRO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ELECTRO",
+          "D__KEY__DAMAGE": 3
+        },
+        "icon": "MonsterSkill_S_InvokerElectric_01"
+      },
+      {
+        "id": 24063,
+        "name": "狂迸骇雷",
+        "englishName": "Wild Thunderburst",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。\\n如果目标充能不多于1，造成的伤害+2。",
+        "description": "造成3点雷元素伤害。\n如果目标充能不多于1，造成的伤害+2。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ELECTRO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ELECTRO",
+          "D__KEY__DAMAGE": 3
+        },
+        "icon": "MonsterSkill_E_InvokerElectric_01_HD"
+      },
+      {
+        "id": 24064,
+        "name": "雷之新生",
+        "englishName": "Electric Rebirth",
+        "type": "GCG_SKILL_TAG_PASSIVE",
+        "rawDescription": "【被动】战斗开始时，初始附属<color=#FFFFFFFF>$[C124061]</color>。",
+        "description": "【被动】战斗开始时，初始附属雷之新生。",
+        "playCost": [],
+        "keyMap": {},
+        "icon": "MonsterSkill_S_InvokerElectric_02"
+      },
+      {
+        "id": 24065,
+        "name": "雷之新生",
+        "englishName": "Electric Rebirth",
+        "type": "GCG_SKILL_TAG_PASSIVE",
+        "rawDescription": "战斗开始时，初始附属<color=#FFFFFFFF>$[C124061]</color>。",
+        "description": "战斗开始时，初始附属雷之新生。",
+        "playCost": [],
+        "keyMap": {}
+      }
+    ],
+    "hp": 6,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_InvokerElectric",
+    "icon": "UI_Gcg_Char_MonsterIcon_InvokerElectric"
   },
   {
     "id": 2501,
@@ -9783,8 +9943,8 @@
         "name": "增殖感召",
         "englishName": "Invokation of Propagation",
         "type": "GCG_SKILL_TAG_PASSIVE",
-        "rawDescription": "【被动】战斗开始时，生成6张<color=#FFFFFFFF>$[C127021]</color>，随机放入牌库。我方召唤4个<color=#FFFFFFFF>$[C127022]</color>后，此角色附属<color=#FFFFFFFF>$[C127027]</color>，并获得2点<color=#FFFFFFFF>$[K6]</color>。",
-        "description": "【被动】战斗开始时，生成6张唤醒眷属，随机放入牌库。我方召唤4个增殖生命体后，此角色附属重燃的绿洲之心，并获得2点护盾。",
+        "rawDescription": "【被动】战斗开始时，生成5张<color=#FFFFFFFF>$[C127021]</color>，随机放入牌库。我方召唤4个<color=#FFFFFFFF>$[C127022]</color>后，此角色附属<color=#FFFFFFFF>$[C127027]</color>，并获得1点<color=#FFFFFFFF>$[K6]</color>。",
+        "description": "【被动】战斗开始时，生成5张唤醒眷属，随机放入牌库。我方召唤4个增殖生命体后，此角色附属重燃的绿洲之心，并获得1点护盾。",
         "playCost": [],
         "keyMap": {},
         "icon": "MonsterSkill_S_Apep_02"
@@ -9794,5 +9954,99 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Monster_Apep",
     "icon": "UI_Gcg_Char_MonsterIcon_Apep"
+  },
+  {
+    "id": 2703,
+    "shareId": 422,
+    "sinceVersion": "v5.1.0",
+    "obtainable": true,
+    "name": "镀金旅团·叶轮舞者",
+    "englishName": "Eremite Floral Ring-Dancer",
+    "tags": [
+      "GCG_TAG_ELEMENT_DENDRO",
+      "GCG_TAG_WEAPON_NONE",
+      "GCG_TAG_CAMP_EREMITE"
+    ],
+    "storyTitle": "旋舞之忆·叶轮舞者",
+    "storyText": "「沙之民有音乐与舞蹈的传统，起初是对神的礼赞，后来则是讨取王者欢心的演艺与战斗的技术。」",
+    "skills": [
+      {
+        "id": 27031,
+        "name": "叶轮轻扫",
+        "englishName": "Floral-Ring Caress",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_DENDRO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_00"
+      },
+      {
+        "id": 27032,
+        "name": "蔓延旋舞",
+        "englishName": "Spiraling Whirl",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE_3]点$[D__KEY__ELEMENT]，生成1层<color=#FFFFFFFF>$[C127033]</color>。",
+        "description": "造成3点草元素伤害，生成1层灵蛇祝福。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_DENDRO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_DENDRO",
+          "D__KEY__DAMAGE_3": 3
+        }
+      },
+      {
+        "id": 27033,
+        "name": "厄灵苏醒·草之灵蛇",
+        "englishName": "Spirit of Omen's Awakening: Dendro Spirit-Serpent",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。整场牌局限制1次，将1张<color=#FFFFFFFF>$[C127032]</color>加入我方手牌。\\n（装备有<color=#FFFFFFFF>$[C127032]</color>的角色可以使用特技：<color=#FFFFFFFF>$[S1270321]</color>）",
+        "description": "造成4点草元素伤害。整场牌局限制1次，将1张厄灵·草之灵蛇加入我方手牌。\n（装备有厄灵·草之灵蛇的角色可以使用特技：藤蔓锋鳞）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_DENDRO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_DENDRO",
+          "D__KEY__DAMAGE": 4
+        }
+      },
+      {
+        "id": 27034,
+        "name": "厄灵之能",
+        "englishName": "Spirit of Omen's Power",
+        "type": "GCG_SKILL_TAG_PASSIVE",
+        "rawDescription": "【被动】<color=#FFFFFFFF>此角色受到伤害后：</color>如果此角色生命值不多于7，则获得1点$[K310]。（每回合1次）",
+        "description": "【被动】此角色受到伤害后：如果此角色生命值不多于7，则获得1点充能。（每回合1次）",
+        "playCost": [],
+        "keyMap": {},
+        "icon": "MonsterSkill_S_EremiteOracle_02"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_EremiteGrass",
+    "icon": "UI_Gcg_Char_MonsterIcon_EremiteGrass"
   }
 ]
