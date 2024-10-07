@@ -109,3 +109,52 @@ export const Koholasaurus = card(313003)
     c.triggerEndPhaseSkill(e.targets[0])
   })
   .done();
+
+/**
+ * @id 123031
+ * @name 厄灵·炎之魔蝎
+ * @description
+ * 所附属角色受到伤害时：如可能，失去1点充能，以抵消1点伤害，然后生成魔蝎祝福。（每回合至多2次）
+ * 特技：炙烧攻势
+ * 可用次数：1
+ * （角色最多装备1个「特技」）
+ * 【1230311: 炙烧攻势】造成2点火元素伤害。
+ * 【1230312: 】
+ */
+export const SpiritOfOmenPyroScorpion = card(123031)
+  .since("v5.1.0")
+  .technique()
+  // TODO
+  .done();
+
+/**
+ * @id 127032
+ * @name 厄灵·草之灵蛇
+ * @description
+ * 特技：藤蔓锋鳞
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * 【1270321: 藤蔓锋鳞】造成1点草元素伤害。
+ * 【2270312: 】
+ */
+export const SpiritOfOmenDendroSpiritserpent = card(127032)
+  .since("v5.1.0")
+  .technique()
+  // TODO
+  .done();
+
+/**
+ * @id 313004
+ * @name 嵴锋龙
+ * @description
+ * 特技：掘进突击
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * 【3130041: 掘进突击】抓2张牌。然后，如果手牌中存在名称不存在于本局最初牌组中的牌，则提供2点护盾保护所附属角色。
+ */
+export const Tepetlisaurus = card(313004)
+  .since("v5.1.0")
+  .costSame(2)
+  .technique()
+  // TODO
+  .done();

@@ -19,6 +19,8 @@ import { character, skill, summon, status, card, DamageType, SkillHandle, Status
  * @id 123034
  * @name 炎之魔蝎·守势
  * @description
+ * 魔蝎祝福在场时：所附属角色受到的伤害-1。（每回合至多2次）
+ * @outdated
  * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合至多2次）
  */
 export const PyroScorpionGuardianStance01: StatusHandle = status(123034)
@@ -47,6 +49,9 @@ export const PyroScorpionGuardianStance: StatusHandle = status(123033)
  * @id 123032
  * @name 厄灵·炎之魔蝎
  * @description
+ * 我方使用厄灵·炎之魔蝎的特技时：移除此效果，每有1层「魔蝎祝福」，就使此特技造成的伤害+1。
+ * （「魔蝎祝福」的层数可叠加，没有上限）
+ * @outdated
  * 结束阶段：造成1点火元素伤害；如果本回合中镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」，则此伤害+1。
  * 可用次数：2
  * 入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合至多2次，使角色受到的伤害-1。）
@@ -118,6 +123,8 @@ export const SearingGlare = skill(23031)
  * @id 23032
  * @name 炎晶迸击
  * @description
+ * 造成3点火元素伤害，生成1层魔蝎祝福。
+ * @outdated
  * 造成3点火元素伤害。
  */
 export const BlazingStrike = skill(23032)
@@ -130,6 +137,9 @@ export const BlazingStrike = skill(23032)
  * @id 23033
  * @name 厄灵苏醒·炎之魔蝎
  * @description
+ * 造成3点火元素伤害。整场牌局限制1次，将1张厄灵·炎之魔蝎加入我方手牌。
+ * （装备有厄灵·炎之魔蝎的角色可以使用特技：炙烧攻势）
+ * @outdated
  * 造成2点火元素伤害，召唤厄灵·炎之魔蝎。
  */
 export const SpiritOfOmensAwakeningPyroScorpion: SkillHandle = skill(23033)
@@ -147,6 +157,8 @@ export const SpiritOfOmensAwakeningPyroScorpion: SkillHandle = skill(23033)
  * @id 23034
  * @name 厄灵之能
  * @description
+ * 【被动】此角色受到伤害后：如果此角色生命值不多于7，则获得1点充能。（每回合1次）
+ * @outdated
  * 【被动】此角色受到伤害后：如果此角色生命值不多于7，则获得1点充能。（整场牌局限制1次）
  */
 export const SpiritOfOmensPower = skill(23034)
@@ -202,6 +214,12 @@ export const EremiteScorchingLoremaster = character(2303)
  * @id 223031
  * @name 魔蝎烈祸
  * @description
+ * 战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。
+ * 镀金旅团·炽沙叙事人装备此牌后，立刻使用一次炎晶迸击。
+ * 装备有此牌的镀金旅团·炽沙叙事人在场，我方使用炙烧攻势击倒敌方角色后：将1张厄灵·炎之魔蝎加入手牌。
+ * 回合结束时：生成1层魔蝎祝福。
+ * （牌组中包含镀金旅团·炽沙叙事人，才能加入牌组）
+ * @outdated
  * 战斗行动：我方出战角色为镀金旅团·炽沙叙事人时，装备此牌。
  * 镀金旅团·炽沙叙事人装备此牌后，立刻使用一次厄灵苏醒·炎之魔蝎。
  * 装备有此牌的镀金旅团·炽沙叙事人生成的厄灵·炎之魔蝎在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1；

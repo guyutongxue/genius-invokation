@@ -1577,3 +1577,53 @@ export const SaurianDiningBuddies = card(332039)
     }
   })
   .done();
+
+/**
+ * @id 133090
+ * @name 海底寻宝
+ * @description
+ * 生成6张海底宝藏，随机地置入我方牌库中。
+ */
+export const UnderwaterTreasureHunt = card(133090)
+  .since("v5.1.0")
+  .costSame(2)
+  // TODO
+  .done();
+
+/**
+ * @id 133091
+ * @name 可控性危害化式定向爆破
+ * @description
+ * 对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。
+ */
+export const ControlledDirectionalBlast = card(133091)
+  .since("v5.1.0")
+  .costSame(1)
+  // TODO
+  .done();
+
+/**
+ * @id 133094
+ * @name 温妮莎传说
+ * @description
+ * 生成4个不同类型的基础元素骰。
+ */
+export const TheTaleOfVennessa = card(133094)
+  .since("v5.1.0")
+  .costSame(3)
+  // TODO
+  .done();
+
+/**
+ * @id 332040
+ * @name 镀金旅团的茶歇
+ * @description
+ * 如果我方存在相同元素类型的角色，则从3张「场地」中挑选1张加入手牌；
+ * 如果我方存在相同武器类型的角色，则从3张「道具」中挑选1张加入手牌；
+ * 如果我方存在相同所属势力的角色，则从3张「料理」中挑选1张加入手牌。
+ */
+export const EremiteTeatime = card(332040)
+  .since("v5.1.0")
+  .costSame(2)
+  // TODO
+  .done();
