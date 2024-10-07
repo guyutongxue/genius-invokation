@@ -27,6 +27,14 @@ export interface ChooseActiveRequest {
   candidates: readonly number[];
 }
 
+export interface SelectCardRequest {
+  /**
+   * @minItems 1
+   * 可供选择的卡牌定义 ID
+   */
+  cards: readonly number[];
+}
+
 export interface ActionRequest {
   /**
    * @minItems 1
@@ -74,6 +82,7 @@ export type RpcRequest = {
   rerollDice: RerollDiceRequest;
   switchHands: SwitchHandsRequest;
   chooseActive: ChooseActiveRequest;
+  selectCard: SelectCardRequest;
   action: ActionRequest;
 };
 

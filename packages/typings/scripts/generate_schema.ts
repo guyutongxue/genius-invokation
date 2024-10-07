@@ -43,10 +43,10 @@ await writeFile(
   JSON.stringify(notifySchema),
 );
 
-const rpcMethods = ["rerollDice", "switchHands", "chooseActive", "action"];
+const rpcMethods = ["rerollDice", "switchHands", "chooseActive", "selectCard", "action"];
 const rpcSchemas: Record<string, { request: any; response: any }> = {};
 for (const m of rpcMethods) {
-  const reqType = pascalCase(m + "Request");
+  const reqType = pascalCase(m + "Request ");
   const resType = pascalCase(m + "Response");
   rpcSchemas[m] = {
     request: generator?.getSchemaForSymbol(reqType),

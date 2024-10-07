@@ -28,6 +28,10 @@ export interface ChooseActiveResponse {
   active: number;
 }
 
+export interface SelectCardResponse {
+  selected: number;
+}
+
 export interface ActionResponse {
   chosenIndex: number;
   cost: DiceType[];
@@ -37,6 +41,7 @@ export type RpcResponse = {
   rerollDice: RerollDiceResponse;
   switchHands: SwitchHandsResponse;
   chooseActive: ChooseActiveResponse;
+  selectCard: SelectCardResponse;
   action: ActionResponse;
 };
 

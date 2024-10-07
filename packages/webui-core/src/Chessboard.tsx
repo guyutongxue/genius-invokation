@@ -41,6 +41,7 @@ import type {
   DamageData,
   ExposedMutation,
   UseSkillAction,
+  SelectCardResponse,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -169,6 +170,7 @@ export interface AgentActions {
   onSwitchHands: () => Promise<SwitchHandsResponse>;
   onChooseActive: (req: ChooseActiveRequest) => Promise<ChooseActiveResponse>;
   onRerollDice: () => Promise<RerollDiceResponse>;
+  onSelectCard: () => Promise<SelectCardResponse>;
   onAction: (req: ActionRequest) => Promise<ActionResponse>;
 }
 
@@ -264,6 +266,10 @@ export function createPlayer(
     },
     onRerollDice: async () => {
       return { rerollIndexes: await waitReroll() };
+    },
+    onSelectCard: async () => {
+      // TODO
+      throw new Error("Not implemented");
     },
     onChooseActive: async ({ candidates }) => {
       let active = candidates[0];
@@ -474,6 +480,9 @@ export function createPlayer(
             break;
           case "rerollDice":
             action.onRerollDice().then(sanitize).then(resolve).catch(reject);
+            break;
+          case "selectCard":
+            action.onSelectCard().then(sanitize).then(resolve).catch(reject);
             break;
           case "action":
             action
