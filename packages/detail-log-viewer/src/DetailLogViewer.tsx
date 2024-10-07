@@ -117,9 +117,6 @@ export function DetailLogEntry(props: DetailLogEntryProps) {
 }
 
 export function DetailLogViewer(props: DetailLogViewer.Props) {
-  createEffect(() => {
-    console.log(props.logs);
-  })
   return (
     <div>
       <style>{styles}</style>
