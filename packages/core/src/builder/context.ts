@@ -151,6 +151,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   public readonly skillInfo: Required<SkillInfoOfContextConstruction>;
   private readonly mutator: StateMutator;
   private readonly eventAndRequests: EventAndRequest[] = [];
+  private readonly originalOnNotify?: (opt: InternalNotifyOption) => void;
   public readonly callerArea: EntityArea;
 
   /**
@@ -171,6 +172,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       ? Omit<Meta["eventArgType"], `_${string}`>
       : Meta["eventArgType"],
   ) {
+    this.originalOnNotify = skillInfo.mutatorConfig?.onNotify;
     const mutatorConfig: MutatorConfig = {
       ...skillInfo.mutatorConfig,
       onNotify: (opt) => this.onNotify(opt),
@@ -189,7 +191,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
    * @internal
    */
   _terminate() {
-    this.onNotify({
+    this.originalOnNotify?.({
       canResume: false,
       state: this.state,
       stateMutations: this._stateMutations,
