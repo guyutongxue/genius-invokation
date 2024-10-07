@@ -485,6 +485,9 @@ export class Game extends StateMutator {
     const { active } = await this.rpc(who, "chooseActive", {
       candidates: candidates.map((c) => c.id),
     });
+    if (!candidates.some((ch) => ch.id === active)) {
+      throw new GiTcgIOError(who, `Invalid active character id ${active}`);
+    }
     return getEntityById(state, active, true) as CharacterState;
   }
 
@@ -999,6 +1002,9 @@ export class Game extends StateMutator {
   /** @internal */
   override async requestSelectCard(who: 0 | 1, cards: readonly number[]) {
     const { selected } = await this.rpc(who, "selectCard", { cards });
+    if (!cards.includes(selected)) {
+      throw new GiTcgIOError(who, `Selected card not in candidates`);
+    }
     return selected;
   }
 

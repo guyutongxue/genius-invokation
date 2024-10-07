@@ -83,7 +83,7 @@ import {
   SummonHandle,
   TypedExEntity,
 } from "./type";
-import { CardTag } from "../base/card";
+import { CardDefinition, CardTag } from "../base/card";
 import { GuessedTypeOfQuery } from "../query/types";
 import { NontrivialDamageType, REACTION_MAP } from "../base/reaction";
 import {
@@ -1377,6 +1377,39 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     );
   }
 
+  selectAndSummon(summons: (SummonHandle | EntityDefinition)[]) {
+    this.emitEvent("requestSelectCard", this.skillInfo, this.callerArea.who, {
+      type: "createEntity",
+      cards: summons.map((defOrId) => {
+        if (typeof defOrId === "number") {
+          const def = this.state.data.entities.get(defOrId);
+          if (!def) {
+            throw new GiTcgDataError(`Unknown entity definition id ${defOrId}`);
+          }
+          return def;
+        } else {
+          return defOrId;
+        }
+      }),
+    });
+  }
+  selectAndCreateHandCard(cards: (CardHandle | CardDefinition)[]) {
+    this.emitEvent("requestSelectCard", this.skillInfo, this.callerArea.who, {
+      type: "createHandCard",
+      cards: cards.map((defOrId) => {
+        if (typeof defOrId === "number") {
+          const def = this.state.data.cards.get(defOrId);
+          if (!def) {
+            throw new GiTcgDataError(`Unknown card definition id ${defOrId}`);
+          }
+          return def;
+        } else {
+          return defOrId;
+        }
+      }),
+    });
+  }
+
   random<T>(items: readonly T[]): T {
     const mutation: Mutation = {
       type: "stepRandom",
@@ -1422,7 +1455,9 @@ type SkillContextMutativeProps =
   | "setExtensionState"
   | "switchCards"
   | "reroll"
-  | "useSkill";
+  | "useSkill"
+  | "selectAndSummon"
+  | "selectAndCreateHandCard";
 
 /**
  * 所谓 `Typed` 是指，若 `Readonly` 则忽略那些可以改变游戏状态的方法。
