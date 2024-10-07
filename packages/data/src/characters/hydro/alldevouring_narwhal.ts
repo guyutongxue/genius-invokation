@@ -145,7 +145,7 @@ export const DeepDevourersDomain = combatStatus(122041)
         const card2Cost = cost;
         const distinctCostCount = new Set([card0Cost, card1Cost, card2Cost]).size;
         const extraMaxHealth = 4 - distinctCostCount;
-        c.setVariable("extraMaxHealth", extraMaxHealth);
+        c.addVariable("extraMaxHealth", extraMaxHealth);
         c.setVariable("cardCount", 0);
         break;
       }
