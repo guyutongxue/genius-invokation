@@ -996,6 +996,12 @@ export class Game extends StateMutator {
     return rerollIndexes;
   }
 
+  /** @internal */
+  override async requestSelectCard(who: 0 | 1, cards: readonly number[]) {
+    const { selected } = await this.rpc(who, "selectCard", { cards });
+    return selected;
+  }
+
   private async switchActive(who: 0 | 1, to: CharacterState) {
     const player = this.state.players[who];
     const from = player.characters[getActiveCharacterIndex(player)];

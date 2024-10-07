@@ -47,11 +47,13 @@ import {
   InternalPauseOption,
   StateMutator,
 } from "./mutator";
+import { CardDefinition } from "./base/card";
 
 interface IoDuringSkillFinalize {
   logger: IDetailLogger;
   requestSwitchCard(who: 0 | 1): Promise<number[]>;
   requestReroll(who: 0 | 1): Promise<number[]>;
+  requestSelectCard(who: 0 | 1, cards: readonly number[]): Promise<number>;
   chooseActive(who: 0 | 1, state: GameState): Promise<CharacterState>;
   onNotify(opt: InternalNotifyOption): void;
   onPause(opt: InternalPauseOption): Promise<void>;
@@ -101,6 +103,16 @@ export class SkillExecutor extends StateMutator {
   protected override async requestSwitchCard(who: 0 | 1): Promise<number[]> {
     if (this.config.io) {
       return this.config.io.requestSwitchCard(who);
+    } else {
+      throw new GiTcgIoNotProvideError();
+    }
+  }
+  protected override async requestSelectCard(
+    who: 0 | 1,
+    cards: readonly number[],
+  ): Promise<number> {
+    if (this.config.io) {
+      return this.config.io.requestSelectCard(who, cards);
     } else {
       throw new GiTcgIoNotProvideError();
     }
@@ -430,6 +442,13 @@ export class SkillExecutor extends StateMutator {
           `request player ${arg.who} to switch hands`,
         );
         await this.switchCard(arg.who);
+      } else if (name === "requestSelectCard") {
+        using l = this.subLog(
+          DetailLogType.Event,
+          `request player ${arg.who} to select card`,
+        );
+        const events = await this.selectCard(arg.who, arg.info);
+        await this.handleEvent(...events);
       } else if (name === "requestUseSkill") {
         using l = this.subLog(
           DetailLogType.Event,

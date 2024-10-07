@@ -95,6 +95,7 @@ import { flip } from "@gi-tcg/utils";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { DetailLogType } from "../log";
 import {
+  CreateEntityOptions,
   GiTcgPreviewAbortedError,
   InternalNotifyOption,
   InternalPauseOption,
@@ -117,13 +118,6 @@ interface DrawCardsOpt {
 
 interface HealOption {
   kind?: HealKind;
-}
-
-interface CreateEntityOptions {
-  /** 创建实体时，覆盖默认变量 */
-  overrideVariables?: Partial<EntityVariables>;
-  /** 设定创建实体的 id。仅在打出支援牌和装备牌时直接继承原手牌 id */
-  withId?: number;
 }
 
 type InsertPilePayload =
@@ -735,116 +729,15 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
           );
       }
     }
-    using l = this.subLog(
-      DetailLogType.Primitive,
-      `Create entity [${def.type}:${def.id}] at ${stringifyEntityArea(area)}`,
-    );
-    const entitiesAtArea = allEntitiesAtArea(this.state, area);
-    // handle immuneControl vs disableSkill;
-    // do not generate Frozen etc. on those characters
-    const immuneControl = entitiesAtArea.find(
-      (e) =>
-        e.definition.type === "status" &&
-        e.definition.tags.includes("immuneControl"),
-    );
-    if (
-      immuneControl &&
-      def.type === "status" &&
-      def.tags.includes("disableSkill")
-    ) {
-      this.log(
-        DetailLogType.Other,
-        "Because of immuneControl, entities with disableSkill cannot be created",
-      );
-      return null;
-    }
-    const oldOne = entitiesAtArea.find(
-      (e): e is EntityState =>
-        e.definition.type !== "character" &&
-        e.definition.type !== "support" &&
-        e.definition.id === id2,
-    );
-    const { varConfigs } = def;
-    const overrideVariables = opt.overrideVariables ?? {};
-    if (oldOne) {
-      this.log(
-        DetailLogType.Other,
-        `Found existing entity ${stringifyState(
-          oldOne,
-        )} at same area. Rewriting variables`,
-      );
-      const newValues: Record<string, number> = {};
-      // refresh exist entity's variable
-      for (const name in varConfigs) {
-        let { initialValue, recreateBehavior } = varConfigs[name];
-        if (typeof overrideVariables[name] === "number") {
-          initialValue = overrideVariables[name]!;
-        }
-        const oldValue = oldOne.variables[name] ?? 0;
-        switch (recreateBehavior.type) {
-          case "overwrite": {
-            newValues[name] = initialValue;
-            break;
-          }
-          case "takeMax": {
-            newValues[name] = Math.max(initialValue, oldValue ?? 0);
-            break;
-          }
-          case "append": {
-            const appendValue =
-              overrideVariables[name] ?? recreateBehavior.appendValue;
-            const appendResult = appendValue + oldValue;
-            newValues[name] = Math.min(
-              appendResult,
-              recreateBehavior.appendLimit,
-            );
-          }
-        }
-      }
-      for (const [name, value] of Object.entries(newValues)) {
-        if (Reflect.has(oldOne.variables, name)) {
-          this.mutate({
-            type: "modifyEntityVar",
-            state: oldOne,
-            varName: name,
-            value,
-          });
-        }
-      }
-      const newState = getEntityById(this.state, oldOne.id);
+    const { oldState, newState } = this.createEntityImpl(def, area, opt);
+    if (newState) {
       this.emitEvent("onEnter", this.state, {
+        overridden: oldState,
         newState,
-        overrided: oldOne,
       });
       return this.of(newState);
     } else {
-      if (
-        area.type === "summons" &&
-        entitiesAtArea.length === this.state.config.maxSummons
-      ) {
-        return null;
-      }
-      const initState: EntityState = {
-        id: opt.withId ?? 0,
-        definition: def,
-        variables: Object.fromEntries(
-          Object.entries(varConfigs).map(([name, { initialValue }]) => [
-            name,
-            overrideVariables[name] ?? initialValue,
-          ]),
-        ),
-      };
-      this.mutate({
-        type: "createEntity",
-        where: area,
-        value: initState,
-      });
-      const newState = getEntityById(this.state, initState.id);
-      this.emitEvent("onEnter", this.state, {
-        newState,
-        overrided: null,
-      });
-      return this.of(newState);
+      return null;
     }
   }
   summon(
@@ -1096,7 +989,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     const sorted = this.player.dice.toSortedBy((dice) => [
       dice === DiceType.Omni ? 0 : 1,
       -countMap.get(dice)!,
-      dice
+      dice,
     ]);
     switch (strategy) {
       case "seq": {
@@ -1192,30 +1085,7 @@ export class SkillContext<Meta extends ContextMetaBase> extends StateMutator {
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
-    using l = this.subLog(
-      DetailLogType.Primitive,
-      `Create hand card [card:${cardId}]`,
-    );
-    const cardState: CardState = {
-      id: 0,
-      definition: cardDef,
-    };
-    const who = this.callerArea.who;
-    this.mutate({
-      type: "createCard",
-      who,
-      target: "hands",
-      value: cardState,
-    });
-    if (this.player.hands.length > this.state.config.maxHands) {
-      this.mutate({
-        type: "removeCard",
-        who,
-        where: "hands",
-        oldState: cardState,
-        used: false,
-      });
-    }
+    this.createHandCardImpl(this.callerArea.who, cardDef);
   }
 
   drawCards(count: number, opt: DrawCardsOpt = {}) {

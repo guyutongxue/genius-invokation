@@ -37,7 +37,7 @@ export const GossamerSprite = summon(117051)
  */
 export const SeamlessShield: CombatStatusHandle = combatStatus(117053)
   .shield(1)
-  .on("enter", (c, e) => e.overrided)
+  .on("enter", (c, e) => e.overridden)
   .damage(DamageType.Dendro, 1)
   .heal(1, "my active")
   .do((c) => {

@@ -32,7 +32,11 @@ import {
 } from "../base/reaction";
 import { CharacterDefinition } from "./character";
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
-import { EntityArea, EntityDefinition, UsagePerRoundVariableNames } from "./entity";
+import {
+  EntityArea,
+  EntityDefinition,
+  UsagePerRoundVariableNames,
+} from "./entity";
 import { IDetailLogger } from "../log";
 import { InternalNotifyOption } from "../mutator";
 import { diceCostOfCard, getEntityArea, mixins } from "../utils";
@@ -62,7 +66,6 @@ export type InitiativeSkillFilter = (
   skillInfo: SkillInfo,
   arg: InitiativeSkillEventArg,
 ) => boolean;
-
 
 export interface InitiativeSkillEventArg {
   targets: AnyState[];
@@ -203,7 +206,7 @@ export type ActionInfo = WithActionDetail<ActionInfoBase>;
 
 export interface EnterEventInfo {
   readonly newState: EntityState | CharacterState;
-  readonly overrided: EntityState | null;
+  readonly overridden: EntityState | null;
 }
 
 export class EventArg {
@@ -565,7 +568,7 @@ export class ModifyUseSkillEventArg extends UseSkillEventArg {
       ...skillInfo,
       charged: this._forceCharged || skillInfo.charged,
       plunging: this._forcePlunging || skillInfo.plunging,
-    }
+    };
   }
 }
 
@@ -855,7 +858,7 @@ export class EntityEventArg extends EventArg {
   }
 }
 
-class EnterEventArg extends EntityEventArg {
+export class EnterEventArg extends EntityEventArg {
   constructor(
     state: GameState,
     private readonly enterInfo: EnterEventInfo,
@@ -863,11 +866,11 @@ class EnterEventArg extends EntityEventArg {
     super(state, enterInfo.newState);
   }
 
-  get overrided() {
-    return this.enterInfo.overrided;
+  get overridden() {
+    return this.enterInfo.overridden;
   }
   toString(): string {
-    return `${super.toString()}, overrided: ${!!this.enterInfo.overrided}`;
+    return `${super.toString()}, overridden: ${!!this.enterInfo.overridden}`;
   }
 }
 
@@ -1065,6 +1068,26 @@ class SwitchHandsRequestArg extends RequestArg {
   }
 }
 
+export type SelectCardInfo =
+  | {
+      readonly type: "createHandCard";
+      readonly cards: readonly CardDefinition[];
+    }
+  | {
+      readonly type: "createEntity";
+      readonly cards: readonly EntityDefinition[];
+    };
+
+class SelectCardRequestArg extends RequestArg {
+  constructor(
+    via: SkillInfo,
+    public readonly who: 0 | 1,
+    public readonly info: SelectCardInfo,
+  ) {
+    super(via);
+  }
+}
+
 class RerollRequestArg extends RequestArg {
   constructor(
     via: SkillInfo,
@@ -1090,7 +1113,7 @@ class DisposeCardRequestArg extends RequestArg {
   constructor(
     requestBy: SkillInfo,
     public readonly who: 0 | 1,
-    public readonly card: CardState
+    public readonly card: CardState,
   ) {
     super(requestBy);
   }
@@ -1108,6 +1131,7 @@ class TriggerEndPhaseSkillRequestArg extends RequestArg {
 
 const REQUEST_MAP = {
   requestSwitchHands: SwitchHandsRequestArg,
+  requestSelectCard: SelectCardRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
   requestDisposeCard: DisposeCardRequestArg,
