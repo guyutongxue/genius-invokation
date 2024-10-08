@@ -273,6 +273,14 @@ const detailedEventDictionary = {
       e.damageInfo.fromReaction === null
     );
   }),
+  increaseTechniqueDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
+    return (
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.source.id, r) &&
+      e.via.definition.skillType === "technique" &&
+      e.damageInfo.fromReaction === null
+    );
+  }),
   multiplySkillDamage: defineDescriptor("modifyDamage2", (c, e, r) => {
     return (
       e.type !== DamageType.Piercing &&
@@ -441,7 +449,9 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   private applyIfFilter = false;
   private _ifFilter: SkillOperationFilter<Meta> = () => true;
 
-  protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfoOfContextConstruction {
+  protected _wrapSkillInfoWithExt(
+    skillInfo: SkillInfo,
+  ): SkillInfoOfContextConstruction {
     return { ...skillInfo, associatedExtensionId: this.associatedExtensionId };
   }
 

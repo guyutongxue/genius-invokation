@@ -1,27 +1,6 @@
-import { card, skill } from "@gi-tcg/core/builder";
-
-/**
- * @id 321015
- * @name 风龙废墟
- * @description
- * 入场时：从牌组中随机抽取一张「天赋」牌。
- * 我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）
- * 可用次数：3
- */
-const StormterrorsLair = card(321015)
-  .until("v5.0.0")
-  .costSame(2)
-  .support("place")
-  .on("enter")
-  .drawCards(1, { withTag: "talent" })
-  .on("deductOmniDice", (c, e) => {
-    return e.hasCardTag("talent") ||
-      (e.isUseSkill() && e.action.skill.definition.requiredCost.filter((d) => d !== DiceType.Energy).length >= 4);
-  })
-  .usage(3)
-  .usagePerRound(1)
-  .deductOmniCost(1)
-  .done();
+import { card, combatStatus, DamageType, skill, SkillHandle, status, StatusHandle, summon, SummonHandle } from "@gi-tcg/core/builder";
+import { VioletArc } from "../characters/electro/lisa";
+import { EremiteScorchingLoremaster, SearingGlare } from "../characters/pyro/eremite_scorching_loremaster";
 
 /**
  * @id 114091
@@ -61,6 +40,21 @@ const LightningTouch = skill(14091)
   .done();
 
 /**
+ * @id 123033
+ * @name 炎之魔蝎·守势
+ * @description
+ * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合1次）
+ */
+const PyroScorpionGuardianStance: StatusHandle = status(123033)
+  .until("v5.0.0")
+  .conflictWith(123034)
+  .on("decreaseDamaged", (c, e) => e.value > 0 &&
+    c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
+  .usagePerRound(1)
+  .decreaseDamage(1)
+  .done();
+
+/**
  * @id 123034
  * @name 炎之魔蝎·守势
  * @description
@@ -73,6 +67,32 @@ const PyroScorpionGuardianStance01: StatusHandle = status(123034)
     c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
   .usagePerRound(2)
   .decreaseDamage(1)
+  .done();
+
+
+/**
+ * @id 123031
+ * @name 厄灵·炎之魔蝎
+ * @description
+ * 结束阶段：造成1点火元素伤害。
+ * 可用次数：2
+ * 入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合1次，使角色受到的伤害-1。）
+ */
+const SpiritOfOmenPyroScorpion = summon(123031)
+  .until("v5.0.0")
+  .conflictWith(123032)
+  .endPhaseDamage(DamageType.Pyro, 1)
+  .usage(2)
+  .on("enter")
+  .if((c) => c.$(`my equipment with definition id ${Scorpocalypse}`))
+  .characterStatus(PyroScorpionGuardianStance01, `my character with definition id 2303`)
+  .else()
+  .characterStatus(PyroScorpionGuardianStance, `my character with definition id 2303`)
+  .on("actionPhase")
+  .if((c) => c.$(`my equipment with definition id ${Scorpocalypse}`))
+  .characterStatus(PyroScorpionGuardianStance01, `my character with definition id 2303`)
+  .else()
+  .characterStatus(PyroScorpionGuardianStance, `my character with definition id 2303`)
   .done();
 
 /**
@@ -150,9 +170,8 @@ const SpiritOfOmensAwakeningPyroScorpion: SkillHandle = skill(23033)
 const SpiritOfOmensPower = skill(23034)
   .until("v5.0.0")
   .type("passive")
-  .on("damaged")
+  .on("damaged", (c) => c.self.health <= 7)
   .usage(1, { name: "damagedEnergySkillUsage", autoDispose: false })
-  .if((c) => c.self.health <= 7)
   .gainEnergy(1, "@self")
   .done();
 

@@ -121,11 +121,7 @@ export const Koholasaurus = card(313003)
  * 【1230311: 炙烧攻势】造成2点火元素伤害。
  * 【1230312: 】
  */
-export const SpiritOfOmenPyroScorpion = card(123031)
-  .since("v5.1.0")
-  .technique()
-  // TODO
-  .done();
+const SpiritOfOmenPyroScorpion = void 0; // moved to eremite_scorching_loremaster
 
 /**
  * @id 127032
