@@ -91,11 +91,9 @@ export const AwakenMyKindred = card(127021)
  * @name 绿洲之庇护
  * @description
  * 提供1点护盾，保护所附属角色。
- * @outdated
- * 提供2点护盾，保护所附属角色。
  */
 export const OasissAegis = status(127028)
-  .shield(2)
+  .shield(1)
   .done();
 
 /**
@@ -124,8 +122,6 @@ export const ReignitedHeartOfOasis = status(127027)
  * @name 绿洲之心
  * @description
  * 我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得1点护盾。
- * @outdated
- * 我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得2点护盾。
  */
 export const HeartOfOasis = combatStatus(127029)
   .variable("organismCount", 0)
@@ -210,14 +206,12 @@ export const TheEndFalls = skill(27023)
  * @name 增殖感召
  * @description
  * 【被动】战斗开始时，生成5张唤醒眷属，随机放入牌库。我方召唤4个增殖生命体后，此角色附属重燃的绿洲之心，并获得1点护盾。
- * @outdated
- * 【被动】战斗开始时，生成6张唤醒眷属，随机放入牌库。我方召唤4个增殖生命体后，此角色附属重燃的绿洲之心，并获得2点护盾。
  */
 export const InvokationOfPropagation = skill(27024)
   .type("passive")
   .variable("organismCount", 0)
   .on("battleBegin")
-  .createPileCards(AwakenMyKindred, 6, "random")
+  .createPileCards(AwakenMyKindred, 5, "random")
   .combatStatus(HeartOfOasis)
   .done();
 

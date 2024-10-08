@@ -1,6 +1,7 @@
 import { card, combatStatus, DamageType, skill, SkillHandle, status, StatusHandle, summon, SummonHandle } from "@gi-tcg/core/builder";
 import { VioletArc } from "../characters/electro/lisa";
 import { EremiteScorchingLoremaster, SearingGlare } from "../characters/pyro/eremite_scorching_loremaster";
+import { AwakenMyKindred, HeartOfOasis } from "../characters/dendro/guardian_of_apeps_oasis";
 
 /**
  * @id 114091
@@ -203,34 +204,6 @@ const Scorpocalypse = card(223031)
 const OasissAegis = status(127028)
   .until("v5.0.0")
   .shield(2)
-  .done();
-
-/**
- * @id 127029
- * @name 绿洲之心
- * @description
- * 我方召唤4个增殖生命体后，我方阿佩普的绿洲守望者附属重燃的绿洲之心，并获得2点护盾。
- */
-const HeartOfOasis = combatStatus(127029)
-  .until("v5.0.0")
-  .variable("organismCount", 0)
-  .on("enterRelative", (c, e) =>
-    [
-      ProliferatedOrganism01,
-      ProliferatedOrganism02,
-      ProliferatedOrganism03,
-      ProliferatedOrganism04,
-    ].includes(e.entity.definition.id as SummonHandle))
-  .listenToPlayer()
-  .do((c) => {
-    c.addVariable("organismCount", 1);
-    if (c.getVariable("organismCount") === 4) {
-      const apep = c.$(`my character with definition id ${GuardianOfApepsOasis}`);
-      apep?.addStatus(ReignitedHeartOfOasis);
-      apep?.addStatus(OasissAegis);
-      c.dispose();
-    }
-  })
   .done();
 
 /**
