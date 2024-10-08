@@ -25,7 +25,7 @@ import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
-  characters: [2201, 1312, 1403],
+  characters: [2303, 1312, 1403],
   cards: [
     312018,
     332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
