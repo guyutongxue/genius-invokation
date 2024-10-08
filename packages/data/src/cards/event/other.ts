@@ -1301,7 +1301,7 @@ export const CanotilasSupport = card(302209)
  * 可用次数：3
  */
 const ThironasGoodWill = combatStatus(302219)
-  .on("roundEnd")
+  .on("endPhase") // 文本有误
   .usage(3)
   .do((c) => {
     const card = c.random(MELUSINE_EVENT_CARDS);
