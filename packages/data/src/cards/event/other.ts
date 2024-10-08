@@ -1584,11 +1584,8 @@ export const SaurianDiningBuddies = card(332039)
  * @description
  * 生成6张海底宝藏，随机地置入我方牌库中。
  */
-export const UnderwaterTreasureHunt = card(133090)
-  .since("v5.1.0")
-  .costSame(2)
-  // TODO
-  .done();
+export const FakeUnderwaterTreasureHunt = card(133090) // 骗骗花
+  .reserve();
 
 /**
  * @id 133091
@@ -1596,11 +1593,8 @@ export const UnderwaterTreasureHunt = card(133090)
  * @description
  * 对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。
  */
-export const ControlledDirectionalBlast = card(133091)
-  .since("v5.1.0")
-  .costSame(1)
-  // TODO
-  .done();
+export const FakeControlledDirectionalBlast = card(133091) // 骗骗花
+  .reserve();
 
 /**
  * @id 133094
@@ -1608,11 +1602,8 @@ export const ControlledDirectionalBlast = card(133091)
  * @description
  * 生成4个不同类型的基础元素骰。
  */
-export const TheTaleOfVennessa = card(133094)
-  .since("v5.1.0")
-  .costSame(3)
-  // TODO
-  .done();
+export const TheTaleOfVennessa = card(133094) // 骗骗花
+  .reserve();
 
 /**
  * @id 332040

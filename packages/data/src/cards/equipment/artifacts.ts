@@ -906,12 +906,8 @@ export const GladiatorsTriumphus = card(312029)
  * 角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）
  * （角色最多装备1件「圣遗物」）
  */
-export const TenacityOfTheMillelith = card(133086)
-  .since("v5.1.0")
-  .costSame(3)
-  .artifact()
-  // TODO
-  .done();
+export const FakeTenacityOfTheMillelith = card(133086) // 骗骗花
+  .reserve();
 
 /**
  * @id 133095
@@ -921,12 +917,8 @@ export const TenacityOfTheMillelith = card(133086)
  * 所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）
  * （角色最多装备1件「圣遗物」）
  */
-export const GildedDreams = card(133095)
-  .since("v5.1.0")
-  .costSame(3)
-  .artifact()
-  // TODO
-  .done();
+export const FakeGildedDreams = card(133095) // 骗骗花
+  .reserve();
 
 /**
  * @id 312030

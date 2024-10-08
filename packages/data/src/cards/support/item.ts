@@ -221,9 +221,5 @@ export const Kusava = card(323008)
  * 可用次数：3
  * 【此卡含描述变量】
  */
-export const Lumenarystone = card(133096)
-  .since("v5.1.0")
-  .costVoid(3)
-  .support("item")
-  // TODO
-  .done();
+export const Lumenarystone = card(133096) // 骗骗花
+  .reserve();

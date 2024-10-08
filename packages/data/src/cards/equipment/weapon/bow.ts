@@ -192,12 +192,8 @@ export const EndOfTheLine = card(311207)
  * 入场时：在本回合中，下次对角色打出「天赋」或角色使用「元素战技」时，少花费2个元素骰。
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
-export const KingsValet = card(133092)
-  .since("v5.1.0")
-  .costSame(3)
-  .weapon("bow")
-  // TODO
-  .done();
+export const KingsValet = card(133092) // 骗骗花
+  .reserve();
 
 /**
  * @id 133093
@@ -207,9 +203,5 @@ export const KingsValet = card(133092)
  * 角色使用原本元素骰费用+充能费用至少为5的技能时，伤害额外+2。（每回合1次）
  * （「弓」角色才能装备。角色最多装备1件「武器」）
  */
-export const AsmosBow = card(133093)
-  .since("v5.1.0")
-  .costSame(3)
-  .weapon("bow")
-  // TODO
-  .done();
+export const AsmosBow = card(133093) // 骗骗花
+  .reserve();

@@ -285,12 +285,8 @@ export const RainbowMacarons = card(333015)
  * 本回合中，所有我方角色下一次「元素战技」造成的伤害+2。
  * （每回合每个角色最多食用1次「料理」）
  */
-export const TandooriGrilledChicken = card(133085)
-  .since("v5.1.0")
-  .costVoid(2)
-  .tags("food")
-  // TODO
-  .done();
+export const TandooriGrilledChicken = card(133085) // 骗骗花
+  .reserve();
 
 /**
  * @id 133097
@@ -299,11 +295,8 @@ export const TandooriGrilledChicken = card(133085)
  * 治疗目标角色1点。
  * （每回合每个角色最多食用1次「料理」）
  */
-export const SweetMaam = card(133097)
-  .since("v5.1.0")
-  .tags("food")
-  // TODO
-  .done();
+export const SweetMaam = card(133097) // 骗骗花
+  .reserve();
 
 /**
  * @id 133098
@@ -312,12 +305,8 @@ export const SweetMaam = card(133097)
  * 治疗目标角色1点，该角色接下来3次受到伤害后再治疗其1点。
  * （每回合每个角色最多食用1次「料理」）
  */
-export const DeliciousMacarons = card(133098)
-  .since("v5.1.0")
-  .costVoid(2)
-  .tags("food")
-  // TODO
-  .done();
+export const DeliciousMacarons = card(133098) // 骗骗花
+  .reserve();
 
 /**
  * @id 333016

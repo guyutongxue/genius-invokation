@@ -517,12 +517,8 @@ export const StadiumOfTheSacredFlame = card(321022)
  * @description
  * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。
  */
-export const FormerSiteOfTheCentralLaboratory = card(133087)
-  .since("v5.1.0")
-  .costSame(1)
-  .support("place")
-  // TODO
-  .done();
+export const FormerSiteOfTheCentralLaboratory = card(133087) // 骗骗花
+  .reserve();
 
 /**
  * @id 133088
@@ -531,12 +527,8 @@ export const FormerSiteOfTheCentralLaboratory = card(133087)
  * 结束阶段：治疗我方「出战角色」2点。
  * 可用次数：2
  */
-export const FavoniusCathedral = card(133088)
-  .since("v5.1.0")
-  .costSame(2)
-  .support("place")
-  // TODO
-  .done();
+export const FakeFavoniusCathedral = card(133088) // 骗骗花
+  .reserve();
 
 /**
  * @id 321023
