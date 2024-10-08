@@ -107,7 +107,7 @@ export const WildThunderburst = skill(24063)
  * @description
  * 【被动】战斗开始时，初始附属雷之新生。
  */
-export const ElectricRebirth = skill(24064)
+export const ElectricRebirthPassive = skill(24064)
   .type("passive")
   // TODO
   .done();
@@ -118,7 +118,7 @@ export const ElectricRebirth = skill(24064)
  * @description
  * 战斗开始时，初始附属雷之新生。
  */
-export const ElectricRebirth = skill(24065)
+export const ElectricRebirthPassive01 = skill(24065)
   .type("passive")
   // TODO
   .done();
@@ -134,7 +134,7 @@ export const AbyssLectorVioletLightning = character(2406)
   .tags("electro", "monster")
   .health(6)
   .energy(2)
-  .skills(DenOfThunder, ShockOfTheEnigmaticAbyss, WildThunderburst, ElectricRebirth, ElectricRebirth)
+  .skills(DenOfThunder, ShockOfTheEnigmaticAbyss, WildThunderburst, ElectricRebirthPassive, ElectricRebirthPassive01)
   .done();
 
 /**
