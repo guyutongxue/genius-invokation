@@ -133,11 +133,7 @@ const SpiritOfOmenPyroScorpion = void 0; // moved to eremite_scorching_loremaste
  * 【1270321: 藤蔓锋鳞】造成1点草元素伤害。
  * 【2270312: 】
  */
-export const SpiritOfOmenDendroSpiritserpent = card(127032)
-  .since("v5.1.0")
-  .technique()
-  // TODO
-  .done();
+const SpiritOfOmenDendroSpiritserpent = void 0; // moved to eremite_floral_ringdancer
 
 /**
  * @id 313004

@@ -21,10 +21,7 @@ import { character, skill, status, combatStatus, card, DamageType } from "@gi-tc
  * @description
  * 回合开始时：舍弃1张唤醒眷属，治疗该角色1点生命值。
  */
-export const ProliferatedOrganismAnimated = status(127030)
-  .since("v5.1.0")
-  // TODO
-  .done();
+const ProliferatedOrganismAnimated = void 0; // PVE 从阿佩普那边挤过来的编号
 
 /**
  * @id 127031
@@ -32,10 +29,7 @@ export const ProliferatedOrganismAnimated = status(127030)
  * @description
  * 回合开始时：舍弃1张唤醒眷属，治疗该角色1点生命值，生成1张唤醒眷属，随机置入我方牌库。
  */
-export const ProliferatedOrganismBerserk = status(127031)
-  .since("v5.1.0")
-  // TODO
-  .done();
+const ProliferatedOrganismBerserk = void 0; // PVE 从阿佩普那边挤过来的编号
 
 /**
  * @id 127033
@@ -46,7 +40,31 @@ export const ProliferatedOrganismBerserk = status(127031)
  */
 export const SpiritserpentsBlessing = combatStatus(127033)
   .since("v5.1.0")
-  // TODO
+  .on("increaseTechniqueDamage", (c, e) => e.via.definition.id === 1230311)
+  .usageCanAppend(1, Infinity)
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 127032
+ * @name 厄灵·草之灵蛇
+ * @description
+ * 特技：藤蔓锋鳞
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * 【1270321: 藤蔓锋鳞】造成1点草元素伤害。
+ * 【2270312: 】
+ */
+export const SpiritOfOmenDendroSpiritserpent = card(127032)
+  .since("v5.1.0")
+  .technique()
+  .provideSkill(1270321)
+  .costVoid(1)
+  .costEnergy(1)
+  .usage(2, { autoDecrease: false })
+  .damage(DamageType.Dendro, 1)
+  .if((c) => !c.$(`my combat status with definition id ${SpiritserpentsBlessing}`))
+  .consumeUsage(1)
   .done();
 
 /**
@@ -59,7 +77,7 @@ export const FloralringCaress = skill(27031)
   .type("normal")
   .costDendro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -71,7 +89,8 @@ export const FloralringCaress = skill(27031)
 export const SpiralingWhirl = skill(27032)
   .type("elemental")
   .costDendro(3)
-  // TODO
+  .damage(DamageType.Dendro, 3)
+  .combatStatus(SpiritserpentsBlessing)
   .done();
 
 /**
@@ -85,7 +104,7 @@ export const SpiritOfOmensAwakeningDendroSpiritserpent = skill(27033)
   .type("burst")
   .costDendro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Dendro, 4)
   .done();
 
 /**
@@ -96,7 +115,12 @@ export const SpiritOfOmensAwakeningDendroSpiritserpent = skill(27033)
  */
 export const SpiritOfOmensPower = skill(27034)
   .type("passive")
-  // TODO
+  .on("damaged", (c) => c.self.health <= 7)
+  .usagePerRound(1, { name: "usagePerRound1" })
+  .gainEnergy(1, "@self")
+  .on("useSkill", (c, e) => e.skill.definition.id === SpiritOfOmensAwakeningDendroSpiritserpent)
+  .usage(1, { name: "createCardUsage", autoDispose: false })
+  .createHandCard(SpiritOfOmenDendroSpiritserpent)
   .done();
 
 /**
@@ -126,5 +150,10 @@ export const SpiritSerpentsSwirl = card(227031)
   .since("v5.1.0")
   .costDendro(3)
   .talent(EremiteFloralRingdancer)
-  // TODO
+  .on("enter")
+  .useSkill(SpiralingWhirl)
+  .on("switchActive", (c, e) => c.of(e.switchInfo.to).hasTechnique()?.definition.id === SpiritOfOmenDendroSpiritserpent)
+  .listenToPlayer()
+  .usagePerRound(1)
+  .damage(DamageType.Dendro, 1)
   .done();
