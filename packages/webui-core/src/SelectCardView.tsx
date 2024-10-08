@@ -27,7 +27,7 @@ export function SelectCardView(props: SelectCardViewProps) {
   const [chosen, setChosen] = createSignal<number | null>(null);
   return (
     <div class="w-full h-full flex flex-col justify-center items-center">
-      <ul>
+      <ul class="flex gap-4">
         <For each={props.cards}>
           {(id) => (
             <li
@@ -42,6 +42,13 @@ export function SelectCardView(props: SelectCardViewProps) {
           )}
         </For>
       </ul>
+      <button
+        class="mt-3 btn btn-green"
+        disabled={chosen() === null}
+        onClick={() => chosen() !== null && props.onConfirm?.(chosen()!)}
+      >
+        确定
+      </button>
     </div>
   );
 }

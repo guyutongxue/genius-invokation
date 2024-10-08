@@ -29,8 +29,8 @@ export interface ChooseActiveRequest {
 
 export interface SelectCardRequest {
   /**
-   * @minItems 1
    * 可供选择的卡牌定义 ID
+   * @minItems 1
    */
   cards: readonly number[];
 }

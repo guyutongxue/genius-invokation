@@ -275,7 +275,7 @@ export function createPlayer(
     },
     onSelectCard: async ({ cards }) => {
       setCardToSelect(cards);
-      return { chosen: await waitCardSelect() };
+      return { selected: await waitCardSelect() };
     },
     onChooseActive: async ({ candidates }) => {
       let active = candidates[0];
@@ -619,7 +619,7 @@ export function createPlayer(
         </Show>
         <Show when={cardSelecting()}>
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
-            <SelectCardView cards={cardToSelect()} />
+            <SelectCardView cards={cardToSelect()} onConfirm={notifyCardSelected} />
           </div>
         </Show>
         <button
