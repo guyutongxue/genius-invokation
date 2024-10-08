@@ -237,6 +237,13 @@ const detailedEventDictionary = {
       e.canDeductCost()
     );
   }),
+  deductOmniDiceTechnique: defineDescriptor("modifyAction2", (c, e, r) => {
+    return (
+      e.isUseSkill() &&
+      checkRelative(c.state, e.action.skill.caller.id, r) &&
+      e.canDeductCost()
+    );
+  }),
   modifyAction: defineDescriptor("modifyAction2", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),

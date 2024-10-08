@@ -537,5 +537,24 @@ export const FakeFavoniusCathedral = card(133088) // 骗骗花
 export const StageTepetl = card(321023)
   .since("v5.1.0")
   .support("place")
-  // TODO
+  .variable("attention", 0)
+  .on("playCard")
+  .listenToAll()
+  .do((c, e) => {
+    const isMine = e.who === c.self.who;
+    const player = isMine ? c.player : c.oppPlayer;
+    const delta = isMine ? 1 : -1;
+    if (!player.initialPiles.some((card) => card.id === e.card.definition.id)) {
+      c.addVariable("attention", delta);
+    }
+  })
+  .on("actionPhase")
+  .do((c) => {
+    const attention = c.getVariable("attention");
+    if (attention >= 3) {
+      c.generateDice("randomElement", 1);
+    } else if (attention >= 1) {
+      c.convertDice(DiceType.Omni, 1);
+    }
+  })
   .done();

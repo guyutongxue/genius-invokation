@@ -27,25 +27,31 @@ export type ElementTag =
   | "geo"
   | "dendro";
 
-export type WeaponTag =
-  | "sword"
-  | "claymore"
-  | "pole"
-  | "catalyst"
-  | "bow"
-  | "other";
+export const WEAPON_TAGS = [
+  "sword",
+  "claymore",
+  "pole",
+  "catalyst",
+  "bow",
+  "other",
+] as const;
 
-export type NationTag =
-  | "mondstadt"
-  | "liyue"
-  | "inazuma"
-  | "sumeru"
-  | "fontaine"
-  | "fatui"
-  | "eremite"
-  | "monster"
-  | "hilichurl"
-  | "sacread";
+export type WeaponTag = typeof WEAPON_TAGS[number];
+
+export const NATION_TAGS = [
+  "mondstadt",
+  "liyue",
+  "inazuma",
+  "sumeru",
+  "fontaine",
+  "fatui",
+  "eremite",
+  "monster",
+  "hilichurl",
+  "sacread",
+] as const;
+
+export type NationTag = typeof NATION_TAGS[number];
 
 // 虽然荒的英文是 Ousia，但是在代码里使用 pneuma 表示荒
 export type ArkheTag =

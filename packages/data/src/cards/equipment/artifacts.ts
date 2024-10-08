@@ -921,6 +921,19 @@ export const FakeGildedDreams = card(133095) // 骗骗花
   .reserve();
 
 /**
+ * @id 301204
+ * @name 指挥的礼帽（生效中）
+ * @description
+ * 对角色打出「天赋」或角色使用技能时：少花费1个元素骰。
+ * 可用次数：1
+ */
+export const ConductorsTopHatInEffect = status(301204)
+  .on("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .usage(1)
+  .deductOmniCost(1)
+  .done();
+
+/**
  * @id 312030
  * @name 指挥的礼帽
  * @description
@@ -931,5 +944,11 @@ export const ConductorsTopHat = card(312030)
   .since("v5.1.0")
   .costSame(1)
   .artifact()
-  // TODO
+  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)
+  .usagePerRound(1)
+  .do((c) => {
+    c.disposeRandomCard(c.getMaxCostHands());
+    c.convertDice(DiceType.Omni, 2)
+    c.characterStatus(ConductorsTopHatInEffect, "@master");
+  })
   .done();

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { card, DamageType } from "@gi-tcg/core/builder";
+import { card, DamageType, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 115102
@@ -136,6 +136,16 @@ const SpiritOfOmenPyroScorpion = void 0; // moved to eremite_scorching_loremaste
 const SpiritOfOmenDendroSpiritserpent = void 0; // moved to eremite_floral_ringdancer
 
 /**
+ * @id 301301
+ * @name 掘进的收获
+ * @description
+ * 提供2点护盾，保护所附属角色。
+ */
+const DiggingDownToPaydirt = status(301301)
+  .shield(2)
+  .done();
+
+/**
  * @id 313004
  * @name 嵴锋龙
  * @description
@@ -148,5 +158,12 @@ export const Tepetlisaurus = card(313004)
   .since("v5.1.0")
   .costSame(2)
   .technique()
-  // TODO
+  .provideSkill(3130031)
+  .costVoid(2)
+  .drawCards(2)
+  .if((c) => {
+    const initialDefIds = c.player.initialPiles.map((card) => card.id);
+    return c.player.hands.some((card) => !initialDefIds.includes(card.definition.id));
+  })
+  .characterStatus(DiggingDownToPaydirt, "@master")
   .done();

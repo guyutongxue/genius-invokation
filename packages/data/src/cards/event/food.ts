@@ -318,5 +318,9 @@ export const DeliciousMacarons = card(133098) // 骗骗花
 export const SaurusCrackers = card(333016)
   .since("v5.1.0")
   .tags("food")
-  // TODO
+  .food()
+  .toStatus("@targets.0", 303314)
+  .oneDuration()
+  .once("deductOmniDiceTechnique")
+  .deductOmniCost(1)
   .done();

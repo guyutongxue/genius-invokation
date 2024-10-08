@@ -371,11 +371,7 @@ export const StoneAndContracts = card(331802)
  */
 export const ThunderAndEternity = card(331803)
   .since("v3.7.0")
-  .do((c) => {
-    const count = c.player.dice.length;
-    c.absorbDice("seq", count);
-    c.generateDice(DiceType.Omni, count);
-  })
+  .convertDice(DiceType.Omni, "all")
   .done();
 
 /**
@@ -1140,12 +1136,8 @@ export const ForbiddenKnowledge = card(301020)
 export const CountdownToTheShow3 = card(332032)
   .since("v4.7.0")
   .costSame(3)
-  .do((c) => {
-    const count = c.player.dice.length;
-    c.absorbDice("seq", count);
-    c.generateDice(DiceType.Omni, count);
-    c.drawCards(4);
-  })
+  .convertDice(DiceType.Omni, "all")
+  .drawCards(4)
   .onDispose((c) => {
     c.createPileCards(CountdownToTheShow2, 1, "top");
   })
@@ -1161,12 +1153,8 @@ export const CountdownToTheShow3 = card(332032)
 export const CountdownToTheShow2 = card(332033)
   .since("v4.7.0")
   .costSame(2)
-  .do((c) => {
-    const count = c.player.dice.length;
-    c.absorbDice("seq", count);
-    c.generateDice(DiceType.Omni, count);
-    c.drawCards(4);
-  })
+  .convertDice(DiceType.Omni, "all")
+  .drawCards(4)
   .onDispose((c) => {
     c.createPileCards(CountdownToTheShow1, 1, "top");
   })
@@ -1182,12 +1170,8 @@ export const CountdownToTheShow2 = card(332033)
 export const CountdownToTheShow1 = card(332034)
   .since("v4.7.0")
   .costSame(1)
-  .do((c) => {
-    const count = c.player.dice.length;
-    c.absorbDice("seq", count);
-    c.generateDice(DiceType.Omni, count);
-    c.drawCards(4);
-  })
+  .convertDice(DiceType.Omni, "all")
+  .drawCards(4)
   .onDispose((c) => {
     c.createPileCards(TheShowBegins, 1, "top");
   })
@@ -1201,12 +1185,8 @@ export const CountdownToTheShow1 = card(332034)
  */
 export const TheShowBegins = card(332035)
   .since("v4.7.0")
-  .do((c) => {
-    const count = c.player.dice.length;
-    c.absorbDice("seq", count);
-    c.generateDice(DiceType.Omni, count);
-    c.drawCards(4);
-  })
+  .convertDice(DiceType.Omni, "all")
+  .drawCards(4)
   .done();
 
 /**
@@ -1616,5 +1596,25 @@ export const TheTaleOfVennessa = card(133094) // 骗骗花
 export const EremiteTeatime = card(332040)
   .since("v5.1.0")
   .costSame(2)
-  // TODO
+  .do((c) => {
+    const characters = c.$$("my characters");
+    const elements = characters.map((ch) => ch.element());
+    const weapons = characters.map((ch) => ch.weaponTag()).filter((tag) => !!tag);
+    const nations = characters.flatMap((ch) => ch.nationTags());
+    if (new Set(elements).size < characters.length) {
+      const cards = [...c.state.data.cards.values()].filter((card) => card.tags.includes("place"));
+      const candidates = c.randomSubset(cards, 3);
+      c.selectAndCreateHandCard(candidates);
+    }
+    if (new Set(weapons).size < characters.length) {
+      const cards = [...c.state.data.cards.values()].filter((card) => card.tags.includes("item"));
+      const candidates = c.randomSubset(cards, 3);
+      c.selectAndCreateHandCard(candidates);
+    }
+    if (new Set(nations).size < characters.length) {
+      const cards = [...c.state.data.cards.values()].filter((card) => card.tags.includes("food"));
+      const candidates = c.randomSubset(cards, 3);
+      c.selectAndCreateHandCard(candidates);
+    }
+  })
   .done();

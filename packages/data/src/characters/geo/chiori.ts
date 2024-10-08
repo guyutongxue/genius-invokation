@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, card, DamageType, CardHandle, SummonHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 116091
@@ -25,7 +25,16 @@ import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core
  */
 export const GrouchyKnifewieldingTamoto = summon(116091)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
+  .on("enter")
+  .do((c) => {
+    c.characterStatus(GeoInfusion, `my character with definition id ${Chiori}`);
+  })
+  .on("dispose")
+  .do((c) => {
+    c.$(`my character status with definition id ${GeoInfusion}`)?.dispose();
+  })
   .done();
 
 /**
@@ -38,7 +47,11 @@ export const GrouchyKnifewieldingTamoto = summon(116091)
  */
 export const NothingToSeeHereTamoto = summon(116092)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
+  .on("useSkill")
+  .usagePerRound(1)
+  .switchActive("my next")
   .done();
 
 /**
@@ -51,7 +64,11 @@ export const NothingToSeeHereTamoto = summon(116092)
  */
 export const EffortlesslyOutclassingOpponentsTamoto = summon(116093)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
+  .on("useSkill", (c, e) => e.skill.caller.definition.id !== Chiori)
+  .usagePerRound(1)
+  .damage(DamageType.Geo, 1)
   .done();
 
 /**
@@ -63,7 +80,8 @@ export const EffortlesslyOutclassingOpponentsTamoto = summon(116093)
  */
 export const TranquillyTakingTenTamoto = summon(116094)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
   .done();
 
 /**
@@ -76,7 +94,13 @@ export const TranquillyTakingTenTamoto = summon(116094)
  */
 export const FightingWithHerEyesShutTamoto = summon(116095)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
+  .on("increaseDamage", (c, e) =>
+    ([...DOLLS, Chiori] as number[]).includes(e.source.definition.id) && 
+    e.type === DamageType.Geo)
+  .usagePerRound(2)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -89,7 +113,10 @@ export const FightingWithHerEyesShutTamoto = summon(116095)
  */
 export const BombasticSideeyeTamoto = summon(116096)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
+  .on("deductOmniDiceSkill", (c, e) => e.action.skill.definition.id === WeavingBlade)
+  .usagePerRound(1)
   .done();
 
 /**
@@ -100,8 +127,21 @@ export const BombasticSideeyeTamoto = summon(116096)
  */
 export const ChiorisAutomatonDolls = summon(116097)
   .since("v5.1.0")
-  // TODO
+  .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
   .done();
+
+const USEFUL_DOLLS: SummonHandle[] = [
+  GrouchyKnifewieldingTamoto,
+  NothingToSeeHereTamoto,
+  EffortlesslyOutclassingOpponentsTamoto,
+  FightingWithHerEyesShutTamoto,
+  BombasticSideeyeTamoto,
+];
+const DOLLS: SummonHandle[] = [
+  ...USEFUL_DOLLS, 
+  TranquillyTakingTenTamoto
+];
 
 /**
  * @id 116098
@@ -111,7 +151,10 @@ export const ChiorisAutomatonDolls = summon(116097)
  */
 export const GeoInfusion = status(116098)
   .since("v5.1.0")
-  // TODO
+  .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
+  .increaseDamage(1)
+  .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Geo)
   .done();
 
 /**
@@ -124,7 +167,7 @@ export const WeavingBlade = skill(16091)
   .type("normal")
   .costGeo(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 2)
   .done();
 
 /**
@@ -136,7 +179,15 @@ export const WeavingBlade = skill(16091)
 export const FlutteringHasode = skill(16092)
   .type("elemental")
   .costGeo(3)
-  // TODO
+  .do((c) => {
+    let count = 3;
+    if (c.self.hasEquipment(InFiveColorsDyed)) {
+      c.summon(TranquillyTakingTenTamoto);
+      count = 4;
+    }
+    const candidates = c.randomSubset(DOLLS, count);
+    c.selectAndSummon(candidates);
+  })
   .done();
 
 /**
@@ -149,7 +200,7 @@ export const HiyokuTwinBlades = skill(16093)
   .type("burst")
   .costGeo(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Geo, 5)
   .done();
 
 /**
@@ -179,5 +230,6 @@ export const InFiveColorsDyed = card(216091)
   .since("v5.1.0")
   .costGeo(3)
   .talent(Chiori)
-  // TODO
+  .on("enter")
+  .useSkill(FlutteringHasode)
   .done();
