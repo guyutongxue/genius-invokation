@@ -1575,6 +1575,12 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   get aura(): Aura {
     return this.getVariable("aura");
   }
+  get maxHealth(): number {
+    return this.getVariable("maxHealth");
+  }
+  get maxEnergy(): number {
+    return this.getVariable("maxEnergy");
+  }
   positionIndex() {
     return super.positionIndex(this.skillContext.state);
   }

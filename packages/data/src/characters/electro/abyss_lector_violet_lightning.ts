@@ -13,29 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
-
-/**
- * @id 124061
- * @name 雷之新生
- * @description
- * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到4点生命值。此效果触发后，角色造成的雷元素伤害+1。
- */
-export const ElectricRebirth = status(124061)
-  .since("v5.1.0")
-  // TODO
-  .done();
-
-/**
- * @id 124062
- * @name 雷之新生·锐势
- * @description
- * 角色造成的雷元素伤害+1。
- */
-export const ElectricRebirthHoned = status(124062)
-  .since("v5.1.0")
-  // TODO
-  .done();
+import { character, skill, status, card, DamageType, Aura } from "@gi-tcg/core/builder";
 
 /**
  * @id 124063
@@ -45,9 +23,7 @@ export const ElectricRebirthHoned = status(124062)
  * 此状态提供2次雷元素附着（可被元素反应消耗）：耗尽后移除此效果，并使所附属角色无法使用技能且在结束阶段受到6点穿透伤害。
  */
 export const ThunderousWard = status(124063)
-  .since("v5.1.0")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 124064
@@ -57,8 +33,38 @@ export const ThunderousWard = status(124063)
  * 结束阶段：对所附属角色造成6点穿透伤害，然后移除此效果。
  */
 export const RollingAbyssalThunder = status(124064)
+  .reserve();
+
+/**
+ * @id 124062
+ * @name 雷之新生·锐势
+ * @description
+ * 角色造成的雷元素伤害+1。
+ */
+export const ElectricRebirthHoned = status(124062)
   .since("v5.1.0")
-  // TODO
+  .on("increaseSkillDamage", (c, e) => e.type === DamageType.Electro)
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 124061
+ * @name 雷之新生
+ * @description
+ * 所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到4点生命值。此效果触发后，角色造成的雷元素伤害+1。
+ */
+export const ElectricRebirth = status(124061)
+  .since("v5.1.0")
+  .on("beforeDefeated")
+  .immune(4)
+  .do((c) => {
+    const talent = c.self.master().hasEquipment(ChainLightningCascade);
+    if (talent) {
+      c.dispose(talent);
+      c.$("opp active")!.loseEnergy(1);
+    }
+  })
+  .characterStatus(ElectricRebirthHoned)
   .done();
 
 /**
@@ -71,7 +77,7 @@ export const DenOfThunder = skill(24061)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Electro, 1)
   .done();
 
 /**
@@ -84,7 +90,18 @@ export const DenOfThunder = skill(24061)
 export const ShockOfTheEnigmaticAbyss = skill(24062)
   .type("elemental")
   .costElectro(3)
-  // TODO
+  .do((c) => {
+    const target = c.$("opp active")!;
+    const stealEnergy = target.aura === Aura.Electro;
+    c.damage(DamageType.Electro, 3)
+    if (!stealEnergy) {
+      return;
+    }
+    const energy = target.loseEnergy(1);
+    if (energy > 0) {
+      c.$("my characters with energy < maxEnergy")?.gainEnergy(1);
+    }
+  })
   .done();
 
 /**
@@ -98,7 +115,10 @@ export const WildThunderburst = skill(24063)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .if((c) => c.$("opp active")!.energy <= 1)
+  .damage(DamageType.Electro, 3)
+  .else()
+  .damage(DamageType.Electro, 1)
   .done();
 
 /**
@@ -109,7 +129,8 @@ export const WildThunderburst = skill(24063)
  */
 export const ElectricRebirthPassive = skill(24064)
   .type("passive")
-  // TODO
+  .on("battleBegin")
+  .characterStatus(ElectricRebirth)
   .done();
 
 /**
@@ -119,9 +140,7 @@ export const ElectricRebirthPassive = skill(24064)
  * 战斗开始时，初始附属雷之新生。
  */
 export const ElectricRebirthPassive01 = skill(24065)
-  .type("passive")
-  // TODO
-  .done();
+  .reserve();
 
 /**
  * @id 2406
@@ -134,7 +153,7 @@ export const AbyssLectorVioletLightning = character(2406)
   .tags("electro", "monster")
   .health(6)
   .energy(2)
-  .skills(DenOfThunder, ShockOfTheEnigmaticAbyss, WildThunderburst, ElectricRebirthPassive, ElectricRebirthPassive01)
+  .skills(DenOfThunder, ShockOfTheEnigmaticAbyss, WildThunderburst, ElectricRebirthPassive)
   .done();
 
 /**
@@ -148,6 +167,15 @@ export const AbyssLectorVioletLightning = character(2406)
 export const ChainLightningCascade = card(224061)
   .since("v5.1.0")
   .costElectro(1)
-  .talent(AbyssLectorVioletLightning)
-  // TODO
+  .talent(AbyssLectorVioletLightning, "none")
+  .on("enter")
+  .do((c) => {
+    if (!c.self.master().hasStatus(ElectricRebirth)) {
+      c.$("opp active")!.loseEnergy(1);
+    }
+  })
+  .on("defeated")
+  .do((c) => {
+    c.$("opp active")!.loseEnergy(1);
+  })
   .done();
