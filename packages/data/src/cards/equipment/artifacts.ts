@@ -897,3 +897,58 @@ export const GladiatorsTriumphus = card(312029)
   .usagePerRound(1)
   .deductOmniCost(1)
   .done();
+
+/**
+ * @id 133086
+ * @name 千岩牢固
+ * @description
+ * 行动阶段开始时：为角色附属「重嶂不移」。（提供2点护盾，保护该角色。）
+ * 角色受到伤害后：如果所附属角色为「出战角色」，则生成1个此角色元素类型的元素骰。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const FakeTenacityOfTheMillelith = card(133086) // 骗骗花
+  .reserve();
+
+/**
+ * @id 133095
+ * @name 饰金之梦
+ * @description
+ * 入场时：生成1个所附属角色类型的元素骰。如果我方队伍中存在3种不同元素类型的角色，则改为生成2个。
+ * 所附属角色为出战角色期间，敌方受到元素反应伤害时：抓1张牌。（每回合至多2次）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const FakeGildedDreams = card(133095) // 骗骗花
+  .reserve();
+
+/**
+ * @id 301204
+ * @name 指挥的礼帽（生效中）
+ * @description
+ * 对角色打出「天赋」或角色使用技能时：少花费1个元素骰。
+ * 可用次数：1
+ */
+export const ConductorsTopHatInEffect = status(301204)
+  .on("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .usage(1)
+  .deductOmniCost(1)
+  .done();
+
+/**
+ * @id 312030
+ * @name 指挥的礼帽
+ * @description
+ * 我方切换到所附属角色后：舍弃原本元素骰费用最高的1张手牌，将2个元素骰转换为万能元素，并使角色下次使用技能或打出「天赋」时少花费1个元素骰。（每回合1次）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const ConductorsTopHat = card(312030)
+  .since("v5.1.0")
+  .costSame(1)
+  .artifact()
+  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)
+  .usagePerRound(1)
+  .do((c) => {
+    c.disposeRandomCard(c.getMaxCostHands());
+    c.convertDice(DiceType.Omni, 2)
+    c.characterStatus(ConductorsTopHatInEffect, "@master");
+  })
+  .done();

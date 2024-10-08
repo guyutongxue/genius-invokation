@@ -237,6 +237,13 @@ const detailedEventDictionary = {
       e.canDeductCost()
     );
   }),
+  deductOmniDiceTechnique: defineDescriptor("modifyAction2", (c, e, r) => {
+    return (
+      e.isUseSkill() &&
+      checkRelative(c.state, e.action.skill.caller.id, r) &&
+      e.canDeductCost()
+    );
+  }),
   modifyAction: defineDescriptor("modifyAction2", (c, { who }, r) => {
     return checkRelative(c.state, { who }, r);
   }),
@@ -270,6 +277,14 @@ const detailedEventDictionary = {
       e.type !== DamageType.Piercing &&
       checkRelative(c.state, e.source.id, r) &&
       isCharacterInitiativeSkill(e.via.definition) &&
+      e.damageInfo.fromReaction === null
+    );
+  }),
+  increaseTechniqueDamage: defineDescriptor("modifyDamage1", (c, e, r) => {
+    return (
+      e.type !== DamageType.Piercing &&
+      checkRelative(c.state, e.source.id, r) &&
+      e.via.definition.skillType === "technique" &&
       e.damageInfo.fromReaction === null
     );
   }),
@@ -441,7 +456,9 @@ export abstract class SkillBuilder<Meta extends BuilderMetaBase> {
   private applyIfFilter = false;
   private _ifFilter: SkillOperationFilter<Meta> = () => true;
 
-  protected _wrapSkillInfoWithExt(skillInfo: SkillInfo): SkillInfoOfContextConstruction {
+  protected _wrapSkillInfoWithExt(
+    skillInfo: SkillInfo,
+  ): SkillInfoOfContextConstruction {
     return { ...skillInfo, associatedExtensionId: this.associatedExtensionId };
   }
 

@@ -239,3 +239,32 @@ export const UltimateOverlordsMegaMagicSword = card(311308)
     }
   })
   .done();
+
+/**
+ * @id 311309
+ * @name 便携动力锯
+ * @description
+ * 所附属角色受到伤害时：如可能，舍弃原本元素骰费用最高的1张手牌，以抵消1点伤害，然后累积1点「坚忍标记」。（每回合1次）
+ * 角色造成伤害时：如果此牌已有「坚忍标记」，则消耗所有「坚忍标记」，使此伤害+1，并且每消耗1点「坚忍标记」就抓1张牌。
+ * （「双手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+export const PortablePowerSaw = card(311309)
+  .since("v5.1.0")
+  .costSame(2)
+  .weapon("claymore")
+  .variable("marker", 0)
+  .on("decreaseDamaged", (c, e) => c.player.hands.length !== 0 && e.value > 0)
+  .usagePerRound(1)
+  .do((c, e) => {
+    const cards = c.getMaxCostHands();
+    if (c.disposeRandomCard(cards).length > 0) {
+      c.addVariable("marker", 1);
+    }
+  })
+  .on("increaseSkillDamage")
+  .do((c, e) => {
+    e.increaseDamage(1);
+    c.drawCards(c.getVariable("marker"));
+    c.setVariable("marker", 0);
+  })
+  .done();

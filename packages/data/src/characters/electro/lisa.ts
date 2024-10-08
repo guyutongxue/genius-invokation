@@ -33,13 +33,15 @@ export const LightningRoseSummon = summon(114092)
  * @description
  * 此状态初始具有2层「引雷」；重复附属时，叠加1层「引雷」。「引雷」最多可以叠加到4层。
  * 结束阶段：叠加1层「引雷」。
- * 所附属角色受到苍雷伤害时：移除此状态，每层「引雷」使此伤害+1。
+ * 所附属角色受到苍雷或蔷薇雷光的伤害时：移除此状态，每层「引雷」使此伤害+1。
  */
 export const Conductive = status(114091)
   .variableCanAppend("conductive", 2, 4, 1)
   .on("endPhase")
   .addVariableWithMax("conductive", 1, 4)
-  .on("increaseDamaged", (c, e) => e.via.definition.id === VioletArc)
+  .on("increaseDamaged", (c, e) =>
+    e.via.definition.id === VioletArc || 
+    e.source.definition.id === LightningRoseSummon)
   .do((c, e) => {
     e.increaseDamage(c.getVariable("conductive"));
     c.dispose();
@@ -50,15 +52,13 @@ export const Conductive = status(114091)
  * @id 14091
  * @name 指尖雷暴
  * @description
- * 造成1点雷元素伤害；
- * 如果此技能为重击，则使敌方出战角色附属引雷。
+ * 造成1点雷元素伤害，并使敌方出战角色附属引雷。
  */
 export const LightningTouch = skill(14091)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
   .damage(DamageType.Electro, 1)
-  .if((c) => c.skillInfo.charged)
   .characterStatus(Conductive, "opp active")
   .done();
 

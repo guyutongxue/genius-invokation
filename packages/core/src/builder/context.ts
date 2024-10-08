@@ -67,7 +67,9 @@ import {
   getActiveCharacterIndex,
   getEntityArea,
   getEntityById,
+  nationOfCharacter,
   sortDice,
+  weaponOfCharacter,
 } from "../utils";
 import { executeQuery } from "../query";
 import {
@@ -103,7 +105,7 @@ import {
   MutatorConfig,
   StateMutator,
 } from "../mutator";
-import { CharacterDefinition } from "../base/character";
+import { CharacterDefinition, CharacterTag } from "../base/character";
 import { Draft, produce } from "immer";
 import { nextRandom } from "../random";
 
@@ -1046,6 +1048,24 @@ export class SkillContext<Meta extends ContextMetaBase> {
       }
     }
   }
+  convertDice(target: DiceType, count: number | "all") {
+    if (count === "all") {
+      count = this.player.dice.length;
+    }
+    const oldDiceCount = this.player.dice.length - count;
+    const oldDice = this.player.dice.slice(0, oldDiceCount);
+    const newDice = new Array<DiceType>(count).fill(target);
+    const finalDice = sortDice(this.player, [...oldDice, ...newDice]);
+    using l = this.mutator.subLog(
+      DetailLogType.Primitive,
+      `Convert ${count} dice to [dice:${target}]`,
+    );
+    this.mutate({
+      type: "resetDice",
+      who: this.callerArea.who,
+      value: finalDice,
+    });
+  }
   generateDice(type: DiceType | "randomElement", count: number) {
     const maxCount = this.state.config.maxDice - this.player.dice.length;
     using l = this.mutator.subLog(
@@ -1424,13 +1444,32 @@ export class SkillContext<Meta extends ContextMetaBase> {
     });
   }
 
-  random<T>(items: readonly T[]): T {
+  private getRandomValue() {
     const mutation: Mutation = {
       type: "stepRandom",
       value: -1,
     };
     this.mutate(mutation);
-    return items[mutation.value % items.length];
+    return mutation.value;
+  }
+
+  random<T>(items: readonly T[]): T {
+    return items[this.getRandomValue() % items.length];
+  }
+  private shuffleTail<T>(items: readonly T[], count: number): T[] {
+    const itemsCopy = [...items];
+    for (let i = itemsCopy.length - 1; i >= itemsCopy.length - count; i--) {
+      const j = this.getRandomValue() % (i + 1);
+      [itemsCopy[i], itemsCopy[j]] = [itemsCopy[j], itemsCopy[i]];
+    }
+    return itemsCopy;
+  }
+  shuffle<T>(items: readonly T[]): T[] {
+    return this.shuffleTail(items, items.length);
+  }
+  randomSubset<T>(items: readonly T[], count: number): T[] {
+    const partiallyShuffled = this.shuffleTail(items, count);
+    return partiallyShuffled.slice(-count);
   }
 }
 
@@ -1458,6 +1497,7 @@ type SkillContextMutativeProps =
   | "consumeUsagePerRound"
   | "transformDefinition"
   | "absorbDice"
+  | "convertDice"
   | "generateDice"
   | "createHandCard"
   | "createPileCards"
@@ -1575,6 +1615,12 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   get aura(): Aura {
     return this.getVariable("aura");
   }
+  get maxHealth(): number {
+    return this.getVariable("maxHealth");
+  }
+  get maxEnergy(): number {
+    return this.getVariable("maxEnergy");
+  }
   positionIndex() {
     return super.positionIndex(this.skillContext.state);
   }
@@ -1592,6 +1638,12 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   }
   element(): DiceType {
     return elementOfCharacter(this.state.definition);
+  }
+  weaponTag(): CharacterTag | undefined {
+    return weaponOfCharacter(this.state.definition);
+  }
+  nationTags(): CharacterTag[] {
+    return nationOfCharacter(this.state.definition);
   }
   private hasEquipmentWithTag(tag: EntityTag): EntityState | null {
     return (

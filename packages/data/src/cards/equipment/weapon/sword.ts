@@ -184,3 +184,14 @@ export const SplendorOfTranquilWaters = card(311508)
   .increaseDamage(1)
   .heal(1, "@master")
   .done();
+
+/**
+ * @id 133089
+ * @name 天空之刀
+ * @description
+ * 角色造成的伤害+1。
+ * 每回合1次：角色使用「普通攻击」造成的伤害额外+1。
+ * （「单手剑」角色才能装备。角色最多装备1件「武器」）
+ */
+export const SkywardSword = card(133089) // 骗骗花
+  .reserve();

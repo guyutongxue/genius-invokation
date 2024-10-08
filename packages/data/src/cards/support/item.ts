@@ -212,3 +212,14 @@ export const Kusava = card(323008)
   .deductOmniCost(1)
   .addVariable("memory", -1)
   .done();
+
+/**
+ * @id 133096
+ * @name 流明媒触石
+ * @description
+ * 我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素。（每回合1次）
+ * 可用次数：3
+ * 【此卡含描述变量】
+ */
+export const Lumenarystone = card(133096) // 骗骗花
+  .reserve();

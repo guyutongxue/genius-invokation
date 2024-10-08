@@ -24,7 +24,7 @@ import {
   PlayerState,
 } from "./base/state";
 import { EntityArea } from "./base/entity";
-import { CharacterDefinition, ElementTag } from "./base/character";
+import { CharacterDefinition, CharacterTag, ElementTag, NATION_TAGS, NationTag, WEAPON_TAGS, WeaponTag } from "./base/character";
 import { CardDefinition } from "./base/card";
 import {
   defineSkillInfo,
@@ -343,6 +343,15 @@ export function elementOfCharacter(ch: CharacterDefinition): DiceType {
     return DiceType.Void;
   }
   return elementTags[element];
+}
+export function weaponOfCharacter(ch: CharacterDefinition): WeaponTag | undefined {
+  const weaponTags: readonly CharacterTag[] = WEAPON_TAGS;
+  const weapon = ch.tags.find((tag): tag is WeaponTag => weaponTags.includes(tag));
+  return weapon;
+}
+export function nationOfCharacter(ch: CharacterDefinition): NationTag[] {
+  const nationTags: readonly CharacterTag[] = NATION_TAGS;
+  return ch.tags.filter((tag): tag is NationTag => nationTags.includes(tag));
 }
 
 function toSortedBy<T, K extends number[]>(

@@ -213,3 +213,14 @@ export const CashflowSupervision = card(311109)
   .usagePerRound(2)
   .characterStatus(CashflowSupervisionInEffect, "@master")
   .done();
+
+/**
+ * @id 133099
+ * @name 万世涌流大典
+ * @description
+ * 角色造成的伤害+1。
+ * 角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+export const TombOfTheEternalFlow = card(133099) // 骗骗花
+  .reserve();

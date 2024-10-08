@@ -267,7 +267,7 @@ export const GandharvaVille = card(321014)
  * @id 321015
  * @name 风龙废墟
  * @description
- * 入场时：从牌组中随机抽取一张「天赋」牌。
+ * 入场时：从牌组中随机抽取1张「天赋」牌。
  * 我方打出「天赋」牌，或我方角色使用原本元素骰消耗至少为4的技能时：少花费1个元素骰。（每回合1次）
  * 可用次数：3
  */
@@ -503,6 +503,58 @@ export const StadiumOfTheSacredFlame = card(321022)
         c.dispose();
         break;
       }
+    }
+  })
+  .done();
+
+/**
+ * @id 133087
+ * @name 中央实验室旧址
+ * @description
+ * 我方舍弃或调和1张牌后：此牌累积1点「实验进展」。每当「实验进展」达到3点、6点、9点时，就获得1个万能元素。然后，如果「实验进展」至少为9点，则弃置此牌。
+ */
+export const FormerSiteOfTheCentralLaboratory = card(133087) // 骗骗花
+  .reserve();
+
+/**
+ * @id 133088
+ * @name 西风教堂
+ * @description
+ * 结束阶段：治疗我方「出战角色」2点。
+ * 可用次数：2
+ */
+export const FakeFavoniusCathedral = card(133088) // 骗骗花
+  .reserve();
+
+/**
+ * @id 321023
+ * @name 特佩利舞台
+ * @description
+ * 我方打出名称不存在于本局最初牌组的牌时：此牌累积1点「瞩目」。
+ * 敌方打出名称不存在于本局最初牌组的牌时：此牌扣除1点「瞩目」。
+ * 行动阶段开始时：如果此牌有至少3点「瞩目」，则生成1个随机基础元素骰；如果此牌有至少1点「瞩目」，将1个元素骰转换为万能元素。
+ */
+export const StageTepetl = card(321023)
+  .since("v5.1.0")
+  .support("place")
+  .variable("attention", 0)
+  .on("playCard")
+  .listenToAll()
+  .do((c, e) => {
+    const isMine = e.who === c.self.who;
+    const player = isMine ? c.player : c.oppPlayer;
+    const delta = isMine ? 1 : -1;
+    if (!player.initialPiles.some((card) => card.id === e.card.definition.id)) {
+      c.addVariable("attention", delta);
+    }
+  })
+  .on("actionPhase")
+  .do((c) => {
+    const attention = c.getVariable("attention");
+    if (attention >= 3) {
+      c.generateDice("randomElement", 1);
+    } else if (attention >= 1) {
+      c.convertDice(DiceType.Omni, 1);
     }
   })
   .done();
