@@ -4,10 +4,7 @@ IO 格式定义于包 `@gi-tcg/typings`。
 
 ## `rpc` 请求玩家行动
 
-由四种请求玩家行动的情形：
-
-> **TODO**  
-> 增设 5.1 “选择”语义
+由五种请求玩家行动的情形：
 
 ### `rerollDice` 请求重投骰子
 
@@ -20,6 +17,11 @@ IO 格式定义于包 `@gi-tcg/typings`。
 - **响应格式**：`{ removedHands: number[] }` 需要移出手牌的卡牌 id。
 
 应响应卡牌 id 而非卡牌定义 id。
+
+### `selectCard` 挑选
+
+- **请求格式**：`{ cards: number[] }` 可供挑选的卡牌定义 id。
+- **响应格式**：`{ selected: number }` 用户确定选择的卡牌定义 id。
 
 ### `chooseActive` 请求选择出战角色
 

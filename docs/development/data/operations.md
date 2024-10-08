@@ -97,6 +97,9 @@ interface SkillContext {
   // randomElemnt 用以生成不同的基础类型元素骰子
   generateDice(type: DiceType | "randomElement", count: number): void;
 
+  // 转换部分或全部骰子为 targetType 类型
+  convertDice(targetType: DiceType, count: number | "all"): void;
+
   // 为我方生成手牌（不是从牌堆抽取）
   createHandCard(card: CardHandle): void;
 
@@ -196,8 +199,10 @@ interface SkillContext {
   // 本回合内，第几次执行本技能（同一发起者）
   countOfThisSkill(): number;
 
-  // 步进游戏状态的随机数发生器，随机选择 items 中的一个值
+  // 步进游戏状态的随机数发生器以进行随机操作
   random<T>(items: T[]): T;
+  shuffle<T>(items: readonly T[]): T[];
+  randomSubset<T>(items: readonly T[], count: number): T[];
 
   // 获取我方或对方原本元素骰费用最多的手牌列表
   getMaxCostHands(who: "my" | "opp" = "my"): CardState[];
