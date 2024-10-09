@@ -24,7 +24,7 @@ import { SheerCold } from "./la_signora";
  * 可用次数：2
  */
 export const PiercingIceridge = summon(121033)
-  .endPhaseDamage(DamageType.Cryo, 1, "recent opp of my active")
+  .endPhaseDamage(DamageType.Cryo, 1, "recent opp from my active")
   .usage(2)
   .done();
 

@@ -117,6 +117,7 @@ export const BombasticSideeyeTamoto = summon(116096)
   .usage(2)
   .on("deductOmniDiceSkill", (c, e) => e.action.skill.definition.id === WeavingBlade)
   .usagePerRound(1)
+  .deductOmniCost(1)
   .done();
 
 /**
