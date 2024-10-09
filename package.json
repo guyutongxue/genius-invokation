@@ -12,7 +12,7 @@
     "@arethetypeswrong/cli": "^0.16.4",
     "@microsoft/api-extractor": "^7.47.9",
     "@types/bun": "^1.1.10",
-    "bun": "^1.1.29",
+    "bun": "^1.1.30",
     "tsup": "^8.3.0",
     "type-fest": "^4.26.1",
     "typescript": "^5.6.2"

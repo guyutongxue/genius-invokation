@@ -23,17 +23,11 @@ import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
 const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.10.1";
+const VERSION = "0.10.2";
 
-let doPublish = false;
-if ((await $`which npm`.nothrow().quiet()).exitCode === 0) {
-  if (process.env.PUBLISH) {
-    doPublish = true;
-  } else {
-    console.warn(`This will be a dry-run. set PUBLISH env variable for publish.`);
-  }
-} else {
-  console.warn(`Npm not available, so no package will be published.`);
+const doPublish = !!process.env.PUBLISH;
+if (!doPublish) {
+  console.warn(`This will be a dry-run. set PUBLISH env variable for publish.`);
 }
 
 interface PackageInfo {
@@ -126,6 +120,6 @@ for (const { packageJson, directory } of packageInfos) {
   // Bro attw is so strict
   await $`bunx --bun attw --pack ${publishDir}`.nothrow();
   if (doPublish) {
-    await $`npm publish --access public`.cwd(publishDir);
+    await $`bun publish --access public`.cwd(publishDir);
   }
 }
