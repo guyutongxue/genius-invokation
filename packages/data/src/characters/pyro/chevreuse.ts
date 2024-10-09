@@ -119,7 +119,10 @@ export const RingOfBurstingGrenades = skill(13133)
  */
 export const VerticalForceCoordinationPassive = skill(13134)
   .type("passive")
-  .on("reaction", (c, e) => e.type === Reaction.Overloaded)
+  .on("reaction", (c, e) => 
+    c.self.state.variables.alive &&
+    e.type === Reaction.Overloaded &&
+    !c.of(e.target).isMine())
   .usagePerRound(1, { name: "usagePerRound1" })
   .createHandCard(OverchargedBall)
   .done();

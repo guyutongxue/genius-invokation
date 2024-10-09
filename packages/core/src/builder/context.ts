@@ -125,15 +125,16 @@ interface HealOption {
 }
 
 type InsertPilePayload =
-  | Omit<CreateCardM, "targetIndex">
-  | Omit<TransferCardM, "targetIndex">;
+  | Omit<CreateCardM, "targetIndex" | "who">
+  | Omit<TransferCardM, "targetIndex" | "who">;
 
 type InsertPileStrategy =
   | "top"
   | "bottom"
   | "random"
   | "spaceAround"
-  | `topRange${number}`;
+  | `topRange${number}`
+  | `topIndex${number}`;
 
 type Setter<T> = (draft: Draft<T>) => void;
 
@@ -1186,22 +1187,27 @@ export class SkillContext<Meta extends ContextMetaBase> {
   private insertPileCards(
     payloads: InsertPilePayload[],
     strategy: InsertPileStrategy,
+    where: "my" | "opp"
   ) {
     const count = payloads.length;
+    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    const player = this.state.players[who];
     switch (strategy) {
       case "top":
         for (const mut of payloads) {
           this.mutate({
             ...mut,
+            who,
             targetIndex: 0,
           });
         }
         break;
       case "bottom":
         for (const mut of payloads) {
-          const targetIndex = this.player.piles.length;
+          const targetIndex = player.piles.length;
           this.mutate({
             ...mut,
+            who,
             targetIndex,
           });
         }
@@ -1213,23 +1219,25 @@ export class SkillContext<Meta extends ContextMetaBase> {
             value: -1,
           };
           this.mutate(mut);
-          const index = mut.value % (this.player.piles.length + 1);
+          const index = mut.value % (player.piles.length + 1);
           this.mutate({
             ...payloads[i],
+            who,
             targetIndex: index,
           });
         }
         break;
       case "spaceAround":
         const spaces = count + 1;
-        const step = Math.floor(this.player.piles.length / spaces);
-        const rest = this.player.piles.length % spaces;
+        const step = Math.floor(player.piles.length / spaces);
+        const rest = player.piles.length % spaces;
         for (let i = 0, j = step; i < count; i++, j += step) {
           if (i < rest) {
             j++;
           }
           this.mutate({
             ...payloads[i],
+            who,
             targetIndex: i + j,
           });
         }
@@ -1249,6 +1257,19 @@ export class SkillContext<Meta extends ContextMetaBase> {
             const index = mut.value % range;
             this.mutate({
               ...payloads[i],
+              who,
+              targetIndex: index,
+            });
+          }
+        } else  if (strategy.startsWith("topIndex")) {
+          const index = Number(strategy.slice(8));
+          if (isNaN(index)) {
+            throw new GiTcgDataError(`Invalid strategy ${strategy}`);
+          }
+          for (let i = 0; i < count; i++) {
+            this.mutate({
+              ...payloads[i],
+              who,
               targetIndex: index,
             });
           }
@@ -1263,8 +1284,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
     cardId: CardHandle,
     count: number,
     strategy: InsertPileStrategy,
+    where: "my" | "opp" = "my",
   ) {
-    const who = this.callerArea.who;
+    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
     using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
@@ -1287,7 +1309,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           value: { ...cardTemplate },
         }) as const,
     );
-    this.insertPileCards(payloads, strategy);
+    this.insertPileCards(payloads, strategy, where);
   }
   undrawCards(cards: CardState[], strategy: InsertPileStrategy) {
     const who = this.callerArea.who;
@@ -1307,7 +1329,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           value: card,
         }) as const,
     );
-    this.insertPileCards(payloads, strategy);
+    this.insertPileCards(payloads, strategy, "my");
   }
 
   stealHandCard(card: CardState) {
