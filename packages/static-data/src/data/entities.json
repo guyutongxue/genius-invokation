@@ -5508,6 +5508,7 @@
     "playingDescription": "所附属角色受到伤害时：如可能，失去1点充能，以抵消1点伤害，然后生成魔蝎祝福。（每回合至多2次）\n特技：炙烧攻势\n可用次数：1",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_EremiteOracle",
     "buffIconHash": "13787791603732109330"
   },
   {
@@ -5521,6 +5522,7 @@
     "description": "我方使用厄灵·炎之魔蝎的特技时：移除此效果，每有1层「魔蝎祝福」，就使此特技造成的伤害+1。\n（「魔蝎祝福」的层数可叠加，没有上限）",
     "shownToken": "GCG_TOKEN_COUNTER",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_EremiteOracle_E",
     "buffIconHash": "15978828407713369411"
   },
   {
@@ -6570,7 +6572,8 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_DENDRO",
           "D__KEY__DAMAGE": 2
-        }
+        },
+        "icon": "MonsterSkill_S_EremiteGrass_02"
       },
       {
         "id": 2270312,
@@ -6588,6 +6591,7 @@
     "playingDescription": "特技：藤蔓锋鳞\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_EremiteGrass",
     "buffIconHash": "13372367094953574110"
   },
   {
@@ -6601,6 +6605,7 @@
     "description": "我方使用厄灵·草之灵蛇的特技时：此特技造成的伤害+1，并且不消耗厄灵·草之灵蛇的可用次数。\n可用次数：1（可叠加，没有上限）",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_EremiteGrass_E",
     "buffIconHash": "12038387700517931029"
   },
   {
@@ -9664,7 +9669,8 @@
             "count": 2
           }
         ],
-        "keyMap": {}
+        "keyMap": {},
+        "icon": "Btn_Natsaurus_Drillhead_ElementalArt_0l"
       }
     ],
     "rawDescription": "$[K58]：$[S3130041]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
@@ -9673,6 +9679,7 @@
     "playingDescription": "特技：掘进突击\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Drillhead",
     "buffIconHash": "13876857398019034662"
   },
   {

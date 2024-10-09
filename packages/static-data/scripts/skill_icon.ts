@@ -32,7 +32,7 @@ export async function getSkillIcon(skillId: number | string, iconHash?: number |
   if (Reflect.has(mapping, String(iconHash))) {
     return mapping[String(iconHash)];
   }
-  console.log(`Skill id ${skillId} has unknown icon hash ${iconHash}, find it on ambr.top...`);
+  console.log(`Skill id ${skillId} has unknown icon hash ${iconHash}, find it on Project Amber...`);
 
   let skillObj = null;
   if (skillId.length === 5) {

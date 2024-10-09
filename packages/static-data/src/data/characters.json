@@ -10008,7 +10008,8 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_DENDRO",
           "D__KEY__DAMAGE_3": 3
-        }
+        },
+        "icon": "MonsterSkill_S_EremiteGrass_01"
       },
       {
         "id": 27033,
@@ -10030,7 +10031,8 @@
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_DENDRO",
           "D__KEY__DAMAGE": 4
-        }
+        },
+        "icon": "MonsterSkill_E_EremiteGrass_01_HD"
       },
       {
         "id": 27034,

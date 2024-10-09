@@ -126,5 +126,10 @@
   "9106223241565525136": "UI_Gcg_Buff_Vehicle_HilistrayWater",
   "8875513956227362946": "UI_Gcg_Buff_Vehicle_MantaRay",
   "18333484455810420104": "UI_Gcg_Buff_Vehicle_Hookwalker",
-  "11093104840137801693": "UI_Gcg_Buff_Vehicle_Mosasaurus"
+  "11093104840137801693": "UI_Gcg_Buff_Vehicle_Mosasaurus",
+  "13787791603732109330": "UI_Gcg_Buff_Vehicle_EremiteOracle",
+  "15978828407713369411": "UI_Gcg_Buff_EremiteOracle_E",
+  "13372367094953574110": "UI_Gcg_Buff_Vehicle_EremiteGrass",
+  "12038387700517931029": "UI_Gcg_Buff_EremiteGrass_E",
+  "13876857398019034662": "UI_Gcg_Buff_Vehicle_Drillhead"
 }

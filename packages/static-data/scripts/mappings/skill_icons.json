@@ -254,5 +254,9 @@
   "3155351553544401070": "MonsterSkill_S_InvokerElectric_01",
   "4048986114365781694": "MonsterSkill_E_InvokerElectric_01_HD",
   "4402729226119518128": "MonsterSkill_S_InvokerElectric_02",
-  "13102655697580940627": "MonsterSkill_S_EremiteOracle_03"
+  "13102655697580940627": "MonsterSkill_S_EremiteOracle_03",
+  "5452078219508061971": "MonsterSkill_S_EremiteGrass_01",
+  "5991324619177683521": "MonsterSkill_E_EremiteGrass_01_HD",
+  "13808436191547094956": "MonsterSkill_S_EremiteGrass_02",
+  "10695666907312981537": "Btn_Natsaurus_Drillhead_ElementalArt_0l"
 }
