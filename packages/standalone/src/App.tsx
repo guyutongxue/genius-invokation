@@ -261,10 +261,10 @@ export function App() {
             <li>
               获取牌组码：
               <a
-                href="https://gjfleo.github.io/summoners-summit/teams/"
+                href="https://www.summoners.top/teams"
                 target="_blank"
               >
-                召唤之颠：原神赛事数据统计平台
+                召唤之巅：原神赛事数据统计平台
               </a>
             </li>
             <li>
