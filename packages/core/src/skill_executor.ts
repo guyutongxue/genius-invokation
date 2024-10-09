@@ -33,6 +33,7 @@ import { Aura, DamageType, ExposedMutation, Reaction } from "@gi-tcg/typings";
 import {
   allEntities,
   allSkills,
+  CallerAndSkill,
   checkImmune,
   getActiveCharacterIndex,
   getEntityArea,
@@ -275,7 +276,10 @@ export class SkillExecutor {
             },
           ],
         });
-        const healEventArg = new DamageOrHealEventArg(arg.onTimeState, healInfo);
+        const healEventArg = new DamageOrHealEventArg(
+          arg.onTimeState,
+          healInfo,
+        );
         await this.handleEvent(["onDamageOrHeal", healEventArg]);
       }
     }
@@ -513,21 +517,40 @@ export class SkillExecutor {
           DetailLogType.Event,
           `Handling event ${name} (${arg.toString()}):`,
         );
-        for (const { caller, skill } of allSkills(arg.onTimeState, name)) {
+        interface CallerAndSkillExtended extends CallerAndSkill {
+          isSelfDispose?: boolean;
+        }
+        const callerAndSkills: CallerAndSkillExtended[] = allSkills(
+          this.state,
+          name,
+        );
+        // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
+        if (name === "onDispose") {
+          const entity = arg.entity;
+          const who = getEntityArea(arg.onTimeState, arg.entity.id).who;
+          const caller = getEntityById(
+            this.state,
+            this.state.players[who].activeCharacterId,
+            true,
+          );
+          const onDisposeSkills = entity.definition.skills.filter(
+            (sk) => sk.triggerOn === "onDispose",
+          );
+          callerAndSkills.unshift(
+            ...onDisposeSkills.map((skill) => ({
+              caller,
+              skill,
+              isSelfDispose: true,
+            })),
+          );
+        }
+        for (const { caller, skill, isSelfDispose } of callerAndSkills) {
           const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
           }) as Writable<SkillInfo>;
           const currentEntities = allEntities(this.state);
-          // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
-          if (name === "onDispose" && arg.entity.id === caller.id) {
-            const who = getEntityArea(arg.onTimeState, arg.entity.id).who;
-            skillInfo.caller = getEntityById(
-              this.state,
-              this.state.players[who].activeCharacterId,
-              true,
-            );
-          } else if (!currentEntities.find((et) => et.id === caller.id)) {
+          if (!isSelfDispose && !currentEntities.find((et) => et.id === caller.id)) {
             continue;
           }
           if (!(0, skill.filter)(this.state, skillInfo, arg)) {

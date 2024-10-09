@@ -80,12 +80,6 @@ export const WateryRebirthHoned = status(122037)
 export const WateryRebirthStatus = status(122031)
   .on("beforeDefeated")
   .immune(4)
-  .do((c) => {
-    const talent = c.self.master().hasEquipment(SurgingUndercurrent);
-    if (talent) {
-      c.combatStatus(CurseOfTheUndercurrent, "opp");
-    }
-  })
   .characterStatus(WateryRebirthHoned, "@master")
   .dispose()
   .done();
@@ -211,4 +205,6 @@ export const SurgingUndercurrent = card(222031)
       c.combatStatus(CurseOfTheUndercurrent, "opp");
     }
   })
+  .on("defeated")
+  .combatStatus(CurseOfTheUndercurrent, "opp")
   .done();

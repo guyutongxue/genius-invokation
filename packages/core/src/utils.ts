@@ -119,7 +119,7 @@ export function allEntities(state: GameState): AnyState[] {
   return result;
 }
 
-interface CallerAndSkill {
+export interface CallerAndSkill {
   caller: EntityState | CharacterState;
   skill: TriggeredSkillDefinition;
 }
