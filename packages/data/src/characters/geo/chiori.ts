@@ -185,7 +185,7 @@ export const FlutteringHasode = skill(16092)
       c.summon(TranquillyTakingTenTamoto);
       count = 4;
     }
-    const candidates = c.randomSubset(DOLLS, count);
+    const candidates = c.randomSubset(USEFUL_DOLLS, count);
     c.selectAndSummon(candidates);
   })
   .done();
