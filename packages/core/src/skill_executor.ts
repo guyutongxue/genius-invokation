@@ -517,13 +517,12 @@ export class SkillExecutor {
           DetailLogType.Event,
           `Handling event ${name} (${arg.toString()}):`,
         );
+        
         interface CallerAndSkillExtended extends CallerAndSkill {
           isSelfDispose?: boolean;
         }
-        const callerAndSkills: CallerAndSkillExtended[] = allSkills(
-          this.state,
-          name,
-        );
+
+        const callerAndSkills: CallerAndSkillExtended[] = [];
         // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
         if (name === "onDispose") {
           const entity = arg.entity;
@@ -536,7 +535,7 @@ export class SkillExecutor {
           const onDisposeSkills = entity.definition.skills.filter(
             (sk) => sk.triggerOn === "onDispose",
           );
-          callerAndSkills.unshift(
+          callerAndSkills.push(
             ...onDisposeSkills.map((skill) => ({
               caller,
               skill,
@@ -544,13 +543,19 @@ export class SkillExecutor {
             })),
           );
         }
+        // 收集其它待响应技能
+        callerAndSkills.push(...allSkills(this.state, name));
+
         for (const { caller, skill, isSelfDispose } of callerAndSkills) {
           const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
           }) as Writable<SkillInfo>;
           const currentEntities = allEntities(this.state);
-          if (!isSelfDispose && !currentEntities.find((et) => et.id === caller.id)) {
+          if (
+            !isSelfDispose &&
+            !currentEntities.find((et) => et.id === caller.id)
+          ) {
             continue;
           }
           if (!(0, skill.filter)(this.state, skillInfo, arg)) {
