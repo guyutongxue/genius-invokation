@@ -120,6 +120,6 @@ for (const { packageJson, directory } of packageInfos) {
   // Bro attw is so strict
   await $`bunx --bun attw --pack ${publishDir}`.nothrow();
   if (doPublish) {
-    await $`bun publish --access public`.cwd(publishDir);
+    await $`bunx npm publish --access public`.cwd(publishDir);
   }
 }
