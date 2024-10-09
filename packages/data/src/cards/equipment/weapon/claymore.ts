@@ -199,7 +199,7 @@ export const ForestRegalia = card(311307)
 
 const NonInitialPlayedCardExtension = extension(311308, { count: pair(0) })
   .mutateWhen("onPlayCard", (c, e) => {
-    if (e._state.players[e.who].initialPiles.every((card) => card.id !== e.card.definition.id)) {
+    if (e.onTimeState.players[e.who].initialPiles.every((card) => card.id !== e.card.definition.id)) {
       c.count[e.who]++;
     }
   })

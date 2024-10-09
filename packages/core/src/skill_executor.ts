@@ -146,7 +146,7 @@ export class SkillExecutor {
       if (arg.damageInfo.causeDefeated) {
         // Wrap original EventArg to ZeroHealthEventArg
         const zeroHealthEventArg = new ZeroHealthEventArg(
-          arg._state,
+          arg.onTimeState,
           arg.damageInfo,
         );
         if (checkImmune(this.state, zeroHealthEventArg)) {
@@ -275,7 +275,7 @@ export class SkillExecutor {
             },
           ],
         });
-        const healEventArg = new DamageOrHealEventArg(arg._state, healInfo);
+        const healEventArg = new DamageOrHealEventArg(arg.onTimeState, healInfo);
         await this.handleEvent(["onDamageOrHeal", healEventArg]);
       }
     }
@@ -513,7 +513,7 @@ export class SkillExecutor {
           DetailLogType.Event,
           `Handling event ${name} (${arg.toString()}):`,
         );
-        for (const { caller, skill } of allSkills(this.state, name)) {
+        for (const { caller, skill } of allSkills(arg.onTimeState, name)) {
           const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
@@ -521,7 +521,7 @@ export class SkillExecutor {
           const currentEntities = allEntities(this.state);
           // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
           if (name === "onDispose" && arg.entity.id === caller.id) {
-            const who = getEntityArea(arg._state, arg.entity.id).who;
+            const who = getEntityArea(arg.onTimeState, arg.entity.id).who;
             skillInfo.caller = getEntityById(
               this.state,
               this.state.players[who].activeCharacterId,

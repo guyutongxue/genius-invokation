@@ -231,17 +231,13 @@ export interface EnterEventInfo {
 
 export class EventArg {
   _currentSkillInfo: SkillInfo | null = null;
-  constructor(public readonly _state: GameState) {}
+  constructor(public readonly onTimeState: GameState) {}
 
   protected get caller(): EntityState | CharacterState {
     if (this._currentSkillInfo === null) {
       throw new GiTcgCoreInternalError("EventArg caller not set");
     }
     return this._currentSkillInfo.caller;
-  }
-
-  get onTimeState() {
-    return this._state;
   }
 
   toString() {

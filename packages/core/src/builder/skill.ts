@@ -403,7 +403,7 @@ const detailedEventDictionary = {
     return checkRelative(c.state, e.entity.id, r);
   }),
   dispose: defineDescriptor("onDispose", (c, e, r) => {
-    return checkRelative(e._state, e.entity.id, r);
+    return checkRelative(e.onTimeState, e.entity.id, r);
   }),
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
     // 由于此时场上不再存在 self，故只能通过 skillDefinition 是否位于 entity 的定义内来判断

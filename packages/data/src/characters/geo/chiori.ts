@@ -31,9 +31,9 @@ export const GrouchyKnifewieldingTamoto = summon(116091)
   .do((c) => {
     c.characterStatus(GeoInfusion, `my character with definition id ${Chiori}`);
   })
-  .on("dispose")
+  .on("selfDispose")
   .do((c) => {
-    c.$(`my character status with definition id ${GeoInfusion}`)?.dispose();
+    c.$(`my status with definition id ${GeoInfusion}`)?.dispose();
   })
   .done();
 
