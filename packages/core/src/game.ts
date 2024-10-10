@@ -738,7 +738,7 @@ export class Game {
           break;
         }
         case "switchActive": {
-          this.switchActive(who, actionInfo.to);
+          await this.switchActive(who, actionInfo.to);
           break;
         }
         case "elementalTuning": {
