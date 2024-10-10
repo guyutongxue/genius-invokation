@@ -860,7 +860,7 @@ export class Game {
     this.mutate({
       type: "stepRound",
     });
-    if (this.state.roundNumber > this.config.maxRounds) {
+    if (this.state.roundNumber >= this.config.maxRounds) {
       this.gotWinner(null);
     } else {
       this.mutate({
