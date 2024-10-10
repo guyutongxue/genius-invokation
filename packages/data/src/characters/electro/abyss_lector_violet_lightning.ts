@@ -92,16 +92,14 @@ export const ShockOfTheEnigmaticAbyss = skill(24062)
   .costElectro(3)
   .do((c) => {
     const target = c.$("opp active")!;
-    const stealEnergy = target.aura === Aura.Electro;
-    c.damage(DamageType.Electro, 3)
-    if (!stealEnergy) {
-      return;
-    }
-    const energy = target.loseEnergy(1);
-    if (energy > 0) {
-      c.$("my characters with energy < maxEnergy")?.gainEnergy(1);
+    if (target.aura === Aura.Electro) {
+      const energy = target.loseEnergy(1);
+      if (energy > 0) {
+        c.$("my characters with energy < maxEnergy")?.gainEnergy(1);
+      }
     }
   })
+  .damage(DamageType.Electro, 3)
   .done();
 
 /**
