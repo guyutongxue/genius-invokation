@@ -70,7 +70,7 @@ const AVATAR_ICON_NAMES: Record<string, string> = {
   "EremitePushDagger.png": "Eremitewater.png",
 };
 const CARDFACE_TO_AVATAR_MAP = Object.fromEntries(
-  [...Object.entries(AVATAR_ICON_NAMES)].map(([k, v]) => [
+  Object.entries(AVATAR_ICON_NAMES).map(([k, v]) => [
     v.slice(0, -4),
     k.slice(0, -4),
   ]),

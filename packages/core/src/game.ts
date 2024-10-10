@@ -153,12 +153,13 @@ export class Game {
 
   constructor(opt: GameOption) {
     const config = mergeGameConfigWithDefault(opt.gameConfig);
-    const extensions = [...opt.data.extensions.values()].map<ExtensionState>(
-      (v) => ({
+    const extensions = opt.data.extensions
+      .values()
+      .map<ExtensionState>((v) => ({
         definition: v,
         state: v.initialState,
-      }),
-    );
+      }))
+      .toArray();
     const initialState: GameState = {
       data: opt.data,
       config,

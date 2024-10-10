@@ -20,7 +20,7 @@
     "@gi-tcg/deck-builder": "workspace:*",
     "@gi-tcg/detail-log-viewer": "workspace:*",
     "@vercel/analytics": "^1.2.0",
-    "core-js": "3.37.0",
+    "core-js": "3.38.1",
     "solid-js": "^1.8.15"
   },
   "devDependencies": {
