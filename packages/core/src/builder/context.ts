@@ -105,7 +105,7 @@ import {
   MutatorConfig,
   StateMutator,
 } from "../mutator";
-import { CharacterDefinition, CharacterTag } from "../base/character";
+import { CharacterDefinition, NationTag, WeaponTag } from "../base/character";
 import { Draft, produce } from "immer";
 import { nextRandom } from "../random";
 
@@ -1661,10 +1661,10 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   element(): DiceType {
     return elementOfCharacter(this.state.definition);
   }
-  weaponTag(): CharacterTag | undefined {
+  weaponTag(): WeaponTag {
     return weaponOfCharacter(this.state.definition);
   }
-  nationTags(): CharacterTag[] {
+  nationTags(): NationTag[] {
     return nationOfCharacter(this.state.definition);
   }
   private hasEquipmentWithTag(tag: EntityTag): EntityState | null {

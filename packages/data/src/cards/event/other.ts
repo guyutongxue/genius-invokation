@@ -1599,7 +1599,7 @@ export const EremiteTeatime = card(332040)
   .do((c) => {
     const characters = c.$$("my characters");
     const elements = characters.map((ch) => ch.element());
-    const weapons = characters.map((ch) => ch.weaponTag()).filter((tag) => !!tag);
+    const weapons = characters.map((ch) => ch.weaponTag());
     const nations = characters.flatMap((ch) => ch.nationTags());
     if (new Set(elements).size < characters.length) {
       const cards = c.state.data.cards.values().filter((card) => card.tags.includes("place")).toArray();

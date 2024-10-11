@@ -18,7 +18,7 @@ import { DescriptionDictionary } from "./entity";
 import { InitiativeSkillDefinition } from "./skill";
 import { VersionInfo } from "./version";
 
-export type WeaponCardTag = Exclude<WeaponTag, "other">;
+export type WeaponCardTag = Exclude<WeaponTag, "otherWeapon">;
 
 export type EquipmentTag =
   | "talent"

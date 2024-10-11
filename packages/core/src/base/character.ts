@@ -33,7 +33,7 @@ export const WEAPON_TAGS = [
   "pole",
   "catalyst",
   "bow",
-  "other",
+  "otherWeapon",
 ] as const;
 
 export type WeaponTag = typeof WEAPON_TAGS[number];

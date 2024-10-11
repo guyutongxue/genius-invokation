@@ -344,10 +344,10 @@ export function elementOfCharacter(ch: CharacterDefinition): DiceType {
   }
   return elementTags[element];
 }
-export function weaponOfCharacter(ch: CharacterDefinition): WeaponTag | undefined {
+export function weaponOfCharacter(ch: CharacterDefinition): WeaponTag {
   const weaponTags: readonly CharacterTag[] = WEAPON_TAGS;
   const weapon = ch.tags.find((tag): tag is WeaponTag => weaponTags.includes(tag));
-  return weapon;
+  return weapon ?? "otherWeapon";
 }
 export function nationOfCharacter(ch: CharacterDefinition): NationTag[] {
   const nationTags: readonly CharacterTag[] = NATION_TAGS;
