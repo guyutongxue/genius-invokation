@@ -18,6 +18,7 @@ import shareIdMap from "./share_id.json";
 const BLOCK_WORDS = [
   /64/i,
   /89/i,
+  /ba9/i,
   /c4/i,
   /cag/i,
   /gay/i,
