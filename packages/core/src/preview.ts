@@ -125,22 +125,27 @@ export class ActionPreviewer {
             new PlayCardEventArg(previewState, newActionInfo),
           );
         }
-        if (completed) {
-          previewState = applyMutation(previewState, {
-            type: "removeCard",
-            who: this.who,
-            where: "hands",
-            oldState: card,
-            used: true,
-          });
-        }
         if (
           player().combatStatuses.find((st) =>
             st.definition.tags.includes("disableEvent"),
           ) &&
           card.definition.cardType === "event"
         ) {
+          previewState = applyMutation(previewState, {
+            type: "removeCard",
+            who: this.who,
+            where: "hands",
+            oldState: card,
+            reason: "disabled"
+          });
         } else {
+          previewState = applyMutation(previewState, {
+            type: "removeCard",
+            who: this.who,
+            where: "hands",
+            oldState: card,
+            reason: "play"
+          });
           const skillInfo = defineSkillInfo({
             caller: activeCh(),
             definition: card.definition,
@@ -186,7 +191,7 @@ export class ActionPreviewer {
           who: this.who,
           where: "hands",
           oldState: card,
-          used: false,
+          reason: "elementalTuning",
         });
         if (completed) {
           const tuneCardEventArg = new DisposeOrTuneCardEventArg(

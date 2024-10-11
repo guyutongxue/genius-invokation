@@ -79,7 +79,7 @@ export interface RemoveCardM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
   readonly where: "hands" | "piles";
-  readonly used: boolean;
+  readonly reason: "play" | "elementalTuning" | "overflow" | "disposed" | "disabled";
   readonly oldState: CardState;
 }
 
@@ -438,7 +438,7 @@ export function stringifyMutation(m: Mutation): string | null {
     case "removeCard": {
       return `Dispose card ${stringifyState(m.oldState)} of player ${m.who}'s ${
         m.where
-      } (${m.used ? "used" : "not used"})`;
+      } (${m.reason})`;
     }
     case "createCard": {
       return `Create card ${stringifyState(m.value)} for player ${m.who} in ${

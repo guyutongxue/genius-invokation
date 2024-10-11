@@ -57,7 +57,7 @@ interface RemoveCardEM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
   readonly where: "hands" | "piles";
-  readonly used: boolean;
+  readonly reason: "play" | "elementalTuning" | "overflow" | "disposed" | "disabled";
   readonly id: number;
   readonly definitionId: number;
 }

@@ -194,6 +194,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
    * @internal
    */
   _terminate() {
+    this.mutator.notify();
     this.originalOnNotify?.({
       canResume: false,
       state: this.state,
@@ -1174,7 +1175,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
             who,
             where: "hands",
             oldState: chosen,
-            used: false,
+            reason: "overflow",
           });
         }
       }
@@ -1368,7 +1369,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         who,
         where,
         oldState: card,
-        used: false,
+        reason: "disposed",
       });
       this.emitEvent("requestDisposeCard", this.skillInfo, who, card);
       const method: DisposeOrTuneMethod =

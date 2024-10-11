@@ -194,7 +194,7 @@ export class StateMutator {
         who,
         where: "hands",
         oldState: candidate,
-        used: false,
+        reason: "overflow",
       });
     }
     return candidate;
@@ -398,7 +398,7 @@ export class StateMutator {
         who,
         where: "hands",
         oldState: cardState,
-        used: false,
+        reason: "overflow",
       });
     }
   }

@@ -711,7 +711,7 @@ export class Game {
               who,
               where: "hands",
               oldState: actionInfo.card,
-              used: false,
+              reason: "disabled",
             });
           } else {
             this.mutate({
@@ -719,7 +719,7 @@ export class Game {
               who,
               where: "hands",
               oldState: actionInfo.card,
-              used: true,
+              reason: "play",
             });
             await this.executeSkill(
               defineSkillInfo({
@@ -748,7 +748,7 @@ export class Game {
             who,
             where: "hands",
             oldState: actionInfo.card,
-            used: false,
+            reason: "elementalTuning"
           });
           this.mutate({
             type: "resetDice",

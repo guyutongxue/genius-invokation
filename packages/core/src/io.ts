@@ -88,13 +88,14 @@ export function exposeMutation(
       };
     }
     case "removeCard": {
+      const hide = m.who !== who && ["overflow", "elementalTuning"].includes(m.reason);
       return {
         type: "removeCard",
         who: m.who,
         where: m.where,
-        used: m.used,
+        reason: m.reason,
         id: m.oldState.id,
-        definitionId: m.oldState.definition.id,
+        definitionId: hide ? 0 : m.oldState.definition.id,
       };
     }
     case "createCard": {
