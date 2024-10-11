@@ -6,7 +6,7 @@ import {
   SkillDescription,
   TriggeredSkillDefinition,
 } from "../base/skill";
-import { SkillContext } from "./context";
+import { SkillContext } from "./context/skill";
 import { registerExtension } from "./registry";
 import { WritableMetaOf } from "./skill";
 import { ExtensionHandle } from "./type";

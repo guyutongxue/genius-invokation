@@ -41,7 +41,7 @@ import {
   SkillInfoOfContextConstruction,
 } from "../base/skill";
 import { AnyState, EntityVariables, GameState } from "../base/state";
-import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context";
+import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context/skill";
 import { ExtensionHandle, SkillHandle } from "./type";
 import {
   EntityArea,

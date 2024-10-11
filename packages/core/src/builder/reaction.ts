@@ -16,7 +16,7 @@
 import { Reaction, DamageType } from "@gi-tcg/typings";
 import { SkillDescription } from "../base/skill";
 import { SkillBuilder, enableShortcut } from "./skill";
-import { TypedSkillContext } from "./context";
+import { TypedSkillContext } from "./context/skill";
 import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
 
 export const CALLED_FROM_REACTION: unique symbol = Symbol();

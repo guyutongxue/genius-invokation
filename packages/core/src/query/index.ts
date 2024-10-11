@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ContextMetaBase, SkillContext } from "../builder/context";
+import { ContextMetaBase, SkillContext } from "../builder/context/skill";
 import { TypedExEntity } from "../builder/type";
 import { GuessedTypeOfQuery } from "./types";
 import { QueryArgs, doSemanticQueryAction } from "./semantic";

@@ -42,7 +42,7 @@ import {
   SkillInfo,
 } from "../base/skill";
 import { registerCard } from "./registry";
-import { SkillContext } from "./context";
+import { SkillContext } from "./context/skill";
 import {
   SkillBuilderWithCost,
   enableShortcut,

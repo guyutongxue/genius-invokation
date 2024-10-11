@@ -16,7 +16,9 @@
 import { DamageType } from "@gi-tcg/typings";
 import { CharacterTag } from "../base/character";
 import { EntityTag, EntityType, ExEntityType } from "../base/entity";
-import { ContextMetaBase, TypedCharacter, TypedEntity } from "./context";
+import { ContextMetaBase } from "./context/skill";
+import { TypedCharacter } from "./context/character";
+import { TypedEntity } from "./context/entity";
 import { CharacterState, EntityState } from "..";
 
 export type CharacterHandle = number & { readonly _char: unique symbol };
