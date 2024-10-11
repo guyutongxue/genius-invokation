@@ -255,15 +255,19 @@ export class Game {
     }
   }
 
+  // private lastNotifiedState: [string, string] = ["", ""];
   private notifyOneImpl(who: 0 | 1, opt: InternalNotifyOption) {
     const player = this.io.players[who];
     const stateMutations = opt.stateMutations
       .map((m) => exposeMutation(who, m))
       .filter((em): em is ExposedMutation => !!em);
-    player.notify({
-      mutations: [...stateMutations, ...opt.exposedMutations],
-      newState: exposeState(who, opt.state),
-    });
+    const newState = exposeState(who, opt.state);
+    const mutations = [...stateMutations, ...opt.exposedMutations];
+    // const newStateStr = JSON.stringify(newState);
+    // if (mutations.length > 0 || newStateStr !== this.lastNotifiedState[who]) {
+    player.notify({ mutations, newState });
+    // this.lastNotifiedState[who] = newStateStr;
+    // }
   }
   private notifyOne(who: 0 | 1, mutation?: ExposedMutation, state?: GameState) {
     this.notifyOneImpl(who, {
@@ -287,9 +291,9 @@ export class Game {
       return;
     }
     const { state, canResume, stateMutations } = opt;
-    await this.io.pause?.(this.state, [...stateMutations], canResume);
-    if (this.state.phase === "gameEnd") {
-      this.gotWinner(this.state.winner);
+    await this.io.pause?.(state, [...stateMutations], canResume);
+    if (state.phase === "gameEnd") {
+      this.gotWinner(state.winner);
     } else {
       await this.checkGiveUp();
     }
@@ -314,7 +318,7 @@ export class Game {
     this.logger.clearLogs();
     (async () => {
       try {
-        await this.mutator.notifyAndPause({ canResume: true });
+        await this.mutator.notifyAndPause({ force: true, canResume: true });
         while (!this._terminated) {
           switch (this.state.phase) {
             case "initHands":
@@ -748,7 +752,7 @@ export class Game {
             who,
             where: "hands",
             oldState: actionInfo.card,
-            reason: "elementalTuning"
+            reason: "elementalTuning",
           });
           this.mutate({
             type: "resetDice",

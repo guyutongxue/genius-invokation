@@ -31,48 +31,56 @@ export class GiTcgIoNotProvideError extends GiTcgPreviewAbortedError {
 }
 
 export interface NotifyOption {
-  canResume?: boolean;
-  mutations?: readonly ExposedMutation[];
+  /** 即便没有积攒的 mutations，也执行 `onNotify`。适用于首次通知。 */
+  readonly force?: boolean;
+  readonly canResume?: boolean;
+  readonly mutations?: readonly ExposedMutation[];
 }
 
 export interface InternalPauseOption {
-  state: GameState;
-  canResume: boolean;
+  readonly state: GameState;
+  readonly canResume: boolean;
   /** 自上次通知后，对局状态发生的所有变化 */
-  stateMutations: readonly Mutation[];
+  readonly stateMutations: readonly Mutation[];
 }
 export interface InternalNotifyOption extends InternalPauseOption {
   /** 上层传入的其他变化（可直接输出前端） */
-  exposedMutations: readonly ExposedMutation[];
+  readonly exposedMutations: readonly ExposedMutation[];
 }
 
 export interface MutatorConfig {
   /**
    * 详细日志输出器。
    */
-  logger?: IDetailLogger;
-  
+  readonly logger?: IDetailLogger;
+
   /**
    * `notify` 时调用的接口。
    */
-  onNotify: (opt: InternalNotifyOption) => void;
+  readonly onNotify: (opt: InternalNotifyOption) => void;
 
   /**
    * `pause` 时调用的接口。
    */
-  onPause: (opt: InternalPauseOption) => Promise<void>;
+  readonly onPause: (opt: InternalPauseOption) => Promise<void>;
 
-  howToSwitchHands?: (who: 0 | 1) => Promise<number[]>;
-  howToReroll?: (who: 0 | 1) => Promise<number[]>;
-  howToSelectCard?: (who: 0 | 1, cards: readonly number[]) => Promise<number>;
-  howToChooseActive?: (who: 0 | 1, candidates: readonly number[]) => Promise<number>;
+  readonly howToSwitchHands?: (who: 0 | 1) => Promise<number[]>;
+  readonly howToReroll?: (who: 0 | 1) => Promise<number[]>;
+  readonly howToSelectCard?: (
+    who: 0 | 1,
+    cards: readonly number[],
+  ) => Promise<number>;
+  readonly howToChooseActive?: (
+    who: 0 | 1,
+    candidates: readonly number[],
+  ) => Promise<number>;
 }
 
 export interface CreateEntityOptions {
   /** 创建实体时，覆盖默认变量 */
-  overrideVariables?: Partial<EntityVariables>;
+  readonly overrideVariables?: Partial<EntityVariables>;
   /** 设定创建实体的 id。仅在打出支援牌和装备牌时直接继承原手牌 id */
-  withId?: number;
+  readonly withId?: number;
 }
 
 export interface CreateEntityResult {
@@ -92,11 +100,10 @@ export class StateMutator {
   private _state: GameState;
   private _mutationsToBeNotified: Mutation[] = [];
   private _mutationsToBePause: Mutation[] = [];
-  private _first = true;
 
   constructor(
     initialState: GameState,
-    private config: MutatorConfig,
+    private readonly config: MutatorConfig,
   ) {
     this._state = initialState;
   }
@@ -118,14 +125,13 @@ export class StateMutator {
     this._mutationsToBeNotified = [];
     this._mutationsToBePause = [];
   }
-  
+
   log(type: DetailLogType, value: string): void {
     return this.config.logger?.log(type, value);
   }
   subLog(type: DetailLogType, value: string) {
     return this.config.logger?.subLog(type, value);
   }
-
 
   mutate(mutation: Mutation) {
     this._state = applyMutation(this.state, mutation);
@@ -160,10 +166,8 @@ export class StateMutator {
 
   notify(opt: NotifyOption = {}) {
     const internalOpt = this.createNotifyInternalOption(opt);
-    if (this._first) {
-      this.config.onNotify(internalOpt);
-      this._first = false;
-    } else if (
+    if (
+      opt.force ||
       internalOpt.stateMutations.length > 0 ||
       internalOpt.exposedMutations.length > 0
     ) {
@@ -261,10 +265,7 @@ export class StateMutator {
     this.notify();
   }
 
-  randomDice(
-    count: number,
-    alwaysOmni?: boolean,
-  ): readonly DiceType[] {
+  randomDice(count: number, alwaysOmni?: boolean): readonly DiceType[] {
     if (alwaysOmni) {
       return new Array<DiceType>(count).fill(DiceType.Omni);
     }
@@ -322,7 +323,10 @@ export class StateMutator {
         `No available candidate active character for player ${who}.`,
       );
     }
-    const activeChId = await this.config.howToChooseActive(who, candidates.map((c) => c.id));
+    const activeChId = await this.config.howToChooseActive(
+      who,
+      candidates.map((c) => c.id),
+    );
     return getEntityById(this.state, activeChId, true) as CharacterState;
   }
 
@@ -403,7 +407,7 @@ export class StateMutator {
     }
   }
 
- createEntity(
+  createEntity(
     def: EntityDefinition,
     area: EntityArea,
     opt: CreateEntityOptions = {},

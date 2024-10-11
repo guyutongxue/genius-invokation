@@ -18,8 +18,6 @@ import { Version } from "./base/version";
 import { GameData, GameDataGetter } from "./builder";
 import { CORE_VERSION } from ".";
 
-import "core-js/proposals/explicit-resource-management";
-
 export interface GameStateLogEntry {
   readonly state: GameState;
   readonly canResume: boolean;
