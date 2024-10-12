@@ -23,6 +23,7 @@ const BLOCK_WORDS = [
   /cag/i,
   /gay/i,
   /hjt/i,
+  /jba/i,
   /jzm/i,
   /ntr/i,
   /pcp/i,
