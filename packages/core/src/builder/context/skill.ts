@@ -546,7 +546,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       this.doHeal(value, t.state, { kind });
     }
   }
-  
+
   /** 增加最大生命值 */
   increaseMaxHealth(value: number, target: CharacterTargetArg) {
     const targets = this.queryCoerceToCharacters(target);
@@ -1516,6 +1516,7 @@ type SkillContextMutativeProps =
   | "switchActive"
   | "gainEnergy"
   | "heal"
+  | "increaseMaxHealth"
   | "damage"
   | "apply"
   | "createEntity"
