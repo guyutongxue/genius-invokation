@@ -1,5 +1,16 @@
-import { DamageData, ExposedMutation, Reaction, StateData } from "@gi-tcg/typings";
-import { ComponentProps, For, createEffect, splitProps, untrack } from "solid-js";
+import {
+  DamageData,
+  ExposedMutation,
+  Reaction,
+  StateData,
+} from "@gi-tcg/typings";
+import {
+  ComponentProps,
+  For,
+  createEffect,
+  splitProps,
+  untrack,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import { usePlayerContext } from "./Chessboard";
 
@@ -17,49 +28,56 @@ export function Announcer(props: AnnouncerProps) {
     "who",
   ]);
   const [mutationHintTexts, setMutationHintTexts] = createStore<string[]>([]);
-  let scrollRef: HTMLDivElement | null = null;
-  const getSpells = () => local.mutations?.map((m) => spellMutation(m,local.who, local.stateData, assetAltText));
+  let scrollRef: HTMLDivElement;
+  const getSpells = () =>
+    local.mutations?.map((m) =>
+      spellMutation(m, local.who, local.stateData, assetAltText),
+    );
   createEffect(() => {
-    if(local.mutations === undefined) return;
+    if (typeof local.mutations === "undefined") return;
     const newSpells = untrack(getSpells);
-    newSpells && setMutationHintTexts((txts) => {
-      const availableSpells = newSpells.filter((s) => s !== "");
-      return [...txts, ...availableSpells];
-    });
+    newSpells &&
+      setMutationHintTexts((txts) => {
+        const availableSpells = newSpells.filter((s) => s !== "");
+        return [...txts, ...availableSpells];
+      });
   });
   createEffect(() => {
-    if(scrollRef && mutationHintTexts.length > 0) {
+    if (scrollRef && mutationHintTexts.length > 0) {
       scrollRef.scrollTo(0, scrollRef.scrollHeight + 40);
     }
   });
-  return <div
-    {...restProps}
-    id='debug-announcer'
-    ref={(el) => {scrollRef = el;}}
-  >
-    喋喋不休的解说员：
-    <ul>
-      <For each={mutationHintTexts}>
-        {(txt) => <li>{txt}</li>}
-      </For>
-    </ul>
-  </div>;
+  return (
+    <div {...restProps} ref={scrollRef!}>
+      喋喋不休的解说员：
+      <ul>
+        <For each={mutationHintTexts}>{(txt) => <li>{txt}</li>}</For>
+      </ul>
+    </div>
+  );
 }
 
-const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, altTextFunc: (definitionId: number) => string | undefined) => {
+const spellMutation = (
+  m: ExposedMutation,
+  who: 0 | 1,
+  stateData: StateData,
+  altTextFunc: (definitionId: number) => string | undefined,
+) => {
   let spell = "";
-  const spellWho = (argWho: 0 | 1) => argWho === who ? '我方' : '对方';
+  const spellWho = (argWho: 0 | 1) => (argWho === who ? "我方" : "对方");
   const spellEntity = (entityId: number) => {
-    let spell = '';
+    let spell = "";
     for (const who of [0, 1] as const) {
       const player = stateData.players[who];
       for (const ch of player.characters) {
-        if (ch.id === entityId){
+        if (ch.id === entityId) {
           spell = `${spellWho(who)} 的 ${altTextFunc(ch.definitionId)}`;
         } else {
           const entity = ch.entities.find((e) => e.id === entityId);
-          if(entity) {
-            spell = `${spellWho(who)} 的 ${altTextFunc(ch.definitionId)} 的 ${altTextFunc(entity.definitionId)}`;
+          if (entity) {
+            spell = `${spellWho(who)} 的 ${altTextFunc(
+              ch.definitionId,
+            )} 的 ${altTextFunc(entity.definitionId)}`;
           }
         }
       }
@@ -67,15 +85,17 @@ const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, alt
         const entity = player[key].find((e) => e.id === entityId);
         if (entity) {
           const spellKeyDict = {
-            combatStatuses: '出战状态',
-            summons: '召唤物',
-            supports: '支援牌',
+            combatStatuses: "出战状态",
+            summons: "召唤物",
+            supports: "支援牌",
           };
-          spell = `${spellWho(who)} 的 ${spellKeyDict[key]} ${altTextFunc(entity.definitionId)}`;
+          spell = `${spellWho(who)} 的 ${spellKeyDict[key]} ${altTextFunc(
+            entity.definitionId,
+          )}`;
         }
       }
     }
-    if(spell === '') spell = `不知道啥`;
+    if (spell === "") spell = `不知道啥`;
 
     return spell;
   };
@@ -83,18 +103,27 @@ const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, alt
     // TODO: 目前没有给对手创建牌的情况, 未来可能会有
     switch (target) {
       case "hands":
-        return '手牌';
+        return "手牌";
       case "piles":
-        return '牌堆';
+        return "牌堆";
       default:
-        return '不知道哪';
+        return "不知道哪";
     }
   };
   const typeSpellArray = [
-    '物理', '冰', '水', '火', '雷', '风', '岩', '草', '穿刺', '治疗'
+    "物理",
+    "冰",
+    "水",
+    "火",
+    "雷",
+    "风",
+    "岩",
+    "草",
+    "穿刺",
+    "治疗",
   ];
   const spellReactionType = (reactionType: Reaction) => {
-    const reactionTypeDict: { [key in Reaction]: string} = {
+    const reactionTypeDict: { [key in Reaction]: string } = {
       [Reaction.Melt]: "融化",
       [Reaction.Vaporize]: "蒸发",
       [Reaction.Overloaded]: "超载",
@@ -111,7 +140,7 @@ const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, alt
       [Reaction.CrystallizeElectro]: "雷结晶",
       [Reaction.Burning]: "燃烧",
       [Reaction.Bloom]: "绽放",
-      [Reaction.Quicken]: "激化"
+      [Reaction.Quicken]: "激化",
     };
     return reactionTypeDict[reactionType];
   };
@@ -121,7 +150,7 @@ const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, alt
       break;
     case "damage":
       spell = `${spellEntity(m.damage.target)} 受到 ${m.damage.value} 点 \
-        ${typeSpellArray[m.damage.type]} ${m.damage.type === 9 ? '' : '伤害'}`;
+        ${typeSpellArray[m.damage.type]} ${m.damage.type === 9 ? "" : "伤害"}`;
       break;
     case "stepRound":
       spell = `回合开始`;
@@ -145,47 +174,53 @@ const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, alt
       spell = `切换行动方`;
       break;
     case "switchActive":
-      spell = `${spellWho(m.who)} 切换出战角色至 ${altTextFunc(m.definitionId)}`;
+      spell = `${spellWho(m.who)} 切换出战角色至 ${altTextFunc(
+        m.definitionId,
+      )}`;
       break;
     case "setPlayerFlag":
-      if(m.flagName === "declaredEnd") {
+      if (m.flagName === "declaredEnd") {
         spell = `${spellWho(m.who)} 宣布结束回合`;
-      } else if(m.flagName === "legendUsed") {
+      } else if (m.flagName === "legendUsed") {
         spell = `${spellWho(m.who)} 使用了秘传技能`;
       }
       break;
     case "createCard":
       // 跳过开局发牌的解说
       if (stateData.phase === "initHands") break;
-      spell = `${spellWho(m.who)} 将一张卡牌置入了 ${spellCreateCardTarget(m.target)}`;
+      spell = `${spellWho(m.who)} 将一张卡牌置入了 ${spellCreateCardTarget(
+        m.target,
+      )}`;
       break;
     case "removeCard":
-      switch(m.reason) {
-        case 'disposed':
+      switch (m.reason) {
+        case "disposed":
           spell = `${spellWho(m.who)} 弃置了一张卡牌`;
           break;
-        case 'elementalTuning':
+        case "elementalTuning":
           spell = `${spellWho(m.who)} 调和了 一张卡牌`;
           break;
-        case 'overflow':
+        case "overflow":
           spell = `${spellWho(m.who)} 手牌已满 弃置了一张卡牌`;
           break;
-        case 'disabled':
+        case "disabled":
           spell = `${spellWho(m.who)} 被裁了 一张卡牌`;
           break;
         // 如果是使用牌的情况, 应当会在useCommonSkill中解说
-        case 'play':
+        case "play":
           break;
       }
       break;
     case "transferCard":
       if (stateData.phase === "initHands") break;
-      if(m.from === 'piles' && m.to === 'hands') {
+      if (m.from === "piles" && m.to === "hands") {
         spell = `${spellWho(m.who)} 抽了一张卡`;
-      } else if(m.from === 'hands' && m.to === 'piles') {
+      } else if (m.from === "hands" && m.to === "piles") {
         spell = `${spellWho(m.who)} 埋了一张卡进牌堆`;
       } else {
-        spell = `${spellWho(m.who)} 将一张卡牌从 ${spellCreateCardTarget(m.from)} 移动到 ${spellCreateCardTarget(m.to)}`;
+        spell = `${spellWho(m.who)} 将一张卡牌从 ${spellCreateCardTarget(
+          m.from,
+        )} 移动到 ${spellCreateCardTarget(m.to)}`;
       }
       break;
     case "createCharacter":
@@ -199,11 +234,13 @@ const spellMutation = (m: ExposedMutation, who: 0 | 1, stateData: StateData, alt
       spell = `${altTextFunc(m.definitionId)} 移除了`;
       break;
     case "elementalReaction":
-      spell = `${spellEntity(m.on)} 触发了元素反应 ${spellReactionType(m.reactionType)}`;
+      spell = `${spellEntity(m.on)} 触发了元素反应 ${spellReactionType(
+        m.reactionType,
+      )}`;
       break;
     // 变更实体的属性, 预计需要额外处理, 不然会废话太多
     case "modifyEntityVar":
-      console.log(`===== modifyEntityVar  =====`);
+      // console.log(`===== modifyEntityVar  =====`);
       break;
     default:
       console.log(`===== 2200 unimply type: ${m.type} =====`);
