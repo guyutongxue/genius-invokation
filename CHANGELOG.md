@@ -2,6 +2,9 @@
 
 **仅记录破坏性改动。**
 
+## 0.12.0
+- 移除了 `PlayerIO.giveUp` 字段。使用 `Game` 的 `giveUp(who)` 方法以更高效地实现弹射。
+
 ## 0.11.0
 - 接口更新：`RemoveCardEM` 使用了 `reason` 字段替换 `used` 以显示更精确的行动牌移除信息。
 
