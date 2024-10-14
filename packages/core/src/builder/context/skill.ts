@@ -473,6 +473,68 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
+  private doHeal(value: number, targetState: CharacterState, option: Required<HealOption>) {
+    const damageType = DamageType.Heal;
+    if (!targetState.variables.alive) {
+      if (option.kind === "revive") {
+        this.mutator.log(
+          DetailLogType.Other,
+          `Before healing ${stringifyState(targetState)}, revive him.`,
+        );
+        this.mutate({
+          type: "modifyEntityVar",
+          state: targetState,
+          varName: "alive",
+          value: 1,
+        });
+        this.emitEvent("onRevive", this.state, targetState);
+      } else {
+        // Cannot apply non-revive heal on a dead character
+        return;
+      }
+    }
+    using l = this.mutator.subLog(
+      DetailLogType.Primitive,
+      `Heal ${value} to ${stringifyState(targetState)}`,
+    );
+    const targetInjury =
+      targetState.variables.maxHealth - targetState.variables.health;
+    const finalValue = Math.min(value, targetInjury);
+    this.mutate({
+      type: "modifyEntityVar",
+      state: targetState,
+      varName: "health",
+      value: targetState.variables.health + finalValue,
+    });
+    let healInfo: HealInfo = {
+      type: damageType,
+      expectedValue: value,
+      value: finalValue,
+      healKind: option.kind,
+      source: this.callerState,
+      via: this.skillInfo,
+      target: targetState,
+      causeDefeated: false,
+      fromReaction: null,
+    };
+    const modifier = new ModifyHealEventArg(this.state, healInfo);
+    this.handleInlineEvent("modifyHeal", modifier);
+    healInfo = modifier.damageInfo;
+    this.mutator.notify({
+      mutations: [
+        {
+          type: "damage",
+          damage: {
+            type: healInfo.type,
+            value: healInfo.value,
+            target: targetState.id,
+          },
+        },
+      ],
+    });
+    this.emitEvent("onDamageOrHeal", this.state, healInfo);
+  }
+
   /** 治疗角色 */
   heal(
     value: number,
@@ -481,69 +543,28 @@ export class SkillContext<Meta extends ContextMetaBase> {
   ) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      const damageType = DamageType.Heal;
-      const targetState = t.state;
-      if (!targetState.variables.alive) {
-        if (kind === "revive") {
-          this.mutator.log(
-            DetailLogType.Other,
-            `Before healing ${stringifyState(targetState)}, revive him.`,
-          );
-          this.mutate({
-            type: "modifyEntityVar",
-            state: targetState,
-            varName: "alive",
-            value: 1,
-          });
-          this.emitEvent("onRevive", this.state, targetState);
-        } else {
-          continue;
-        }
-      }
+      this.doHeal(value, t.state, { kind });
+    }
+  }
+
+  /** 增加最大生命值 */
+  increaseMaxHealth(value: number, target: CharacterTargetArg) {
+    const targets = this.queryCoerceToCharacters(target);
+    for (const t of targets) {
       using l = this.mutator.subLog(
         DetailLogType.Primitive,
-        `Heal ${value} to ${stringifyState(targetState)}`,
+        `Increase ${value} max health to ${stringifyState(t.state)}`,
       );
-      const targetInjury =
-        targetState.variables.maxHealth - targetState.variables.health;
-      const finalValue = Math.min(value, targetInjury);
+      const targetState = t.state;
       this.mutate({
         type: "modifyEntityVar",
         state: targetState,
-        varName: "health",
-        value: targetState.variables.health + finalValue,
+        varName: "maxHealth",
+        value: targetState.variables.maxHealth + value,
       });
-      let healInfo: HealInfo = {
-        type: damageType,
-        expectedValue: value,
-        value: finalValue,
-        healKind: kind,
-        source: this.callerState,
-        via: this.skillInfo,
-        target: targetState,
-        causeDefeated: false,
-        fromReaction: null,
-      };
-      const modifier = new ModifyHealEventArg(this.state, healInfo);
-      this.handleInlineEvent("modifyHeal", modifier);
-      healInfo = modifier.damageInfo;
-      this.mutator.notify({
-        mutations: [
-          {
-            type: "damage",
-            damage: {
-              type: healInfo.type,
-              value: healInfo.value,
-              target: targetState.id,
-            },
-          },
-        ],
-      });
-      // this.mutate({
-      //   type: "pushDamageLog",
-      //   damage: healInfo,
-      // });
-      this.emitEvent("onDamageOrHeal", this.state, healInfo);
+      // Note: `t.state` is a getter that gets latest state.
+      // Do not write `targetState` here
+      this.doHeal(value, t.state, { kind: "increaseMaxHealth" });
     }
   }
 
@@ -1495,6 +1516,7 @@ type SkillContextMutativeProps =
   | "switchActive"
   | "gainEnergy"
   | "heal"
+  | "increaseMaxHealth"
   | "damage"
   | "apply"
   | "createEntity"

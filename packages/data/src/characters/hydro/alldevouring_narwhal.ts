@@ -70,17 +70,6 @@ export const DarkShadow = summon(122043)
  */
 export const AnomalousAnatomy = status(122042)
   .variableCanAppend("extraMaxHealth", 1, Infinity)
-  .on("enter")
-  .do((c) => {
-    const master = c.self.master().state;
-    c.mutate({
-      type: "modifyEntityVar",
-      state: master,
-      varName: "maxHealth",
-      value: master.variables.maxHealth + 1,
-    });
-    c.heal(1, master, { kind: "increaseMaxHealth" });
-  })
   .on("dispose")
   .do((c) => {
     c.mutate({
@@ -167,6 +156,7 @@ export const DeepDevourersDomain = combatStatus(122041)
         narwhal.addStatus(AnomalousAnatomy, {
           overrideVariables: { extraMaxHealth }
         });
+        c.increaseMaxHealth(extraMaxHealth, narwhal.state);
       }
       c.setVariable("extraMaxHealth", 0);
     }

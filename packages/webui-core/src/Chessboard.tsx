@@ -58,6 +58,7 @@ import { SkillButton } from "./SkillButton";
 import { cached } from "./fetch";
 import { AsyncQueue } from "./async_queue";
 import { SelectCardView } from "./SelectCardView";
+import { Announcer } from "./Announcer";
 
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
@@ -733,11 +734,11 @@ function Chessboard(props: ChessboardProps) {
             {(skill) => <SkillButton data={skill} />}
           </For>
         </div>
-        <div class="absolute top-10 left-15 h-20 w-40 overflow-auto">
-          <ul>
-            <For each={mutationHintTexts}>{(txt) => <li>{txt}</li>}</For>
-          </ul>
-        </div>
+        <Announcer class="absolute top-10 left-15 h-40 w-50 overflow-auto"
+          mutations={local.mutations}
+          who={local.who}
+          stateData={local.stateData}
+        />
         {local.children}
         <Show when={!props.previewing && local.stateData.phase === "gameEnd"}>
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
