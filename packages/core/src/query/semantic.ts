@@ -149,9 +149,9 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
         const lhs = a.values[i];
         const rhs = b.values[i];
         if (lhs < rhs) {
-          return 1;
-        } else if (lhs > rhs) {
           return -1;
+        } else if (lhs > rhs) {
+          return 1;
         }
       }
       return 0;
