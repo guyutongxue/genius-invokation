@@ -95,7 +95,7 @@ export const WangshuInn = card(321005)
   .support("place")
   .on("endPhase", (c) => c.$(`my standby with health < maxHealth`))
   .usage(2)
-  .heal(2, "my standby characters order by health - naxHealth limit 1")
+  .heal(2, "my standby characters order by health - maxHealth limit 1")
   .done();
 
 /**
