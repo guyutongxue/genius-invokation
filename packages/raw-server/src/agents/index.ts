@@ -46,7 +46,6 @@ export function playerIoFromAgent(agentType: AgentType): PlayerIO {
       throw new Error(`Unknown agent: ${agentType}`);
   }
   return {
-    giveUp: false,
     notify: (n) => agent.onNotify?.(n),
     rpc: (m, data): any => {
       switch (m) {

@@ -186,9 +186,6 @@ class WsGame extends WsJsonRpcBase {
           this.playerNotify(who, n);
         },
         rpc: (m, arg) => this.playerRpc(who, m, arg),
-        get giveUp() {
-          return !config;
-        },
       };
     }
   }
@@ -263,6 +260,7 @@ class WsGame extends WsJsonRpcBase {
             message: `Player ${$who} not ready`,
           });
         }
+        this.game?.giveUp($who);
         this.players[$who] = null;
         this.sendRpcResult(id, 0);
         break;

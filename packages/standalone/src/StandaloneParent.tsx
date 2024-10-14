@@ -43,9 +43,15 @@ export interface StandaloneParentProps {
   version: Version;
 }
 
+const CHILD_WHO = 0;
+const PARENT_WHO = 1;
+
 export function StandaloneParent(props: StandaloneParentProps) {
   const [uiIo, Chessboard] = createPlayer(1, {
-    assetAltText: getName
+    assetAltText: getName,
+    onGiveUp: () => {
+      game?.giveUp(PARENT_WHO);
+    }
   });
 
   const [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
@@ -64,7 +70,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
     const autoGiveupWhenChildCloseInterval = window.setInterval(() => {
       if (newWindow?.closed && autoGiveupWhenChildCloseInterval !== null) {
         window.clearInterval(autoGiveupWhenChildCloseInterval);
-        childIo.giveUp = true;
+        game?.giveUp(CHILD_WHO);
         setPopupWindow(null);
       }
     }, 1000);
@@ -90,7 +96,6 @@ export function StandaloneParent(props: StandaloneParentProps) {
   };
 
   const childIo: PlayerIOWithCancellation = {
-    giveUp: false,
     notify: (...params) => {
       popupWindow()?.postMessage({
         giTcg: "1.0",
@@ -200,8 +205,6 @@ export function StandaloneParent(props: StandaloneParentProps) {
   };
 
   const resumeGame = async () => {
-    childIo.giveUp = false;
-    uiIo.giveUp = false;
     await showPopup();
     const logs = stateLog().slice(0, viewingLogIndex() + 1);
     childIo.cancelRpc();
@@ -228,7 +231,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
       return;
     }
     if (data.method === "giveUp") {
-      childIo.giveUp = true;
+      game?.giveUp(CHILD_WHO);
     }
   };
   let detailDialog: HTMLDialogElement;

@@ -94,8 +94,6 @@ export interface PlayerConfig {
 
 const INITIAL_ID = -500000;
 
-const IO_CHECK_GIVEUP_INTERVAL = 500;
-
 /** 获取玩家初始状态，主要是初始化“起始牌堆” */
 function initPlayerState(
   data: GameData,
@@ -294,17 +292,6 @@ export class Game {
     await this.io.pause?.(state, [...stateMutations], canResume);
     if (state.phase === "gameEnd") {
       this.gotWinner(state.winner);
-    } else {
-      await this.checkGiveUp();
-    }
-  }
-  private checkGiveUp() {
-    if (this.io.players[0].giveUp) {
-      return this.gotWinner(1);
-    } else if (this.io.players[1].giveUp) {
-      return this.gotWinner(0);
-    } else {
-      return null;
     }
   }
 
@@ -374,6 +361,10 @@ export class Game {
     return this.start();
   }
 
+  giveUp(who: 0 | 1) {
+    this.gotWinner(flip(who));
+  }
+
   /** 胜负已定，切换到 gameEnd 阶段 */
   private async gotWinner(winner: 0 | 1 | null) {
     if (this.state.phase !== "gameEnd") {
@@ -419,14 +410,6 @@ export class Game {
     } catch (e) {
       console.warn("Rpc request verify failed", e);
     }
-    // IO 的同时轮询检查是否有投降，若有立即结束对局
-    const interval = setInterval(() => {
-      if (this._terminated) {
-        clearInterval(interval);
-      } else {
-        this.checkGiveUp();
-      }
-    }, IO_CHECK_GIVEUP_INTERVAL);
     try {
       const resp = await this.io.players[who].rpc(method, req);
       verifyRpcResponse(method, resp);
@@ -437,8 +420,6 @@ export class Game {
       } else {
         throw new GiTcgIOError(who, String(e));
       }
-    } finally {
-      clearInterval(interval);
     }
   }
 

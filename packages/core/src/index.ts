@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export { version as CORE_VERSION } from "../package.json" with { type: "json" };
+import { version } from "../package.json" with { type: "json" };
+export { version as CORE_VERSION };
 export {
   Game,
   type GameOption,

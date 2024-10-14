@@ -23,8 +23,6 @@ import {
 } from "@gi-tcg/core";
 import { StandaloneChild } from "./StandaloneChild";
 import { StandaloneParent } from "./StandaloneParent";
-import { MultiplayerHost } from "./MultiplayerHost";
-import { MultiplayerGuest } from "./MultiplayerGuest";
 import { VERSIONS } from "@gi-tcg/core";
 import { DeckBuilder } from "@gi-tcg/deck-builder";
 import "@gi-tcg/deck-builder/style.css";
@@ -330,12 +328,6 @@ export function App() {
             deck1={deck1()}
             version={version()}
           />
-        </Match>
-        <Match when={mode() === GameMode.MultiplayerHost}>
-          <MultiplayerHost deck={deck0()} />
-        </Match>
-        <Match when={mode() === GameMode.MultiplayerGuest}>
-          <MultiplayerGuest deck={deck0()} roomId={roomId()} />
         </Match>
       </Switch>
       <dialog ref={deckBuilderDialog!} class="deck-builder-dialog">

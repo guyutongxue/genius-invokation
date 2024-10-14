@@ -155,7 +155,6 @@ class Player implements PlayerIOWithError {
     public readonly user: UserNoPassword,
     public readonly deck: Deck,
   ) {}
-  giveUp = false;
 
   private _nextRpcId = 0;
   private _rpcResolver: RpcResolver | null = null;
@@ -422,6 +421,15 @@ class Room {
       }
     })();
   }
+  giveUp(userId: number) {
+    if (this.players[0]?.user.id === userId) {
+      this.game?.giveUp(0);
+    } else if (this.players[1]?.user.id === userId) {
+      this.game?.giveUp(1);
+    } else {
+      throw new NotFoundException(`Player ${userId} not found`);
+    }
+  }
 
   onStop(cb: GameStopHandler) {
     this.onStopHandlers.push(cb);
@@ -670,13 +678,6 @@ export class RoomsService {
     if (!room) {
       throw new NotFoundException(`Room not found`);
     }
-    const players = room.getPlayers();
-    for (const player of players) {
-      if (player.user.id === userId) {
-        player.giveUp = true;
-        return;
-      }
-    }
-    throw new NotFoundException(`User ${userId} not in room`);
+    room.giveUp(userId);
   }
 }

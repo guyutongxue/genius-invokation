@@ -57,7 +57,6 @@ interface GameIO {
 }
 
 interface PlayerIO {
-  giveUp: boolean;
   notify: (notification: NotificationMessage) => void;
   rpc: <M extends RpcMethod>(
     method: M,
@@ -67,7 +66,6 @@ interface PlayerIO {
 ```
 
 玩家的交互行为在 `io.players` 中定义。其中：
-- 若设置 `giveUp` 为 `true`，则在下个“暂停点”处，游戏自动判负；
 - 在合理的时机游戏会调用玩家的 `notify` 函数以通知玩家有某些牌局的变化；
 - 在需要玩家操作（指重投骰子、切换手牌、选择出战角色、选择行动）的时刻，会调用 `rpc` 获取玩家的选择。也可通过实现此接口接入 AI 智能体。
 

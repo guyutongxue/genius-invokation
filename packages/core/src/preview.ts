@@ -22,13 +22,15 @@ import {
   DisposeOrTuneCardEventArg,
   GenericModifyActionEventArg,
   PlayCardEventArg,
-  SkillInfo,
   SwitchActiveEventArg,
   UseSkillEventArg,
 } from "./base/skill";
 import { AnyState, GameState } from "./base/state";
 import { SkillExecutor } from "./skill_executor";
-import { Writable, allEntities, getActiveCharacterIndex, getEntityArea } from "./utils";
+import {
+  getActiveCharacterIndex,
+  getEntityArea,
+} from "./utils";
 
 export type ActionInfoWithModification = ActionInfo & {
   eventArg: InstanceType<typeof GenericModifyActionEventArg>;
@@ -48,8 +50,14 @@ export class ActionPreviewer {
   ): Promise<ActionInfoWithModification> {
     // eventArg_PreCalc 为预计算，只应用 ActionInfo 的副作用
     // eventArg_Real 行动后使用，然后传入 handleEvent 使其真正发生
-    const eventArgPreCalc = new GenericModifyActionEventArg(this.originalState, actionInfo);
-    const eventArgReal = new GenericModifyActionEventArg(this.originalState, actionInfo);
+    const eventArgPreCalc = new GenericModifyActionEventArg(
+      this.originalState,
+      actionInfo,
+    );
+    const eventArgReal = new GenericModifyActionEventArg(
+      this.originalState,
+      actionInfo,
+    );
     let [previewState, completed] = await SkillExecutor.previewEvent(
       this.originalState,
       "modifyAction0",
@@ -136,7 +144,7 @@ export class ActionPreviewer {
             who: this.who,
             where: "hands",
             oldState: card,
-            reason: "disabled"
+            reason: "disabled",
           });
         } else {
           previewState = applyMutation(previewState, {
@@ -144,7 +152,7 @@ export class ActionPreviewer {
             who: this.who,
             where: "hands",
             oldState: card,
-            reason: "play"
+            reason: "play",
           });
           const skillInfo = defineSkillInfo({
             caller: activeCh(),

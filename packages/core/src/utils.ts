@@ -24,7 +24,15 @@ import {
   PlayerState,
 } from "./base/state";
 import { EntityArea } from "./base/entity";
-import { CharacterDefinition, CharacterTag, ElementTag, NATION_TAGS, NationTag, WEAPON_TAGS, WeaponTag } from "./base/character";
+import {
+  CharacterDefinition,
+  CharacterTag,
+  ElementTag,
+  NATION_TAGS,
+  NationTag,
+  WEAPON_TAGS,
+  WeaponTag,
+} from "./base/character";
 import { CardDefinition } from "./base/card";
 import {
   defineSkillInfo,
@@ -346,7 +354,9 @@ export function elementOfCharacter(ch: CharacterDefinition): DiceType {
 }
 export function weaponOfCharacter(ch: CharacterDefinition): WeaponTag {
   const weaponTags: readonly CharacterTag[] = WEAPON_TAGS;
-  const weapon = ch.tags.find((tag): tag is WeaponTag => weaponTags.includes(tag));
+  const weapon = ch.tags.find((tag): tag is WeaponTag =>
+    weaponTags.includes(tag),
+  );
   return weapon ?? "otherWeapon";
 }
 export function nationOfCharacter(ch: CharacterDefinition): NationTag[] {
@@ -380,8 +390,8 @@ function toSortedBy<T, K extends number[]>(
  * 3. 骰子数量多的靠前
  * 4. 骰子类型编号
  * @param player 当前玩家的状态，用以获取有效骰信息
- * @param dice 
- * @returns 
+ * @param dice
+ * @returns
  */
 export function sortDice(
   player: PlayerState,

@@ -443,7 +443,6 @@ export function createPlayer(
   };
   const renderQueue = new AsyncQueue();
   const io: PlayerIOWithCancellation = {
-    giveUp: false,
     notify: (msg) => {
       renderQueue.push(async () => {
         setStateData(msg.newState);
@@ -513,7 +512,6 @@ export function createPlayer(
   };
   createEffect(() => {
     if (giveUp()) {
-      io.giveUp = true;
       opt.onGiveUp?.();
       rejectRpc(new Error("User give up when rpc"));
     }
@@ -626,9 +624,9 @@ export function createPlayer(
         <button
           class="absolute left-2 top-2 z-15 btn btn-red-500"
           onClick={() => setGiveUp(true)}
-          disabled={io.giveUp}
+          disabled={giveUp()}
         >
-          {io.giveUp ? "已放弃对局" : "走此小道"}
+          {giveUp() ? "已放弃对局" : "走此小道"}
         </button>
       </Chessboard>
     </PlayerContext.Provider>

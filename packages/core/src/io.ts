@@ -40,7 +40,6 @@ import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 import { initiativeSkillsOfPlayer } from "./utils";
 
 export interface PlayerIO {
-  giveUp: boolean;
   readonly notify: (notification: NotificationMessage) => void;
   readonly rpc: <M extends RpcMethod>(
     method: M,
