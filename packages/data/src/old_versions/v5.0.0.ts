@@ -49,7 +49,7 @@ const LightningTouch = skill(14091)
 const PyroScorpionGuardianStance: StatusHandle = status(123033)
   .until("v5.0.0")
   .conflictWith(123034)
-  .on("decreaseDamaged", (c, e) => e.value > 0 &&
+  .on("decreaseDamaged", (c, e) =>
     c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
   .usagePerRound(1)
   .decreaseDamage(1)
@@ -64,7 +64,7 @@ const PyroScorpionGuardianStance: StatusHandle = status(123033)
 const PyroScorpionGuardianStance01: StatusHandle = status(123034)
   .until("v5.0.0")
   .conflictWith(123033)
-  .on("decreaseDamaged", (c, e) => e.value > 0 &&
+  .on("decreaseDamaged", (c, e) =>
     c.$(`my summons with definition id ${SpiritOfOmenPyroScorpion01} or my summons with definition id ${SpiritOfOmenPyroScorpion}`))
   .usagePerRound(2)
   .decreaseDamage(1)

@@ -26,7 +26,7 @@ import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tc
 export const Reflection = summon(112031)
   .endPhaseDamage(DamageType.Hydro, 1)
   .dispose()
-  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .done();

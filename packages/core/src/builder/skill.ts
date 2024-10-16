@@ -41,7 +41,11 @@ import {
   SkillInfoOfContextConstruction,
 } from "../base/skill";
 import { AnyState, EntityVariables, GameState } from "../base/state";
-import { ContextMetaBase, SkillContext, TypedSkillContext } from "./context/skill";
+import {
+  ContextMetaBase,
+  SkillContext,
+  TypedSkillContext,
+} from "./context/skill";
 import { ExtensionHandle, SkillHandle } from "./type";
 import {
   EntityArea,
@@ -308,7 +312,9 @@ const detailedEventDictionary = {
   }),
   decreaseDamaged: defineDescriptor("modifyDamage3", (c, e, r) => {
     return (
-      e.type !== DamageType.Piercing && checkRelative(c.state, e.target.id, r)
+      e.type !== DamageType.Piercing &&
+      e.value > 0 &&
+      checkRelative(c.state, e.target.id, r)
     );
   }),
   beforeHealed: defineDescriptor("modifyHeal", (c, e, r) => {
@@ -331,8 +337,10 @@ const detailedEventDictionary = {
     return checkRelative(c.state, { who }, r);
   }),
   playCard: defineDescriptor("onPlayCard", (c, e, r) => {
-    // 支援牌不触发自身
-    return c.self.id !== e.card.id && checkRelative(c.state, { who: e.who }, r);
+    return (
+      // c.self.id !== e.card.id &&  // 支援牌不触发自身——有例外，移到具体卡牌代码中
+      checkRelative(c.state, { who: e.who }, r)
+    );
   }),
   // modifySkill: defineDescriptor("modifyUseSkill", (c, e, r) => {
   //   return (

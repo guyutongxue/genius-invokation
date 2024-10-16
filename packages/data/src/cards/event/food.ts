@@ -62,7 +62,7 @@ export const LotusFlowerCrisp = card(333003)
   .food()
   .toStatus("@targets.0", 303303)
   .oneDuration()
-  .once("decreaseDamaged", (c, e) => e.value > 0)
+  .once("decreaseDamaged")
   .decreaseDamage(3)
   .done();
 
@@ -220,7 +220,7 @@ export const ButterCrab = card(333012)
   .food({ satiatedTarget: "all my characters" })
   .toStatus("all my characters", 303310)
   .oneDuration()
-  .once("decreaseDamaged", (c, e) => e.value > 0)
+  .once("decreaseDamaged")
   .decreaseDamage(2)
   .done();
 

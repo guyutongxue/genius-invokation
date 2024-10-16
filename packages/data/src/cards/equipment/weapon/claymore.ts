@@ -253,7 +253,7 @@ export const PortablePowerSaw = card(311309)
   .costSame(2)
   .weapon("claymore")
   .variable("marker", 0)
-  .on("decreaseDamaged", (c, e) => c.player.hands.length !== 0 && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.player.hands.length !== 0)
   .usagePerRound(1)
   .do((c, e) => {
     const cards = c.getMaxCostHands();

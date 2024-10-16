@@ -24,7 +24,6 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Skill
 export const FierySanctumsProtection = combatStatus(113094)
   .on("decreaseDamaged", (c, e) =>
     c.of(e.target).isActive() &&
-    e.value > 0 &&
     c.$(`my standby characters with definition id ${Dehya}`))
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)

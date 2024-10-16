@@ -26,7 +26,7 @@ import { character, skill, summon, card, DamageType, SummonHandle } from "@gi-tc
 export const OceanicMimicFrog = summon(122013)
   .hintIcon(DamageType.Hydro)
   .hintText("2")
-  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .on("endPhase", (c) => c.getVariable("usage") <= 0)
@@ -84,7 +84,7 @@ export const OceanicMimicRaptorPreview = summon(122010) // 这是纯水幻形·�
 export const OceanicMimicFrogPreview = summon(122014) // 这是纯水幻形·蛙的预览版本
   .hintIcon(DamageType.Hydro)
   .hintText("2")
-  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive())
   .usage(1, { autoDispose: false })
   .decreaseDamage(1)
   .on("endPhase", (c) => c.getVariable("usage") <= 0)

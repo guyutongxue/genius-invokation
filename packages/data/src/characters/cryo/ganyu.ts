@@ -35,7 +35,7 @@ export const SacredCryoPearl = summon(111011)
  * 可用次数：2
  */
 export const IceLotus = combatStatus(111012)
-  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive() && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.of(e.target).isActive())
   .usage(2)
   .decreaseDamage(1)
   .done();

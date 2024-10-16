@@ -41,7 +41,7 @@ export const StoneForce = status(126012)
  * 可用次数：3
  */
 export const Stonehide = status(126011)
-  .on("decreaseDamaged", (c, e) => e.value > 0)
+  .on("decreaseDamaged")
   .usage(3)
   .decreaseDamage(1)
   .if((c, e) => e.type === DamageType.Geo)

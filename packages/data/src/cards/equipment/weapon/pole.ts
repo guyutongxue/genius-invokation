@@ -227,7 +227,7 @@ export const ProspectorsDrill = card(311409)
   .costSame(2)
   .weapon("pole")
   .variable("unity", 0)
-  .on("decreaseDamaged", (c, e) => c.player.hands.length !== 0 && e.value > 0)
+  .on("decreaseDamaged", (c, e) => c.player.hands.length !== 0)
   .usagePerRound(1)
   .do((c, e) => {
     const cards = c.getMaxCostHands();
