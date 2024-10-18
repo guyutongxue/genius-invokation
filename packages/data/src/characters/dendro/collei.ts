@@ -36,7 +36,7 @@ export const CuileinAnbar = summon(117011)
  */
 export const Sprout = combatStatus(117012)
   .duration(1)
-  .on("skillDamage", (c, e) => e.isReactionRelatedTo(DamageType.Dendro))
+  .on("skillReaction", (c, e) => e.relatedTo(DamageType.Dendro))
   .usagePerRound(1)
   .damage(DamageType.Dendro, 1)
   .done();
