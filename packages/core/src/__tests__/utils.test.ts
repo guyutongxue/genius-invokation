@@ -37,7 +37,6 @@ test("sort dice", () => {
     characters: [
       {
         id: -1,
-        damageLog: [],
         entities: [],
         variables: {} as never,
         definition: {
@@ -56,7 +55,6 @@ test("sort dice", () => {
       },
       {
         id: -2,
-        damageLog: [],
         entities: [],
         variables: {} as never,
         definition: {

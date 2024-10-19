@@ -236,7 +236,6 @@ export class Game {
             ]),
           ) as any,
           entities: [],
-          damageLog: [],
         },
       });
     }

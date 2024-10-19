@@ -88,7 +88,6 @@ export interface CharacterState {
   readonly definition: CharacterDefinition;
   readonly entities: readonly EntityState[];
   readonly variables: CharacterVariables;
-  readonly damageLog: readonly (DamageInfo | HealInfo)[];
 }
 
 export type CharacterVariables = VariableOfConfig<CharacterVariableConfigs>;

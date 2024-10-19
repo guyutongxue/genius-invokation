@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, summon, combatStatus, card, DamageType, pair, extension } from "@gi-tcg/core/builder";
 
 /**
  * @id 111011
@@ -66,6 +66,9 @@ export const TrailOfTheQilin = skill(11012)
   .combatStatus(IceLotus)
   .done();
 
+const FrostflakeArrowUsedExtension = extension(11013, { used: pair(false) })
+  .done();
+
 /**
  * @id 11013
  * @name 霜华矢
@@ -75,13 +78,15 @@ export const TrailOfTheQilin = skill(11012)
 export const FrostflakeArrow = skill(11013)
   .type("normal")
   .costCryo(5)
+  .associateExtension(FrostflakeArrowUsedExtension)
   .do((c) => {
-    if (c.self.hasEquipment(UndividedHeart) && c.countOfSkill() > 0) {
+    if (c.self.hasEquipment(UndividedHeart) && c.getExtensionState().used[c.self.who]) {
       c.damage(DamageType.Piercing, 3, "opp standby");
     } else {
       c.damage(DamageType.Piercing, 2, "opp standby");
     }
     c.damage(DamageType.Cryo, 2);
+    c.setExtensionState((st) => st.used[c.self.who] = true);
   })
   .done();
 
