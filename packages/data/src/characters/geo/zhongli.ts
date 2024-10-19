@@ -134,7 +134,7 @@ export const DominanceOfEarth = card(216031)
   .on("increaseDamage", (c, e) => {
     return e.type === DamageType.Geo &&
       (e.source.definition.id === Zhongli || e.source.definition.type === "summon") && 
-      c.$(`@master with health >= 7`);
+      c.self.master().health >= 7;
   })
   .increaseDamage(1)
   .done();

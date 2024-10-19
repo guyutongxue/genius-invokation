@@ -212,7 +212,6 @@ export const ElementalResonanceEnduringRock = card(331602)
   .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
   .do((c) => {
     c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
-    return true;
   })
   .done();
 
