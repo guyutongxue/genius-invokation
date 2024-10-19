@@ -751,7 +751,7 @@ export class ModifyDamageEventArgBase extends DamageOrHealEventArg<DamageInfo> {
     const type = this._newDamageType ?? super.damageInfo.type;
     let value = super.damageInfo.value;
     value = value + this._increased; // 加
-    const multiplier = (this._multiplied ?? 1) * this._divider;
+    const multiplier = (this._multiplied ?? 1) / this._divider;
     value = Math.ceil(value * multiplier); // 乘除
     value = Math.max(0, value - this._decreased); // 减
     return {
