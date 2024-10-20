@@ -51,7 +51,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
     assetAltText: getName,
     onGiveUp: () => {
       game?.giveUp(PARENT_WHO);
-    }
+    },
   });
 
   const [popupWindow, setPopupWindow] = createSignal<Window | null>(null);
@@ -169,7 +169,11 @@ export function StandaloneParent(props: StandaloneParentProps) {
   };
 
   let game: Game | null = null;
-  const pause = async (state: GameState, mutations: unknown, canResume: boolean) => {
+  const pause = async (
+    state: GameState,
+    mutations: unknown,
+    canResume: boolean,
+  ) => {
     if (game !== null) {
       setStateLog((logs) => [...logs, { state, canResume }]);
     }
@@ -178,7 +182,11 @@ export function StandaloneParent(props: StandaloneParentProps) {
   const onGameError = (e: unknown, from?: Game) => {
     if (!from || from === game) {
       console.error(e);
-      alert(e instanceof Error ? e.message : String(e));
+      alert(
+        `游戏出现了内部错误！请点击主窗口下方“导出日志”按钮生成日志文件，并反馈至 GitHub Issue，thanks~\n${
+          e instanceof Error ? e.message : String(e)
+        }`,
+      );
     }
   };
 
@@ -213,7 +221,9 @@ export function StandaloneParent(props: StandaloneParentProps) {
     const newGame = new Game(getGameOption());
     game = newGame;
     const latestState = logs[logs.length - 1];
-    newGame.startFromState(latestState.state).catch((e) => onGameError(e, newGame));
+    newGame
+      .startFromState(latestState.state)
+      .catch((e) => onGameError(e, newGame));
     setStateLog(logs);
     setViewingLogIndex(-1);
     setFromImport(false);
