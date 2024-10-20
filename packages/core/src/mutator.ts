@@ -464,10 +464,14 @@ export class StateMutator {
             break;
           }
           case "takeMax": {
-            newValues[name] = Math.max(initialValue, oldValue ?? 0);
+            newValues[name] = Math.max(initialValue, oldValue);
             break;
           }
           case "append": {
+            if (oldValue > recreateBehavior.appendLimit) {
+              // 如果当前值已经超过可叠加的上限，则不再叠加
+              break;
+            }
             const appendValue =
               overrideVariables[name] ?? recreateBehavior.appendValue;
             const appendResult = appendValue + oldValue;
@@ -475,6 +479,7 @@ export class StateMutator {
               appendResult,
               recreateBehavior.appendLimit,
             );
+            break;
           }
         }
       }

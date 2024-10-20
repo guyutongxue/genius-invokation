@@ -929,6 +929,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     target?: CharacterState | EntityState,
   ) {
     target ??= this.callerState;
+    if (target.variables[prop] > maxLimit) {
+      // 如果当前值已经超过可叠加的上限，则不再叠加
+      return;
+    }
     const finalValue = Math.min(maxLimit, value + target.variables[prop]);
     this.setVariable(prop, finalValue, target);
   }
