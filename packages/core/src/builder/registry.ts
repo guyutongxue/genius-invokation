@@ -19,7 +19,7 @@ import { EntityDefinition, VariableConfig } from "../base/entity";
 import { ExtensionDefinition } from "../base/extension";
 import {
   InitiativeSkillDefinition,
-  TriggeredSkillDefinition,
+  SkillDefinition,
 } from "../base/skill";
 import { GiTcgDataError } from "../error";
 import {
@@ -30,7 +30,6 @@ import {
   getCorrectVersion,
 } from "../base/version";
 import { freeze } from "immer";
-import { isCharacterInitiativeSkill } from "../utils";
 
 let currentStore: DataStore | null = null;
 
@@ -49,7 +48,7 @@ export function beginRegistration() {
 }
 
 interface CharacterEntry
-  extends Omit<CharacterDefinition, "skills" | "initiativeSkills"> {
+  extends Omit<CharacterDefinition, "skills"> {
   skillIds: readonly number[];
 }
 
@@ -63,7 +62,7 @@ interface CharacterPassiveSkillEntry {
   type: "passiveSkill";
   version: VersionInfo;
   varConfigs: Record<string, VariableConfig>;
-  skills: readonly TriggeredSkillDefinition[];
+  skills: readonly SkillDefinition[];
 }
 
 interface CharacterInitiativeSkillEntry {

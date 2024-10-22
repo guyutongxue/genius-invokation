@@ -69,7 +69,7 @@ export const StellarRestoration = skill(14032)
   .costElectro(3)
   .do((c) => {
     c.damage(DamageType.Electro, 3);
-    const requestByCard = c.skillInfo.requestBy?.fromCard?.definition.id === LightningStiletto;
+    const requestByCard = c.skillInfo.requestBy?.caller?.definition.id === LightningStiletto;
     const lightningStilettoCard = c.player.hands.find((card) => card.definition.id === LightningStiletto);
     if (requestByCard || lightningStilettoCard) {
       if (c.self.hasEquipment(ThunderingPenance)) {

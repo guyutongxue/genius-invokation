@@ -220,8 +220,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
   get oppPlayer() {
     return this.state.players[flip(this.callerArea.who)];
   }
-  private get callerState(): CharacterState | EntityState {
-    return getEntityById(this.state, this.skillInfo.caller.id, true);
+  private get callerState(): AnyState {
+    return getEntityById(this.state, this.skillInfo.caller.id);
   }
   isMyTurn() {
     return this.state.currentTurn === this.callerArea.who;
@@ -244,13 +244,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
         charged: false,
         plunging: false,
         isPreview: this.skillInfo.isPreview,
+        isSelfDispose: false,
         mutatorConfig: this.skillInfo.mutatorConfig,
       }),
     );
     for (const info of infos) {
       arg._currentSkillInfo = info;
       try {
-        getEntityById(this.state, info.caller.id, true);
+        getEntityById(this.state, info.caller.id);
       } catch {
         continue;
       }
@@ -289,12 +290,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
   of(entityState: EntityState): TypedEntity<Meta>;
   of(entityState: CharacterState): TypedCharacter<Meta>;
   of<T extends ExEntityType = ExEntityType>(
-    entityId: EntityState | CharacterState | number,
+    entityId: AnyState | number,
   ): TypedExEntity<Meta, T>;
-  of(entityState: EntityState | CharacterState | number): unknown {
+  of(entityState: AnyState | number): unknown {
     if (typeof entityState === "number") {
-      entityState = getEntityById(this.state, entityState, true);
+      entityState = getEntityById(this.state, entityState);
     }
+    this.assertNotCard(entityState);
     if (entityState.definition.type === "character") {
       return new Character(this, entityState.id);
     } else {
@@ -869,9 +871,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
   // NOTICE: getVariable/setVariable/addVariable 应当将 caller 的严格版声明放在最后一个
   // 因为 (...args: infer R) 只能获取到重载列表中的最后一个，而严格版是 BuilderWithShortcut 需要的
 
-  getVariable(prop: string, target: CharacterState | EntityState): number;
+  getVariable(prop: string, target: AnyState): number;
   getVariable(prop: Meta["callerVars"]): number;
-  getVariable(prop: string, target?: CharacterState | EntityState) {
+  getVariable(prop: string, target?: AnyState) {
     if (target) {
       return this.of(target).getVariable(prop);
     } else {
@@ -882,31 +884,39 @@ export class SkillContext<Meta extends ContextMetaBase> {
   setVariable(
     prop: string,
     value: number,
-    target: CharacterState | EntityState,
+    target: AnyState,
   ): void;
   setVariable(prop: Meta["callerVars"], value: number): void;
-  setVariable(prop: any, value: number, target?: CharacterState | EntityState) {
+  setVariable(prop: any, value: number, target?: AnyState) {
     target ??= this.callerState;
+    this.assertNotCard(target);
     using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Set ${stringifyState(target)}'s variable ${prop} to ${value}`,
     );
     this.mutate({
       type: "modifyEntityVar",
-      state: target,
+      state: target as CharacterState | EntityState,
       varName: prop,
       value: value,
     });
   }
 
+  private assertNotCard(target: AnyState): asserts target is CharacterState | EntityState {
+    if (target.definition.type === "card") {
+      throw new GiTcgDataError(`Cannot add variable to card`);
+    }
+  }
+
   addVariable(
     prop: string,
     value: number,
-    target: CharacterState | EntityState,
+    target: AnyState,
   ): void;
   addVariable(prop: Meta["callerVars"], value: number): void;
-  addVariable(prop: any, value: number, target?: CharacterState | EntityState) {
+  addVariable(prop: any, value: number, target?: AnyState) {
     target ??= this.callerState;
+    this.assertNotCard(target);
     const finalValue = value + target.variables[prop];
     this.setVariable(prop, finalValue, target);
   }
@@ -915,7 +925,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     prop: string,
     value: number,
     maxLimit: number,
-    target: CharacterState | EntityState,
+    target: AnyState,
   ): void;
   addVariableWithMax(
     prop: Meta["callerVars"],
@@ -926,9 +936,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     prop: any,
     value: number,
     maxLimit: number,
-    target?: CharacterState | EntityState,
+    target?: AnyState,
   ) {
     target ??= this.callerState;
+    this.assertNotCard(target);
     if (target.variables[prop] > maxLimit) {
       // 如果当前值已经超过可叠加的上限，则不再叠加
       return;
@@ -1314,6 +1325,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const cardTemplate = {
       id: 0,
       definition: cardDef,
+      variables: {}
     };
     const payloads = Array.from(
       { length: count },
@@ -1386,10 +1398,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         oldState: card,
         reason: "disposed",
       });
-      this.emitEvent("requestDisposeCard", this.skillInfo, who, card);
       const method: DisposeOrTuneMethod =
         where === "hands" ? "disposeFromHands" : "disposeFromPiles";
-      this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);
+      this.emitEvent("onDisposeOrTuneCard", this.state, card, method);
     }
   }
 

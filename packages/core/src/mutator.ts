@@ -327,7 +327,7 @@ export class StateMutator {
       who,
       candidates.map((c) => c.id),
     );
-    return getEntityById(this.state, activeChId, true) as CharacterState;
+    return getEntityById(this.state, activeChId) as CharacterState;
   }
 
   async selectCard(
@@ -388,6 +388,7 @@ export class StateMutator {
     const cardState: CardState = {
       id: 0,
       definition,
+      variables: {},
     };
     this.mutate({
       type: "createCard",
@@ -493,7 +494,7 @@ export class StateMutator {
           });
         }
       }
-      const newState = getEntityById(this.state, oldState.id);
+      const newState = getEntityById(this.state, oldState.id) as EntityState;
       return { oldState, newState };
     } else {
       if (
@@ -517,7 +518,7 @@ export class StateMutator {
         where: area,
         value: initState,
       });
-      const newState = getEntityById(this.state, initState.id);
+      const newState = getEntityById(this.state, initState.id) as EntityState;
       return { oldState: null, newState };
     }
   }

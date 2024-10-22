@@ -59,7 +59,7 @@ export type SkillDescription<Arg> = (
 ) => SkillResult;
 
 export type CommonSkillType = "normal" | "elemental" | "burst" | "technique";
-export type SkillType = CommonSkillType | "playCard" | "disposeCard";
+export type SkillType = CommonSkillType | "playCard";
 
 export type InitiativeSkillFilter = (
   state: GameState,
@@ -76,24 +76,24 @@ export type InitiativeSkillTargetGetter = (
   skillInfo: SkillInfo,
 ) => InitiativeSkillEventArg[];
 
-export interface InitiativeSkillDefinition
-  extends SkillDefinitionBase<InitiativeSkillEventArg> {
+export interface InitiativeSkillConfig {
   readonly skillType: SkillType;
   readonly requiredCost: readonly DiceType[];
   readonly gainEnergy: boolean;
   readonly prepared: boolean;
-  readonly triggerOn: null;
   readonly getTarget: InitiativeSkillTargetGetter;
+}
+
+export interface InitiativeSkillDefinition
+  extends SkillDefinitionBase<InitiativeSkillEventArg> {
+  readonly triggerOn: "initiative";
+  readonly initiativeSkillConfig: InitiativeSkillConfig;
 }
 
 /** 使用 `defineSkillInfo` 创建 */
 export interface SkillInfo {
-  readonly caller: CharacterState | EntityState;
+  readonly caller: AnyState;
   readonly definition: SkillDefinition;
-  /**
-   * 仅当此技能是作为卡牌描述的一部分时才有值。
-   */
-  readonly fromCard: CardState | null;
   /**
    * 若此技能通过 `requestSkill` 如准备技能或天赋牌触发，
    * 则此字段指定上述技能的 `SkillInfo`
@@ -107,8 +107,18 @@ export interface SkillInfo {
    * 是否是预览中。部分技能会因是否为预览而采取不同的效果。
    */
   readonly isPreview: boolean;
+  /** 使否是“亡语” */
+  readonly isSelfDispose: boolean;
   /** @internal SkillContext 内部的 StateMutator 的配置 */
   readonly mutatorConfig?: MutatorConfig;
+}
+export interface UseSkillSkillInfo extends SkillInfo {
+  readonly caller: CharacterState;
+  readonly definition: InitiativeSkillDefinition;
+}
+export interface PlayCardSkillInfo extends SkillInfo {
+  readonly caller: CardState;
+  readonly definition: InitiativeSkillDefinition;
 }
 
 type RequiredWith<T, K extends keyof T> = T & Required<Pick<T, K>>;
@@ -118,13 +128,15 @@ type InitSkillInfo = RequiredWith<
   "caller" | "definition" // This is required for every skill info
 >;
 
+export function defineSkillInfo(init: InitSkillInfo & { caller: CardState }): PlayCardSkillInfo;
+export function defineSkillInfo(init: InitSkillInfo): SkillInfo;
 export function defineSkillInfo(init: InitSkillInfo): SkillInfo {
   return {
-    fromCard: null,
     requestBy: null,
     charged: false,
     plunging: false,
     isPreview: false,
+    isSelfDispose: false,
     ...init,
   };
 }
@@ -140,7 +152,7 @@ export interface SkillInfoOfContextConstruction extends SkillInfo {
 export interface DamageInfo {
   readonly type: Exclude<DamageType, DamageType.Heal>;
   readonly value: number;
-  readonly source: CharacterState | EntityState;
+  readonly source: AnyState;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly causeDefeated: boolean;
@@ -159,7 +171,7 @@ export interface HealInfo {
   readonly expectedValue: number;
   readonly value: number;
   readonly healKind: HealKind;
-  readonly source: CharacterState | EntityState;
+  readonly source: AnyState;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly fromReaction: null;
@@ -184,7 +196,7 @@ export interface UseSkillInfo {
 export interface PlayCardInfo {
   readonly type: "playCard";
   readonly who: 0 | 1;
-  readonly card: CardState;
+  readonly skill: PlayCardSkillInfo;
   readonly targets: AnyState[];
 }
 
@@ -233,7 +245,7 @@ export class EventArg {
   _currentSkillInfo: SkillInfo | null = null;
   constructor(public readonly onTimeState: GameState) {}
 
-  protected get caller(): EntityState | CharacterState {
+  protected get caller(): AnyState {
     if (this._currentSkillInfo === null) {
       throw new GiTcgCoreInternalError("EventArg caller not set");
     }
@@ -294,7 +306,7 @@ export class ActionEventArg<
         text = `use skill [skill:${this.action.skill.definition.id}]`;
         break;
       case "playCard":
-        text = `play card ${stringifyState(this.action.card)}`;
+        text = `play card ${stringifyState(this.action.skill.caller)}`;
         break;
       case "switchActive":
         text = `switch active character to ${stringifyState(this.action.to)}`;
@@ -313,12 +325,11 @@ export class ActionEventArg<
     )}, fast: ${this.action.fast}`;
   }
   originalDiceCost(): DiceType[] {
-    if (this.isUseSkill()) {
-      return this.action.skill.definition.requiredCost.filter(
-        (d) => d !== DiceType.Energy,
-      );
-    } else if (this.isPlayCard()) {
-      return this.action.card.definition.requiredCost.filter(
+    if (
+      (this.isUseSkill() || this.isPlayCard()) &&
+      this.action.skill.definition.initiativeSkillConfig
+    ) {
+      return this.action.skill.definition.initiativeSkillConfig.requiredCost.filter(
         (d) => d !== DiceType.Energy,
       );
     } else {
@@ -345,14 +356,12 @@ export class ActionEventArg<
     if (this.action.type === "useSkill") {
       const skillDef = this.action.skill.definition;
       return (
-        character.definition.initiativeSkills.some(
-          (sk) => sk.id === skillDef.id,
-        ) &&
-        (!skillType || skillDef.skillType === skillType)
+        character.definition.skills.some((sk) => sk.id === skillDef.id) &&
+        (!skillType || skillDef.initiativeSkillConfig?.skillType === skillType)
       );
     } else if (this.action.type === "playCard") {
       return !!(
-        this.action.card.definition.tags.includes("talent") &&
+        this.action.skill.caller.definition.tags.includes("talent") &&
         this.action.targets.find((target) => target.id === character.id)
       );
     } else {
@@ -362,7 +371,10 @@ export class ActionEventArg<
 
   isSkillType(skillType: CommonSkillType): boolean {
     if (this.isUseSkill()) {
-      return this.action.skill.definition.skillType === skillType;
+      return (
+        this.action.skill.definition.initiativeSkillConfig?.skillType ===
+        skillType
+      );
     } else {
       return false;
     }
@@ -375,7 +387,7 @@ export class ActionEventArg<
   }
   hasCardTag(tag: CardTag) {
     if (this.action.type === "playCard") {
-      return this.action.card.definition.tags.includes(tag);
+      return this.action.skill.caller.definition.tags.includes(tag);
     } else {
       return false;
     }
@@ -383,7 +395,9 @@ export class ActionEventArg<
   hasOneOfCardTag(...tags: CardTag[]) {
     if (this.action.type === "playCard") {
       const action: PlayCardInfo = this.action;
-      return tags.some((tag) => action.card.definition.tags.includes(tag));
+      return tags.some((tag) =>
+        action.skill.caller.definition.tags.includes(tag),
+      );
     } else {
       return false;
     }
@@ -557,7 +571,7 @@ export class UseSkillEventArg extends PlayerEventArg {
     return `use skill [skill:${this.skill.definition.id}]`;
   }
   isSkillType(skillType: CommonSkillType): boolean {
-    return this.skill.definition.skillType === skillType;
+    return this.skill.definition.initiativeSkillConfig?.skillType === skillType;
   }
   isChargedAttack(): this is ActionEventArg<UseSkillInfo> {
     return this.skill.charged;
@@ -596,36 +610,16 @@ export class PlayCardEventArg extends PlayerEventArg {
     super(state, playCardInfo.who);
   }
   get card() {
-    return this.playCardInfo.card;
+    return this.playCardInfo.skill.caller;
   }
   override toString() {
-    return `play card ${stringifyState(this.playCardInfo.card)}`;
+    return `play card ${stringifyState(this.card)}`;
   }
   hasCardTag(tag: CardTag) {
     return this.card.definition.tags.includes(tag);
   }
   hasOneOfCardTag(...tags: CardTag[]) {
     return tags.some((tag) => this.card.definition.tags.includes(tag));
-  }
-}
-
-export class DisposeOrTuneCardEventArg extends PlayerEventArg {
-  constructor(
-    state: GameState,
-    who: 0 | 1,
-    public readonly card: CardState,
-    public readonly method: DisposeOrTuneMethod,
-  ) {
-    super(state, who);
-  }
-
-  diceCost() {
-    return diceCostOfCard(this.card.definition);
-  }
-  override toString(): string {
-    return `player ${this.who} ${this.method} card ${stringifyState(
-      this.card,
-    )}`;
   }
 }
 
@@ -695,7 +689,7 @@ export class DamageOrHealEventArg<
     return isReactionSwirl(this.damageInfo as DamageInfo);
   }
   viaSkillType(skillType: CommonSkillType): boolean {
-    return this.via.definition.skillType === skillType;
+    return this.via.definition.initiativeSkillConfig?.skillType === skillType;
   }
   viaChargedAttack(): boolean {
     return this.via.charged;
@@ -864,7 +858,7 @@ export class EntityEventArg extends EventArg {
   public readonly who: 0 | 1;
   constructor(
     state: GameState,
-    public readonly entity: CharacterState | EntityState,
+    public readonly entity: AnyState,
   ) {
     super(state);
     this.who = getEntityArea(state, entity.id).who;
@@ -887,6 +881,27 @@ export class EnterEventArg extends EntityEventArg {
   }
   toString(): string {
     return `${super.toString()}, overridden: ${!!this.enterInfo.overridden}`;
+  }
+}
+
+export class DisposeEventArg extends EntityEventArg {}
+
+export class DisposeOrTuneCardEventArg extends DisposeEventArg {
+  constructor(
+    state: GameState,
+    public readonly card: CardState,
+    public readonly method: DisposeOrTuneMethod,
+  ) {
+    super(state, card);
+  }
+
+  diceCost() {
+    return diceCostOfCard(this.card.definition);
+  }
+  override toString(): string {
+    return `player ${this.who} ${this.method} card ${stringifyState(
+      this.card,
+    )}`;
   }
 }
 
@@ -1124,17 +1139,6 @@ class UseSkillRequestArg extends RequestArg {
   }
 }
 
-// 请求执行行动牌的舍弃时效果
-class DisposeCardRequestArg extends RequestArg {
-  constructor(
-    requestBy: SkillInfo,
-    public readonly who: 0 | 1,
-    public readonly card: CardState,
-  ) {
-    super(requestBy);
-  }
-}
-
 class TriggerEndPhaseSkillRequestArg extends RequestArg {
   constructor(
     requestBy: SkillInfo,
@@ -1150,7 +1154,6 @@ const REQUEST_MAP = {
   requestSelectCard: SelectCardRequestArg,
   requestReroll: RerollRequestArg,
   requestUseSkill: UseSkillRequestArg,
-  requestDisposeCard: DisposeCardRequestArg,
   requestTriggerEndPhaseSkill: TriggerEndPhaseSkillRequestArg,
 } satisfies Record<string, new (...args: any[]) => RequestArg>;
 type RequestMap = typeof REQUEST_MAP;
@@ -1189,15 +1192,12 @@ export type SkillActionFilter<Arg> = (
 
 export interface TriggeredSkillDefinition<E extends EventNames = EventNames>
   extends SkillDefinitionBase<EventArgOf<E>> {
-  readonly skillType: null;
   readonly triggerOn: E;
-  readonly requiredCost: readonly [];
-  readonly gainEnergy: false;
+  readonly initiativeSkillConfig: null;
 }
 
 export type SkillDefinition =
   | InitiativeSkillDefinition
-  | CardDefinition
   | TriggeredSkillDefinition;
 
 export function stringifyDamageInfo(damage: DamageInfo | HealInfo): string {

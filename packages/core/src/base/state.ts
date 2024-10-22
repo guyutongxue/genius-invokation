@@ -22,8 +22,6 @@ import {
   EntityVariableConfigs,
   VariableOfConfig,
 } from "./entity";
-import { Mutation } from "./mutation";
-import { DamageInfo, HealInfo, SkillInfo } from "./skill";
 import { GameData } from "../builder/registry";
 import { ExtensionDefinition } from "./extension";
 
@@ -81,6 +79,7 @@ export interface PlayerState {
 export interface CardState {
   readonly id: number;
   readonly definition: CardDefinition;
+  readonly variables: Record<never, never>;
 }
 
 export interface CharacterState {
@@ -100,14 +99,14 @@ export interface EntityState {
 
 export type EntityVariables = VariableOfConfig<EntityVariableConfigs>;
 
-export type AnyState = CharacterState | EntityState;
+export type AnyState = CharacterState | EntityState | CardState;
 
 export interface ExtensionState {
   readonly definition: ExtensionDefinition;
   readonly state: unknown;
 }
 
-export function stringifyState(st: AnyState | CardState): string {
+export function stringifyState(st: AnyState): string {
   let type: string;
   if (st.definition.__definition === "cards") {
     type = "card";

@@ -14,9 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Aura } from "@gi-tcg/typings";
-import { TriggeredSkillDefinition, InitiativeSkillDefinition } from "./skill";
+import { SkillDefinition } from "./skill";
 import { VariableConfig } from "./entity";
-import { Version, VersionInfo } from "./version";
+import { VersionInfo } from "./version";
 
 export type ElementTag =
   | "cryo"
@@ -67,8 +67,7 @@ export interface CharacterDefinition {
   readonly version: VersionInfo;
   readonly tags: readonly CharacterTag[];
   readonly varConfigs: CharacterVariableConfigs;
-  readonly initiativeSkills: readonly InitiativeSkillDefinition[];
-  readonly skills: readonly TriggeredSkillDefinition[];
+  readonly skills: readonly SkillDefinition[];
 }
 
 export interface CharacterVariableConfigs {

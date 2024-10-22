@@ -333,12 +333,10 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "modifyEntityVar": {
       const newState = produce(state, (draft) => {
-        const entity = getEntityById(draft, m.state.id, true) as Draft<
-          CharacterState | EntityState
-        >;
-        entity.variables[m.varName] = m.value;
+        const entity = getEntityById(draft, m.state.id) as Draft<EntityState>;
+        (entity.variables as Record<string, number>)[m.varName] = m.value;
       });
-      m.state = getEntityById(newState, m.state.id, true);
+      m.state = getEntityById(newState, m.state.id) as EntityState;
       return newState;
     }
     case "transformDefinition": {
@@ -351,7 +349,6 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const entity = getEntityById(
           draft,
           m.state.id,
-          true,
         ) as Draft<CharacterState>;
         entity.definition = m.newDefinition as Draft<CharacterDefinition>;
         // 如果是转换角色形态，则移动 skillLog 到新的定义 id 下
@@ -365,7 +362,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
           player.roundSkillLog.delete(m.state.definition.id);
         }
       });
-      m.state = getEntityById(newState, m.state.id, true) as CharacterState;
+      m.state = getEntityById(newState, m.state.id) as CharacterState;
       return newState;
     }
     case "resetDice": {

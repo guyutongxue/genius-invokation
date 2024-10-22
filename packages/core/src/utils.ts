@@ -56,21 +56,15 @@ export type Writable<T> = {
 export function getEntityById(
   state: GameState,
   id: number,
-  includeCharacter?: false,
-): EntityState;
-export function getEntityById(
-  state: GameState,
-  id: number,
-  includeCharacter: true,
-): EntityState | CharacterState;
-export function getEntityById(
-  state: GameState,
-  id: number,
-  includeCharacter = false,
-): EntityState | CharacterState {
+): AnyState {
   for (const player of state.players) {
+    for (const card of player.hands) {
+      if (card.id === id) {
+        return card;
+      }
+    }
     for (const ch of player.characters) {
-      if (includeCharacter && ch.id === id) {
+      if (ch.id === id) {
         return ch;
       }
       for (const entity of ch.entities) {
@@ -115,6 +109,8 @@ export function allEntities(state: GameState): AnyState[] {
       }
     }
 
+    result.push(...player.hands);
+
     result.push(active, ...active.entities);
     result.push(...player.combatStatuses);
     for (const ch of standby) {
@@ -127,9 +123,14 @@ export function allEntities(state: GameState): AnyState[] {
   return result;
 }
 
-export interface CallerAndSkill {
-  caller: EntityState | CharacterState;
+export interface CallerAndTriggeredSkill {
+  caller: AnyState;
   skill: TriggeredSkillDefinition;
+}
+
+export interface CallerAndInitiativeSkill {
+  caller: AnyState;
+  skill: InitiativeSkillDefinition
 }
 
 /**
@@ -141,7 +142,7 @@ export interface CallerAndSkill {
  */
 export function initiativeSkillsOfPlayer(
   player: PlayerState,
-): { caller: AnyState; definition: InitiativeSkillDefinition }[] {
+): CallerAndInitiativeSkill[] {
   const activeCh = player.characters.find(
     (ch) => player.activeCharacterId === ch.id,
   );
@@ -150,16 +151,21 @@ export function initiativeSkillsOfPlayer(
   }
   return [
     ...activeCh.entities.flatMap((st) =>
-      st.definition.initiativeSkills.map((sk) => ({
-        caller: st,
-        definition: sk,
-      })),
+      st.definition.skills
+        .filter((sk) => sk.triggerOn === "initiative")
+        .map((sk) => ({
+          caller: st,
+          skill: sk,
+        })),
     ),
-    ...activeCh.definition.initiativeSkills
-      .filter((sk) => !sk.prepared)
+    ...activeCh.definition.skills
+      .filter(
+        (sk): sk is InitiativeSkillDefinition =>
+          sk.triggerOn === "initiative" && !sk.initiativeSkillConfig.prepared,
+      )
       .map((sk) => ({
         caller: activeCh,
-        definition: sk,
+        skill: sk,
       })),
   ];
 }
@@ -173,12 +179,11 @@ export function initiativeSkillsOfPlayer(
 export function allSkills(
   state: GameState,
   triggerOn: EventNames,
-): CallerAndSkill[] {
-  const result: CallerAndSkill[] = [];
+): CallerAndTriggeredSkill[] {
+  const result: CallerAndTriggeredSkill[] = [];
   const caller = getEntityById(
     state,
     state.players[state.currentTurn].activeCharacterId,
-    true,
   ) as CharacterState;
   for (const ext of state.extensions) {
     for (const skill of ext.definition.skills) {
@@ -285,7 +290,8 @@ export function isCharacterInitiativeSkill(
     allowSkillType.push("technique");
   }
   return (
-    skillDef.triggerOn === null && allowSkillType.includes(skillDef.skillType)
+    skillDef.triggerOn === "initiative" &&
+    allowSkillType.includes(skillDef.initiativeSkillConfig.skillType)
   );
 }
 
@@ -332,8 +338,28 @@ export function isSkillDisabled(character: CharacterState): boolean {
   );
 }
 
+export function playSkillOfCard(
+  card: CardDefinition,
+): InitiativeSkillDefinition {
+  const skillDefinition = card.skills.find(
+    (sk) => sk.triggerOn === "initiative",
+  );
+  if (!skillDefinition) {
+    throw new GiTcgCoreInternalError(
+      `Card definition ${card.id} do not have a initiative skill`,
+    );
+  }
+  return skillDefinition;
+}
+
+export function costOfCard(card: CardDefinition): readonly DiceType[] {
+  return playSkillOfCard(card).initiativeSkillConfig.requiredCost;
+}
+
 export function diceCostOfCard(card: CardDefinition): number {
-  return card.requiredCost.filter((c) => c !== DiceType.Energy).length;
+  return playSkillOfCard(card).initiativeSkillConfig.requiredCost.filter(
+    (c) => c !== DiceType.Energy,
+  ).length;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

@@ -30,7 +30,7 @@ export class Entity<Meta extends ContextMetaBase> {
   }
 
   get state(): EntityState {
-    return getEntityById(this.skillContext.state, this.id);
+    return getEntityById(this.skillContext.state, this.id) as EntityState;
   }
   get definition(): EntityDefinition {
     return this.state.definition;

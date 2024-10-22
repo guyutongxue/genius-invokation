@@ -25,7 +25,7 @@ import {
   USAGE_PER_ROUND_VARIABLE_NAMES,
   VariableConfig,
 } from "../base/entity";
-import { InitiativeSkillDefinition, TriggeredSkillDefinition } from "../base/skill";
+import { SkillDefinition } from "../base/skill";
 import { registerEntity, registerPassiveSkill } from "./registry";
 import {
   BuilderWithShortcut,
@@ -46,7 +46,7 @@ import {
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
 import { Writable, getEntityArea, getEntityById } from "../utils";
-import { EntityState, GameState } from "../base/state";
+import { AnyState, EntityState, GameState } from "../base/state";
 import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
 export interface AppendOptions {
@@ -109,7 +109,7 @@ export class EntityBuilder<
   AssociatedExt extends ExtensionHandle = never,
 > {
   private _skillNo = 0;
-  _skillList: TriggeredSkillDefinition[] = [];
+  _skillList: SkillDefinition[] = [];
   _usagePerRoundIndex = 0;
   private _tags: EntityTag[] = [];
   _varConfigs: Writable<EntityVariableConfigs> = {};
@@ -118,7 +118,6 @@ export class EntityBuilder<
   private _hintText: string | null = null;
   private _descriptionDictionary: Writable<DescriptionDictionary> = {};
   _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
-  _initiativeSkills: InitiativeSkillDefinition[] = [];
   private generateSkillId() {
     const thisSkillNo = ++this._skillNo;
     return this.id + thisSkillNo / 100;
@@ -146,7 +145,7 @@ export class EntityBuilder<
       throw new GiTcgDataError(`Description key ${key} already exists`);
     }
     const entry: DescriptionDictionaryEntry = (st, id) => {
-      const self = getEntityById(st, id);
+      const self = getEntityById(st, id) as EntityState;
       const area = getEntityArea(st, id);
       const ext = st.extensions.find(
         (ext) => ext.definition.id === this._associatedExtensionId,
@@ -516,7 +515,6 @@ export class EntityBuilder<
         visibleVarName: this._visibleVarName,
         varConfigs: this._varConfigs,
         hintText: this._hintText,
-        initiativeSkills: this._initiativeSkills,
         skills: this._skillList,
         tags: this._tags,
         type: this._type,

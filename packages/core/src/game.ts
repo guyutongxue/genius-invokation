@@ -36,13 +36,13 @@ import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   elementOfCharacter,
   getActiveCharacterIndex,
-  getEntityById,
   findReplaceAction,
   shuffle,
   sortDice,
   isSkillDisabled,
   initiativeSkillsOfPlayer,
   getEntityArea,
+  playSkillOfCard,
 } from "./utils";
 import { GameData } from "./builder/registry";
 import {
@@ -246,6 +246,7 @@ export class Game {
         value: {
           id: 0,
           definition: card,
+          variables: {}
         },
         target: "piles",
       });
@@ -671,7 +672,8 @@ export class Game {
           break;
         }
         case "playCard": {
-          if (actionInfo.card.definition.tags.includes("legend")) {
+          const card = actionInfo.skill.caller;
+          if (card.definition.tags.includes("legend")) {
             this.mutate({
               type: "setPlayerFlag",
               who,
@@ -688,13 +690,13 @@ export class Game {
             player().combatStatuses.find((st) =>
               st.definition.tags.includes("disableEvent"),
             ) &&
-            actionInfo.card.definition.cardType === "event"
+            card.definition.cardType === "event"
           ) {
             this.mutate({
               type: "removeCard",
               who,
               where: "hands",
-              oldState: actionInfo.card,
+              oldState: card,
               reason: "disabled",
             });
           } else {
@@ -702,15 +704,11 @@ export class Game {
               type: "removeCard",
               who,
               where: "hands",
-              oldState: actionInfo.card,
+              oldState: card,
               reason: "play",
             });
             await this.executeSkill(
-              defineSkillInfo({
-                caller: activeCh(),
-                definition: actionInfo.card.definition,
-                fromCard: actionInfo.card,
-              }),
+              actionInfo.skill,
               {
                 targets: actionInfo.targets,
               },
@@ -744,7 +742,6 @@ export class Game {
           });
           const tuneCardEventArg = new DisposeOrTuneCardEventArg(
             this.state,
-            who,
             actionInfo.card,
             "elementalTuning",
           );
@@ -864,23 +861,23 @@ export class Game {
     if (isSkillDisabled(activeCh)) {
       // Use skill is disabled, skip
     } else {
-      for (const { caller, definition } of initiativeSkillsOfPlayer(player)) {
-        const charged = definition.skillType === "normal" && player.canCharged;
-        const plunging =
-          definition.skillType === "normal" &&
+      for (const { caller, skill } of initiativeSkillsOfPlayer(player)) {
+        const skillType = skill.initiativeSkillConfig.skillType;
+        const charged = skillType === "normal" && player.canCharged;
+        const plunging = skillType === "normal" &&
           (player.canPlunging ||
             activeCh.entities.some((et) =>
               et.definition.tags.includes("normalAsPlunging"),
             ));
         const skillInfo = defineSkillInfo({
           caller,
-          definition,
+          definition: skill,
           charged,
           plunging,
         });
-        const allTargets = (0, definition.getTarget)(this.state, skillInfo);
+        const allTargets = (0, skill.initiativeSkillConfig.getTarget)(this.state, skillInfo);
         for (const arg of allTargets) {
-          if (!(0, definition.filter)(this.state, skillInfo, arg)) {
+          if (!(0, skill.filter)(this.state, skillInfo, arg)) {
             continue;
           }
           const actionInfo: ActionInfo = {
@@ -889,7 +886,7 @@ export class Game {
             skill: skillInfo,
             targets: arg.targets,
             fast: false,
-            cost: [...definition.requiredCost],
+            cost: [...skill.initiativeSkillConfig.requiredCost],
           };
           result.push(actionInfo);
         }
@@ -899,10 +896,10 @@ export class Game {
     // Cards
     for (const card of player.hands) {
       let allTargets: InitiativeSkillEventArg[];
+      const skillDef = playSkillOfCard(card.definition);
       const skillInfo = defineSkillInfo({
-        caller: activeCh,
-        definition: card.definition,
-        fromCard: card,
+        caller: card,
+        definition: skillDef,
       });
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
@@ -911,16 +908,16 @@ export class Game {
       ) {
         allTargets = player.supports.map((st) => ({ targets: [st] }));
       } else {
-        allTargets = (0, card.definition.getTarget)(this.state, skillInfo);
+        allTargets = (0, skillDef.initiativeSkillConfig.getTarget)(this.state, skillInfo);
       }
       for (const arg of allTargets) {
-        if ((0, card.definition.filter)(this.state, skillInfo, arg)) {
+        if ((0, skillDef.filter)(this.state, skillInfo, arg)) {
           const actionInfo: ActionInfo = {
             type: "playCard",
             who,
-            card,
+            skill: skillInfo,
             targets: arg.targets,
-            cost: [...card.definition.requiredCost],
+            cost: [...skillDef.initiativeSkillConfig.requiredCost],
             fast: !card.definition.tags.includes("action"),
           };
           result.push(actionInfo);

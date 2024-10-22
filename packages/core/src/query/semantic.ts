@@ -17,7 +17,7 @@ import { flip } from "@gi-tcg/utils";
 import type { Node, NonterminalNode } from "ohm-js";
 
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
-import { CharacterState, EntityState, GameState } from "../base/state";
+import { AnyState, CharacterState, EntityState, GameState } from "../base/state";
 import { ContextMetaBase, SkillContext } from "../builder/context/skill";
 import { CharacterBase } from "../builder/context/character";
 import {
@@ -29,7 +29,6 @@ import {
 import { EntityType } from "../base/entity";
 import { GiTcgQueryError } from "../error";
 
-type AnyState = EntityState | CharacterState;
 type AnySkillContext = SkillContext<ContextMetaBase>;
 
 type ExternalQueryFn = (c: AnySkillContext) => number;
@@ -284,7 +283,7 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       );
     }
     const id = dict();
-    return [getEntityById(this.args.ctx.state, id, true)];
+    return [getEntityById(this.args.ctx.state, id)];
   },
   PrimaryQuery_paren(_l, query, _r) {
     return query.doQuery(this.args.ctx);
@@ -465,7 +464,7 @@ const evalExprDict: QueryLangActionDict<number> = {
   },
   PropertyName(idOrLit) {
     const name = idOrLit.propName;
-    return this.args.state.variables[name];
+    return (this.args.state.variables as Record<string, number>)[name];
   },
   numericLiteral(_) {
     return Number(this.sourceString);

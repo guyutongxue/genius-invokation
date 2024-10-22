@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import {
-  AnyState,
   CharacterState,
   EntityState,
   GameState,
@@ -34,12 +33,12 @@ import {
   ExEntityType,
 } from "../base/entity";
 import {
+  DisposeOrTuneCardEventArg,
   InitiativeSkillDefinition,
   InitiativeSkillEventArg,
-  InitiativeSkillFilter,
-  InitiativeSkillTargetGetter,
+  SkillDefinition,
   SkillDescription,
-  SkillInfo,
+  TriggeredSkillDefinition,
 } from "../base/skill";
 import { registerCard } from "./registry";
 import { SkillContext } from "./context/skill";
@@ -97,7 +96,7 @@ type InitiativeSkillBuilderMeta<
 type DisposeCardBuilderMeta<AssociatedExt extends ExtensionHandle> = {
   callerType: "character";
   callerVars: never;
-  eventArgType: InitiativeSkillEventArg;
+  eventArgType: DisposeOrTuneCardEventArg;
   associatedExtension: AssociatedExt;
 };
 
@@ -209,7 +208,7 @@ class CardBuilder<
       .do((c) => {
         const ch = c.$("character and @targets.0");
         ch?.equip(this.cardId as EquipmentHandle, {
-          withId: c.skillInfo.fromCard!.id,
+          withId: c.skillInfo.caller.id,
         });
       })
       .done();
@@ -238,7 +237,7 @@ class CardBuilder<
         c.dispose(targets[0]);
       }
       c.createEntity("support", this.cardId as SupportHandle, void 0, {
-        withId: c.skillInfo.fromCard!.id,
+        withId: c.skillInfo.caller.id,
       });
     }).done();
     const builder = support(this.cardId).tags(type);
@@ -399,14 +398,15 @@ class CardBuilder<
       const target = this._satiatedTarget;
       this.operations.push((c) => c.characterStatus(SATIATED_ID, target));
     }
+    const skills: SkillDefinition[] = [];
+
     const targetGetter = this.buildTargetGetter();
-    let onDispose: InitiativeSkillDefinition | undefined = void 0;
     const action = this.buildAction<InitiativeSkillEventArg>();
     const filter = this.buildFilter<InitiativeSkillEventArg>();
     if (this._doSameWhenDisposed || this._disposeOperation !== null) {
       const disposeOp = this._disposeOperation;
       const disposeAction = disposeOp
-        ? <SkillDescription<InitiativeSkillEventArg>>((
+        ? <SkillDescription<DisposeOrTuneCardEventArg>>((
             state,
             skillInfo,
             arg,
@@ -414,43 +414,48 @@ class CardBuilder<
             const ctx = new SkillContext<
               WritableMetaOf<DisposeCardBuilderMeta<AssociatedExt>>
             >(state, this._wrapSkillInfoWithExt(skillInfo), arg);
-            disposeOp(ctx, { targets: [] });
+            disposeOp(ctx, ctx.eventArg);
             ctx._terminate();
             return [ctx.state, ctx.events];
           })
-        : action;
-      const disposeDef: InitiativeSkillDefinition = {
+        : this.buildAction<DisposeOrTuneCardEventArg>();
+      const disposeDef: TriggeredSkillDefinition<"onDisposeOrTuneCard"> = {
         type: "skill",
-        skillType: "disposeCard",
-        id: this.cardId + 0.01,
-        triggerOn: null,
-        requiredCost: [],
-        gainEnergy: false,
-        prepared: false,
-        filter: () => true,
+        id: this.cardId + 0.02,
+        triggerOn: "onDisposeOrTuneCard",
+        initiativeSkillConfig: null,
         action: disposeAction,
-        getTarget: () => [],
+        filter: (st, info, arg) => {
+          return info.isSelfDispose;
+        },
         usagePerRoundVariableName: null,
       };
-      onDispose = disposeDef;
+      skills.push(disposeDef);
     }
+    const skillDef: InitiativeSkillDefinition = {
+      type: "skill",
+      id: this.cardId + 0.01,
+      triggerOn: "initiative",
+      initiativeSkillConfig: {
+        skillType: "playCard",
+        requiredCost: this._cost,
+        gainEnergy: false,
+        prepared: false,
+        getTarget: targetGetter,
+      },
+      filter,
+      action,
+      usagePerRoundVariableName: null,
+    };
+    skills.push(skillDef);
     const cardDef: CardDefinition = {
       __definition: "cards",
-      type: "skill",
-      skillType: "playCard",
+      type: "card",
       cardType: this._type,
       id: this.cardId,
       tags: this._tags,
       version: this._versionInfo,
-      triggerOn: null,
-      requiredCost: this._cost,
-      gainEnergy: false,
-      prepared: false,
-      filter,
-      action,
-      getTarget: targetGetter,
-      usagePerRoundVariableName: null,
-      onDispose,
+      skills,
       descriptionDictionary: this._descriptionDictionary,
     };
     registerCard(cardDef);

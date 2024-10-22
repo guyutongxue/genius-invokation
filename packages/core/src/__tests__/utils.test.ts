@@ -42,7 +42,6 @@ test("sort dice", () => {
         definition: {
           __definition: "characters",
           id: 1601,
-          initiativeSkills: [],
           skills: [],
           tags: ["dendro"],
           type: "character",
@@ -60,7 +59,6 @@ test("sort dice", () => {
         definition: {
           __definition: "characters",
           id: 1401,
-          initiativeSkills: [],
           skills: [],
           tags: ["electro"],
           type: "character",

@@ -96,7 +96,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   }
 
   get state(): CharacterState {
-    const entity = getEntityById(this.skillContext.state, this._id, true);
+    const entity = getEntityById(this.skillContext.state, this._id);
     if (entity.definition.type !== "character") {
       throw new GiTcgCoreInternalError("Expected character");
     }

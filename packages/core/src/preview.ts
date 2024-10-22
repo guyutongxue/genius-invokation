@@ -18,14 +18,13 @@ import { applyMutation } from "./base/mutation";
 import {
   ActionEventArg,
   ActionInfo,
-  defineSkillInfo,
   DisposeOrTuneCardEventArg,
   GenericModifyActionEventArg,
   PlayCardEventArg,
   SwitchActiveEventArg,
   UseSkillEventArg,
 } from "./base/skill";
-import { AnyState, GameState } from "./base/state";
+import { GameState } from "./base/state";
 import { SkillExecutor } from "./skill_executor";
 import {
   getActiveCharacterIndex,
@@ -117,7 +116,7 @@ export class ActionPreviewer {
         break;
       }
       case "playCard": {
-        const card = newActionInfo.card;
+        const card = newActionInfo.skill.caller;
         if (card.definition.tags.includes("legend")) {
           previewState = applyMutation(previewState, {
             type: "setPlayerFlag",
@@ -154,16 +153,11 @@ export class ActionPreviewer {
             oldState: card,
             reason: "play",
           });
-          const skillInfo = defineSkillInfo({
-            caller: activeCh(),
-            definition: card.definition,
-            fromCard: card,
-          });
           const arg = { targets: newActionInfo.targets };
           if (completed) {
             [previewState, completed] = await SkillExecutor.previewSkill(
               previewState,
-              skillInfo,
+              newActionInfo.skill,
               arg,
             );
           }
@@ -204,7 +198,6 @@ export class ActionPreviewer {
         if (completed) {
           const tuneCardEventArg = new DisposeOrTuneCardEventArg(
             previewState,
-            this.who,
             card,
             "elementalTuning",
           );
