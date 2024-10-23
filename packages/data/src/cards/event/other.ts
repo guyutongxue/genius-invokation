@@ -699,7 +699,7 @@ export const PlungingStrike = card(332017)
   .do((c, e) => {
     const target = e.targets[0];
     c.switchActive(target);
-    const normalSkill = c.$("my active")!.definition.skills.find((sk) => sk.skillType === "normal");
+    const normalSkill = c.$("my active")!.definition.skills.find((sk) => sk.initiativeSkillConfig?.skillType === "normal");
     if (normalSkill) {
       c.useSkill(normalSkill.id as SkillHandle);
     }
@@ -932,7 +932,7 @@ export const MachineAssemblyLine = card(332028)
   .addVariableWithMax("readiness", 1, 2)
   .once("deductOmniDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
-    diceCostOfCard(e.action.card.definition) <= c.getVariable("readiness"))
+    e.originalDiceCost().length <= c.getVariable("readiness"))
   .do((c, e) => {
     e.deductOmniCost(e.cost.length);
     c.setVariable("readiness", 0);
@@ -959,7 +959,7 @@ export const SunyataFlower = card(332029)
   })
   .toCombatStatus(303229)
   .oneDuration()
-  .once("deductOmniDiceCard", (c, e) => e.action.card.definition.cardType === "support")
+  .once("deductOmniDiceCard", (c, e) => e.action.skill.caller.definition.cardType === "support")
   .deductOmniCost(1)
   .done();
 

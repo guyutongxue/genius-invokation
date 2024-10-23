@@ -118,7 +118,7 @@ export const TreasureseekingSeelie = card(323004)
 export const SeedDispensary = card(323005)
   .since("v4.3.0")
   .support("item")
-  .on("deductOmniDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) >= 2 && e.action.card.definition.cardType === "support")
+  .on("deductOmniDiceCard", (c, e) => e.originalDiceCost().length >= 2 && e.action.skill.caller.definition.cardType === "support")
   .usagePerRound(1)
   .usage(2)
   .deductOmniCost(1)
@@ -127,7 +127,7 @@ export const SeedDispensary = card(323005)
 const CardPlayedExtension = extension(323006, { played: pair(new Set<number>()) })
   .mutateWhen("onAction", (st, e) => {
     if (e.isPlayCard()) {
-      st.played[e.who].add(e.action.card.definition.id);
+      st.played[e.who].add(e.action.skill.caller.definition.id);
     }
   })
   .done();
@@ -149,7 +149,7 @@ export const MementoLens = card(323006)
     if (!e.hasOneOfCardTag("weapon", "artifact", "place", "ally")) {
       return false;
     }
-    return c.getExtensionState().played[c.self.who].has(e.action.card.definition.id);
+    return c.getExtensionState().played[c.self.who].has(e.action.skill.caller.definition.id);
   })
   .usagePerRound(1)
   .do((c, e) => {

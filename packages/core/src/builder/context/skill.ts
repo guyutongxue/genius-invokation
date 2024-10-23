@@ -98,6 +98,7 @@ import { Draft, produce } from "immer";
 import { nextRandom } from "../../random";
 import { Character, TypedCharacter } from "./character";
 import { Entity, TypedEntity } from "./entity";
+import { Card } from "./card";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -148,10 +149,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
   public readonly callerArea: EntityArea;
 
   /**
-   * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
+   * 获取正在执行逻辑的实体的 `Character` 或 `Entity`。
    * @returns
    */
-  public readonly self: TypedExEntity<Meta, Meta["callerType"]>;
+  private readonly _self: TypedExEntity<Meta, Meta["callerType"]>;
 
   /**
    *
@@ -171,13 +172,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
       onNotify: (opt) => this.onNotify(opt),
       onPause: async () => {},
     };
+    this.callerArea = getEntityArea(state, skillInfo.caller.id);
     this.skillInfo = {
       ...skillInfo,
       mutatorConfig,
-    }
+    };
     this.mutator = new StateMutator(state, mutatorConfig);
-    this.callerArea = getEntityArea(state, this.skillInfo.caller.id);
-    this.self = this.of(this.skillInfo.caller);
+    this._self = this.of<Meta["callerType"]>(this.skillInfo.caller);
   }
   /**
    * 技能执行完毕，发出通知，禁止后续改动。
@@ -206,6 +207,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
     return this.mutator.mutate(mut);
   }
 
+  get self() {
+    if (this._self === null) {
+      throw new GiTcgDataError("Self entity not available");
+    }
+    return this._self;
+  }
+
   get isPreview(): boolean {
     return !!this.skillInfo.isPreview;
   }
@@ -220,8 +228,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
   get oppPlayer() {
     return this.state.players[flip(this.callerArea.who)];
   }
-  private get callerState(): CharacterState | EntityState {
-    return getEntityById(this.state, this.skillInfo.caller.id, true);
+  /** Latest caller state */
+  private get callerState(): AnyState {
+    return getEntityById(this.state, this.skillInfo.caller.id);
   }
   isMyTurn() {
     return this.state.currentTurn === this.callerArea.who;
@@ -244,13 +253,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
         charged: false,
         plunging: false,
         isPreview: this.skillInfo.isPreview,
+        isSelfDispose: false,
         mutatorConfig: this.skillInfo.mutatorConfig,
       }),
     );
     for (const info of infos) {
       arg._currentSkillInfo = info;
       try {
-        getEntityById(this.state, info.caller.id, true);
+        getEntityById(this.state, info.caller.id);
       } catch {
         continue;
       }
@@ -289,14 +299,16 @@ export class SkillContext<Meta extends ContextMetaBase> {
   of(entityState: EntityState): TypedEntity<Meta>;
   of(entityState: CharacterState): TypedCharacter<Meta>;
   of<T extends ExEntityType = ExEntityType>(
-    entityId: EntityState | CharacterState | number,
+    entityId: AnyState | number,
   ): TypedExEntity<Meta, T>;
-  of(entityState: EntityState | CharacterState | number): unknown {
+  of(entityState: AnyState | number): unknown {
     if (typeof entityState === "number") {
-      entityState = getEntityById(this.state, entityState, true);
+      entityState = getEntityById(this.state, entityState);
     }
     if (entityState.definition.type === "character") {
       return new Character(this, entityState.id);
+    } else if (entityState.definition.type === "card") {
+      return new Card(this, entityState.id);
     } else {
       return new Entity(this, entityState.id);
     }
@@ -378,7 +390,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     ...args: EventAndRequestConstructorArgs<E>
   ) {
     const arg = constructEventAndRequestArg(event, ...args);
-    this.mutator.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
+    this.mutator.log(
+      DetailLogType.Other,
+      `Event ${event} (${arg.toString()}) emitted`,
+    );
     this.eventAndRequests.push([event, arg] as EventAndRequest);
   }
 
@@ -473,7 +488,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  private doHeal(value: number, targetState: CharacterState, option: Required<HealOption>) {
+  private doHeal(
+    value: number,
+    targetState: CharacterState,
+    option: Required<HealOption>,
+  ) {
     const damageType = DamageType.Heal;
     if (!targetState.variables.alive) {
       if (option.kind === "revive") {
@@ -511,7 +530,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       expectedValue: value,
       value: finalValue,
       healKind: option.kind,
-      source: this.callerState,
+      source: this.skillInfo.caller,
       via: this.skillInfo,
       target: targetState,
       causeDefeated: false,
@@ -869,9 +888,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
   // NOTICE: getVariable/setVariable/addVariable 应当将 caller 的严格版声明放在最后一个
   // 因为 (...args: infer R) 只能获取到重载列表中的最后一个，而严格版是 BuilderWithShortcut 需要的
 
-  getVariable(prop: string, target: CharacterState | EntityState): number;
+  getVariable(prop: string, target: AnyState): number;
   getVariable(prop: Meta["callerVars"]): number;
-  getVariable(prop: string, target?: CharacterState | EntityState) {
+  getVariable(prop: string, target?: AnyState) {
     if (target) {
       return this.of(target).getVariable(prop);
     } else {
@@ -879,34 +898,36 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  setVariable(
-    prop: string,
-    value: number,
-    target: CharacterState | EntityState,
-  ): void;
+  setVariable(prop: string, value: number, target: AnyState): void;
   setVariable(prop: Meta["callerVars"], value: number): void;
-  setVariable(prop: any, value: number, target?: CharacterState | EntityState) {
+  setVariable(prop: any, value: number, target?: AnyState) {
     target ??= this.callerState;
+    this.assertNotCard(target);
     using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Set ${stringifyState(target)}'s variable ${prop} to ${value}`,
     );
     this.mutate({
       type: "modifyEntityVar",
-      state: target,
+      state: target as CharacterState | EntityState,
       varName: prop,
       value: value,
     });
   }
 
-  addVariable(
-    prop: string,
-    value: number,
-    target: CharacterState | EntityState,
-  ): void;
+  private assertNotCard(
+    target: AnyState,
+  ): asserts target is CharacterState | EntityState {
+    if (target.definition.type === "card") {
+      throw new GiTcgDataError(`Cannot add variable to card`);
+    }
+  }
+
+  addVariable(prop: string, value: number, target: AnyState): void;
   addVariable(prop: Meta["callerVars"], value: number): void;
-  addVariable(prop: any, value: number, target?: CharacterState | EntityState) {
+  addVariable(prop: any, value: number, target?: AnyState) {
     target ??= this.callerState;
+    this.assertNotCard(target);
     const finalValue = value + target.variables[prop];
     this.setVariable(prop, finalValue, target);
   }
@@ -915,7 +936,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     prop: string,
     value: number,
     maxLimit: number,
-    target: CharacterState | EntityState,
+    target: AnyState,
   ): void;
   addVariableWithMax(
     prop: Meta["callerVars"],
@@ -926,9 +947,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     prop: any,
     value: number,
     maxLimit: number,
-    target?: CharacterState | EntityState,
+    target?: AnyState,
   ) {
     target ??= this.callerState;
+    this.assertNotCard(target);
     if (target.variables[prop] > maxLimit) {
       // 如果当前值已经超过可叠加的上限，则不再叠加
       return;
@@ -1203,10 +1225,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
   private insertPileCards(
     payloads: InsertPilePayload[],
     strategy: InsertPileStrategy,
-    where: "my" | "opp"
+    where: "my" | "opp",
   ) {
     const count = payloads.length;
-    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    const who =
+      where === "my" ? this.callerArea.who : flip(this.callerArea.who);
     const player = this.state.players[who];
     switch (strategy) {
       case "top":
@@ -1277,7 +1300,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
               targetIndex: index,
             });
           }
-        } else  if (strategy.startsWith("topIndex")) {
+        } else if (strategy.startsWith("topIndex")) {
           const index = Number(strategy.slice(8));
           if (isNaN(index)) {
             throw new GiTcgDataError(`Invalid strategy ${strategy}`);
@@ -1302,7 +1325,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
     strategy: InsertPileStrategy,
     where: "my" | "opp" = "my",
   ) {
-    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    const who =
+      where === "my" ? this.callerArea.who : flip(this.callerArea.who);
     using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
@@ -1314,6 +1338,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const cardTemplate = {
       id: 0,
       definition: cardDef,
+      variables: {},
     };
     const payloads = Array.from(
       { length: count },
@@ -1379,6 +1404,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         DetailLogType.Primitive,
         `Dispose card ${stringifyState(card)} from player ${who}`,
       );
+      const method: DisposeOrTuneMethod =
+        where === "hands" ? "disposeFromHands" : "disposeFromPiles";
+      this.emitEvent("onDisposeOrTuneCard", this.state, card, method);
       this.mutate({
         type: "removeCard",
         who,
@@ -1386,10 +1414,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
         oldState: card,
         reason: "disposed",
       });
-      this.emitEvent("requestDisposeCard", this.skillInfo, who, card);
-      const method: DisposeOrTuneMethod =
-        where === "hands" ? "disposeFromHands" : "disposeFromPiles";
-      this.emitEvent("onDisposeOrTuneCard", this.state, who, card, method);
     }
   }
 

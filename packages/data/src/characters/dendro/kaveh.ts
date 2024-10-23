@@ -74,7 +74,7 @@ export const MehraksAssistance = status(117081)
  * 我方下次打出「场地」支援牌时：少花费2个元素骰。
  */
 export const TheArtOfBudgetingInEffect = combatStatus(117083)
-  .once("deductOmniDiceCard", (c, e) => e.action.card.definition.tags.includes("place"))
+  .once("deductOmniDiceCard", (c, e) => e.action.skill.caller.definition.tags.includes("place"))
   .deductOmniCost(2)
   .done();
 

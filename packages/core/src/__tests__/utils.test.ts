@@ -42,7 +42,6 @@ test("sort dice", () => {
         definition: {
           __definition: "characters",
           id: 1601,
-          initiativeSkills: [],
           skills: [],
           tags: ["dendro"],
           type: "character",
@@ -60,7 +59,6 @@ test("sort dice", () => {
         definition: {
           __definition: "characters",
           id: 1401,
-          initiativeSkills: [],
           skills: [],
           tags: ["electro"],
           type: "character",
@@ -86,6 +84,7 @@ test("sort dice", () => {
     hasDefeated: false,
     legendUsed: false,
     roundSkillLog: new Map(),
+    removedEntities: [],
   };
   const sorted = sortDice(playerState, shuffled);
   expect(sorted).toEqual(dice);

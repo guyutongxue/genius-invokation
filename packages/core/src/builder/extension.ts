@@ -63,11 +63,9 @@ export class ExtensionBuilder<ExtStateType extends object> {
     };
     const def: TriggeredSkillDefinition = {
       type: "skill",
-      skillType: null,
+      initiativeSkillConfig: null,
       id: this.generateSkillId(),
       triggerOn: event,
-      requiredCost: [],
-      gainEnergy: false,
       filter: () => true,
       action,
       usagePerRoundVariableName: null,

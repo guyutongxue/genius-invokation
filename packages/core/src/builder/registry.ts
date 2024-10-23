@@ -19,7 +19,7 @@ import { EntityDefinition, VariableConfig } from "../base/entity";
 import { ExtensionDefinition } from "../base/extension";
 import {
   InitiativeSkillDefinition,
-  TriggeredSkillDefinition,
+  SkillDefinition,
 } from "../base/skill";
 import { GiTcgDataError } from "../error";
 import {
@@ -30,7 +30,6 @@ import {
   getCorrectVersion,
 } from "../base/version";
 import { freeze } from "immer";
-import { isCharacterInitiativeSkill } from "../utils";
 
 let currentStore: DataStore | null = null;
 
@@ -48,8 +47,7 @@ export function beginRegistration() {
   };
 }
 
-interface CharacterEntry
-  extends Omit<CharacterDefinition, "skills" | "initiativeSkills"> {
+interface CharacterEntry extends Omit<CharacterDefinition, "skills"> {
   skillIds: readonly number[];
 }
 
@@ -63,7 +61,7 @@ interface CharacterPassiveSkillEntry {
   type: "passiveSkill";
   version: VersionInfo;
   varConfigs: Record<string, VariableConfig>;
-  skills: readonly TriggeredSkillDefinition[];
+  skills: readonly SkillDefinition[];
 }
 
 interface CharacterInitiativeSkillEntry {
@@ -217,14 +215,17 @@ export function endRegistration(): GameDataGetter {
           (acc, { varConfigs }) => combineObject(acc, varConfigs),
           <Record<string, VariableConfig>>{},
         );
+        const skills: readonly SkillDefinition[] = [
+          ...initiativeSkills.map((e) => e.skill),
+          ...passiveSkills.flatMap((e) => e.skills),
+        ];
         return {
           ...correctCh,
-          initiativeSkills: initiativeSkills.map((e) => e.skill),
           varConfigs: combineObject(
             correctCh.varConfigs,
             passiveSkillVarConfigs,
           ),
-          skills: passiveSkills.flatMap((e) => e.skills),
+          skills,
         };
       }),
     };

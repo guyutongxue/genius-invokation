@@ -37,7 +37,7 @@ import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
 import { GiTcgIOError } from "./error";
 import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
-import { initiativeSkillsOfPlayer } from "./utils";
+import { costOfCard, initiativeSkillsOfPlayer } from "./utils";
 
 export interface PlayerIO {
   readonly notify: (notification: NotificationMessage) => void;
@@ -66,6 +66,7 @@ export function exposeMutation(
     case "mutateExtensionState":
     case "pushRoundSkillLog":
     case "clearRoundSkillLog":
+    case "clearRemovedEntities":
     case "switchActive": // We will manually handle this
       return null;
     case "changePhase":
@@ -225,7 +226,7 @@ function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
     descriptionDictionary,
     isLegend: !hide && c.definition.tags.includes("legend"),
     definitionId: hide ? 0 : c.definition.id,
-    definitionCost: hide ? [] : [...c.definition.requiredCost],
+    definitionCost: hide ? [] : [...costOfCard(c.definition)],
   };
 }
 
@@ -246,7 +247,7 @@ function exposeCharacter(state: GameState, ch: CharacterState): CharacterData {
 function exposeInitiativeSkill(skill: InitiativeSkillDefinition): SkillData {
   return {
     definitionId: skill.id,
-    definitionCost: [...skill.requiredCost],
+    definitionCost: [...skill.initiativeSkillConfig.requiredCost],
   };
 }
 
@@ -258,7 +259,7 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
     winner: state.winner,
     players: state.players.map<PlayerData>((p, i) => {
       const skills = initiativeSkillsOfPlayer(p).map(
-        ({ definition }) => definition,
+        ({ skill }) => skill,
       );
       return {
         activeCharacterId: p.activeCharacterId,
@@ -293,7 +294,7 @@ export function exposeAction(action: ActionInfo): Action {
     case "playCard": {
       return {
         type: "playCard",
-        card: action.card.id,
+        card: action.skill.caller.id,
         cost: action.cost,
         targets: action.targets.map((t) => t.id),
         preview: action.preview

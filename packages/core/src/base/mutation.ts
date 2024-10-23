@@ -79,7 +79,13 @@ export interface RemoveCardM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
   readonly where: "hands" | "piles";
-  readonly reason: "play" | "elementalTuning" | "overflow" | "disposed" | "disabled";
+  readonly reason:
+    | "play"
+    | "onDrawTriggered"
+    | "elementalTuning"
+    | "overflow"
+    | "disposed"
+    | "disabled";
   readonly oldState: CardState;
 }
 
@@ -153,6 +159,9 @@ export interface ClearRoundSkillLogM {
   readonly type: "clearRoundSkillLog";
   readonly who: 0 | 1;
 }
+export interface ClearRemovedEntitiesM {
+  readonly type: "clearRemovedEntities";
+}
 
 export type Mutation =
   | StepRandomM
@@ -173,7 +182,8 @@ export type Mutation =
   | SetPlayerFlagM
   | MutateExtensionStateM
   | PushRoundSkillLogM
-  | ClearRoundSkillLogM;
+  | ClearRoundSkillLogM
+  | ClearRemovedEntitiesM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -274,7 +284,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
             `Card ${m.oldState.id} not found in ${m.where} of ${m.who}`,
           );
         }
-        player[m.where].splice(cardIdx, 1);
+        player.removedEntities.push(...player[m.where].splice(cardIdx, 1));
       });
     }
     case "createCard": {
@@ -301,7 +311,11 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "createEntity": {
       const { where, value } = m;
-      if (where.type === "characters") {
+      if (where.type === "hands") {
+        throw new GiTcgCoreInternalError(
+          `Cannot create hand card using createEntity. Use createCard instead.`,
+        );
+      } else if (where.type === "characters") {
         return produce(state, (draft) => {
           const character = draft.players[where.who].characters.find(
             (c) => c.id === where.characterId,
@@ -317,8 +331,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
           character.entities.push(value as Draft<EntityState>);
         });
       } else {
+        const type = where.type;
         return produce(state, (draft) => {
-          const area = draft.players[where.who][where.type];
+          const area = draft.players[where.who][type];
           if (value.id === 0) {
             value.id = draft.iterators.id--;
           }
@@ -333,12 +348,10 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "modifyEntityVar": {
       const newState = produce(state, (draft) => {
-        const entity = getEntityById(draft, m.state.id, true) as Draft<
-          CharacterState | EntityState
-        >;
-        entity.variables[m.varName] = m.value;
+        const entity = getEntityById(draft, m.state.id) as Draft<EntityState>;
+        (entity.variables as Record<string, number>)[m.varName] = m.value;
       });
-      m.state = getEntityById(newState, m.state.id, true);
+      m.state = getEntityById(newState, m.state.id) as EntityState;
       return newState;
     }
     case "transformDefinition": {
@@ -351,7 +364,6 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const entity = getEntityById(
           draft,
           m.state.id,
-          true,
         ) as Draft<CharacterState>;
         entity.definition = m.newDefinition as Draft<CharacterDefinition>;
         // 如果是转换角色形态，则移动 skillLog 到新的定义 id 下
@@ -365,7 +377,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
           player.roundSkillLog.delete(m.state.definition.id);
         }
       });
-      m.state = getEntityById(newState, m.state.id, true) as CharacterState;
+      m.state = getEntityById(newState, m.state.id) as CharacterState;
       return newState;
     }
     case "resetDice": {
@@ -405,6 +417,12 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "clearRoundSkillLog": {
       return produce(state, (draft) => {
         draft.players[m.who].roundSkillLog.clear();
+      });
+    }
+    case "clearRemovedEntities": {
+      return produce(state, (draft) => {
+        draft.players[0].removedEntities = [];
+        draft.players[1].removedEntities = [];
       });
     }
     default: {

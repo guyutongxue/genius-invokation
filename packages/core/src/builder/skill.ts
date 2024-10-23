@@ -30,17 +30,14 @@ import {
   ModifyAction1EventArg,
   ModifyAction2EventArg,
   ModifyAction3EventArg,
-  ActionEventArg,
   DamageInfo,
   SkillResult,
-  ElementalTuningInfo,
   InitiativeSkillDefinition,
   InitiativeSkillEventArg,
-  InitiativeSkillFilter,
   InitiativeSkillTargetGetter,
   SkillInfoOfContextConstruction,
 } from "../base/skill";
-import { AnyState, EntityVariables, GameState } from "../base/state";
+import { AnyState, GameState } from "../base/state";
 import {
   ContextMetaBase,
   SkillContext,
@@ -49,14 +46,14 @@ import {
 import { ExtensionHandle, SkillHandle } from "./type";
 import {
   EntityArea,
+  EntityType,
   USAGE_PER_ROUND_VARIABLE_NAMES,
   UsagePerRoundVariableNames,
 } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
-import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
+import { GiTcgDataError } from "../error";
 import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
-import { createVariable } from "./utils";
 import { registerInitiativeSkill } from "./registry";
 import { InitiativeSkillTargetKind } from "../base/card";
 import {
@@ -65,7 +62,9 @@ import {
   TargetQuery,
 } from "./card";
 
-export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
+export type BuilderMetaBase = Omit<ContextMetaBase, "readonly" | "callerType"> & {
+  callerType: "character" | EntityType
+};
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
   [K in keyof BuilderMetaBase]: BM[K];
 } & { readonly: true };
@@ -169,7 +168,7 @@ export function commonInitiativeSkillCheck(
 ): boolean {
   return (
     isCharacterInitiativeSkill(skillInfo.definition, allowTechnique) &&
-    !skillInfo.definition.prepared
+    !skillInfo.definition.initiativeSkillConfig.prepared
   );
 }
 
@@ -288,7 +287,7 @@ const detailedEventDictionary = {
     return (
       e.type !== DamageType.Piercing &&
       checkRelative(e.onTimeState, e.source.id, r) &&
-      e.via.definition.skillType === "technique" &&
+      e.via.definition.initiativeSkillConfig?.skillType === "technique" &&
       e.damageInfo.fromReaction === null
     );
   }),
@@ -414,10 +413,7 @@ const detailedEventDictionary = {
     return checkRelative(e.onTimeState, e.entity.id, r);
   }),
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
-    // 由于此时场上不再存在 self，故只能通过 skillDefinition 是否位于 entity 的定义内来判断
-    return e.entity.definition.skills.some(
-      (sk) => sk.id === c.skillInfo.definition.id,
-    );
+    return e.entity.id === r.callerId;
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return checkRelative(e.onTimeState, e.target.id, r) && e.damageInfo.causeDefeated;
@@ -725,6 +721,9 @@ export class TriggeredSkillBuilder<
   }
 
   private buildSkill() {
+    if (this.parent._type === "character") {
+      this.filters.push((c) => c.self.state.variables.alive);
+    }
     if (this._usagePerRoundOpt?.autoDecrease) {
       this.do((c) => {
         c.consumeUsagePerRound();
@@ -748,11 +747,9 @@ export class TriggeredSkillBuilder<
     const [eventName] = detailedEventDictionary[this.triggerOn];
     const def: TriggeredSkillDefinition = {
       type: "skill",
-      skillType: null,
       id: this.id,
       triggerOn: eventName,
-      requiredCost: [],
-      gainEnergy: false,
+      initiativeSkillConfig: null,
       filter: this.buildFilter(),
       action: this.buildAction(),
       usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
@@ -952,15 +949,17 @@ class InitiativeSkillBuilder<
       id: this.skillId,
       skill: {
         type: "skill",
-        skillType: this._skillType,
         id: this.skillId,
-        triggerOn: null,
-        requiredCost: this._cost,
-        gainEnergy: this._gainEnergy,
-        prepared: this._prepared,
+        initiativeSkillConfig: {
+          skillType: this._skillType,
+          requiredCost: this._cost,
+          gainEnergy: this._gainEnergy,
+          prepared: this._prepared,
+          getTarget: this.buildTargetGetter(),
+        },
+        triggerOn: "initiative",
         action: this.buildAction(),
         filter: this.buildFilter(),
-        getTarget: this.buildTargetGetter(),
         usagePerRoundVariableName: null,
       },
     });
@@ -1075,18 +1074,20 @@ export class TechniqueBuilder<
     }
     const def: InitiativeSkillDefinition = {
       type: "skill",
-      skillType: "technique",
-      triggerOn: null,
+      initiativeSkillConfig: {
+        skillType: "technique",
+        requiredCost: this._cost,
+        gainEnergy: false,
+        prepared: false,
+        getTarget: this.buildTargetGetter(),
+      },
+      triggerOn: "initiative",
       id: this.id,
-      requiredCost: this._cost,
-      gainEnergy: false,
-      prepared: false,
       filter: this.buildFilter(),
       action: this.buildAction(),
-      getTarget: this.buildTargetGetter(),
       usagePerRoundVariableName: this._usagePerRoundOpt?.name ?? null,
     };
-    this.parent._initiativeSkills.push(def);
+    this.parent._skillList.push(def);
   }
 
   endProvide() {

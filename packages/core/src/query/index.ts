@@ -18,7 +18,7 @@ import { TypedExEntity } from "../builder/type";
 import { GuessedTypeOfQuery } from "./types";
 import { QueryArgs, doSemanticQueryAction } from "./semantic";
 import { allEntities, getEntityArea } from "../utils";
-import { CharacterState, EntityState, GameState } from "../base/state";
+import { AnyState, CharacterState, EntityState, GameState } from "../base/state";
 import {
   InitiativeSkillEventArg,
   DamageOrHealEventArg,
@@ -82,7 +82,7 @@ export function executeQueryOnState(
   state: GameState,
   who: 0 | 1,
   q: string,
-): (EntityState | CharacterState)[] {
+): AnyState[] {
   return doSemanticQueryAction(q, {
     state,
     candidates: allEntities(state),

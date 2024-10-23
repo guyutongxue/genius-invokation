@@ -92,10 +92,7 @@ export const WateryRebirthStatus = status(122031)
  * 可用次数：2
  */
 export const CurseOfTheUndercurrent = combatStatus(122033)
-  .on("addDice", (c, e) => {
-    return e.action.type === "useSkill" &&
-      (e.action.skill.definition.skillType === "elemental" || e.action.skill.definition.skillType === "burst");
-  })
+  .on("addDice", (c, e) => e.isSkillType("elemental") || e.isSkillType("burst"))
   .usage(2)
   .addCost(DiceType.Omni, 1)
   .done();

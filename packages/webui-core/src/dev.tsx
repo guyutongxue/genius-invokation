@@ -25,9 +25,9 @@ import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { createPlayer } from "./index";
 
 const playerConfig0: PlayerConfig = {
-  characters: [2303, 1609, 1101],
+  characters: [2204, 1313, 1403],
   cards: [
-    211011, 332040, 322016, 216091,
+    323008, 
     332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
     332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
     332019, 331803, 332003, 332007, 332022, 331801, 332011, 
@@ -36,7 +36,7 @@ const playerConfig0: PlayerConfig = {
   alwaysOmni: import.meta.env.DEV,
 };
 const playerConfig1: PlayerConfig = {
-  characters: [2502, 1201, 1303],
+  characters: [1609, 1201, 1303],
   cards: [
     333015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
     331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,

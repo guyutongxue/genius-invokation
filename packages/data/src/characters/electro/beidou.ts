@@ -62,7 +62,6 @@ export const TidecallerSurfEmbrace = status(114051)
  */
 export const WavestriderStatus = status(114055)
   .prepare(Wavestrider)
-  .on("selfDispose")
   .done();
 
 

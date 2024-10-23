@@ -118,8 +118,8 @@ export const YayoiNanatsuki = card(322020)
 const SeedDispensary = card(323005)
   .until("v4.5.0")
   .support("item")
-  .on("deductOmniDiceCard", (c, e) => diceCostOfCard(e.action.card.definition) === 1 &&
-    ["equipment", "support"].includes(e.action.card.definition.type))
+  .on("deductOmniDiceCard", (c, e) => e.originalDiceCost().length === 1 &&
+    ["equipment", "support"].includes(e.action.skill.caller.definition.type))
   .deductOmniCost(1)
   .usage(2)
   .done();

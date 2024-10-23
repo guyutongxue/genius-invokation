@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { GameState, EntityState } from "./state";
+import { GameState } from "./state";
 import { EquipmentTag, SupportTag } from "./card";
-import { InitiativeSkillDefinition, TriggeredSkillDefinition } from "./skill";
+import { SkillDefinition } from "./skill";
 import { VersionInfo } from "./version";
 
 export type EntityTag =
@@ -34,7 +34,7 @@ export type EntityType =
   | "support"
   | "summon";
 
-export type ExEntityType = "character" | EntityType;
+export type ExEntityType = "character" | "card" | EntityType;
 
 export interface EntityDefinition {
   readonly __definition: "entities";
@@ -45,14 +45,13 @@ export interface EntityDefinition {
   readonly tags: readonly EntityTag[];
   readonly hintText: string | null;
   readonly varConfigs: EntityVariableConfigs;
-  readonly initiativeSkills: readonly InitiativeSkillDefinition[];
-  readonly skills: readonly TriggeredSkillDefinition[];
+  readonly skills: readonly SkillDefinition[];
   readonly descriptionDictionary: DescriptionDictionary;
 }
 
 export type EntityArea =
   | {
-      readonly type: "combatStatuses" | "supports" | "summons";
+      readonly type: "hands" | "combatStatuses" | "supports" | "summons" | "removedEntities";
       readonly who: 0 | 1;
     }
   | {

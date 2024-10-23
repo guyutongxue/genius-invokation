@@ -15,7 +15,7 @@
 
 import { WeaponTag } from "./character";
 import { DescriptionDictionary } from "./entity";
-import { InitiativeSkillDefinition } from "./skill";
+import { SkillDefinition } from "./skill";
 import { VersionInfo } from "./version";
 
 export type WeaponCardTag = Exclude<WeaponTag, "otherWeapon">;
@@ -46,11 +46,13 @@ export type InitiativeSkillTargetKind = readonly (
   | "support"
 )[];
 
-export interface CardDefinition extends InitiativeSkillDefinition {
+export interface CardDefinition {
   readonly __definition: "cards";
-  readonly cardType: CardType;
+  readonly type: "card";
+  readonly id: number;
   readonly version: VersionInfo;
+  readonly cardType: CardType;
   readonly tags: readonly CardTag[];
-  readonly onDispose?: InitiativeSkillDefinition;
+  readonly skills: readonly SkillDefinition[];
   readonly descriptionDictionary: DescriptionDictionary;
 }
