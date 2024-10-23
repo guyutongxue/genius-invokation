@@ -107,28 +107,31 @@ export interface SkillInfo {
    * 是否是预览中。部分技能会因是否为预览而采取不同的效果。
    */
   readonly isPreview: boolean;
-  /** 使否是“亡语” */
-  readonly isSelfDispose: boolean;
+  /** @internal */
+  readonly callerArea?: EntityArea;
   /** @internal SkillContext 内部的 StateMutator 的配置 */
   readonly mutatorConfig?: MutatorConfig;
 }
-export interface UseSkillSkillInfo extends SkillInfo {
-  readonly caller: CharacterState;
+export interface InitiativeSkillInfo extends SkillInfo {
   readonly definition: InitiativeSkillDefinition;
 }
-export interface PlayCardSkillInfo extends SkillInfo {
+export interface PlayCardSkillInfo extends InitiativeSkillInfo {
   readonly caller: CardState;
-  readonly definition: InitiativeSkillDefinition;
 }
 
 type RequiredWith<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 type InitSkillInfo = RequiredWith<
-  Partial<Omit<SkillInfo, "isPreview" | "mutatorConfig">>, // this two property will be added by SkillExecutor
+  Partial<Omit<SkillInfo, "isPreview" | "mutatorConfig">>, // these properties will be added by SkillExecutor
   "caller" | "definition" // This is required for every skill info
 >;
 
-export function defineSkillInfo(init: InitSkillInfo & { caller: CardState }): PlayCardSkillInfo;
+export function defineSkillInfo(
+  init: InitSkillInfo & { caller: CardState },
+): PlayCardSkillInfo;
+export function defineSkillInfo(
+  init: InitSkillInfo & { definition: InitiativeSkillDefinition },
+): InitiativeSkillInfo;
 export function defineSkillInfo(init: InitSkillInfo): SkillInfo;
 export function defineSkillInfo(init: InitSkillInfo): SkillInfo {
   return {
@@ -136,7 +139,6 @@ export function defineSkillInfo(init: InitSkillInfo): SkillInfo {
     charged: false,
     plunging: false,
     isPreview: false,
-    isSelfDispose: false,
     ...init,
   };
 }
@@ -153,6 +155,7 @@ export interface DamageInfo {
   readonly type: Exclude<DamageType, DamageType.Heal>;
   readonly value: number;
   readonly source: AnyState;
+  readonly sourceArea: EntityArea;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly causeDefeated: boolean;
@@ -172,6 +175,7 @@ export interface HealInfo {
   readonly value: number;
   readonly healKind: HealKind;
   readonly source: AnyState;
+  readonly sourceArea: EntityArea;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly fromReaction: null;
@@ -189,7 +193,7 @@ export interface ReactionInfo {
 export interface UseSkillInfo {
   readonly type: "useSkill";
   readonly who: 0 | 1;
-  readonly skill: SkillInfo;
+  readonly skill: InitiativeSkillInfo;
   readonly targets: AnyState[];
 }
 
@@ -357,7 +361,7 @@ export class ActionEventArg<
       const skillDef = this.action.skill.definition;
       return (
         character.definition.skills.some((sk) => sk.id === skillDef.id) &&
-        (!skillType || skillDef.initiativeSkillConfig?.skillType === skillType)
+        (!skillType || skillDef.initiativeSkillConfig.skillType === skillType)
       );
     } else if (this.action.type === "playCard") {
       return !!(
@@ -372,7 +376,7 @@ export class ActionEventArg<
   isSkillType(skillType: CommonSkillType): boolean {
     if (this.isUseSkill()) {
       return (
-        this.action.skill.definition.initiativeSkillConfig?.skillType ===
+        this.action.skill.definition.initiativeSkillConfig.skillType ===
         skillType
       );
     } else {
@@ -560,12 +564,15 @@ export class UseSkillEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     public readonly callerArea: EntityArea,
-    protected readonly _skillInfo: SkillInfo,
+    protected readonly _skillInfo: InitiativeSkillInfo,
   ) {
     super(state, callerArea.who);
   }
   get skill() {
     return this._skillInfo;
+  }
+  get skillCaller() {
+    return this._skillInfo.caller as CharacterState;
   }
   override toString(): string {
     return `use skill [skill:${this.skill.definition.id}]`;
@@ -633,7 +640,7 @@ export class DamageOrHealEventArg<
     private readonly _damageInfo: InfoT,
   ) {
     super(state);
-    this.sourceWho = getEntityArea(state, _damageInfo.source.id).who;
+    this.sourceWho = _damageInfo.sourceArea.who;
     this.targetWho = getEntityArea(state, _damageInfo.target.id).who;
   }
   toString() {

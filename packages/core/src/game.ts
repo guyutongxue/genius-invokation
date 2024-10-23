@@ -725,6 +725,11 @@ export class Game {
           break;
         }
         case "elementalTuning": {
+          const tuneCardEventArg = new DisposeOrTuneCardEventArg(
+            this.state,
+            actionInfo.card,
+            "elementalTuning",
+          );
           this.mutate({
             type: "removeCard",
             who,
@@ -740,11 +745,6 @@ export class Game {
               elementOfCharacter(activeCh().definition),
             ]),
           });
-          const tuneCardEventArg = new DisposeOrTuneCardEventArg(
-            this.state,
-            actionInfo.card,
-            "elementalTuning",
-          );
           await this.handleEvent("onDisposeOrTuneCard", tuneCardEventArg);
           break;
         }
@@ -899,6 +899,7 @@ export class Game {
       const skillDef = playSkillOfCard(card.definition);
       const skillInfo = defineSkillInfo({
         caller: card,
+        callerArea: { who, type: "hands" },
         definition: skillDef,
       });
       // 当支援区满时，卡牌目标为“要离场的支援牌”

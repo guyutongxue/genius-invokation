@@ -47,8 +47,7 @@ export function beginRegistration() {
   };
 }
 
-interface CharacterEntry
-  extends Omit<CharacterDefinition, "skills"> {
+interface CharacterEntry extends Omit<CharacterDefinition, "skills"> {
   skillIds: readonly number[];
 }
 
@@ -216,14 +215,17 @@ export function endRegistration(): GameDataGetter {
           (acc, { varConfigs }) => combineObject(acc, varConfigs),
           <Record<string, VariableConfig>>{},
         );
+        const skills: readonly SkillDefinition[] = [
+          ...initiativeSkills.map((e) => e.skill),
+          ...passiveSkills.flatMap((e) => e.skills),
+        ];
         return {
           ...correctCh,
-          initiativeSkills: initiativeSkills.map((e) => e.skill),
           varConfigs: combineObject(
             correctCh.varConfigs,
             passiveSkillVarConfigs,
           ),
-          skills: passiveSkills.flatMap((e) => e.skills),
+          skills,
         };
       }),
     };

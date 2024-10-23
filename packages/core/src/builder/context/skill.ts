@@ -148,10 +148,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
   public readonly callerArea: EntityArea;
 
   /**
-   * 获取正在执行逻辑的实体的 `CharacterContext` 或 `EntityContext`。
+   * 获取正在执行逻辑的实体的 `Character` 或 `Entity`。
    * @returns
    */
-  public readonly self: TypedExEntity<Meta, Meta["callerType"]>;
+  private readonly _self: TypedExEntity<Meta, Meta["callerType"]> | null = null;
 
   /**
    *
@@ -171,13 +171,17 @@ export class SkillContext<Meta extends ContextMetaBase> {
       onNotify: (opt) => this.onNotify(opt),
       onPause: async () => {},
     };
+    this.callerArea =
+      skillInfo.callerArea ?? getEntityArea(state, skillInfo.caller.id);
     this.skillInfo = {
       ...skillInfo,
+      callerArea: this.callerArea,
       mutatorConfig,
-    }
+    };
     this.mutator = new StateMutator(state, mutatorConfig);
-    this.callerArea = getEntityArea(state, this.skillInfo.caller.id);
-    this.self = this.of(this.skillInfo.caller);
+    try {
+      this._self = this.of<Meta["callerType"]>(this.skillInfo.caller);
+    } catch {}
   }
   /**
    * 技能执行完毕，发出通知，禁止后续改动。
@@ -206,6 +210,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
     return this.mutator.mutate(mut);
   }
 
+  get self() {
+    if (this._self === null) {
+      throw new GiTcgDataError("Self entity not available");
+    }
+    return this._self;
+  }
+
   get isPreview(): boolean {
     return !!this.skillInfo.isPreview;
   }
@@ -220,6 +231,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   get oppPlayer() {
     return this.state.players[flip(this.callerArea.who)];
   }
+  /** Latest caller state */
   private get callerState(): AnyState {
     return getEntityById(this.state, this.skillInfo.caller.id);
   }
@@ -380,7 +392,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     ...args: EventAndRequestConstructorArgs<E>
   ) {
     const arg = constructEventAndRequestArg(event, ...args);
-    this.mutator.log(DetailLogType.Other, `Event ${event} (${arg.toString()}) emitted`);
+    this.mutator.log(
+      DetailLogType.Other,
+      `Event ${event} (${arg.toString()}) emitted`,
+    );
     this.eventAndRequests.push([event, arg] as EventAndRequest);
   }
 
@@ -475,7 +490,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  private doHeal(value: number, targetState: CharacterState, option: Required<HealOption>) {
+  private doHeal(
+    value: number,
+    targetState: CharacterState,
+    option: Required<HealOption>,
+  ) {
     const damageType = DamageType.Heal;
     if (!targetState.variables.alive) {
       if (option.kind === "revive") {
@@ -513,7 +532,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
       expectedValue: value,
       value: finalValue,
       healKind: option.kind,
-      source: this.callerState,
+      source: this.skillInfo.caller,
+      sourceArea: this.callerArea,
       via: this.skillInfo,
       target: targetState,
       causeDefeated: false,
@@ -587,6 +607,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       const targetState = t.state;
       let damageInfo: DamageInfo = {
         source: this.skillInfo.caller,
+        sourceArea: this.callerArea,
         target: targetState,
         type,
         value,
@@ -881,11 +902,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     }
   }
 
-  setVariable(
-    prop: string,
-    value: number,
-    target: AnyState,
-  ): void;
+  setVariable(prop: string, value: number, target: AnyState): void;
   setVariable(prop: Meta["callerVars"], value: number): void;
   setVariable(prop: any, value: number, target?: AnyState) {
     target ??= this.callerState;
@@ -902,17 +919,15 @@ export class SkillContext<Meta extends ContextMetaBase> {
     });
   }
 
-  private assertNotCard(target: AnyState): asserts target is CharacterState | EntityState {
+  private assertNotCard(
+    target: AnyState,
+  ): asserts target is CharacterState | EntityState {
     if (target.definition.type === "card") {
       throw new GiTcgDataError(`Cannot add variable to card`);
     }
   }
 
-  addVariable(
-    prop: string,
-    value: number,
-    target: AnyState,
-  ): void;
+  addVariable(prop: string, value: number, target: AnyState): void;
   addVariable(prop: Meta["callerVars"], value: number): void;
   addVariable(prop: any, value: number, target?: AnyState) {
     target ??= this.callerState;
@@ -1214,10 +1229,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
   private insertPileCards(
     payloads: InsertPilePayload[],
     strategy: InsertPileStrategy,
-    where: "my" | "opp"
+    where: "my" | "opp",
   ) {
     const count = payloads.length;
-    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    const who =
+      where === "my" ? this.callerArea.who : flip(this.callerArea.who);
     const player = this.state.players[who];
     switch (strategy) {
       case "top":
@@ -1288,7 +1304,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
               targetIndex: index,
             });
           }
-        } else  if (strategy.startsWith("topIndex")) {
+        } else if (strategy.startsWith("topIndex")) {
           const index = Number(strategy.slice(8));
           if (isNaN(index)) {
             throw new GiTcgDataError(`Invalid strategy ${strategy}`);
@@ -1313,7 +1329,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
     strategy: InsertPileStrategy,
     where: "my" | "opp" = "my",
   ) {
-    const who = where === "my" ? this.callerArea.who : flip(this.callerArea.who);
+    const who =
+      where === "my" ? this.callerArea.who : flip(this.callerArea.who);
     using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Create pile cards ${count} * [card:${cardId}], strategy ${strategy}`,
@@ -1325,7 +1342,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const cardTemplate = {
       id: 0,
       definition: cardDef,
-      variables: {}
+      variables: {},
     };
     const payloads = Array.from(
       { length: count },
@@ -1391,6 +1408,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
         DetailLogType.Primitive,
         `Dispose card ${stringifyState(card)} from player ${who}`,
       );
+      const method: DisposeOrTuneMethod =
+        where === "hands" ? "disposeFromHands" : "disposeFromPiles";
+      this.emitEvent("onDisposeOrTuneCard", this.state, card, method);
       this.mutate({
         type: "removeCard",
         who,
@@ -1398,9 +1418,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
         oldState: card,
         reason: "disposed",
       });
-      const method: DisposeOrTuneMethod =
-        where === "hands" ? "disposeFromHands" : "disposeFromPiles";
-      this.emitEvent("onDisposeOrTuneCard", this.state, card, method);
     }
   }
 

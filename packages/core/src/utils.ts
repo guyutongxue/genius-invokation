@@ -53,10 +53,7 @@ export type Writable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
-export function getEntityById(
-  state: GameState,
-  id: number,
-): AnyState {
+export function getEntityById(state: GameState, id: number): AnyState {
   for (const player of state.players) {
     for (const card of player.hands) {
       if (card.id === id) {
@@ -130,7 +127,7 @@ export interface CallerAndTriggeredSkill {
 
 export interface CallerAndInitiativeSkill {
   caller: AnyState;
-  skill: InitiativeSkillDefinition
+  skill: InitiativeSkillDefinition;
 }
 
 /**
@@ -214,7 +211,12 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
         };
       }
     }
-    for (const key of ["combatStatuses", "summons", "supports"] as const) {
+    for (const key of [
+      "hands",
+      "combatStatuses",
+      "summons",
+      "supports",
+    ] as const) {
       if (player[key].find((e) => e.id === id)) {
         return {
           type: key,

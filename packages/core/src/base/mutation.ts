@@ -301,7 +301,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "createEntity": {
       const { where, value } = m;
-      if (where.type === "characters") {
+      if (where.type === "hands") {
+        throw new GiTcgCoreInternalError(`Cannot create hand card using createEntity. Use createCard instead.`);
+      } else if (where.type === "characters") {
         return produce(state, (draft) => {
           const character = draft.players[where.who].characters.find(
             (c) => c.id === where.characterId,
@@ -317,8 +319,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
           character.entities.push(value as Draft<EntityState>);
         });
       } else {
+        const type = where.type;
         return produce(state, (draft) => {
-          const area = draft.players[where.who][where.type];
+          const area = draft.players[where.who][type];
           if (value.id === 0) {
             value.id = draft.iterators.id--;
           }

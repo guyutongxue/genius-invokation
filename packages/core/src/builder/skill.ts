@@ -411,8 +411,7 @@ const detailedEventDictionary = {
     return checkRelative(e.onTimeState, e.entity.id, r);
   }),
   selfDispose: defineDescriptor("onDispose", (c, e, r) => {
-    // 由于此时场上不再存在 self，故只能通过 skillDefinition 是否位于 entity 的定义内来判断
-    return c.skillInfo.isSelfDispose;
+    return e.entity.id === r.callerId;
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return checkRelative(e.onTimeState, e.target.id, r) && e.damageInfo.causeDefeated;

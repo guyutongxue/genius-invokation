@@ -426,7 +426,7 @@ class CardBuilder<
         initiativeSkillConfig: null,
         action: disposeAction,
         filter: (st, info, arg) => {
-          return info.isSelfDispose;
+          return info.caller.id === arg.entity.id;
         },
         usagePerRoundVariableName: null,
       };

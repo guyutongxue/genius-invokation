@@ -49,6 +49,7 @@ import {
 } from "./mutator";
 import { Mutation } from "./base/mutation";
 import { Game } from "./game";
+import { EntityArea } from "./base/entity";
 
 export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
 
@@ -101,7 +102,8 @@ export class SkillExecutor {
       DetailLogType.Other,
       `skill caller: ${stringifyState(skillInfo.caller)}`,
     );
-    const callerArea = getEntityArea(this.state, skillInfo.caller.id);
+    const callerArea =
+      skillInfo.callerArea ?? getEntityArea(this.state, skillInfo.caller.id);
     const skillDef = skillInfo.definition;
 
     const preExposedMutations: ExposedMutation[] = [];
@@ -128,6 +130,7 @@ export class SkillExecutor {
       this.state,
       {
         ...skillInfo,
+        callerArea,
         isPreview: this.config.preview,
         mutatorConfig: this.config.mutatorConfig,
       },
@@ -246,11 +249,14 @@ export class SkillExecutor {
             arg._immuneInfo.newHealth
           }`,
         );
+        const source = arg._immuneInfo.skill.caller;
+        const sourceArea = getEntityArea(arg.onTimeState, source.id);
         const healValue = arg._immuneInfo.newHealth;
         const healInfo: HealInfo = {
           type: DamageType.Heal,
           healKind: "revive",
           source: arg._immuneInfo.skill.caller,
+          sourceArea,
           via: arg._immuneInfo.skill,
           target: arg.target,
           expectedValue: healValue,
@@ -501,45 +507,41 @@ export class SkillExecutor {
         );
 
         interface CallerAndSkillExtended extends CallerAndTriggeredSkill {
-          isSelfDispose?: boolean;
+          callerArea?: EntityArea;
         }
 
         const callerAndSkills: CallerAndSkillExtended[] = [];
-        // 对于弃置事件，额外地使被弃置的实体本身也能响应（但是调整技能调用者为当前玩家出战角色）
+        // 对于弃置事件，额外地使被弃置的实体本身也能响应
         if (arg instanceof DisposeEventArg) {
-          const entity = arg.entity;
-          const who = getEntityArea(arg.onTimeState, arg.entity.id).who;
-          const caller = getEntityById(
-            this.state,
-            this.state.players[who].activeCharacterId,
-          );
-          const onDisposeSkills = entity.definition.skills.filter(
+          const caller = arg.entity;
+          const callerArea = getEntityArea(arg.onTimeState, arg.entity.id);
+          const onDisposeSkills = caller.definition.skills.filter(
             (sk): sk is TriggeredSkillDefinition => sk.triggerOn === name,
           );
           callerAndSkills.push(
             ...onDisposeSkills.map((skill) => ({
               caller,
+              callerArea,
               skill,
-              isSelfDispose: true,
             })),
           );
         }
         // 收集其它待响应技能
         callerAndSkills.push(...allSkills(this.state, name));
 
-        for (const { caller, skill, isSelfDispose } of callerAndSkills) {
+        for (let { caller, skill, callerArea } of callerAndSkills) {
+          if (!callerArea) {
+            try {
+              callerArea = getEntityArea(this.state, caller.id);
+            } catch {
+              continue;
+            }
+          }
           const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
-            isSelfDispose,
-          }) as Writable<SkillInfo>;
-          const currentEntities = allEntities(this.state);
-          if (
-            !isSelfDispose &&
-            !currentEntities.find((et) => et.id === caller.id)
-          ) {
-            continue;
-          }
+            callerArea,
+          });
           if (!(0, skill.filter)(this.state, skillInfo, arg)) {
             continue;
           }

@@ -188,6 +188,11 @@ export class ActionPreviewer {
       }
       case "elementalTuning": {
         const card = newActionInfo.card;
+        const tuneCardEventArg = new DisposeOrTuneCardEventArg(
+          previewState,
+          card,
+          "elementalTuning",
+        );
         previewState = applyMutation(previewState, {
           type: "removeCard",
           who: this.who,
@@ -196,11 +201,6 @@ export class ActionPreviewer {
           reason: "elementalTuning",
         });
         if (completed) {
-          const tuneCardEventArg = new DisposeOrTuneCardEventArg(
-            previewState,
-            card,
-            "elementalTuning",
-          );
           [previewState, completed] = await SkillExecutor.previewEvent(
             previewState,
             "onDisposeOrTuneCard",
