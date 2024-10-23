@@ -350,11 +350,12 @@ export function playSkillOfCard(
   card: CardDefinition,
 ): InitiativeSkillDefinition {
   const skillDefinition = card.skills.find(
-    (sk) => sk.triggerOn === "initiative",
+    (sk): sk is InitiativeSkillDefinition =>
+      sk.initiativeSkillConfig?.skillType === "playCard",
   );
   if (!skillDefinition) {
     throw new GiTcgCoreInternalError(
-      `Card definition ${card.id} do not have a initiative skill`,
+      `Card definition ${card.id} do not have a playCard skill`,
     );
   }
   return skillDefinition;
@@ -365,9 +366,7 @@ export function costOfCard(card: CardDefinition): readonly DiceType[] {
 }
 
 export function diceCostOfCard(card: CardDefinition): number {
-  return playSkillOfCard(card).initiativeSkillConfig.requiredCost.filter(
-    (c) => c !== DiceType.Energy,
-  ).length;
+  return costOfCard(card).filter((c) => c !== DiceType.Energy).length;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

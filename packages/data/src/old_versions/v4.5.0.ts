@@ -1,4 +1,4 @@
-import { DamageType, DiceType, card, diceCostOfCard, skill, status } from "@gi-tcg/core/builder";
+import { DamageType, DiceType, card, skill, status } from "@gi-tcg/core/builder";
 import { EmbersRekindled } from "../characters/pyro/abyss_lector_fathomless_flames";
 import { HeronStrike } from "../characters/hydro/candace";
 import { Wavestrider } from "../characters/electro/beidou";

@@ -514,7 +514,7 @@ export class SkillExecutor {
         // 收集其它待响应技能
         callerAndSkills.push(...allSkills(this.state, name));
 
-        for (let { caller, skill } of callerAndSkills) {
+        for (const { caller, skill } of callerAndSkills) {
           const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
