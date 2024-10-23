@@ -40,7 +40,6 @@ import {
 } from "./utils";
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType } from "./log";
-import { Writable } from "./utils";
 import {
   GiTcgPreviewAbortedError,
   MutatorConfig as MutatorConfig,

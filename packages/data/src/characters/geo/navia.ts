@@ -113,7 +113,6 @@ export const AsTheSunlitSkysSingingSalute = skill(16083)
 export const MutualAssistanceNetwork = skill(16084)
   .type("passive")
   .on("damaged", (c, e) => 
-    c.self.state.variables.alive &&
     [
       Reaction.CrystallizeCryo, 
       Reaction.CrystallizeElectro, 

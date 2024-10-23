@@ -120,7 +120,6 @@ export const RingOfBurstingGrenades = skill(13133)
 export const VerticalForceCoordinationPassive = skill(13134)
   .type("passive")
   .on("reaction", (c, e) => 
-    c.self.state.variables.alive &&
     e.type === Reaction.Overloaded &&
     !c.of(e.target).isMine())
   .listenToAll()

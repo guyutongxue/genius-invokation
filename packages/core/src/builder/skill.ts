@@ -721,6 +721,9 @@ export class TriggeredSkillBuilder<
   }
 
   private buildSkill() {
+    if (this.parent._type === "character") {
+      this.filters.push((c) => c.self.state.variables.alive);
+    }
     if (this._usagePerRoundOpt?.autoDecrease) {
       this.do((c) => {
         c.consumeUsagePerRound();
