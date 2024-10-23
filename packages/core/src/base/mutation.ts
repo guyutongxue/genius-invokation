@@ -79,7 +79,12 @@ export interface RemoveCardM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
   readonly where: "hands" | "piles";
-  readonly reason: "play" | "elementalTuning" | "overflow" | "disposed" | "disabled";
+  readonly reason:
+    | "play"
+    | "elementalTuning"
+    | "overflow"
+    | "disposed"
+    | "disabled";
   readonly oldState: CardState;
 }
 
@@ -153,6 +158,9 @@ export interface ClearRoundSkillLogM {
   readonly type: "clearRoundSkillLog";
   readonly who: 0 | 1;
 }
+export interface ClearRemovedEntitiesM {
+  readonly type: "clearRemovedEntities";
+}
 
 export type Mutation =
   | StepRandomM
@@ -173,7 +181,8 @@ export type Mutation =
   | SetPlayerFlagM
   | MutateExtensionStateM
   | PushRoundSkillLogM
-  | ClearRoundSkillLogM;
+  | ClearRoundSkillLogM
+  | ClearRemovedEntitiesM;
 
 function doMutation(state: GameState, m: Mutation): GameState {
   switch (m.type) {
@@ -274,7 +283,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
             `Card ${m.oldState.id} not found in ${m.where} of ${m.who}`,
           );
         }
-        player[m.where].splice(cardIdx, 1);
+        player.removedEntities.push(...player[m.where].splice(cardIdx, 1));
       });
     }
     case "createCard": {
@@ -302,7 +311,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "createEntity": {
       const { where, value } = m;
       if (where.type === "hands") {
-        throw new GiTcgCoreInternalError(`Cannot create hand card using createEntity. Use createCard instead.`);
+        throw new GiTcgCoreInternalError(
+          `Cannot create hand card using createEntity. Use createCard instead.`,
+        );
       } else if (where.type === "characters") {
         return produce(state, (draft) => {
           const character = draft.players[where.who].characters.find(
@@ -405,6 +416,12 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "clearRoundSkillLog": {
       return produce(state, (draft) => {
         draft.players[m.who].roundSkillLog.clear();
+      });
+    }
+    case "clearRemovedEntities": {
+      return produce(state, (draft) => {
+        draft.players[0].removedEntities = [];
+        draft.players[1].removedEntities = [];
       });
     }
     default: {

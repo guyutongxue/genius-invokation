@@ -37,8 +37,7 @@ import {
   EntityDefinition,
   UsagePerRoundVariableNames,
 } from "./entity";
-import { IDetailLogger } from "../log";
-import { InternalNotifyOption, MutatorConfig } from "../mutator";
+import { MutatorConfig } from "../mutator";
 import { diceCostOfCard, getEntityArea, mixins } from "../utils";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
@@ -107,8 +106,6 @@ export interface SkillInfo {
    * 是否是预览中。部分技能会因是否为预览而采取不同的效果。
    */
   readonly isPreview: boolean;
-  /** @internal */
-  readonly callerArea?: EntityArea;
   /** @internal SkillContext 内部的 StateMutator 的配置 */
   readonly mutatorConfig?: MutatorConfig;
 }
@@ -155,7 +152,6 @@ export interface DamageInfo {
   readonly type: Exclude<DamageType, DamageType.Heal>;
   readonly value: number;
   readonly source: AnyState;
-  readonly sourceArea: EntityArea;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly causeDefeated: boolean;
@@ -175,7 +171,6 @@ export interface HealInfo {
   readonly value: number;
   readonly healKind: HealKind;
   readonly source: AnyState;
-  readonly sourceArea: EntityArea;
   readonly via: SkillInfo;
   readonly target: CharacterState;
   readonly fromReaction: null;
@@ -640,7 +635,7 @@ export class DamageOrHealEventArg<
     private readonly _damageInfo: InfoT,
   ) {
     super(state);
-    this.sourceWho = _damageInfo.sourceArea.who;
+    this.sourceWho = getEntityArea(state, _damageInfo.source.id).who;
     this.targetWho = getEntityArea(state, _damageInfo.target.id).who;
   }
   toString() {
@@ -1075,7 +1070,7 @@ export const EVENT_MAP = {
   onDamageOrHeal: DamageOrHealEventArg,
 
   onEnter: EnterEventArg,
-  onDispose: EntityEventArg,
+  onDispose: DisposeEventArg,
 
   modifyZeroHealth: ZeroHealthEventArg,
   onRevive: CharacterEventArg,

@@ -66,6 +66,7 @@ export function exposeMutation(
     case "mutateExtensionState":
     case "pushRoundSkillLog":
     case "clearRoundSkillLog":
+    case "clearRemovedEntities":
     case "switchActive": // We will manually handle this
       return null;
     case "changePhase":

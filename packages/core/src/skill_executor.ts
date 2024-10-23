@@ -102,8 +102,7 @@ export class SkillExecutor {
       DetailLogType.Other,
       `skill caller: ${stringifyState(skillInfo.caller)}`,
     );
-    const callerArea =
-      skillInfo.callerArea ?? getEntityArea(this.state, skillInfo.caller.id);
+    const callerArea = getEntityArea(this.state, skillInfo.caller.id);
     const skillDef = skillInfo.definition;
 
     const preExposedMutations: ExposedMutation[] = [];
@@ -130,7 +129,6 @@ export class SkillExecutor {
       this.state,
       {
         ...skillInfo,
-        callerArea,
         isPreview: this.config.preview,
         mutatorConfig: this.config.mutatorConfig,
       },
@@ -250,13 +248,11 @@ export class SkillExecutor {
           }`,
         );
         const source = arg._immuneInfo.skill.caller;
-        const sourceArea = getEntityArea(arg.onTimeState, source.id);
         const healValue = arg._immuneInfo.newHealth;
         const healInfo: HealInfo = {
           type: DamageType.Heal,
           healKind: "revive",
-          source: arg._immuneInfo.skill.caller,
-          sourceArea,
+          source,
           via: arg._immuneInfo.skill,
           target: arg.target,
           expectedValue: healValue,
@@ -506,41 +502,24 @@ export class SkillExecutor {
           `Handling event ${name} (${arg.toString()}):`,
         );
 
-        interface CallerAndSkillExtended extends CallerAndTriggeredSkill {
-          callerArea?: EntityArea;
-        }
-
-        const callerAndSkills: CallerAndSkillExtended[] = [];
+        const callerAndSkills: CallerAndTriggeredSkill[] = [];
         // 对于弃置事件，额外地使被弃置的实体本身也能响应
         if (arg instanceof DisposeEventArg) {
           const caller = arg.entity;
-          const callerArea = getEntityArea(arg.onTimeState, arg.entity.id);
           const onDisposeSkills = caller.definition.skills.filter(
             (sk): sk is TriggeredSkillDefinition => sk.triggerOn === name,
           );
           callerAndSkills.push(
-            ...onDisposeSkills.map((skill) => ({
-              caller,
-              callerArea,
-              skill,
-            })),
+            ...onDisposeSkills.map((skill) => ({ caller, skill })),
           );
         }
         // 收集其它待响应技能
         callerAndSkills.push(...allSkills(this.state, name));
 
-        for (let { caller, skill, callerArea } of callerAndSkills) {
-          if (!callerArea) {
-            try {
-              callerArea = getEntityArea(this.state, caller.id);
-            } catch {
-              continue;
-            }
-          }
+        for (let { caller, skill } of callerAndSkills) {
           const skillInfo = defineSkillInfo({
             caller,
             definition: skill,
-            callerArea,
           });
           if (!(0, skill.filter)(this.state, skillInfo, arg)) {
             continue;

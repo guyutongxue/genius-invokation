@@ -20,6 +20,7 @@ import {
   DescriptionDictionaryKey,
   EntityArea,
   EntityTag,
+  EntityType,
   EntityVariableConfigs,
   ExEntityType,
   USAGE_PER_ROUND_VARIABLE_NAMES,
@@ -46,7 +47,7 @@ import {
 import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
 import { createVariable, createVariableCanAppend } from "./utils";
 import { Writable, getEntityArea, getEntityById } from "../utils";
-import { AnyState, EntityState, GameState } from "../base/state";
+import { EntityState, GameState } from "../base/state";
 import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
 export interface AppendOptions {
@@ -104,7 +105,7 @@ type EntityDescriptionDictionaryGetter<AssociatedExt extends ExtensionHandle> =
   ) => string | number;
 
 export class EntityBuilder<
-  CallerType extends ExEntityType,
+  CallerType extends "character" | EntityType,
   Vars extends string = never,
   AssociatedExt extends ExtensionHandle = never,
 > {

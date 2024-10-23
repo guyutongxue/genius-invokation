@@ -84,6 +84,7 @@ test("sort dice", () => {
     hasDefeated: false,
     legendUsed: false,
     roundSkillLog: new Map(),
+    removedEntities: [],
   };
   const sorted = sortDice(playerState, shuffled);
   expect(sorted).toEqual(dice);

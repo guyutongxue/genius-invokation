@@ -46,14 +46,14 @@ import {
 import { ExtensionHandle, SkillHandle } from "./type";
 import {
   EntityArea,
+  EntityType,
   USAGE_PER_ROUND_VARIABLE_NAMES,
   UsagePerRoundVariableNames,
 } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
 import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
-import { GiTcgCoreInternalError, GiTcgDataError } from "../error";
+import { GiTcgDataError } from "../error";
 import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
-import { createVariable } from "./utils";
 import { registerInitiativeSkill } from "./registry";
 import { InitiativeSkillTargetKind } from "../base/card";
 import {
@@ -62,7 +62,9 @@ import {
   TargetQuery,
 } from "./card";
 
-export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
+export type BuilderMetaBase = Omit<ContextMetaBase, "readonly" | "callerType"> & {
+  callerType: "character" | EntityType
+};
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
   [K in keyof BuilderMetaBase]: BM[K];
 } & { readonly: true };

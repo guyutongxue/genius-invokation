@@ -135,6 +135,7 @@ function initPlayerState(
     legendUsed: false,
     skipNextTurn: false,
     roundSkillLog: new Map(),
+    removedEntities: [],
   };
 }
 
@@ -326,6 +327,7 @@ export class Game {
             default:
               break;
           }
+          this.mutate({ type: "clearRemovedEntities" });
           await this.mutator.notifyAndPause({ canResume: true });
         }
       } catch (e) {
@@ -899,7 +901,6 @@ export class Game {
       const skillDef = playSkillOfCard(card.definition);
       const skillInfo = defineSkillInfo({
         caller: card,
-        callerArea: { who, type: "hands" },
         definition: skillDef,
       });
       // 当支援区满时，卡牌目标为“要离场的支援牌”

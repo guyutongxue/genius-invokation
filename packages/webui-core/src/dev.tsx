@@ -36,7 +36,7 @@ const playerConfig0: PlayerConfig = {
   alwaysOmni: import.meta.env.DEV,
 };
 const playerConfig1: PlayerConfig = {
-  characters: [2502, 1201, 1303],
+  characters: [1609, 1201, 1303],
   cards: [
     333015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
     331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,

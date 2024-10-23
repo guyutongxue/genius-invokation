@@ -34,7 +34,7 @@ export type EntityType =
   | "support"
   | "summon";
 
-export type ExEntityType = "character" | EntityType;
+export type ExEntityType = "character" | "card" | EntityType;
 
 export interface EntityDefinition {
   readonly __definition: "entities";
@@ -51,7 +51,7 @@ export interface EntityDefinition {
 
 export type EntityArea =
   | {
-      readonly type: "hands" | "combatStatuses" | "supports" | "summons" ;
+      readonly type: "hands" | "combatStatuses" | "supports" | "summons" | "removedEntities";
       readonly who: 0 | 1;
     }
   | {

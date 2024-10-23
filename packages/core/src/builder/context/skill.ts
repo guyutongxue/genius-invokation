@@ -98,6 +98,7 @@ import { Draft, produce } from "immer";
 import { nextRandom } from "../../random";
 import { Character, TypedCharacter } from "./character";
 import { Entity, TypedEntity } from "./entity";
+import { Card } from "./card";
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -151,7 +152,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
    * 获取正在执行逻辑的实体的 `Character` 或 `Entity`。
    * @returns
    */
-  private readonly _self: TypedExEntity<Meta, Meta["callerType"]> | null = null;
+  private readonly _self: TypedExEntity<Meta, Meta["callerType"]>;
 
   /**
    *
@@ -171,17 +172,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
       onNotify: (opt) => this.onNotify(opt),
       onPause: async () => {},
     };
-    this.callerArea =
-      skillInfo.callerArea ?? getEntityArea(state, skillInfo.caller.id);
+    this.callerArea = getEntityArea(state, skillInfo.caller.id);
     this.skillInfo = {
       ...skillInfo,
-      callerArea: this.callerArea,
       mutatorConfig,
     };
     this.mutator = new StateMutator(state, mutatorConfig);
-    try {
-      this._self = this.of<Meta["callerType"]>(this.skillInfo.caller);
-    } catch {}
+    this._self = this.of<Meta["callerType"]>(this.skillInfo.caller);
   }
   /**
    * 技能执行完毕，发出通知，禁止后续改动。
@@ -308,9 +305,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (typeof entityState === "number") {
       entityState = getEntityById(this.state, entityState);
     }
-    this.assertNotCard(entityState);
     if (entityState.definition.type === "character") {
       return new Character(this, entityState.id);
+    } else if (entityState.definition.type === "card") {
+      return new Card(this, entityState.id);
     } else {
       return new Entity(this, entityState.id);
     }
@@ -533,7 +531,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
       value: finalValue,
       healKind: option.kind,
       source: this.skillInfo.caller,
-      sourceArea: this.callerArea,
       via: this.skillInfo,
       target: targetState,
       causeDefeated: false,
@@ -607,7 +604,6 @@ export class SkillContext<Meta extends ContextMetaBase> {
       const targetState = t.state;
       let damageInfo: DamageInfo = {
         source: this.skillInfo.caller,
-        sourceArea: this.callerArea,
         target: targetState,
         type,
         value,

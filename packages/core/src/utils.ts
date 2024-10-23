@@ -70,7 +70,12 @@ export function getEntityById(state: GameState, id: number): AnyState {
         }
       }
     }
-    for (const key of ["combatStatuses", "summons", "supports"] as const) {
+    for (const key of [
+      "combatStatuses",
+      "summons",
+      "supports",
+      "removedEntities",
+    ] as const) {
       const area = player[key];
       for (const entity of area) {
         if (entity.id === id) {
@@ -83,7 +88,7 @@ export function getEntityById(state: GameState, id: number): AnyState {
 }
 
 /**
- * 查找所有实体，按照通常响应顺序排序
+ * 查找所有实体，按照通常响应顺序排序。不含已移除的实体。
  * @param state 游戏状态
  * @returns 实体状态列表
  */
@@ -216,6 +221,7 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
       "combatStatuses",
       "summons",
       "supports",
+      "removedEntities",
     ] as const) {
       if (player[key].find((e) => e.id === id)) {
         return {
@@ -275,7 +281,7 @@ export function removeEntity(state: Draft<GameState>, id: number) {
       const area = player[key];
       const idx = area.findIndex((e) => e.id === id);
       if (idx !== -1) {
-        area.splice(idx, 1);
+        player.removedEntities.push(...area.splice(idx, 1));
         return;
       }
     }
