@@ -31,7 +31,6 @@ import {
 import { CharacterState, GameState, stringifyState } from "./base/state";
 import { Aura, DamageType, ExposedMutation } from "@gi-tcg/typings";
 import {
-  allEntities,
   allSkills,
   CallerAndTriggeredSkill,
   checkImmune,

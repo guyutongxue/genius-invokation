@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, card, DamageType, StatusHandle } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, StatusHandle, combatStatus } from "@gi-tcg/core/builder";
 
 /**
  * @id 112042
@@ -56,7 +56,29 @@ export const RangedStance = status(112041)
  * （处于「近战状态」的达达利亚攻击所附属角色时，会造成额外伤害。）
  */
 export const Riptide: StatusHandle = status(112043)
-  .done(); // 无法响应所附属角色被击倒后的事件，移动到达达利亚被动技能
+  .on("defeated")
+  .do((c) => {
+    const active = c.$("my active includes defeated")!;
+    if (active.state.variables.alive) {
+      active.addStatus(Riptide);
+    } else {
+      c.combatStatus(Riptide2);
+    }
+  })
+  .done();
+
+
+// 当对方带有断流的角色被击倒时：
+// 若出战角色被击倒（稍后玩家需选择出战角色）：
+// - 则在下次切换角色后，为新的出战角色附属断流。
+// 否则：
+// - 直接为当前出战角色附属断流。
+
+const Riptide2 = combatStatus(112044)
+  .once("switchActive")
+  .characterStatus(Riptide, "my active")
+  .done();
+
 
 /**
  * @id 12041
@@ -133,15 +155,10 @@ export const TideWithholder = skill(12044)
  * @description
  * 
  */
-export const RangedStanceSkill = skill(12045)
+const RangedStanceSkill = skill(12045)
   .type("passive")
   .reserve();
 
-// 当对方带有断流的角色被击倒时：
-// 若被击倒的角色是出战角色（稍后玩家需选择出战角色）：
-// - 则在下次切换角色后，为新的出战角色附属断流。
-// 否则（被击倒的是后台角色）：
-// - 直接为当前出战角色附属断流。
 
 /**
  * @id 12046
@@ -149,28 +166,8 @@ export const RangedStanceSkill = skill(12045)
  * @description
  * 
  */
-export const AddRiptideToNextCharacter = skill(12046)
-  .type("passive")
-  .variable("addAfterSwitch", 0)
-  .on("defeated", (c, e) => {
-    const ch = c.of(e.target);
-    return !ch.isMine() && ch.hasStatus(Riptide);
-  })
-  .listenToAll()
-  .do((c, e) => {
-    const ch = c.of(e.target);
-    if (ch.isActive()) {
-      c.setVariable("addAfterSwitch", 1);
-    } else {
-      c.characterStatus(Riptide, "opp active");
-    }
-  })
-  .on("switchActive", (c, e) =>
-    c.getVariable("addAfterSwitch") && 
-    e.switchInfo.who !== c.self.who)
-  .characterStatus(Riptide, "opp active")
-  .setVariable("addAfterSwitch", 0)
-  .done();
+const UnknownSkill = skill(12046)
+  .reserve();
 
 /**
  * @id 1204
@@ -183,7 +180,7 @@ export const Tartaglia = character(1204)
   .tags("hydro", "bow", "fatui")
   .health(10)
   .energy(3)
-  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder, AddRiptideToNextCharacter)
+  .skills(CuttingTorrent, FoulLegacyRagingTide, HavocObliteration, TideWithholder)
   .done();
 
 /**

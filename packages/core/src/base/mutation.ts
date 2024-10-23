@@ -81,6 +81,7 @@ export interface RemoveCardM {
   readonly where: "hands" | "piles";
   readonly reason:
     | "play"
+    | "onDrawTriggered"
     | "elementalTuning"
     | "overflow"
     | "disposed"
