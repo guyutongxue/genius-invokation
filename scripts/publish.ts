@@ -61,7 +61,7 @@ function removeBunFromExport(exports: PackageJson["exports"]): PackageJson["expo
   }
   const cond: typeof exports = {};
   for (const key in exports) {
-    if (key === "bun") {
+    if (key === "bun" || key.includes("internal")) {
       continue;
     }
     cond[key] = removeBunFromExport(exports[key])!;
