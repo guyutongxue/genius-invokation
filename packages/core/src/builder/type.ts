@@ -19,7 +19,9 @@ import { EntityTag, EntityType, ExEntityType } from "../base/entity";
 import { ContextMetaBase } from "./context/skill";
 import { TypedCharacter } from "./context/character";
 import { TypedEntity } from "./context/entity";
-import { CharacterState, EntityState } from "..";
+import { CardState, CharacterState, EntityState } from "..";
+import { TypedCard } from "./context/card";
+import { CardTag } from "../base/card";
 
 export type CharacterHandle = number & { readonly _char: unique symbol };
 export type SkillHandle = number & { readonly _skill: unique symbol };
@@ -44,38 +46,48 @@ export type ExtensionHandle<T = unknown> = number & {
 };
 
 export type ExEntityState<TypeT extends ExEntityType> =
-  TypeT extends "character" ? CharacterState : EntityState;
+  TypeT extends "character"
+    ? CharacterState
+    : TypeT extends "card"
+      ? CardState
+      : EntityState;
 
 export type TypedExEntity<
   Meta extends ContextMetaBase,
   TypeT extends ExEntityType,
 > = TypeT extends "character"
   ? TypedCharacter<Meta>
-  : TypeT extends EntityType
-    ? TypedEntity<Meta>
-    : never;
+  : TypeT extends "card"
+    ? TypedCard<Meta>
+    : TypeT extends EntityType
+      ? TypedEntity<Meta>
+      : never;
 
 export type HandleT<T extends ExEntityType> = T extends "character"
   ? CharacterHandle
-  : T extends "combatStatus"
-    ? CombatStatusHandle
-    : T extends "status"
-      ? StatusHandle
-      : T extends "equipment"
-        ? EquipmentHandle
-        : T extends "summon"
-          ? SummonHandle
-          : T extends "support"
-            ? SupportHandle
-            : T extends "passiveSkill"
-              ? SkillHandle
-              : never;
+  : T extends "card"
+    ? CardHandle
+    : T extends "combatStatus"
+      ? CombatStatusHandle
+      : T extends "status"
+        ? StatusHandle
+        : T extends "equipment"
+          ? EquipmentHandle
+          : T extends "summon"
+            ? SummonHandle
+            : T extends "support"
+              ? SupportHandle
+              : T extends "passiveSkill"
+                ? SkillHandle
+                : never;
 
 export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"
   ? CharacterTag
-  : TypeT extends EntityType
-    ? EntityTag
-    : never;
+  : TypeT extends "card"
+    ? CardTag
+    : TypeT extends EntityType
+      ? EntityTag
+      : never;
 
 export type AppliableDamageType =
   | DamageType.Cryo

@@ -13,17 +13,32 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { GiTcgDataError } from "../../error";
 import { CardState } from "../../base/state";
-import { getEntityById } from "../../utils";
+import { getEntityArea, getEntityById } from "../../utils";
 import { ContextMetaBase, SkillContext } from "./skill";
+import { EntityArea } from "../../base/entity";
 
 export class Card<Meta extends ContextMetaBase> {
+  public readonly area: EntityArea;
   constructor(
     private readonly skillContext: SkillContext<Meta>,
     public readonly id: number,
-  ) {}
+  ) {
+    this.area = getEntityArea(this.skillContext.state, this.id);
+  }
   
   get state(): CardState {
     return getEntityById(this.skillContext.state, this.id) as CardState;
   }
+
+  getVariable(name: string): never {
+    throw new GiTcgDataError("Cannot get variable of a card");
+  }
+  dispose(): never {
+    throw new GiTcgDataError("Cannot dispose a card in this method");
+    this.skillContext.disposeCard(this.state);
+  }
 }
+
+export type TypedCard<Meta extends ContextMetaBase> = Card<Meta>;

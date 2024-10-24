@@ -34,6 +34,7 @@ export interface GameConfig {
   readonly maxSummons: number;
   readonly initialDice: number;
   readonly maxDice: number;
+  readonly allowTuningAnyDice: boolean;
 }
 
 export interface IteratorState {

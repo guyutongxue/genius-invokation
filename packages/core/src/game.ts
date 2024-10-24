@@ -247,7 +247,7 @@ export class Game {
         value: {
           id: 0,
           definition: card,
-          variables: {}
+          variables: {},
         },
         target: "piles",
       });
@@ -609,6 +609,7 @@ export class Game {
         throw new GiTcgIOError(who, `Selected dice doesn't meet requirement`);
       }
       if (
+        !this.state.config.allowTuningAnyDice &&
         actionInfo.type === "elementalTuning" &&
         (cost[0] === DiceType.Omni || cost[0] === actionInfo.result)
       ) {
@@ -709,12 +710,9 @@ export class Game {
               oldState: card,
               reason: "play",
             });
-            await this.executeSkill(
-              actionInfo.skill,
-              {
-                targets: actionInfo.targets,
-              },
-            );
+            await this.executeSkill(actionInfo.skill, {
+              targets: actionInfo.targets,
+            });
           }
           await this.handleEvent(
             "onPlayCard",
@@ -866,7 +864,8 @@ export class Game {
       for (const { caller, skill } of initiativeSkillsOfPlayer(player)) {
         const skillType = skill.initiativeSkillConfig.skillType;
         const charged = skillType === "normal" && player.canCharged;
-        const plunging = skillType === "normal" &&
+        const plunging =
+          skillType === "normal" &&
           (player.canPlunging ||
             activeCh.entities.some((et) =>
               et.definition.tags.includes("normalAsPlunging"),
@@ -877,7 +876,10 @@ export class Game {
           charged,
           plunging,
         });
-        const allTargets = (0, skill.initiativeSkillConfig.getTarget)(this.state, skillInfo);
+        const allTargets = (0, skill.initiativeSkillConfig.getTarget)(
+          this.state,
+          skillInfo,
+        );
         for (const arg of allTargets) {
           if (!(0, skill.filter)(this.state, skillInfo, arg)) {
             continue;
@@ -910,7 +912,10 @@ export class Game {
       ) {
         allTargets = player.supports.map((st) => ({ targets: [st] }));
       } else {
-        allTargets = (0, skillDef.initiativeSkillConfig.getTarget)(this.state, skillInfo);
+        allTargets = (0, skillDef.initiativeSkillConfig.getTarget)(
+          this.state,
+          skillInfo,
+        );
       }
       for (const arg of allTargets) {
         if ((0, skillDef.filter)(this.state, skillInfo, arg)) {
@@ -1056,6 +1061,7 @@ export function mergeGameConfigWithDefault(
     maxSummons: 4,
     maxSupports: 4,
     randomSeed: randomSeed(),
+    allowTuningAnyDice: false,
     ...JSON.parse(JSON.stringify(config ?? {})),
   };
 }

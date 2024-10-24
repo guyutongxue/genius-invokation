@@ -866,7 +866,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   dispose(target: EntityTargetArg = "@self") {
     const targets = this.queryOrOf(target);
     for (const t of targets) {
-      const who = t.who;
+      this.assertNotCard(t.state);
       const entityState = t.state;
       if (entityState.definition.type === "character") {
         throw new GiTcgDataError(
@@ -999,7 +999,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   ): void;
   transformDefinition(target: string, newDefId: number): void;
   transformDefinition(
-    target: string | EntityState | CharacterState,
+    target: string | AnyState,
     newDefId: number,
   ) {
     if (typeof target === "string") {
@@ -1012,6 +1012,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         );
       }
     }
+    this.assertNotCard(target);
     const oldDef = target.definition;
     const def = this.state.data[oldDef.__definition].get(newDefId);
     if (typeof def === "undefined") {
