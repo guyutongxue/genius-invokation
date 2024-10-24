@@ -15,7 +15,7 @@
 
 import { DamageType } from "@gi-tcg/typings";
 import { CharacterTag } from "../base/character";
-import { EntityTag, EntityType, ExEntityType } from "../base/entity";
+import { EntityTag, EntityType } from "../base/entity";
 import { ContextMetaBase } from "./context/skill";
 import { TypedCharacter } from "./context/character";
 import { TypedEntity } from "./context/entity";
@@ -44,6 +44,8 @@ export type ExtensionHandle<T = unknown> = number & {
   readonly _extSym: unique symbol;
   readonly type: T;
 };
+
+export type ExEntityType = "character" | "card" | EntityType;
 
 export type ExEntityState<TypeT extends ExEntityType> =
   TypeT extends "character"

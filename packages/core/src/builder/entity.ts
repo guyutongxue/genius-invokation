@@ -22,7 +22,6 @@ import {
   EntityTag,
   EntityType,
   EntityVariableConfigs,
-  ExEntityType,
   USAGE_PER_ROUND_VARIABLE_NAMES,
   VariableConfig,
 } from "../base/entity";
@@ -39,6 +38,7 @@ import {
   enableShortcut,
 } from "./skill";
 import {
+  ExEntityType,
   ExtensionHandle,
   HandleT,
   PassiveSkillHandle,

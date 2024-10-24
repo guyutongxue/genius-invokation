@@ -30,7 +30,6 @@ import {
   DescriptionDictionary,
   DescriptionDictionaryEntry,
   DescriptionDictionaryKey,
-  ExEntityType,
 } from "../base/entity";
 import {
   DisposeOrTuneCardEventArg,
@@ -47,11 +46,11 @@ import {
   enableShortcut,
   BuilderWithShortcut,
   SkillOperationFilter,
-  ReadonlyMetaOf,
   SkillOperation,
   WritableMetaOf,
 } from "./skill";
 import {
+  ExEntityType,
   CardHandle,
   CharacterHandle,
   CombatStatusHandle,

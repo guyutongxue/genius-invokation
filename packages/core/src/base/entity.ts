@@ -34,8 +34,6 @@ export type EntityType =
   | "support"
   | "summon";
 
-export type ExEntityType = "character" | "card" | EntityType;
-
 export interface EntityDefinition {
   readonly __definition: "entities";
   readonly type: EntityType;

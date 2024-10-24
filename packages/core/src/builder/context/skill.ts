@@ -24,7 +24,6 @@ import {
   EntityArea,
   EntityDefinition,
   EntityType,
-  ExEntityType,
   stringifyEntityArea,
 } from "../../base/entity";
 import { CreateCardM, Mutation, TransferCardM } from "../../base/mutation";
@@ -71,6 +70,7 @@ import {
   ExEntityState,
   ExtensionHandle,
   HandleT,
+  ExEntityType,
   SkillHandle,
   StatusHandle,
   SummonHandle,
@@ -998,10 +998,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     newDefId: HandleT<DefT>,
   ): void;
   transformDefinition(target: string, newDefId: number): void;
-  transformDefinition(
-    target: string | AnyState,
-    newDefId: number,
-  ) {
+  transformDefinition(target: string | AnyState, newDefId: number) {
     if (typeof target === "string") {
       const entity = this.$(target);
       if (entity) {
