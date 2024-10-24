@@ -5,9 +5,12 @@
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "bun": "./src/index.ts",
-    "import": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
+    "./internal/*": "./src/*.ts"
   },
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",

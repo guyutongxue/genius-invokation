@@ -1,0 +1,9 @@
+{
+  "name": "@gi-tcg/test",
+  "private": true,
+
+  "dependencies": {
+    "@gi-tcg/core": "workspace:*",
+    "@gi-tcg/data": "workspace:*"
+  }
+}
