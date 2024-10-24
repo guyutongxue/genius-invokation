@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { For, Match, Switch, createSignal } from "solid-js";
+import { For, Match, Show, Switch, createSignal } from "solid-js";
 import data from "@gi-tcg/data";
 import {
   CURRENT_VERSION,
@@ -86,11 +86,13 @@ export function App() {
   };
 
   let deckBuilderDialog: HTMLDialogElement;
+  const [loadDeckBuilder, setLoadDeckBuilder] = createSignal(false);
   const [deckBuilderValue, setDeckBuilderValue] = createSignal<Deck>({
     characters: [],
     cards: [],
   });
   const openDeckBuilder = () => {
+    setLoadDeckBuilder(true);
     deckBuilderDialog.showModal();
   };
   const closeDeckBuilder = () => {
@@ -331,11 +333,13 @@ export function App() {
         </Match>
       </Switch>
       <dialog ref={deckBuilderDialog!} class="deck-builder-dialog">
-        <DeckBuilder
-          class="deck-builder"
-          deck={deckBuilderValue()}
-          onChangeDeck={setDeckBuilderValue}
-        />
+        <Show when={loadDeckBuilder()}>
+          <DeckBuilder
+            class="deck-builder"
+            deck={deckBuilderValue()}
+            onChangeDeck={setDeckBuilderValue}
+          />
+        </Show>
         <div class="deck-builder-actions">
           <button onClick={closeDeckBuilder}>Close</button>
           <button onClick={saveDeckBuilderValue}>Save</button>
