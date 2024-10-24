@@ -111,8 +111,6 @@ export function allEntities(state: GameState): AnyState[] {
       }
     }
 
-    result.push(...player.hands);
-
     result.push(active, ...active.entities);
     result.push(...player.combatStatuses);
     for (const ch of standby) {
@@ -121,6 +119,7 @@ export function allEntities(state: GameState): AnyState[] {
       }
     }
     result.push(...player.summons, ...player.supports);
+    result.push(...player.hands);
   }
   return result;
 }
