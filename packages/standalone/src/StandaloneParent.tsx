@@ -17,7 +17,6 @@ import data from "@gi-tcg/data";
 import {
   DetailLogEntry,
   Game,
-  GameIO,
   GameState,
   GameStateLogEntry,
   Version,
@@ -190,21 +189,26 @@ export function StandaloneParent(props: StandaloneParentProps) {
     }
   };
 
-  const getGameOption = () => {
-    const playerConfig0 = decodeShareCode(props.deck0);
-    const playerConfig1 = decodeShareCode(props.deck1);
-    const playerConfigs = [playerConfig0, playerConfig1] as const;
-    const io: GameIO = {
-      pause,
-      players: [childIo, uiIo],
-    };
-    return { data: data(props.version), io, playerConfigs };
+  const createGame = (state?: GameState) => {
+    if (!state) {
+      const deck0 = decodeShareCode(props.deck0);
+      const deck1 = decodeShareCode(props.deck1);
+      state = Game.createInitialState({
+        decks: [deck0, deck1],
+        data: data(props.version),
+      });
+    }
+    const game = new Game(state);
+    game.onPause = pause;
+    game.players[0].io = childIo;
+    game.players[1].io = uiIo;
+    return game;
   };
 
   const startGame = async () => {
     try {
       await showPopup();
-      const initialGame = new Game(getGameOption());
+      const initialGame = createGame();
       game = initialGame;
       initialGame.start().catch((e) => onGameError(e, initialGame));
     } catch (e) {
@@ -218,12 +222,10 @@ export function StandaloneParent(props: StandaloneParentProps) {
     childIo.cancelRpc();
     uiIo.cancelRpc();
     game?.terminate();
-    const newGame = new Game(getGameOption());
-    game = newGame;
     const latestState = logs[logs.length - 1];
-    newGame
-      .startFromState(latestState.state)
-      .catch((e) => onGameError(e, newGame));
+    const newGame = createGame(latestState.state);
+    game = newGame;
+    newGame.start().catch((e) => onGameError(e, newGame));
     setStateLog(logs);
     setViewingLogIndex(-1);
     setFromImport(false);
