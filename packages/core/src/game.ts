@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { checkDice, flip } from "@gi-tcg/utils";
+import { checkDice, Deck, flip } from "@gi-tcg/utils";
 import {
   DiceType,
   ExposedMutation,
@@ -32,7 +32,7 @@ import {
   PlayerState,
 } from "./base/state";
 import { Mutation } from "./base/mutation";
-import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
+import { PauseHandler, exposeAction, exposeMutation, exposeState } from "./io";
 import {
   elementOfCharacter,
   getActiveCharacterIndex,
@@ -83,13 +83,8 @@ import {
 import { ActionInfoWithModification, ActionPreviewer } from "./preview";
 import { Version } from "./base/version";
 
-type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
-
-export interface PlayerConfig {
-  readonly cards: number[];
-  readonly characters: number[];
+export interface DeckInit extends Deck {
   readonly noShuffle?: boolean;
-  readonly alwaysOmni?: boolean;
 }
 
 const INITIAL_ID = -500000;
@@ -140,18 +135,34 @@ function initPlayerState(
 }
 
 export class Game {
-  private readonly config: GameConfig;
   private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
-  private readonly io: GameIO;
   private readonly logger: DetailLogger;
 
   private _terminated = false;
-  private finishResolvers: Resolvers<0 | 1 | null> | null = null;
+  private finishResolvers: PromiseWithResolvers<0 | 1 | null> | null = null;
   private readonly mutator: StateMutator;
   public readonly mutatorConfig: MutatorConfig;
 
-  constructor(opt: GameOption) {
-    const config = mergeGameConfigWithDefault(opt.gameConfig);
+  public onPause: PauseHandler | null = null;
+
+  constructor(initialState: GameState) {
+    this.logger = new DetailLogger();
+    this.mutatorConfig = {
+      logger: this.logger,
+      onNotify: (opt) => this.onNotify(opt),
+      onPause: (opt) => this.onPause(opt),
+      howToChooseActive: (who, chs) => this.rpcChooseActive(who, chs),
+      howToReroll: (who) => this.rpcReroll(who),
+      howToSwitchHands: (who) => this.rpcSwitchHands(who),
+      howToSelectCard: (who, cards) => this.rpcSelectCard(who, cards),
+    };
+    this.mutator = new StateMutator(initialState, this.mutatorConfig);
+    this.playerConfigs = opt.playerConfigs;
+    this.initPlayerCards(0);
+    this.initPlayerCards(1);
+  }
+
+  static createInitialState(deck, config?: GameConfig) {
     const extensions = opt.data.extensions
       .values()
       .map<ExtensionState>((v) => ({
@@ -161,7 +172,7 @@ export class Game {
       .toArray();
     const initialState: GameState = {
       data: opt.data,
-      config,
+      config: mergeGameConfigWithDefault(config),
       iterators: {
         random: config.randomSeed,
         id: INITIAL_ID,
@@ -176,22 +187,10 @@ export class Game {
       ],
       extensions,
     };
-    this.logger = new DetailLogger();
-    this.mutatorConfig = {
-      logger: this.logger,
-      onNotify: (opt) => this.onNotify(opt),
-      onPause: (opt) => this.onPause(opt),
-      howToChooseActive: (who, chs) => this.rpcChooseActive(who, chs),
-      howToReroll: (who) => this.rpcReroll(who),
-      howToSwitchHands: (who) => this.rpcSwitchHands(who),
-      howToSelectCard: (who, cards) => this.rpcSelectCard(who, cards),
-    };
-    this.mutator = new StateMutator(initialState, this.mutatorConfig);
-    this.config = mergeGameConfigWithDefault(opt.gameConfig);
-    this.playerConfigs = opt.playerConfigs;
-    this.io = opt.io;
-    this.initPlayerCards(0);
-    this.initPlayerCards(1);
+  }
+  
+  get config() {
+    return this.state.config;
   }
 
   get gameVersion(): Version {
@@ -351,16 +350,6 @@ export class Game {
       }
     })();
     return this.finishResolvers.promise;
-  }
-
-  async startFromState(state: GameState) {
-    if (this.finishResolvers !== null) {
-      throw new GiTcgCoreInternalError(
-        `Game already started. Please use a new Game instance instead of start multiple time.`,
-      );
-    }
-    this.mutator.resetState(state);
-    return this.start();
   }
 
   giveUp(who: 0 | 1) {

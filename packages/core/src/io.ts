@@ -47,15 +47,13 @@ export interface PlayerIO {
   ) => Promise<RpcResponse[M]>;
 }
 
-export interface GameIO {
-  readonly pause?: (
-    state: GameState,
-    mutations: Mutation[],
-    canResume: boolean,
-  ) => Promise<unknown>;
-  readonly onIoError?: (e: GiTcgIOError) => void;
-  readonly players: readonly [PlayerIO, PlayerIO];
-}
+export type PauseHandler = (
+  state: GameState,
+  mutations: Mutation[],
+  canResume: boolean,
+) => Promise<unknown>;
+
+export type IOErrorHandler = (e: GiTcgIOError) => void;
 
 export function exposeMutation(
   who: 0 | 1,
