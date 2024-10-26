@@ -32,7 +32,7 @@ const InEveryHouseAStove = card(330005)
 ```ts
 import data from "@gi-tcg/data";
 
-const game = new Game({
+const state = Game.createInitialState({
   data: data(),
   // [...]
 });
@@ -43,7 +43,7 @@ const game = new Game({
 ```ts
 import data from "@gi-tcg/data";
 
-const game = new Game({
+const state = Game.createInitialState({
   data: data("v3.3.0"),
   // [...]
 });

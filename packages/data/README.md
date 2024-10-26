@@ -10,7 +10,7 @@
 import data from "@gi-tcg/data";
 import { Game } from "@gi-tcg/core";
 
-const game = new Game({
+const state = Game.createInitialState({
   data: data(),
   // other options...
 });
