@@ -758,15 +758,15 @@ export class Game {
           break;
         }
       }
+      await this.handleEvent(
+        "onAction",
+        new ActionEventArg(this.state, actionInfo),
+      );
       if (!actionInfo.fast) {
         this.mutate({
           type: "switchTurn",
         });
       }
-      await this.handleEvent(
-        "onAction",
-        new ActionEventArg(this.state, actionInfo),
-      );
       this.mutate({
         type: "setPlayerFlag",
         who,
