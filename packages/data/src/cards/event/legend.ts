@@ -107,7 +107,7 @@ export const InEveryHouseAStove = card(330005)
   .replaceDescription("[T]", (st) => st.roundNumber)
   .do((c) => {
     if (c.state.roundNumber === 1) {
-      const initTalentDefIds = c.player.initialPiles
+      const initTalentDefIds = c.player.initialDeck.cards
         .filter((card) => card.tags.includes("talent"))
         .map((card) => card.id)
       if (new Set(initTalentDefIds).size >= 2) {

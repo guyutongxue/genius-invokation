@@ -544,7 +544,7 @@ export const StageTepetl = card(321023)
     const isMine = e.who === c.self.who;
     const player = isMine ? c.player : c.oppPlayer;
     const delta = isMine ? 1 : -1;
-    if (!player.initialPiles.some((card) => card.id === e.card.definition.id)) {
+    if (!player.initialDeck.cards.some((card) => card.id === e.card.definition.id)) {
       c.addVariable("attention", delta);
     }
   })

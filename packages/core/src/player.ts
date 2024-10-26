@@ -2,8 +2,8 @@
 import { PlayerIO } from "./io";
 
 export interface PlayerConfig {
-  readonly alwaysOmni: boolean;
-  readonly allowTuningAnyDice: boolean;
+  alwaysOmni: boolean;
+  allowTuningAnyDice: boolean;
 }
 
 const DEFAULT_PLAYER_IO: PlayerIO = {

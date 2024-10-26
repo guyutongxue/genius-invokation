@@ -1375,7 +1375,7 @@ export const PucasSupport = card(302213)
   .since("v4.8.0")
   .do((c) => {
     const allies = c.state.data.cards.values().filter((card) => card.tags.includes("ally")).toArray();
-    const count = c.state.config.maxSupports - c.player.supports.length;
+    const count = c.state.config.maxSupportsCount - c.player.supports.length;
     for (let i = 0; i < count; i++) {
       const ally = c.random(allies);
       c.createEntity("support", ally.id as SupportHandle, {
@@ -1383,7 +1383,7 @@ export const PucasSupport = card(302213)
         who: c.self.who
       });
     }
-    const oppCount = c.state.config.maxSupports - c.oppPlayer.supports.length;
+    const oppCount = c.state.config.maxSupportsCount - c.oppPlayer.supports.length;
     for (let i = 0; i < oppCount; i++) {
       const ally = c.random(allies);
       c.createEntity("support", ally.id as SupportHandle, {

@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "@ohm-js/cli": "^2.0.0",
-    "@types/core-js": "^2.5.8",
     "prettier": "3.1.1"
   }
 }

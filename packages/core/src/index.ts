@@ -20,6 +20,7 @@ export {
   type DeckConfig,
   type CreateInitialStateConfig,
 } from "./game";
+export { type Player, type PlayerConfig } from "./player";
 export { type GameStateLogEntry, DetailLogType, type DetailLogEntry, serializeGameStateLog, deserializeGameStateLog } from "./log";
 export type * from "./base/state";
 export { type Mutation } from "./base/mutation";
