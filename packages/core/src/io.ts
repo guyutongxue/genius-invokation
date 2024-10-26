@@ -35,7 +35,7 @@ import {
 } from "./base/state";
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
-import { GiTcgIOError } from "./error";
+import { GiTcgIoError } from "./error";
 import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 import { costOfCard, initiativeSkillsOfPlayer } from "./utils";
 
@@ -53,7 +53,7 @@ export type PauseHandler = (
   canResume: boolean,
 ) => Promise<unknown>;
 
-export type IOErrorHandler = (e: GiTcgIOError) => void;
+export type IoErrorHandler = (e: GiTcgIoError) => void;
 
 export function exposeMutation(
   who: 0 | 1,

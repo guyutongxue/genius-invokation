@@ -20,5 +20,7 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
 export class Player {
   public io: PlayerIO = DEFAULT_PLAYER_IO;
   public config: PlayerConfig = DEFAULT_PLAYER_CONFIG;
-  constructor() {}
+  constructor() {
+    Object.seal(this);
+  }
 }

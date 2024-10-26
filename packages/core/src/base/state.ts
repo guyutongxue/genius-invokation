@@ -53,8 +53,13 @@ export interface GameState {
   readonly extensions: readonly ExtensionState[];
 }
 
+export interface InitialDeckDefinition {
+  readonly characters: readonly CharacterDefinition[];
+  readonly cards: readonly CardDefinition[];
+}
+
 export interface PlayerState {
-  readonly initialPiles: readonly CardDefinition[];
+  readonly initialDeck: InitialDeckDefinition;
   readonly piles: readonly CardState[];
   readonly activeCharacterId: number;
   readonly hands: readonly CardState[];

@@ -19,12 +19,12 @@ import { createEffect, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
 import data from "@gi-tcg/data";
-import { DetailLogEntry, Game, GameIO, PlayerConfig } from "@gi-tcg/core";
+import { DetailLogEntry, Game, DeckConfig } from "@gi-tcg/core";
 import { decode } from "@gi-tcg/utils";
 import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { createPlayer } from "./index";
 
-const playerConfig0: PlayerConfig = {
+const deck0: DeckConfig = {
   characters: [2204, 1313, 1403],
   cards: [
     323008, 
@@ -33,9 +33,8 @@ const playerConfig0: PlayerConfig = {
     332019, 331803, 332003, 332007, 332022, 331801, 332011, 
   ],
   noShuffle: import.meta.env.DEV,
-  alwaysOmni: import.meta.env.DEV,
 };
-const playerConfig1: PlayerConfig = {
+const deck1: DeckConfig = {
   characters: [1609, 1201, 1303],
   cards: [
     333015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
@@ -44,7 +43,6 @@ const playerConfig1: PlayerConfig = {
     332019, 331803, 332003, 332007, 332022, 331801, 332011, 330006, 330005,
   ],
   noShuffle: import.meta.env.DEV,
-  // alwaysOmni: import.meta.env.DEV,
 };
 
 function App() {
@@ -52,17 +50,14 @@ function App() {
   const [io1, Chessboard1] = createPlayer(1);
   const [detailLog, setDetailLog] = createSignal<readonly DetailLogEntry[]>([]);
 
-  const io: GameIO = {
-    pause: async () => {
-      setDetailLog([...game.detailLog]);
-    },
-    players: [io0, io1],
-  };
-  const game = new Game({
+  const state = Game.createInitialState({
+    decks: [deck0, deck1],
     data: data(),
-    io,
-    playerConfigs: [playerConfig0, playerConfig1],
   });
+  const game = new Game(state);
+  game.onPause = async () => { setDetailLog([...game.detailLog]); },
+  game.players[0].io = io0;
+  game.players[1].io = io1;
   game.start();
   Reflect.set(window, "game", game);
 

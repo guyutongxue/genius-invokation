@@ -46,26 +46,20 @@ import {
   StateMutator,
 } from "./mutator";
 import { Mutation } from "./base/mutation";
-import { Game } from "./game";
-import { EntityArea } from "./base/entity";
 
 export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
 
 export type PreviewResult = readonly [newState: GameState, completed: boolean];
 
 interface SkillExecutorConfig {
-  readonly mutatorConfig: MutatorConfig;
   readonly preview: boolean;
 }
 
 export class SkillExecutor {
-  private mutator: StateMutator;
   private constructor(
-    state: GameState,
+    private mutator: StateMutator,
     private readonly config: SkillExecutorConfig,
-  ) {
-    this.mutator = new StateMutator(state, config.mutatorConfig);
-  }
+  ) {}
 
   get state() {
     return this.mutator.state;
@@ -75,12 +69,9 @@ export class SkillExecutor {
     this.mutator.mutate(mutation);
   }
 
-  private static readonly PREVIEW_CONFIG: SkillExecutorConfig = {
-    preview: false,
-    mutatorConfig: {
-      onNotify: () => {},
-      onPause: async () => {},
-    },
+  private static readonly PREVIEW_CONFIG: MutatorConfig = {
+    onNotify: () => {},
+    onPause: async () => {},
   };
 
   async finalizeSkill(
@@ -128,7 +119,7 @@ export class SkillExecutor {
       {
         ...skillInfo,
         isPreview: this.config.preview,
-        mutatorConfig: this.config.mutatorConfig,
+        mutatorConfig: this.mutator.config,
       },
       arg as any,
     );
@@ -534,14 +525,11 @@ export class SkillExecutor {
   }
 
   static async executeSkill(
-    game: Game,
+    mutator: StateMutator,
     skill: SkillInfo,
     arg: GeneralSkillArg,
   ) {
-    const executor = new SkillExecutor(game.state, {
-      preview: false,
-      mutatorConfig: game.mutatorConfig,
-    });
+    const executor = new SkillExecutor(mutator, { preview: false });
     await executor.finalizeSkill(skill, arg);
     return executor.state;
   }
@@ -550,7 +538,8 @@ export class SkillExecutor {
     skill: SkillInfo,
     arg: GeneralSkillArg,
   ): Promise<PreviewResult> {
-    const executor = new SkillExecutor(state, SkillExecutor.PREVIEW_CONFIG);
+    const mutator = new StateMutator(state, SkillExecutor.PREVIEW_CONFIG);
+    const executor = new SkillExecutor(mutator, { preview: true });
     try {
       await executor.finalizeSkill(skill, arg);
     } catch (e) {
@@ -562,14 +551,15 @@ export class SkillExecutor {
     }
     return [executor.state, true];
   }
-  static async handleEvent(game: Game, ...event: EventAndRequest) {
-    return SkillExecutor.handleEvents(game, [event]);
+  static async handleEvent(mutator: StateMutator, ...event: EventAndRequest) {
+    return SkillExecutor.handleEvents(mutator, [event]);
   }
   static async previewEvent(
     state: GameState,
     ...event: EventAndRequest
   ): Promise<PreviewResult> {
-    const executor = new SkillExecutor(state, SkillExecutor.PREVIEW_CONFIG);
+    const mutator = new StateMutator(state, SkillExecutor.PREVIEW_CONFIG);
+    const executor = new SkillExecutor(mutator, { preview: true });
     try {
       await executor.handleEvent(event);
     } catch (e) {
@@ -581,11 +571,8 @@ export class SkillExecutor {
     }
     return [executor.state, true];
   }
-  static async handleEvents(game: Game, events: EventAndRequest[]) {
-    const executor = new SkillExecutor(game.state, {
-      preview: false,
-      mutatorConfig: game.mutatorConfig,
-    });
+  static async handleEvents(mutator: StateMutator, events: EventAndRequest[]) {
+    const executor = new SkillExecutor(mutator, { preview: false });
     await executor.handleEvent(...events);
     return executor.state;
   }
