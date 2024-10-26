@@ -425,7 +425,7 @@ class CardBuilder<
         initiativeSkillConfig: null,
         action: disposeAction,
         filter: (st, info, arg) => {
-          return info.caller.id === arg.entity.id;
+          return info.caller.id === arg.entity.id && arg.method !== "elementalTuning";
         },
         usagePerRoundVariableName: null,
       };
