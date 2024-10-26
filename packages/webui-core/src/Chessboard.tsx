@@ -764,7 +764,7 @@ export function StandaloneChessboard(props: StandaloneChessboardProps) {
     allCosts: [],
     allSelected: [],
     assetApiEndpoint: () =>
-      local.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api",
+      local.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api/v2",
     assetAltText: (id) => local.assetAltText?.(id),
     onClick: () => {},
     setPrepareTuning: () => {},

@@ -378,6 +378,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     );
     return player.hands.filter((c) => diceCostOfCard(c.definition) === maxCost);
   }
+  isInInitialPile(card: CardState): boolean {
+    const defId = card.definition.id;
+    return this.player.initialDeck.cards.some((c) => c.id === defId);
+  }
 
   // MUTATIONS
 
@@ -1104,7 +1108,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
     });
   }
   generateDice(type: DiceType | "randomElement", count: number) {
-    const maxCount = this.state.config.maxDice - this.player.dice.length;
+    const maxCount = this.state.config.maxDiceCount - this.player.dice.length;
     using l = this.mutator.subLog(
       DetailLogType.Primitive,
       `Generate ${count}${
@@ -1204,7 +1208,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
           value: chosen,
         });
         cards.push(chosen);
-        if (player().hands.length > this.state.config.maxHands) {
+        if (player().hands.length > this.state.config.maxHandsCount) {
           this.mutate({
             type: "removeCard",
             who,

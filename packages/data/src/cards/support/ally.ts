@@ -60,7 +60,7 @@ export const Timaeus = card(322003)
   .costSame(2)
   .support("ally")
   .variable("material", 2)
-  .on("enter", (c) => c.player.initialPiles.filter((c) => c.tags.includes("artifact")).length >= 6)
+  .on("enter", (c) => c.player.initialDeck.cards.filter((c) => c.tags.includes("artifact")).length >= 6)
   .drawCards(1, { withTag: "artifact" })
   .on("endPhase")
   .addVariable("material", 1)
@@ -87,7 +87,7 @@ export const Wagner = card(322004)
   .variable("material", 2)
   .on("enter")
   .do((c) => {
-    const weaponDefs = c.player.initialPiles.filter((c) => c.tags.includes("weapon")).map((c) => c.id);
+    const weaponDefs = c.player.initialDeck.cards.filter((c) => c.tags.includes("weapon")).map((c) => c.id);
     const weaponKinds = new Set(weaponDefs).size;
     if (weaponKinds >= 3) {
       c.drawCards(1, { withTag: "weapon" });
@@ -317,7 +317,7 @@ export const KidKujirai = card(322014)
   .on("actionPhase")
   .do((c) => {
     c.generateDice(DiceType.Omni, 1);
-    if (c.oppPlayer.supports.length < c.state.config.maxSupports) {
+    if (c.oppPlayer.supports.length < c.state.config.maxSupportsCount) {
       c.transferEntity(c.self.state, {
         type: "supports",
         who: flip(c.self.who)

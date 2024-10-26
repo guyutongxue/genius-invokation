@@ -35,7 +35,7 @@ import {
 } from "./base/state";
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
-import { GiTcgIOError } from "./error";
+import { GiTcgIoError } from "./error";
 import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 import { costOfCard, initiativeSkillsOfPlayer } from "./utils";
 
@@ -47,15 +47,13 @@ export interface PlayerIO {
   ) => Promise<RpcResponse[M]>;
 }
 
-export interface GameIO {
-  readonly pause?: (
-    state: GameState,
-    mutations: Mutation[],
-    canResume: boolean,
-  ) => Promise<unknown>;
-  readonly onIoError?: (e: GiTcgIOError) => void;
-  readonly players: readonly [PlayerIO, PlayerIO];
-}
+export type PauseHandler = (
+  state: GameState,
+  mutations: Mutation[],
+  canResume: boolean,
+) => Promise<unknown>;
+
+export type IoErrorHandler = (e: GiTcgIoError) => void;
 
 export function exposeMutation(
   who: 0 | 1,

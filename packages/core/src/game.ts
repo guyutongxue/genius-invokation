@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { checkDice, flip } from "@gi-tcg/utils";
+import { checkDice, Deck, flip } from "@gi-tcg/utils";
 import {
   DiceType,
   ExposedMutation,
@@ -32,7 +32,13 @@ import {
   PlayerState,
 } from "./base/state";
 import { Mutation } from "./base/mutation";
-import { GameIO, exposeAction, exposeMutation, exposeState } from "./io";
+import {
+  IoErrorHandler,
+  PauseHandler,
+  exposeAction,
+  exposeMutation,
+  exposeState,
+} from "./io";
 import {
   elementOfCharacter,
   getActiveCharacterIndex,
@@ -69,7 +75,7 @@ import {
   GiTcgCoreInternalError,
   GiTcgDataError,
   GiTcgError,
-  GiTcgIOError,
+  GiTcgIoError,
 } from "./error";
 import { DetailLogType, DetailLogger } from "./log";
 import { randomSeed } from "./random";
@@ -82,46 +88,52 @@ import {
 } from "./mutator";
 import { ActionInfoWithModification, ActionPreviewer } from "./preview";
 import { Version } from "./base/version";
+import { Player } from "./player";
+import { CharacterDefinition } from "./base/character";
 
-type Resolvers<T> = ReturnType<typeof Promise.withResolvers<T>>;
-
-export interface PlayerConfig {
-  readonly cards: number[];
-  readonly characters: number[];
+export interface DeckConfig extends Deck {
   readonly noShuffle?: boolean;
-  readonly alwaysOmni?: boolean;
 }
 
 const INITIAL_ID = -500000;
 
 /** 获取玩家初始状态，主要是初始化“起始牌堆” */
-function initPlayerState(
-  data: GameData,
-  playerConfig: PlayerConfig,
-): PlayerState {
-  let initialPiles: readonly CardDefinition[] = playerConfig.cards.map((id) => {
+function initPlayerState(data: GameData, deck: DeckConfig): PlayerState {
+  let initialCards: readonly CardDefinition[] = deck.cards.map((id) => {
     const def = data.cards.get(id);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown card id ${id}`);
     }
     return def;
   });
-  if (!playerConfig.noShuffle) {
-    initialPiles = shuffle(initialPiles);
+  const initialCharacters: readonly CharacterDefinition[] = deck.characters.map(
+    (id) => {
+      const def = data.characters.get(id);
+      if (typeof def === "undefined") {
+        throw new GiTcgDataError(`Unknown character id ${id}`);
+      }
+      return def;
+    },
+  );
+  if (!deck.noShuffle) {
+    initialCards = shuffle(initialCards);
   }
   // 将秘传牌放在最前面
-  function compFn(def: CardDefinition) {
+  const compFn = (def: CardDefinition) => {
     if (def.tags.includes("legend")) {
       return 0;
     } else {
       return 1;
     }
-  }
-  initialPiles = initialPiles.toSorted((a, b) => compFn(a) - compFn(b));
+  };
+  initialCards = initialCards.toSorted((a, b) => compFn(a) - compFn(b));
   return {
     activeCharacterId: 0,
     characters: [],
-    initialPiles,
+    initialDeck: {
+      characters: initialCharacters,
+      cards: initialCards,
+    },
     piles: [],
     hands: [],
     dice: [],
@@ -139,28 +151,53 @@ function initPlayerState(
   };
 }
 
+export interface CreateInitialStateConfig extends Partial<GameConfig> {
+  readonly decks: readonly [DeckConfig, DeckConfig];
+  readonly data: GameData;
+}
+
 export class Game {
-  private readonly config: GameConfig;
-  private readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
-  private readonly io: GameIO;
   private readonly logger: DetailLogger;
 
   private _terminated = false;
-  private finishResolvers: Resolvers<0 | 1 | null> | null = null;
-  private readonly mutator: StateMutator;
-  public readonly mutatorConfig: MutatorConfig;
+  private finishResolvers: PromiseWithResolvers<0 | 1 | null> | null = null;
 
-  constructor(opt: GameOption) {
-    const config = mergeGameConfigWithDefault(opt.gameConfig);
-    const extensions = opt.data.extensions
+  private readonly mutator: StateMutator;
+  private readonly mutatorConfig: MutatorConfig;
+  readonly players: readonly [Player, Player];
+
+  public onPause: PauseHandler | null = null;
+  public onIoError: IoErrorHandler | null = null;
+
+  constructor(initialState: GameState) {
+    this.logger = new DetailLogger();
+    this.mutatorConfig = {
+      logger: this.logger,
+      onNotify: (opt) => this.mutatorNotifyHandler(opt),
+      onPause: (opt) => this.mutatorPauseHandler(opt),
+      howToChooseActive: (who, chs) => this.rpcChooseActive(who, chs),
+      howToReroll: (who) => this.rpcReroll(who),
+      howToSwitchHands: (who) => this.rpcSwitchHands(who),
+      howToSelectCard: (who, cards) => this.rpcSelectCard(who, cards),
+    };
+    this.mutator = new StateMutator(initialState, this.mutatorConfig);
+    this.players = [new Player(), new Player()];
+    // this.initPlayerCards(0);
+    // this.initPlayerCards(1);
+  }
+
+  static createInitialState(opt: CreateInitialStateConfig): GameState {
+    const { decks, data, ...partialConfig } = opt;
+    const extensions = data.extensions
       .values()
       .map<ExtensionState>((v) => ({
         definition: v,
         state: v.initialState,
       }))
       .toArray();
-    const initialState: GameState = {
-      data: opt.data,
+    const config = mergeGameConfigWithDefault(partialConfig);
+    const state: GameState = {
+      data,
       config,
       iterators: {
         random: config.randomSeed,
@@ -171,27 +208,16 @@ export class Game {
       roundNumber: 0,
       winner: null,
       players: [
-        initPlayerState(opt.data, opt.playerConfigs[0]),
-        initPlayerState(opt.data, opt.playerConfigs[1]),
+        initPlayerState(data, decks[0]),
+        initPlayerState(data, decks[1]),
       ],
       extensions,
     };
-    this.logger = new DetailLogger();
-    this.mutatorConfig = {
-      logger: this.logger,
-      onNotify: (opt) => this.onNotify(opt),
-      onPause: (opt) => this.onPause(opt),
-      howToChooseActive: (who, chs) => this.rpcChooseActive(who, chs),
-      howToReroll: (who) => this.rpcReroll(who),
-      howToSwitchHands: (who) => this.rpcSwitchHands(who),
-      howToSelectCard: (who, cards) => this.rpcSelectCard(who, cards),
-    };
-    this.mutator = new StateMutator(initialState, this.mutatorConfig);
-    this.config = mergeGameConfigWithDefault(opt.gameConfig);
-    this.playerConfigs = opt.playerConfigs;
-    this.io = opt.io;
-    this.initPlayerCards(0);
-    this.initPlayerCards(1);
+    return state;
+  }
+
+  get config() {
+    return this.state.config;
   }
 
   get gameVersion(): Version {
@@ -218,20 +244,16 @@ export class Game {
 
   /** 初始化玩家的角色牌和牌堆 */
   private initPlayerCards(who: 0 | 1) {
-    const config = this.playerConfigs[who];
-    for (const ch of config.characters) {
-      const def = this.state.data.characters.get(ch);
-      if (typeof def === "undefined") {
-        throw new GiTcgDataError(`Unknown character id ${ch}`);
-      }
+    const player = this.state.players[who];
+    for (const ch of player.initialDeck.characters) {
       this.mutate({
         type: "createCharacter",
         who,
         value: {
           id: 0,
-          definition: def,
+          definition: ch,
           variables: Object.fromEntries(
-            Object.entries(def.varConfigs).map(([name, { initialValue }]) => [
+            Object.entries(ch.varConfigs).map(([name, { initialValue }]) => [
               name,
               initialValue,
             ]),
@@ -240,7 +262,7 @@ export class Game {
         },
       });
     }
-    for (const card of this.state.players[who].initialPiles) {
+    for (const card of this.state.players[who].initialDeck.cards) {
       this.mutate({
         type: "createCard",
         who,
@@ -256,7 +278,7 @@ export class Game {
 
   // private lastNotifiedState: [string, string] = ["", ""];
   private notifyOneImpl(who: 0 | 1, opt: InternalNotifyOption) {
-    const player = this.io.players[who];
+    const playerIo = this.players[who].io;
     const stateMutations = opt.stateMutations
       .map((m) => exposeMutation(who, m))
       .filter((em): em is ExposedMutation => !!em);
@@ -264,7 +286,7 @@ export class Game {
     const mutations = [...stateMutations, ...opt.exposedMutations];
     // const newStateStr = JSON.stringify(newState);
     // if (mutations.length > 0 || newStateStr !== this.lastNotifiedState[who]) {
-    player.notify({ mutations, newState });
+    playerIo.notify({ mutations, newState });
     // this.lastNotifiedState[who] = newStateStr;
     // }
   }
@@ -277,7 +299,7 @@ export class Game {
     });
   }
 
-  private async onNotify(opt: InternalNotifyOption) {
+  private async mutatorNotifyHandler(opt: InternalNotifyOption) {
     if (this._terminated) {
       return;
     }
@@ -285,12 +307,12 @@ export class Game {
       this.notifyOneImpl(i, opt);
     }
   }
-  private async onPause(opt: InternalPauseOption) {
+  private async mutatorPauseHandler(opt: InternalPauseOption) {
     if (this._terminated) {
       return;
     }
     const { state, canResume, stateMutations } = opt;
-    await this.io.pause?.(state, [...stateMutations], canResume);
+    await this.onPause?.(state, [...stateMutations], canResume);
     if (state.phase === "gameEnd") {
       this.gotWinner(state.winner);
     }
@@ -331,8 +353,8 @@ export class Game {
           await this.mutator.notifyAndPause({ canResume: true });
         }
       } catch (e) {
-        if (e instanceof GiTcgIOError) {
-          this.io.onIoError?.(e);
+        if (e instanceof GiTcgIoError) {
+          this.onIoError?.(e);
           await this.gotWinner(flip(e.who));
         } else if (e instanceof GiTcgError) {
           this.finishResolvers?.reject(e);
@@ -351,16 +373,6 @@ export class Game {
       }
     })();
     return this.finishResolvers.promise;
-  }
-
-  async startFromState(state: GameState) {
-    if (this.finishResolvers !== null) {
-      throw new GiTcgCoreInternalError(
-        `Game already started. Please use a new Game instance instead of start multiple time.`,
-      );
-    }
-    this.mutator.resetState(state);
-    return this.start();
   }
 
   giveUp(who: 0 | 1) {
@@ -413,26 +425,28 @@ export class Game {
       console.warn("Rpc request verify failed", e);
     }
     try {
-      const resp = await this.io.players[who].rpc(method, req);
+      const resp = await this.players[who].io.rpc(method, req);
       verifyRpcResponse(method, resp);
       return resp;
     } catch (e) {
       if (e instanceof Error) {
-        throw new GiTcgIOError(who, e.message, { cause: e?.cause });
+        throw new GiTcgIoError(who, e.message, { cause: e?.cause });
       } else {
-        throw new GiTcgIOError(who, String(e));
+        throw new GiTcgIoError(who, String(e));
       }
     }
   }
 
   private async initHands() {
     using l = this.mutator.subLog(DetailLogType.Phase, `In initHands phase:`);
+    this.initPlayerCards(0);
+    this.initPlayerCards(1);
     for (let who of [0, 1] as const) {
-      for (let i = 0; i < this.config.initialHands; i++) {
+      for (let i = 0; i < this.config.initialHandsCount; i++) {
         this.mutator.drawCard(who);
       }
     }
-    this.mutator.notifyAndPause();
+    await this.mutator.notifyAndPause();
     await Promise.all([
       this.mutator.switchHands(0),
       this.mutator.switchHands(1),
@@ -485,7 +499,7 @@ export class Game {
       candidates,
     });
     if (!candidates.includes(active)) {
-      throw new GiTcgIOError(who, `Invalid active character id ${active}`);
+      throw new GiTcgIoError(who, `Invalid active character id ${active}`);
     }
     return active;
   }
@@ -516,8 +530,8 @@ export class Game {
         const initDice = sortDice(this.state.players[who], [
           ...fixed,
           ...this.mutator.randomDice(
-            Math.max(0, this.config.initialDice - fixed.length),
-            this.playerConfigs[who].alwaysOmni,
+            Math.max(0, this.config.initialDiceCount - fixed.length),
+            this.players[who].config.alwaysOmni,
           ),
         ]);
         this.mutate({
@@ -596,7 +610,7 @@ export class Game {
         candidates: actions.map(exposeAction),
       });
       if (chosenIndex < 0 || chosenIndex >= actions.length) {
-        throw new GiTcgIOError(who, `User chosen index out of range`);
+        throw new GiTcgIoError(who, `User chosen index out of range`);
       }
       const actionInfo = actions[chosenIndex];
       await this.handleEvent("modifyAction0", actionInfo.eventArg);
@@ -606,14 +620,14 @@ export class Game {
 
       // 检查骰子
       if (!checkDice(actionInfo.cost, cost)) {
-        throw new GiTcgIOError(who, `Selected dice doesn't meet requirement`);
+        throw new GiTcgIoError(who, `Selected dice doesn't meet requirement`);
       }
       if (
-        !this.state.config.allowTuningAnyDice &&
+        !this.players[who].config.allowTuningAnyDice &&
         actionInfo.type === "elementalTuning" &&
         (cost[0] === DiceType.Omni || cost[0] === actionInfo.result)
       ) {
-        throw new GiTcgIOError(
+        throw new GiTcgIoError(
           who,
           `Elemental tunning cannot use omni dice or active character's element`,
         );
@@ -625,7 +639,7 @@ export class Game {
         } else {
           const idx = operatingDice.indexOf(consumed);
           if (idx === -1) {
-            throw new GiTcgIOError(
+            throw new GiTcgIoError(
               who,
               `Selected dice (${consumed}) not found in player`,
             );
@@ -645,7 +659,7 @@ export class Game {
       const currentEnergy = activeCh().variables.energy;
       if (requiredEnergy > 0) {
         if (currentEnergy < requiredEnergy) {
-          throw new GiTcgIOError(
+          throw new GiTcgIoError(
             who,
             `Active character does not have enough energy`,
           );
@@ -841,7 +855,7 @@ export class Game {
     this.mutate({
       type: "stepRound",
     });
-    if (this.state.roundNumber >= this.config.maxRounds) {
+    if (this.state.roundNumber >= this.config.maxRoundsCount) {
       this.gotWinner(null);
     } else {
       this.mutate({
@@ -908,7 +922,7 @@ export class Game {
       // 当支援区满时，卡牌目标为“要离场的支援牌”
       if (
         card.definition.cardType === "support" &&
-        player.supports.length === this.state.config.maxSupports
+        player.supports.length === this.state.config.maxSupportsCount
       ) {
         allTargets = player.supports.map((st) => ({ targets: [st] }));
       } else {
@@ -993,7 +1007,7 @@ export class Game {
   private async rpcSelectCard(who: 0 | 1, cards: readonly number[]) {
     const { selected } = await this.rpc(who, "selectCard", { cards });
     if (!cards.includes(selected)) {
-      throw new GiTcgIOError(who, `Selected card not in candidates`);
+      throw new GiTcgIoError(who, `Selected card not in candidates`);
     }
     return selected;
   }
@@ -1031,37 +1045,26 @@ export class Game {
   }
 
   private async executeSkill(skillInfo: SkillInfo, arg: GeneralSkillArg) {
-    this.mutator.notify();
-    this.mutator.resetState(
-      await SkillExecutor.executeSkill(this, skillInfo, arg),
-    );
+    await SkillExecutor.executeSkill(this.mutator, skillInfo, arg);
   }
   private async handleEvent(...args: EventAndRequest) {
-    this.mutator.notify();
-    this.mutator.resetState(await SkillExecutor.handleEvent(this, ...args));
+    await SkillExecutor.handleEvent(this.mutator, ...args);
   }
-}
-
-export interface GameOption {
-  readonly data: GameData;
-  readonly gameConfig?: Partial<GameConfig>;
-  readonly playerConfigs: readonly [PlayerConfig, PlayerConfig];
-  readonly io: GameIO;
 }
 
 export function mergeGameConfigWithDefault(
   config?: Partial<GameConfig>,
 ): GameConfig {
+  config = JSON.parse(JSON.stringify(config ?? {}));
   return {
-    initialDice: 8,
-    initialHands: 5,
-    maxDice: 16,
-    maxHands: 10,
-    maxRounds: 15,
-    maxSummons: 4,
-    maxSupports: 4,
+    initialDiceCount: 8,
+    initialHandsCount: 5,
+    maxDiceCount: 16,
+    maxHandsCount: 10,
+    maxRoundsCount: 15,
+    maxSummonsCount: 4,
+    maxSupportsCount: 4,
     randomSeed: randomSeed(),
-    allowTuningAnyDice: false,
-    ...JSON.parse(JSON.stringify(config ?? {})),
+    ...config,
   };
 }

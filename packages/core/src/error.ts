@@ -42,7 +42,7 @@ export class GiTcgQueryError extends GiTcgDataError {
   }
 }
 
-export class GiTcgIOError extends GiTcgError {
+export class GiTcgIoError extends GiTcgError {
   constructor(
     public readonly who: 0 | 1,
     message?: string,

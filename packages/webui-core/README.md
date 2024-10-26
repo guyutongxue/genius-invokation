@@ -15,11 +15,10 @@ function App() {
   const [io0, Chessboard0] = createPlayer(0);
   const [io1, Chessboard1] = createPlayer(1);
 
-  const io: GameIO = {
-    pause: /* ... */,
-    players: [io0, io1],
-  };
-  const game = new Game({ data, io, playerConfigs });
+  const state = /* ... */
+  const game = new Game(state);
+  game.players[0].io = io0;
+  game.players[1].io = io1;
   
   onMounted(() => {
     game.start();

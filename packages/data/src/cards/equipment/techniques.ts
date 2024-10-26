@@ -162,8 +162,7 @@ export const Tepetlisaurus = card(313004)
   .costVoid(2)
   .drawCards(2)
   .if((c) => {
-    const initialDefIds = c.player.initialPiles.map((card) => card.id);
-    return c.player.hands.some((card) => !initialDefIds.includes(card.definition.id));
+    return c.player.hands.some((card) => !c.isInInitialPile(card));
   })
   .characterStatus(DiggingDownToPaydirt, "@master")
   .done();

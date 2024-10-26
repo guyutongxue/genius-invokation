@@ -27,14 +27,13 @@ import { ExtensionDefinition } from "./extension";
 
 export interface GameConfig {
   readonly randomSeed: number;
-  readonly initialHands: number;
-  readonly maxHands: number;
-  readonly maxRounds: number;
-  readonly maxSupports: number;
-  readonly maxSummons: number;
-  readonly initialDice: number;
-  readonly maxDice: number;
-  readonly allowTuningAnyDice: boolean;
+  readonly initialHandsCount: number;
+  readonly maxHandsCount: number;
+  readonly maxRoundsCount: number;
+  readonly maxSupportsCount: number;
+  readonly maxSummonsCount: number;
+  readonly initialDiceCount: number;
+  readonly maxDiceCount: number;
 }
 
 export interface IteratorState {
@@ -54,8 +53,13 @@ export interface GameState {
   readonly extensions: readonly ExtensionState[];
 }
 
+export interface InitialDeckDefinition {
+  readonly characters: readonly CharacterDefinition[];
+  readonly cards: readonly CardDefinition[];
+}
+
 export interface PlayerState {
-  readonly initialPiles: readonly CardDefinition[];
+  readonly initialDeck: InitialDeckDefinition;
   readonly piles: readonly CardState[];
   readonly activeCharacterId: number;
   readonly hands: readonly CardState[];

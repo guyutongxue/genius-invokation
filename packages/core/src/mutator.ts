@@ -103,7 +103,7 @@ export class StateMutator {
 
   constructor(
     initialState: GameState,
-    private readonly config: MutatorConfig,
+    public readonly config: MutatorConfig,
   ) {
     this._state = initialState;
   }
@@ -192,7 +192,9 @@ export class StateMutator {
       to: "hands",
       value: candidate,
     });
-    if (this.state.players[who].hands.length > this.state.config.maxHands) {
+    if (
+      this.state.players[who].hands.length > this.state.config.maxHandsCount
+    ) {
       this.mutate({
         type: "removeCard",
         who,
@@ -397,7 +399,7 @@ export class StateMutator {
       value: cardState,
     });
     const player = this.state.players[who];
-    if (player.hands.length > this.state.config.maxHands) {
+    if (player.hands.length > this.state.config.maxHandsCount) {
       this.mutate({
         type: "removeCard",
         who,
@@ -499,7 +501,7 @@ export class StateMutator {
     } else {
       if (
         area.type === "summons" &&
-        entitiesAtArea.length === this.state.config.maxSummons
+        entitiesAtArea.length === this.state.config.maxSummonsCount
       ) {
         return { oldState: null, newState: null };
       }

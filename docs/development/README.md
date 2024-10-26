@@ -28,34 +28,37 @@
 核心库暴露了 `Game` 类代表对局。其构造参数大致为：
 
 ```ts
-interface StartOption {
-  data: GameData; // import('@gi-tcg/data') 可获取
-  playerConfigs: [PlayerConfig, PlayerConfig];
-  io: GameIO; // see below
-}
+import data from "@gi-tcg/data";
+import { Game } from "@gi-tcg/core";
 
-interface PlayerConfig {
-  readonly cards: number[];
-  readonly characters: number[];
-}
+// 1. 从双方牌组构建初始状态
+// ==========================
+// - data() 从 @gi-tcg/data 包获取官方的卡牌代码
+// - decks 为双方的初始牌组 id 列表，格式为 { characters: number[], cards: number[] }
+//   deck0，即 0 号玩家总是先手
+const state = Game.createInitialState({
+  data: data(),
+  decks: [deck0, deck1],
+});
 
-// 使用：
-const game = new Game(option);
+// 2. 构造 Game 实例，并设置 IO 方式
+// =================================
+// - 游戏会在部分结算完成节点执行 onPause，设置此钩子函数以进行调试
+// - 通过 players[x].io 设置双方玩家如何与核心交互（参见下文）
+const game = new Game(state);
+game.onPause = async () => { /* ... */ },
+game.players[0].io = /* ... */;
+game.players[1].io = /* ... */;
+
+// 3. 开始游戏！
+// ============
+// Promise 返回 0 | 1 | null 表明本场游戏的胜利方。
 const winner = await game.start();
 ```
 
-大部分字段都是显然的。
-
-- 玩家分别是 0 号玩家和 1 号玩家，0 号玩家总是先手（使用方负责猜先的实现）。每个玩家的 `PlayerConfig` 通常只需指明其角色牌 `characters` 和行动牌 `cards`。
-- `data` 如果使用官方卡牌数据，可直接 `import data from "@gi-tcg/data";`。
-- `io` 定义了玩家的交互行为。
+### 玩家 IO
 
 ```ts
-interface GameIO {
-  pause: (st: GameState) => Promise<unknown>;
-  players: [PlayerIO, PlayerIO];
-}
-
 interface PlayerIO {
   notify: (notification: NotificationMessage) => void;
   rpc: <M extends RpcMethod>(
@@ -69,9 +72,7 @@ interface PlayerIO {
 - 在合理的时机游戏会调用玩家的 `notify` 函数以通知玩家有某些牌局的变化；
 - 在需要玩家操作（指重投骰子、切换手牌、选择出战角色、选择行动）的时刻，会调用 `rpc` 获取玩家的选择。也可通过实现此接口接入 AI 智能体。
 
-关于玩家 IO 的详细说明，参见 [io](./io.md)。
-
-每次对局进行到一个“暂停点”处，就会调用一次 `pause`，方便使用方调试。
+详细说明请参见 [io](./io.md)。
 
 ## 参与开发
 
