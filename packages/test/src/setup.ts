@@ -1,5 +1,5 @@
 import data from "@gi-tcg/data";
-import { Game, GameConfig, Version, BuilderTypes } from "@gi-tcg/core";
+import { Game, GameConfig, Version, BuilderTypes, PhaseType } from "@gi-tcg/core";
 
 export type EntityConfig<TypeT extends BuilderTypes.ExEntityType> = {
   [key in keyof BuilderTypes.ExEntityState<TypeT>["variables"]]?: number;
@@ -45,6 +45,10 @@ export interface TestSetup {
   dataVersion?: Version;
   enableRoll?: boolean;
 
+  phase?: PhaseType;
+  currentTurn?: "my" | "opp";
+  roundNumber?: number;
+
   myCharacters?: CharacterSetup[];
   myActiveIndex?: number;
   myCombatStatuses?: CombatStatusSetup[];
@@ -62,7 +66,9 @@ export interface TestSetup {
 }
 
 export function setup(init: TestSetup = {}) {
-
+  const game = new Game({
+    data
+  });
 }
 
 export function ref<HandleT extends AllHandleT>(name?: HandleT): Ref<HandleT> {
