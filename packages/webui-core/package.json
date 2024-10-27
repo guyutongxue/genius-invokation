@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/webui-core",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Core component of @gi-tcg/webui",
   "type": "module",
   "types": "./dist/index.d.ts",

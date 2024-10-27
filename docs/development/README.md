@@ -74,6 +74,10 @@ interface PlayerIO {
 
 详细说明请参见 [io](./io.md)。
 
+### 示例程序
+
+[Stackblitz](https://stackblitz.com/edit/gi-tcg-example?file=src%2Fmain.js)
+
 ## 参与开发
 
 配置开发环境。安装 [Bun](https://bun.sh)，随后在仓库根目录下执行下述命令既可：
