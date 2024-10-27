@@ -4,7 +4,7 @@ import { Diluc } from "@gi-tcg/data/internal/characters/pyro/diluc";
 
 const target = ref(Diluc);
 
-const a = <div></div>
+const a = <></>
 
 const ctx = setup({
   myCharacters: [Venti, _, _],
