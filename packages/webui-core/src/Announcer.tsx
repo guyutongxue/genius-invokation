@@ -104,7 +104,7 @@ const spellMutation = (
     switch (target) {
       case "hands":
         return "手牌";
-      case "piles":
+      case "pile":
         return "牌堆";
       default:
         return "不知道哪";
@@ -213,9 +213,9 @@ const spellMutation = (
       break;
     case "transferCard":
       if (stateData.phase === "initHands") break;
-      if (m.from === "piles" && m.to === "hands") {
+      if (m.from === "pile" && m.to === "hands") {
         spell = `${spellWho(m.who)} 抽了一张卡`;
-      } else if (m.from === "hands" && m.to === "piles") {
+      } else if (m.from === "hands" && m.to === "pile") {
         spell = `${spellWho(m.who)} 埋了一张卡进牌堆`;
       } else {
         spell = `${spellWho(m.who)} 将一张卡牌从 ${spellCreateCardTarget(

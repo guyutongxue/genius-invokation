@@ -243,7 +243,7 @@ export class ActionPreviewer {
         const currentPlayer = this.originalState.players[who];
 
         // 隐藏当前还在牌库中的手牌，或者步进了随机数生成器后新的手牌
-        const currentPileCards = currentPlayer.piles.map((c) => c.id);
+        const currentPileCards = currentPlayer.pile.map((c) => c.id);
         const currentHandCards = currentPlayer.hands.map((c) => c.id);
         for (const card of previewPlayer.hands) {
           if (

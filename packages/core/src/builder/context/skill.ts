@@ -380,7 +380,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
   }
   isInInitialPile(card: CardState): boolean {
     const defId = card.definition.id;
-    return this.player.initialDeck.cards.some((c) => c.id === defId);
+    return this.player.initialPile.some((c) => c.id === defId);
   }
 
   // MUTATIONS
@@ -1195,14 +1195,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
       // 否则，随机选中一张满足条件的牌
       const player = () => this.state.players[who];
       for (let i = 0; i < count; i++) {
-        const candidates = player().piles.filter(check);
+        const candidates = player().pile.filter(check);
         if (candidates.length === 0) {
           break;
         }
         const chosen = this.random(candidates);
         this.mutate({
           type: "transferCard",
-          from: "piles",
+          from: "pile",
           to: "hands",
           who,
           value: chosen,
@@ -1245,7 +1245,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         break;
       case "bottom":
         for (const mut of payloads) {
-          const targetIndex = player.piles.length;
+          const targetIndex = player.pile.length;
           this.mutate({
             ...mut,
             who,
@@ -1260,7 +1260,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
             value: -1,
           };
           this.mutate(mut);
-          const index = mut.value % (player.piles.length + 1);
+          const index = mut.value % (player.pile.length + 1);
           this.mutate({
             ...payloads[i],
             who,
@@ -1270,8 +1270,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
         break;
       case "spaceAround":
         const spaces = count + 1;
-        const step = Math.floor(player.piles.length / spaces);
-        const rest = player.piles.length % spaces;
+        const step = Math.floor(player.pile.length / spaces);
+        const rest = player.pile.length % spaces;
         for (let i = 0, j = step; i < count; i++, j += step) {
           if (i < rest) {
             j++;
@@ -1348,7 +1348,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         ({
           type: "createCard",
           who,
-          target: "piles",
+          target: "pile",
           value: { ...cardTemplate },
         }) as const,
     );
@@ -1367,7 +1367,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         ({
           type: "transferCard",
           from: "hands",
-          to: "piles",
+          to: "pile",
           who,
           value: card,
         }) as const,
@@ -1390,16 +1390,16 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const player = this.player;
     const who = this.callerArea.who;
     for (const card of cards) {
-      let where: "hands" | "piles";
+      let where: "hands" | "pile";
       if (player.hands.find((c) => c.id === card.id)) {
         where = "hands";
-      } else if (player.piles.find((c) => c.id === card.id)) {
-        where = "piles";
+      } else if (player.pile.find((c) => c.id === card.id)) {
+        where = "pile";
       } else {
         throw new GiTcgDataError(
           `Cannot dispose card ${stringifyState(
             card,
-          )} from player ${who}, not found in either hands or piles`,
+          )} from player ${who}, not found in either hands or pile`,
         );
       }
       using l = this.mutator.subLog(

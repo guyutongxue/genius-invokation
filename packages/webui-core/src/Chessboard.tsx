@@ -63,7 +63,7 @@ import { Announcer } from "./Announcer";
 const EMPTY_PLAYER_DATA: PlayerData = {
   activeCharacterId: 0,
   dice: [],
-  piles: [],
+  pile: [],
   hands: [],
   characters: [],
   combatStatuses: [],

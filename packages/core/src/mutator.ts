@@ -181,14 +181,14 @@ export class StateMutator {
   }
 
   drawCard(who: 0 | 1): CardState | null {
-    const candidate = this.state.players[who].piles[0];
+    const candidate = this.state.players[who].pile[0];
     if (typeof candidate === "undefined") {
       return null;
     }
     this.mutate({
       type: "transferCard",
       who,
-      from: "piles",
+      from: "pile",
       to: "hands",
       value: candidate,
     });
@@ -230,11 +230,11 @@ export class StateMutator {
         value: -1,
       };
       this.mutate(mutation);
-      const index = mutation.value % (player().piles.length + 1);
+      const index = mutation.value % (player().pile.length + 1);
       this.mutate({
         type: "transferCard",
         from: "hands",
-        to: "piles",
+        to: "pile",
         who,
         value: card,
         targetIndex: index,
@@ -245,20 +245,20 @@ export class StateMutator {
     for (let i = 0; i < count; i++) {
       let candidate: CardState;
       while (
-        topIndex < player().piles.length &&
-        swapInCardIds.includes(player().piles[topIndex].definition.id)
+        topIndex < player().pile.length &&
+        swapInCardIds.includes(player().pile[topIndex].definition.id)
       ) {
         topIndex++;
       }
-      if (topIndex >= player().piles.length) {
+      if (topIndex >= player().pile.length) {
         // 已经跳过了所有同名牌，只能从头开始
-        candidate = player().piles[0];
+        candidate = player().pile[0];
       } else {
-        candidate = player().piles[topIndex];
+        candidate = player().pile[topIndex];
       }
       this.mutate({
         type: "transferCard",
-        from: "piles",
+        from: "pile",
         to: "hands",
         who,
         value: candidate,

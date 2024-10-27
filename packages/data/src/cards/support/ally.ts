@@ -60,7 +60,7 @@ export const Timaeus = card(322003)
   .costSame(2)
   .support("ally")
   .variable("material", 2)
-  .on("enter", (c) => c.player.initialDeck.cards.filter((c) => c.tags.includes("artifact")).length >= 6)
+  .on("enter", (c) => c.player.initialPile.filter((c) => c.tags.includes("artifact")).length >= 6)
   .drawCards(1, { withTag: "artifact" })
   .on("endPhase")
   .addVariable("material", 1)
@@ -87,7 +87,7 @@ export const Wagner = card(322004)
   .variable("material", 2)
   .on("enter")
   .do((c) => {
-    const weaponDefs = c.player.initialDeck.cards.filter((c) => c.tags.includes("weapon")).map((c) => c.id);
+    const weaponDefs = c.player.initialPile.filter((c) => c.tags.includes("weapon")).map((c) => c.id);
     const weaponKinds = new Set(weaponDefs).size;
     if (weaponKinds >= 3) {
       c.drawCards(1, { withTag: "weapon" });
@@ -632,7 +632,7 @@ export const SirArthur = card(322026)
   .on("endPhase", (c) => c.getVariable("clue") >= 2)
   .do((c) => {
     c.addVariable("clue", -2);
-    const top = c.oppPlayer.piles[0];
+    const top = c.oppPlayer.pile[0];
     c.createHandCard(top.definition.id as CardHandle);
   })
   .done();

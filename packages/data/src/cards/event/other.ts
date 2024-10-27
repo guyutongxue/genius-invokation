@@ -1329,7 +1329,7 @@ export const SluasisSupport = card(302211)
   .since("v4.8.0")
   .costSame(1)
   .do((c) => {
-    for (const card of c.oppPlayer.piles.slice(0, 3)) {
+    for (const card of c.oppPlayer.pile.slice(0, 3)) {
       c.createHandCard(card.id as CardHandle);
     };
   })
@@ -1406,10 +1406,10 @@ const TopyassGoodwill = combatStatus(302216)
   .abortPreview()
   .do((c) => {
     let doDrawCard: boolean;
-    if (c.player.piles.length === 0 && c.player.hands.length === 0) {
+    if (c.player.pile.length === 0 && c.player.hands.length === 0) {
       // 啥也做不了
       return;
-    } else if (c.player.piles.length === 0) {
+    } else if (c.player.pile.length === 0) {
       // 只能舍弃
       doDrawCard = false;
     } else if (c.player.hands.length === 0) {

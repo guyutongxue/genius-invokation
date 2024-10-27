@@ -95,18 +95,29 @@ export interface DeckConfig extends Deck {
   readonly noShuffle?: boolean;
 }
 
-const INITIAL_ID = -500000;
+/** A helper class to iterate id when constructing initial state */
+class IdIter {
+  static readonly INITIAL_ID = -500000;
+  #id = IdIter.INITIAL_ID;
+  get id() {
+    return this.#id--;
+  }
+}
 
-/** 获取玩家初始状态，主要是初始化“起始牌堆” */
-function initPlayerState(data: GameData, deck: DeckConfig): PlayerState {
-  let initialCards: readonly CardDefinition[] = deck.cards.map((id) => {
+/** 根据 deck 初始化玩家状态 */
+function initPlayerState(
+  data: GameData,
+  deck: DeckConfig,
+  idIter: IdIter,
+): PlayerState {
+  let initialPile: readonly CardDefinition[] = deck.cards.map((id) => {
     const def = data.cards.get(id);
     if (typeof def === "undefined") {
       throw new GiTcgDataError(`Unknown card id ${id}`);
     }
     return def;
   });
-  const initialCharacters: readonly CharacterDefinition[] = deck.characters.map(
+  const characterDefs: readonly CharacterDefinition[] = deck.characters.map(
     (id) => {
       const def = data.characters.get(id);
       if (typeof def === "undefined") {
@@ -116,7 +127,7 @@ function initPlayerState(data: GameData, deck: DeckConfig): PlayerState {
     },
   );
   if (!deck.noShuffle) {
-    initialCards = shuffle(initialCards);
+    initialPile = shuffle(initialPile);
   }
   // 将秘传牌放在最前面
   const compFn = (def: CardDefinition) => {
@@ -126,15 +137,33 @@ function initPlayerState(data: GameData, deck: DeckConfig): PlayerState {
       return 1;
     }
   };
-  initialCards = initialCards.toSorted((a, b) => compFn(a) - compFn(b));
+  initialPile = initialPile.toSorted((a, b) => compFn(a) - compFn(b));
+  const characters: CharacterState[] = [];
+  const pile: CardState[] = [];
+  for (const definition of characterDefs) {
+    characters.push({
+      id: idIter.id,
+      definition,
+      variables: Object.fromEntries(
+        Object.entries(definition.varConfigs).map(
+          ([name, { initialValue }]) => [name, initialValue],
+        ),
+      ) as any,
+      entities: [],
+    });
+  }
+  for (const definition of initialPile) {
+    pile.push({
+      id: idIter.id,
+      definition,
+      variables: {},
+    });
+  }
   return {
     activeCharacterId: 0,
-    characters: [],
-    initialDeck: {
-      characters: initialCharacters,
-      cards: initialCards,
-    },
-    piles: [],
+    characters,
+    initialPile,
+    pile,
     hands: [],
     dice: [],
     combatStatuses: [],
@@ -196,21 +225,22 @@ export class Game {
       }))
       .toArray();
     const config = mergeGameConfigWithDefault(partialConfig);
+    const idIter = new IdIter();
     const state: GameState = {
       data,
       config,
+      players: [
+        initPlayerState(data, decks[0], idIter),
+        initPlayerState(data, decks[1], idIter),
+      ],
       iterators: {
         random: config.randomSeed,
-        id: INITIAL_ID,
+        id: idIter.id,
       },
       phase: "initHands",
       currentTurn: 0,
       roundNumber: 0,
       winner: null,
-      players: [
-        initPlayerState(data, decks[0]),
-        initPlayerState(data, decks[1]),
-      ],
       extensions,
     };
     return state;
@@ -240,40 +270,6 @@ export class Game {
 
   query(who: 0 | 1, query: string): AnyState[] {
     return executeQueryOnState(this.state, who, query);
-  }
-
-  /** 初始化玩家的角色牌和牌堆 */
-  private initPlayerCards(who: 0 | 1) {
-    const player = this.state.players[who];
-    for (const ch of player.initialDeck.characters) {
-      this.mutate({
-        type: "createCharacter",
-        who,
-        value: {
-          id: 0,
-          definition: ch,
-          variables: Object.fromEntries(
-            Object.entries(ch.varConfigs).map(([name, { initialValue }]) => [
-              name,
-              initialValue,
-            ]),
-          ) as any,
-          entities: [],
-        },
-      });
-    }
-    for (const card of this.state.players[who].initialDeck.cards) {
-      this.mutate({
-        type: "createCard",
-        who,
-        value: {
-          id: 0,
-          definition: card,
-          variables: {},
-        },
-        target: "piles",
-      });
-    }
   }
 
   // private lastNotifiedState: [string, string] = ["", ""];
@@ -439,8 +435,6 @@ export class Game {
 
   private async initHands() {
     using l = this.mutator.subLog(DetailLogType.Phase, `In initHands phase:`);
-    this.initPlayerCards(0);
-    this.initPlayerCards(1);
     for (let who of [0, 1] as const) {
       for (let i = 0; i < this.config.initialHandsCount; i++) {
         this.mutator.drawCard(who);

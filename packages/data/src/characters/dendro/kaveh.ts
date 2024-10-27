@@ -33,7 +33,7 @@ export const BurstScan = combatStatus(117082)
     const core = c.$(`my combat status with definition id ${DendroCore} or my summon with definition id ${BountifulCore}`);
     if (core) {
       core.addVariable("usage", -1);
-      const pileTop = c.player.piles[0];
+      const pileTop = c.player.pile[0];
       const cost = diceCostOfCard(pileTop.definition);
       c.disposeCard(pileTop);
       c.damage(DamageType.Dendro, cost);

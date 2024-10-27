@@ -64,8 +64,8 @@ export interface TransferCardM {
   readonly type: "transferCard";
   readonly targetIndex?: number;
   readonly who: 0 | 1;
-  readonly from: "piles" | "hands";
-  readonly to: "piles" | "hands" | "oppPiles" | "oppHands";
+  readonly from: "pile" | "hands";
+  readonly to: "pile" | "hands" | "oppPiles" | "oppHands";
   readonly value: CardState;
 }
 
@@ -78,7 +78,7 @@ export interface SwitchActiveM {
 export interface RemoveCardM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
-  readonly where: "hands" | "piles";
+  readonly where: "hands" | "pile";
   readonly reason:
     | "play"
     | "onDrawTriggered"
@@ -93,7 +93,7 @@ export interface CreateCardM {
   readonly type: "createCard";
   readonly who: 0 | 1;
   readonly value: IdWritable<CardState>;
-  readonly target: "hands" | "piles";
+  readonly target: "hands" | "pile";
   readonly targetIndex?: number;
 }
 
@@ -220,8 +220,8 @@ function doMutation(state: GameState, m: Mutation): GameState {
         const oppPlayer = draft.players[flip(m.who)];
         let src: CardState[];
         switch (m.from) {
-          case "piles":
-            src = player.piles;
+          case "pile":
+            src = player.pile;
             break;
           case "hands":
             src = player.hands;
@@ -233,14 +233,14 @@ function doMutation(state: GameState, m: Mutation): GameState {
         }
         let dst: CardState[];
         switch (m.to) {
-          case "piles":
-            dst = player.piles;
+          case "pile":
+            dst = player.pile;
             break;
           case "hands":
             dst = player.hands;
             break;
           case "oppPiles":
-            dst = oppPlayer.piles;
+            dst = oppPlayer.pile;
             break;
           case "oppHands":
             dst = oppPlayer.hands;

@@ -29,7 +29,7 @@ export function PlayerArea(props: PlayerAreaProps) {
   return (
     <div class="w-full flex flex-row">
       <div class="bg-yellow-800 text-white flex flex-col justify-center items-center w-10 flex-shrink-0 gap-2">
-        <div class="text-center">牌堆 <br />{props.data.piles.length}</div>
+        <div class="text-center">牌堆 <br />{props.data.pile.length}</div>
         <div class="h-3 w-3 rotate-45 bg-gradient-to-r from-purple-500 to-blue-500" classList={{
           "bg-gradient-to-r": !props.data.legendUsed,
           "bg-gray-300": props.data.legendUsed,

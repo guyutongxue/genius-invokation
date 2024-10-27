@@ -171,7 +171,7 @@ export interface PlayerData {
   /**
    * 牌堆
    */
-  piles: CardData[];
+  pile: CardData[];
 
   /**
    * 手牌列表

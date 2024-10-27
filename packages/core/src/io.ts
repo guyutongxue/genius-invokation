@@ -261,7 +261,7 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
       );
       return {
         activeCharacterId: p.activeCharacterId,
-        piles: p.piles.map((c) => exposeCard(state, c, true)),
+        pile: p.pile.map((c) => exposeCard(state, c, true)),
         hands: p.hands.map((c) => exposeCard(state, c, i !== who)),
         characters: p.characters.map((ch) => exposeCharacter(state, ch)),
         dice: i === who ? [...p.dice] : [...p.dice].fill(0),

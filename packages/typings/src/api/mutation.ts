@@ -39,8 +39,8 @@ interface SetWinnerEM {
 interface TransferCardEM {
   readonly type: "transferCard";
   readonly who: 0 | 1;
-  readonly from: "piles" | "hands";
-  readonly to: "piles" | "hands" | "oppPiles" | "oppHands";
+  readonly from: "pile" | "hands";
+  readonly to: "pile" | "hands" | "oppPiles" | "oppHands";
   readonly id: number;
   readonly definitionId: number;
 }
@@ -56,7 +56,7 @@ interface SwitchActiveEM {
 interface RemoveCardEM {
   readonly type: "removeCard";
   readonly who: 0 | 1;
-  readonly where: "hands" | "piles";
+  readonly where: "hands" | "pile";
   readonly reason:
     | "play"
     | "onDrawTriggered"
@@ -73,7 +73,7 @@ interface CreateCardEM {
   readonly who: 0 | 1;
   readonly id: number;
   readonly definitionId: number;
-  readonly target: "hands" | "piles";
+  readonly target: "hands" | "pile";
 }
 
 interface CreateCharacterEM {
