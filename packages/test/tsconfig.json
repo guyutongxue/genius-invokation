@@ -15,9 +15,12 @@
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
 
+    "jsx": "react-jsx",
+    "jsxImportSource": "#jsx",
+
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "__tests__/**/*.ts"],
+  "include": ["src/**/*.ts", "__tests__/**/*.ts", "__tests__/**/*.tsx"],
 }
