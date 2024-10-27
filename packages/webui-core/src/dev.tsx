@@ -15,12 +15,11 @@
 
 /* @refresh reload */
 // import "solid-devtools";
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import { DetailLogEntry, Game, DeckConfig } from "@gi-tcg/core";
-import { decode } from "@gi-tcg/utils";
 import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { createPlayer } from "./index";
 
@@ -51,8 +50,8 @@ function App() {
   const [detailLog, setDetailLog] = createSignal<readonly DetailLogEntry[]>([]);
 
   const state = Game.createInitialState({
+    data: getData(),
     decks: [deck0, deck1],
-    data: data(),
   });
   const game = new Game(state);
   game.onPause = async () => { setDetailLog([...game.detailLog]); },

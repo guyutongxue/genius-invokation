@@ -30,10 +30,10 @@ const InEveryHouseAStove = card(330005)
 `@gi-tcg/data` 的默认导出返回一个函数 `(version?) => GameData`。若不指定 `version`，则启动最新版本的对局：
 
 ```ts
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 
 const state = Game.createInitialState({
-  data: data(),
+  data: getData(),
   // [...]
 });
 ```
@@ -41,10 +41,10 @@ const state = Game.createInitialState({
 显式传入参数来指定早期版本：
 
 ```ts
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 
 const state = Game.createInitialState({
-  data: data("v3.3.0"),
+  data: getData("v3.3.0"),
   // [...]
 });
 ```

@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { For, Match, Show, Switch, createSignal } from "solid-js";
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import {
   CURRENT_VERSION,
   GameStateLogEntry,
@@ -71,7 +71,7 @@ export function App() {
           const contents = event.target?.result as string;
           try {
             const logs = JSON.parse(contents);
-            resolve(deserializeGameStateLog(data, logs));
+            resolve(deserializeGameStateLog(getData, logs));
           } catch (error) {
             reject(error);
           }

@@ -4,6 +4,10 @@
 
 ## 0.13.0
 - 重要接口重构：重新设计了构造 `Game` 实例的方式。请参考最新开发文档。
+  - 构造 `Game` 时：使用牌组和配置创建 `GameState`，并用 `GameState` 构造 `Game`
+  - 使用 `game.onPause` `game.onIoError` `game.players[x].io` 来设置 IO 行为
+  - `GiTcgIOError` 重命名为 `GiTcgIoError`
+  - `PlayerState` 的 `initialPiles` 和 `piles` 重命名为 `initialPile` 和 `pile`；相关的 mutation 中的 `piles` 也都重命名为 `pile`
 
 ## 0.12.0
 - 移除了 `PlayerIO.giveUp` 字段。使用 `Game` 的 `giveUp(who)` 方法以更高效地实现弹射。

@@ -28,7 +28,7 @@
 核心库暴露了 `Game` 类代表对局。其构造参数大致为：
 
 ```ts
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import { Game } from "@gi-tcg/core";
 
 // 1. 从双方牌组构建初始状态
@@ -37,7 +37,7 @@ import { Game } from "@gi-tcg/core";
 // - decks 为双方的初始牌组 id 列表，格式为 { characters: number[], cards: number[] }
 //   deck0，即 0 号玩家总是先手
 const state = Game.createInitialState({
-  data: data(),
+  data: getData(),
   decks: [deck0, deck1],
 });
 

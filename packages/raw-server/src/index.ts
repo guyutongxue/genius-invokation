@@ -15,13 +15,12 @@
 
 import {
   Game,
-  GameIO,
   NotificationMessage,
-  PlayerConfig,
+  DeckConfig,
   PlayerIO,
   RpcMethod,
 } from "@gi-tcg/core";
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import { Elysia, t } from "elysia";
 import { parseArgs } from "node:util";
 import { AgentType, playerIoFromAgent } from "./agents";
@@ -98,7 +97,7 @@ abstract class WsJsonRpcBase {
   }
 }
 
-interface PlayerConfigWithAgent extends PlayerConfig {
+interface DeckConfigWithAgent extends DeckConfig {
   $useAgent?: AgentType | null;
 }
 
@@ -108,10 +107,10 @@ interface NotificationSubscription {
 }
 
 class WsGame extends WsJsonRpcBase {
-  private players: [
-    PlayerConfigWithAgent | null,
-    PlayerConfigWithAgent | null,
-  ] = [null, null];
+  private players: [DeckConfigWithAgent | null, DeckConfigWithAgent | null] = [
+    null,
+    null,
+  ];
   private game: Game | null = null;
 
   private lastNotification: (NotificationMessage | null)[] = [null, null];
@@ -151,22 +150,6 @@ class WsGame extends WsJsonRpcBase {
     this.notificationSubscriptions = [];
   }
 
-  private createGameIo(): GameIO {
-    return {
-      pause: async () => {},
-      players: [this.createPlayerIo(0), this.createPlayerIo(1)],
-      onIoError: (e) => {
-        console.error(e);
-        const config = this.players[e.who];
-        if (config && !config.$useAgent) {
-          this.sendRpcNotification("error", {
-            $who: e.who,
-            message: e.message,
-          });
-        }
-      },
-    };
-  }
   private createPlayerIo(who: 0 | 1): PlayerIO {
     const config = this.players[who];
     if (!config) throw new Error("Player not found");
@@ -199,12 +182,23 @@ class WsGame extends WsJsonRpcBase {
   private createGame() {
     if (this.game) return;
     if (this.players[0] && this.players[1]) {
-      const io = this.createGameIo();
-      this.game = new Game({
-        data: data(),
-        io,
-        playerConfigs: [this.players[0], this.players[1]],
+      const state = Game.createInitialState({
+        data: getData(),
+        decks: [this.players[0], this.players[1]],
       });
+      this.game = new Game(state);
+      this.game.players[0].io = this.createPlayerIo(0);
+      this.game.players[1].io = this.createPlayerIo(1);
+      this.game.onIoError = (e) => {
+        console.error(e);
+        const config = this.players[e.who];
+        if (config && !config.$useAgent) {
+          this.sendRpcNotification("error", {
+            $who: e.who,
+            message: e.message,
+          });
+        }
+      };
       this.game
         .start()
         .catch(console.error)

@@ -30,19 +30,16 @@ import {
   GiTcgError,
   Game as InternalGame,
   type NotificationMessage,
-  type PlayerConfig,
   type PlayerIO,
   type RerollDiceResponse,
   type RpcMethod,
   type RpcRequest,
-  type RpcResponse,
   type SwitchHandsResponse,
   serializeGameStateLog,
   CORE_VERSION,
   VERSIONS,
-  type Version,
 } from "@gi-tcg/core";
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import { type Deck, flip } from "@gi-tcg/utils";
 import {
   BehaviorSubject,
@@ -377,14 +374,14 @@ class Room {
     verifyDeck(player1.deck);
     player0.setTimeoutConfig(this.config);
     player1.setTimeoutConfig(this.config);
-    const game = new InternalGame({
-      data: data(
+    const state = InternalGame.createInitialState({
+      decks: [player0.deck, player1.deck],
+      data: getData(
         this.config.gameVersion ? VERSIONS[this.config.gameVersion]! : void 0,
       ),
-      gameConfig: this.config,
-      playerConfigs: [player0.deck, player1.deck],
-      io: {
-        pause: async (state, mutations, canResume) => {
+    })
+    const game = new InternalGame(state);
+    game.onPause = async (state, mutations, canResume) => {
           this.stateLog.push({ state, canResume });
           for (const mut of mutations) {
             if (mut.type === "changePhase" && mut.newPhase === "roll") {
@@ -392,14 +389,13 @@ class Room {
               player1.resetRoundTimeout();
             }
           }
-        },
-        players: [player0, player1],
-        onIoError: (e) => {
-          player0.onError(e);
-          player1.onError(e);
-        },
-      },
-    });
+        };
+    game.onIoError = (e) => {
+      player0.onError(e);
+      player1.onError(e);
+    }
+    game.players[0].io = player0;
+    game.players[1].io = player1;
     player0.onInitialized(0, player1.playerInfo);
     player1.onInitialized(1, player0.playerInfo);
     (async () => {

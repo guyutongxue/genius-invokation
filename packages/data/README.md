@@ -7,11 +7,11 @@
 ## Usage
 
 ```js
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import { Game } from "@gi-tcg/core";
 
 const state = Game.createInitialState({
-  data: data(),
+  data: getData(),
   // other options...
 });
 ```

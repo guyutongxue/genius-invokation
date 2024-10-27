@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import data from "@gi-tcg/data";
+import getData from "@gi-tcg/data";
 import {
   DetailLogEntry,
   Game,
@@ -195,7 +195,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
       const deck1 = decodeShareCode(props.deck1);
       state = Game.createInitialState({
         decks: [deck0, deck1],
-        data: data(props.version),
+        data: getData(props.version),
       });
     }
     const game = new Game(state);

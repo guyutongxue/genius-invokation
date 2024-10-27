@@ -17,7 +17,7 @@
 
 ## 结算技能
 
-此部分实现方案主要参考 [LL夜鹰](https://space.bilibili.com/4360502) 与 [炸鸡喵](https://space.bilibili.com/442588088) 起草的 ["七圣规则集"](https://docs.qq.com/doc/DZHhJVm1FRERIdk9q)。注意，该规则行文尚有不严谨之处，故我在部分细节上自行采取了和本项目契合的算法。
+此部分实现方案主要参考 [LL夜鹰](https://space.bilibili.com/4360502) 与 [Fried-Chicken](https://space.bilibili.com/442588088) 起草的 ["七圣规则集"](https://docs.qq.com/doc/DZHhJVm1FRERIdk9q)。注意，该规则行文尚有不严谨之处，故我在部分细节上自行采取了和本项目契合的算法。
 
 详细说明建议查阅代码。以下为简要流程概述：
 - 执行技能函数，获得其中引发的事件列表；
