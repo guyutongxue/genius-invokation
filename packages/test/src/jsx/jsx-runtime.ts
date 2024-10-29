@@ -1,8 +1,8 @@
-export function jsx(...args: any[]) {
-  console.log(args);
+export function jsx(comp: Function, prop: Record<string, any>) {
+  return comp(prop);
 }
 export function Fragment(...args: any[]) {
-  console.log(args);
+  throw new Error("Fragment should not be used");
 };
 export { jsx as jsxDEV };
 
@@ -12,6 +12,6 @@ export declare namespace JSX {
   interface ElementChildrenAttribute {
     children: unknown;
   }
-  type Element = { readonly _element: unique symbol };
+  type Element = readonly [Function, Record<string, any>];
   type ElementClass = unknown;
 }

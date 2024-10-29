@@ -1,15 +1,14 @@
-import { Character, ref, State } from "@/main";
+import { Character, ref, setup, State, Status } from "@/main";
 import { Venti } from "@gi-tcg/data/internal/characters/anemo/venti";
-import { Diluc } from "@gi-tcg/data/internal/characters/pyro/diluc";
+import { Satiated } from "@gi-tcg/data/internal/commons";
 
 const target = ref();
 
-const state = <State>
-  <Character opp active ref={target} />
-  <Character my active def={Venti} />
-</State>
-
-const ctx = setup({
-  myCharacters: [Venti, _, _],
-  oppCharacters: [target, _, _],
-});
+const ctx = setup(
+  <State>
+    <Character opp active ref={target}>
+      <Status def={Satiated} />
+    </Character>
+    <Character my active def={Venti} />
+  </State>,
+);
