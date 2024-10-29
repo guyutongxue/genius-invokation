@@ -9,6 +9,9 @@ export { jsx as jsxDEV };
 export declare namespace JSX {
   interface IntrinsicElements {
   }
-  type Element = unknown;
+  interface ElementChildrenAttribute {
+    children: unknown;
+  }
+  type Element = { readonly _element: unique symbol };
   type ElementClass = unknown;
 }
