@@ -116,3 +116,5 @@ export function stringifyState(st: AnyState): string {
   }
   return `[${type}:${st.definition.id}](${st.id})`;
 }
+
+export { type GameData, type CharacterDefinition, type EntityDefinition, type CardDefinition, type ExtensionDefinition };

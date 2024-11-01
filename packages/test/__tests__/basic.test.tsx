@@ -4,7 +4,7 @@ import { Satiated } from "@gi-tcg/data/internal/commons";
 
 const target = ref();
 
-const ctx = setup(
+const c = setup(
   <State>
     <Character opp active ref={target}>
       <Status def={Satiated} />
