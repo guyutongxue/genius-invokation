@@ -1,2 +1,2 @@
 import "@gi-tcg/data";
-export * from "./setup2";
+export * from "./setup";
