@@ -6,7 +6,7 @@ import {
   RpcRequest,
   RpcResponse,
 } from "@gi-tcg/core";
-import { SkillHandle } from "@gi-tcg/core/builder";
+import { CardHandle, CharacterHandle, SkillHandle } from "@gi-tcg/core/builder";
 import { verifyRpcResponse } from "@gi-tcg/typings/verify";
 import { Ref } from "./setup";
 
@@ -16,11 +16,16 @@ class IoController {
     private who: 0 | 1,
   ) {}
 
-  skill(id: SkillHandle, ...targets: Ref[]) {
-    // this.controller._resolve(this.who, {})
-  }
+  async skill(id: SkillHandle, ...targets: Ref[]) {}
+  async card(targetOrId: CardHandle | Ref, ...targets: Ref[]) {}
+  async tune(targetOrId: CardHandle | Ref) {}
+  async switch(targetOrId: CharacterHandle | Ref) {}
+  async end() {}
 
-
+  async selectCard(id: number) {}
+  async chooseActive(targetOrId: CharacterHandle | Ref) {}
+  async switchHands(...removed: (CardHandle | Ref)[]) {}
+  // async reroll() {}
 }
 
 class AwaitingRpc {
@@ -91,7 +96,7 @@ export class TestController {
     return response;
   }
 
-  _resolve(who: 0 | 1, response: RpcResponse[RpcMethod]) {
+  private resolve(who: 0 | 1, response: RpcResponse[RpcMethod]) {
     if (!this.awaitingRpc) {
       throw new Error(`No rpc is pending now.`);
     }
