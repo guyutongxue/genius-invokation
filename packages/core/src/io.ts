@@ -40,8 +40,8 @@ import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 import { costOfCard, initiativeSkillsOfPlayer } from "./utils";
 
 export interface PlayerIO {
-  readonly notify: (notification: NotificationMessage) => void;
-  readonly rpc: <M extends RpcMethod>(
+  notify: (notification: NotificationMessage) => void;
+  rpc: <M extends RpcMethod>(
     method: M,
     data: RpcRequest[M],
   ) => Promise<RpcResponse[M]>;

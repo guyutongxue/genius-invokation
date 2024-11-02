@@ -31,7 +31,7 @@ function nextId() {
   return _nextId++;
 }
 
-class Ref {
+export class Ref {
   #_marker = null;
   readonly id: number;
   constructor() {
@@ -196,7 +196,7 @@ function defaultCharacterDefs(data: GameData) {
   return DEFAULT_CH_IDS.map((id) => data.characters.get(id)!);
 }
 
-export function setup(state: JSX.Element) {
+export async function setup(state: JSX.Element): Promise<TestController> {
   if (state[0] !== State) {
     throw new Error("The root element must be State");
   }
@@ -413,5 +413,6 @@ export function setup(state: JSX.Element) {
     winner: null,
     players,
   };
-  return new TestController(gameState);
+  const c = new TestController(gameState);
+  return await c.step();
 }
