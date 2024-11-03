@@ -12,6 +12,9 @@ export declare namespace JSX {
   interface ElementChildrenAttribute {
     children: unknown;
   }
-  type Element = readonly [Function, Record<string, any>];
+  type Element = {
+    readonly comp: Function;
+    readonly prop: Record<string, any>;
+  };
   type ElementClass = unknown;
 }

@@ -2,6 +2,7 @@
   "name": "@gi-tcg/test",
   "private": true,
   "imports": {
+    "#test": "./src/main.ts",
     "#jsx/jsx-runtime": "./src/jsx/jsx-runtime.ts",
     "#jsx/jsx-dev-runtime": "./src/jsx/jsx-runtime.ts"
   },

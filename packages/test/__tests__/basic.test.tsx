@@ -1,15 +1,14 @@
-import { Character, ref, setup, State, Status } from "@/main";
+import { ref, setup, Character, State, Status } from "#test";
 import {
   SkywardSonnet,
   Venti,
 } from "@gi-tcg/data/internal/characters/anemo/venti";
 import { Satiated } from "@gi-tcg/data/internal/commons";
-
-import { expect, test } from "bun:test";
+import { test } from "bun:test";
 
 test("basic", async () => {
   const target = ref();
-  const c = await setup(
+  const c = setup(
     <State>
       <Character opp active ref={target}>
         <Status def={Satiated} />
@@ -18,5 +17,6 @@ test("basic", async () => {
     </State>,
   );
   await c.me.skill(SkywardSonnet);
-  expect(target);
+  await c.stepToNextAction();
+  c.expect("opp active").withVariable("health", 8);
 });
