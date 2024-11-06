@@ -86,7 +86,8 @@ export function exposeMutation(
       };
     }
     case "removeCard": {
-      const hide = m.who !== who && ["overflow", "elementalTuning"].includes(m.reason);
+      const hide =
+        m.who !== who && ["overflow", "elementalTuning"].includes(m.reason);
       return {
         type: "removeCard",
         who: m.who,
@@ -199,6 +200,7 @@ function exposeEntity(state: GameState, e: EntityState): EntityData {
     variable: e.definition.visibleVarName
       ? e.variables[e.definition.visibleVarName] ?? null
       : null,
+    variableName: e.definition.visibleVarName,
     usagePerRoundHighlight,
     hintIcon: e.variables.hintIcon ?? null,
     hintText: e.definition.hintText,
@@ -256,9 +258,7 @@ export function exposeState(who: 0 | 1, state: GameState): StateData {
     roundNumber: state.roundNumber,
     winner: state.winner,
     players: state.players.map<PlayerData>((p, i) => {
-      const skills = initiativeSkillsOfPlayer(p).map(
-        ({ skill }) => skill,
-      );
+      const skills = initiativeSkillsOfPlayer(p).map(({ skill }) => skill);
       return {
         activeCharacterId: p.activeCharacterId,
         pile: p.pile.map((c) => exposeCard(state, c, true)),

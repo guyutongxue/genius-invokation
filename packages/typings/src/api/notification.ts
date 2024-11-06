@@ -92,9 +92,15 @@ export interface EntityData {
   variable: number | null;
 
   /**
+   * 实体可见变量名
+   */
+  variableName: string | null;
+
+  /**
    * 是否有“本回合使用次数未耗尽”的高亮效果
    */
   usagePerRoundHighlight: boolean;
+
 
   /**
    * 描述中动态替换掉的变量值
