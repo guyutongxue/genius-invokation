@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { StateData } from "./notification";
 import type { DiceType } from "../enums";
+import type { PreviewData } from "./preview";
 
 export interface RerollDiceRequest {}
 
@@ -46,14 +46,14 @@ export interface SwitchActiveAction {
   type: "switchActive";
   active: number;
   cost: readonly DiceType[];
-  preview?: StateData;
+  preview: PreviewData[];
 }
 export interface PlayCardAction {
   type: "playCard";
   card: number;
   cost: readonly DiceType[];
   targets: readonly number[];
-  preview?: StateData;
+  preview: PreviewData[];
 }
 
 export interface UseSkillAction {
@@ -61,19 +61,19 @@ export interface UseSkillAction {
   skill: number;
   cost: readonly DiceType[];
   targets: readonly number[];
-  preview?: StateData;
+  preview: PreviewData[];
 }
 
 export interface ElementalTuningAction {
   type: "elementalTuning";
   discardedCard: number;
   target: DiceType;
-  preview?: StateData;
+  preview: PreviewData[];
 }
 
 export interface DeclareEndAction {
   type: "declareEnd";
-  preview?: StateData;
+  preview: PreviewData[];
 }
 
 export type Action = SwitchActiveAction | PlayCardAction | UseSkillAction | ElementalTuningAction | DeclareEndAction;

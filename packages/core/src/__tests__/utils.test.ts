@@ -72,10 +72,7 @@ test("sort dice", () => {
     ],
     hands: [],
     pile: [],
-    initialDeck: {
-      characters: [],
-      cards: [],
-    },
+    initialPile: [],
     dice: shuffled,
     summons: [],
     supports: [],

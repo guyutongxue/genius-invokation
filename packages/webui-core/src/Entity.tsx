@@ -13,16 +13,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { EntityData } from "@gi-tcg/typings";
+import type { EntityData, EntityVarDiffPreview } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Show } from "solid-js";
 import { Interactive } from "./Interactive";
+import { useEventContext } from "./Chessboard";
 
 export interface EntityProps {
+  preview?: boolean;
   data: EntityData;
 }
 
 export function Summon(props: EntityProps) {
+  const { previewData } = useEventContext();
+  const previewVarDiff = () => {
+    if (props.data.variable === null) {
+      return null;
+    }
+    const previewValue = previewData().find(
+      (p): p is EntityVarDiffPreview =>
+        p.type === "entityVarDiff" && p.entity === props.data.id,
+    )?.newValue;
+    if (typeof previewValue === "undefined") {
+      return null;
+    }
+    if (previewValue < props.data.variable) {
+      return `- ${props.data.variable - previewValue}`;
+    } else {
+      return `+ ${previewValue - props.data.variable}`;
+    }
+  };
   return (
     <Show when={props.data.definitionId}>
       <Interactive
@@ -32,6 +52,7 @@ export function Summon(props: EntityProps) {
       >
         <div
           class="h-full w-full entity-highlight-layer absolute top-0 left-0 z-1 rounded-lg"
+          classList={{ preview: props.preview }}
           data-highlight={props.data.usagePerRoundHighlight}
         />
         <Image
@@ -51,6 +72,15 @@ export function Summon(props: EntityProps) {
             />
             {props.data.hintText}
           </div>
+        </Show>
+        <Show when={previewVarDiff()}>
+          {(diff) => {
+            return (
+              <div class="absolute z-2 top-5 left-50% translate-x--50% bg-white opacity-80 p-2 rounded-md">
+                {diff()}
+              </div>
+            );
+          }}
         </Show>
       </Interactive>
     </Show>

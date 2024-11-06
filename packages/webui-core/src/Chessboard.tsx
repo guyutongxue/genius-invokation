@@ -43,6 +43,7 @@ import type {
   UseSkillAction,
   SelectCardResponse,
   SelectCardRequest,
+  PreviewData,
 } from "@gi-tcg/typings";
 import type { PlayerIO } from "@gi-tcg/core";
 
@@ -189,6 +190,7 @@ export interface PlayerContextValue {
 
 export interface EventContextValue {
   readonly allDamages: Accessor<readonly DamageData[]>;
+  readonly previewData: Accessor<readonly PreviewData[]>;
   readonly focusing: Accessor<number | null>;
 }
 
@@ -225,7 +227,7 @@ export function createPlayer(
   Chessboard: (props: ComponentProps<"div">) => JSX.Element,
 ] {
   const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
-  const [previewStateData, setPreviewStateData] = createSignal<StateData>();
+  const [previewData, setPreviewData] = createSignal<PreviewData[]>([]);
   const [previewing, setPreviewing] = createSignal(false);
   const [mutations, setMutations] = createSignal<ExposedMutation[]>([]);
   const [giveUp, setGiveUp] = createSignal(false);
@@ -399,7 +401,7 @@ export function createPlayer(
         setClickable([...(state.clickable?.keys() ?? [])]);
         setSelected([...state.selected]);
         const chosenIndex = state.actionIndex!;
-        setPreviewStateData(candidates[chosenIndex].preview);
+        setPreviewData(candidates[chosenIndex].preview);
 
         if (candidates[chosenIndex].type === "declareEnd") {
           setClickable([]);
@@ -437,7 +439,7 @@ export function createPlayer(
       setClickable([]);
       setSelected([]);
       setAllCosts({});
-      setPreviewStateData();
+      setPreviewData([]);
       return result;
     },
   };
@@ -551,10 +553,10 @@ export function createPlayer(
   const ChessboardWithIO = () => (
     <PlayerContext.Provider value={playerContextValue}>
       <Chessboard
-        stateData={(previewing() && previewStateData()) || stateData()}
+        stateData={stateData()}
         who={who}
         mutations={mutations()}
-        previewing={previewing()}
+        previewData={previewing() ? previewData() : null}
         onClick={() => notifyChessboardClicked()}
       >
         <Show when={allClickable.includes(DECLARE_END_ID)}>
@@ -583,7 +585,7 @@ export function createPlayer(
               value={myPlayer().dice}
               onConfirm={notifyDiceSelected}
               onCancel={() => notifyDiceSelected(void 0)}
-              onEnterPreview={() => previewStateData() && setPreviewing(true)}
+              onEnterPreview={() => setPreviewing(true)}
               onLeavePreview={() => setPreviewing(false)}
             />
           </Show>
@@ -618,7 +620,10 @@ export function createPlayer(
         </Show>
         <Show when={cardSelecting()}>
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
-            <SelectCardView cards={cardToSelect()} onConfirm={notifyCardSelected} />
+            <SelectCardView
+              cards={cardToSelect()}
+              onConfirm={notifyCardSelected}
+            />
           </div>
         </Show>
         <button
@@ -640,7 +645,7 @@ interface ChessboardProps extends ComponentProps<"div"> {
   mutations?: readonly ExposedMutation[];
   who: 0 | 1;
   children?: JSX.Element;
-  previewing?: boolean;
+  previewData: PreviewData[] | null;
   onClick?: (e: MouseEvent) => void;
 }
 
@@ -649,6 +654,7 @@ function Chessboard(props: ChessboardProps) {
   const [local, restProps] = splitProps(props, [
     "class",
     "stateData",
+    "previewData",
     "mutations",
     "who",
     "children",
@@ -656,6 +662,7 @@ function Chessboard(props: ChessboardProps) {
 
   const [allDamages, setAllDamages] = createSignal<DamageData[]>([]);
   const [focusing, setFocusing] = createSignal<number | null>(null);
+  const previewData = () => local.previewData ?? [];
 
   createEffect(() => {
     let currentFocusing: number | null = null;
@@ -688,7 +695,7 @@ function Chessboard(props: ChessboardProps) {
   const [mutationHintTexts, setMutationHintTexts] = createStore<string[]>([]);
 
   return (
-    <EventContext.Provider value={{ allDamages, focusing }}>
+    <EventContext.Provider value={{ allDamages, previewData, focusing }}>
       <div
         class={`gi-tcg-chessboard relative flex flex-col ${
           local.class ?? ""
@@ -696,15 +703,20 @@ function Chessboard(props: ChessboardProps) {
         {...restProps}
       >
         <div
-          data-previewing={props.previewing}
+          data-previewing={props.previewData !== null}
           onClick={(e) => props.onClick?.(e)}
           class="w-full b-solid b-black b-2 relative data-[previewing=true]:grayscale-50"
         >
           <PlayerArea
+            who={(1 - local.who) as 0 | 1}
             data={local.stateData.players[1 - local.who]}
             opp={true}
           />
-          <PlayerArea data={local.stateData.players[local.who]} opp={false} />
+          <PlayerArea
+            who={local.who}
+            data={local.stateData.players[local.who]}
+            opp={false}
+          />
         </div>
         <div class="absolute left-0 top-[50%] translate-y-[-50%] z-10">
           <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
@@ -732,13 +744,14 @@ function Chessboard(props: ChessboardProps) {
             {(skill) => <SkillButton data={skill} />}
           </For>
         </div>
-        <Announcer class="absolute top-10 left-15 h-40 w-50 overflow-auto"
+        <Announcer
+          class="absolute top-10 left-15 h-40 w-50 overflow-auto"
           mutations={local.mutations}
           who={local.who}
           stateData={local.stateData}
         />
         {local.children}
-        <Show when={!props.previewing && local.stateData.phase === "gameEnd"}>
+        <Show when={!props.previewData && local.stateData.phase === "gameEnd"}>
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
             {local.stateData.winner === local.who ? "胜利" : "失败"}
           </div>

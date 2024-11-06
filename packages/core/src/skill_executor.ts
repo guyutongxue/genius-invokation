@@ -41,7 +41,6 @@ import {
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType } from "./log";
 import {
-  GiTcgPreviewAbortedError,
   MutatorConfig as MutatorConfig,
   StateMutator,
 } from "./mutator";
@@ -49,14 +48,12 @@ import { Mutation } from "./base/mutation";
 
 export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
 
-export type PreviewResult = readonly [newState: GameState, completed: boolean];
-
 interface SkillExecutorConfig {
   readonly preview: boolean;
 }
 
 export class SkillExecutor {
-  private constructor(
+  constructor(
     private mutator: StateMutator,
     private readonly config: SkillExecutorConfig,
   ) {}
@@ -68,11 +65,6 @@ export class SkillExecutor {
   private mutate(mutation: Mutation) {
     this.mutator.mutate(mutation);
   }
-
-  private static readonly PREVIEW_CONFIG: MutatorConfig = {
-    onNotify: () => {},
-    onPause: async () => {},
-  };
 
   async finalizeSkill(
     skillInfo: SkillInfo,
@@ -533,43 +525,8 @@ export class SkillExecutor {
     await executor.finalizeSkill(skill, arg);
     return executor.state;
   }
-  static async previewSkill(
-    state: GameState,
-    skill: SkillInfo,
-    arg: GeneralSkillArg,
-  ): Promise<PreviewResult> {
-    const mutator = new StateMutator(state, SkillExecutor.PREVIEW_CONFIG);
-    const executor = new SkillExecutor(mutator, { preview: true });
-    try {
-      await executor.finalizeSkill(skill, arg);
-    } catch (e) {
-      if (e instanceof GiTcgPreviewAbortedError) {
-        return [executor.state, false];
-      } else {
-        throw e;
-      }
-    }
-    return [executor.state, true];
-  }
   static async handleEvent(mutator: StateMutator, ...event: EventAndRequest) {
     return SkillExecutor.handleEvents(mutator, [event]);
-  }
-  static async previewEvent(
-    state: GameState,
-    ...event: EventAndRequest
-  ): Promise<PreviewResult> {
-    const mutator = new StateMutator(state, SkillExecutor.PREVIEW_CONFIG);
-    const executor = new SkillExecutor(mutator, { preview: true });
-    try {
-      await executor.handleEvent(event);
-    } catch (e) {
-      if (e instanceof GiTcgPreviewAbortedError) {
-        return [executor.state, false];
-      } else {
-        throw e;
-      }
-    }
-    return [executor.state, true];
   }
   static async handleEvents(mutator: StateMutator, events: EventAndRequest[]) {
     const executor = new SkillExecutor(mutator, { preview: false });

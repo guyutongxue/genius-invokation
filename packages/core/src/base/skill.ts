@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, Reaction } from "@gi-tcg/typings";
+import { DamageType, DiceType, Reaction, PreviewData } from "@gi-tcg/typings";
 import {
   AnyState,
   CardState,
@@ -231,7 +231,7 @@ export type WithActionDetail<T extends ActionInfoBase> = T & {
   readonly cost: readonly DiceType[];
   readonly fast: boolean;
   readonly log?: string;
-  readonly preview?: GameState;
+  readonly preview?: PreviewData[];
 };
 export type ActionInfo = WithActionDetail<ActionInfoBase>;
 

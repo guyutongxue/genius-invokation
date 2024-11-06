@@ -170,7 +170,7 @@ export function exposeMutation(
   }
 }
 
-function exposeEntity(state: GameState, e: EntityState): EntityData {
+export function exposeEntity(state: GameState, e: EntityState): EntityData {
   let equipment: EntityData["equipment"];
   if (e.definition.type === "equipment") {
     if (e.definition.tags.includes("artifact")) {
@@ -284,9 +284,7 @@ export function exposeAction(action: ActionInfo): Action {
         skill: action.skill.definition.id,
         cost: action.cost,
         targets: action.targets.map((t) => t.id),
-        preview: action.preview
-          ? exposeState(action.who, action.preview)
-          : void 0,
+        preview: action.preview ?? [],
       };
     }
     case "playCard": {
@@ -295,26 +293,29 @@ export function exposeAction(action: ActionInfo): Action {
         card: action.skill.caller.id,
         cost: action.cost,
         targets: action.targets.map((t) => t.id),
-        preview: action.preview
-          ? exposeState(action.who, action.preview)
-          : void 0,
+        preview: action.preview ?? [],
       };
     }
-    case "switchActive":
+    case "switchActive": {
       return {
         type: "switchActive",
         active: action.to.id,
         cost: action.cost,
+        preview: action.preview ?? [],
       };
-    case "elementalTuning":
+    }
+    case "elementalTuning": {
       return {
         type: "elementalTuning",
         discardedCard: action.card.id,
         target: action.result,
+        preview: [],
       };
+    }
     case "declareEnd": {
       return {
         type: "declareEnd",
+        preview: [],
       };
     }
   }

@@ -15,6 +15,7 @@
 
 export * from "./enums";
 export type * from "./api/notification";
+export type * from "./api/preview";
 export type * from "./api/request";
 export type * from "./api/response";
 export type * from "./api/mutation";

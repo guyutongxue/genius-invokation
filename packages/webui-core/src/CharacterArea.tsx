@@ -13,7 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { CharacterData } from "@gi-tcg/typings";
+import type {
+  CharacterData,
+  DefeatedPreview,
+  NewAuraPreview,
+  NewEnergyPreview,
+  NewHealthPreview,
+} from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Status } from "./Entity";
 import { For, Index, Show } from "solid-js";
@@ -75,10 +81,42 @@ function WaterDrop() {
 }
 
 export function CharacterArea(props: CharacterAreaProps) {
-  const { allDamages } = useEventContext();
+  const { allDamages, previewData } = useEventContext();
   const damaged = () => allDamages().find((d) => d.target === props.data.id);
-  const aura1 = () => props.data.aura & 0xf;
-  const aura2 = () => (props.data.aura >> 4) & 0xf;
+
+  const aura = (): [number, number] => {
+    const aura =
+      previewData().find(
+        (p): p is NewAuraPreview =>
+          p.type === "newAura" && p.character === props.data.id,
+      )?.value ?? props.data.aura;
+    return [aura & 0xf, (aura >> 4) & 0xf];
+  };
+  const energy = () =>
+    previewData().find(
+      (p): p is NewEnergyPreview =>
+        p.type === "newEnergy" && p.character === props.data.id,
+    )?.value ?? props.data.energy;
+  const defeated = () =>
+    previewData().some(
+      (p): p is DefeatedPreview =>
+        p.type === "defeated" && p.character === props.data.id,
+    ) || props.data.defeated;
+
+  const previewHealthDiff = () => {
+    const previewHealth = previewData().find(
+      (p): p is NewHealthPreview =>
+        p.type === "newHealth" && p.character === props.data.id,
+    )?.value;
+    if (typeof previewHealth === "undefined") {
+      return null;
+    }
+    if (previewHealth < props.data.health) {
+      return `- ${props.data.health - previewHealth}`;
+    } else {
+      return `+ ${previewHealth - props.data.health}`;
+    }
+  };
 
   const statuses = () => props.data.entities.filter((et) => !et.equipment);
   const weapon = () =>
@@ -92,12 +130,13 @@ export function CharacterArea(props: CharacterAreaProps) {
   return (
     <div class="flex flex-col gap-1 items-center">
       <div class="h-5 flex flex-row items-end gap-2">
-        <Show when={aura1()}>
-          <Image imageId={aura1()} class="h-5 w-5" />
-        </Show>
-        <Show when={aura2()}>
-          <Image imageId={aura2()} class="h-5 w-5" />
-        </Show>
+        <For each={aura()}>
+          {(aura) => (
+            <Show when={aura}>
+              <Image imageId={aura} class="h-5 w-5" />
+            </Show>
+          )}
+        </For>
       </div>
       <div class="h-40 relative">
         <div class="absolute z-1 left-[-15px] top-[-20px] flex items-center justify-center">
@@ -105,7 +144,7 @@ export function CharacterArea(props: CharacterAreaProps) {
           <div class="absolute">{props.data.health}</div>
         </div>
         <div class="absolute z-1 right-[-10px] top-0 flex flex-col gap-2">
-          <EnergyBar current={props.data.energy} total={props.data.maxEnergy} />
+          <EnergyBar current={energy()} total={props.data.maxEnergy} />
           <Show when={technique()}>
             {(et) => (
               <Interactive
@@ -119,6 +158,15 @@ export function CharacterArea(props: CharacterAreaProps) {
             )}
           </Show>
         </div>
+        <Show when={previewHealthDiff()}>
+          {(diff) => {
+            return (
+              <div class="absolute z-2 top-5 left-50% translate-x--50% bg-white opacity-80 p-2 rounded-md">
+                {diff()}
+              </div>
+            );
+          }}
+        </Show>
         <div class="absolute z-3 hover:z-10 left--3 top-[20px] flex flex-col items-center justify-center gap-2">
           <Show when={weapon()}>
             {(et) => (
@@ -173,7 +221,7 @@ export function CharacterArea(props: CharacterAreaProps) {
         <div class="absolute z-3 hover:z-10 left-0 bottom-0 h-6 flex flex-row">
           <For each={statuses()}>{(st) => <Status data={st} />}</For>
         </div>
-        <Show when={props.data.defeated}>
+        <Show when={defeated()}>
           <div class="absolute z-5 top-[50%] left-0 w-full text-center text-5xl font-bold translate-y-[-50%] font-[var(--font-emoji)]">
             &#9760;
           </div>
