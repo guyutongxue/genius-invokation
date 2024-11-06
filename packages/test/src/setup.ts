@@ -19,6 +19,7 @@ import {
   CardHandle,
   CharacterHandle,
   CombatStatusHandle,
+  DiceType,
   EquipmentHandle,
   StatusHandle,
   SummonHandle,
@@ -28,7 +29,7 @@ import { TestController } from "./controller";
 
 let _nextId = -5000000;
 function nextId() {
-  return _nextId++;
+  return _nextId--;
 }
 
 export class Ref {
@@ -63,7 +64,7 @@ export namespace Character {
   }
 }
 export function Character(props: Character.Prop): JSX.Element {
-  return [Character, props];
+  return { comp: Character, prop: props };
 }
 
 export interface EntityProp extends CommonEntityJsxProp {
@@ -79,7 +80,7 @@ export namespace Summon {
   }
 }
 export function Summon(props: Summon.Prop): JSX.Element {
-  return [Summon, props];
+  return { comp: Summon, prop: props };
 }
 
 export namespace CombatStatus {
@@ -88,7 +89,7 @@ export namespace CombatStatus {
   }
 }
 export function CombatStatus(props: CombatStatus.Prop): JSX.Element {
-  return [CombatStatus, props];
+  return { comp: CombatStatus, prop: props };
 }
 
 export namespace Status {
@@ -97,7 +98,7 @@ export namespace Status {
   }
 }
 export function Status(props: Status.Prop): JSX.Element {
-  return [Status, props];
+  return { comp: Status, prop: props };
 }
 export namespace Equipment {
   export interface Prop extends EntityProp {
@@ -105,7 +106,7 @@ export namespace Equipment {
   }
 }
 export function Equipment(props: Equipment.Prop): JSX.Element {
-  return [Equipment, props];
+  return { comp: Equipment, prop: props };
 }
 
 export namespace Support {
@@ -114,7 +115,7 @@ export namespace Support {
   }
 }
 export function Support(props: Support.Prop): JSX.Element {
-  return [Support, props];
+  return { comp: Support, prop: props };
 }
 export namespace Card {
   export interface Prop extends CommonEntityJsxProp {
@@ -125,7 +126,7 @@ export namespace Card {
   }
 }
 export function Card(props: Card.Prop): JSX.Element {
-  return [Card, props];
+  return { comp: Card, prop: props };
 }
 
 export namespace DeclaredEnd {
@@ -135,7 +136,7 @@ export namespace DeclaredEnd {
   }
 }
 export function DeclaredEnd(props: DeclaredEnd.Prop): JSX.Element {
-  return [DeclaredEnd, props];
+  return { comp: DeclaredEnd, prop: props };
 }
 
 export namespace State {
@@ -151,7 +152,7 @@ export namespace State {
   }
 }
 export function State(props: State.Prop): JSX.Element {
-  return [State, props];
+  return { comp: State, prop: props };
 }
 
 function childrenToArray(
@@ -196,11 +197,11 @@ function defaultCharacterDefs(data: GameData) {
   return DEFAULT_CH_IDS.map((id) => data.characters.get(id)!);
 }
 
-export async function setup(state: JSX.Element): Promise<TestController> {
-  if (state[0] !== State) {
+export function setup(state: JSX.Element): TestController {
+  if (state.comp !== State) {
     throw new Error("The root element must be State");
   }
-  const stateProp = state[1] as State.Prop;
+  const stateProp = state.prop as State.Prop;
   const data = getData(stateProp.dataVersion);
   const players: Draft<[PlayerState, PlayerState]> = [
     emptyPlayerState(),
@@ -210,28 +211,28 @@ export async function setup(state: JSX.Element): Promise<TestController> {
     defaultCharacterDefs(data),
     defaultCharacterDefs(data),
   ];
-  for (const [comp, props] of childrenToArray(stateProp.children)) {
+  for (const { comp, prop } of childrenToArray(stateProp.children)) {
     if (comp === DeclaredEnd) {
-      if (props.my) {
+      if (prop.my) {
         players[0].declaredEnd = true;
       }
-      if (props.opp) {
+      if (prop.opp) {
         players[1].declaredEnd = true;
       }
       continue;
     }
     let who: 0 | 1;
-    if (props.my) {
+    if (prop.my) {
       who = 0;
-    } else if (props.opp) {
+    } else if (prop.opp) {
       who = 1;
     } else {
       throw new Error(
         `An entity of type ${comp.name} in global state neither have 'my' or 'opp'`,
       );
     }
-    delete props.my;
-    delete props.opp;
+    delete prop.my;
+    delete prop.opp;
     type OmitProp<T> = Omit<T, "my" | "opp">;
     type AllEntityProp =
       | CombatStatus.Prop
@@ -242,8 +243,8 @@ export async function setup(state: JSX.Element): Promise<TestController> {
     const player = players[who];
     switch (comp) {
       case Character: {
-        const { ref, children, def, v, ...namedV } =
-          props as OmitProp<Character.Prop>;
+        const { ref, children, def, active, v, ...namedV } =
+          prop as OmitProp<Character.Prop>;
         const id = ref?.id ?? nextId();
         let definition: CharacterDefinition;
         if (def) {
@@ -268,13 +269,13 @@ export async function setup(state: JSX.Element): Promise<TestController> {
 
         const entities: Draft<EntityState>[] = [];
         for (const child of childrenToArray(children)) {
-          if (!([Status, Equipment] as Function[]).includes(child[0])) {
+          if (!([Status, Equipment] as Function[]).includes(child.comp)) {
             throw new Error(
               `An entity of type ${comp.name} can only have Status or Equipment`,
             );
           }
           const { def, ref, v, ...namedV } =
-            child[1] as OmitProp<AllEntityProp>;
+            child.prop as OmitProp<AllEntityProp>;
           const id = ref?.id ?? nextId();
           if (!def) {
             throw new Error(
@@ -310,10 +311,16 @@ export async function setup(state: JSX.Element): Promise<TestController> {
           entities,
         };
         player.characters.push(state as Draft<CharacterState>);
+        if (active) {
+          if (player.activeCharacterId !== 0) {
+            throw new Error(`Player ${who} already has an active character`);
+          }
+          player.activeCharacterId = id;
+        }
         break;
       }
       case Card: {
-        const { ref, def, pile, notInitial } = props as OmitProp<Card.Prop>;
+        const { ref, def, pile, notInitial } = prop as OmitProp<Card.Prop>;
         const id = ref?.id ?? nextId();
         if (!def) {
           throw new Error(
@@ -339,7 +346,7 @@ export async function setup(state: JSX.Element): Promise<TestController> {
       case CombatStatus:
       case Summon:
       case Support: {
-        const { ref, def, v, ...namedV } = props as OmitProp<AllEntityProp>;
+        const { ref, def, v, ...namedV } = prop as OmitProp<AllEntityProp>;
         const id = ref?.id ?? nextId();
         if (!def) {
           throw new Error(
@@ -381,6 +388,29 @@ export async function setup(state: JSX.Element): Promise<TestController> {
       }
     }
   }
+  for (const who of [0, 1] as const) {
+    const player = players[who];
+    for (let i = player.characters.length; i < 3; i++) {
+      const definition = playerDefaultCharacters[who].shift()!;
+      const state: CharacterState = {
+        id: nextId(),
+        definition,
+        variables: Object.fromEntries(
+          Object.entries(definition.varConfigs).map(([k, v]) => [
+            k,
+            v.initialValue,
+          ]),
+        ) as CharacterVariables,
+        entities: [],
+      };
+      player.characters.push(state as Draft<CharacterState>);
+    }
+    if (player.activeCharacterId === 0) {
+      player.activeCharacterId = player.characters[0].id;
+    }
+    player.dice = Array.from({ length: 8 }, () => DiceType.Omni);
+  }
+
   const extensions = data.extensions
     .values()
     .map(
@@ -414,5 +444,6 @@ export async function setup(state: JSX.Element): Promise<TestController> {
     players,
   };
   const c = new TestController(gameState);
-  return await c.step();
+  c.start();
+  return c;
 }
