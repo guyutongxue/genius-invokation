@@ -944,7 +944,7 @@ export const ConductorsTopHat = card(312030)
   .since("v5.1.0")
   .costSame(1)
   .artifact()
-  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)
+  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id && c.player.hands.length > 0)
   .usagePerRound(1)
   .do((c) => {
     c.disposeRandomCard(c.getMaxCostHands());
