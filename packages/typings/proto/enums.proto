@@ -1,0 +1,84 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+edition = "2023";
+
+enum DiceRequirementType {
+  VOID = 0;
+  CRYO = 1;
+  HYDRO = 2;
+  PYRO = 3;
+  ELECTRO = 4;
+  ANEMO = 5;
+  GEO = 6;
+  DENDRO = 7;
+  ALIGNED = 8;
+  ENERGY = 9;
+  LEGEND = 10;
+}
+
+enum DiceType {
+  CRYO = 1;
+  HYDRO = 2;
+  PYRO = 3;
+  ELECTRO = 4;
+  ANEMO = 5;
+  GEO = 6;
+  DENDRO = 7;
+  OMNI = 8;
+}
+
+enum DamageType {
+  PHYSICAL = 0;
+  CRYO = 1;
+  HYDRO = 2;
+  PYRO = 3;
+  ELECTRO = 4;
+  ANEMO = 5;
+  GEO = 6;
+  DENDRO = 7;
+  PIERCING = 8;
+  HEAL = 9;
+}
+
+enum AuraType {
+  NONE = 0;
+  CRYO = 1;
+  HYDRO = 2;
+  PYRO = 3;
+  ELECTRO = 4;
+  DENDRO = 7;
+  CRYO_DENDRO = 0x71;
+}
+
+enum ReactionType {
+  MELT = 101;
+  VAPORIZE = 102;
+  OVERLOADED = 103;
+  SUPERCONDUCT = 104;
+  ELECTRO_CHARGED = 105;
+  FROZEN = 106;
+  SWIRL_CRYO = 107;
+  SWIRL_HYDRO = 108;
+  SWIRL_PYRO = 109;
+  SWIRL_ELECTRO = 110;
+  CRYSTALLIZE_CRYO = 111;
+  CRYSTALLIZE_HYDRO = 112;
+  CRYSTALLIZE_PYRO = 113;
+  CRYSTALLIZE_ELECTRO = 114;
+  BURNING = 115;
+  BLOOM = 116;
+  QUICKEN = 117;
+}
