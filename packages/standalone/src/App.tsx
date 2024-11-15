@@ -198,7 +198,7 @@ export function App() {
               id="multiplayerInput"
               disabled
             />
-            <label class="tab__header" title="敬请期待" for="multiplayerInput">
+            <label class="tab__header" for="multiplayerInput">
               <a href="https://7shengzhaohuan.online/gi-tcg" target="_blank">
                 多人对战
               </a>
