@@ -58,8 +58,9 @@ import type {
   PlayerActionResponseDto,
 } from "./rooms.controller";
 import { DecksService } from "../decks/decks.service";
-import { UsersService, type UserNoPassword } from "../users/users.service";
+import { UsersService } from "../users/users.service";
 import { GamesService } from "../games/games.service";
+import type { User } from "@prisma/client";
 
 interface RoomConfig extends Partial<GameConfig> {
   initTotalActionTime: number; // defaults 45
@@ -83,8 +84,6 @@ interface PlayerIOWithError extends PlayerIO {
 
 interface PlayerInfo {
   userId: number;
-  userName: string | null;
-  userEmail: string;
   deck: Deck;
 }
 
@@ -149,7 +148,7 @@ class Player implements PlayerIOWithError {
     this.rpcSseSource,
   );
   constructor(
-    public readonly user: UserNoPassword,
+    public readonly user: User,
     public readonly deck: Deck,
   ) {}
 
@@ -161,8 +160,6 @@ class Player implements PlayerIOWithError {
   get playerInfo(): PlayerInfo {
     return {
       userId: this.user.id,
-      userName: this.user.name,
-      userEmail: this.user.email,
       deck: this.deck,
     };
   }

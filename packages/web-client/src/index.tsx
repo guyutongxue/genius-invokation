@@ -31,6 +31,10 @@ async function main() {
   }
   axios.defaults.baseURL = BACKEND_BASE_URL;
   axios.interceptors.request.use((config) => {
+    if (config.url?.includes("https://")) {
+      // non-backend request
+      return config;
+    }
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;

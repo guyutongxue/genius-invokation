@@ -16,27 +16,18 @@
 import { A, Route, Router } from "@solidjs/router";
 import { Accessor, createContext, createSignal, onMount, useContext } from "solid-js";
 import { Home } from "./pages/Home";
-import { Login } from "./pages/Login";
-import { Register } from "./pages/Register";
-import { Header } from "./components/Header";
 import axios from "axios";
-import { getGravatarUrl } from "./utils";
 import { User } from "./pages/User";
 import { Decks } from "./pages/Decks";
 import { EditDeck } from "./pages/EditDeck";
 import { Room } from "./pages/Room";
-import { createStore } from "solid-js/store";
 
 export interface UserInfo {
   id: number;
-  email: string;
-  name: string | null;
-  rank: number;
+  name: string;
   createdAt: string;
   avatarUrl: string;
 }
-
-type UserReadyCallback = (user: UserInfo) => unknown;
 
 export interface UserContextValue {
   user: Accessor<UserInfo | null>;
@@ -50,8 +41,10 @@ function App() {
   const [user, setUser] = createSignal<UserInfo | null>(null);
   const refresh = async () => {
     try {
-      const { data } = await axios.get("users/me");
-      data.avatarUrl = await getGravatarUrl(data.email);
+      const { data } = await axios.get<UserInfo>("users/me");
+      const { data: githubData } = await axios.get(`https://api.github.com/user/${data.id}`);
+      data.name = githubData.name;
+      data.avatarUrl = githubData.avatar_url;
       setUser(data);
       console.log(data);
     } catch (e) {
@@ -72,8 +65,6 @@ function App() {
         <Router base={import.meta.env.BASE_URL}>
           <Route path="/" component={Home} />
           <Route path="/user/:id" component={User} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
           <Route path="/decks/:id" component={EditDeck} />
           <Route path="/decks" component={Decks} />
           <Route path="/rooms/:code" component={Room} />

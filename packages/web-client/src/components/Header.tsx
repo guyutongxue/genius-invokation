@@ -30,32 +30,15 @@ export function Header() {
       <h1 class="flex-grow text-xl line-height-none font-bold flex items-center">
         <A href="/">七圣召唤模拟对战平台</A>
       </h1>
-      <Show
-        when={user()}
-        fallback={
-          <ul class="flex flex-rol gap-2">
-            <li>
-              <A href="/login">
-                <button class="btn btn-solid-green text-1em gap-0.5em">
-                  登录
-                </button>
-              </A>
-            </li>
-            <li>
-              <A href="/register">
-                <button class="btn btn-link-black text-1em gap-0.5em">
-                  注册
-                </button>
-              </A>
-            </li>
-          </ul>
-        }
-      >
+      <Show when={user()}>
         {(info) => (
           <>
             <A href={`/user/${info().id}`}>
               <div class="rounded-full w-12 h-12 b-solid b-1 b-gray-200 flex items-center justify-center">
-                <img src={info().avatarUrl} class="w-10 h-10 [clip-path:circle()]" />
+                <img
+                  src={info().avatarUrl}
+                  class="w-10 h-10 [clip-path:circle()]"
+                />
               </div>
             </A>
             <button

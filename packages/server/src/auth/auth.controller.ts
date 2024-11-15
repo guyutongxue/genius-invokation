@@ -13,17 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from "@nestjs/common";
+import type { FastifyReply } from "fastify";
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { AuthService } from "./auth.service";
 import { Public } from "./auth.guard";
+import { BASE_PATH } from "../frontend";
 
-class LoginDto {
-  @IsEmail()
-  email!: string;
-
+class GitHubCallbackDto {
   @IsNotEmpty()
-  password!: string;
+  code!: string;
 }
 
 @Controller("auth")
@@ -33,8 +32,10 @@ export class AuthController {
 
   @Public()
   @HttpCode(HttpStatus.OK)
-  @Post("login")
-  async login(@Body() { email, password }: LoginDto) {
-    return await this.auth.login(email, password);
+  @Get("github/callback")
+  async login(@Query() { code }: GitHubCallbackDto, @Res() res: FastifyReply) {
+    const { accessToken } = await this.auth.login(code);
+    const homepage = import.meta.env.NODE_ENV === "production" ? `${BASE_PATH}` : "http://localhost:5173/gi-tcg";
+    res.status(302).redirect(`${homepage}?token=${accessToken}`);
   }
 }

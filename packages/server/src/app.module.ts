@@ -16,7 +16,6 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AuthModule } from './auth/auth.module';
-import { InvitationModule } from './invitation/invitation.module';
 import { UsersModule } from "./users/users.module";
 import { GamesModule } from './games/games.module';
 import { DecksModule } from './decks/decks.module';
@@ -24,6 +23,6 @@ import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   controllers: [AppController],
-  imports: [AuthModule, UsersModule, InvitationModule, GamesModule, DecksModule, RoomsModule],
+  imports: [AuthModule, UsersModule, GamesModule, DecksModule, RoomsModule],
 })
 export class AppModule {}

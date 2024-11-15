@@ -1,11 +1,6 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "email" TEXT NOT NULL,
-    "password" BLOB NOT NULL,
-    "salt" BLOB NOT NULL,
-    "rank" INTEGER NOT NULL DEFAULT 10,
-    "name" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -31,16 +26,6 @@ CREATE TABLE "PlayerOnGames" (
 );
 
 -- CreateTable
-CREATE TABLE "InvitationCode" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "code" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "used" BOOLEAN NOT NULL DEFAULT false,
-    "createdByUserId" INTEGER NOT NULL,
-    CONSTRAINT "InvitationCode_createdByUserId_fkey" FOREIGN KEY ("createdByUserId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
 CREATE TABLE "Deck" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
@@ -51,9 +36,3 @@ CREATE TABLE "Deck" (
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Deck_ownerUserId_fkey" FOREIGN KEY ("ownerUserId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "InvitationCode_code_key" ON "InvitationCode"("code");

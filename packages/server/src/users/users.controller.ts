@@ -24,43 +24,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
 } from "@nestjs/common";
-import { UsersService, type UserNoPassword } from "./users.service";
+import { UsersService } from "./users.service";
 import { User } from "../auth/user.decorator";
-import {
-  Allow,
-  IsEmail,
-  IsNotEmpty,
-  Length,
-  MaxLength,
-} from "class-validator";
-import { type User as UserModel } from "@prisma/client";
 import { Public } from "../auth/auth.guard";
-import { InvitationService } from "../invitation/invitation.service";
-
-class SetPasswordDto {
-  @Length(6, 64)
-  password!: string;
-}
-
-class SetNameDto {
-  @IsNotEmpty()
-  @MaxLength(64)
-  name!: string;
-}
-
-class RegisterDto {
-  @IsEmail()
-  email!: string;
-
-  @Length(6, 64)
-  password!: string;
-
-  @Allow()
-  code?: string;
-}
-
+import type { User as UserModel } from "@prisma/client";
 
 @Controller("users")
 export class UsersController {
@@ -69,7 +37,7 @@ export class UsersController {
   ) {}
 
   @Get("me")
-  async me(@User() userId: number): Promise<UserNoPassword> {
+  async me(@User() userId: number): Promise<UserModel> {
     const user = await this.users.findById(userId);
     if (!user) {
       throw new NotFoundException();
@@ -78,39 +46,11 @@ export class UsersController {
   }
 
   @Get(":id")
-  async getUser(@Param("id", ParseIntPipe) id: number): Promise<UserNoPassword> {
+  async getUser(@Param("id", ParseIntPipe) id: number): Promise<UserModel> {
     const user = await this.users.findById(id);
     if (!user) {
       throw new NotFoundException();
     }
     return user;
-  }
-
-  @Put("me/password")
-  async setPassword(
-    @User() userId: number,
-    @Body() { password }: SetPasswordDto,
-  ) {
-    await this.users.updatePassword(userId, password);
-    return { message: "Password updated" };
-  }
-
-  @Put("me/name")
-  async setName(@User() userId: number, @Body() { name }: SetNameDto) {
-    await this.users.updateName(userId, name);
-    return { message: "Name updated" };
-  }
-
-  @HttpCode(HttpStatus.CREATED)
-  @Public()
-  @Post()
-  async registerUser(@Body() { email, password, code }: RegisterDto) {
-    if (!code) {
-      throw new BadRequestException(
-        `We now require an invitation code to register. Please ask a friend for one.`,
-      );
-    }
-    await this.users.create(email, password, { code });
-    return { message: "User created" };
   }
 }

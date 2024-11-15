@@ -20,10 +20,11 @@ import {
   Match,
   For,
   createSignal,
+  onMount,
 } from "solid-js";
 import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
-import { A, useNavigate } from "@solidjs/router";
+import { A, useNavigate, useSearchParams } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
 import { DeckBriefInfo } from "../components/DeckBriefInfo";
 import { RoomDialog } from "../components/RoomDialog";
@@ -31,8 +32,9 @@ import { roomCodeToId } from "../utils";
 import { RoomInfo } from "../components/RoomInfo";
 
 export function Home() {
-  const { user } = useUserContext();
+  const { user, refresh } = useUserContext();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams<{ token: string }>();
   const [decks] = createResource(() =>
     axios.get("decks").then((res) => res.data),
   );
@@ -89,6 +91,17 @@ export function Home() {
     joinRoomDialogEl.showModal();
   };
 
+  const CLIENT_ID = "Iv23liMGX6EkkrfUax8B";
+
+  onMount(async () => {
+    if (searchParams.token) {
+      localStorage.setItem("accessToken", searchParams.token);
+      setSearchParams({});
+      await refresh();
+      navigate("/");
+    }
+  });
+
   return (
     <Layout>
       <div class="container mx-auto">
@@ -96,14 +109,13 @@ export function Home() {
           when={user()}
           fallback={
             <div class="flex flex-row gap-1 justify-center text-xl my-8">
-              请先
-              <A href="/login" class="text-blue-500">
-                登录
-              </A>
-              或
-              <A href="/register" class="text-blue-500">
-                注册
-              </A>
+              <a
+                href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`}
+                class="flex flex-row gap-2 btn btn-solid-black text-1em gap-0.5em"
+              >
+                <i class="block i-mdi-github" />
+                <span class="text-sm">Login with GitHub</span>
+              </a>
             </div>
           }
         >
@@ -169,7 +181,10 @@ export function Home() {
                         创建房间…
                       </button>
                       或者
-                      <form class="flex-grow flex flex-row" onSubmit={joinRoomBySubmitCode}>
+                      <form
+                        class="flex-grow flex flex-row"
+                        onSubmit={joinRoomBySubmitCode}
+                      >
                         <input
                           class="input input-solid rounded-r-0 b-r-0"
                           name="roomCode"
@@ -196,9 +211,7 @@ export function Home() {
                   <ul class="flex gap-2 flex-row flex-wrap">
                     <For
                       each={allRooms()}
-                      fallback={
-                        <div class="text-gray-500">暂无对局</div>
-                      }
+                      fallback={<div class="text-gray-500">暂无对局</div>}
                     >
                       {(roomInfo) => (
                         <li>

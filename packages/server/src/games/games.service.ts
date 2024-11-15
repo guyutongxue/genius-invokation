@@ -62,7 +62,6 @@ export class GamesService {
             player: {
               select: {
                 id: true,
-                name: true,
               },
             },
             who: true,
@@ -87,7 +86,6 @@ export class GamesService {
             player: {
               select: {
                 id: true,
-                name: true,
               },
             },
             who: true,

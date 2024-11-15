@@ -16,6 +16,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
+import axios from "axios";
 
 @Injectable()
 export class AuthService {
@@ -25,12 +26,39 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(email: string, password: string) {
-    const result = await this.users.verifyPassword(email, password);
-    if (!result) {
+  private async getGitHubId(code: string) {
+    const response = await axios.post(`https://github.com/login/oauth/access_token`, {
+      client_id: process.env.GH_CLIENT_ID,
+      client_secret: process.env.GH_CLIENT_SECRET,
+      code,
+    }, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    if (response.status !== 200) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: result.id };
+    const accessToken = response.data.access_token;
+    const userResponse = await axios.get(`https://api.github.com/user`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: `application/vnd.github+json`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    if (userResponse.status !== 200) {
+      throw new UnauthorizedException();
+    }
+    return {
+      id: userResponse.data.id,
+    };
+  }
+
+  async login(code: string) {
+    const { id } = await this.getGitHubId(code);
+    await this.users.create(id);
+    const payload = { sub: id };
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };

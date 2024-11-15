@@ -1,15 +1,13 @@
 import { For, Show, createResource } from "solid-js";
 import { A } from "@solidjs/router";
 import { useUserContext } from "../App";
-import { getGravatarUrl, roomIdToCode } from "../utils";
+import { getAvatarUrl, roomIdToCode } from "../utils";
 
 export interface RoomInfoProps {
   id: number;
   watchable: boolean;
   players: {
     userId: number;
-    userName?: string;
-    userEmail: string;
   }[];
   onJoin?: (roomInfo: RoomInfoProps) => void;
 }
@@ -28,13 +26,13 @@ export function RoomInfo(props: RoomInfoProps) {
   const [avatarUrl0] = createResource(
     () => props.players,
     (players) => {
-      return players[0] && getGravatarUrl(players[0].userEmail, 30);
+      return players[0] && getAvatarUrl(players[0].userId);
     },
   );
   const [avatarUrl1] = createResource(
     () => props.players,
     (players) => {
-      return players[1] && getGravatarUrl(players[1].userEmail, 30);
+      return players[1] && getAvatarUrl(players[1].userId);
     },
   );
   return (
@@ -58,7 +56,7 @@ export function RoomInfo(props: RoomInfoProps) {
               src={avatarUrl0()}
               class="rounded-full b-yellow-800 b-1 translate-x--2"
             />
-            {props.players[0].userName ?? `旅行者 ${props.players[0].userId}`}
+            {/* props.players[0].userName ?? */ `旅行者 ${props.players[0].userId}`}
           </A>
           <span class="text-xl font-bold">VS</span>
           <Show
@@ -81,7 +79,7 @@ export function RoomInfo(props: RoomInfoProps) {
               href={url(props.players[1].userId)}
               class="flex flex-row items-center h-6 rounded-l-xl pl-2 bg-yellow-800 text-yellow-100 mr-2 hover:bg-yellow-700 transition-colors group-data-[disabled=true]:pointer-events-none"
             >
-              {props.players[1].userName ?? `旅行者 ${props.players[1].userId}`}
+              {/* props.players[1].userName ?? */ `旅行者 ${props.players[1].userId}`}
               <img
                 src={avatarUrl1()}
                 class="rounded-full b-yellow-800 b-1 translate-x-2"
