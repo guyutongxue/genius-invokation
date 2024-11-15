@@ -198,53 +198,12 @@ export function App() {
               id="multiplayerInput"
               disabled
             />
-            <label
-              class="tab__header"
-              style={{ cursor: "not-allowed" }}
-              title="敬请期待"
-              for="multiplayerInput"
-            >
-              多人对战
+            <label class="tab__header" title="敬请期待" for="multiplayerInput">
+              <a href="https://7shengzhaohuan.online/gi-tcg" target="_blank">
+                多人对战
+              </a>
             </label>
-            <div class="tab__content config-panel">
-              <div class="config-panel__title">牌组配置</div>
-              <div class="config-panel__deck">
-                <label>我方牌组</label>
-                <input
-                  type="text"
-                  value={deck0()}
-                  onInput={(e) => setDeck0(e.currentTarget.value)}
-                />
-              </div>
-              <div class="config-panel__title">房间号</div>
-              <div class="config-panel__room-id">
-                <input
-                  type="text"
-                  value={roomId()}
-                  placeholder="创建新房间"
-                  onInput={(e) => setRoomId(e.currentTarget.value)}
-                />
-              </div>
-              <div class="config-panel__description">
-                房间号置空则创建新房间，否则加入指定房间。
-                <span class="text-danger">
-                  多人对战模式是实验性的，可能存在大量 bug。
-                </span>
-              </div>
-              <div class="config-panel__button-group">
-                <button
-                  onClick={() =>
-                    setMode(
-                      roomId() === ""
-                        ? GameMode.MultiplayerHost
-                        : GameMode.MultiplayerGuest,
-                    )
-                  }
-                >
-                  {roomId() === "" ? "创建房间" : "加入房间"}
-                </button>
-              </div>
-            </div>
+            <div class="tab__content config-panel" />
             <div class="tab__spacer" />
           </div>
           <h3>友情链接</h3>
@@ -260,10 +219,7 @@ export function App() {
             </li>
             <li>
               获取牌组码：
-              <a
-                href="https://www.summoners.top/teams"
-                target="_blank"
-              >
+              <a href="https://www.summoners.top/teams" target="_blank">
                 召唤之巅：原神赛事数据统计平台
               </a>
             </li>

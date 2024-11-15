@@ -27,9 +27,12 @@ export function Header() {
   };
   return (
     <header class="fixed top-0 left-0 w-full flex flex-row h-16 bg-white z-200 px-4 shadow-md items-center gap-4">
-      <h1 class="flex-grow text-xl line-height-none font-bold flex items-center">
-        <A href="/">七圣召唤模拟对战平台</A>
-      </h1>
+      <div class="flex-grow flex items-end gap-2">
+        <h1 class="text-xl line-height-none font-bold ">
+          <A href="/">七圣召唤模拟对战平台</A>
+        </h1>
+        <span class="text-10px badge badge-soft-warning">Public Beta</span>
+      </div>
       <Show when={user()}>
         {(info) => (
           <>

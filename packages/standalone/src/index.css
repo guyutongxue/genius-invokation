@@ -140,6 +140,11 @@ html {
   transition-property: all;
   transition-duration: 0.2s;
   border-bottom: black 1px solid;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 .tab__input:not(:checked) + .tab__header:hover {
   background-color: #e0e0e0;

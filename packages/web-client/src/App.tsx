@@ -21,6 +21,7 @@ import { User } from "./pages/User";
 import { Decks } from "./pages/Decks";
 import { EditDeck } from "./pages/EditDeck";
 import { Room } from "./pages/Room";
+import { NotFound } from "./pages/NotFound";
 
 export interface UserInfo {
   id: number;
@@ -68,6 +69,7 @@ function App() {
           <Route path="/decks/:id" component={EditDeck} />
           <Route path="/decks" component={Decks} />
           <Route path="/rooms/:code" component={Room} />
+          <Route path="*" component={NotFound} />
         </Router>
       </div>
     </UserContext.Provider>
