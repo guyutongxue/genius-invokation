@@ -18,6 +18,9 @@ import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 
+const CODE_EXCHANGE_URL = process.env.GH_CODE_EXCHANGE_URL ?? `https://github.com/login/oauth/access_token`;
+const GET_USER_API_URL = process.env.GH_GET_USER_API_URL ?? `https://api.github.com/user`;
+
 @Injectable()
 export class AuthService {
 
@@ -27,7 +30,7 @@ export class AuthService {
   ) {}
 
   private async getGitHubId(code: string) {
-    const response = await axios.post(`https://github.com/login/oauth/access_token`, {
+    const response = await axios.post(CODE_EXCHANGE_URL, {
       client_id: process.env.GH_CLIENT_ID,
       client_secret: process.env.GH_CLIENT_SECRET,
       code,
@@ -40,7 +43,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const accessToken = response.data.access_token;
-    const userResponse = await axios.get(`https://api.github.com/user`, {
+    const userResponse = await axios.get(GET_USER_API_URL, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: `application/vnd.github+json`,
