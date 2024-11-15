@@ -31,13 +31,11 @@ export function UserInfo(props: UserInfoProps) {
   return (
     <div class="flex flex-row container gap-4">
       <div class="flex flex-col w-45">
-        <a href="https://gravatar.com/profile" target="_blank" title="修改头像">
-          <div class="rounded-full w-40 h-40 b-solid b-1 b-gray-200 flex items-center justify-center mb-3">
-            <Show when={avatarUrl()}>
-              <img src={avatarUrl()} class="w-36 h-36 [clip-path:circle()]" />
-            </Show>
-          </div>
-        </a>
+        <div class="rounded-full w-40 h-40 b-solid b-1 b-gray-200 flex items-center justify-center mb-3">
+          <Show when={avatarUrl()}>
+            <img src={avatarUrl()} class="w-36 h-36 [clip-path:circle()]" />
+          </Show>
+        </div>
       </div>
       <div class="flex-grow flex flex-col items-start">
         <div class="flex items-end gap-2 mb-5">

@@ -54,6 +54,8 @@ export function RoomInfo(props: RoomInfoProps) {
           >
             <img
               src={avatarUrl0()}
+              width="30"
+              height="30"
               class="rounded-full b-yellow-800 b-1 translate-x--2"
             />
             {/* props.players[0].userName ?? */ `旅行者 ${props.players[0].userId}`}
@@ -82,6 +84,8 @@ export function RoomInfo(props: RoomInfoProps) {
               {/* props.players[1].userName ?? */ `旅行者 ${props.players[1].userId}`}
               <img
                 src={avatarUrl1()}
+                width="30"
+                height="30"
                 class="rounded-full b-yellow-800 b-1 translate-x-2"
               />
             </A>
