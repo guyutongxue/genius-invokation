@@ -1,0 +1,56 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+message Action {
+  oneof action {
+    SwitchActiveAction switch_active = 1;
+    PlayCardAction play_card = 2;
+    UseSkillAction use_skill = 3;
+    ElementalTuningAction elemental_tuning = 4;
+    DeclareEndAction declare_end = 5;
+  }
+}
+
+message SwitchActiveAction {
+  map<DiceRequirementType, int32> required_cost = 1;
+  sint32 character_id = 2;
+  repeated PreviewData preview = 10;
+}
+
+message PlayCardAction {
+  map<DiceRequirementType, int32> required_cost = 1;
+  sint32 card_id = 2;
+  repeated sint32 target_ids = 3;
+  repeated PreviewData preview = 10;
+}
+
+message UseSkillAction {
+  map<DiceRequirementType, int32> required_cost = 1;
+  int32 skill_id = 2;
+  repeated sint32 target_ids = 3;
+  repeated PreviewData preview = 10;
+}
+
+message ElementalTuningAction {
+  map<DiceRequirementType, int32> required_cost = 1;
+  sint32 removed_card_id = 2;
+  DiceType target_dice = 3;
+  repeated PreviewData preview = 10;
+}
+
+message DeclareEndAction {
+  // map<DiceRequirementType, int32> required_cost = 1;
+  repeated PreviewData preview = 10;
+}

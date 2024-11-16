@@ -13,4 +13,45 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import "./enums.proto";
+import "./action.proto";
+import "./preview.proto";
+
 edition = "2023";
+
+message RerollDiceRequest {}
+
+message SwitchHandsRequest {}
+
+message ChooseActiveRequest {
+  repeated sint32 candidate_ids = 1;
+}
+
+message SelectCardRequest {
+  repeated int32 candidate_definition_ids = 1;
+}
+
+message ActionRequest {
+  repeated Action action = 1;
+}
+
+message RerollDiceResponse {
+  repeated int32 reroll_indexes = 1;
+}
+
+message SwitchHandsResponse {
+  repeated sint32 removed_hand_ids = 1;
+}
+
+message ChooseActiveResponse {
+  sint32 active_character_id = 1;
+}
+
+message SelectCardResponse {
+  sint32 selected_definition_id = 1;
+}
+
+message ActionResponse {
+  int32 chosen_action_index = 1;
+  repeated DiceType used_dice = 2;
+}

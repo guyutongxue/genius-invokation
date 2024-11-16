@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import "./enums.proto";
+import "./action.proto";
 
 edition = "2023";
 
@@ -36,7 +37,8 @@ message ExposedMutation {
     DamageEM damage = 15;
     ElementalReactionEM elemental_reaction = 16;
     ActionDoneEM action_done = 17;
-    PlayerStatusChangeEM player_status_change = 18;
+    TriggeredEM triggered = 18;
+    PlayerStatusChangeEM player_status_change = 19;
   }
 }
 
@@ -145,20 +147,26 @@ message ResetDiceEM {
 message DamageEM {
   DamageType type = 1;
   int32 value = 2;
-  int32 target_id = 3;
+  sint32 target_id = 3;
   int32 target_definition_id = 4;
-  int32 source_id = 5;
+  sint32 source_id = 5;
   int32 source_definition_id = 6;
 }
 
 message ElementalReactionEM {
   Reaction type = 1;
-  int32 character_id = 3;
+  sint32 character_id = 3;
   int32 character_definition_id = 4;
 }
 
 message ActionDoneEM {
-  Action action = 1; // TODO
+  int32 who = 1;
+  Action action = 2;
+}
+
+message TriggeredEM {
+  sint32 entity_id = 1;
+  int32 entity_definition_id = 2;
 }
 
 enum PlayerStatus {

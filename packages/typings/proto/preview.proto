@@ -1,0 +1,27 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import "./mutation.proto";
+
+message PreviewData {
+  oneof mutation {
+    SwitchActiveEM switch_active = 6;
+    CreateEntityEM create_entity = 10;
+    RemoveEntityEM remove_entity = 11;
+    ModifyEntityVarEM modify_entity_var = 12;
+    TransformDefinitionEM transform_definition = 13;
+    ElementalReactionEM elemental_reaction = 16;
+  }
+}
