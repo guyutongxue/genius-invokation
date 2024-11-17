@@ -130,7 +130,9 @@ export function checkDice(
     const chosenMap = new Set<DiceType>(chosen);
     // 完全同色，或者只有杂色+万能两种骰子
     return (
-      chosenMap.size === 1 || (chosenMap.size === 2 && chosenMap.has(OMNI))
+      (chosenMap.size === 0 && requiredCount === 0) ||
+      chosenMap.size === 1 ||
+      (chosenMap.size === 2 && chosenMap.has(OMNI))
     );
   }
   const requiredArray = required
