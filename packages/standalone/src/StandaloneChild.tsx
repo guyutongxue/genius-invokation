@@ -57,7 +57,7 @@ export function StandaloneChild() {
           {
             giTcg: "1.0",
             method: "rpc",
-            result,
+            result: JSON.parse(JSON.stringify(result)),
             id: data.id,
           },
           "*",
