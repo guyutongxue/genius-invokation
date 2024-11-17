@@ -135,7 +135,8 @@ export function checkDice(
   }
   const requiredArray = required
     .entries()
-    .flatMap(([k, v]) => Array.from({ length: v }, () => k));
+    .flatMap(([k, v]) => Array.from({ length: v }, () => k))
+    .toArray();
   // 否则逐个检查杂色/无色
   const chosen2 = [...chosen];
   let voidCount = 0;

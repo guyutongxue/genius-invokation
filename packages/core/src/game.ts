@@ -613,6 +613,7 @@ export class Game {
       await this.handleEvent("modifyAction3", actionInfo.eventArg);
 
       // 检查骰子
+      console.log(actionInfo.cost, usedDice);
       if (!checkDice(actionInfo.cost, usedDice as DiceType[])) {
         throw new GiTcgIoError(who, `Selected dice doesn't meet requirement`);
       }
@@ -695,7 +696,7 @@ export class Game {
                 actionDone: {
                   who,
                   actionType: PbActionType.ACTION_PLAY_CARD,
-                  characterOfCardId: card.id,
+                  characterOrCardId: card.id,
                   skillOrCardDefinitionId: card.definition.id,
                 }
               }
