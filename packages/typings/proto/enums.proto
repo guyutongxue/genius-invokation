@@ -15,6 +15,7 @@
 
 syntax = "proto3";
 
+// 描述骰子费用的骰子类型
 enum DiceRequirementType {
   DICE_REQ_VOID = 0;
   DICE_REQ_CRYO = 1;
@@ -29,11 +30,13 @@ enum DiceRequirementType {
   DICE_REQ_LEGEND = 10;
 }
 
+// 骰子费用 entry，以此为元素的集合构成骰子费用需求
 message DiceRequirement {
   DiceRequirementType type = 1;
   int32 count = 2;
 }
 
+// 实际骰子类型
 enum DiceType {
   DICE_UNSPECIFIED = 0;
   DICE_CRYO = 1;
@@ -66,7 +69,7 @@ enum AuraType {
   AURA_PYRO = 3;
   AURA_ELECTRO = 4;
   AURA_DENDRO = 7;
-  AURA_CRYO_DENDRO = 0x71;
+  AURA_CRYO_DENDRO = 0x71; // (AURA_DENDRO << 4) | AURA_CRYO
 }
 
 enum ReactionType {

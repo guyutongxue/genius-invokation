@@ -38,12 +38,17 @@ message PlayerState {
   repeated EntityState summon = 4;
   repeated EntityState support = 5;
   repeated DiceType dice = 6;
+  // 牌堆数据
   repeated CardState pile_card = 7;
+  // 手牌数据
   repeated CardState hand_card = 8;
   
+  // 是否已宣布结束
   bool declared_end = 51;
+  // 是否使用了秘传牌
   bool legend_used = 52;
   
+  // 当前出战角色的主动技能和特技列表
   repeated SkillInfo initiative_skill = 101;
 }
 
@@ -63,20 +68,30 @@ message CharacterState {
 message EntityState {
   sint32 id = 1;
   int32 definition_id = 2;
+  // 指示如何替换文本描述中的变量名 
   map<string, string> description_dictionary = 4;
   
+  // 显示于召唤物、支援牌右上角的变量名和变量值
   optional string variable_name = 51;
   optional int32 variable_value = 52;
+  // 召唤物左下角标文字
   optional string hint_text = 53;
+  // 召唤物左下角标图标 id
   optional int32 hint_icon = 54;
+  // 是否带有高光以显示此回合内有可用次数
   bool has_usage_per_round = 55;
+  // 若为装备，则提供此字段以显示装备类型
   optional EquipmentType equipment = 56;
 }
 
 enum EquipmentType {
+  // 其他装备（天赋）
   EQUIPMENT_OTHER = 0;
+  // 武器
   EQUIPMENT_WEAPON = 1;
+  // 圣遗物
   EQUIPMENT_ARTIFACT = 2;
+  // 特技
   EQUIPMENT_TECHNIQUE = 3;
 }
 
@@ -84,6 +99,7 @@ message CardState {
   sint32 id = 1;
   int32 definition_id = 2;
   map<string, string> description_dictionary = 4;
+  // 原本费用
   repeated DiceRequirement definition_cost = 5;
 }
 

@@ -175,6 +175,8 @@ enum ActionType {
   ACTION_DECLARE_END = 5;
 }
 
+// 玩家选择了某行动
+// 适用于：使用技能、打出手牌和宣布结束
 message ActionDoneEM {
   int32 who = 1;
   ActionType action_type = 2;
@@ -186,11 +188,13 @@ message ActionDoneEM {
   optional int32 character_definition_id = 5;
 }
 
+// 某实体的被动技能被触发
 message TriggeredEM {
   sint32 entity_id = 1;
   int32 entity_definition_id = 2;
 }
 
+// 玩家的当前 IO 状态 (WIP)
 enum PlayerStatus {
   PLAYER_STATUS_UNSPECIFIED = 0;
   PLAYER_STATUS_CHOOSING_ACTIVE = 1;

@@ -28,33 +28,45 @@ message Action {
   }
 }
 
+// 切换出战角色
 message SwitchActiveAction {
   repeated DiceRequirement required_cost = 1;
+  // 出站角色 id
   sint32 character_id = 2;
   repeated PreviewData preview = 10;
 }
 
+// 打出手牌
 message PlayCardAction {
   repeated DiceRequirement required_cost = 1;
+  // 手牌 id
   sint32 card_id = 2;
+  // 打出手牌目标 id 列表
   repeated sint32 target_ids = 3;
   repeated PreviewData preview = 10;
 }
 
+// 使用技能
 message UseSkillAction {
   repeated DiceRequirement required_cost = 1;
+  // 技能定义 id
   int32 skill_id = 2;
+  // 使用技能目标 id 列表
   repeated sint32 target_ids = 3;
   repeated PreviewData preview = 10;
 }
 
+// 元素调和
 message ElementalTuningAction {
   repeated DiceRequirement required_cost = 1;
+  // 要调和的手牌 id
   sint32 removed_card_id = 2;
+  // 调和目标骰子类型
   DiceType target_dice = 3;
   repeated PreviewData preview = 10;
 }
 
+// 宣布结束
 message DeclareEndAction {
   // DiceRequirement required_cost = 1;
   repeated PreviewData preview = 10;
