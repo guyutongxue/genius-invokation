@@ -21,6 +21,7 @@ import {
   RpcRequest,
   RpcResponse,
   DiceRequirement,
+  PbActionType,
 } from "@gi-tcg/typings";
 import {
   AnyState,
@@ -426,7 +427,7 @@ export class Game {
           `Invalid response format: expect ${method} in response`,
         );
       }
-      return resp as Required<RpcResponse>[M];
+      return resp[method] as Required<RpcResponse>[M];
     } catch (e) {
       if (e instanceof Error) {
         throw new GiTcgIoError(who, e.message, { cause: e?.cause });
@@ -626,28 +627,18 @@ export class Game {
         );
       }
       // 消耗骰子
-      const operatingDice = diceToMap(player().dice);
-      for (const [type, count] of usedDice) {
-        if (type === DiceType.Energy) {
-          continue;
-        } else {
-          const currentCount = operatingDice.get(type) ?? 0;
-          if (currentCount < count) {
-            throw new GiTcgIoError(
-              who,
-              `Selected dice ${type} not enough: ${currentCount} < ${count}`,
-            );
-          }
-          operatingDice.set(type, currentCount - count);
+      const operatingDice = [...player().dice];
+      for (const type of usedDice) {
+        const idx = operatingDice.indexOf(type as DiceType);
+        if (idx === -1) {
+          throw new GiTcgIoError(who, `Selected dice ${type} doesn't found in player`);
         }
+        operatingDice.splice(idx, 1);
       }
       this.mutate({
         type: "resetDice",
         who,
-        value: operatingDice
-          .entries()
-          .flatMap(([t, v]) => Array.from({ length: v }, () => t))
-          .toArray(),
+        value: operatingDice,
       });
       // 消耗能量
       const requiredEnergy = actionInfo.cost.get(DiceType.Energy) ?? 0;
@@ -669,6 +660,19 @@ export class Game {
 
       switch (actionInfo.type) {
         case "useSkill": {
+          this.mutator.notify({
+            mutations: [
+              {
+                actionDone: {
+                  who,
+                  actionType: PbActionType.ACTION_PLAY_CARD,
+                  characterOrCardId: actionInfo.skill.caller.id,
+                  characterDefinitionId: actionInfo.skill.caller.definition.id,
+                  skillOrCardDefinitionId: actionInfo.skill.definition.id,
+                }
+              }
+            ]
+          });
           const callerArea = getEntityArea(this.state, activeCh().id);
           await this.handleEvent(
             "onBeforeUseSkill",
@@ -685,6 +689,18 @@ export class Game {
         }
         case "playCard": {
           const card = actionInfo.skill.caller;
+          this.mutator.notify({
+            mutations: [
+              {
+                actionDone: {
+                  who,
+                  actionType: PbActionType.ACTION_PLAY_CARD,
+                  characterOfCardId: card.id,
+                  skillOrCardDefinitionId: card.definition.id,
+                }
+              }
+            ]
+          });
           if (card.definition.tags.includes("legend")) {
             this.mutate({
               type: "setPlayerFlag",
@@ -758,6 +774,16 @@ export class Game {
           break;
         }
         case "declareEnd": {
+          this.mutator.notify({
+            mutations: [
+              {
+                actionDone: {
+                  who,
+                  actionType: PbActionType.ACTION_DECLARE_END,
+                }
+              }
+            ]
+          });
           this.mutate({
             type: "setPlayerFlag",
             who,

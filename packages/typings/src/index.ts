@@ -35,6 +35,7 @@ export {
 export { PreviewData } from "./gen/preview";
 export {
   CardArea as PbCardArea,
+  CreateEntityArea as PbCreateEntityArea,
   ActionType as PbActionType,
   PhaseType as PbPhaseType,
   PlayerStatus as PbPlayerStatus,

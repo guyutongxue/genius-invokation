@@ -34,6 +34,7 @@ import {
   PbDiceRequirementType,
   PbCardArea,
   PbRemoveCardReason,
+  PbCreateEntityArea,
 } from "@gi-tcg/typings";
 import {
   CardState,
@@ -207,9 +208,25 @@ export function exposeMutation(
       };
     }
     case "createEntity": {
+      let where: PbCreateEntityArea = PbCreateEntityArea.ENTITY_AREA_UNSPECIFIED;
+      switch (m.where.type) {
+        case "characters":
+          where = PbCreateEntityArea.ENTITY_AREA_CHARACTER;
+          break;
+        case "combatStatuses":
+          where = PbCreateEntityArea.ENTITY_AREA_COMBAT_STATUS;
+          break;
+        case "summons":
+          where = PbCreateEntityArea.ENTITY_AREA_SUMMON;
+          break;
+        case "supports":
+          where = PbCreateEntityArea.ENTITY_AREA_SUPPORT;
+          break;
+      }
       return {
         createEntity: {
           who: m.where.who,
+          where,
           entityId: m.value.id,
           entityDefinitionId: m.value.definition.id,
         },

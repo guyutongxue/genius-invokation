@@ -13,13 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { CardData } from "@gi-tcg/core";
+import type { PbCardState } from "@gi-tcg/typings";
 import { For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Card } from "./Card";
 
 export interface SwitchHandsViewProps {
-  hands: readonly CardData[];
+  hands: readonly PbCardState[];
   onConfirm?: (ids: number[]) => void;
 }
 

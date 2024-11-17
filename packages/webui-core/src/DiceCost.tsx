@@ -13,32 +13,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { DiceType } from "@gi-tcg/typings";
+import type { DiceType, PbDiceRequirement } from "@gi-tcg/typings";
 import { diceToMap } from "@gi-tcg/utils";
 import { ComponentProps, For, splitProps } from "solid-js";
 
 import { Dice, DiceColor } from "./Dice";
 
 interface DiceCostProps extends ComponentProps<"div"> {
-  cost: readonly DiceType[];
-  realCost?: readonly DiceType[];
+  cost: readonly PbDiceRequirement[];
+  realCost?: readonly PbDiceRequirement[];
 }
 
 export function DiceCost(props: DiceCostProps) {
   const [local, restProps] = splitProps(props, ["cost", "realCost"]);
   const diceMap = () => {
-    const costMap = diceToMap(local.cost);
+    const costMap = new Map(
+      local.cost.map(({ type, count }) => [type as DiceType, count]),
+    );
+    const realCostMap = new Map(
+      local.realCost?.map(({ type, count }) => [type as DiceType, count]),
+    );
     type DiceTuple = readonly [type: DiceType, count: number, color: DiceColor];
     let result: DiceTuple[] = [];
     if (local.realCost) {
-      const realCostMap = diceToMap(local.realCost);
-      const allCostType = new Set([...local.cost, ...local.realCost]);
-      if (allCostType.size === 0) {
-        allCostType.add(8 /* Omni */);
-      }
-      for (const type of allCostType) {
+      for (const [type, originalCount] of costMap) {
         const realCount = realCostMap.get(type) ?? 0;
-        const originalCount = costMap.get(type) ?? 0;
         const color =
           realCount > originalCount
             ? "increased"

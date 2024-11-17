@@ -114,10 +114,19 @@ message CreateCharacterEM {
   int32 character_definition_id = 3;
 }
 
+enum CreateEntityArea {
+  ENTITY_AREA_UNSPECIFIED = 0;
+  ENTITY_AREA_CHARACTER = 1;
+  ENTITY_AREA_COMBAT_STATUS = 2;
+  ENTITY_AREA_SUMMON = 3;
+  ENTITY_AREA_SUPPORT = 4;
+}
+
 message CreateEntityEM {
   int32 who = 1;
   sint32 entity_id = 2;
   int32 entity_definition_id = 3;
+  CreateEntityArea where = 4;
 }
 
 message RemoveEntityEM {
@@ -169,8 +178,12 @@ enum ActionType {
 message ActionDoneEM {
   int32 who = 1;
   ActionType action_type = 2;
-  optional sint32 character_of_card_id = 3;
+  // If action_type == ACTION_PLAY_CARD or ACTION_USE_SKILL
+  optional sint32 character_or_card_id = 3;
+  // If action_type == ACTION_PLAY_CARD or ACTION_USE_SKILL
   optional int32 skill_or_card_definition_id = 4;
+  // If action_type == ACTION_USE_SKILL
+  optional int32 character_definition_id = 5;
 }
 
 message TriggeredEM {

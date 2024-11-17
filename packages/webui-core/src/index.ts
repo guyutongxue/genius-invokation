@@ -17,7 +17,7 @@ import "./index.css";
 
 export {
   createPlayer,
-  EMPTY_STATE_DATA,
+  EMPTY_GAME_STATE,
   type WebUiOption,
   StandaloneChessboard,
   type StandaloneChessboardProps,

@@ -13,13 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type {
-  CharacterData,
-  DefeatedPreview,
-  NewAuraPreview,
-  NewEnergyPreview,
-  NewHealthPreview,
-} from "@gi-tcg/typings";
+import type { ModifyEntityVarEM, PbCharacterState } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Status } from "./Entity";
 import { For, Index, Show } from "solid-js";
@@ -28,7 +22,7 @@ import { DICE_COLOR } from "./Dice";
 import { Interactive } from "./Interactive";
 
 export interface CharacterAreaProps {
-  data: CharacterData;
+  data: PbCharacterState;
 }
 
 interface EnergyBarProps {
@@ -82,32 +76,37 @@ function WaterDrop() {
 
 export function CharacterArea(props: CharacterAreaProps) {
   const { allDamages, previewData } = useEventContext();
-  const damaged = () => allDamages().find((d) => d.target === props.data.id);
+  const damaged = () => allDamages().find((d) => d.targetId === props.data.id);
 
   const aura = (): [number, number] => {
     const aura =
       previewData().find(
-        (p): p is NewAuraPreview =>
-          p.type === "newAura" && p.character === props.data.id,
-      )?.value ?? props.data.aura;
+        (p) =>
+          p.modifyEntityVar?.entityId === props.data.id &&
+          p.modifyEntityVar?.variableName === "aura",
+      )?.modifyEntityVar?.variableValue ?? props.data.aura;
     return [aura & 0xf, (aura >> 4) & 0xf];
   };
   const energy = () =>
     previewData().find(
-      (p): p is NewEnergyPreview =>
-        p.type === "newEnergy" && p.character === props.data.id,
-    )?.value ?? props.data.energy;
+      (p) =>
+        p.modifyEntityVar?.entityId === props.data.id &&
+        p.modifyEntityVar?.variableName === "energy",
+    )?.modifyEntityVar?.variableValue ?? props.data.energy;
   const defeated = () =>
     previewData().some(
-      (p): p is DefeatedPreview =>
-        p.type === "defeated" && p.character === props.data.id,
+      (p) =>
+        p.modifyEntityVar?.entityId === props.data.id &&
+        p.modifyEntityVar?.variableName === "alive" &&
+        p.modifyEntityVar?.variableValue === 0,
     ) || props.data.defeated;
 
   const previewHealthDiff = () => {
     const previewHealth = previewData().find(
-      (p): p is NewHealthPreview =>
-        p.type === "newHealth" && p.character === props.data.id,
-    )?.value;
+      (p) =>
+        p.modifyEntityVar?.entityId === props.data.id &&
+        p.modifyEntityVar?.variableName === "health",
+    )?.modifyEntityVar?.variableValue;
     if (typeof previewHealth === "undefined") {
       return null;
     }
@@ -118,15 +117,15 @@ export function CharacterArea(props: CharacterAreaProps) {
     }
   };
 
-  const statuses = () => props.data.entities.filter((et) => !et.equipment);
+  const statuses = () => props.data.entity.filter((et) => !et.equipment);
   const weapon = () =>
-    props.data.entities.find((et) => et.equipment === "weapon");
+    props.data.entity.find((et) => et.equipment === 1 /* weapon */);
   const artifact = () =>
-    props.data.entities.find((et) => et.equipment === "artifact");
+    props.data.entity.find((et) => et.equipment === 2 /* artifact */);
   const technique = () =>
-    props.data.entities.find((et) => et.equipment === "technique");
+    props.data.entity.find((et) => et.equipment === 3 /* technique */);
   const otherEquipments = () =>
-    props.data.entities.filter((et) => et.equipment === true);
+    props.data.entity.filter((et) => et.equipment === 0 /* other */);
   return (
     <div class="flex flex-col gap-1 items-center">
       <div class="h-5 flex flex-row items-end gap-2">
@@ -151,7 +150,7 @@ export function CharacterArea(props: CharacterAreaProps) {
                 class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
-                dataHighlight={et().usagePerRoundHighlight}
+                dataHighlight={et().hasUsagePerRound}
               >
                 &#129668;
               </Interactive>
@@ -174,7 +173,7 @@ export function CharacterArea(props: CharacterAreaProps) {
                 class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
-                dataHighlight={et().usagePerRoundHighlight}
+                dataHighlight={et().hasUsagePerRound}
               >
                 &#x1F5E1;
               </Interactive>
@@ -186,7 +185,7 @@ export function CharacterArea(props: CharacterAreaProps) {
                 class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et().id}
                 definitionId={et().definitionId}
-                dataHighlight={et().usagePerRoundHighlight}
+                dataHighlight={et().hasUsagePerRound}
               >
                 &#x1F451;
               </Interactive>
@@ -198,7 +197,7 @@ export function CharacterArea(props: CharacterAreaProps) {
                 class="w-6 h-6 rounded-3 text-center bg-yellow-50 data-[highlight=true]bg-yellow-200 border-solid border-1 border-yellow-800"
                 id={et.id}
                 definitionId={et.definitionId}
-                dataHighlight={et.usagePerRoundHighlight}
+                dataHighlight={et.hasUsagePerRound}
               >
                 &#x2728;
               </Interactive>

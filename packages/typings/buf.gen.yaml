@@ -5,3 +5,7 @@ plugins:
   - remote: buf.build/community/stephenh-ts-proto:v2.2.0
     # strategy: all
     out: src/gen
+    opt:
+      - outputJsonMethods=false
+      - unrecognizedEnum=false
+      - exportCommonSymbols=false

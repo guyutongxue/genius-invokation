@@ -13,7 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { DiceType } from "@gi-tcg/typings";
+import type {
+  DiceType,
+  PbDiceRequirement,
+  PbDiceType,
+  ReadonlyDiceRequirement,
+} from "@gi-tcg/typings";
 import { Index, Show, createEffect, mergeProps, onCleanup } from "solid-js";
 import { checkDice, chooseDice } from "@gi-tcg/utils";
 
@@ -21,9 +26,9 @@ import { Dice } from "./Dice";
 import { createStore, produce } from "solid-js/store";
 
 export interface DiceSelectProps {
-  required?: readonly DiceType[];
-  value: readonly DiceType[];
-  disabledDice?: readonly DiceType[];
+  required?: readonly PbDiceRequirement[];
+  value: readonly PbDiceType[];
+  disabledDice?: readonly PbDiceType[];
   confirmOnly?: boolean;
   disableConfirm?: boolean;
   onConfirm?: (dice: DiceType[]) => void;
@@ -37,16 +42,22 @@ export function DiceSelect(props: DiceSelectProps) {
     {
       confirmOnly: false,
       disableConfirm: false,
-      required: [] as readonly DiceType[],
-      disabledDice: [] as readonly DiceType[],
+      required: [] as readonly PbDiceRequirement[],
+      disabledDice: [] as readonly PbDiceType[],
     },
     props,
   );
   const [chosen, setChosen] = createStore<boolean[]>([]);
+  const required = () =>
+    new Map(
+      merged.required.map(({ type, count }) => [type as DiceType, count]),
+    );
   createEffect(() => {
     const autoChosen = chooseDice(
-      merged.required,
-      merged.value.filter((d) => !merged.disabledDice.includes(d)),
+      required(),
+      merged.value.filter(
+        (d) => !merged.disabledDice.includes(d),
+      ) as DiceType[],
     );
     const chosenResult = [];
     for (let i = 0; i < merged.value.length; i++) {
@@ -58,11 +69,11 @@ export function DiceSelect(props: DiceSelectProps) {
     }
     setChosen(chosenResult);
   });
-  const chosenDice = () => props.value.filter((_, i) => chosen[i]);
+  const chosenDice = () => props.value.filter((_, i) => chosen[i]) as DiceType[];
   const flipChosen = (index: number) => {
     setChosen(produce((p) => void (p[index] = !p[index])));
   };
-  const isValid = () => checkDice(merged.required, chosenDice());
+  const isValid = () => checkDice(required(), chosenDice());
 
   onCleanup(() => {
     merged.onLeavePreview?.();

@@ -19,7 +19,7 @@ import { Image } from "./Image";
 import { Match, Show, Switch, mergeProps } from "solid-js";
 
 export interface DiceProps {
-  type: DiceType;
+  type: number;
   selected?: boolean;
   size?: number;
   text?: string;
