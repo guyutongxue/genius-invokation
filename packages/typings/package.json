@@ -12,9 +12,9 @@
     }
   },
   "scripts": {
-    "build:json": "bun scripts/generate_schema.ts",
+    "build:buf": "bunx buf generate",
     "build:ts": "tsup",
-    "build": "bun build:json && bun build:ts"
+    "build": "bun build:buf && bun build:ts"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.47.2",
