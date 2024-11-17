@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import "./enums.proto";
-import "./mutation.proto";
+syntax = "proto3";
 
-edition = "2023";
+import "enums.proto";
+import "mutation.proto";
 
 message Notification {
   State state = 1;
@@ -57,7 +57,7 @@ message CharacterState {
   int32 max_health = 53;
   int32 energy = 54;
   int32 max_energy = 55;
-  Aura aura = 56;
+  AuraType aura = 56;
 }
 
 message EntityState {
@@ -74,20 +74,20 @@ message EntityState {
 }
 
 enum EquipmentType {
-  OTHER = 0;
-  WEAPON = 1;
-  ARTIFACT = 2;
-  TECHNIQUE = 3;
+  EQUIPMENT_OTHER = 0;
+  EQUIPMENT_WEAPON = 1;
+  EQUIPMENT_ARTIFACT = 2;
+  EQUIPMENT_TECHNIQUE = 3;
 }
 
 message CardState {
   sint32 id = 1;
   int32 definition_id = 2;
   map<string, int32> description_dict = 4;
-  map<DiceRequirementType, int32> definition_cost = 5;
+  DiceRequirement definition_cost = 5;
 }
 
 message SkillInfo {
   int32 definition_id = 2;
-  map<DiceRequirementType, int32> definition_cost = 5;
+  DiceRequirement definition_cost = 5;
 }

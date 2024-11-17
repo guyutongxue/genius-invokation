@@ -13,6 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+syntax = "proto3";
+
+import "enums.proto";
+import "preview.proto";
+
 message Action {
   oneof action {
     SwitchActiveAction switch_active = 1;
@@ -24,33 +29,33 @@ message Action {
 }
 
 message SwitchActiveAction {
-  map<DiceRequirementType, int32> required_cost = 1;
+  DiceRequirement required_cost = 1;
   sint32 character_id = 2;
   repeated PreviewData preview = 10;
 }
 
 message PlayCardAction {
-  map<DiceRequirementType, int32> required_cost = 1;
+  DiceRequirement required_cost = 1;
   sint32 card_id = 2;
   repeated sint32 target_ids = 3;
   repeated PreviewData preview = 10;
 }
 
 message UseSkillAction {
-  map<DiceRequirementType, int32> required_cost = 1;
+  DiceRequirement required_cost = 1;
   int32 skill_id = 2;
   repeated sint32 target_ids = 3;
   repeated PreviewData preview = 10;
 }
 
 message ElementalTuningAction {
-  map<DiceRequirementType, int32> required_cost = 1;
+  DiceRequirement required_cost = 1;
   sint32 removed_card_id = 2;
   DiceType target_dice = 3;
   repeated PreviewData preview = 10;
 }
 
 message DeclareEndAction {
-  // map<DiceRequirementType, int32> required_cost = 1;
+  // DiceRequirement required_cost = 1;
   repeated PreviewData preview = 10;
 }

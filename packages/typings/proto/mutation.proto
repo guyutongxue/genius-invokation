@@ -13,10 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import "./enums.proto";
-import "./action.proto";
+syntax = "proto3";
 
-edition = "2023";
+import "enums.proto";
 
 message ExposedMutation {
   oneof mutation {
@@ -43,12 +42,12 @@ message ExposedMutation {
 }
 
 enum PhaseType {
-  INIT_HANDS = 0;
-  INIT_ACTIVES = 1;
-  ROLL = 2;
-  ACTION = 3;
-  END = 4;
-  GAME_END = 5;
+  PHASE_INIT_HANDS = 0;
+  PHASE_INIT_ACTIVES = 1;
+  PHASE_ROLL = 2;
+  PHASE_ACTION = 3;
+  PHASE_END = 4;
+  PHASE_GAME_END = 5;
 }
 
 message ChangePhaseEM {
@@ -64,8 +63,8 @@ message SetWinnerEM {
 }
 
 enum CardArea {
-  HAND = 0;
-  PILE = 1;
+  CARD_AREA_HAND = 0;
+  CARD_AREA_PILE = 1;
 }
 
 message TransferCardEM {
@@ -85,13 +84,13 @@ message SwitchActiveEM {
 }
 
 enum RemoveCardReason {
-  OTHER = 0;
-  PLAY = 1;
-  ELEMENTAL_TUNNING = 2;
-  HANDS_OVERFLOW = 3;
-  DISPOSED = 4;
-  DISABLED = 5;
-  ON_DRAW_TRIGGERED = 6;
+  REMOVE_CARD_REASON_UNSPECIFIED = 0;
+  REMOVE_CARD_REASON_PLAY = 1;
+  REMOVE_CARD_REASON_ELEMENTAL_TUNNING = 2;
+  REMOVE_CARD_REASON_HANDS_OVERFLOW = 3;
+  REMOVE_CARD_REASON_DISPOSED = 4;
+  REMOVE_CARD_REASON_DISABLED = 5;
+  REMOVE_CARD_REASON_ON_DRAW_TRIGGERED = 6;
 }
 
 message RemoveCardEM {
@@ -154,14 +153,25 @@ message DamageEM {
 }
 
 message ElementalReactionEM {
-  Reaction type = 1;
+  ReactionType type = 1;
   sint32 character_id = 3;
   int32 character_definition_id = 4;
 }
 
+enum ActionType {
+  ACTION_UNSPECIFIED = 0;
+  ACTION_USE_SKILL = 1;
+  ACTION_PLAY_CARD = 2;
+  ACTION_SWITCH_ACTIVE = 3;
+  ACTION_ELEMENTAL_TUNING = 4;
+  ACTION_DECLARE_END = 5;
+}
+
 message ActionDoneEM {
   int32 who = 1;
-  Action action = 2;
+  ActionType action_type = 2;
+  optional sint32 character_of_card_id = 3;
+  optional int32 skill_or_card_definition_id = 4;
 }
 
 message TriggeredEM {
@@ -170,12 +180,12 @@ message TriggeredEM {
 }
 
 enum PlayerStatus {
-  NORMAL = 0;
-  CHOOSING_ACTIVE = 1;
-  SWITCHING_HANDS = 2;
-  REROLLING = 3;
-  ACTING = 4;
-  SELECTING_CARDS = 4;
+  PLAYER_STATUS_UNSPECIFIED = 0;
+  PLAYER_STATUS_CHOOSING_ACTIVE = 1;
+  PLAYER_STATUS_SWITCHING_HANDS = 2;
+  PLAYER_STATUS_REROLLING = 3;
+  PLAYER_STATUS_ACTING = 4;
+  PLAYER_STATUS_SELECTING_CARDS = 5;
 }
 
 message PlayerStatusChangeEM {

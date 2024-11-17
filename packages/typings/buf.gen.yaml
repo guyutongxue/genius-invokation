@@ -1,0 +1,7 @@
+version: v2
+managed:
+  enabled: true
+plugins:
+  - remote: buf.build/community/stephenh-ts-proto:v2.2.0
+    # strategy: all
+    out: src/gen

@@ -13,72 +13,79 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-edition = "2023";
+syntax = "proto3";
 
 enum DiceRequirementType {
-  VOID = 0;
-  CRYO = 1;
-  HYDRO = 2;
-  PYRO = 3;
-  ELECTRO = 4;
-  ANEMO = 5;
-  GEO = 6;
-  DENDRO = 7;
-  ALIGNED = 8;
-  ENERGY = 9;
-  LEGEND = 10;
+  DICE_REQ_VOID = 0;
+  DICE_REQ_CRYO = 1;
+  DICE_REQ_HYDRO = 2;
+  DICE_REQ_PYRO = 3;
+  DICE_REQ_ELECTRO = 4;
+  DICE_REQ_ANEMO = 5;
+  DICE_REQ_GEO = 6;
+  DICE_REQ_DENDRO = 7;
+  DICE_REQ_ALIGNED = 8;
+  DICE_REQ_ENERGY = 9;
+  DICE_REQ_LEGEND = 10;
+}
+
+message DiceRequirement {
+  DiceRequirementType type = 1;
+  int32 count = 2;
 }
 
 enum DiceType {
-  CRYO = 1;
-  HYDRO = 2;
-  PYRO = 3;
-  ELECTRO = 4;
-  ANEMO = 5;
-  GEO = 6;
-  DENDRO = 7;
-  OMNI = 8;
+  DICE_UNSPECIFIED = 0;
+  DICE_CRYO = 1;
+  DICE_HYDRO = 2;
+  DICE_PYRO = 3;
+  DICE_ELECTRO = 4;
+  DICE_ANEMO = 5;
+  DICE_GEO = 6;
+  DICE_DENDRO = 7;
+  DICE_OMNI = 8;
 }
 
 enum DamageType {
-  PHYSICAL = 0;
-  CRYO = 1;
-  HYDRO = 2;
-  PYRO = 3;
-  ELECTRO = 4;
-  ANEMO = 5;
-  GEO = 6;
-  DENDRO = 7;
-  PIERCING = 8;
-  HEAL = 9;
+  DMG_PHYSICAL = 0;
+  DMG_CRYO = 1;
+  DMG_HYDRO = 2;
+  DMG_PYRO = 3;
+  DMG_ELECTRO = 4;
+  DMG_ANEMO = 5;
+  DMG_GEO = 6;
+  DMG_DENDRO = 7;
+  DMG_PIERCING = 8;
+  DMG_HEAL = 9;
 }
 
 enum AuraType {
-  NONE = 0;
-  CRYO = 1;
-  HYDRO = 2;
-  PYRO = 3;
-  ELECTRO = 4;
-  DENDRO = 7;
-  CRYO_DENDRO = 0x71;
+  AURA_NONE = 0;
+  AURA_CRYO = 1;
+  AURA_HYDRO = 2;
+  AURA_PYRO = 3;
+  AURA_ELECTRO = 4;
+  AURA_DENDRO = 7;
+  AURA_CRYO_DENDRO = 0x71;
 }
 
 enum ReactionType {
-  MELT = 101;
-  VAPORIZE = 102;
-  OVERLOADED = 103;
-  SUPERCONDUCT = 104;
-  ELECTRO_CHARGED = 105;
-  FROZEN = 106;
-  SWIRL_CRYO = 107;
-  SWIRL_HYDRO = 108;
-  SWIRL_PYRO = 109;
-  SWIRL_ELECTRO = 110;
-  CRYSTALLIZE_CRYO = 111;
-  CRYSTALLIZE_HYDRO = 112;
-  CRYSTALLIZE_PYRO = 113;
-  CRYSTALLIZE_ELECTRO = 114;
-  BURNING = 115;
-  BLOOM = 116;
-  QUICKEN = 117;
+  REACTION_UNSPECIFIED = 0;
+  REACTION_MELT = 101;
+  REACTION_VAPORIZE = 102;
+  REACTION_OVERLOADED = 103;
+  REACTION_SUPERCONDUCT = 104;
+  REACTION_ELECTRO_CHARGED = 105;
+  REACTION_FROZEN = 106;
+  REACTION_SWIRL_CRYO = 107;
+  REACTION_SWIRL_HYDRO = 108;
+  REACTION_SWIRL_PYRO = 109;
+  REACTION_SWIRL_ELECTRO = 110;
+  REACTION_CRYSTALLIZE_CRYO = 111;
+  REACTION_CRYSTALLIZE_HYDRO = 112;
+  REACTION_CRYSTALLIZE_PYRO = 113;
+  REACTION_CRYSTALLIZE_ELECTRO = 114;
+  REACTION_BURNING = 115;
+  REACTION_BLOOM = 116;
+  REACTION_QUICKEN = 117;
 }
