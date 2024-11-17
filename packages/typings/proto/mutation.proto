@@ -80,13 +80,13 @@ message SwitchActiveEM {
   int32 who = 1;
   sint32 character_id = 2;
   int32 character_definition_id = 3;
-  int32 via_skill_id = 4;
+  optional int32 via_skill_id = 4;
 }
 
 enum RemoveCardReason {
   REMOVE_CARD_REASON_UNSPECIFIED = 0;
   REMOVE_CARD_REASON_PLAY = 1;
-  REMOVE_CARD_REASON_ELEMENTAL_TUNNING = 2;
+  REMOVE_CARD_REASON_ELEMENTAL_TUNING = 2;
   REMOVE_CARD_REASON_HANDS_OVERFLOW = 3;
   REMOVE_CARD_REASON_DISPOSED = 4;
   REMOVE_CARD_REASON_DISABLED = 5;
@@ -121,16 +121,15 @@ message CreateEntityEM {
 }
 
 message RemoveEntityEM {
-  int32 who = 1;
   sint32 entity_id = 2;
   int32 entity_definition_id = 3;
 }
 
 message ModifyEntityVarEM {
-  sint32 entity_id = 1;
-  int32 entity_definition_id = 2;
-  string variable_name = 3;
-  int32 variable_value = 4;
+  sint32 entity_id = 2;
+  int32 entity_definition_id = 3;
+  string variable_name = 4;
+  int32 variable_value = 5;
 }
 
 message TransformDefinitionEM {

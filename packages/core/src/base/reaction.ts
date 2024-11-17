@@ -1,22 +1,25 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Reaction as R, Aura as A, DamageType as D } from "@gi-tcg/typings";
 import { DamageInfo } from "../base/skill";
 
-export type NontrivialDamageType = Exclude<D, D.Physical | D.Piercing | D.Heal>;
+export type NontrivialDamageType = Exclude<
+  D,
+  typeof D.Physical | typeof D.Piercing | typeof D.Heal
+>;
 
 export type ReactionMap = Record<
   A,
@@ -110,10 +113,7 @@ export const REACTION_RELATIVES: Record<R, readonly [D, D]> = {
 };
 
 export function getReaction(damageInfo: DamageInfo): R | null {
-  if (
-    damageInfo.type === D.Physical ||
-    damageInfo.type === D.Piercing
-  ) {
+  if (damageInfo.type === D.Physical || damageInfo.type === D.Piercing) {
     return null;
   }
   const [, reactionType] =
@@ -134,9 +134,15 @@ export function isReactionRelatedTo(
   return REACTION_RELATIVES[reaction].includes(target);
 }
 
+export type SwirlableElement =
+  | typeof D.Cryo
+  | typeof D.Hydro
+  | typeof D.Pyro
+  | typeof D.Electro;
+
 export function isReactionSwirl(
   damageInfo: DamageInfo,
-): D.Cryo | D.Electro | D.Hydro | D.Pyro | null {
+): SwirlableElement | null {
   switch (getReaction(damageInfo)) {
     case R.SwirlCryo:
       return D.Cryo;

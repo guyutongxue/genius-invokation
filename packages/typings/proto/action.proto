@@ -29,27 +29,27 @@ message Action {
 }
 
 message SwitchActiveAction {
-  DiceRequirement required_cost = 1;
+  repeated DiceRequirement required_cost = 1;
   sint32 character_id = 2;
   repeated PreviewData preview = 10;
 }
 
 message PlayCardAction {
-  DiceRequirement required_cost = 1;
+  repeated DiceRequirement required_cost = 1;
   sint32 card_id = 2;
   repeated sint32 target_ids = 3;
   repeated PreviewData preview = 10;
 }
 
 message UseSkillAction {
-  DiceRequirement required_cost = 1;
+  repeated DiceRequirement required_cost = 1;
   int32 skill_id = 2;
   repeated sint32 target_ids = 3;
   repeated PreviewData preview = 10;
 }
 
 message ElementalTuningAction {
-  DiceRequirement required_cost = 1;
+  repeated DiceRequirement required_cost = 1;
   sint32 removed_card_id = 2;
   DiceType target_dice = 3;
   repeated PreviewData preview = 10;

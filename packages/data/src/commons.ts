@@ -25,7 +25,7 @@ import { status, combatStatus, summon, DamageType } from "@gi-tcg/core/builder";
 export const Frozen = status(106)
   .oneDuration()
   .tags("disableSkill")
-  .on("increaseDamaged", (c, e) => [DamageType.Pyro, DamageType.Physical].includes(e.type))
+  .on("increaseDamaged", (c, e) => ([DamageType.Pyro, DamageType.Physical] as DamageType[]).includes(e.type))
   .increaseDamage(2)
   .dispose()
   .done();
@@ -61,7 +61,7 @@ export const BurningFlame = summon(115)
  */
 export const DendroCore = combatStatus(116)
   .on("increaseDamage", (c, e) =>
-    [DamageType.Pyro, DamageType.Electro].includes(e.type) &&
+    ([DamageType.Pyro, DamageType.Electro] as DamageType[]).includes(e.type) &&
     e.target.id === c.$("opp active character")!.id)
   .usage(1)
   .increaseDamage(1)
@@ -76,7 +76,7 @@ export const DendroCore = combatStatus(116)
  */
 export const CatalyzingField = combatStatus(117)
   .on("increaseDamage", (c, e) =>
-    [DamageType.Electro, DamageType.Dendro].includes(e.type) &&
+    ([DamageType.Electro, DamageType.Dendro] as DamageType[]).includes(e.type) &&
     e.target.id === c.$("opp active character")!.id)
   .usage(2)
   .increaseDamage(1)

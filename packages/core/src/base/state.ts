@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { PhaseType, DiceType } from "@gi-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 
 import { CardDefinition } from "./card";
 import { CharacterDefinition, CharacterVariableConfigs } from "./character";
@@ -40,6 +40,14 @@ export interface IteratorState {
   readonly random: number;
   readonly id: number;
 }
+
+export type PhaseType =
+  | "initActives"
+  | "initHands"
+  | "roll"
+  | "action"
+  | "end"
+  | "gameEnd";
 
 export interface GameState {
   readonly data: GameData;
@@ -71,7 +79,7 @@ export interface PlayerState {
   readonly skipNextTurn: boolean;
   /**
    * 每回合使用技能列表。
-   * 键为技能发起者的角色定义 id，值为该定义下使用过的技能 id 列表 
+   * 键为技能发起者的角色定义 id，值为该定义下使用过的技能 id 列表
    */
   readonly roundSkillLog: ReadonlyMap<number, number[]>;
   readonly removedEntities: AnyState[];
@@ -117,4 +125,10 @@ export function stringifyState(st: AnyState): string {
   return `[${type}:${st.definition.id}](${st.id})`;
 }
 
-export { type GameData, type CharacterDefinition, type EntityDefinition, type CardDefinition, type ExtensionDefinition };
+export {
+  type GameData,
+  type CharacterDefinition,
+  type EntityDefinition,
+  type CardDefinition,
+  type ExtensionDefinition,
+};

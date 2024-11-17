@@ -84,7 +84,7 @@ export const AmosBow = card(311204)
   .weapon("bow")
   .on("increaseSkillDamage")
   .increaseDamage(1)
-  .on("increaseSkillDamage", (c, e) => e.via.definition.initiativeSkillConfig!.requiredCost.length >= 5)
+  .on("increaseSkillDamage", (c, e) => e.via.definition.initiativeSkillConfig!.computed$costSize)
   .usagePerRound(1)
   .increaseDamage(2)
   .done();

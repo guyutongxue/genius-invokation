@@ -29,7 +29,7 @@ export const StoneFacetsElementalAbsorption = status(126021)
   .associateExtension(AbsorbedCountExtension)
   .on("transformDefinition", (c, e) => e.oldDefinition.id !== e.newDefinition.id)
   .do((c) => {
-    let diceType = DiceType.Geo;
+    let diceType: DiceType = DiceType.Geo;
     switch (c.self.master().definition.id) {
       case AzhdahaCryo: diceType = DiceType.Cryo; break;
       case AzhdahaHydro: diceType = DiceType.Hydro; break;

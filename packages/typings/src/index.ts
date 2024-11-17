@@ -15,6 +15,14 @@
 
 export * from "./common_enums";
 export {
+  Action,
+  UseSkillAction,
+  PlayCardAction,
+  SwitchActiveAction,
+  ElementalTuningAction,
+  DeclareEndAction,
+} from "./gen/action";
+export {
   CardState as PbCardState,
   CharacterState as PbCharacterState,
   EntityState as PbEntityState,
@@ -25,20 +33,6 @@ export {
   Notification,
 } from "./gen/notification";
 export { PreviewData } from "./gen/preview";
-export {
-  ActionRequest,
-  ActionResponse,
-  ChooseActiveRequest,
-  ChooseActiveResponse,
-  RerollDiceRequest,
-  RerollDiceResponse,
-  SelectCardRequest,
-  SelectCardResponse,
-  SwitchHandsRequest,
-  SwitchHandsResponse,
-  Request as GiTcgRequest,
-  Response as GiTcgResponse,
-} from "./gen/rpc";
 export {
   CardArea as PbCardArea,
   ActionType as PbActionType,
@@ -64,5 +58,21 @@ export {
   TransferCardEM,
   TransformDefinitionEM,
   TriggeredEM,
-  ExposedMutation
+  ExposedMutation,
 } from "./gen/mutation";
+
+import { Request as RpcRequest, Response as RpcResponse } from "./gen/rpc";
+export type RpcMethod = keyof RpcRequest;
+export { RpcRequest, RpcResponse };
+export {
+  ActionRequest,
+  ActionResponse,
+  ChooseActiveRequest,
+  ChooseActiveResponse,
+  RerollDiceRequest,
+  RerollDiceResponse,
+  SelectCardRequest,
+  SelectCardResponse,
+  SwitchHandsRequest,
+  SwitchHandsResponse,
+} from "./gen/rpc";

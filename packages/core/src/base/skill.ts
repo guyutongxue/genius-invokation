@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, Reaction, PreviewData } from "@gi-tcg/typings";
+import { DamageType, DiceType, Reaction, PreviewData, ReadonlyDiceRequirement, DiceRequirement } from "@gi-tcg/typings";
 import {
   AnyState,
   CardState,
@@ -26,6 +26,7 @@ import { CardTag, CardDefinition } from "./card";
 import {
   REACTION_MAP,
   REACTION_RELATIVES,
+  SwirlableElement,
   getReaction,
   isReactionRelatedTo,
   isReactionSwirl,
@@ -38,7 +39,7 @@ import {
   UsagePerRoundVariableNames,
 } from "./entity";
 import { MutatorConfig } from "../mutator";
-import { diceCostOfCard, getEntityArea, mixins } from "../utils";
+import { costSize, diceCostOfCard, diceCostSize, getEntityArea, mixins } from "../utils";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {
@@ -77,7 +78,9 @@ export type InitiativeSkillTargetGetter = (
 
 export interface InitiativeSkillConfig {
   readonly skillType: SkillType;
-  readonly requiredCost: readonly DiceType[];
+  readonly requiredCost: ReadonlyDiceRequirement;
+  readonly computed$costSize: number;
+  readonly computed$diceCostSize: number;
   readonly gainEnergy: boolean;
   readonly prepared: boolean;
   readonly getTarget: InitiativeSkillTargetGetter;
@@ -149,7 +152,7 @@ export interface SkillInfoOfContextConstruction extends SkillInfo {
 }
 
 export interface DamageInfo {
-  readonly type: Exclude<DamageType, DamageType.Heal>;
+  readonly type: Exclude<DamageType, typeof DamageType.Heal>;
   readonly value: number;
   readonly source: AnyState;
   readonly via: SkillInfo;
@@ -166,7 +169,7 @@ export type HealKind =
   | "increaseMaxHealth"; // 增加最大生命值（吞星之鲸）
 
 export interface HealInfo {
-  readonly type: DamageType.Heal;
+  readonly type: typeof DamageType.Heal;
   readonly expectedValue: number;
   readonly value: number;
   readonly healKind: HealKind;
@@ -228,7 +231,7 @@ export type ActionInfoBase =
   | DeclareEndInfo;
 
 export type WithActionDetail<T extends ActionInfoBase> = T & {
-  readonly cost: readonly DiceType[];
+  readonly cost: ReadonlyDiceRequirement;
   readonly fast: boolean;
   readonly log?: string;
   readonly preview?: PreviewData[];
@@ -323,16 +326,25 @@ export class ActionEventArg<
       this.action.cost,
     )}, fast: ${this.action.fast}`;
   }
-  originalDiceCost(): DiceType[] {
+  protected originalDiceCost(): ReadonlyDiceRequirement {
     if (
       (this.isUseSkill() || this.isPlayCard()) &&
       this.action.skill.definition.initiativeSkillConfig
     ) {
-      return this.action.skill.definition.initiativeSkillConfig.requiredCost.filter(
-        (d) => d !== DiceType.Energy,
-      );
+      return this.action.skill.definition.initiativeSkillConfig.requiredCost;
     } else {
-      return [];
+      throw new GiTcgCoreInternalError("originalDiceCost not available");
+    }
+  }
+  originalDiceCostSize(): number {
+    if (
+      (this.isUseSkill() || this.isPlayCard()) &&
+      this.action.skill.definition.initiativeSkillConfig
+    ) {
+      return this.action.skill.definition.initiativeSkillConfig
+        .computed$diceCostSize;
+    } else {
+      return 0;
     }
   }
 
@@ -406,13 +418,13 @@ export class ActionEventArg<
 export class ModifyActionEventArgBase<
   InfoT extends ActionInfoBase,
 > extends ActionEventArg<InfoT> {
-  protected _cost: DiceType[];
+  protected _cost: DiceRequirement;
   protected _fast: boolean;
   protected _log = "";
 
   constructor(state: GameState, action: WithActionDetail<InfoT>) {
     super(state, action);
-    this._cost = [...action.cost];
+    this._cost = new Map(action.cost);
     this._fast = action.fast;
   }
 
@@ -426,21 +438,39 @@ export class ModifyActionEventArgBase<
   }
 
   get cost() {
-    const order = (d: DiceType) => (d === DiceType.Void ? 100 : d);
-    return this._cost.toSorted((a, b) => order(a) - order(b));
+    return this._cost;
+  }
+  costSize() {
+    return costSize(this.cost);
+  }
+  diceCostSize() {
+    return diceCostSize(this.cost);
+  }
+
+  protected doDeductCost(availableType: DiceType[], count: number) {
+    for (const type of availableType) {
+      const currentCount = this._cost.get(type) ?? 0;
+      this._cost.set(type, Math.max(0, currentCount - count));
+      count -= currentCount;
+      if (count <= 0) {
+        return;
+      }
+    }
   }
 
   isFast() {
     return this._fast;
   }
   canDeductVoidCost() {
-    return this.cost.includes(DiceType.Void);
+    return this.cost.has(DiceType.Void);
   }
-  canDeductCostOfType(type: Exclude<DiceType, DiceType.Omni | DiceType.Void>) {
-    return this.cost.includes(type) || this.cost.includes(DiceType.Void);
+  canDeductCostOfType(
+    type: Exclude<DiceType, typeof DiceType.Omni | typeof DiceType.Void>,
+  ) {
+    return this.cost.has(type) || this.cost.has(DiceType.Void);
   }
   canDeductCost() {
-    return this.cost.length > 0;
+    return this.cost.values().reduce((acc, v) => acc + v, 0) > 0;
   }
 }
 
@@ -451,13 +481,7 @@ export class ModifyAction0EventArg<
     this._log += `${stringifyState(
       this.caller,
     )} deduct ${count} [dice:0] from cost.\n`;
-    for (let i = 0; i < count; i++) {
-      const voidIndex = this._cost.indexOf(DiceType.Void);
-      if (voidIndex === -1) {
-        break;
-      }
-      this._cost.splice(voidIndex, 1);
-    }
+    this.doDeductCost([DiceType.Void], count);
   }
 
   addCost(type: DiceType, count: number) {
@@ -466,40 +490,31 @@ export class ModifyAction0EventArg<
     )} add ${count} [dice:${type}] to cost.\n`;
     if (type === DiceType.Omni) {
       // 增加 Omni 类型：假设原本要求为单色*n，增加该类型的元素骰
-      const originalCost = this.originalDiceCost();
-      const targetType = originalCost[0] ?? DiceType.Same;
-      if (originalCost.find((type) => type !== targetType)) {
+      const originalCost = this.originalDiceCost()
+        .entries()
+        .filter(([dice, cost]) => dice !== DiceType.Energy)
+        .toArray();
+      if (originalCost.length !== 1) {
         throw new GiTcgDataError(
-          "Cannot addCost omni to action whose original cost have multiple dice requirement",
+          "Cannot addCost omni to action whose original dice requirement do not have single dice type",
         );
       }
-      this._cost.push(...new Array<DiceType>(count).fill(targetType));
-    } else {
-      this._cost.push(...new Array<DiceType>(count).fill(type));
+      type = originalCost[0][0];
     }
+    const currentCount = this._cost.get(type) ?? 0;
+    this._cost.set(type, currentCount + count);
   }
 }
 
 export class ModifyAction1EventArg<
   InfoT extends ActionInfoBase,
 > extends ModifyAction0EventArg<InfoT> {
-  deductCost(type: Exclude<DiceType, DiceType.Omni>, count: number) {
+  deductCost(type: Exclude<DiceType, typeof DiceType.Omni>, count: number) {
     this._log += `${stringifyState(
       this.caller,
     )} deduct ${count} [dice:${type}] from cost.\n`;
-    for (let i = 0; i < count; i++) {
-      // 减有色骰子时：先检查此颜色，再检查无色
-      const index = this._cost.indexOf(type);
-      if (index === -1) {
-        const voidIndex = this._cost.indexOf(DiceType.Void);
-        if (voidIndex === -1) {
-          break;
-        }
-        this._cost.splice(voidIndex, 1);
-      } else {
-        this._cost.splice(index, 1);
-      }
-    }
+    // 减有色骰子时：先检查此颜色，再检查无色
+    this.doDeductCost([type, DiceType.Void], count);
   }
 }
 
@@ -510,7 +525,20 @@ export class ModifyAction2EventArg<
     this._log += `${stringifyState(
       this.caller,
     )} deduct ${count} [dice:8] from cost.\n`;
-    this._cost = this.cost.toSpliced(0, count);
+    this.doDeductCost(
+      [
+        DiceType.Aligned,
+        DiceType.Cryo,
+        DiceType.Hydro,
+        DiceType.Pyro,
+        DiceType.Electro,
+        DiceType.Anemo,
+        DiceType.Geo,
+        DiceType.Dendro,
+        DiceType.Void,
+      ],
+      count,
+    );
   }
   setFastAction(): void {
     if (this._fast) {
@@ -526,7 +554,7 @@ export class ModifyAction3EventArg<
 > extends ModifyActionEventArgBase<InfoT> {
   deductAllCost() {
     this._log += `${stringifyState(this.caller)} deduct all cost.\n`;
-    this._cost = [];
+    this._cost = new Map();
   }
 }
 
@@ -679,12 +707,7 @@ export class DamageOrHealEventArg<
     }
     return isReactionRelatedTo(this.damageInfo as DamageInfo, target);
   }
-  isSwirl():
-    | DamageType.Cryo
-    | DamageType.Hydro
-    | DamageType.Pyro
-    | DamageType.Electro
-    | null {
+  isSwirl(): SwirlableElement | null {
     if (!this.isDamageTypeDamage()) {
       return null;
     }
@@ -735,7 +758,8 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
 }
 
 export class ModifyDamageEventArgBase extends DamageOrHealEventArg<DamageInfo> {
-  protected _newDamageType: Exclude<DamageType, DamageType.Heal> | null = null;
+  protected _newDamageType: Exclude<DamageType, typeof DamageType.Heal> | null =
+    null;
   protected _increased = 0;
   protected _multiplied: number | null = null;
   protected _divider = 1;
@@ -761,7 +785,7 @@ export class ModifyDamageEventArgBase extends DamageOrHealEventArg<DamageInfo> {
 }
 
 export class ModifyDamage0EventArg extends ModifyDamageEventArgBase {
-  changeDamageType(type: Exclude<DamageType, DamageType.Heal>) {
+  changeDamageType(type: Exclude<DamageType, typeof DamageType.Heal>) {
     this._log += `${stringifyState(
       this.caller,
     )} change damage type from [damage:${

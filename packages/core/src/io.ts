@@ -15,23 +15,32 @@
 
 import {
   Action,
-  CardData,
-  CharacterData,
-  EntityData,
+  PbCardState,
+  PbCharacterState,
+  PbEntityState,
   ExposedMutation,
-  NotificationMessage,
-  PlayerData,
+  Notification,
+  PbPlayerState,
   RpcMethod,
   RpcRequest,
   RpcResponse,
-  SkillData,
-  StateData,
+  PbSkillInfo,
+  PbGameState,
+  PbPhaseType,
+  PbDiceType,
+  PbEquipmentType,
+  ReadonlyDiceRequirement,
+  PbDiceRequirement,
+  PbDiceRequirementType,
+  PbCardArea,
+  PbRemoveCardReason,
 } from "@gi-tcg/typings";
 import {
   CardState,
   CharacterState,
   EntityState,
   GameState,
+  PhaseType,
 } from "./base/state";
 import { Mutation } from "./base/mutation";
 import { ActionInfo, InitiativeSkillDefinition } from "./base/skill";
@@ -40,11 +49,8 @@ import { USAGE_PER_ROUND_VARIABLE_NAMES } from "./base/entity";
 import { costOfCard, initiativeSkillsOfPlayer } from "./utils";
 
 export interface PlayerIO {
-  notify: (notification: NotificationMessage) => void;
-  rpc: <M extends RpcMethod>(
-    method: M,
-    data: RpcRequest[M],
-  ) => Promise<RpcResponse[M]>;
+  notify: (notification: Notification) => void;
+  rpc: (request: RpcRequest) => Promise<RpcResponse>;
 }
 
 export type PauseHandler = (
@@ -54,6 +60,31 @@ export type PauseHandler = (
 ) => Promise<unknown>;
 
 export type IoErrorHandler = (e: GiTcgIoError) => void;
+
+function exposePhaseType(phase: PhaseType): PbPhaseType {
+  switch (phase) {
+    case "initActives":
+      return PbPhaseType.PHASE_INIT_ACTIVES;
+    case "initHands":
+      return PbPhaseType.PHASE_INIT_HANDS;
+    case "roll":
+      return PbPhaseType.PHASE_ROLL;
+    case "action":
+      return PbPhaseType.PHASE_ACTION;
+    case "end":
+      return PbPhaseType.PHASE_END;
+    case "gameEnd":
+      return PbPhaseType.PHASE_GAME_END;
+  }
+}
+function exposeCardWhere(where: "hands" | "pile"): PbCardArea {
+  switch (where) {
+    case "hands":
+      return PbCardArea.CARD_AREA_HAND;
+    case "pile":
+      return PbCardArea.CARD_AREA_PILE;
+  }
+}
 
 export function exposeMutation(
   who: 0 | 1,
@@ -65,103 +96,162 @@ export function exposeMutation(
     case "pushRoundSkillLog":
     case "clearRoundSkillLog":
     case "clearRemovedEntities":
+    case "setPlayerFlag":
     case "switchActive": // We will manually handle this
       return null;
     case "changePhase":
-      return m;
-    case "stepRound":
-      return m;
-    case "switchTurn":
-      return m;
-    case "setWinner":
-      return m;
-    case "transferCard": {
+      const newPhase = exposePhaseType(m.newPhase);
       return {
-        type: "transferCard",
-        who: m.who,
-        from: m.from,
-        to: m.to,
-        id: m.value.id,
-        definitionId: m.who === who ? m.value.definition.id : 0,
+        changePhase: { newPhase },
+      };
+    case "stepRound":
+      return { stepRound: m };
+    case "switchTurn":
+      return { switchTurn: m };
+    case "setWinner":
+      return { setWinner: m };
+    case "transferCard": {
+      const from = exposeCardWhere(m.from);
+      let transferToOpp = false;
+      let to: PbCardArea;
+      switch (m.to) {
+        case "hands": {
+          to = PbCardArea.CARD_AREA_HAND;
+          break;
+        }
+        case "pile": {
+          to = PbCardArea.CARD_AREA_PILE;
+          break;
+        }
+        case "oppHands": {
+          to = PbCardArea.CARD_AREA_HAND;
+          transferToOpp = true;
+          break;
+        }
+        case "oppPile": {
+          to = PbCardArea.CARD_AREA_PILE;
+          transferToOpp = true;
+          break;
+        }
+      }
+      return {
+        transferCard: {
+          who: m.who,
+          from,
+          to,
+          transferToOpp,
+          cardId: m.value.id,
+          cardDefinitionId: m.who === who ? m.value.definition.id : 0,
+        },
       };
     }
     case "removeCard": {
       const hide =
         m.who !== who && ["overflow", "elementalTuning"].includes(m.reason);
+      const from = exposeCardWhere(m.where);
+      let reason: PbRemoveCardReason;
+      switch (m.reason) {
+        case "play": {
+          reason = PbRemoveCardReason.REMOVE_CARD_REASON_PLAY;
+          break;
+        }
+        case "elementalTuning": {
+          reason = PbRemoveCardReason.REMOVE_CARD_REASON_ELEMENTAL_TUNING;
+          break;
+        }
+        case "overflow": {
+          reason = PbRemoveCardReason.REMOVE_CARD_REASON_HANDS_OVERFLOW;
+          break;
+        }
+        case "disposed": {
+          reason = PbRemoveCardReason.REMOVE_CARD_REASON_DISPOSED;
+          break;
+        }
+        case "disabled": {
+          reason = PbRemoveCardReason.REMOVE_CARD_REASON_DISABLED;
+          break;
+        }
+        case "onDrawTriggered": {
+          reason = PbRemoveCardReason.REMOVE_CARD_REASON_ON_DRAW_TRIGGERED;
+          break;
+        }
+      }
       return {
-        type: "removeCard",
-        who: m.who,
-        where: m.where,
-        reason: m.reason,
-        id: m.oldState.id,
-        definitionId: hide ? 0 : m.oldState.definition.id,
+        removeCard: {
+          who: m.who,
+          from,
+          reason,
+          cardId: m.oldState.id,
+          cardDefinitionId: hide ? 0 : m.oldState.definition.id,
+        },
       };
     }
     case "createCard": {
+      const to = exposeCardWhere(m.target);
       return {
-        type: "createCard",
-        who: m.who,
-        id: m.target === "hands" ? m.value.id : 0,
-        definitionId: m.who === who ? m.value.definition.id : 0,
-        target: m.target,
+        createCard: {
+          who: m.who,
+          cardId: m.target === "hands" ? m.value.id : 0,
+          cardDefinitionId: m.who === who ? m.value.definition.id : 0,
+          to,
+        },
       };
     }
     case "createCharacter": {
       return {
-        type: "createCharacter",
-        who: m.who,
-        id: m.value.id,
-        definitionId: m.value.definition.id,
+        createCharacter: {
+          who: m.who,
+          characterId: m.value.id,
+          characterDefinitionId: m.value.definition.id,
+        },
       };
     }
     case "createEntity": {
       return {
-        type: "createEntity",
-        id: m.value.id,
-        definitionId: m.value.definition.id,
+        createEntity: {
+          who: m.where.who,
+          entityId: m.value.id,
+          entityDefinitionId: m.value.definition.id,
+        },
       };
     }
     case "removeEntity": {
       return {
-        type: "removeEntity",
-        id: m.oldState.id,
-        definitionId: m.oldState.definition.id,
+        removeEntity: {
+          entityId: m.oldState.id,
+          entityDefinitionId: m.oldState.definition.id,
+        },
       };
     }
     case "modifyEntityVar": {
       return {
-        type: "modifyEntityVar",
-        id: m.state.id,
-        definitionId: m.state.definition.id,
-        varName: m.varName,
-        value: m.value,
+        modifyEntityVar: {
+          entityId: m.state.id,
+          entityDefinitionId: m.state.definition.id,
+          variableName: m.varName,
+          variableValue: m.value,
+        },
       };
     }
     case "transformDefinition": {
       return {
-        type: "transformDefinition",
-        id: m.state.id,
-        newDefinitionId: m.newDefinition.id,
+        transformDefinition: {
+          entityId: m.state.id,
+          newEntityDefinitionId: m.newDefinition.id,
+        },
       };
     }
     case "resetDice": {
+      const dice =
+        m.who === who
+          ? ([...m.value] as PbDiceType[])
+          : Array.from(m.value, () => PbDiceType.DICE_UNSPECIFIED);
       return {
-        type: "resetDice",
-        who: m.who,
-        value: m.who === who ? m.value : [...m.value].fill(0),
-      };
-    }
-    case "setPlayerFlag": {
-      if (["declaredEnd", "legendUsed"].includes(m.flagName)) {
-        return {
-          type: "setPlayerFlag",
+        resetDice: {
           who: m.who,
-          flagName: m.flagName as any,
-          value: m.value,
-        };
-      } else {
-        return null;
-      }
+          dice,
+        },
+      };
     }
     default: {
       const _check: never = m;
@@ -170,20 +260,18 @@ export function exposeMutation(
   }
 }
 
-export function exposeEntity(state: GameState, e: EntityState): EntityData {
-  let equipment: EntityData["equipment"];
+export function exposeEntity(state: GameState, e: EntityState): PbEntityState {
+  let equipment: PbEquipmentType | undefined = void 0;
   if (e.definition.type === "equipment") {
     if (e.definition.tags.includes("artifact")) {
-      equipment = "artifact";
+      equipment = PbEquipmentType.EQUIPMENT_ARTIFACT;
     } else if (e.definition.tags.includes("weapon")) {
-      equipment = "weapon";
+      equipment = PbEquipmentType.EQUIPMENT_WEAPON;
     } else if (e.definition.tags.includes("technique")) {
-      equipment = "technique";
+      equipment = PbEquipmentType.EQUIPMENT_TECHNIQUE;
     } else {
-      equipment = true;
+      equipment = PbEquipmentType.EQUIPMENT_OTHER;
     }
-  } else {
-    equipment = false;
   }
   const descriptionDictionary = Object.fromEntries(
     Object.entries(e.definition.descriptionDictionary).map(([k, v]) => [
@@ -191,25 +279,38 @@ export function exposeEntity(state: GameState, e: EntityState): EntityData {
       v(state, e.id),
     ]),
   );
-  const usagePerRoundHighlight = USAGE_PER_ROUND_VARIABLE_NAMES.some(
+  const hasUsagePerRound = USAGE_PER_ROUND_VARIABLE_NAMES.some(
     (name) => e.variables[name],
   );
   return {
     id: e.id,
     definitionId: e.id === 0 ? 0 : e.definition.id,
-    variable: e.definition.visibleVarName
-      ? e.variables[e.definition.visibleVarName] ?? null
-      : null,
-    variableName: e.definition.visibleVarName,
-    usagePerRoundHighlight,
+    variableValue: e.definition.visibleVarName
+      ? e.variables[e.definition.visibleVarName] ?? void 0
+      : void 0,
+    variableName: e.definition.visibleVarName ?? void 0,
+    hasUsagePerRound,
     hintIcon: e.variables.hintIcon ?? null,
-    hintText: e.definition.hintText,
+    hintText: e.definition.hintText ?? void 0,
     equipment,
     descriptionDictionary,
   };
 }
 
-function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
+function exposeDiceRequirement(
+  req: ReadonlyDiceRequirement,
+): PbDiceRequirement[] {
+  return req
+    .entries()
+    .map(([k, v]) => ({ type: k as PbDiceRequirementType, count: v }))
+    .toArray();
+}
+
+function exposeCard(
+  state: GameState,
+  c: CardState,
+  hide: boolean,
+): PbCardState {
   if (c.id === 0) {
     hide = true;
   }
@@ -221,21 +322,33 @@ function exposeCard(state: GameState, c: CardState, hide: boolean): CardData {
           v(state, c.id),
         ]),
       );
+  const definitionCost: PbDiceRequirement[] = [];
+  if (!hide) {
+    definitionCost.push(...exposeDiceRequirement(costOfCard(c.definition)));
+    if (c.definition.tags.includes("legend")) {
+      definitionCost.push({
+        type: PbDiceRequirementType.DICE_REQ_LEGEND,
+        count: 1,
+      });
+    }
+  }
   return {
     id: c.id,
     descriptionDictionary,
-    isLegend: !hide && c.definition.tags.includes("legend"),
     definitionId: hide ? 0 : c.definition.id,
-    definitionCost: hide ? [] : [...costOfCard(c.definition)],
+    definitionCost,
   };
 }
 
-function exposeCharacter(state: GameState, ch: CharacterState): CharacterData {
+function exposeCharacter(
+  state: GameState,
+  ch: CharacterState,
+): PbCharacterState {
   return {
     id: ch.id,
     definitionId: ch.definition.id,
     defeated: !ch.variables.alive,
-    entities: ch.entities.map((e) => exposeEntity(state, e)),
+    entity: ch.entities.map((e) => exposeEntity(state, e)),
     health: ch.variables.health,
     energy: ch.variables.energy,
     maxHealth: ch.variables.maxHealth,
@@ -244,35 +357,41 @@ function exposeCharacter(state: GameState, ch: CharacterState): CharacterData {
   };
 }
 
-function exposeInitiativeSkill(skill: InitiativeSkillDefinition): SkillData {
+function exposeInitiativeSkill(skill: InitiativeSkillDefinition): PbSkillInfo {
   return {
     definitionId: skill.id,
-    definitionCost: [...skill.initiativeSkillConfig.requiredCost],
+    definitionCost: exposeDiceRequirement(
+      skill.initiativeSkillConfig.requiredCost,
+    ),
   };
 }
 
-export function exposeState(who: 0 | 1, state: GameState): StateData {
+export function exposeState(who: 0 | 1, state: GameState): PbGameState {
   return {
-    phase: state.phase,
+    phase: exposePhaseType(state.phase),
     currentTurn: state.currentTurn,
     roundNumber: state.roundNumber,
-    winner: state.winner,
-    players: state.players.map<PlayerData>((p, i) => {
+    winner: state.winner ?? void 0,
+    player: state.players.map<PbPlayerState>((p, i) => {
       const skills = initiativeSkillsOfPlayer(p).map(({ skill }) => skill);
+      const dice =
+        i === who
+          ? ([...p.dice] as PbDiceType[])
+          : p.dice.map(() => PbDiceType.DICE_UNSPECIFIED);
       return {
         activeCharacterId: p.activeCharacterId,
-        pile: p.pile.map((c) => exposeCard(state, c, true)),
-        hands: p.hands.map((c) => exposeCard(state, c, i !== who)),
-        characters: p.characters.map((ch) => exposeCharacter(state, ch)),
-        dice: i === who ? [...p.dice] : [...p.dice].fill(0),
-        combatStatuses: p.combatStatuses.map((e) => exposeEntity(state, e)),
-        supports: p.supports.map((e) => exposeEntity(state, e)),
-        summons: p.summons.map((e) => exposeEntity(state, e)),
-        skills: i === who ? skills.map(exposeInitiativeSkill) : [],
+        pileCard: p.pile.map((c) => exposeCard(state, c, true)),
+        handCard: p.hands.map((c) => exposeCard(state, c, i !== who)),
+        character: p.characters.map((ch) => exposeCharacter(state, ch)),
+        dice,
+        combatStatus: p.combatStatuses.map((e) => exposeEntity(state, e)),
+        support: p.supports.map((e) => exposeEntity(state, e)),
+        summon: p.summons.map((e) => exposeEntity(state, e)),
+        initiativeSkill: i === who ? skills.map(exposeInitiativeSkill) : [],
         declaredEnd: p.declaredEnd,
         legendUsed: p.legendUsed,
       };
-    }) as [PlayerData, PlayerData],
+    }),
   };
 }
 
@@ -280,42 +399,48 @@ export function exposeAction(action: ActionInfo): Action {
   switch (action.type) {
     case "useSkill": {
       return {
-        type: "useSkill",
-        skill: action.skill.definition.id,
-        cost: action.cost,
-        targets: action.targets.map((t) => t.id),
-        preview: action.preview ?? [],
+        useSkill: {
+          skillId: action.skill.definition.id,
+          requiredCost: exposeDiceRequirement(action.cost),
+          targetIds: action.targets.map((t) => t.id),
+          preview: action.preview ?? [],
+        },
       };
     }
     case "playCard": {
       return {
-        type: "playCard",
-        card: action.skill.caller.id,
-        cost: action.cost,
-        targets: action.targets.map((t) => t.id),
-        preview: action.preview ?? [],
+        playCard: {
+          cardId: action.skill.caller.id,
+          requiredCost: exposeDiceRequirement(action.cost),
+          targetIds: action.targets.map((t) => t.id),
+          preview: action.preview ?? [],
+        },
       };
     }
     case "switchActive": {
       return {
-        type: "switchActive",
-        active: action.to.id,
-        cost: action.cost,
-        preview: action.preview ?? [],
+        switchActive: {
+          characterId: action.to.id,
+          requiredCost: exposeDiceRequirement(action.cost),
+          preview: action.preview ?? [],
+        },
       };
     }
     case "elementalTuning": {
       return {
-        type: "elementalTuning",
-        discardedCard: action.card.id,
-        target: action.result,
-        preview: [],
+        elementalTuning: {
+          removedCardId: action.card.id,
+          targetDice: action.result as PbDiceType,
+          requiredCost: exposeDiceRequirement(action.cost),
+          preview: [],
+        },
       };
     }
     case "declareEnd": {
       return {
-        type: "declareEnd",
-        preview: [],
+        declareEnd: {
+          preview: [],
+        },
       };
     }
   }

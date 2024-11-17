@@ -14,7 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import type { Draft } from "immer";
-import { DiceType } from "@gi-tcg/typings";
+import {
+  DiceType,
+  DiceRequirement,
+  ReadonlyDiceRequirement,
+} from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import {
   AnyState,
@@ -360,12 +364,32 @@ export function playSkillOfCard(
   return skillDefinition;
 }
 
-export function costOfCard(card: CardDefinition): readonly DiceType[] {
+export function normalizeCost(req: DiceRequirement): DiceRequirement {
+  if (req.size === 0) {
+    req.set(DiceType.Omni, 0);
+  }
+  return req;
+}
+
+export function costOfCard(card: CardDefinition): ReadonlyDiceRequirement {
   return playSkillOfCard(card).initiativeSkillConfig.requiredCost;
 }
 
+export function costSize(req: ReadonlyDiceRequirement): number {
+  return req.entries().reduce((acc, [dice, count]) => acc + count, 0);
+}
+
+export function diceCostSize(req: ReadonlyDiceRequirement): number {
+  return req
+    .entries()
+    .reduce(
+      (acc, [dice, count]) => acc + (dice !== DiceType.Energy ? count : 0),
+      0,
+    );
+}
+
 export function diceCostOfCard(card: CardDefinition): number {
-  return costOfCard(card).filter((c) => c !== DiceType.Energy).length;
+  return playSkillOfCard(card).initiativeSkillConfig.computed$diceCostSize;
 }
 
 export function elementOfCharacter(ch: CharacterDefinition): DiceType {

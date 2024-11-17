@@ -113,12 +113,12 @@ export const AsTheSunlitSkysSingingSalute = skill(16083)
 export const MutualAssistanceNetwork = skill(16084)
   .type("passive")
   .on("damaged", (c, e) => 
-    [
+    ([
       Reaction.CrystallizeCryo, 
       Reaction.CrystallizeElectro, 
       Reaction.CrystallizeHydro, 
       Reaction.CrystallizePyro
-    ].includes(e.getReaction()!) && 
+    ] as Reaction[]).includes(e.getReaction()!) && 
     !c.of(e.target).isMine())
   .listenToAll()
   .createPileCards(CrystalShrapnel, 3, "random")

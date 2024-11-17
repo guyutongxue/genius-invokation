@@ -92,8 +92,8 @@ export type ExTag<TypeT extends ExEntityType> = TypeT extends "character"
       : never;
 
 export type AppliableDamageType =
-  | DamageType.Cryo
-  | DamageType.Hydro
-  | DamageType.Pyro
-  | DamageType.Electro
-  | DamageType.Dendro;
+  | typeof DamageType.Cryo
+  | typeof DamageType.Hydro
+  | typeof DamageType.Pyro
+  | typeof DamageType.Electro
+  | typeof DamageType.Dendro;

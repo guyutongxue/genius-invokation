@@ -17,6 +17,7 @@ import {
   DamageType,
   DiceType,
   ExposedMutation,
+  PbDamageType,
   Reaction,
 } from "@gi-tcg/typings";
 
@@ -451,13 +452,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
     this.mutator.notify({
       mutations: [
         {
-          type: "switchActive",
-          who: playerWho,
-          id: switchToTarget.id,
-          definitionId: switchToTarget.definition.id,
-          via: this.fromReaction
-            ? Reaction.Overloaded
-            : this.skillInfo.definition.id ?? null,
+          switchActive: {
+            who: playerWho,
+            characterId: switchToTarget.id,
+            characterDefinitionId: switchToTarget.definition.id,
+            viaSkillId: this.fromReaction
+              ? Reaction.Overloaded
+              : this.skillInfo.definition.id ?? null,
+          },
         },
       ],
     });
@@ -546,11 +548,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
     this.mutator.notify({
       mutations: [
         {
-          type: "damage",
           damage: {
             type: healInfo.type,
+            sourceId: this.skillInfo.caller.id,
+            sourceDefinitionId: this.skillInfo.caller.definition.id,
             value: healInfo.value,
-            target: targetState.id,
+            targetId: targetState.id,
+            targetDefinitionId: targetState.definition.id,
           },
         },
       ],
@@ -647,11 +651,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
         this.mutator.notify({
           mutations: [
             {
-              type: "damage",
               damage: {
                 type: damageInfo.type,
+                sourceId: damageInfo.source.id,
+                sourceDefinitionId: damageInfo.source.definition.id,
                 value: damageInfo.value,
-                target: damageInfo.target.id,
+                targetId: damageInfo.target.id,
+                targetDefinitionId: damageInfo.target.definition.id,
               },
             },
           ],
@@ -717,9 +723,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
       this.mutator.notify({
         mutations: [
           {
-            type: "elementalReaction",
-            on: target.state.id,
-            reactionType: reaction,
+            elementalReaction: {
+              type: reaction,
+              characterId: target.state.id,
+              characterDefinitionId: target.state.definition.id,
+            },
           },
         ],
       });

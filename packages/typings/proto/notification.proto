@@ -63,7 +63,7 @@ message CharacterState {
 message EntityState {
   sint32 id = 1;
   int32 definition_id = 2;
-  map<string, int32> description_dict = 4;
+  map<string, string> description_dictionary = 4;
   
   optional string variable_name = 51;
   optional int32 variable_value = 52;
@@ -83,11 +83,11 @@ enum EquipmentType {
 message CardState {
   sint32 id = 1;
   int32 definition_id = 2;
-  map<string, int32> description_dict = 4;
-  DiceRequirement definition_cost = 5;
+  map<string, string> description_dictionary = 4;
+  repeated DiceRequirement definition_cost = 5;
 }
 
 message SkillInfo {
   int32 definition_id = 2;
-  DiceRequirement definition_cost = 5;
+  repeated DiceRequirement definition_cost = 5;
 }

@@ -241,7 +241,7 @@ export const GoldenHouse = card(321013)
   .support("place")
   .on("deductOmniDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
-    e.originalDiceCost().length >= 3)
+    e.originalDiceCostSize() >= 3)
   .usagePerRound(1)
   .usage(2)
   .deductOmniCost(1)
@@ -279,7 +279,7 @@ export const StormterrorsLair = card(321015)
   .drawCards(1, { withTag: "talent" })
   .on("deductOmniDice", (c, e) => {
     return e.hasCardTag("talent") ||
-      (e.isUseSkill() && e.originalDiceCost().length >= 4);
+      (e.isUseSkill() && e.originalDiceCostSize() >= 4);
   })
   .usage(3)
   .usagePerRound(1)
