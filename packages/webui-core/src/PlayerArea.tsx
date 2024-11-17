@@ -13,7 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { NewEntityPreview, PlayerData } from "@gi-tcg/typings";
+import type {
+  PbCreateEntityArea,
+  CreateEntityEM,
+  PbPlayerState,
+  PbEntityState,
+} from "@gi-tcg/typings";
 import { For, Match, Switch } from "solid-js";
 
 import { Summon, Support, Status } from "./Entity";
@@ -22,7 +27,7 @@ import { Card } from "./Card";
 import { useEventContext } from "./Chessboard";
 
 export interface PlayerAreaProps {
-  data: PlayerData;
+  data: PbPlayerState;
   who: 0 | 1;
   opp: boolean;
 }
@@ -32,27 +37,39 @@ export function PlayerArea(props: PlayerAreaProps) {
   const newSummons = () =>
     previewData()
       .filter(
-        (p): p is NewEntityPreview =>
-          p.type === "newEntity" &&
-          p.who === props.who &&
-          p.where === "summons",
+        (p) =>
+          p.createEntity?.who === props.who &&
+          p.createEntity?.where === 3 /* SUMMON */,
       )
-      .map((p) => p.state);
+      .map(
+        (p): PbEntityState => ({
+          id: p.createEntity!.entityId,
+          definitionId: p.createEntity!.entityDefinitionId,
+          descriptionDictionary: {},
+          hasUsagePerRound: false,
+        }),
+      );
   const newSupports = () =>
     previewData()
       .filter(
-        (p): p is NewEntityPreview =>
-          p.type === "newEntity" &&
-          p.who === props.who &&
-          p.where === "supports",
+        (p) =>
+          p.createEntity?.who === props.who &&
+          p.createEntity?.where === 4 /* SUPPORT */,
       )
-      .map((p) => p.state);
+      .map(
+        (p): PbEntityState => ({
+          id: p.createEntity!.entityId,
+          definitionId: p.createEntity!.entityDefinitionId,
+          descriptionDictionary: {},
+          hasUsagePerRound: false,
+        }),
+      );
   return (
     <div class="w-full flex flex-row">
       <div class="bg-yellow-800 text-white flex flex-col justify-center items-center w-10 flex-shrink-0 gap-2">
         <div class="text-center">
           牌堆 <br />
-          {props.data.pile.length}
+          {props.data.pileCard.length}
         </div>
         <div
           class="h-3 w-3 rotate-45 bg-gradient-to-r from-purple-500 to-blue-500"
@@ -69,7 +86,7 @@ export function PlayerArea(props: PlayerAreaProps) {
       >
         <div class="h-52 flex flex-row justify-center gap-6">
           <div class="min-w-40 grid grid-cols-2 grid-rows-2 gap-2 justify-items-center items-center">
-            <For each={props.data.supports}>
+            <For each={props.data.support}>
               {(support) => <Support data={support} />}
             </For>
             <For each={newSupports()}>
@@ -77,14 +94,14 @@ export function PlayerArea(props: PlayerAreaProps) {
             </For>
           </div>
           <div class="flex flex-row gap-6 items-end">
-            <For each={props.data.characters}>
+            <For each={props.data.character}>
               {(ch) => (
                 <div class="flex flex-col">
                   <CharacterArea data={ch} />
                   <Switch>
                     <Match when={ch.id === props.data.activeCharacterId}>
                       <div class="h-6 flex flex-row">
-                        <For each={props.data.combatStatuses}>
+                        <For each={props.data.combatStatus}>
                           {(st) => <Status data={st} />}
                         </For>
                       </div>
@@ -98,7 +115,7 @@ export function PlayerArea(props: PlayerAreaProps) {
             </For>
           </div>
           <div class="min-w-40 grid grid-cols-2 grid-rows-2 gap-2 justify-items-center items-center">
-            <For each={props.data.summons}>
+            <For each={props.data.summon}>
               {(summon) => <Summon data={summon} />}
             </For>
             <For each={newSummons()}>
@@ -111,7 +128,7 @@ export function PlayerArea(props: PlayerAreaProps) {
             props.opp ? "justify-end" : "justify-start"
           }`}
         >
-          <For each={props.data.hands}>{(card) => <Card data={card} />}</For>
+          <For each={props.data.handCard}>{(card) => <Card data={card} />}</For>
         </div>
       </div>
     </div>

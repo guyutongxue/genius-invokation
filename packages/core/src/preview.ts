@@ -14,7 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { produce } from "immer";
-import { applyMutation, Mutation } from "./base/mutation";
+import {
+  applyMutation,
+  ModifyEntityVarM,
+  Mutation,
+  SwitchActiveM,
+} from "./base/mutation";
 import {
   ActionEventArg,
   ActionInfo,
@@ -31,7 +36,7 @@ import { GeneralSkillArg, SkillExecutor } from "./skill_executor";
 import { getActiveCharacterIndex, getEntityArea } from "./utils";
 import { GiTcgPreviewAbortedError, StateMutator } from "./mutator";
 import { ExposedMutation, PreviewData } from "@gi-tcg/typings";
-import { exposeEntity, exposeState } from "./io";
+import { exposeEntity, exposeMutation, exposeState } from "./io";
 
 export type ActionInfoWithModification = ActionInfo & {
   eventArg: InstanceType<typeof GenericModifyActionEventArg>;
@@ -94,29 +99,20 @@ class PreviewContext {
   getPreviewData(): PreviewData[] {
     const result: PreviewData[] = [];
     for (const em of this.exposedMutations) {
-      switch (em.type) {
-        case "elementalReaction": {
-          result.push({
-            type: "reaction",
-            character: em.on,
-            value: em.reactionType,
-          });
-          break;
-        }
+      if (em.elementalReaction) {
+        result.push(em);
       }
     }
-    const newHealths = new Map<number, number>();
-    const newEnergies = new Map<number, number>();
-    const newAura = new Map<number, number>();
-    const newAlive = new Map<number, number>();
-    const newVisibleVar = new Map<number, number>();
+    const newActives = new Map<0 | 1, SwitchActiveM>();
+    const newHealths = new Map<number, ModifyEntityVarM>();
+    const newEnergies = new Map<number, ModifyEntityVarM>();
+    const newAura = new Map<number, ModifyEntityVarM>();
+    const newAlive = new Map<number, ModifyEntityVarM>();
+    const newVisibleVar = new Map<number, ModifyEntityVarM>();
     for (const m of this.stateMutations) {
       switch (m.type) {
         case "switchActive": {
-          result.push({
-            type: "newActive",
-            character: m.value.id,
-          });
+          newActives.set(m.who, m);
           break;
         }
         case "modifyEntityVar": {
@@ -129,11 +125,11 @@ class PreviewContext {
               alive: newAlive,
             };
             if (m.varName in maps) {
-              maps[m.varName as keyof typeof maps].set(m.state.id, m.value);
+              maps[m.varName as keyof typeof maps].set(m.state.id, m);
             }
           } else {
             if (m.varName === m.state.definition.visibleVarName) {
-              newVisibleVar.set(m.state.id, m.value);
+              newVisibleVar.set(m.state.id, m);
             }
           }
           break;
@@ -145,59 +141,33 @@ class PreviewContext {
           } else {
             break;
           }
-          result.push({
-            type: "newEntity",
-            who: m.where.who,
-            where,
-            state: exposeEntity(this.state, m.value),
-          });
+          const em = exposeMutation(0, m);
+          if (em) {
+            result.push(em);
+          }
           break;
         }
         case "removeEntity": {
-          result.push({
-            type: "disposedEntity",
-            entity: m.oldState.id,
-          });
+          const em = exposeMutation(0, m);
+          if (em) {
+            result.push(em);
+          }
           break;
         }
       }
     }
-    for (const [id, value] of newHealths) {
-      result.push({
-        type: "newHealth",
-        character: id,
-        value,
-      });
-    }
-    for (const [id, value] of newEnergies) {
-      result.push({
-        type: "newEnergy",
-        character: id,
-        value,
-      });
-    }
-    for (const [id, value] of newAura) {
-      result.push({
-        type: "newAura",
-        character: id,
-        value,
-      });
-    }
-    for (const [id, value] of newAlive) {
-      if (value === 0) {
-        result.push({
-          type: "defeated",
-          character: id,
-        });
-      }
-    }
-    for (const [id, value] of newVisibleVar) {
-      result.push({
-        type: "entityVarDiff",
-        entity: id,
-        newValue: value,
-      });
-    }
+    result.push(
+      ...[
+        ...newActives.values(),
+        ...newHealths.values(),
+        ...newEnergies.values(),
+        ...newAura.values(),
+        ...newAlive.values(),
+        ...newVisibleVar.values(),
+      ]
+        .map((m) => exposeMutation(0, m))
+        .filter((em) => em !== null),
+    );
     return result;
   }
 }

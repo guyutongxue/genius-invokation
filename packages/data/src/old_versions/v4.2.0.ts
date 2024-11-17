@@ -29,7 +29,7 @@ const JoyousCelebration = card(330003)
   .until("v4.2.0")
   .costSame(1)
   .legend()
-  .filter((c) => [DiceType.Cryo, DiceType.Hydro, DiceType.Pyro, DiceType.Electro, DiceType.Dendro].includes(c.$("my active")!.element()))
+  .filter((c) => ([DiceType.Cryo, DiceType.Hydro, DiceType.Pyro, DiceType.Electro, DiceType.Dendro] as DiceType[]).includes(c.$("my active")!.element()))
   .do((c) => {
     const element = c.$("my active")!.element() as 1 | 2 | 3 | 4 | 7;
     // 先挂后台再挂前台（避免前台被超载走导致结算错误）
@@ -194,10 +194,10 @@ const Timaeus = card(322003)
   .variable("material", 2)
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductAllDiceCard", (c, e) => e.hasCardTag("artifact") && c.getVariable("material") >= e.cost.length)
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("artifact") && c.getVariable("material") >= e.diceCostSize())
   .usagePerRound(1)
   .do((c, e) => {
-    c.addVariable("material", -e.cost.length);
+    c.addVariable("material", -e.diceCostSize());
     e.deductAllCost();
   })
   .done();
@@ -218,10 +218,10 @@ const Wagner = card(322004)
   .variable("material", 2)
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductAllDiceCard", (c, e) => e.hasCardTag("weapon") && c.getVariable("material") >= e.cost.length)
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("weapon") && c.getVariable("material") >= e.diceCostSize())
   .usagePerRound(1)
   .do((c, e) => {
-    c.addVariable("material", -e.cost.length);
+    c.addVariable("material", -e.diceCostSize());
     e.deductAllCost();
   })
   .done();

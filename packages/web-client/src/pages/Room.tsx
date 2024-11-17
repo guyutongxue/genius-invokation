@@ -24,7 +24,7 @@ import { PlayerIOWithCancellation, createPlayer } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
 import type { Deck } from "@gi-tcg/utils";
 import EventSourceStream from "@server-sent-stream/web";
-import { RpcMethod } from "@gi-tcg/typings";
+import { RpcMethod, RpcRequest } from "@gi-tcg/typings";
 import { BACKEND_BASE_URL } from "../config";
 
 interface InitializedPayload {
@@ -39,8 +39,7 @@ interface InitializedPayload {
 interface ActionRequestPayload {
   id: number;
   timeout: number;
-  method: RpcMethod;
-  params: any;
+  request: RpcRequest;
 }
 
 const names: Record<number, string> = {};
@@ -105,7 +104,7 @@ export function Room() {
   const onActionRequested = async (payload: ActionRequestPayload) => {
     playerIo()?.cancelRpc();
     await new Promise((r) => setTimeout(r, 100)); // wait for UI notifications?
-    const response = await playerIo()?.rpc(payload.method, payload.params);
+    const response = await playerIo()?.rpc(payload.request);
     try {
       const { data } = await axios.post(
         `rooms/${id}/players/${userId}/actionResponse`,

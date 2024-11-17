@@ -1,0 +1,210 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+syntax = "proto3";
+
+import "enums.proto";
+
+message ExposedMutation {
+  oneof mutation {
+    ChangePhaseEM change_phase = 1;
+    StepRoundEM step_round = 2;
+    SwitchTurnEM switch_turn = 3;
+    SetWinnerEM set_winner = 4;
+    TransferCardEM transfer_card = 5;
+    SwitchActiveEM switch_active = 6;
+    RemoveCardEM remove_card = 7;
+    CreateCardEM create_card = 8;
+    CreateCharacterEM create_character = 9;
+    CreateEntityEM create_entity = 10;
+    RemoveEntityEM remove_entity = 11;
+    ModifyEntityVarEM modify_entity_var = 12;
+    TransformDefinitionEM transform_definition = 13;
+    ResetDiceEM reset_dice = 14;
+    DamageEM damage = 15;
+    ElementalReactionEM elemental_reaction = 16;
+    ActionDoneEM action_done = 17;
+    TriggeredEM triggered = 18;
+    PlayerStatusChangeEM player_status_change = 19;
+  }
+}
+
+enum PhaseType {
+  PHASE_INIT_HANDS = 0;
+  PHASE_INIT_ACTIVES = 1;
+  PHASE_ROLL = 2;
+  PHASE_ACTION = 3;
+  PHASE_END = 4;
+  PHASE_GAME_END = 5;
+}
+
+message ChangePhaseEM {
+  PhaseType new_phase = 1;
+}
+
+message StepRoundEM { }
+
+message SwitchTurnEM { }
+
+message SetWinnerEM {
+  optional int32 winner = 1;
+}
+
+enum CardArea {
+  CARD_AREA_HAND = 0;
+  CARD_AREA_PILE = 1;
+}
+
+message TransferCardEM {
+  int32 who = 1;
+  sint32 card_id = 2;
+  int32 card_definition_id = 3;
+  CardArea from = 4;
+  CardArea to = 5;
+  bool transfer_to_opp = 6;
+}
+
+message SwitchActiveEM {
+  int32 who = 1;
+  sint32 character_id = 2;
+  int32 character_definition_id = 3;
+  optional int32 via_skill_id = 4;
+}
+
+enum RemoveCardReason {
+  REMOVE_CARD_REASON_UNSPECIFIED = 0;
+  REMOVE_CARD_REASON_PLAY = 1;
+  REMOVE_CARD_REASON_ELEMENTAL_TUNING = 2;
+  REMOVE_CARD_REASON_HANDS_OVERFLOW = 3;
+  REMOVE_CARD_REASON_DISPOSED = 4;
+  REMOVE_CARD_REASON_DISABLED = 5;
+  REMOVE_CARD_REASON_ON_DRAW_TRIGGERED = 6;
+}
+
+message RemoveCardEM {
+  int32 who = 1;
+  sint32 card_id = 2;
+  int32 card_definition_id = 3;
+  CardArea from = 4;
+  RemoveCardReason reason = 5;
+}
+
+message CreateCardEM {
+  int32 who = 1;
+  sint32 card_id = 2;
+  int32 card_definition_id = 3;
+  CardArea to = 4;
+}
+
+message CreateCharacterEM {
+  int32 who = 1;
+  sint32 character_id = 2;
+  int32 character_definition_id = 3;
+}
+
+enum CreateEntityArea {
+  ENTITY_AREA_UNSPECIFIED = 0;
+  ENTITY_AREA_CHARACTER = 1;
+  ENTITY_AREA_COMBAT_STATUS = 2;
+  ENTITY_AREA_SUMMON = 3;
+  ENTITY_AREA_SUPPORT = 4;
+}
+
+message CreateEntityEM {
+  int32 who = 1;
+  sint32 entity_id = 2;
+  int32 entity_definition_id = 3;
+  CreateEntityArea where = 4;
+}
+
+message RemoveEntityEM {
+  sint32 entity_id = 2;
+  int32 entity_definition_id = 3;
+}
+
+message ModifyEntityVarEM {
+  sint32 entity_id = 2;
+  int32 entity_definition_id = 3;
+  string variable_name = 4;
+  int32 variable_value = 5;
+}
+
+message TransformDefinitionEM {
+  sint32 entity_id = 2;
+  int32 new_entity_definition_id = 3;
+}
+
+message ResetDiceEM {
+  int32 who = 1;
+  repeated DiceType dice = 2;
+}
+
+message DamageEM {
+  DamageType type = 1;
+  int32 value = 2;
+  sint32 target_id = 3;
+  int32 target_definition_id = 4;
+  sint32 source_id = 5;
+  int32 source_definition_id = 6;
+}
+
+message ElementalReactionEM {
+  ReactionType type = 1;
+  sint32 character_id = 3;
+  int32 character_definition_id = 4;
+}
+
+enum ActionType {
+  ACTION_UNSPECIFIED = 0;
+  ACTION_USE_SKILL = 1;
+  ACTION_PLAY_CARD = 2;
+  ACTION_SWITCH_ACTIVE = 3;
+  ACTION_ELEMENTAL_TUNING = 4;
+  ACTION_DECLARE_END = 5;
+}
+
+// 玩家选择了某行动
+// 适用于：使用技能、打出手牌和宣布结束
+message ActionDoneEM {
+  int32 who = 1;
+  ActionType action_type = 2;
+  // If action_type == ACTION_PLAY_CARD or ACTION_USE_SKILL
+  optional sint32 character_or_card_id = 3;
+  // If action_type == ACTION_PLAY_CARD or ACTION_USE_SKILL
+  optional int32 skill_or_card_definition_id = 4;
+  // If action_type == ACTION_USE_SKILL
+  optional int32 character_definition_id = 5;
+}
+
+// 某实体的被动技能被触发
+message TriggeredEM {
+  sint32 entity_id = 1;
+  int32 entity_definition_id = 2;
+}
+
+// 玩家的当前 IO 状态 (WIP)
+enum PlayerStatus {
+  PLAYER_STATUS_UNSPECIFIED = 0;
+  PLAYER_STATUS_CHOOSING_ACTIVE = 1;
+  PLAYER_STATUS_SWITCHING_HANDS = 2;
+  PLAYER_STATUS_REROLLING = 3;
+  PLAYER_STATUS_ACTING = 4;
+  PLAYER_STATUS_SELECTING_CARDS = 5;
+}
+
+message PlayerStatusChangeEM {
+  int32 who = 1;
+  PlayerStatus status = 2;
+}

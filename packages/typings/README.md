@@ -4,6 +4,4 @@
 >
 > This is an ESM-only package.
 
-Exports common enums and frontend-backend communicate typings.
-
-`@gi-tcg/typings/verify` exports verify functions for `rpc` and `notification`.
+Exports common enums, frontend-backend communicate typings and their protobuf encoding and decoding facilities.

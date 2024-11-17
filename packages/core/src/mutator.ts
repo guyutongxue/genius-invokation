@@ -66,13 +66,10 @@ export interface MutatorConfig {
 
   readonly howToSwitchHands?: (who: 0 | 1) => Promise<number[]>;
   readonly howToReroll?: (who: 0 | 1) => Promise<number[]>;
-  readonly howToSelectCard?: (
-    who: 0 | 1,
-    cards: readonly number[],
-  ) => Promise<number>;
+  readonly howToSelectCard?: (who: 0 | 1, cards: number[]) => Promise<number>;
   readonly howToChooseActive?: (
     who: 0 | 1,
-    candidates: readonly number[],
+    candidates: number[],
   ) => Promise<number>;
 }
 

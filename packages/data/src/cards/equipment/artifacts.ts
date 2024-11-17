@@ -760,7 +760,7 @@ export const GoldenTroupesReward = card(312025)
   .on("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .do((c, e) => {
     const reward = c.getVariable("reward");
-    const currentCost = e.cost.filter((dice) => dice !== DiceType.Energy).length;
+    const currentCost = e.costSize();
     const deduced = Math.min(reward, currentCost);
     e.deductOmniCost(deduced);
     c.addVariable("reward", -deduced);
@@ -844,7 +844,7 @@ export const GoldenTroupe = card(312026)
   .on("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .do((c, e) => {
     const reward = c.getVariable("reward");
-    const currentCost = e.cost.filter((dice) => dice !== DiceType.Energy).length;
+    const currentCost = e.costSize();
     const deduced = Math.min(reward, currentCost);
     e.deductOmniCost(deduced);
     c.addVariable("reward", -deduced);

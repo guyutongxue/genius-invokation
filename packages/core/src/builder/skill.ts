@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType } from "@gi-tcg/typings";
+import { DamageType, DiceType, DiceRequirement } from "@gi-tcg/typings";
 import {
   CommonSkillType,
   SkillDescription,
@@ -51,7 +51,13 @@ import {
   UsagePerRoundVariableNames,
 } from "../base/entity";
 import { EntityBuilder, EntityBuilderResultT, VariableOptions } from "./entity";
-import { getEntityArea, isCharacterInitiativeSkill } from "../utils";
+import {
+  costSize,
+  diceCostSize,
+  getEntityArea,
+  isCharacterInitiativeSkill,
+  normalizeCost,
+} from "../utils";
 import { GiTcgDataError } from "../error";
 import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
 import { registerInitiativeSkill } from "./registry";
@@ -62,8 +68,11 @@ import {
   TargetQuery,
 } from "./card";
 
-export type BuilderMetaBase = Omit<ContextMetaBase, "readonly" | "callerType"> & {
-  callerType: "character" | EntityType
+export type BuilderMetaBase = Omit<
+  ContextMetaBase,
+  "readonly" | "callerType"
+> & {
+  callerType: "character" | EntityType;
 };
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
   [K in keyof BuilderMetaBase]: BM[K];
@@ -230,7 +239,8 @@ const detailedEventDictionary = {
   }),
   deductElementDiceSkill: defineDescriptor("modifyAction1", (c, e, r) => {
     return (
-      e.isUseSkill() && checkRelative(e.onTimeState, e.action.skill.caller.id, r)
+      e.isUseSkill() &&
+      checkRelative(e.onTimeState, e.action.skill.caller.id, r)
     );
   }),
   deductOmniDiceSkill: defineDescriptor("modifyAction2", (c, e, r) => {
@@ -301,12 +311,14 @@ const detailedEventDictionary = {
   }),
   increaseDamaged: defineDescriptor("modifyDamage1", (c, e, r) => {
     return (
-      e.type !== DamageType.Piercing && checkRelative(e.onTimeState, e.target.id, r)
+      e.type !== DamageType.Piercing &&
+      checkRelative(e.onTimeState, e.target.id, r)
     );
   }),
   multiplyDamaged: defineDescriptor("modifyDamage2", (c, e, r) => {
     return (
-      e.type !== DamageType.Piercing && checkRelative(e.onTimeState, e.target.id, r)
+      e.type !== DamageType.Piercing &&
+      checkRelative(e.onTimeState, e.target.id, r)
     );
   }),
   decreaseDamaged: defineDescriptor("modifyDamage3", (c, e, r) => {
@@ -320,7 +332,9 @@ const detailedEventDictionary = {
     return checkRelative(e.onTimeState, e.target.id, r);
   }),
   beforeDefeated: defineDescriptor("modifyZeroHealth", (c, e, r) => {
-    return checkRelative(e.onTimeState, e.target.id, r) && e._immuneInfo === null;
+    return (
+      checkRelative(e.onTimeState, e.target.id, r) && e._immuneInfo === null
+    );
   }),
 
   battleBegin: defineDescriptor("onBattleBegin"),
@@ -381,13 +395,19 @@ const detailedEventDictionary = {
     return checkRelative(e.onTimeState, { who: e.who }, r);
   }),
   dealDamage: defineDescriptor("onDamageOrHeal", (c, e, r) => {
-    return e.isDamageTypeDamage() && checkRelative(e.onTimeState, e.source.id, r);
+    return (
+      e.isDamageTypeDamage() && checkRelative(e.onTimeState, e.source.id, r)
+    );
   }),
   skillDamage: defineDescriptor("onDamageOrHeal", (c, e, r) => {
-    return e.isDamageTypeDamage() && checkRelative(e.onTimeState, e.source.id, r);
+    return (
+      e.isDamageTypeDamage() && checkRelative(e.onTimeState, e.source.id, r)
+    );
   }),
   damaged: defineDescriptor("onDamageOrHeal", (c, e, r) => {
-    return e.isDamageTypeDamage() && checkRelative(e.onTimeState, e.target.id, r);
+    return (
+      e.isDamageTypeDamage() && checkRelative(e.onTimeState, e.target.id, r)
+    );
   }),
   healed: defineDescriptor("onDamageOrHeal", (c, e, r) => {
     return e.isDamageTypeHeal() && checkRelative(e.onTimeState, e.target.id, r);
@@ -400,7 +420,8 @@ const detailedEventDictionary = {
   }),
   skillReaction: defineDescriptor("onReaction", (c, e, r) => {
     return (
-      checkRelative(e.onTimeState, e.caller.id, r) && e.viaCommonInitiativeSkill()
+      checkRelative(e.onTimeState, e.caller.id, r) &&
+      e.viaCommonInitiativeSkill()
     );
   }),
   enter: defineDescriptor("onEnter", (c, e, r) => {
@@ -416,7 +437,9 @@ const detailedEventDictionary = {
     return e.entity.id === r.callerId;
   }),
   defeated: defineDescriptor("onDamageOrHeal", (c, e, r) => {
-    return checkRelative(e.onTimeState, e.target.id, r) && e.damageInfo.causeDefeated;
+    return (
+      checkRelative(e.onTimeState, e.target.id, r) && e.damageInfo.causeDefeated
+    );
   }),
   revive: defineDescriptor("onRevive", (c, e, r) => {
     return checkRelative(e.onTimeState, e.character.id, r);
@@ -841,9 +864,9 @@ export abstract class SkillBuilderWithCost<
   constructor(skillId: number) {
     super(skillId);
   }
-  protected _cost: DiceType[] = [];
+  protected _cost: DiceRequirement = new Map();
   private cost(type: DiceType, count: number): this {
-    this._cost.push(...Array(count).fill(type));
+    this._cost.set(type, count);
     return this;
   }
   costVoid(count: number) {
@@ -871,7 +894,7 @@ export abstract class SkillBuilderWithCost<
     return this.cost(DiceType.Dendro, count);
   }
   costSame(count: number) {
-    return this.cost(DiceType.Same, count);
+    return this.cost(DiceType.Aligned, count);
   }
   costEnergy(count: number) {
     return this.cost(DiceType.Energy, count);
@@ -888,7 +911,7 @@ class InitiativeSkillBuilder<
 }> {
   private _skillType: SkillType = "normal";
   private _gainEnergy = true;
-  protected _cost: DiceType[] = [];
+  protected _cost: DiceRequirement = new Map();
   private _versionInfo: VersionInfo = DEFAULT_VERSION_INFO;
   private _prepared = false;
   constructor(private readonly skillId: number) {
@@ -952,7 +975,9 @@ class InitiativeSkillBuilder<
         id: this.skillId,
         initiativeSkillConfig: {
           skillType: this._skillType,
-          requiredCost: this._cost,
+          requiredCost: normalizeCost(this._cost),
+          computed$costSize: costSize(this._cost),
+          computed$diceCostSize: diceCostSize(this._cost),
           gainEnergy: this._gainEnergy,
           prepared: this._prepared,
           getTarget: this.buildTargetGetter(),
@@ -1076,7 +1101,9 @@ export class TechniqueBuilder<
       type: "skill",
       initiativeSkillConfig: {
         skillType: "technique",
-        requiredCost: this._cost,
+        requiredCost: normalizeCost(this._cost),
+        computed$costSize: costSize(this._cost),
+        computed$diceCostSize: diceCostSize(this._cost),
         gainEnergy: false,
         prepared: false,
         getTarget: this.buildTargetGetter(),

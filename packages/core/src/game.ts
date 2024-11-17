@@ -13,15 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { checkDice, Deck, flip } from "@gi-tcg/utils";
+import { checkDice, Deck, diceToMap, flip } from "@gi-tcg/utils";
 import {
   DiceType,
   ExposedMutation,
   RpcMethod,
   RpcRequest,
   RpcResponse,
+  DiceRequirement,
+  PbActionType,
 } from "@gi-tcg/typings";
-import { verifyRpcRequest, verifyRpcResponse } from "@gi-tcg/typings/verify";
 import {
   AnyState,
   CardState,
@@ -185,6 +186,9 @@ export interface CreateInitialStateConfig extends Partial<GameConfig> {
   readonly data: GameData;
 }
 
+const VOID_1_DICE_REQUIREMENT: DiceRequirement = new Map([[DiceType.Void, 1]]);
+const EMPTY_DICE_REQUIREMENT: DiceRequirement = new Map();
+
 export class Game {
   private readonly logger: DetailLogger;
 
@@ -278,11 +282,11 @@ export class Game {
     const stateMutations = opt.stateMutations
       .map((m) => exposeMutation(who, m))
       .filter((em): em is ExposedMutation => !!em);
-    const newState = exposeState(who, opt.state);
-    const mutations = [...stateMutations, ...opt.exposedMutations];
+    const state = exposeState(who, opt.state);
+    const mutation = [...stateMutations, ...opt.exposedMutations];
     // const newStateStr = JSON.stringify(newState);
     // if (mutations.length > 0 || newStateStr !== this.lastNotifiedState[who]) {
-    playerIo.notify({ mutations, newState });
+    playerIo.notify({ mutation, state });
     // this.lastNotifiedState[who] = newStateStr;
     // }
   }
@@ -410,20 +414,20 @@ export class Game {
   private async rpc<M extends RpcMethod>(
     who: 0 | 1,
     method: M,
-    req: RpcRequest[M],
-  ): Promise<RpcResponse[M]> {
+    request: RpcRequest[M],
+  ): Promise<Required<RpcResponse>[M]> {
     if (this._terminated) {
       throw new GiTcgCoreInternalError(`Game has been terminated`);
     }
     try {
-      verifyRpcRequest(method, req);
-    } catch (e) {
-      console.warn("Rpc request verify failed", e);
-    }
-    try {
-      const resp = await this.players[who].io.rpc(method, req);
-      verifyRpcResponse(method, resp);
-      return resp;
+      const resp = await this.players[who].io.rpc({ [method]: request });
+      if (!(method in resp)) {
+        throw new GiTcgIoError(
+          who,
+          `Invalid response format: expect ${method} in response`,
+        );
+      }
+      return resp[method] as Required<RpcResponse>[M];
     } catch (e) {
       if (e instanceof Error) {
         throw new GiTcgIoError(who, e.message, { cause: e?.cause });
@@ -477,25 +481,20 @@ export class Game {
     });
   }
 
-  /** @internal */
-  async rpcChooseActive(
+  private async rpcChooseActive(
     who: 0 | 1,
-    candidates: readonly number[],
+    candidateIds: number[],
   ): Promise<number> {
-    // this.notifyOne(
-    //   flip(who),
-    //   {
-    //     type: "oppChoosingActive",
-    //   },
-    //   state,
-    // );
-    const { active } = await this.rpc(who, "chooseActive", {
-      candidates,
+    const { activeCharacterId } = await this.rpc(who, "chooseActive", {
+      candidateIds,
     });
-    if (!candidates.includes(active)) {
-      throw new GiTcgIoError(who, `Invalid active character id ${active}`);
+    if (!candidateIds.includes(activeCharacterId)) {
+      throw new GiTcgIoError(
+        who,
+        `Invalid active character id ${activeCharacterId}`,
+      );
     }
-    return active;
+    return activeCharacterId;
   }
 
   private async rollPhase() {
@@ -597,29 +596,31 @@ export class Game {
         new PlayerEventArg(this.state, who),
       );
       const actions = await this.availableActions();
-      this.notifyOne(flip(who), {
-        type: "oppAction",
+      // TODO
+      // this.notifyOne(flip(who), {
+      //   type: "oppAction",
+      // });
+      const { chosenActionIndex, usedDice } = await this.rpc(who, "action", {
+        action: actions.map(exposeAction),
       });
-      const { chosenIndex, cost } = await this.rpc(who, "action", {
-        candidates: actions.map(exposeAction),
-      });
-      if (chosenIndex < 0 || chosenIndex >= actions.length) {
+      if (chosenActionIndex < 0 || chosenActionIndex >= actions.length) {
         throw new GiTcgIoError(who, `User chosen index out of range`);
       }
-      const actionInfo = actions[chosenIndex];
+      const actionInfo = actions[chosenActionIndex];
       await this.handleEvent("modifyAction0", actionInfo.eventArg);
       await this.handleEvent("modifyAction1", actionInfo.eventArg);
       await this.handleEvent("modifyAction2", actionInfo.eventArg);
       await this.handleEvent("modifyAction3", actionInfo.eventArg);
 
       // 检查骰子
-      if (!checkDice(actionInfo.cost, cost)) {
+      console.log(actionInfo.cost, usedDice);
+      if (!checkDice(actionInfo.cost, usedDice as DiceType[])) {
         throw new GiTcgIoError(who, `Selected dice doesn't meet requirement`);
       }
       if (
         !this.players[who].config.allowTuningAnyDice &&
         actionInfo.type === "elementalTuning" &&
-        (cost[0] === DiceType.Omni || cost[0] === actionInfo.result)
+        (usedDice[0] === DiceType.Omni || usedDice[0] === actionInfo.result)
       ) {
         throw new GiTcgIoError(
           who,
@@ -628,18 +629,12 @@ export class Game {
       }
       // 消耗骰子
       const operatingDice = [...player().dice];
-      for (const consumed of cost) {
-        if (consumed === DiceType.Energy) {
-        } else {
-          const idx = operatingDice.indexOf(consumed);
-          if (idx === -1) {
-            throw new GiTcgIoError(
-              who,
-              `Selected dice (${consumed}) not found in player`,
-            );
-          }
-          operatingDice.splice(idx, 1);
+      for (const type of usedDice) {
+        const idx = operatingDice.indexOf(type as DiceType);
+        if (idx === -1) {
+          throw new GiTcgIoError(who, `Selected dice ${type} doesn't found in player`);
         }
+        operatingDice.splice(idx, 1);
       }
       this.mutate({
         type: "resetDice",
@@ -647,9 +642,7 @@ export class Game {
         value: operatingDice,
       });
       // 消耗能量
-      const requiredEnergy = actionInfo.cost.filter(
-        (x) => x === DiceType.Energy,
-      ).length;
+      const requiredEnergy = actionInfo.cost.get(DiceType.Energy) ?? 0;
       const currentEnergy = activeCh().variables.energy;
       if (requiredEnergy > 0) {
         if (currentEnergy < requiredEnergy) {
@@ -668,6 +661,19 @@ export class Game {
 
       switch (actionInfo.type) {
         case "useSkill": {
+          this.mutator.notify({
+            mutations: [
+              {
+                actionDone: {
+                  who,
+                  actionType: PbActionType.ACTION_PLAY_CARD,
+                  characterOrCardId: actionInfo.skill.caller.id,
+                  characterDefinitionId: actionInfo.skill.caller.definition.id,
+                  skillOrCardDefinitionId: actionInfo.skill.definition.id,
+                }
+              }
+            ]
+          });
           const callerArea = getEntityArea(this.state, activeCh().id);
           await this.handleEvent(
             "onBeforeUseSkill",
@@ -684,6 +690,18 @@ export class Game {
         }
         case "playCard": {
           const card = actionInfo.skill.caller;
+          this.mutator.notify({
+            mutations: [
+              {
+                actionDone: {
+                  who,
+                  actionType: PbActionType.ACTION_PLAY_CARD,
+                  characterOrCardId: card.id,
+                  skillOrCardDefinitionId: card.definition.id,
+                }
+              }
+            ]
+          });
           if (card.definition.tags.includes("legend")) {
             this.mutate({
               type: "setPlayerFlag",
@@ -757,6 +775,16 @@ export class Game {
           break;
         }
         case "declareEnd": {
+          this.mutator.notify({
+            mutations: [
+              {
+                actionDone: {
+                  who,
+                  actionType: PbActionType.ACTION_DECLARE_END,
+                }
+              }
+            ]
+          });
           this.mutate({
             type: "setPlayerFlag",
             who,
@@ -898,7 +926,7 @@ export class Game {
             skill: skillInfo,
             targets: arg.targets,
             fast: false,
-            cost: [...skill.initiativeSkillConfig.requiredCost],
+            cost: skill.initiativeSkillConfig.requiredCost,
           };
           result.push(actionInfo);
         }
@@ -932,7 +960,7 @@ export class Game {
             who,
             skill: skillInfo,
             targets: arg.targets,
-            cost: [...skillDef.initiativeSkillConfig.requiredCost],
+            cost: skillDef.initiativeSkillConfig.requiredCost,
             fast: !card.definition.tags.includes("action"),
           };
           result.push(actionInfo);
@@ -954,7 +982,7 @@ export class Game {
         .map((s) => ({
           ...s,
           fast: false,
-          cost: [DiceType.Void],
+          cost: VOID_1_DICE_REQUIREMENT,
         })),
     );
 
@@ -972,7 +1000,7 @@ export class Game {
         .map((s) => ({
           ...s,
           fast: true,
-          cost: [DiceType.Void],
+          cost: VOID_1_DICE_REQUIREMENT,
         })),
     );
 
@@ -981,7 +1009,7 @@ export class Game {
       type: "declareEnd",
       who,
       fast: false,
-      cost: [],
+      cost: EMPTY_DICE_REQUIREMENT,
     });
     // Add preview and apply modifyAction
     const previewer = new ActionPreviewer(this.state, who);
@@ -989,8 +1017,8 @@ export class Game {
   }
 
   private async rpcSwitchHands(who: 0 | 1) {
-    const { removedHands } = await this.rpc(who, "switchHands", {});
-    return removedHands;
+    const { removedHandIds } = await this.rpc(who, "switchHands", {});
+    return removedHandIds;
   }
 
   private async rpcReroll(who: 0 | 1) {
@@ -998,12 +1026,14 @@ export class Game {
     return rerollIndexes;
   }
 
-  private async rpcSelectCard(who: 0 | 1, cards: readonly number[]) {
-    const { selected } = await this.rpc(who, "selectCard", { cards });
-    if (!cards.includes(selected)) {
+  private async rpcSelectCard(who: 0 | 1, candidateDefinitionIds: number[]) {
+    const { selectedDefinitionId } = await this.rpc(who, "selectCard", {
+      candidateDefinitionIds,
+    });
+    if (!candidateDefinitionIds.includes(selectedDefinitionId)) {
       throw new GiTcgIoError(who, `Selected card not in candidates`);
     }
-    return selected;
+    return selectedDefinitionId;
   }
 
   private async switchActive(who: 0 | 1, to: CharacterState) {
@@ -1018,11 +1048,11 @@ export class Game {
     this.mutator.notify({
       mutations: [
         {
-          type: "switchActive",
-          who,
-          id: to.id,
-          definitionId: to.definition.id,
-          via: null,
+          switchActive: {
+            who,
+            characterId: to.id,
+            characterDefinitionId: to.definition.id,
+          },
         },
       ],
     });

@@ -932,9 +932,9 @@ export const MachineAssemblyLine = card(332028)
   .addVariableWithMax("readiness", 1, 2)
   .once("deductOmniDiceCard", (c, e) =>
     e.hasOneOfCardTag("weapon", "artifact") &&
-    e.originalDiceCost().length <= c.getVariable("readiness"))
+    e.originalDiceCostSize() <= c.getVariable("readiness"))
   .do((c, e) => {
-    e.deductOmniCost(e.cost.length);
+    e.deductOmniCost(e.diceCostSize());
     c.setVariable("readiness", 0);
   })
   .done();

@@ -61,10 +61,7 @@ const winner = await game.start();
 ```ts
 interface PlayerIO {
   notify: (notification: NotificationMessage) => void;
-  rpc: <M extends RpcMethod>(
-    method: M,
-    data: RpcRequest[M],
-  ) => Promise<RpcResponse[M]>;
+  rpc: (request: RpcRequest) => Promise<RpcResponse>;
 }
 ```
 

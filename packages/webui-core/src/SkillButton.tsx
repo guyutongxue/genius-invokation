@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { SkillData } from "@gi-tcg/typings";
+import type { PbSkillInfo } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
 import { usePlayerContext } from "./Chessboard";
 import { CardDescription } from "./CardDescription";
 
 export interface SkillButtonProps {
-  data: SkillData;
+  data: PbSkillInfo;
 }
 
 export function SkillButton(props: SkillButtonProps) {

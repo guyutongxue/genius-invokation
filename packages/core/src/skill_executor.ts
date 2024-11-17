@@ -40,10 +40,7 @@ import {
 } from "./utils";
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType } from "./log";
-import {
-  MutatorConfig as MutatorConfig,
-  StateMutator,
-} from "./mutator";
+import { MutatorConfig as MutatorConfig, StateMutator } from "./mutator";
 import { Mutation } from "./base/mutation";
 
 export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;
@@ -91,15 +88,10 @@ export class SkillExecutor {
       skillInfo.caller.definition.skills.find((sk) => sk.id === skillDef.id)
     ) {
       preExposedMutations.push({
-        type: "triggered",
-        id: skillInfo.caller.id,
-      });
-    }
-    if (skillInfo.definition.triggerOn === null) {
-      preExposedMutations.push({
-        type: "useCommonSkill",
-        who: callerArea.who,
-        skill: skillDef.id,
+        triggered: {
+          entityId: skillInfo.caller.id,
+          entityDefinitionId: skillInfo.caller.definition.id,
+        },
       });
     }
     this.mutator.notify({
@@ -250,11 +242,13 @@ export class SkillExecutor {
         await this.mutator.notifyAndPause({
           mutations: [
             {
-              type: "damage",
               damage: {
                 type: healInfo.type,
                 value: healInfo.value,
-                target: healInfo.target.id,
+                sourceId: healInfo.source.id,
+                sourceDefinitionId: healInfo.source.definition.id,
+                targetId: healInfo.target.id,
+                targetDefinitionId: healInfo.target.definition.id,
               },
             },
           ],
@@ -360,11 +354,11 @@ export class SkillExecutor {
         this.mutator.notify({
           mutations: [
             {
-              type: "switchActive",
-              who: arg.switchInfo.who,
-              id: arg.switchInfo.to.id,
-              definitionId: arg.switchInfo.to.definition.id,
-              via: null,
+              switchActive: {
+                who: arg.switchInfo.who,
+                characterId: arg.switchInfo.to.id,
+                characterDefinitionId: arg.switchInfo.to.definition.id,
+              },
             },
           ],
         });

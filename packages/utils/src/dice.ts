@@ -1,19 +1,19 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { DiceType } from "@gi-tcg/typings";
+import type { DiceType, ReadonlyDiceRequirement } from "@gi-tcg/typings";
 
 const VOID = 0;
 const OMNI = 8;
@@ -26,16 +26,15 @@ const ENERGY = 9;
  * @returns 布尔数组，被选择的骰子的下标对应元素设置为 `true`；如果无法选择则返回全 `false`。
  */
 export function chooseDice(
-  required: readonly DiceType[],
+  required: ReadonlyDiceRequirement,
   dice: readonly DiceType[],
 ): boolean[] {
-  const requiredMap = diceToMap(required, true);
   const OMNI_COUNT = dice.filter((d) => d === OMNI).length;
   const FAIL_RESULT = Array<boolean>(dice.length).fill(false);
   const result = [...FAIL_RESULT];
   // 需要同色骰子
-  if (requiredMap.has(OMNI)) {
-    const requiredCount = requiredMap.get(OMNI)!;
+  if (required.has(OMNI)) {
+    const requiredCount = required.get(OMNI)!;
     // 杂色骰子+万能骰子，凑够同色
     for (let i = dice.length - 1; i >= 0; i--) {
       if (dice[i] === OMNI) continue;
@@ -65,8 +64,11 @@ export function chooseDice(
     }
     return FAIL_RESULT;
   }
+  const requiredArray = required
+    .entries()
+    .flatMap(([k, v]) => Array.from({ length: v }, () => k));
   // 无色或者杂色
-  next: for (const r of required) {
+  next: for (const r of requiredArray) {
     if (r === ENERGY) continue;
     if (r === VOID) {
       // 无色：任何骰子都可以
@@ -97,18 +99,14 @@ export function chooseDice(
 }
 
 /**
- * 将骰子需求列表改写为 `Map<DiceType, number>` 形式
- * @param dice 骰子需求列表
- * @param allowEmpty 允许返回空 Map；默认不需要骰子时返回 `{(Omni, 0)}`
- * @returns 
+ * 将骰子列表改写为 `Map<DiceType, number>` 形式
+ * @param dice 骰子列表
+ * @returns
  */
-export function diceToMap(dice: readonly DiceType[], allowEmpty = false): Map<DiceType, number> {
+export function diceToMap(dice: readonly DiceType[]): Map<DiceType, number> {
   const result = new Map<DiceType, number>();
   for (const d of dice) {
     result.set(d, (result.get(d) ?? 0) + 1);
-  }
-  if (!allowEmpty && dice.length === 0) {
-    result.set(OMNI, 0);
   }
   return result;
 }
@@ -121,26 +119,30 @@ export function diceToMap(dice: readonly DiceType[], allowEmpty = false): Map<Di
  * @returns 是否符合要求
  */
 export function checkDice(
-  required: readonly DiceType[],
+  required: ReadonlyDiceRequirement,
   chosen: readonly DiceType[],
 ): boolean {
-  const requiredMap = diceToMap(required, true);
   // 如果需要同色骰子
-  if (requiredMap.has(OMNI)) {
-    const requiredCount = requiredMap.get(OMNI)!;
+  if (required.has(OMNI)) {
+    const requiredCount = required.get(OMNI)!;
     // 检查个数
     if (requiredCount !== chosen.length) return false;
     const chosenMap = new Set<DiceType>(chosen);
     // 完全同色，或者只有杂色+万能两种骰子
     return (
+      (chosenMap.size === 0 && requiredCount === 0) ||
       chosenMap.size === 1 ||
       (chosenMap.size === 2 && chosenMap.has(OMNI))
     );
   }
+  const requiredArray = required
+    .entries()
+    .flatMap(([k, v]) => Array.from({ length: v }, () => k))
+    .toArray();
   // 否则逐个检查杂色/无色
   const chosen2 = [...chosen];
   let voidCount = 0;
-  for (const r of required) {
+  for (const r of requiredArray) {
     if (r === ENERGY) continue;
     // 记录无色的个数，最后检查剩余个数是否一致
     if (r === VOID) {

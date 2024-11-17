@@ -16,7 +16,7 @@
 import { type JSX } from "solid-js";
 import { render } from "solid-js/web";
 import {
-  EMPTY_STATE_DATA,
+  EMPTY_GAME_STATE,
   PlayerIOWithCancellation,
   StandaloneChessboard,
   StandaloneChessboardProps,
@@ -45,9 +45,10 @@ export function createPlayer(
 }
 
 const defaultProps: StandaloneChessboardProps = {
-  stateData: EMPTY_STATE_DATA,
+  state: EMPTY_GAME_STATE,
   who: 0,
   mutations: [],
+  previewData: [],
   assetApiEndpoint: void 0,
 };
 

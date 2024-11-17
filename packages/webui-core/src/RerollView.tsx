@@ -13,13 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { DiceType } from "@gi-tcg/typings";
+import type { PbDiceType } from "@gi-tcg/typings";
 import { Dice } from "./Dice";
-import { For, Index, createSignal } from "solid-js";
+import { For, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export interface RerollViewProps {
-  dice: readonly DiceType[];
+  dice: readonly PbDiceType[];
   onConfirm?: (indexes: number[]) => void;
 }
 

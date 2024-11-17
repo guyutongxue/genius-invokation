@@ -15,9 +15,10 @@
 
 import { type Draft, produce, enableMapSet } from "immer";
 
-import { DiceType, PhaseType } from "@gi-tcg/typings";
+import { DiceType } from "@gi-tcg/typings";
 import { flip } from "@gi-tcg/utils";
 import {
+  PhaseType,
   CardState,
   CharacterState,
   EntityState,
@@ -65,7 +66,7 @@ export interface TransferCardM {
   readonly targetIndex?: number;
   readonly who: 0 | 1;
   readonly from: "pile" | "hands";
-  readonly to: "pile" | "hands" | "oppPiles" | "oppHands";
+  readonly to: "pile" | "hands" | "oppPile" | "oppHands";
   readonly value: CardState;
 }
 
@@ -239,7 +240,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
           case "hands":
             dst = player.hands;
             break;
-          case "oppPiles":
+          case "oppPile":
             dst = oppPlayer.pile;
             break;
           case "oppHands":

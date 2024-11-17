@@ -29,7 +29,7 @@ import {
   type GameStateLogEntry,
   GiTcgError,
   Game as InternalGame,
-  type NotificationMessage,
+  type Notification,
   type PlayerIO,
   type RerollDiceResponse,
   type RpcMethod,
@@ -38,6 +38,8 @@ import {
   serializeGameStateLog,
   CORE_VERSION,
   VERSIONS,
+  RpcResponse,
+  SelectCardResponse,
 } from "@gi-tcg/core";
 import getData from "@gi-tcg/data";
 import { type Deck, flip } from "@gi-tcg/utils";
@@ -99,7 +101,7 @@ export interface SSEInitialized {
 
 export interface SSENotification {
   type: "notification";
-  data: NotificationMessage;
+  data: Notification;
 }
 export interface SSEError {
   type: "error";
@@ -115,14 +117,12 @@ export interface SSERpc {
   type: "rpc";
   id: number;
   timeout: number;
-  method: RpcMethod;
-  params: RpcRequest[RpcMethod];
+  request: RpcRequest
 }
 
 interface RpcResolver {
   id: number;
-  method: RpcMethod;
-  params: any;
+  request: RpcRequest;
   timeout: number;
   resolve: (response: any) => void;
 }
@@ -177,8 +177,7 @@ class Player implements PlayerIOWithError {
         type: "rpc",
         id: this._rpcResolver.id,
         timeout: this._rpcResolver.timeout,
-        method: this._rpcResolver.method,
-        params: this._rpcResolver.params,
+        request: this._rpcResolver.request,
       };
     } else {
       return null;
@@ -195,44 +194,49 @@ class Player implements PlayerIOWithError {
     this._rpcResolver.resolve(response.response);
   }
 
-  notify(notification: NotificationMessage) {
+  notify(notification: Notification) {
     this.notificationSseSource.next({
       type: "notification",
       data: notification,
     });
   }
 
-  private timeoutRpc(method: RpcMethod, params: RpcRequest[RpcMethod]) {
-    if (method === "action") {
-      const { candidates } = params as ActionRequest;
-      const declareEndIdx = candidates.findIndex(
-        (c) => c.type === "declareEnd",
-      );
+  private timeoutRpc(request: RpcRequest): RpcResponse {
+    if (request.action) {
+      const { action } = request.action;
+      const declareEndIdx = action.findIndex((c) => c.declareEnd);
       const result: ActionResponse = {
-        chosenIndex: declareEndIdx,
-        cost: [],
+        chosenActionIndex: declareEndIdx,
+        usedDice: [],
       };
-      return result;
-    } else if (method === "chooseActive") {
-      const { candidates } = params as ChooseActiveRequest;
+      return { action: result };
+    } else if (request.chooseActive) {
+      const { candidateIds } = request.chooseActive;
       const result: ChooseActiveResponse = {
-        active: candidates[0]!,
+        activeCharacterId: candidateIds[0]!,
       };
-      return result;
-    } else if (method === "rerollDice") {
+      return { chooseActive: result };
+    } else if (request.rerollDice) {
       const result: RerollDiceResponse = {
         rerollIndexes: [],
       };
-      return result;
-    } else if (method === "switchHands") {
+      return { rerollDice: result };
+    } else if (request.switchHands) {
       const result: SwitchHandsResponse = {
-        removedHands: [],
+        removedHandIds: [],
       };
-      return result;
+      return { switchHands: result };
+    } else if (request.selectCard) {
+      const result: SelectCardResponse = {
+        selectedDefinitionId: request.selectCard.candidateDefinitionIds[0]!,
+      }
+      return { selectCard: result };
+    } else {
+      throw new Error("Unknown rpc request");
     }
   }
 
-  async rpc(method: RpcMethod, params: RpcRequest[RpcMethod]): Promise<any> {
+  async rpc(request: RpcRequest): Promise<RpcResponse> {
     const id = this._nextRpcId++;
     // 当前回合剩余时间
     const roundTimeout = this._roundTimeout;
@@ -240,7 +244,7 @@ class Player implements PlayerIOWithError {
     let timeout: number;
     // 行动结束后，计算新的回合剩余时间
     let setRoundTimeout: (remained: number) => void;
-    if (method === "rerollDice") {
+    if (request.rerollDice) {
       timeout = this._timeoutConfig?.rerollTime ?? Infinity;
       setRoundTimeout = () => {};
     } else {
@@ -249,13 +253,12 @@ class Player implements PlayerIOWithError {
         this._roundTimeout = Math.min(roundTimeout, remain + 1);
       };
     }
-    const payload: SSERpc = { type: "rpc", id, timeout, method, params };
+    const payload: SSERpc = { type: "rpc", id, timeout, request };
     this.rpcSseSource.next(payload);
     return new Promise((resolve) => {
       const resolver: RpcResolver = {
         id,
-        method,
-        params,
+        request,
         timeout,
         resolve: (r) => {
           clearInterval(interval);
@@ -271,7 +274,7 @@ class Player implements PlayerIOWithError {
           clearInterval(interval);
           setRoundTimeout(0);
           this._rpcResolver = null;
-          resolve(this.timeoutRpc(method, params));
+          resolve(this.timeoutRpc(request));
         }
       }, 1000);
     });
@@ -376,21 +379,21 @@ class Room {
       data: getData(
         this.config.gameVersion ? VERSIONS[this.config.gameVersion]! : void 0,
       ),
-    })
+    });
     const game = new InternalGame(state);
     game.onPause = async (state, mutations, canResume) => {
-          this.stateLog.push({ state, canResume });
-          for (const mut of mutations) {
-            if (mut.type === "changePhase" && mut.newPhase === "roll") {
-              player0.resetRoundTimeout();
-              player1.resetRoundTimeout();
-            }
-          }
-        };
+      this.stateLog.push({ state, canResume });
+      for (const mut of mutations) {
+        if (mut.type === "changePhase" && mut.newPhase === "roll") {
+          player0.resetRoundTimeout();
+          player1.resetRoundTimeout();
+        }
+      }
+    };
     game.onIoError = (e) => {
       player0.onError(e);
       player1.onError(e);
-    }
+    };
     game.players[0].io = player0;
     game.players[1].io = player1;
     player0.onInitialized(0, player1.playerInfo);
@@ -459,7 +462,10 @@ export class RoomsService {
   currentRoom(userId: number) {
     for (let i = 0; i < this.rooms.length; i++) {
       const room = this.rooms[i];
-      if (room && room.getPlayers().some((player) => player.user.id === userId)) {
+      if (
+        room &&
+        room.getPlayers().some((player) => player.user.id === userId)
+      ) {
         return room.getRoomInfo(i);
       }
     }

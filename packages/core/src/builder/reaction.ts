@@ -18,6 +18,7 @@ import { SkillDescription } from "../base/skill";
 import { SkillBuilder, enableShortcut } from "./skill";
 import { TypedSkillContext } from "./context/skill";
 import { CombatStatusHandle, StatusHandle, SummonHandle } from "./type";
+import { SwirlableElement } from "../base/reaction";
 
 export const CALLED_FROM_REACTION: unique symbol = Symbol();
 
@@ -69,12 +70,6 @@ const pierceToOther: ReactionAction = (c, e) => {
 const crystallize: ReactionAction = (c, e) => {
   c.combatStatus(Crystallize, e.here);
 };
-
-type SwirlableElement =
-  | DamageType.Cryo
-  | DamageType.Hydro
-  | DamageType.Pyro
-  | DamageType.Electro;
 
 const swirl = (srcElement: SwirlableElement): ReactionAction => {
   return (c, e) => {

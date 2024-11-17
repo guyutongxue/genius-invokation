@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { CardData, DiceType } from "@gi-tcg/typings";
+import type { PbCardState, DiceType } from "@gi-tcg/typings";
 
 import { Image } from "./Image";
 import { DiceCost } from "./DiceCost";
@@ -22,7 +22,7 @@ import { Show } from "solid-js";
 import { Interactive } from "./Interactive";
 
 export interface CardProps {
-  data: CardData;
+  data: PbCardState;
   realCost?: DiceType[];
 }
 

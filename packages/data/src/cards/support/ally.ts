@@ -64,10 +64,10 @@ export const Timaeus = card(322003)
   .drawCards(1, { withTag: "artifact" })
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductAllDiceCard", (c, e) => e.hasCardTag("artifact") && c.getVariable("material") >= e.cost.length)
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("artifact") && c.getVariable("material") >= e.diceCostSize())
   .usagePerRound(1)
   .do((c, e) => {
-    c.addVariable("material", -e.cost.length);
+    c.addVariable("material", -e.diceCostSize());
     e.deductAllCost();
   })
   .done();
@@ -95,10 +95,10 @@ export const Wagner = card(322004)
   })
   .on("endPhase")
   .addVariable("material", 1)
-  .on("deductAllDiceCard", (c, e) => e.hasCardTag("weapon") && c.getVariable("material") >= e.cost.length)
+  .on("deductAllDiceCard", (c, e) => e.hasCardTag("weapon") && c.getVariable("material") >= e.diceCostSize())
   .usagePerRound(1)
   .do((c, e) => {
-    c.addVariable("material", -e.cost.length);
+    c.addVariable("material", -e.diceCostSize());
     e.deductAllCost();
   })
   .done();

@@ -62,7 +62,7 @@ import {
 import { combatStatus, status, equipment, support } from "./entity";
 import { GuessedTypeOfQuery } from "../query/types";
 import { GiTcgDataError } from "../error";
-import { Writable } from "../utils";
+import { costSize, diceCostSize, normalizeCost, Writable } from "../utils";
 import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
 type StateOf<TargetKindTs extends InitiativeSkillTargetKind> =
@@ -437,7 +437,9 @@ class CardBuilder<
       triggerOn: "initiative",
       initiativeSkillConfig: {
         skillType: "playCard",
-        requiredCost: this._cost,
+        requiredCost: normalizeCost(this._cost),
+        computed$costSize: costSize(this._cost),
+        computed$diceCostSize: diceCostSize(this._cost),
         gainEnergy: false,
         prepared: false,
         getTarget: targetGetter,

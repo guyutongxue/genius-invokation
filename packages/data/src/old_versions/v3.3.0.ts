@@ -91,7 +91,7 @@ const MintyMeatRolls = card(333008)
 const CatalyzingField = combatStatus(117)
   .until("v3.3.0")
   .on("increaseDamage", (c, e) =>
-    [DamageType.Electro, DamageType.Dendro].includes(e.type) &&
+    ([DamageType.Electro, DamageType.Dendro] as DamageType[]).includes(e.type) &&
     e.target.id === c.$("opp active character")!.id)
   .usage(3)
   .increaseDamage(1)

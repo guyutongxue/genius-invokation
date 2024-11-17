@@ -59,6 +59,7 @@ function App() {
   game.players[0].config.alwaysOmni = true;
   game.players[0].config.allowTuningAnyDice = true;
   game.players[1].io = io1;
+  game.onIoError = console.error;
   game.start();
   Reflect.set(window, "game", game);
 

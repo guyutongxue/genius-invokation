@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import type { EntityData, EntityVarDiffPreview } from "@gi-tcg/typings";
+import type { PbEntityState, ModifyEntityVarEM } from "@gi-tcg/typings";
 import { Image } from "./Image";
 import { Show } from "solid-js";
 import { Interactive } from "./Interactive";
@@ -21,26 +21,26 @@ import { useEventContext } from "./Chessboard";
 
 export interface EntityProps {
   preview?: boolean;
-  data: EntityData;
+  data: PbEntityState;
 }
 
 export function Summon(props: EntityProps) {
   const { previewData } = useEventContext();
   const previewVarDiff = () => {
-    if (props.data.variable === null) {
+    if (!props.data.variableName) {
       return null;
     }
     const previewValue = previewData().find(
-      (p): p is EntityVarDiffPreview =>
-        p.type === "entityVarDiff" && p.entity === props.data.id,
-    )?.newValue;
+      (p) =>
+        p.modifyEntityVar?.entityId === props.data.id
+    )?.modifyEntityVar?.variableValue;
     if (typeof previewValue === "undefined") {
       return null;
     }
-    if (previewValue < props.data.variable) {
-      return `- ${props.data.variable - previewValue}`;
+    if (previewValue < props.data.variableValue!) {
+      return `- ${props.data.variableValue! - previewValue}`;
     } else {
-      return `+ ${previewValue - props.data.variable}`;
+      return `+ ${previewValue - props.data.variableValue!}`;
     }
   };
   return (
@@ -53,15 +53,15 @@ export function Summon(props: EntityProps) {
         <div
           class="h-full w-full entity-highlight-layer absolute top-0 left-0 z-1 rounded-lg"
           classList={{ preview: props.preview }}
-          data-highlight={props.data.usagePerRoundHighlight}
+          data-highlight={props.data.hasUsagePerRound}
         />
         <Image
           imageId={props.data.definitionId}
           class="h-full w-full rounded-lg"
         />
-        <Show when={props.data.variable !== null}>
+        <Show when={props.data.variableName}>
           <div class="absolute right-0 top-0 bg-white b-1 b-solid b-black w-6 h-6 rounded-3 translate-x-[50%] translate-y-[-50%] flex justify-center items-center z-2">
-            {props.data.variable}
+            {props.data.variableValue}
           </div>
         </Show>
         <Show when={props.data.hintIcon !== null}>
@@ -98,9 +98,9 @@ export function Status(props: EntityProps) {
         definitionId={props.data.definitionId}
       >
         <Image imageId={props.data.definitionId} class="h-5 w-5" />
-        <Show when={props.data.variable !== null}>
+        <Show when={props.data.variableName}>
           <div class="absolute bottom-0 right-0 text-xs">
-            {props.data.variable}
+            {props.data.variableValue}
           </div>
         </Show>
       </Interactive>

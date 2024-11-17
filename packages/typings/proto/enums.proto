@@ -1,0 +1,94 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+syntax = "proto3";
+
+// 描述骰子费用的骰子类型
+enum DiceRequirementType {
+  DICE_REQ_VOID = 0;
+  DICE_REQ_CRYO = 1;
+  DICE_REQ_HYDRO = 2;
+  DICE_REQ_PYRO = 3;
+  DICE_REQ_ELECTRO = 4;
+  DICE_REQ_ANEMO = 5;
+  DICE_REQ_GEO = 6;
+  DICE_REQ_DENDRO = 7;
+  DICE_REQ_ALIGNED = 8;
+  DICE_REQ_ENERGY = 9;
+  DICE_REQ_LEGEND = 10;
+}
+
+// 骰子费用 entry，以此为元素的集合构成骰子费用需求
+message DiceRequirement {
+  DiceRequirementType type = 1;
+  int32 count = 2;
+}
+
+// 实际骰子类型
+enum DiceType {
+  DICE_UNSPECIFIED = 0;
+  DICE_CRYO = 1;
+  DICE_HYDRO = 2;
+  DICE_PYRO = 3;
+  DICE_ELECTRO = 4;
+  DICE_ANEMO = 5;
+  DICE_GEO = 6;
+  DICE_DENDRO = 7;
+  DICE_OMNI = 8;
+}
+
+enum DamageType {
+  DMG_PHYSICAL = 0;
+  DMG_CRYO = 1;
+  DMG_HYDRO = 2;
+  DMG_PYRO = 3;
+  DMG_ELECTRO = 4;
+  DMG_ANEMO = 5;
+  DMG_GEO = 6;
+  DMG_DENDRO = 7;
+  DMG_PIERCING = 8;
+  DMG_HEAL = 9;
+}
+
+enum AuraType {
+  AURA_NONE = 0;
+  AURA_CRYO = 1;
+  AURA_HYDRO = 2;
+  AURA_PYRO = 3;
+  AURA_ELECTRO = 4;
+  AURA_DENDRO = 7;
+  AURA_CRYO_DENDRO = 0x71; // (AURA_DENDRO << 4) | AURA_CRYO
+}
+
+enum ReactionType {
+  REACTION_UNSPECIFIED = 0;
+  REACTION_MELT = 101;
+  REACTION_VAPORIZE = 102;
+  REACTION_OVERLOADED = 103;
+  REACTION_SUPERCONDUCT = 104;
+  REACTION_ELECTRO_CHARGED = 105;
+  REACTION_FROZEN = 106;
+  REACTION_SWIRL_CRYO = 107;
+  REACTION_SWIRL_HYDRO = 108;
+  REACTION_SWIRL_PYRO = 109;
+  REACTION_SWIRL_ELECTRO = 110;
+  REACTION_CRYSTALLIZE_CRYO = 111;
+  REACTION_CRYSTALLIZE_HYDRO = 112;
+  REACTION_CRYSTALLIZE_PYRO = 113;
+  REACTION_CRYSTALLIZE_ELECTRO = 114;
+  REACTION_BURNING = 115;
+  REACTION_BLOOM = 116;
+  REACTION_QUICKEN = 117;
+}

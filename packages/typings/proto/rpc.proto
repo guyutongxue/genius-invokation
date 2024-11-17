@@ -1,0 +1,77 @@
+// Copyright (C) 2024 Guyutongxue
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+syntax = "proto3";
+
+import "enums.proto";
+import "action.proto";
+import "preview.proto";
+
+message RerollDiceRequest {}
+
+message SwitchHandsRequest {}
+
+message ChooseActiveRequest {
+  repeated sint32 candidate_ids = 1;
+}
+
+message ActionRequest {
+  repeated Action action = 1;
+}
+
+message SelectCardRequest {
+  repeated int32 candidate_definition_ids = 1;
+}
+
+message Request {
+  oneof request {
+    RerollDiceRequest reroll_dice = 1;
+    SwitchHandsRequest switch_hands = 2;
+    ChooseActiveRequest choose_active = 3;
+    ActionRequest action = 4;
+    SelectCardRequest select_card = 5;
+  }
+}
+
+message RerollDiceResponse {
+  repeated int32 reroll_indexes = 1;
+}
+
+message SwitchHandsResponse {
+  repeated sint32 removed_hand_ids = 1;
+}
+
+message ChooseActiveResponse {
+  sint32 active_character_id = 1;
+}
+
+message ActionResponse {
+  int32 chosen_action_index = 1;
+  repeated DiceType used_dice = 2;
+}
+
+message SelectCardResponse {
+  sint32 selected_definition_id = 1;
+}
+
+message Response {
+  oneof response {
+    RerollDiceResponse reroll_dice = 1;
+    SwitchHandsResponse switch_hands = 2;
+    ChooseActiveResponse choose_active = 3;
+    ActionResponse action = 4;
+    SelectCardResponse select_card = 5;
+  }
+}

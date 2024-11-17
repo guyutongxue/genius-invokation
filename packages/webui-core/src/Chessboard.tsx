@@ -26,26 +26,32 @@ import {
   Accessor,
   onMount,
 } from "solid-js";
-import type {
-  DiceType,
-  ActionRequest,
-  ActionResponse,
-  ChooseActiveRequest,
-  ChooseActiveResponse,
-  NotificationMessage,
-  PlayerData,
-  RerollDiceResponse,
-  StateData,
-  SwitchHandsResponse,
-  PlayCardAction,
-  DamageData,
-  ExposedMutation,
-  UseSkillAction,
-  SelectCardResponse,
-  SelectCardRequest,
-  PreviewData,
+import {
+  type DiceType,
+  type ActionRequest,
+  type ActionResponse,
+  type ChooseActiveRequest,
+  type ChooseActiveResponse,
+  type Notification,
+  type PbPlayerState,
+  type RerollDiceResponse,
+  type PbGameState,
+  type SwitchHandsResponse,
+  type PlayCardAction,
+  type DamageEM,
+  type ExposedMutation,
+  type UseSkillAction,
+  type SelectCardResponse,
+  type SelectCardRequest,
+  type PreviewData,
 } from "@gi-tcg/typings";
-import type { PlayerIO } from "@gi-tcg/core";
+import type {
+  Action,
+  PbDiceRequirement,
+  PbDiceType,
+  PlayerIO,
+  RpcResponse,
+} from "@gi-tcg/core";
 
 import { PlayerArea } from "./PlayerArea";
 import { DiceSelect, DiceSelectProps } from "./DiceSelect";
@@ -59,28 +65,27 @@ import { SkillButton } from "./SkillButton";
 import { cached } from "./fetch";
 import { AsyncQueue } from "./async_queue";
 import { SelectCardView } from "./SelectCardView";
-import { Announcer } from "./Announcer";
+import { MutationAnnouncer } from "./MutationAnnouncer";
 
-const EMPTY_PLAYER_DATA: PlayerData = {
+const EMPTY_PLAYER_DATA: PbPlayerState = {
   activeCharacterId: 0,
   dice: [],
-  pile: [],
-  hands: [],
-  characters: [],
-  combatStatuses: [],
-  summons: [],
-  supports: [],
-  skills: [],
+  pileCard: [],
+  handCard: [],
+  character: [],
+  combatStatus: [],
+  summon: [],
+  support: [],
+  initiativeSkill: [],
   declaredEnd: false,
   legendUsed: false,
 };
 
-export const EMPTY_STATE_DATA: StateData = {
+export const EMPTY_GAME_STATE: PbGameState = {
   currentTurn: 0,
-  phase: "initHands",
+  phase: 0 /* PbPhaseType.PHASE_INIT_HANDS */,
   roundNumber: 0,
-  winner: null,
-  players: [EMPTY_PLAYER_DATA, EMPTY_PLAYER_DATA],
+  player: [EMPTY_PLAYER_DATA, EMPTY_PLAYER_DATA],
 };
 
 /** 点击“宣布结束”的行为 ID */
@@ -109,11 +114,11 @@ function buildClickableTransferIter(
   selected: number[],
   actions: ClickableActionWithIndex[],
 ): DiceAndSelectionState {
-  switch (actions[0].targets.length) {
+  switch (actions[0].targetIds.length) {
     case 0: {
       return {
         actionIndex: actions[0].index,
-        required: actions[0].cost,
+        required: actions[0].requiredCost,
         selected,
       };
     }
@@ -125,22 +130,22 @@ function buildClickableTransferIter(
         selected,
       };
       for (const a of actions) {
-        clickable.set(a.targets[0], {
+        clickable.set(a.targetIds[0], {
           clickable,
           actionIndex: a.index,
-          required: a.cost,
-          selected: [...selected, a.targets[0]],
+          required: a.requiredCost,
+          selected: [...selected, a.targetIds[0]],
         });
       }
       return root;
     }
     default: {
-      const groupByFirst = groupBy(actions, (a) => a.targets[0]);
+      const groupByFirst = groupBy(actions, (a) => a.targetIds[0]);
       const clickable = new Map<number, DiceAndSelectionState>();
       for (const [k, v] of groupByFirst) {
         const newV = v.map((v) => ({
           ...v,
-          targets: v.targets.toSpliced(0, 1),
+          targets: v.targetIds.toSpliced(0, 1),
         }));
         clickable.set(k, buildClickableTransferIter([...selected, k], newV));
       }
@@ -161,7 +166,9 @@ function buildClickableTransferIter(
 function buildClickableTransferState(
   cardAction: ClickableActionWithIndex[],
 ): Map<number, DiceAndSelectionState> {
-  const grouped = groupBy(cardAction, (v) => ("skill" in v ? v.skill : v.card));
+  const grouped = groupBy(cardAction, (v) =>
+    "skillId" in v ? v.skillId : v.cardId,
+  );
   const result = new Map<number, DiceAndSelectionState>();
   for (const [k, v] of grouped) {
     result.set(k, buildClickableTransferIter([k], v));
@@ -170,7 +177,7 @@ function buildClickableTransferState(
 }
 
 export interface AgentActions {
-  onNotify?: (msg: NotificationMessage) => void;
+  onNotify?: (msg: Notification) => void;
   onSwitchHands: () => Promise<SwitchHandsResponse>;
   onChooseActive: (req: ChooseActiveRequest) => Promise<ChooseActiveResponse>;
   onRerollDice: () => Promise<RerollDiceResponse>;
@@ -181,7 +188,7 @@ export interface AgentActions {
 export interface PlayerContextValue {
   readonly allClickable: readonly number[];
   readonly allSelected: readonly number[];
-  readonly allCosts: Readonly<Record<number, readonly DiceType[]>>;
+  readonly allCosts: Readonly<Record<number, readonly PbDiceRequirement[]>>;
   readonly onClick: (id: number) => void;
   readonly setPrepareTuning: (value: boolean) => void;
   readonly assetApiEndpoint: Accessor<string>;
@@ -189,7 +196,7 @@ export interface PlayerContextValue {
 }
 
 export interface EventContextValue {
-  readonly allDamages: Accessor<readonly DamageData[]>;
+  readonly allDamages: Accessor<readonly DamageEM[]>;
   readonly previewData: Accessor<readonly PreviewData[]>;
   readonly focusing: Accessor<number | null>;
 }
@@ -226,7 +233,7 @@ export function createPlayer(
   io: PlayerIOWithCancellation,
   Chessboard: (props: ComponentProps<"div">) => JSX.Element,
 ] {
-  const [stateData, setStateData] = createSignal(EMPTY_STATE_DATA);
+  const [gameState, setGameState] = createSignal(EMPTY_GAME_STATE);
   const [previewData, setPreviewData] = createSignal<PreviewData[]>([]);
   const [previewing, setPreviewing] = createSignal(false);
   const [mutations, setMutations] = createSignal<ExposedMutation[]>([]);
@@ -250,7 +257,7 @@ export function createPlayer(
     createWaitNotify<void>();
 
   const [allCosts, setAllCosts] = createStore<
-    Record<number, readonly DiceType[]>
+    Record<number, readonly PbDiceRequirement[]>
   >({});
   const [prepareTuning, setPrepareTuning] = createSignal(false);
 
@@ -270,19 +277,21 @@ export function createPlayer(
 
   const action = opt.alternativeAction ?? {
     onNotify: void 0,
-    onSwitchHands: async () => {
-      return { removedHands: await waitHandSwitch() };
+    onSwitchHands: async (): Promise<SwitchHandsResponse> => {
+      return { removedHandIds: await waitHandSwitch() };
     },
-    onRerollDice: async () => {
+    onRerollDice: async (): Promise<RerollDiceResponse> => {
       return { rerollIndexes: await waitReroll() };
     },
-    onSelectCard: async ({ cards }) => {
-      setCardToSelect(cards);
-      return { selected: await waitCardSelect() };
+    onSelectCard: async ({
+      candidateDefinitionIds,
+    }): Promise<SelectCardResponse> => {
+      setCardToSelect(candidateDefinitionIds);
+      return { selectedDefinitionId: await waitCardSelect() };
     },
-    onChooseActive: async ({ candidates }) => {
-      let active = candidates[0];
-      setClickable([...candidates]);
+    onChooseActive: async ({ candidateIds }): Promise<ChooseActiveResponse> => {
+      let activeCharacterId = candidateIds[0];
+      setClickable([...candidateIds]);
       setDiceSelectProp({
         confirmOnly: true,
         disableConfirm: true,
@@ -301,71 +310,67 @@ export function createPlayer(
         }
         if (typeof result === "number") {
           // 点击了角色
-          active = result;
-          setSelected([active]);
+          activeCharacterId = result;
+          setSelected([activeCharacterId]);
         }
         setDiceSelectProp(nextProp);
       }
       setDiceSelectProp();
       setClickable([]);
       setSelected([]);
-      return { active };
+      return { activeCharacterId };
     },
-    onAction: async ({ candidates }) => {
+    onAction: async ({ action: actions }): Promise<ActionResponse> => {
       const player = myPlayer();
       const currentEnergy =
-        player.characters.find((ch) => ch.id === player.activeCharacterId)
+        player.character.find((ch) => ch.id === player.activeCharacterId)
           ?.energy ?? 0;
       const clickableInfos: ClickableActionWithIndex[] = [];
       const initialClickable = new Map<number, DiceAndSelectionState>();
-      const newAllCosts: Record<number, readonly DiceType[]> = {};
-      for (const [action, i] of candidates.map((v, i) => [v, i] as const)) {
-        if (
-          "cost" in action &&
-          action.cost.filter((d) => d === 9 /* energy */).length > currentEnergy
-        ) {
-          // If energy does not meet the requirement, disable it.
-          continue;
-        }
-        switch (action.type) {
-          case "useSkill": {
-            clickableInfos.push({ ...action, index: i });
-            newAllCosts[action.skill] = action.cost;
-            break;
+      const newAllCosts: Record<number, readonly PbDiceRequirement[]> = {};
+      for (const [actionObj, i] of actions.map((v, i) => [v, i] as const)) {
+        if (actionObj.useSkill) {
+          const action = actionObj.useSkill;
+          const energyReq = action.requiredCost.find(
+            ({ type }) => type === 9 /* energy */,
+          );
+          if (energyReq && currentEnergy < energyReq.count) {
+            continue;
           }
-          case "playCard": {
-            clickableInfos.push({ ...action, index: i });
-            newAllCosts[action.card] = action.cost;
-            break;
+          clickableInfos.push({ ...action, index: i });
+          newAllCosts[action.skillId] = action.requiredCost;
+        } else if (actionObj.playCard) {
+          const action = actionObj.playCard;
+          const energyReq = action.requiredCost.find(
+            ({ type }) => type === 9 /* energy */,
+          );
+          if (energyReq && currentEnergy < energyReq.count) {
+            continue;
           }
-          case "switchActive": {
-            initialClickable.set(action.active, {
-              actionIndex: i,
-              required: action.cost,
-              selected: [action.active],
-            });
-            newAllCosts[action.active] = action.cost;
-            break;
-          }
-          case "elementalTuning": {
-            initialClickable.set(
-              action.discardedCard + ELEMENTAL_TUNING_OFFSET,
-              {
-                actionIndex: i,
-                disabledDice: [8 /* omni */, action.target],
-                required: [0 /* void */],
-                selected: [action.discardedCard],
-              },
-            );
-            break;
-          }
-          case "declareEnd": {
-            initialClickable.set(0, {
-              actionIndex: i,
-              required: [],
-              selected: [],
-            });
-          }
+          clickableInfos.push({ ...action, index: i });
+          newAllCosts[action.cardId] = action.requiredCost;
+        } else if (actionObj.switchActive) {
+          const action = actionObj.switchActive;
+          initialClickable.set(action.characterId, {
+            actionIndex: i,
+            required: action.requiredCost,
+            selected: [action.characterId],
+          });
+          newAllCosts[action.characterId] = action.requiredCost;
+        } else if (actionObj.elementalTuning) {
+          const action = actionObj.elementalTuning;
+          initialClickable.set(action.removedCardId + ELEMENTAL_TUNING_OFFSET, {
+            actionIndex: i,
+            disabledDice: [8 /* omni */, action.targetDice],
+            required: [{ type: 0 /* void */, count: 1 }],
+            selected: [action.removedCardId],
+          });
+        } else if (actionObj.declareEnd) {
+          initialClickable.set(0, {
+            actionIndex: i,
+            required: [],
+            selected: [],
+          });
         }
       }
       for (const [k, v] of buildClickableTransferState(clickableInfos)) {
@@ -400,15 +405,19 @@ export function createPlayer(
         }
         setClickable([...(state.clickable?.keys() ?? [])]);
         setSelected([...state.selected]);
-        const chosenIndex = state.actionIndex!;
-        setPreviewData(candidates[chosenIndex].preview);
+        const chosenActionIndex = state.actionIndex!;
+        setPreviewData(
+          (Object.values(
+            actions[chosenActionIndex],
+          )[0] as Action[keyof Action])!.preview,
+        );
 
-        if (candidates[chosenIndex].type === "declareEnd") {
+        if (actions[chosenActionIndex].declareEnd) {
           setClickable([]);
           setSelected([]);
           result = {
-            chosenIndex,
-            cost: [],
+            chosenActionIndex,
+            usedDice: [],
           };
           break;
         }
@@ -423,8 +432,8 @@ export function createPlayer(
           setDiceSelectProp();
           if (Array.isArray(r)) {
             result = {
-              chosenIndex,
-              cost: r,
+              chosenActionIndex,
+              usedDice: r as PbDiceType[],
             };
             break;
           }
@@ -447,8 +456,8 @@ export function createPlayer(
   const io: PlayerIOWithCancellation = {
     notify: (msg) => {
       renderQueue.push(async () => {
-        setStateData(msg.newState);
-        setMutations(msg.mutations);
+        setGameState(msg.state!);
+        setMutations(msg.mutation);
         if (action.onNotify) {
           action.onNotify(msg);
         }
@@ -456,55 +465,52 @@ export function createPlayer(
           console.log(msg);
         }
         if (
-          msg.mutations.filter((mut) =>
-            ["damage", "triggered"].includes(mut.type),
-          ).length > 0
+          msg.mutation.filter((mut) => mut.damage || mut.triggered).length > 0
         ) {
           if (!import.meta.env.DEV) {
-            console.log(msg.mutations);
+            console.log(msg.mutation);
           }
           await new Promise<void>((resolve) => setTimeout(resolve, 500));
         }
       });
     },
-    rpc: async (method, req) => {
+    rpc: async (request) => {
       await renderQueue.push(async () => {});
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      return new Promise<any>((resolve, reject) => {
+      return new Promise<RpcResponse>((resolve, reject) => {
         rejectRpc = (e) => {
           reject(e);
           clearIo();
         };
-        switch (method) {
-          case "switchHands":
-            action.onSwitchHands().then(sanitize).then(resolve).catch(reject);
-            break;
-          case "chooseActive":
-            action
-              .onChooseActive(req as ChooseActiveRequest)
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
-            break;
-          case "rerollDice":
-            action.onRerollDice().then(sanitize).then(resolve).catch(reject);
-            break;
-          case "selectCard":
-            action
-              .onSelectCard(req as SelectCardRequest)
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
-            break;
-          case "action":
-            action
-              .onAction(req as ActionRequest)
-              .then(sanitize)
-              .then(resolve)
-              .catch(reject);
-            break;
-          default:
-            reject("Unknown method");
+        if (request.switchHands) {
+          action
+            .onSwitchHands()
+            .then((r): RpcResponse => ({ switchHands: { ...r } }))
+            .then(resolve)
+            .catch(reject);
+        } else if (request.chooseActive) {
+          action
+            .onChooseActive(request.chooseActive)
+            .then((r): RpcResponse => ({ chooseActive: { ...r } }))
+            .then(resolve)
+            .catch(reject);
+        } else if (request.rerollDice) {
+          action
+            .onRerollDice()
+            .then((r): RpcResponse => ({ rerollDice: { ...r } }))
+            .then(resolve)
+            .catch(reject);
+        } else if (request.selectCard) {
+          action
+            .onSelectCard(request.selectCard)
+            .then((r): RpcResponse => ({ selectCard: { ...r } }))
+            .then(resolve)
+            .catch(reject);
+        } else if (request.action) {
+          action
+            .onAction(request.action)
+            .then((r): RpcResponse => ({ action: { ...r } }))
+            .then(resolve)
+            .catch(reject);
         }
       });
     },
@@ -519,7 +525,7 @@ export function createPlayer(
     }
   });
 
-  const myPlayer = () => stateData().players[who];
+  const myPlayer = () => gameState().player[who];
 
   const tuningDragEnter = (e: DragEvent) => {
     e.preventDefault();
@@ -553,7 +559,7 @@ export function createPlayer(
   const ChessboardWithIO = () => (
     <PlayerContext.Provider value={playerContextValue}>
       <Chessboard
-        stateData={stateData()}
+        state={gameState()}
         who={who}
         mutations={mutations()}
         previewData={previewing() ? previewData() : null}
@@ -613,7 +619,7 @@ export function createPlayer(
         <Show when={handSwitching()}>
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 z-20">
             <SwitchHandsView
-              hands={myPlayer().hands}
+              hands={myPlayer().handCard}
               onConfirm={notifyHandSwitched}
             />
           </div>
@@ -641,7 +647,7 @@ export function createPlayer(
 }
 
 interface ChessboardProps extends ComponentProps<"div"> {
-  stateData: StateData;
+  state: PbGameState;
   mutations?: readonly ExposedMutation[];
   who: 0 | 1;
   children?: JSX.Element;
@@ -653,30 +659,33 @@ function Chessboard(props: ChessboardProps) {
   const { assetApiEndpoint, assetAltText } = usePlayerContext();
   const [local, restProps] = splitProps(props, [
     "class",
-    "stateData",
+    "state",
     "previewData",
     "mutations",
     "who",
     "children",
   ]);
 
-  const [allDamages, setAllDamages] = createSignal<DamageData[]>([]);
+  const [allDamages, setAllDamages] = createSignal<DamageEM[]>([]);
   const [focusing, setFocusing] = createSignal<number | null>(null);
   const previewData = () => local.previewData ?? [];
 
   createEffect(() => {
     let currentFocusing: number | null = null;
-    const currentDamages: DamageData[] = [];
+    const currentDamages: DamageEM[] = [];
     for (const event of local.mutations ?? []) {
-      if (event.type === "damage") {
+      if (event.damage) {
         currentDamages.push(event.damage);
       }
-      if (event.type === "triggered") {
-        currentFocusing = event.id;
+      if (event.triggered) {
+        currentFocusing = event.triggered.entityId;
       }
-      if (event.type === "useCommonSkill") {
-        const text = `${event.who === local.who ? "我方" : "对方"} 使用 ${
-          assetAltText(event.skill) ?? event.skill
+      if (event.actionDone) {
+        const text = `${
+          event.actionDone.who === local.who ? "我方" : "对方"
+        } 使用 ${
+          assetAltText(event.actionDone.skillOrCardDefinitionId!) ??
+          event.actionDone.skillOrCardDefinitionId
         }`;
         setMutationHintTexts((txts) => [text, ...txts]);
       }
@@ -709,12 +718,12 @@ function Chessboard(props: ChessboardProps) {
         >
           <PlayerArea
             who={(1 - local.who) as 0 | 1}
-            data={local.stateData.players[1 - local.who]}
+            data={local.state.player[1 - local.who]}
             opp={true}
           />
           <PlayerArea
             who={local.who}
-            data={local.stateData.players[local.who]}
+            data={local.state.player[local.who]}
             opp={false}
           />
         </div>
@@ -722,7 +731,7 @@ function Chessboard(props: ChessboardProps) {
           <div class="absolute left-5 top--2 translate-y-[-100%] translate-x-[-50%]">
             <Dice
               type={8 /* omni */}
-              text={`${local.stateData.players[1 - local.who].dice.length}`}
+              text={`${local.state.player[1 - local.who].dice.length}`}
               size={32}
             />
           </div>
@@ -730,30 +739,32 @@ function Chessboard(props: ChessboardProps) {
             <div
               class="w-20 h-20 rounded-10 flex flex-col items-center justify-center border-8 border-solid border-yellow-800"
               classList={{
-                "bg-yellow-300": local.stateData.currentTurn === local.who,
-                "bg-blue-200": local.stateData.currentTurn !== local.who,
+                "bg-yellow-300": local.state.currentTurn === local.who,
+                "bg-blue-200": local.state.currentTurn !== local.who,
               }}
             >
-              <div class="text-lg">{local.stateData.roundNumber}</div>
-              <div class="text-sm text-gray">{local.stateData.phase}</div>
+              <div class="text-lg">{local.state.roundNumber}</div>
+              {/* <div class="text-sm text-gray">{local.state.phase}</div> */}
             </div>
           </div>
         </div>
         <div class="absolute right-10 bottom-0 z-12 flex flex-row gap-2">
-          <For each={local.stateData.players[local.who].skills}>
+          <For each={local.state.player[local.who].initiativeSkill}>
             {(skill) => <SkillButton data={skill} />}
           </For>
         </div>
-        <Announcer
+        <MutationAnnouncer
           class="absolute top-10 left-15 h-40 w-50 overflow-auto"
           mutations={local.mutations}
           who={local.who}
-          stateData={local.stateData}
+          state={local.state}
         />
         {local.children}
-        <Show when={!props.previewData && local.stateData.phase === "gameEnd"}>
+        <Show
+          when={!props.previewData && local.state.phase === 5 /* gameEnd */}
+        >
           <div class="absolute left-0 top-0 h-full w-full bg-black bg-opacity-70 text-white text-15 z-20 flex items-center justify-center">
-            {local.stateData.winner === local.who ? "胜利" : "失败"}
+            {local.state.winner === local.who ? "胜利" : "失败"}
           </div>
         </Show>
       </div>
@@ -787,7 +798,7 @@ export function StandaloneChessboard(props: StandaloneChessboardProps) {
     <PlayerContext.Provider value={contextValue()}>
       <Chessboard {...restProps}>
         <div class="absolute right-0 top-0 z-15 h-full min-w-8 flex flex-col bg-yellow-800">
-          <For each={restProps.stateData.players[restProps.who].dice}>
+          <For each={restProps.state.player[restProps.who].dice}>
             {(d) => <Dice type={d} />}
           </For>
         </div>

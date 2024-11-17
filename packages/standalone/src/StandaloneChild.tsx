@@ -52,12 +52,12 @@ export function StandaloneChild() {
         if (!Array.isArray(data.params)) {
           return;
         }
-        const result = await uiIo.rpc(...(data.params as [any, any]));
+        const result = await uiIo.rpc(...(data.params as [any]));
         (e.source as WindowProxy)?.postMessage(
           {
             giTcg: "1.0",
             method: "rpc",
-            result,
+            result: JSON.parse(JSON.stringify(result)),
             id: data.id,
           },
           "*",
