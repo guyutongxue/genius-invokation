@@ -27,12 +27,22 @@ message ChooseActiveRequest {
   repeated sint32 candidate_ids = 1;
 }
 
+message ActionRequest {
+  repeated Action action = 1;
+}
+
 message SelectCardRequest {
   repeated int32 candidate_definition_ids = 1;
 }
 
-message ActionRequest {
-  repeated Action action = 1;
+message Request {
+  oneof request {
+    RerollDiceRequest reroll_dice = 1;
+    SwitchHandsRequest switch_hands = 2;
+    ChooseActiveRequest choose_active = 3;
+    ActionRequest action = 4;
+    SelectCardRequest select_card = 5;
+  }
 }
 
 message RerollDiceResponse {
@@ -47,11 +57,21 @@ message ChooseActiveResponse {
   sint32 active_character_id = 1;
 }
 
+message ActionResponse {
+  int32 chosen_action_index = 1;
+  repeated DiceType used_dice = 2;
+}
+
 message SelectCardResponse {
   sint32 selected_definition_id = 1;
 }
 
-message ActionResponse {
-  int32 chosen_action_index = 1;
-  repeated DiceType used_dice = 2;
+message Response {
+  oneof response {
+    RerollDiceResponse reroll_dice = 1;
+    SwitchHandsResponse switch_hands = 2;
+    ChooseActiveResponse choose_active = 3;
+    ActionResponse action = 4;
+    SelectCardResponse select_card = 5;
+  }
 }

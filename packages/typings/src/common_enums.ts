@@ -13,32 +13,34 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+export { DiceType as PbDiceType, DiceRequirementType as PbDiceRequirementType, DamageType as PbDamageType, AuraType as PbAuraType } from "./gen/enums";
+
 export enum DiceType {
   Void = 0,
   Cryo = 1,
-  Hydro,
-  Pyro,
-  Electro,
-  Anemo,
-  Geo,
-  Dendro,
+  Hydro = 2,
+  Pyro = 3,
+  Electro = 4,
+  Anemo = 5,
+  Geo = 6,
+  Dendro = 7,
   Omni = 8,
-  Same = 8,
-  Energy = 9
+  Aligned = 8,
+  Energy = 9,
+  Legend = 10,
 }
 
 export enum DamageType {
   Physical = 0,
-  Cryo,
-  Hydro,
-  Pyro,
-  Electro,
-  Anemo,
-  Geo,
-  Dendro,
+  Cryo = 1,
+  Hydro = 2,
+  Pyro = 3,
+  Electro = 4,
+  Anemo = 5,
+  Geo = 6,
+  Dendro = 7,
   Piercing = 8,
   Heal = 9,
-  // Revive = 10,
 }
 
 export enum Aura {
@@ -48,25 +50,25 @@ export enum Aura {
   Pyro = 3,
   Electro = 4,
   Dendro = 7,
-  CryoDendro = Aura.Cryo | (Aura.Dendro << 4)
+  CryoDendro = 113, // Aura.Cryo | (Aura.Dendro << 4)
 }
 
 export enum Reaction {
   Melt = 101,
-  Vaporize,
-  Overloaded,
-  Superconduct,
-  ElectroCharged,
-  Frozen,
-  SwirlCryo,
-  SwirlHydro,
-  SwirlPyro,
-  SwirlElectro,
-  CrystallizeCryo,
-  CrystallizeHydro,
-  CrystallizePyro,
-  CrystallizeElectro,
-  Burning,
-  Bloom,
-  Quicken
+  Vaporize = 102,
+  Overloaded = 103,
+  Superconduct = 104,
+  ElectroCharged = 105,
+  Frozen = 106,
+  SwirlCryo = 107,
+  SwirlHydro = 108,
+  SwirlPyro = 109,
+  SwirlElectro = 110,
+  CrystallizeCryo = 111,
+  CrystallizeHydro = 112,
+  CrystallizePyro = 113,
+  CrystallizeElectro = 114,
+  Burning = 115,
+  Bloom = 116,
+  Quicken = 117,
 }
