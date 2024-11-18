@@ -13,20 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { For, Show, createResource, createSignal, onMount } from "solid-js";
-import { UserInfo as UserInfoT, useUserContext } from "../App";
-import { copyToClipboard, getAvatarUrl } from "../utils";
-import axios, { AxiosError } from "axios";
+import { Show } from "solid-js";
+import { UserInfo as UserInfoT } from "../App";
+import { getAvatarUrl } from "../utils";
 import { A } from "@solidjs/router";
 
 export interface UserInfoProps extends UserInfoT {}
 
 export function UserInfo(props: UserInfoProps) {
-  const [username] = createResource<string>(() =>
-    axios
-      .get(`https://api.github.com/user/${props.id}`)
-      .then((r) => r.data.name),
-  );
   const avatarUrl = () => getAvatarUrl(props.id);
   return (
     <div class="flex flex-row container gap-4">
@@ -44,7 +38,7 @@ export function UserInfo(props: UserInfoProps) {
         </div>
         <dl class="flex flex-row gap-4 items-center mb-2">
           <dt class="font-bold">昵称</dt>
-          <dd class="flex flex-row gap-4 items-center h-8">{username()}</dd>
+          <dd class="flex flex-row gap-4 items-center h-8">{props.name}</dd>
         </dl>
         <hr class="h-1 w-full text-gray-4 my-4" />
         <A class="btn btn-ghost" href="/decks">

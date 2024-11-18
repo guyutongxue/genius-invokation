@@ -25,8 +25,8 @@ import { NotFound } from "./pages/NotFound";
 
 export interface UserInfo {
   id: number;
-  name: string;
-  createdAt: string;
+  login: string;
+  name?: string;
   avatarUrl: string;
 }
 
@@ -43,9 +43,7 @@ function App() {
   const refresh = async () => {
     try {
       const { data } = await axios.get<UserInfo>("users/me");
-      const { data: githubData } = await axios.get(`https://api.github.com/user/${data.id}`);
-      data.name = githubData.name;
-      data.avatarUrl = githubData.avatar_url;
+      data.name = data.name ?? data.login;
       setUser(data);
       console.log(data);
     } catch (e) {

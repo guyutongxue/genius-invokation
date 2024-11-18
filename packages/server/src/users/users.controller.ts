@@ -25,10 +25,8 @@ import {
   ParseIntPipe,
   Post,
 } from "@nestjs/common";
-import { UsersService } from "./users.service";
+import { UsersService, type UserInfo } from "./users.service";
 import { User } from "../auth/user.decorator";
-import { Public } from "../auth/auth.guard";
-import type { User as UserModel } from "@prisma/client";
 
 @Controller("users")
 export class UsersController {
@@ -37,7 +35,7 @@ export class UsersController {
   ) {}
 
   @Get("me")
-  async me(@User() userId: number): Promise<UserModel> {
+  async me(@User() userId: number): Promise<UserInfo> {
     const user = await this.users.findById(userId);
     if (!user) {
       throw new NotFoundException();
@@ -46,7 +44,7 @@ export class UsersController {
   }
 
   @Get(":id")
-  async getUser(@Param("id", ParseIntPipe) id: number): Promise<UserModel> {
+  async getUser(@Param("id", ParseIntPipe) id: number): Promise<UserInfo> {
     const user = await this.users.findById(id);
     if (!user) {
       throw new NotFoundException();

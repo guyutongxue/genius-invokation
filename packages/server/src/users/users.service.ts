@@ -19,6 +19,15 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
 import { type User as UserModel } from "@prisma/client";
+import axios from "axios";
+import { GET_USER_API_URL } from "../auth/auth.service";
+
+export interface UserInfo {
+  id: number;
+  login: string;
+  name?: string;
+  avatarUrl: string;
+}
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -26,17 +35,36 @@ export class UsersService implements OnModuleInit {
 
   async onModuleInit() {}
 
-  async findById(id: number): Promise<UserModel | null> {
-    return await this.prisma.user.findFirst({
+  async findById(id: number): Promise<UserInfo | null> {
+    const user = await this.prisma.user.findFirst({
       where: { id },
     });
+    if (!user) {
+      return null;
+    }
+    const userResponse = await axios.get(GET_USER_API_URL, {
+      headers: {
+        Authorization: `Bearer ${user.ghToken}`,
+        Accept: `application/vnd.github+json`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    if (userResponse.status !== 200) {
+      return null;
+    }
+    return {
+      id: user.id,
+      login: userResponse.data.login,
+      name: userResponse.data.name,
+      avatarUrl: userResponse.data.avatar_url,
+    };
   }
 
-  async create(id: number) {
+  async create(id: number, ghToken: string) {
     await this.prisma.user.upsert({
       where: { id },
-      create: { id },
-      update: {},
+      create: { id, ghToken },
+      update: { ghToken },
     });
   }
 }

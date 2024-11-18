@@ -60,7 +60,7 @@ import type {
   PlayerActionResponseDto,
 } from "./rooms.controller";
 import { DecksService } from "../decks/decks.service";
-import { UsersService } from "../users/users.service";
+import { UsersService, type UserInfo } from "../users/users.service";
 import { GamesService } from "../games/games.service";
 import type { User } from "@prisma/client";
 
@@ -148,7 +148,7 @@ class Player implements PlayerIOWithError {
     this.rpcSseSource,
   );
   constructor(
-    public readonly user: User,
+    public readonly user: UserInfo,
     public readonly deck: Deck,
   ) {}
 

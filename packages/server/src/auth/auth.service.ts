@@ -18,8 +18,8 @@ import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 
-const CODE_EXCHANGE_URL = process.env.GH_CODE_EXCHANGE_URL ?? `https://github.com/login/oauth/access_token`;
-const GET_USER_API_URL = process.env.GH_GET_USER_API_URL ?? `https://api.github.com/user`;
+export const CODE_EXCHANGE_URL = process.env.GH_CODE_EXCHANGE_URL ?? `https://github.com/login/oauth/access_token`;
+export const GET_USER_API_URL = process.env.GH_GET_USER_API_URL ?? `https://api.github.com/user`;
 
 @Injectable()
 export class AuthService {
@@ -55,12 +55,13 @@ export class AuthService {
     }
     return {
       id: userResponse.data.id,
+      ghToken: accessToken,
     };
   }
 
   async login(code: string) {
-    const { id } = await this.getGitHubId(code);
-    await this.users.create(id);
+    const { id, ghToken } = await this.getGitHubId(code);
+    await this.users.create(id, ghToken);
     const payload = { sub: id };
     return {
       accessToken: await this.jwtService.signAsync(payload),
