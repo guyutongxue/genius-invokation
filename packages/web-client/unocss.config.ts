@@ -29,4 +29,9 @@ export default defineConfig({
       primary: "yellow"
     }),
   ],
+  content: {
+    filesystem: [
+      'src/**/*.{html,js,ts,jsx,tsx,vue,svelte,astro}',
+    ],
+  },
 });

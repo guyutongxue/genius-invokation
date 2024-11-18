@@ -7,7 +7,9 @@
     "dev": "bun --watch ./src/main.ts",
     "check": "tsc",
     "debug": "nest start --debug --watch",
-    "start": "pm2 start pm2.config.cjs"
+    "start": "pm2 start pm2.config.cjs",
+    "stop": "pm2 stop '@gi-tcg/server'",
+    "restart": "pm2 restart '@gi-tcg/server'"
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
