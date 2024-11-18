@@ -59,11 +59,6 @@ export type Writable<T> = {
 
 export function getEntityById(state: GameState, id: number): AnyState {
   for (const player of state.players) {
-    for (const card of player.hands) {
-      if (card.id === id) {
-        return card;
-      }
-    }
     for (const ch of player.characters) {
       if (ch.id === id) {
         return ch;
@@ -78,6 +73,7 @@ export function getEntityById(state: GameState, id: number): AnyState {
       "combatStatuses",
       "summons",
       "supports",
+      "hands",
       "removedEntities",
     ] as const) {
       const area = player[key];

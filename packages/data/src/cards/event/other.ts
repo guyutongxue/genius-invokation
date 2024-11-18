@@ -430,6 +430,17 @@ export const TheBestestTravelCompanion = card(332001)
   .done();
 
 /**
+ * @id 303202
+ * @name 换班时间（生效中）
+ * @description
+ * 我方下次执行「切换角色」行动时：少花费1个元素骰。
+ */
+export const ChangingShiftsInEffect = combatStatus(303202)
+  .once("deductOmniDiceSwitch")
+  .deductOmniCost(1)
+  .done();
+
+/**
  * @id 332002
  * @name 换班时间
  * @description
@@ -438,9 +449,7 @@ export const TheBestestTravelCompanion = card(332001)
 export const ChangingShifts = card(332002)
   .since("v3.3.0")
   .filter((c) => c.$(`my standby characters`))
-  .toCombatStatus(303202)
-  .once("deductOmniDiceSwitch")
-  .deductOmniCost(1)
+  .combatStatus(ChangingShiftsInEffect)
   .done();
 
 /**
@@ -1614,6 +1623,53 @@ export const EremiteTeatime = card(332040)
       const cards = c.state.data.cards.values().filter((card) => card.tags.includes("food")).toArray();
       const candidates = c.randomSubset(cards, 3);
       c.selectAndCreateHandCard(candidates);
+    }
+  })
+  .done();
+
+/**
+ * @id 112131
+ * @name 激愈水球·大
+ * @description
+ * 抓到此牌时：治疗我方出战角色3点。生成1张激愈水球·中，将其置于对方牌库顶部第2张牌的位置。
+ */
+const LargeBolsteringBubblebalm = void 0;
+
+/**
+ * @id 112132
+ * @name 激愈水球·中
+ * @description
+ * 抓到此牌时：对所在阵营的出战角色造成2点水元素伤害。生成1张激愈水球·小，将其置于对方牌库顶部。
+ */
+const MediumBolsteringBubblebalm = void 0;
+
+/**
+ * @id 112133
+ * @name 激愈水球·小
+ * @description
+ * 抓到此牌时：治疗所有我方角色1点，生成源水之滴。
+ */
+const SmallBolsteringBubblebalm = void 0;
+
+/**
+ * @id 332041
+ * @name 强劲冲浪拍档！
+ * @description
+ * 双方场上至少存在合计2个「召唤物」时，才能打出：随机触发我方和敌方各1个「召唤物」的「结束阶段」效果。
+ */
+export const UltimateSurfingBuddy = card(332041)
+  .since("v5.2.0")
+  .filter((c) => c.$$(`all summons`).length >= 2)
+  .do((c) => {
+    const mySummons = c.$$(`my summons`);
+    if (mySummons.length > 0) {
+      const mySummon = c.random(mySummons);
+      c.triggerEndPhaseSkill(mySummon.state);
+    }
+    const oppSummons = c.$$(`opp summons`);
+    if (oppSummons.length > 0) {
+      const oppSummon = c.random(oppSummons);
+      c.triggerEndPhaseSkill(oppSummon.state);
     }
   })
   .done();

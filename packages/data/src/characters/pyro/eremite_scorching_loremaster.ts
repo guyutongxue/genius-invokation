@@ -148,3 +148,21 @@ export const Scorpocalypse = card(223031)
   .on("roundEnd")
   .combatStatus(ScorpionBlessing)
   .done();
+
+/**
+ * @id 123033
+ * @name 炎之魔蝎·守势
+ * @description
+ * 厄灵·炎之魔蝎在场时：所附属角色受到的伤害-1。（每回合1次）
+ */
+export const PyroScorpionGuardianStance01 = status(123033)
+  .reserve();
+
+/**
+ * @id 123034
+ * @name 炎之魔蝎·守势
+ * @description
+ * 魔蝎祝福在场时：所附属角色受到的伤害-1。（每回合至多2次）
+ */
+export const PyroScorpionGuardianStance = status(123034)
+  .reserve();

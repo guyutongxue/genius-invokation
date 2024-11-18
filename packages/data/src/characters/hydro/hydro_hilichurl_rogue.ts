@@ -35,6 +35,7 @@ export const MistBubblePrison = status(122052)
  * 造成1点水元素伤害，敌方出战角色附属水泡围困。
  */
 export const MistBubbleLockdown = skill(1220512)
+  .prepared()
   .damage(DamageType.Hydro, 1)
   .characterStatus(MistBubblePrison, "opp active")
   .done();

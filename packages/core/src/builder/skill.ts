@@ -68,12 +68,13 @@ import {
   TargetQuery,
 } from "./card";
 
-export type BuilderMetaBase = Omit<
+export type TriggeredBuilderMetaBase = Omit<
   ContextMetaBase,
-  "readonly" | "callerType"
+  "readonly"
 > & {
   callerType: "character" | EntityType;
 };
+export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
 export type ReadonlyMetaOf<BM extends BuilderMetaBase> = {
   [K in keyof BuilderMetaBase]: BM[K];
 } & { readonly: true };
@@ -633,7 +634,7 @@ export interface UsageOptions<Name extends string> extends VariableOptions {
 }
 
 export class TriggeredSkillBuilder<
-  Meta extends BuilderMetaBase,
+  Meta extends TriggeredBuilderMetaBase,
   EventName extends DetailedEventNames,
 > extends SkillBuilder<Meta> {
   constructor(

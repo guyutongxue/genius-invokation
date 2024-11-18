@@ -91,11 +91,28 @@ export const CatalyzingField = combatStatus(117)
  */
 export const BondOfLife = status(122)
   .on("beforeHealed", (c, e) => e.damageInfo.healKind !== "revive" && e.damageInfo.healKind !== "distribution")
-  .usageCanAppend(1)
+  .usage(1, {
+    append: { limit: Infinity },
+    autoDecrease: false,
+  })
   .do((c, e) => {
     const deducted = Math.max(c.getVariable("usage"), e.damageInfo.value);
     e.decreaseHeal(deducted);
     c.consumeUsage(deducted);
+  })
+  .done();
+
+/**
+ * @id 130
+ * @name 最大生命提高
+ * @description
+ * 每层提高此角色的最大生命值1点。
+ */
+export const MaxHPIncrease = status(130)
+  .variableCanAppend("value", 1, Infinity)
+  .on("enter")
+  .do((c) => {
+    c.increaseMaxHealth(1, "@master");
   })
   .done();
 

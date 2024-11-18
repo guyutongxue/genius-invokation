@@ -13,11 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  CharacterState,
-  EntityState,
-  GameState,
-} from "../base/state";
+import { CharacterState, EntityState, GameState } from "../base/state";
 import {
   CardTag,
   InitiativeSkillTargetKind,
@@ -33,6 +29,7 @@ import {
 } from "../base/entity";
 import {
   DisposeOrTuneCardEventArg,
+  DrawCardEventArg,
   InitiativeSkillDefinition,
   InitiativeSkillEventArg,
   SkillDefinition,
@@ -86,7 +83,7 @@ type InitiativeSkillBuilderMeta<
   KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle,
 > = {
-  callerType: "character";
+  callerType: "character" | "card";
   callerVars: never;
   eventArgType: StrictInitiativeSkillEventArg<KindTs>;
   associatedExtension: AssociatedExt;
@@ -129,7 +126,7 @@ class CardBuilder<
   KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle = never,
 > extends SkillBuilderWithCost<{
-  callerType: "character";
+  callerType: "card";
   callerVars: never;
   eventArgType: StrictInitiativeSkillEventArg<KindTs>;
   associatedExtension: AssociatedExt;
@@ -141,6 +138,7 @@ class CardBuilder<
    * `null` 表明不添加（不是料理牌或者手动指定）
    */
   private _satiatedTarget: string | null = null;
+  private _descriptionOnDraw = false;
   private _doSameWhenDisposed = false;
   private _disposeOperation: SkillOperation<
     DisposeCardBuilderMeta<AssociatedExt>
@@ -364,9 +362,9 @@ class CardBuilder<
   }
 
   doSameWhenDisposed() {
-    if (this._disposeOperation !== null) {
+    if (this._disposeOperation || this._descriptionOnDraw) {
       throw new GiTcgDataError(
-        `Cannot specify dispose action when using .doSameWhenDisposed().`,
+        `Cannot specify dispose action when using .onDispose() or .descriptionOnDraw().`,
       );
     }
     if (this._targetQueries.length > 0) {
@@ -377,10 +375,24 @@ class CardBuilder<
     this._doSameWhenDisposed = true;
     return this;
   }
-  onDispose(op: SkillOperation<DisposeCardBuilderMeta<AssociatedExt>>) {
-    if (this._doSameWhenDisposed) {
+  descriptionOnDraw() {
+    if (this._doSameWhenDisposed || this._disposeOperation) {
       throw new GiTcgDataError(
-        `Cannot specify dispose action when using .doSameWhenDisposed().`,
+        `Cannot specify descriptionOnDraw when using .doSameWhenDisposed() or .onDispose().`,
+      );
+    }
+    if (this._targetQueries.length > 0) {
+      throw new GiTcgDataError(
+        `Cannot specify targets when using .descriptionOnDraw().`,
+      );
+    }
+    this._descriptionOnDraw = true;
+    return this;
+  }
+  onDispose(op: SkillOperation<DisposeCardBuilderMeta<AssociatedExt>>) {
+    if (this._doSameWhenDisposed || this._descriptionOnDraw) {
+      throw new GiTcgDataError(
+        `Cannot specify dispose action when using .doSameWhenDisposed() or .descriptionOnDraw().`,
       );
     }
     this._disposeOperation = op;
@@ -400,8 +412,6 @@ class CardBuilder<
     const skills: SkillDefinition[] = [];
 
     const targetGetter = this.buildTargetGetter();
-    const action = this.buildAction<InitiativeSkillEventArg>();
-    const filter = this.buildFilter<InitiativeSkillEventArg>();
     if (this._doSameWhenDisposed || this._disposeOperation !== null) {
       const disposeOp = this._disposeOperation;
       const disposeAction = disposeOp
@@ -425,30 +435,69 @@ class CardBuilder<
         initiativeSkillConfig: null,
         action: disposeAction,
         filter: (st, info, arg) => {
-          return info.caller.id === arg.entity.id && arg.method !== "elementalTuning";
+          return (
+            info.caller.id === arg.entity.id && arg.method !== "elementalTuning"
+          );
         },
         usagePerRoundVariableName: null,
       };
       skills.push(disposeDef);
     }
-    const skillDef: InitiativeSkillDefinition = {
-      type: "skill",
-      id: this.cardId + 0.01,
-      triggerOn: "initiative",
-      initiativeSkillConfig: {
-        skillType: "playCard",
-        requiredCost: normalizeCost(this._cost),
-        computed$costSize: costSize(this._cost),
-        computed$diceCostSize: diceCostSize(this._cost),
-        gainEnergy: false,
-        prepared: false,
-        getTarget: targetGetter,
-      },
-      filter,
-      action,
-      usagePerRoundVariableName: null,
-    };
-    skills.push(skillDef);
+    if (this._descriptionOnDraw) {
+      this.do((c) => {
+        c.disposeCard(c.self.state);
+      });
+      const drawSkillDef: TriggeredSkillDefinition<"onDrawCard"> = {
+        type: "skill",
+        id: this.cardId + 0.03,
+        triggerOn: "onDrawCard",
+        initiativeSkillConfig: null,
+        filter: (st, info, arg) => {
+          return info.caller.id === arg.card.id;
+        },
+        action: this.buildAction<DrawCardEventArg>(),
+        usagePerRoundVariableName: null,
+      }
+      const skillDef: InitiativeSkillDefinition = {
+        type: "skill",
+        id: this.cardId + 0.01,
+        triggerOn: "initiative",
+        initiativeSkillConfig: {
+          skillType: "playCard",
+          requiredCost: normalizeCost(this._cost),
+          computed$costSize: costSize(this._cost),
+          computed$diceCostSize: diceCostSize(this._cost),
+          gainEnergy: false,
+          prepared: false,
+          getTarget: () => [],
+        },
+        filter: () => false,
+        action: (st) => [st, []],
+        usagePerRoundVariableName: null,
+      }
+      skills.push(skillDef, drawSkillDef);
+    } else {
+      const action = this.buildAction<InitiativeSkillEventArg>();
+      const filter = this.buildFilter<InitiativeSkillEventArg>();
+      const skillDef: InitiativeSkillDefinition = {
+        type: "skill",
+        id: this.cardId + 0.01,
+        triggerOn: "initiative",
+        initiativeSkillConfig: {
+          skillType: "playCard",
+          requiredCost: normalizeCost(this._cost),
+          computed$costSize: costSize(this._cost),
+          computed$diceCostSize: diceCostSize(this._cost),
+          gainEnergy: false,
+          prepared: false,
+          getTarget: targetGetter,
+        },
+        filter,
+        action,
+        usagePerRoundVariableName: null,
+      };
+      skills.push(skillDef);
+    }
     const cardDef: CardDefinition = {
       __definition: "cards",
       type: "card",

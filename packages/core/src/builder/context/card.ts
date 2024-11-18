@@ -27,6 +27,9 @@ export class Card<Meta extends ContextMetaBase> {
   ) {
     this.area = getEntityArea(this.skillContext.state, this.id);
   }
+  get who() {
+    return this.area.who;
+  }
   
   get state(): CardState {
     return getEntityById(this.skillContext.state, this.id) as CardState;

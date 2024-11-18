@@ -952,3 +952,19 @@ export const ConductorsTopHat = card(312030)
     c.characterStatus(ConductorsTopHatInEffect, "@master");
   })
   .done();
+
+/**
+ * @id 312031
+ * @name 少女易逝的芳颜
+ * @description
+ * 附属角色受到圣遗物以外的治疗后：治疗我方受伤最多的角色1点。（每回合至多触发2次）
+ * （角色最多装备1件「圣遗物」）
+ */
+export const MaidensFadingBeauty = card(312031)
+  .since("v5.2.0")
+  .costSame(1)
+  .artifact()
+  .on("healed", (c, e) => !(e.source.definition.type === "equipment" && e.source.definition.tags.includes("artifact")))
+  .usagePerRound(2)
+  .heal(1, "my characters order by health - maxHealth limit 1")
+  .done();

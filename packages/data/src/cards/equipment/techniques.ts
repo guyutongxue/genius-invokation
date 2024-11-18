@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { CardDefinition } from "@gi-tcg/core";
 import { card, DamageType, status } from "@gi-tcg/core/builder";
 
 /**
@@ -165,4 +166,32 @@ export const Tepetlisaurus = card(313004)
     return c.player.hands.some((card) => !c.isInInitialPile(card));
   })
   .characterStatus(DiggingDownToPaydirt, "@master")
+  .done();
+
+/**
+ * @id 313005
+ * @name 暝视龙
+ * @description
+ * 特技：灵性援护
+ * 可用次数：2
+ * （角色最多装备1个「特技」）
+ * 【3130051: 灵性援护】从「场地」「道具」「料理」中挑选1张加入手牌，并且治疗附属角色1点。
+ */
+export const Iktomisaurus = card(313005)
+  .since("v5.2.0")
+  .costSame(2)
+  .technique()
+  .provideSkill(3130051)
+  .usage(2)
+  .costSame(1)
+  .heal(1, "@master")
+  .do((c) => {
+    const tags = ["place", "item", "food"] as const;
+    const candidates: CardDefinition[] = [];
+    for (const tag of tags) {
+      const def = c.random(c.state.data.cards.values().filter((card) => card.tags.includes(tag)).toArray());
+      candidates.push(def);
+    }
+    c.selectAndCreateHandCard(candidates);
+  })
   .done();

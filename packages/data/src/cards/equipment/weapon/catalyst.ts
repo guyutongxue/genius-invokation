@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { DamageType, DiceType, card, status } from "@gi-tcg/core/builder";
+import { BondOfLife } from "../../../commons";
 
 /**
  * @id 311101
@@ -224,3 +225,35 @@ export const CashflowSupervision = card(311109)
  */
 export const TombOfTheEternalFlow = card(133099) // 骗骗花
   .reserve();
+
+/**
+ * @id 301112
+ * @name 纯水流华（生效中）
+ * @description
+ * 所附属角色下次造成的伤害+1。
+ */
+export const FlowingPurityInEffect = status(301112)
+  .once("increaseSkillDamage")
+  .increaseDamage(1)
+  .done();
+
+/**
+ * @id 311110
+ * @name 纯水流华
+ * @description
+ * 入场时和回合结束时：角色附属1层生命之契。
+ * 双方选择行动前：所附属角色如果未附属生命之契，则生成1个随机基础元素骰，并且角色下次造成的伤害+1。（每回合1次）
+ * （「法器」角色才能装备。角色最多装备1件「武器」）
+ */
+export const FlowingPurity = card(311110)
+  .since("v5.2.0")
+  .costSame(1)
+  .weapon("catalyst")
+  .on("enter")
+  .characterStatus(BondOfLife, "@master")
+  .on("beforeAction", (c) => !c.self.master().hasStatus(BondOfLife))
+  .listenToAll()
+  .usagePerRound(1)
+  .generateDice("randomElement", 1)
+  .characterStatus(FlowingPurityInEffect, "@master")
+  .done();

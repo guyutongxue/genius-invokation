@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,22 +24,22 @@ import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
 import { createPlayer } from "./index";
 
 const deck0: DeckConfig = {
-  characters: [2204, 1313, 1403],
+  characters: [2404, 2603, 2304],
   cards: [
-    323008, 
-    332020, 332014, 332004, 332018, 332005, 332006, 332024, 332010, 331804,
-    332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
-    332019, 331803, 332003, 332007, 332022, 331801, 332011, 
+    223041, 223041, 226031, 226031, 312009, 312009, 312010, 312010, 313002,
+    313002, 321002, 321004, 321017, 321017, 322008, 322012, 322012, 322025,
+    330007, 332004, 332004, 332006, 332032, 332032, 332041, 332041, 333003,
+    333003, 333009, 333011,
   ],
   noShuffle: import.meta.env.DEV,
 };
 const deck1: DeckConfig = {
-  characters: [1609, 1201, 1303],
+  characters: [1213, 1111, 1210],
   cards: [
-    333015, 332009, 332002, 331602, 331302, 331402, 331502, 331102, 331202,
-    331702, 331301, 331101, 331601, 331401, 331201, 331701, 331501, 332016,
-    332023, 332017, 332012, 332021, 332013, 332008, 331802, 332004, 332001,
-    332019, 331803, 332003, 332007, 332022, 331801, 332011, 330006, 330005,
+    311105, 311105, 311110, 311110, 311205, 312023, 312023, 312031, 312031,
+    321004, 321004, 321024, 321024, 322018, 322018, 330007, 331202, 331202,
+    332004, 332004, 332006, 332006, 332025, 332031, 332032, 332032, 332040,
+    332040, 333015, 333015,
   ],
   noShuffle: import.meta.env.DEV,
 };
@@ -54,8 +54,10 @@ function App() {
     decks: [deck0, deck1],
   });
   const game = new Game(state);
-  game.onPause = async () => { setDetailLog([...game.detailLog]); },
-  game.players[0].io = io0;
+  (game.onPause = async () => {
+    setDetailLog([...game.detailLog]);
+  }),
+    (game.players[0].io = io0);
   game.players[0].config.alwaysOmni = true;
   game.players[0].config.allowTuningAnyDice = true;
   game.players[1].io = io1;

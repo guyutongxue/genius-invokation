@@ -324,3 +324,18 @@ export const SaurusCrackers = card(333016)
   .once("deductOmniDiceTechnique")
   .deductOmniCost(1)
   .done();
+
+/**
+ * @id 333017
+ * @name 宝石闪闪
+ * @description
+ * 目标角色获得1点额外最大生命值。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+export const GlitteringGemstones = card(333017)
+  .since("v5.2.0")
+  .costSame(1)
+  .tags("food")
+  .food()
+  .increaseMaxHealth(1, "@targets.0")
+  .done();

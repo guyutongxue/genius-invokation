@@ -558,3 +558,18 @@ export const StageTepetl = card(321023)
     }
   })
   .done();
+
+/**
+ * @id 321024
+ * @name 「悬木人」
+ * @description
+ * 我方打出名称不存在于本局最初牌组的牌时：如果打出的牌原本元素骰费用不低于此牌的「极限运动点」，则生成1个随机基础元素骰，然后此牌累积1个「极限运动点」。
+ */
+export const ScionsOfTheCanopy = card(321024)
+  .since("v5.2.0")
+  .support("place")
+  .variable("point", 0)
+  .on("playCard", (c, e) => !c.isInInitialPile(e.card) && diceCostOfCard(e.card.definition) >= c.getVariable("point"))
+  .generateDice("randomElement", 1)
+  .addVariable("point", 1)
+  .done();
