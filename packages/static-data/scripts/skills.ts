@@ -75,8 +75,11 @@ for (const filename of fileList) {
       if (key in PROPERTIES_KEY_MAP) {
         let value = VALUE_GRABBER[PROPERTIES_KEY_MAP[key]](kobj);
         if (typeof value === "undefined") {
-          // D__KEY__ELEMENT 可空（即物理伤害）
-          if (PROPERTIES_KEY_MAP[key] !== "D__KEY__ELEMENT") {
+          if (PROPERTIES_KEY_MAP[key] === "D__KEY__ELEMENT") {
+            // D__KEY__ELEMENT 可空（即物理伤害）
+          } else if (dataName.startsWith("Char_Skill_7")) {
+            // 自走棋角色技能
+          } else {
             console.log(
               `loadTcgSkillKeyMap ${dataName}.json failed to extract ${PROPERTIES_KEY_MAP[key]}`,
             );

@@ -95,6 +95,10 @@ export async function collateCharacters(
     let isWanderer = false;
 
     const id = obj.id;
+    if (Math.floor(id / 1000) === 7) {
+      // 自走棋角色，别闹
+      continue;
+    }
 
     if (locale[obj.nameTextMapHash].includes("ID(1)")) isWanderer = true;
 

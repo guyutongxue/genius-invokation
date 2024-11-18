@@ -79,6 +79,10 @@ export function collateActionCards(langCode: string) {
     }
 
     const id = obj.id;
+    if ([52, 53, 54, 17].includes(Math.floor(id / 10000))) {
+      // 热斗模式
+      continue;
+    }
     const type = obj.cardType;
     const [name, englishName] = [locale, english].map((lc) =>
       sanitizeName(lc[obj.nameTextMapHash] ?? ""),

@@ -201,6 +201,264 @@
     "buffIconHash": "17411196798091326019"
   },
   {
+    "id": 130,
+    "type": "GCG_CARD_STATE",
+    "name": "最大生命提高",
+    "englishName": "Max HP Increase",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "每层提高此角色的最大生命值1点。",
+    "description": "每层提高此角色的最大生命值1点。",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Common_Barrier",
+    "buffIconHash": "3200411659709162179"
+  },
+  {
+    "id": 131,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "激化领域",
+    "englishName": "Catalyzing Field",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "每层使得我方造成的$[K104]或$[K107]+1。",
+    "description": "每层使得我方造成的雷元素伤害或草元素伤害+1。",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Reaction_117",
+    "buffIconHash": "1435833357154190054"
+  },
+  {
+    "id": 132,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "草原核",
+    "englishName": "Dendro Core",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "到达4层后，每次我方触发绽放反应，敌方全体受到2点穿透伤害。",
+    "description": "到达4层后，每次我方触发绽放反应，敌方全体受到2点穿透伤害。",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Reaction_116",
+    "buffIconHash": "3150306063293112355"
+  },
+  {
+    "id": 133,
+    "type": "GCG_CARD_STATE",
+    "name": "持续燃烧",
+    "englishName": "Perpetual Burn",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>附属角色使用技能后：</color>每层对附属角色造成1点$[K103]。（可叠加，没有上限）。",
+    "description": "附属角色使用技能后：每层对附属角色造成1点火元素伤害。（可叠加，没有上限）。",
+    "buffType": "GCG_STATE_BUFF_NEGATIVE",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Common_Element_Fire",
+    "buffIconHash": "6240999780642787685"
+  },
+  {
+    "id": 134,
+    "type": "GCG_CARD_STATE",
+    "name": "护盾",
+    "englishName": "Shields",
+    "tags": [
+      "GCG_TAG_SHEILD"
+    ],
+    "skills": [],
+    "rawDescription": "每层抵消1点此角色受到的伤害。（可叠加，没有上限）。",
+    "description": "每层抵消1点此角色受到的伤害。（可叠加，没有上限）。",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Shield",
+    "buffIconHash": "3779803221919782355"
+  },
+  {
+    "id": 135,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "护盾",
+    "englishName": "Shields",
+    "tags": [
+      "GCG_TAG_SHEILD"
+    ],
+    "skills": [],
+    "rawDescription": "为我方出战角色提供<color=#FFFFFFFF>1点$[K6]</color>。（可叠加，没有上限）",
+    "description": "为我方出战角色提供1点护盾。（可叠加，没有上限）",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Shield",
+    "buffIconHash": "3779803221919782355"
+  },
+  {
+    "id": 136,
+    "type": "GCG_CARD_STATE",
+    "name": "攻击力提高",
+    "englishName": "ATK Increase",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "每层提高此角色的攻击力1点",
+    "description": "每层提高此角色的攻击力1点",
+    "shownToken": "GCG_TOKEN_ABC_ATK",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Atk_Up",
+    "buffIconHash": "1717076279127341445"
+  },
+  {
+    "id": 137,
+    "type": "GCG_CARD_STATE",
+    "name": "受到伤害减半",
+    "englishName": "Halves DMG taken",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "角色受到的伤害减半。（向上取整）",
+    "description": "角色受到的伤害减半。（向上取整）",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Common_Barrier",
+    "buffIconHash": "3200411659709162179"
+  },
+  {
+    "id": 138,
+    "type": "GCG_CARD_STATE",
+    "name": "受到伤害减半",
+    "englishName": "Halves DMG taken",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "角色受到的伤害减半。（向上取整）",
+    "description": "角色受到的伤害减半。（向上取整）",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Common_Barrier",
+    "buffIconHash": "3200411659709162179"
+  },
+  {
+    "id": 139,
+    "type": "GCG_CARD_STATE",
+    "name": "攻击力降低",
+    "englishName": "ATK Decrease",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "攻击力下降，角色下次行动后移除。（可叠加，没有上限）",
+    "description": "攻击力下降，角色下次行动后移除。（可叠加，没有上限）",
+    "buffType": "GCG_STATE_BUFF_NEGATIVE",
+    "shownToken": "GCG_TOKEN_ABC_ATK_DOWN",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Debuff",
+    "buffIconHash": "10729278471473375226"
+  },
+  {
+    "id": 140,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "冰元素伤害增加",
+    "englishName": "Cryo DMG Bonus",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "我方角色和召唤物本回合造成的<color=#FFFFFFFF>$[K151]</color>增加。（扩散伤害除外）",
+    "description": "我方角色和召唤物本回合造成的冰元素伤害增加。（扩散伤害除外）",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Atk_Up_Ice",
+    "buffIconHash": "12254757871367105629"
+  },
+  {
+    "id": 141,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "水元素伤害增加",
+    "englishName": "Hydro DMG Bonus",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "我方角色和召唤物本回合造成的<color=#FFFFFFFF>$[K152]</color>增加。（扩散伤害除外）",
+    "description": "我方角色和召唤物本回合造成的水元素伤害增加。（扩散伤害除外）",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Atk_Up_Water",
+    "buffIconHash": "5025369979990014013"
+  },
+  {
+    "id": 142,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "火元素伤害增加",
+    "englishName": "Pyro DMG Bonus",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "我方角色和召唤物本回合造成的<color=#FFFFFFFF>$[K103]</color>增加。（扩散伤害除外）",
+    "description": "我方角色和召唤物本回合造成的火元素伤害增加。（扩散伤害除外）",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Atk_Up_Fire",
+    "buffIconHash": "1389332644098324264"
+  },
+  {
+    "id": 143,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "雷元素伤害增加",
+    "englishName": "Electro DMG Bonus",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "我方角色和召唤物本回合造成的<color=#FFFFFFFF>$[K104]</color>增加。（扩散伤害除外）",
+    "description": "我方角色和召唤物本回合造成的雷元素伤害增加。（扩散伤害除外）",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Element_Atk_Up_Elec",
+    "buffIconHash": "12298399737515936658"
+  },
+  {
+    "id": 144,
+    "type": "GCG_CARD_STATE",
+    "name": "持续电击",
+    "englishName": "Stormstream",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>附属角色使用技能后：</color>每层对附属角色造成1点$[K5]。（可叠加，没有上限）\\n<color=#FFFFFFFF>结束阶段：</color>层数减半。",
+    "description": "附属角色使用技能后：每层对附属角色造成1点穿透伤害。（可叠加，没有上限）\n结束阶段：层数减半。",
+    "buffType": "GCG_STATE_BUFF_NEGATIVE",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Dot",
+    "buffIconHash": "2018013804103745197"
+  },
+  {
+    "id": 145,
+    "type": "GCG_CARD_STATE",
+    "name": "受到伤害减半",
+    "englishName": "Halves DMG taken",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "角色受到的伤害减半。（向上取整）",
+    "description": "角色受到的伤害减半。（向上取整）",
+    "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Common_Barrier",
+    "buffIconHash": "3200411659709162179"
+  },
+  {
+    "id": 146,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "我方出战受到伤害减半",
+    "englishName": "Your active character receives -50% DMG",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "我方出战角色受到的伤害减半。（向上取整）",
+    "description": "我方出战角色受到的伤害减半。（向上取整）",
+    "hidden": true,
+    "buffIcon": "UI_Gcg_Buff_Common_Barrier",
+    "buffIconHash": "3200411659709162179"
+  },
+  {
+    "id": 147,
+    "type": "GCG_CARD_STATE",
+    "name": "行动获得充能减少",
+    "englishName": "Actions gain less Energy",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "角色行动后,每层抵消1点此角色的充能。",
+    "description": "角色行动后,每层抵消1点此角色的充能。",
+    "buffType": "GCG_STATE_BUFF_NEGATIVE",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Debuff",
+    "buffIconHash": "10729278471473375226"
+  },
+  {
     "id": 100001,
     "type": "GCG_CARD_STATE",
     "name": "眩晕",
@@ -857,6 +1115,65 @@
     "rawPlayingDescription": "装备有此牌的$[A1112]使用技能后，抓1张牌。（每回合至多触发2次）",
     "playingDescription": "装备有此牌的菲米尼使用技能后，抓1张牌。（每回合至多触发2次）",
     "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
+  },
+  {
+    "id": 111131,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "洞察破绽",
+    "englishName": "Scope Out Soft Spots",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>此效果每有1层，就有10%的概率生成<color=#FFFFFFFF>$[C111133]</color>。如果生成了<color=#FFFFFFFF>$[C111133]</color>，就使此效果层数减半。（向下取整）",
+    "description": "我方角色使用技能后：此效果每有1层，就有10%的概率生成强攻破绽。如果生成了强攻破绽，就使此效果层数减半。（向下取整）",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIconHash": "2764850688134773648"
+  },
+  {
+    "id": 111132,
+    "type": "GCG_CARD_SUMMON",
+    "name": "极寒的冰枪",
+    "englishName": "Evercold Frostlance",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K101]，生成1层<color=#FFFFFFFF>$[C111131]</color>。\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "结束阶段：造成1点冰元素伤害，生成1层洞察破绽。\n可用次数：2",
+    "hintType": "GCG_HINT_CRYO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Buff",
+    "buffIconHash": "10756566743744805222",
+    "cardFace": "UI_Gcg_CardFace_Summon_Rosaria"
+  },
+  {
+    "id": 111133,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "强攻破绽",
+    "englishName": "Strike Where It Hurts",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方造成技能伤害时：</color>移除此状态，使本次伤害加倍。",
+    "description": "我方造成技能伤害时：移除此状态，使本次伤害加倍。",
+    "hidden": false,
+    "buffIconHash": "11862362875316269800"
+  },
+  {
+    "id": 211131,
+    "type": "GCG_CARD_MODIFY",
+    "name": "代行裁判",
+    "englishName": "Divine Retribution",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "skills": [],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1113]</color>时，装备此牌。\\n$[A1113]装备此牌后，立刻使用一次<color=#FFD780FF>$[S11132]</color>。\\n装备有此牌的$[A1113]在场时：使用<color=#FFFFFFFF>$[S11132]</color>，或我方生成<color=#FFFFFFFF>$[C111133]</color>后，在手牌中生成1张<color=#FFFFFFFF>$[C332002]</color>。（每回合1次）\\n（牌组中包含$[A1113]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为罗莎莉亚时，装备此牌。\n罗莎莉亚装备此牌后，立刻使用一次噬罪的告解。\n装备有此牌的罗莎莉亚在场时：使用噬罪的告解，或我方生成强攻破绽后，在手牌中生成1张换班时间。（每回合1次）\n（牌组中包含罗莎莉亚，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1113]在场时：使用<color=#FFFFFFFF>$[S11132]</color>，或我方生成<color=#FFFFFFFF>$[C111133]</color>后，在手牌中生成1张<color=#FFFFFFFF>$[C332002]</color>。（每回合1次）",
+    "playingDescription": "装备有此牌的罗莎莉亚在场时：使用噬罪的告解，或我方生成强攻破绽后，在手牌中生成1张换班时间。（每回合1次）",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Equip_Talent",
     "buffIconHash": "3410616192897341730"
@@ -1519,6 +1836,62 @@
     "description": "战斗行动：我方出战角色为芙宁娜时，装备此牌。\n芙宁娜装备此牌后，立刻使用一次孤心沙龙。\n装备有此牌的芙宁娜使用孤心沙龙时，会对自身附属万众瞩目。（角色普通攻击时根据形态触发不同效果）\n（牌组中包含芙宁娜，才能加入牌组）",
     "rawPlayingDescription": "装备有此牌的$[A1211]使用<color=#FFFFFFFF>$[S12123]</color>时，会对自身附属<color=#FFFFFFFF>$[K1030]</color>。（角色普通攻击时根据形态触发不同效果）",
     "playingDescription": "装备有此牌的芙宁娜使用孤心沙龙时，会对自身附属万众瞩目。（角色普通攻击时根据形态触发不同效果）",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
+  },
+  {
+    "id": 112134,
+    "type": "GCG_CARD_STATE",
+    "name": "满满心意药剂冲击",
+    "englishName": "Medical Intervention of Pure Intention",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "本角色将在下次行动时，直接使用技能：<color=#FFFFFFFF>$[S12135]</color>。",
+    "description": "本角色将在下次行动时，直接使用技能：满满心意药剂冲击。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Special",
+    "buffIconHash": "13225239691945994096"
+  },
+  {
+    "id": 112135,
+    "type": "GCG_CARD_ONSTAGE",
+    "name": "静养",
+    "englishName": "Convalescence",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "我方「元素战技」或召唤物造成的伤害+1。\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "我方「元素战技」或召唤物造成的伤害+1。\n可用次数：2",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIconHash": "16497814589753159545"
+  },
+  {
+    "id": 112136,
+    "type": "GCG_CARD_STATE",
+    "name": "细致入微的诊疗",
+    "englishName": "Detailed Diagnosis, Thorough Treatment",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "",
+    "description": "",
+    "hidden": true,
+    "buffIconHash": "1137689185146662789"
+  },
+  {
+    "id": 212131,
+    "type": "GCG_CARD_MODIFY",
+    "name": "应当有适当的休憩",
+    "englishName": "Requires Appropriate Rest",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "skills": [],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1213]</color>时，装备此牌。\\n$[A1213]装备此牌后，立刻使用一次<color=#FFD780FF>$[S12132]</color>。\\n装备有此牌的$[A1213]使用<color=#FFFFFFFF>$[S12132]</color>后，使我方接下来2次「元素战技」或召唤物造成的伤害+1。\\n（牌组中包含$[A1213]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为希格雯时，装备此牌。\n希格雯装备此牌后，立刻使用一次弹跳水疗法。\n装备有此牌的希格雯使用弹跳水疗法后，使我方接下来2次「元素战技」或召唤物造成的伤害+1。\n（牌组中包含希格雯，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A1213]使用<color=#FFFFFFFF>$[S12132]</color>后，使我方接下来2次「元素战技」或召唤物造成的伤害+1。",
+    "playingDescription": "装备有此牌的希格雯使用弹跳水疗法后，使我方接下来2次「元素战技」或召唤物造成的伤害+1。",
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Equip_Talent",
     "buffIconHash": "3410616192897341730"
@@ -6050,14 +6423,14 @@
     "id": 124065,
     "type": "GCG_CARD_ONSTAGE",
     "name": "侵雷重闪",
-    "englishName": "",
+    "englishName": "Chain Lightning Cascade",
     "tags": [],
     "skills": [],
     "rawDescription": "",
     "description": "",
     "hidden": true,
-    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
-    "buffIconHash": "3410616192897341730"
+    "buffIcon": "UI_Gcg_Buff_Common_Daze",
+    "buffIconHash": "13588942201462459600"
   },
   {
     "id": 224061,
@@ -6352,6 +6725,54 @@
     "hidden": false,
     "buffIcon": "UI_Gcg_Buff_Common_Special",
     "buffIconHash": "13225239691945994096"
+  },
+  {
+    "id": 126031,
+    "type": "GCG_CARD_STATE",
+    "name": "黄金侵蚀",
+    "englishName": "Golden Corrosion",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>如果所附属角色位于后台，则此效果每有1次$[K3]，就对所附属角色造成1点$[K5]。\\n<color=#FFFFFFFF>$[K3]：1</color>（可叠加，最多叠加到3次）",
+    "description": "结束阶段：如果所附属角色位于后台，则此效果每有1次可用次数，就对所附属角色造成1点穿透伤害。\n可用次数：1（可叠加，最多叠加到3次）",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Dot",
+    "buffIconHash": "2018013804103745197"
+  },
+  {
+    "id": 126032,
+    "type": "GCG_CARD_SUMMON",
+    "name": "兽境犬首",
+    "englishName": "Rifthound Skull",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>造成1点$[K106]，目标角色附属<color=#FFFFFFFF>$[C126031]</color>。\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "结束阶段：造成1点岩元素伤害，目标角色附属黄金侵蚀。\n可用次数：2",
+    "hintType": "GCG_HINT_GEO",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Buff",
+    "buffIconHash": "10756566743744805222",
+    "cardFace": "UI_Gcg_CardFace_Summon_Planelurker"
+  },
+  {
+    "id": 226031,
+    "type": "GCG_CARD_MODIFY",
+    "name": "异兽侵蚀",
+    "englishName": "Beastly Corrosion",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "skills": [],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A2603]</color>时，装备此牌。\\n$[A2603]装备此牌后，立刻使用一次<color=#FFD780FF>$[S26032]</color>。\\n装备有此牌的$[A2603]在场时，对方的<color=#FFFFFFFF>$[C126031]</color>最多可叠加到5次，并且所附属角色不在后台时也会生效。\\n（牌组中包含$[A2603]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为黄金王兽时，装备此牌。\n黄金王兽装备此牌后，立刻使用一次兽境轰召。\n装备有此牌的黄金王兽在场时，对方的黄金侵蚀最多可叠加到5次，并且所附属角色不在后台时也会生效。\n（牌组中包含黄金王兽，才能加入牌组）",
+    "rawPlayingDescription": "装备有此牌的$[A2603]在场时，对方的<color=#FFFFFFFF>$[C126031]</color>最多可叠加到5次，并且所附属角色不在后台时也会生效。",
+    "playingDescription": "装备有此牌的黄金王兽在场时，对方的黄金侵蚀最多可叠加到5次，并且所附属角色不在后台时也会生效。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Talent",
+    "buffIconHash": "3410616192897341730"
   },
   {
     "id": 127011,
@@ -7972,6 +8393,24 @@
     "buffIconHash": "7531918440982790537"
   },
   {
+    "id": 311110,
+    "type": "GCG_CARD_MODIFY",
+    "name": "纯水流华",
+    "englishName": "Flowing Purity",
+    "tags": [
+      "GCG_TAG_WEAPON",
+      "GCG_TAG_WEAPON_CATALYST"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>入场时和回合结束时：</color>角色附属1层<color=#FFFFFFFF>$[C122]</color>。\\n<color=#FFFFFFFF>双方选择行动前：</color>所附属角色如果未附属<color=#FFFFFFFF>$[C122]</color>，则生成1个随机基础元素骰，并且角色下次造成的伤害+1。（每回合1次）\\n（<color=#FFFFFFFF>「{SPRITE_PRESET#3201}法器」角色</color>才能装备。角色最多装备1件「{SPRITE_PRESET#3003}武器」）",
+    "description": "入场时和回合结束时：角色附属1层生命之契。\n双方选择行动前：所附属角色如果未附属生命之契，则生成1个随机基础元素骰，并且角色下次造成的伤害+1。（每回合1次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>入场时和回合结束时：</color>角色附属1层<color=#FFFFFFFF>$[C122]</color>。\\n<color=#FFFFFFFF>双方选择行动前：</color>所附属角色如果未附属<color=#FFFFFFFF>$[C122]</color>，则生成1个随机基础元素骰，并且角色下次造成的伤害+1。（每回合1次）",
+    "playingDescription": "入场时和回合结束时：角色附属1层生命之契。\n双方选择行动前：所附属角色如果未附属生命之契，则生成1个随机基础元素骰，并且角色下次造成的伤害+1。（每回合1次）",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Weapon",
+    "buffIconHash": "7531918440982790537"
+  },
+  {
     "id": 311201,
     "type": "GCG_CARD_MODIFY",
     "name": "鸦羽弓",
@@ -8723,6 +9162,19 @@
     "buffIconHash": "1717076279127341445"
   },
   {
+    "id": 301112,
+    "type": "GCG_CARD_STATE",
+    "name": "纯水流华（生效中）",
+    "englishName": "Flowing Purity (In Effect)",
+    "tags": [],
+    "skills": [],
+    "rawDescription": "所附属角色下次造成的伤害+1。",
+    "description": "所附属角色下次造成的伤害+1。",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Common_Atk_Up",
+    "buffIconHash": "1717076279127341445"
+  },
+  {
     "id": 312001,
     "type": "GCG_CARD_MODIFY",
     "name": "冒险家头带",
@@ -9241,6 +9693,23 @@
     "buffIconHash": "15282951538599148947"
   },
   {
+    "id": 312031,
+    "type": "GCG_CARD_MODIFY",
+    "name": "少女易逝的芳颜",
+    "englishName": "Maiden's Fading Beauty",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>附属角色受到圣遗物以外的治疗后：</color>治疗我方受伤最多的角色1点。（每回合至多触发2次）\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "附属角色受到圣遗物以外的治疗后：治疗我方受伤最多的角色1点。（每回合至多触发2次）\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>附属角色受到圣遗物以外的治疗后：</color>治疗我方受伤最重的角色1点（每回合2次）",
+    "playingDescription": "附属角色受到圣遗物以外的治疗后：治疗我方受伤最重的角色1点（每回合2次）",
+    "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Equip_Relic",
+    "buffIconHash": "15282951538599148947"
+  },
+  {
     "id": 301201,
     "type": "GCG_CARD_STATE",
     "name": "重嶂不移",
@@ -9683,6 +10152,40 @@
     "buffIconHash": "13876857398019034662"
   },
   {
+    "id": 313005,
+    "type": "GCG_CARD_MODIFY",
+    "name": "暝视龙",
+    "englishName": "Iktomisaurus",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "skills": [
+      {
+        "id": 3130051,
+        "name": "灵性援护",
+        "englishName": "Spiritual Support",
+        "type": "GCG_SKILL_TAG_VEHICLE",
+        "rawDescription": "从「{SPRITE_PRESET#3104}场地」「{SPRITE_PRESET#3102}道具」「{SPRITE_PRESET#3101}料理」中挑选1张加入手牌，并且治疗附属角色1点。",
+        "description": "从「场地」「道具」「料理」中挑选1张加入手牌，并且治疗附属角色1点。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_SAME",
+            "count": 1
+          }
+        ],
+        "keyMap": {},
+        "icon": "Btn_Natsaurus_Shamansaurus_ElementalArt"
+      }
+    ],
+    "rawDescription": "$[K58]：$[S3130051]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "特技：灵性援护\n可用次数：2\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "$[K58]：$[S3130051]\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "playingDescription": "特技：灵性援护\n可用次数：2",
+    "shownToken": "GCG_TOKEN_LIFE",
+    "hidden": false,
+    "buffIconHash": "4429278701278802385"
+  },
+  {
     "id": 301301,
     "type": "GCG_CARD_STATE",
     "name": "掘进的收获",
@@ -10094,6 +10597,20 @@
     "hidden": false
   },
   {
+    "id": 321024,
+    "type": "GCG_CARD_ASSIST",
+    "name": "「悬木人」",
+    "englishName": "\"Scions of the Canopy\"",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "skills": [],
+    "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组的牌时：</color>如果打出的牌原本元素骰费用不低于此牌的<color=#FFFFFFFF>「极限运动点」</color>，则生成1个随机基础元素骰，然后此牌累积1个<color=#FFFFFFFF>「极限运动点」</color>。",
+    "description": "我方打出名称不存在于本局最初牌组的牌时：如果打出的牌原本元素骰费用不低于此牌的「极限运动点」，则生成1个随机基础元素骰，然后此牌累积1个「极限运动点」。",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
+  },
+  {
     "id": 322001,
     "type": "GCG_CARD_ASSIST",
     "name": "派蒙",
@@ -10256,8 +10773,8 @@
       "GCG_TAG_ALLY"
     ],
     "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>我方切换角色后：</color>如果切换到的角色没有$[K310]，则使该角色获得1点$[K310]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：2</color>",
-    "description": "我方切换角色后：如果切换到的角色没有充能，则使该角色获得1点充能。（每回合1次）\n可用次数：2",
+    "rawDescription": "<color=#FFFFFFFF>我方切换到一个没有$[K310]的角色后：</color>使我方出战角色获得1点$[K310]。（每回合1次）\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "description": "我方切换到一个没有充能的角色后：使我方出战角色获得1点充能。（每回合1次）\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false
   },
@@ -13959,94 +14476,49 @@
     "hidden": false
   },
   {
-    "id": 510101,
-    "type": "GCG_CARD_ONSTAGE",
-    "name": "万能向导",
-    "englishName": "Omnipotent Guide",
+    "id": 423068,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·强劲保障",
+    "englishName": "Mastery Talisman: Solid Guarantee",
     "tags": [],
     "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>投掷阶段：</color>你不再投掷元素骰，而是直接获得8个$[K411]！",
-    "description": "投掷阶段：你不再投掷元素骰，而是直接获得8个万能元素！",
-    "hidden": true,
-    "buffIcon": "UI_Gcg_Buff_Common_Special",
-    "buffIconHash": "13225239691945994096"
+    "rawDescription": "<color=#FFFFFFFF>我方角色使用技能后：</color>生成1个$[K411]，抓1张牌。（每回合最多触发3次）",
+    "description": "我方角色使用技能后：生成1个万能元素，抓1张牌。（每回合最多触发3次）",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
   },
   {
-    "id": 510201,
-    "type": "GCG_CARD_ONSTAGE",
-    "name": "修炼的奥义",
-    "englishName": "The Profound Purpose of Practice",
+    "id": 423069,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·乘胜追击",
+    "englishName": "Mastery Talisman: Press the Advantage",
     "tags": [],
     "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>打出任意手牌时：</color>少花费2个元素骰。（每回合1次）",
-    "description": "打出任意手牌时：少花费2个元素骰。（每回合1次）",
-    "hidden": false,
-    "buffIcon": "UI_Gcg_Buff_Rule_02_1",
-    "buffIconHash": "3332999734166380352"
+    "rawDescription": "<color=#FFFFFFFF>本回合中，轮到我方行动期间有敌方角色被击倒时：</color>本次行动结束后，我方可以再连续行动一次，下次执行「切换角色」行动时少花费1个元素骰，并且将此次切换视为「$[K2]」而非「$[K1]」。",
+    "description": "本回合中，轮到我方行动期间有敌方角色被击倒时：本次行动结束后，我方可以再连续行动一次，下次执行「切换角色」行动时少花费1个元素骰，并且将此次切换视为「快速行动」而非「战斗行动」。",
+    "hidden": false
   },
   {
-    "id": 510202,
-    "type": "GCG_CARD_STATE",
-    "name": "修炼的奥义",
-    "englishName": "The Profound Purpose of Practice",
+    "id": 423070,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·外场支援",
+    "englishName": "Mastery Talisman: External Assistance",
     "tags": [],
     "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>对角色打出「{SPRITE_PRESET#3006}天赋」或角色使用技能时：</color>少花费1个元素骰。（每回合1次）",
-    "description": "对角色打出「天赋」或角色使用技能时：少花费1个元素骰。（每回合1次）",
-    "hidden": false,
-    "buffIcon": "UI_Gcg_Buff_Rule_02_2",
-    "buffIconHash": "9634594989106385659"
+    "rawDescription": "<color=#FFFFFFFF>我方每打出2张名称不存在于本局初始牌组的牌后：</color>我方角色造成的伤害+1。（可叠加）",
+    "description": "我方每打出2张名称不存在于本局初始牌组的牌后：我方角色造成的伤害+1。（可叠加）",
+    "shownToken": "GCG_TOKEN_COUNTER",
+    "hidden": false
   },
   {
-    "id": 510203,
-    "type": "GCG_CARD_ONSTAGE",
-    "name": "修炼的奥义",
-    "englishName": "The Profound Purpose of Practice",
+    "id": 423071,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·规模优势",
+    "englishName": "Mastery Talisman: Economies of Scale",
     "tags": [],
     "skills": [],
-    "rawDescription": "",
-    "description": "",
-    "hidden": true,
-    "buffIcon": "UI_Gcg_Buff_Rule_02_1",
-    "buffIconHash": "3332999734166380352"
-  },
-  {
-    "id": 510301,
-    "type": "GCG_CARD_ONSTAGE",
-    "name": "全方位后援",
-    "englishName": "Reinforcements",
-    "tags": [],
-    "skills": [],
-    "rawDescription": "<color=#FFFFFFFF>切换角色</color>总是被视为「$[K2]」，而非「$[K1]」;\\n<color=#FFFFFFFF>我方通过「$[K1]」击倒敌方角色后：</color>我方获得1次额外的行动机会，继续轮到我方执行行动。",
-    "description": "切换角色总是被视为「快速行动」，而非「战斗行动」;\n我方通过「战斗行动」击倒敌方角色后：我方获得1次额外的行动机会，继续轮到我方执行行动。",
-    "hidden": false,
-    "buffIcon": "UI_Gcg_Buff_Rule_03_1",
-    "buffIconHash": "13379464512044052852"
-  },
-  {
-    "id": 510302,
-    "type": "GCG_CARD_ONSTAGE",
-    "name": "全方位后援",
-    "englishName": "Reinforcements",
-    "tags": [],
-    "skills": [],
-    "rawDescription": "",
-    "description": "",
-    "hidden": true,
-    "buffIcon": "UI_Gcg_Buff_Rule_03_1",
-    "buffIconHash": "13379464512044052852"
-  },
-  {
-    "id": 510401,
-    "type": "GCG_CARD_ONSTAGE",
-    "name": "热斗模式：奇策竞驰",
-    "englishName": "Heated Battle Mode: Sprinting Stratagems",
-    "tags": [],
-    "skills": [],
-    "rawDescription": "",
-    "description": "",
-    "hidden": true,
-    "buffIcon": "UI_Gcg_Buff_Rule_03_1",
-    "buffIconHash": "13379464512044052852"
+    "rawDescription": "我方召唤物造成的伤害+2。\\n<color=#FFFFFFFF>我方生成召唤物后：</color>对所有敌方角色造成1点$[K5]。",
+    "description": "我方召唤物造成的伤害+2。\n我方生成召唤物后：对所有敌方角色造成1点穿透伤害。",
+    "hidden": false
   }
 ]

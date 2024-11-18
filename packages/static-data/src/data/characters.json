@@ -1081,6 +1081,91 @@
     "icon": "UI_Gcg_Char_AvatarIcon_Freminet"
   },
   {
+    "id": 1113,
+    "shareId": 432,
+    "sinceVersion": "v5.2.0",
+    "obtainable": true,
+    "name": "罗莎莉亚",
+    "englishName": "Rosaria",
+    "tags": [
+      "GCG_TAG_ELEMENT_CRYO",
+      "GCG_TAG_WEAPON_POLE",
+      "GCG_TAG_NATION_MONDSTADT"
+    ],
+    "storyTitle": "棘冠恩典·罗莎莉亚",
+    "storyText": "「黑影源于光明，光明却不统御黑影。」",
+    "skills": [
+      {
+        "id": 11131,
+        "name": "教会枪术",
+        "englishName": "Spear of the Church",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_CRYO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_03"
+      },
+      {
+        "id": 11132,
+        "name": "噬罪的告解",
+        "englishName": "Ravaging Confession",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成2层<color=#FFFFFFFF>$[C111131]</color>。（触发$[C111131]的效果时，会生成<color=#FFFFFFFF>$[C111133]</color>。）",
+        "description": "造成1点冰元素伤害，生成2层洞察破绽。（触发洞察破绽的效果时，会生成强攻破绽。）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_CRYO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_CRYO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_S_Rosaria_01"
+      },
+      {
+        "id": 11133,
+        "name": "终命的圣礼",
+        "englishName": "Rites of Termination",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成2层<color=#FFFFFFFF>$[C111131]</color>，召唤<color=#FFFFFFFF>$[C111132]</color>。",
+        "description": "造成1点冰元素伤害，生成2层洞察破绽，召唤极寒的冰枪。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_CRYO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_CRYO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_E_Rosaria_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Rosaria",
+    "icon": "UI_Gcg_Char_AvatarIcon_Rosaria"
+  },
+  {
     "id": 1201,
     "shareId": 9,
     "sinceVersion": "v3.3.0",
@@ -2228,6 +2313,135 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Avatar_FurinaOusia",
     "icon": "UI_Gcg_Char_AvatarIcon_FurinaOusia"
+  },
+  {
+    "id": 1213,
+    "shareId": 433,
+    "sinceVersion": "v5.2.0",
+    "obtainable": true,
+    "name": "希格雯",
+    "englishName": "Sigewinne",
+    "tags": [
+      "GCG_TAG_ELEMENT_HYDRO",
+      "GCG_TAG_WEAPON_BOW",
+      "GCG_TAG_NATION_FONTAINE",
+      "GCG_TAG_ARKHE_PNEUMA"
+    ],
+    "storyTitle": "龙女妙变·希格雯",
+    "storyText": "「圣洁之灵，请听我愿。」",
+    "skills": [
+      {
+        "id": 12131,
+        "name": "靶向治疗",
+        "englishName": "Targeted Treatment",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_02"
+      },
+      {
+        "id": 12132,
+        "name": "弹跳水疗法",
+        "englishName": "Rebound Hydrotherapy",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "生成1张<color=#FFFFFFFF>$[C112131]</color>，将其置于我方牌库顶部第3张牌的位置，本角色附属3层<color=#FFFFFFFF>$[C122]</color>。（触发<color=#FFFFFFFF>$[C112131]</color>的效果后，会生成<color=#FFFFFFFF>$[C112132]</color>并置入对方牌库；触发<color=#FFFFFFFF>$[C112132]</color>的效果后，会生成<color=#FFFFFFFF>$[C112133]</color>并置入我方牌库）",
+        "description": "生成1张激愈水球·大，将其置于我方牌库顶部第3张牌的位置，本角色附属3层生命之契。（触发激愈水球·大的效果后，会生成激愈水球·中并置入对方牌库；触发激愈水球·中的效果后，会生成激愈水球·小并置入我方牌库）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 3
+          }
+        ],
+        "keyMap": {},
+        "icon": "Skill_S_Sigewinne_01"
+      },
+      {
+        "id": 12133,
+        "name": "过饱和心意注射",
+        "englishName": "Super Saturated Syringing",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，然后$[K53]：<color=#FFFFFFFF>$[S12135]</color>。",
+        "description": "造成2点水元素伤害，然后准备技能：满满心意药剂冲击。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_E_Sigewinne_01_HD"
+      },
+      {
+        "id": 12134,
+        "name": "细致入微的诊疗",
+        "englishName": "Detailed Diagnosis, Thorough Treatment",
+        "type": "GCG_SKILL_TAG_PASSIVE",
+        "rawDescription": "【被动】我方角色受到治疗，使其所附属的<color=#FFFFFFFF>$[C122]</color>被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）\\n<color=#FFFFFFFF>我方切换到本角色时：</color>如果我方场上存在<color=#FFFFFFFF>$[C112101]</color>，则使其$[K3]-1，本角色获得1点$[K310]。",
+        "description": "【被动】我方角色受到治疗，使其所附属的生命之契被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）\n我方切换到本角色时：如果我方场上存在源水之滴，则使其可用次数-1，本角色获得1点充能。",
+        "playCost": [],
+        "keyMap": {},
+        "icon": "Skill_S_Sigewinne_02"
+      },
+      {
+        "id": 12135,
+        "name": "满满心意药剂冲击",
+        "englishName": "Medical Intervention of Pure Intention",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点水元素伤害。",
+        "playCost": [],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_E_Sigewinne_01_HD"
+      },
+      {
+        "id": 12136,
+        "name": "细致入微的诊疗",
+        "englishName": "Detailed Diagnosis, Thorough Treatment",
+        "type": "GCG_SKILL_TAG_PASSIVE",
+        "rawDescription": "",
+        "description": "",
+        "playCost": [],
+        "keyMap": {}
+      },
+      {
+        "id": 12137,
+        "name": "细致入微的诊疗",
+        "englishName": "Detailed Diagnosis, Thorough Treatment",
+        "type": "GCG_SKILL_TAG_PASSIVE",
+        "rawDescription": "【被动】<color=#FFFFFFFF>我方切换到本角色时：</color>如果我方场上存在<color=#FFFFFFFF>$[C112101]</color>，则使其$[K3]-1，本角色获得1点$[K310]。",
+        "description": "【被动】我方切换到本角色时：如果我方场上存在源水之滴，则使其可用次数-1，本角色获得1点充能。",
+        "playCost": [],
+        "keyMap": {},
+        "icon": "Skill_S_Sigewinne_02"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sigewinne",
+    "icon": "UI_Gcg_Char_AvatarIcon_Sigewinne"
   },
   {
     "id": 1301,
@@ -9762,6 +9976,91 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Monster_DahakaElec",
     "icon": "UI_Gcg_Char_MonsterIcon_DahakaElec"
+  },
+  {
+    "id": 2603,
+    "shareId": 434,
+    "sinceVersion": "v5.2.0",
+    "obtainable": true,
+    "name": "黄金王兽",
+    "englishName": "Golden Wolflord",
+    "tags": [
+      "GCG_TAG_ELEMENT_GEO",
+      "GCG_TAG_WEAPON_NONE",
+      "GCG_TAG_CAMP_MONSTER"
+    ],
+    "storyTitle": "狼群魔主·黄金王兽",
+    "storyText": "来自异界的扭曲魔兽，统领兽境群狼的王者，拥有指挥狼群溶解空间的权威。",
+    "skills": [
+      {
+        "id": 26031,
+        "name": "王狼直击",
+        "englishName": "Wolflord's Strike",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成2点物理伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_GEO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_A_00"
+      },
+      {
+        "id": 26032,
+        "name": "兽境轰召",
+        "englishName": "Howling Riftcall",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，目标角色附属2层<color=#FFFFFFFF>$[C126031]</color>，召唤<color=#FFFFFFFF>$[C126032]</color>。",
+        "description": "造成1点岩元素伤害，目标角色附属2层黄金侵蚀，召唤兽境犬首。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_GEO",
+            "count": 3
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_GEO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "MonsterSkill_S_Planelurker_01"
+      },
+      {
+        "id": 26033,
+        "name": "黄金侵绞",
+        "englishName": "Golden Cankerbind",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，对所有敌方后台角色造成1点$[K5]，并使所有敌方角色附属<color=#FFFFFFFF>$[C126031]</color>。",
+        "description": "造成3点岩元素伤害，对所有敌方后台角色造成1点穿透伤害，并使所有敌方角色附属黄金侵蚀。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_GEO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_GEO",
+          "D__KEY__DAMAGE": 3
+        },
+        "icon": "MonsterSkill_E_Planelurker_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Monster_Planelurker",
+    "icon": "UI_Gcg_Char_MonsterIcon_Planelurker"
   },
   {
     "id": 2701,

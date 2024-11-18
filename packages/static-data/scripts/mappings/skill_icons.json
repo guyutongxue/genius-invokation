@@ -258,5 +258,13 @@
   "5452078219508061971": "MonsterSkill_S_EremiteGrass_01",
   "5991324619177683521": "MonsterSkill_E_EremiteGrass_01_HD",
   "13808436191547094956": "MonsterSkill_S_EremiteGrass_02",
-  "10695666907312981537": "Btn_Natsaurus_Drillhead_ElementalArt_0l"
+  "10695666907312981537": "Btn_Natsaurus_Drillhead_ElementalArt_0l",
+  "2333528371319311091": "Skill_S_Rosaria_01",
+  "13368445880524241062": "Skill_E_Rosaria_01_HD",
+  "3421278481920319996": "Skill_S_Sigewinne_01",
+  "2801743251526669545": "Skill_E_Sigewinne_01_HD",
+  "4056721756811131458": "Skill_S_Sigewinne_02",
+  "5425251551373986186": "MonsterSkill_S_Planelurker_01",
+  "16514163210881144394": "MonsterSkill_E_Planelurker_01_HD",
+  "7799724174870740612": "Btn_Natsaurus_Shamansaurus_ElementalArt"
 }
