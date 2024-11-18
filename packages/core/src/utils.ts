@@ -361,6 +361,10 @@ export function playSkillOfCard(
 }
 
 export function normalizeCost(req: DiceRequirement): DiceRequirement {
+  const emptyDice = req.entries().filter(([k, v]) => v === 0).map(([k, v]) => k);
+  for (const dice of emptyDice) {
+    req.delete(dice);
+  }
   if (req.size === 0) {
     req.set(DiceType.Omni, 0);
   }

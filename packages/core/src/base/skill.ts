@@ -39,7 +39,7 @@ import {
   UsagePerRoundVariableNames,
 } from "./entity";
 import { MutatorConfig } from "../mutator";
-import { costSize, diceCostOfCard, diceCostSize, getEntityArea, mixins } from "../utils";
+import { costSize, diceCostOfCard, diceCostSize, getEntityArea, mixins, normalizeCost } from "../utils";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {
@@ -438,7 +438,7 @@ export class ModifyActionEventArgBase<
   }
 
   get cost() {
-    return this._cost;
+    return normalizeCost(this._cost);
   }
   costSize() {
     return costSize(this.cost);

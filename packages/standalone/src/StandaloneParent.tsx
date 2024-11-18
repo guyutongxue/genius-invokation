@@ -329,7 +329,8 @@ export function StandaloneParent(props: StandaloneParentProps) {
             </div>
             <StandaloneChessboard
               class="grayscale"
-              stateData={exposeState(viewingWho(), state().state)}
+              state={exposeState(viewingWho(), state().state)}
+              previewData={[]}
               who={viewingWho()}
               assetAltText={getName}
             />
