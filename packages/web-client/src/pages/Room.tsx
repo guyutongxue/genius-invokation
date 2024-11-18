@@ -17,7 +17,7 @@ import { useParams, useSearchParams } from "@solidjs/router";
 import { Layout } from "../layouts/Layout";
 import { roomCodeToId } from "../utils";
 import { useUserContext } from "../App";
-import { Show, createSignal, onMount, JSX, createEffect } from "solid-js";
+import { Show, createSignal, onMount, JSX, createEffect, onCleanup } from "solid-js";
 import axios, { AxiosError } from "axios";
 import { Dynamic } from "solid-js/web";
 import { PlayerIOWithCancellation, createPlayer } from "@gi-tcg/webui-core";
@@ -207,6 +207,11 @@ export function Room() {
         .catch(reportStreamError);
     }
   });
+
+  onCleanup(() => {
+    setInitialized();
+  });
+
   return (
     <Layout>
       <div class="container mx-auto flex flex-col">

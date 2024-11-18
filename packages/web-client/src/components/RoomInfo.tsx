@@ -8,6 +8,7 @@ export interface RoomInfoProps {
   watchable: boolean;
   players: {
     userId: number;
+    userName: string;
   }[];
   onJoin?: (roomInfo: RoomInfoProps) => void;
 }
@@ -58,7 +59,7 @@ export function RoomInfo(props: RoomInfoProps) {
               height="30"
               class="rounded-full b-yellow-800 b-1 translate-x--2"
             />
-            {/* props.players[0].userName ?? */ `旅行者 ${props.players[0].userId}`}
+            {props.players[0].userName}
           </A>
           <span class="text-xl font-bold">VS</span>
           <Show
@@ -81,7 +82,7 @@ export function RoomInfo(props: RoomInfoProps) {
               href={url(props.players[1].userId)}
               class="flex flex-row items-center h-6 rounded-l-xl pl-2 bg-yellow-800 text-yellow-100 mr-2 hover:bg-yellow-700 transition-colors group-data-[disabled=true]:pointer-events-none"
             >
-              {/* props.players[1].userName ?? */ `旅行者 ${props.players[1].userId}`}
+              {props.players[1].userName}
               <img
                 src={avatarUrl1()}
                 width="30"

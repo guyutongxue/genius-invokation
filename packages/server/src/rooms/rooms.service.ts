@@ -86,6 +86,7 @@ interface PlayerIOWithError extends PlayerIO {
 
 interface PlayerInfo {
   userId: number;
+  userName: string;
   deck: Deck;
 }
 
@@ -160,6 +161,7 @@ class Player implements PlayerIOWithError {
   get playerInfo(): PlayerInfo {
     return {
       userId: this.user.id,
+      userName: this.user.name ?? this.user.login,
       deck: this.deck,
     };
   }
