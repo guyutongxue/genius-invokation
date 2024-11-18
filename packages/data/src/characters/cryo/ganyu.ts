@@ -24,6 +24,7 @@ import { character, skill, summon, combatStatus, card, DamageType, pair, extensi
  */
 export const SacredCryoPearl = summon(111011)
   .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(2)
   .damage(DamageType.Piercing, 1, "opp standby")
   .done();
 

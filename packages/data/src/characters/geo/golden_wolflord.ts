@@ -45,6 +45,7 @@ export const GoldenCorrosion: StatusHandle = status(126031)
 export const RifthoundSkull = summon(126032)
   .since("v5.2.0")
   .endPhaseDamage(DamageType.Geo, 1)
+  .usage(2)
   .characterStatus(GoldenCorrosion, "opp active")
   .done();
 

@@ -24,6 +24,7 @@ import { character, skill, summon, status, card, DamageType, Aura } from "@gi-tc
  */
 export const MujimujiDaruma = summon(115072)
   .endPhaseDamage(DamageType.Anemo, 1)
+  .usage(2)
   .heal(2, "my characters order by health - maxHealth limit 1")
   .done();
 

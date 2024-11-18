@@ -65,6 +65,7 @@ export const ScopeOutSoftSpots = combatStatus(111131)
 export const EvercoldFrostlance = summon(111132)
   .since("v5.2.0")
   .endPhaseDamage(DamageType.Cryo, 1)
+  .usage(2)
   .combatStatus(ScopeOutSoftSpots)
   .done();
 
