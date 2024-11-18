@@ -19,7 +19,7 @@ export function cached(url: string) {
     return cache.get(url)!;
   } else {
     const result = fetch(url)
-      .then((res) => res.blob())
+      .then((res) => res.ok ? res.blob() : Promise.reject(res))
       .then((blob) => URL.createObjectURL(blob));
     cache.set(url, result);
     return result;

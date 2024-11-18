@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,7 +24,14 @@ export interface ImageProps extends ComponentProps<"img"> {
 export function Image(props: ImageProps) {
   const [local, rest] = splitProps(props, ["imageId", "width", "height"]);
   const { assetApiEndpoint, assetAltText } = usePlayerContext();
-  const [url] = createResource(() => cached(`${assetApiEndpoint()}/images/${local.imageId}?thumb=1`));
+  const [url] = createResource(() => {
+    const placeholderUrl = `https://placehold.jp/70x120.png?text=${encodeURIComponent(
+      assetAltText(local.imageId) ?? local.imageId,
+    )}`;
+    return cached(
+      `${assetApiEndpoint()}/images/${local.imageId}?thumb=1`,
+    ).catch(() => placeholderUrl);
+  });
   const classNames = "flex items-center justify-center object-cover";
   const innerProps = (): ComponentProps<"img"> => ({
     ...rest,
@@ -42,7 +49,9 @@ export function Image(props: ImageProps) {
     <Show
       when={url.state === "ready"}
       fallback={
-        <div {...(innerProps() as ComponentProps<"div">)}>{innerProps().alt}</div>
+        <div {...(innerProps() as ComponentProps<"div">)}>
+          {innerProps().alt}
+        </div>
       }
     >
       <img {...innerProps()} />
