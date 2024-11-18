@@ -450,17 +450,13 @@ export const Mamere: SupportHandle = card(322021)
     e.hasOneOfCardTag("food", "place", "ally", "item")
   )
   .usage(3)
+  .usagePerRound(1)
   .do((c) => {
     const tags = ["food", "place", "ally", "item"] as const;
     const candidates = c.state.data.cards.values().filter((c) => c.id !== Mamere && tags.some((tag) => c.tags.includes(tag))).toArray();
     const card = c.random(candidates);
     c.createHandCard(card.id as CardHandle);
   })
-  .on("playCard", (c, e) => 
-    e.card.definition.id !== Mamere &&
-    e.hasOneOfCardTag("food", "place", "ally", "item")
-  )
-  .usagePerRound(1)
   .done();
 
 /**

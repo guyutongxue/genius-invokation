@@ -122,7 +122,6 @@ export function checkDice(
   required: ReadonlyDiceRequirement,
   chosen: readonly DiceType[],
 ): boolean {
-  console.log(required, chosen);
   // 如果需要同色骰子
   if (required.has(OMNI)) {
     const requiredCount = required.get(OMNI)!;
