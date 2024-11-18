@@ -105,6 +105,9 @@ export function Room() {
     playerIo()?.cancelRpc();
     await new Promise((r) => setTimeout(r, 100)); // wait for UI notifications?
     const response = await playerIo()?.rpc(payload.request);
+    if (!response) {
+      return;
+    }
     try {
       const { data } = await axios.post(
         `rooms/${id}/players/${userId}/actionResponse`,
@@ -210,6 +213,7 @@ export function Room() {
 
   onCleanup(() => {
     setInitialized();
+    setPlayerIo();
   });
 
   return (
