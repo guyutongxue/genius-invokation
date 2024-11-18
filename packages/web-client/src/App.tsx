@@ -14,7 +14,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { A, Route, Router } from "@solidjs/router";
-import { Accessor, createContext, createSignal, onMount, useContext } from "solid-js";
+import {
+  Accessor,
+  createContext,
+  createResource,
+  createSignal,
+  onMount,
+  Resource,
+  useContext,
+} from "solid-js";
 import { Home } from "./pages/Home";
 import axios from "axios";
 import { User } from "./pages/User";
@@ -31,33 +39,27 @@ export interface UserInfo {
 }
 
 export interface UserContextValue {
-  user: Accessor<UserInfo | null>;
-  refresh: () => Promise<void>;
+  user: Resource<UserInfo | null>;
+  refresh: () => unknown;
 }
 
 const UserContext = createContext<UserContextValue>();
 export const useUserContext = () => useContext(UserContext)!;
 
 function App() {
-  const [user, setUser] = createSignal<UserInfo | null>(null);
-  const refresh = async () => {
+  const [user, { refetch }] = createResource<UserInfo | null>(async () => {
     try {
       const { data } = await axios.get<UserInfo>("users/me");
       data.name = data.name ?? data.login;
-      setUser(data);
-      console.log(data);
+      return data;
     } catch (e) {
-      setUser(null);
+      return null;
     }
-  };
+  });
   const userContextValue: UserContextValue = {
     user,
-    refresh,
+    refresh: refetch,
   };
-
-  onMount(() => {
-    refresh();
-  });
   return (
     <UserContext.Provider value={userContextValue}>
       <div class="h-full w-full flex flex-row">
