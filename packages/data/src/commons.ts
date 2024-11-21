@@ -103,20 +103,6 @@ export const BondOfLife = status(122)
   .done();
 
 /**
- * @id 130
- * @name 最大生命提高
- * @description
- * 每层提高此角色的最大生命值1点。
- */
-export const MaxHPIncrease = status(130)
-  .variableCanAppend("value", 1, Infinity)
-  .on("enter")
-  .do((c) => {
-    c.increaseMaxHealth(1, "@master");
-  })
-  .done();
-
-/**
  * @id 303300
  * @name 饱腹
  * @description

@@ -274,7 +274,7 @@ export const IronTongueTian = card(322011)
  * @id 322012
  * @name 刘苏
  * @description
- * 我方切换角色后：如果切换到的角色没有充能，则使该角色获得1点充能。（每回合1次）
+ * 我方切换到一个没有充能的角色后：使我方出战角色获得1点充能。（每回合1次）
  * 可用次数：2
  */
 export const LiuSu = card(322012)
@@ -283,7 +283,8 @@ export const LiuSu = card(322012)
   .support("ally")
   .on("switchActive", (c, e) => c.of(e.switchInfo.to).energy === 0)
   .usage(2)
-  .gainEnergy(1, "@event.switchTo")
+  .usagePerRound(1)
+  .gainEnergy(1, "my active")
   .done();
 
 /**

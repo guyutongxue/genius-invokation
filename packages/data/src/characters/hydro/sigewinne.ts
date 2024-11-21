@@ -15,7 +15,7 @@
 
 import { character, skill, status, combatStatus, card, DamageType } from "@gi-tcg/core/builder";
 import { SourcewaterDroplet } from "./neuvillette";
-import { BondOfLife, MaxHPIncrease } from "../../commons";
+import { BondOfLife } from "../../commons";
 
 /**
  * @id 12135
@@ -52,6 +52,15 @@ export const Convalescence = combatStatus(112135)
   .on("increaseDamage", (c, e) => e.viaSkillType("elemental") || e.source.definition.type === "summon")
   .usage(2)
   .increaseDamage(1)
+  .done();
+
+// 每层提高此角色的最大生命值1点。
+const DetailedDiagnosisThoroughTreatmentStatus = status(112136)
+  .variableCanAppend("value", 1, Infinity) 
+  .on("enter")
+  .do((c) => {
+    c.increaseMaxHealth(1, "@master");
+  })
   .done();
 
 /**
@@ -155,9 +164,9 @@ export const DetailedDiagnosisThoroughTreatment01 = skill(12134)
   .listenToPlayer()
   .setVariable("hasBondOfLife", 0)
   .do((c, e) => {
-    const appended = c.of(e.target).hasStatus(MaxHPIncrease)?.variables.value ?? 0;
+    const appended = c.of(e.target).hasStatus(DetailedDiagnosisThoroughTreatmentStatus)?.variables.value ?? 0;
     if (appended < 3) {
-      c.characterStatus(MaxHPIncrease, e.target);
+      c.characterStatus(DetailedDiagnosisThoroughTreatmentStatus, e.target);
     }
   })
   .done();

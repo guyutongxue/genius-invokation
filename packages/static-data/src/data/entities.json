@@ -1130,6 +1130,7 @@
     "description": "我方角色使用技能后：此效果每有1层，就有10%的概率生成强攻破绽。如果生成了强攻破绽，就使此效果层数减半。（向下取整）",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Rosaria",
     "buffIconHash": "2764850688134773648"
   },
   {
@@ -1158,6 +1159,7 @@
     "rawDescription": "<color=#FFFFFFFF>我方造成技能伤害时：</color>移除此状态，使本次伤害加倍。",
     "description": "我方造成技能伤害时：移除此状态，使本次伤害加倍。",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Crit",
     "buffIconHash": "11862362875316269800"
   },
   {
@@ -1864,6 +1866,7 @@
     "description": "我方「元素战技」或召唤物造成的伤害+1。\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Sigewinne_02",
     "buffIconHash": "16497814589753159545"
   },
   {
@@ -10183,6 +10186,7 @@
     "playingDescription": "特技：灵性援护\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Shamansaurus",
     "buffIconHash": "4429278701278802385"
   },
   {
