@@ -788,7 +788,7 @@ export const WhereIsTheUnseenRazor = card(332022)
   .since("v4.0.0")
   .addTarget("my character has equipment with tag (weapon)")
   .do((c, e) => {
-    const { definition } = c.of(e.targets[0]).removeArtifact()!;
+    const { definition } = c.of(e.targets[0]).removeWeapon()!;
     c.createHandCard(definition.id as CardHandle);
   })
   .toCombatStatus(303222)
