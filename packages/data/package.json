@@ -1,6 +1,6 @@
 {
   "name": "@gi-tcg/data",
-  "version": "0.14.2+gi-5-2-0",
+  "version": "0.14.3+gi-5-2-0",
   "description": "Standard card data for Genius Invokation TCG",
   "type": "module",
   "types": "./dist/index.d.ts",
