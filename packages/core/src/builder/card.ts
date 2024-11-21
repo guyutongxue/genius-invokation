@@ -445,7 +445,13 @@ class CardBuilder<
     }
     if (this._descriptionOnDraw) {
       this.do((c) => {
-        c.disposeCard(c.self.state);
+        c.mutate({
+          type: "removeCard",
+          who: c.self.who,
+          where: "hands",
+          oldState: c.self.state,
+          reason: "onDrawTriggered",
+        });
       });
       const drawSkillDef: TriggeredSkillDefinition<"onDrawCard"> = {
         type: "skill",
@@ -457,7 +463,7 @@ class CardBuilder<
         },
         action: this.buildAction<DrawCardEventArg>(),
         usagePerRoundVariableName: null,
-      }
+      };
       const skillDef: InitiativeSkillDefinition = {
         type: "skill",
         id: this.cardId + 0.01,
@@ -474,7 +480,7 @@ class CardBuilder<
         filter: () => false,
         action: (st) => [st, []],
         usagePerRoundVariableName: null,
-      }
+      };
       skills.push(skillDef, drawSkillDef);
     } else {
       const action = this.buildAction<InitiativeSkillEventArg>();

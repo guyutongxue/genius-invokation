@@ -1038,7 +1038,8 @@ export class DrawCardEventArg extends PlayerEventArg {
 export type DisposeOrTuneMethod =
   | "disposeFromHands"
   | "disposeFromPiles"
-  | "elementalTuning";
+  | "elementalTuning"
+  | "onDrawTriggered";
 
 export class GenerateDiceEventArg extends PlayerEventArg {
   constructor(
