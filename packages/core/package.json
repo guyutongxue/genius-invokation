@@ -19,8 +19,10 @@
   "scripts": {
     "check": "tsc --noEmit",
     "build:ohm": "ohm generateBundles -et src/query/query.ohm",
-    "build:ts": "tsup",
-    "build": "bun build:ohm && bun build:ts"
+    "build:ts": "tsup --dts",
+    "build:js": "tsup",
+    "build": "bun build:ohm && bun build:ts",
+    "build:prod": "bun build:ohm && bun build:js"
   },
   "dependencies": {
     "@gi-tcg/typings": "workspace:*",

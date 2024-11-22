@@ -10,13 +10,16 @@
   },
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "vite build"
+    "build:vite:ts": "ENABLE_DTS=1 vite build",
+    "build:vite:js": "vite build",
+    "build": "bun build:vite:ts",
+    "build:prod": "bun build:vite:js"
   },
   "devDependencies": {
     "solid-element": "^1.8.0",
     "solid-js": "^1.8.15",
     "@gi-tcg/webui-core": "workspace:*",
-    "vite": "^5.0.8",
+    "vite": "^5.0.10",
     "vite-plugin-dts": "^3.7.0",
     "vite-plugin-solid": "^2.10.1"
   }

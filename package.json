@@ -5,7 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun scripts/build.ts"
+    "build": "bun scripts/build.ts",
+    "build:prod": "bun scripts/build.ts --prod"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.16.4",

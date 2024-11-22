@@ -18,9 +18,15 @@
  * This file run all build scripts for building standalone target.
  */
 
-import { $ } from "bun";
+import { $, color } from "bun";
+import { parseArgs } from "node:util";
 
-$.throws(true);
+const { values: { prod } } = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    prod: { type: "boolean" }
+  }
+})
 
 const packages = [
   "static-data",
@@ -36,5 +42,10 @@ const packages = [
 ];
 
 for (const pkg of packages) {
-  await $`bun run build`.cwd(`packages/${pkg}`);
+  console.log(color("green", "ansi") + pkg + "\u001b[0m");
+  if (prod) {
+    await $`bun run build:prod`.cwd(`packages/${pkg}`);
+  } else {
+    await $`bun run build`.cwd(`packages/${pkg}`);
+  }
 }

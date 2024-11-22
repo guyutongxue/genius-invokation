@@ -27,7 +27,7 @@ export default defineConfig({
   },
   plugins: [
     solid(),
-    dts({
+    process.env.ENABLE_DTS && dts({
       rollupTypes: true,
       bundledPackages: [
         "@gi-tcg/webui-core"

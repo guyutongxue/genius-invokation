@@ -18,7 +18,10 @@
   },
   "scripts": {
     "generate": "bun scripts/index.ts -i $GENSHIN_DATA -o src/data",
-    "build": "tsup"
+    "build:ts": "tsup --dts",
+    "build:js": "tsup",
+    "build": "bun build:ts",
+    "build:prod": "bun build:js"
   },
   "devDependencies": {
     "lossless-json": "^4.0.1"

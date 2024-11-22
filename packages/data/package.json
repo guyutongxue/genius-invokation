@@ -15,8 +15,10 @@
   "scripts": {
     "regenerate_data": "bun ./scripts/generators/index.ts",
     "check": "tsc --noEmit",
-    "build:ts": "tsup",
-    "build": "bun build:ts"
+    "build:ts": "tsup --dts",
+    "build:js": "tsup",
+    "build": "bun build:ts",
+    "build:prod": "bun build:js"
   },
   "peerDependencies": {
     "@gi-tcg/core": "workspace:*"

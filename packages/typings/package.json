@@ -13,8 +13,10 @@
   },
   "scripts": {
     "build:buf": "bunx buf generate",
-    "build:ts": "tsup",
-    "build": "bun build:buf && bun build:ts"
+    "build:ts": "tsup --dts",
+    "build:js": "tsup",
+    "build": "bun build:buf && bun build:ts",
+    "build:prod": "bun build:buf && bun build:js"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.47.2",
