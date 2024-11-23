@@ -19,5 +19,8 @@
   },
   "overrides": {
     "esbuild": "0.19.11"
+  },
+  "patchedDependencies": {
+    "ohm-js@17.1.0": "patches/ohm-js@17.1.0.patch"
   }
 }

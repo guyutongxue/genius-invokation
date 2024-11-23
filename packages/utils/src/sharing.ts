@@ -76,8 +76,8 @@ export function encodeRaw(arr: readonly number[]) {
 }
 
 export interface Deck {
-  readonly cards: number[];
-  readonly characters: number[];
+  cards: number[];
+  characters: number[];
 }
 
 /**

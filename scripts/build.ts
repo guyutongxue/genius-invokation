@@ -39,6 +39,7 @@ const packages = [
   "deck-builder",
   "web-client",
   "standalone",
+  "cbinding",
 ];
 
 for (const pkg of packages) {

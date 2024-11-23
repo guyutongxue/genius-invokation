@@ -50,6 +50,7 @@ import {
   initiativeSkillsOfPlayer,
   getEntityArea,
   playSkillOfCard,
+  Writable,
 } from "./utils";
 import { GameData } from "./builder/registry";
 import {
@@ -93,7 +94,7 @@ import { Player } from "./player";
 import { CharacterDefinition } from "./base/character";
 
 export interface DeckConfig extends Deck {
-  readonly noShuffle?: boolean;
+  noShuffle?: boolean;
 }
 
 /** A helper class to iterate id when constructing initial state */
@@ -181,9 +182,10 @@ function initPlayerState(
   };
 }
 
-export interface CreateInitialStateConfig extends Partial<GameConfig> {
-  readonly decks: readonly [DeckConfig, DeckConfig];
-  readonly data: GameData;
+export interface CreateInitialStateConfig
+  extends Writable<Partial<GameConfig>> {
+  decks: readonly [DeckConfig, DeckConfig];
+  data: GameData;
 }
 
 const VOID_1_DICE_REQUIREMENT: DiceRequirement = new Map([[DiceType.Void, 1]]);
@@ -632,7 +634,10 @@ export class Game {
       for (const type of usedDice) {
         const idx = operatingDice.indexOf(type as DiceType);
         if (idx === -1) {
-          throw new GiTcgIoError(who, `Selected dice ${type} doesn't found in player`);
+          throw new GiTcgIoError(
+            who,
+            `Selected dice ${type} doesn't found in player`,
+          );
         }
         operatingDice.splice(idx, 1);
       }
@@ -670,9 +675,9 @@ export class Game {
                   characterOrCardId: actionInfo.skill.caller.id,
                   characterDefinitionId: actionInfo.skill.caller.definition.id,
                   skillOrCardDefinitionId: actionInfo.skill.definition.id,
-                }
-              }
-            ]
+                },
+              },
+            ],
           });
           const callerArea = getEntityArea(this.state, activeCh().id);
           await this.handleEvent(
@@ -698,9 +703,9 @@ export class Game {
                   actionType: PbActionType.ACTION_PLAY_CARD,
                   characterOrCardId: card.id,
                   skillOrCardDefinitionId: card.definition.id,
-                }
-              }
-            ]
+                },
+              },
+            ],
           });
           if (card.definition.tags.includes("legend")) {
             this.mutate({
@@ -781,9 +786,9 @@ export class Game {
                 actionDone: {
                   who,
                   actionType: PbActionType.ACTION_DECLARE_END,
-                }
-              }
-            ]
+                },
+              },
+            ],
           });
           this.mutate({
             type: "setPlayerFlag",
