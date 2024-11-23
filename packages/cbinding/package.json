@@ -4,15 +4,16 @@
   "type": "module",
   "browserslist": "chrome >= 116",
   "devDependencies": {
+    "@babel/preset-typescript": "^7.26.0",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
+    "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-replace": "^6.0.1",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^12.1.1",
     "@types/core-js": "^2.5.8",
     "core-js": "3.38.1",
     "rollup": "^4.27.4"

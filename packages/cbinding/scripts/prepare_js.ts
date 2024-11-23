@@ -1,5 +1,5 @@
 import { rollup } from "rollup";
-import typescript from "@rollup/plugin-typescript";
+import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
@@ -9,7 +9,11 @@ const build = await rollup({
   input: `${import.meta.dirname}/../js/main.ts`,
   external: ["@gi-tcg/cbinding-io"],
   plugins: [
-    typescript(),
+    babel({
+      extensions: [".mjs", ".js", ".ts"],
+      presets: ["@babel/preset-typescript"],
+      babelHelpers: "bundled",
+    }),
     replace({
       preventAssignment: true,
       values: {
@@ -17,7 +21,9 @@ const build = await rollup({
       },
     }),
     commonjs(),
-    nodeResolve(),
+    nodeResolve({
+      extensions: [".mjs", ".js", ".ts"]
+    }),
     terser(),
   ],
   onwarn: (warn, handler) => {
@@ -35,6 +41,8 @@ const {
   format: "es",
 });
 
+const OUTPUT_FILEPATH = `${import.meta.dirname}/../generated/js_code.cpp`;
+
 const D_CHAR_SEQ = "#####EOF#####";
 
 if (chunk.type !== "chunk") {
@@ -42,9 +50,8 @@ if (chunk.type !== "chunk") {
 }
 // await Bun.write("temp.js", chunk.code);
 await Bun.write(
-  `${import.meta.dirname}/../generated/js_code.cpp`,
-  `
-namespace gitcg {
+  OUTPUT_FILEPATH,
+  `namespace gitcg {
   namespace v1_0 {
     extern const char JS_CODE[] = R"${D_CHAR_SEQ}(${chunk.code})${D_CHAR_SEQ}";
   }
