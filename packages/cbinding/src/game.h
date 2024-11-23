@@ -53,7 +53,7 @@ public:
     notification_handler[who] = handler;
   }
 
-  void test() const;
+  void step();
 };
 
 }  // namespace v1_0

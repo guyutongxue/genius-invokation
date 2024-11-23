@@ -150,10 +150,6 @@ export class Game {
     this.#game.players[1].io.rpc = (data) => this.#rpc(1, data);
   }
 
-  static fromCreateParameter(id: number, createParam: GameCreateParameter) {
-    return new Game(id, createParam.createInitialState());
-  }
-
   #notify(who: 0 | 1, data: Notification) {
     io(
       this.id,

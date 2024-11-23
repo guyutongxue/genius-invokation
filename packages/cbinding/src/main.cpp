@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
       std::memcpy(response_data, "Hello, I'm response!", 20);
       *response_len = 20;
     });
-    game->test();
+    game->step();
     std::printf("22222\n");
     gitcg::Environment::dispose();
   }

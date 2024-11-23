@@ -20,6 +20,8 @@
   },
   "scripts": {
     "build:prod": "bun scripts/prepare_js.ts",
+    "cmake:configure": "cmake -B build -GNinja",
+    "cmake:build": "cmake --build build --config RelWithDebInfo",
     "build": "bun run build:prod"
   }
 }

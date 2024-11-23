@@ -15,15 +15,15 @@ FetchContent_MakeAvailable(v8-cmake)
 
 ### My project
 
-project(V8Test)
+project(gitcg-cbinding)
 
-add_executable(V8Test
+add_executable(gitcg-cbinding-test
   src/environment.cpp
   src/game.cpp
   src/main.cpp
   generated/js_code.cpp)
 
-target_link_libraries(V8Test
+target_link_libraries(gitcg-cbinding-test
   PRIVATE
   v8_base_without_compiler
   v8_compiler

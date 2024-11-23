@@ -46,10 +46,16 @@ const OUTPUT_FILEPATH = resolve(
   `${import.meta.dirname}/../generated/js_code.cpp`,
 );
 
-const D_CHAR_SEQ = "#####EOF#####";
+const D_CHAR_SEQ = "###";
 
 if (chunk.type !== "chunk") {
   throw new Error("Unexpected output type");
+}
+
+if (chunk.code.includes(D_CHAR_SEQ)) {
+  throw new Error(
+    "Bundled code includes d_char_seq, please reselect another sequence",
+  );
 }
 
 // await Bun.write("temp.js", chunk.code);
@@ -57,7 +63,12 @@ await Bun.write(
   OUTPUT_FILEPATH,
   `namespace gitcg {
   namespace v1_0 {
-    extern const char JS_CODE[] = R"${D_CHAR_SEQ}(${chunk.code})${D_CHAR_SEQ}";
+    extern const char JS_CODE[] =
+${chunk.code
+  .match(/.{1,4096}/g)!
+  .map((block) => `    R"${D_CHAR_SEQ}(${block})${D_CHAR_SEQ}"`)
+  .join("\n")}
+    ;
   }
 }`,
 );

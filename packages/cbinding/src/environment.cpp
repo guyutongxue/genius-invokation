@@ -155,7 +155,6 @@ Environment::Environment() {
     }
   }
 
-
   auto ns = main_module->GetModuleNamespace().As<v8::Object>();
 
   auto game_str = v8::String::NewFromUtf8Literal(isolate, "Game");

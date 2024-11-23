@@ -25,6 +25,8 @@ class Environment {
   std::unordered_map<int, std::unique_ptr<Game>> games;
   int next_game_id = 0;
 
+  friend class Game;
+
 public:
   v8::Persistent<v8::Function> game_ctor; // temp workaround
   Environment();
@@ -37,7 +39,7 @@ public:
   static void dispose();
 
   Game* create_game();
-  Game* get_game(int gameId) noexcept;
+  Game* get_game(int game_id) noexcept;
 
   v8::Isolate* get_isolate() {
     return isolate;
