@@ -1,5 +1,4 @@
-import { dirname } from "node:path";
-import { mkdir } from "node:fs/promises";
+import { resolve } from "node:path";
 import { rollup } from "rollup";
 import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
@@ -43,7 +42,9 @@ const {
   format: "es",
 });
 
-const OUTPUT_FILEPATH = `${import.meta.dirname}/../generated/js_code.cpp`;
+const OUTPUT_FILEPATH = resolve(
+  `${import.meta.dirname}/../generated/js_code.cpp`,
+);
 
 const D_CHAR_SEQ = "#####EOF#####";
 
@@ -51,7 +52,6 @@ if (chunk.type !== "chunk") {
   throw new Error("Unexpected output type");
 }
 
-await mkdir(dirname(OUTPUT_FILEPATH), { recursive: true });
 // await Bun.write("temp.js", chunk.code);
 await Bun.write(
   OUTPUT_FILEPATH,
