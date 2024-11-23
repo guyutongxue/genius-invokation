@@ -90,7 +90,7 @@ jobs:
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -S ${{ outputs.source-dir }}
+          -S ${{ steps.strings.outputs.source-dir }}
 
       - name: Patch
         if: steps.cache.outputs.cache-hit != 'true'
@@ -98,7 +98,7 @@ jobs:
         # A MSVC issue causes v8 failed to compile
         shell: bash
         run: |
-          cd '${{ outputs.source-dir }}'
+          cd '${{ steps.strings.outputs.source-dir }}'
           patch -p0 < fix_msvc_19.42.patch
 
       - name: Build
