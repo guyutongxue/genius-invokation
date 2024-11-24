@@ -61,7 +61,7 @@ class GameCreateParameter {
 
   setInitAttribute(attribute: number, value: string | number) {
     switch (attribute) {
-      case c.GITCG_ATTR_INIT_DATA_VERSION: {
+      case c.GITCG_ATTR_CREATEPARAM_DATA_VERSION: {
         if (VERSIONS.includes(value as any)) {
           this.dataVersion = value as Version;
         } else {
@@ -69,52 +69,52 @@ class GameCreateParameter {
         }
         break;
       }
-      case c.GITCG_ATTR_INIT_RANDOM_SEED: {
+      case c.GITCG_ATTR_CREATEPARAM_RANDOM_SEED: {
         this.#assertNumber(value);
         this.config.randomSeed = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_INITIAL_HANDS_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_INITIAL_HANDS_COUNT: {
         this.#assertNumber(value);
         this.config.initialHandsCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_MAX_HANDS_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_MAX_HANDS_COUNT: {
         this.#assertNumber(value);
         this.config.maxHandsCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_MAX_ROUNDS_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_MAX_ROUNDS_COUNT: {
         this.#assertNumber(value);
         this.config.maxRoundsCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_MAX_SUPPORTS_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_MAX_SUPPORTS_COUNT: {
         this.#assertNumber(value);
         this.config.maxSupportsCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_MAX_SUMMONS_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_MAX_SUMMONS_COUNT: {
         this.#assertNumber(value);
         this.config.maxSummonsCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_INITIAL_DICE_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_INITIAL_DICE_COUNT: {
         this.#assertNumber(value);
         this.config.initialDiceCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_MAX_DICE_COUNT: {
+      case c.GITCG_ATTR_CREATEPARAM_MAX_DICE_COUNT: {
         this.#assertNumber(value);
         this.config.maxDiceCount = value;
         break;
       }
-      case c.GITCG_ATTR_INIT_NO_SHUFFLE_0: {
+      case c.GITCG_ATTR_CREATEPARAM_NO_SHUFFLE_0: {
         this.#assertNumber(value);
         this.decks[0].noShuffle = !!value;
         break;
       }
-      case c.GITCG_ATTR_INIT_NO_SHUFFLE_1: {
+      case c.GITCG_ATTR_CREATEPARAM_NO_SHUFFLE_1: {
         this.#assertNumber(value);
         this.decks[1].noShuffle = !!value;
         break;
@@ -138,13 +138,6 @@ class GameCreateParameter {
       decks: this.decks,
     });
   }
-}
-
-enum Status {
-  NOT_STARTED = 0,
-  RUNNING = 1,
-  FINISHED = 2,
-  ABORTED = 3,
 }
 
 export class Game {
@@ -200,7 +193,7 @@ export class Game {
     io(this.id, c.GITCG_INTERNAL_IO_ERROR, 0, e.message);
   }
 
-  #status = Status.NOT_STARTED;
+  #status = c.GITCG_GAME_STATUS_NOT_STARTED;
   #resumable = false;
   get state() {
     return this.#game.state;
@@ -217,28 +210,28 @@ export class Game {
 
   async step(): Promise<void> {
     switch (this.#status) {
-      case Status.NOT_STARTED: {
-        this.#status = Status.RUNNING;
+      case c.GITCG_GAME_STATUS_NOT_STARTED: {
+        this.#status = c.GITCG_GAME_STATUS_RUNNING;
         this.#game
           .start()
           .then((e) => {
-            this.#status = Status.FINISHED;
+            this.#status = c.GITCG_GAME_STATUS_FINISHED;
             this.#stepResolvers.resolve();
           })
           .catch((e) => {
-            this.#status = Status.ABORTED;
+            this.#status = c.GITCG_GAME_STATUS_ABORTED;
             this.#stepResolvers.reject(e);
           });
       }
-      case Status.RUNNING: {
+      case c.GITCG_GAME_STATUS_RUNNING: {
         this.#stepResolvers = Promise.withResolvers();
         this.#stepDoneResolvers.resolve();
         await this.#stepResolvers.promise;
       }
-      case Status.FINISHED: {
+      case c.GITCG_GAME_STATUS_RUNNING: {
         return;
       }
-      case Status.ABORTED: {
+      case c.GITCG_GAME_STATUS_ABORTED: {
         throw new Error("Game got aborted, cannot step");
       }
     }
