@@ -76,7 +76,7 @@ const macros = await Bun.file(
   `${import.meta.dirname}/../js/constant.ts`,
 ).text();
 let output_source = "";
-const regexp = /export const ([A-Z_]+) = (\d+);/g;
+const regexp = /export const ([A-Z0-9_]+) = (\d+);/g;
 for (
   let result: RegExpExecArray | null = null;
   (result = regexp.exec(macros));

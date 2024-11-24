@@ -27,7 +27,7 @@ inline namespace v1_0 {
 class Environment;
 
 class Game {
-  Environment* environment;
+  Environment* env;
   int game_id;
   v8::UniquePersistent<v8::Object> instance;
 

@@ -25,9 +25,11 @@ import {
   PbPhaseType,
 } from "@gi-tcg/typings";
 import {
+  deserializeGameStateLog,
   executeQueryOnState,
   GiTcgIoError,
   Game as InternalGame,
+  serializeGameStateLog,
   VERSIONS,
   type AnyState,
   type CreateInitialStateConfig,
@@ -59,11 +61,17 @@ class GameCreateParameter {
     }
   }
 
-  setDeckCharacters(who: 0 | 1, characters: number[]) {
-    this.decks[who].characters = characters;
-  }
-  setDeckCards(who: 0 | 1, cards: number[]) {
-    this.decks[who].cards = cards;
+  setDeck(who: 0 | 1, characters_or_cards: 1 | 2, value: number[]) {
+    if (who !== 0 && who !== 1) {
+      throw new Error(`Invalid who: ${who}`);
+    }
+    if (characters_or_cards === c.GITCG_SET_DECK_CHARACTERS) {
+      this.decks[who].characters = value;
+    } else if (characters_or_cards === c.GITCG_SET_DECK_CARDS) {
+      this.decks[who].cards = value;
+    } else {
+      throw new Error(`Invalid characters_or_cards: ${characters_or_cards}`);
+    }
   }
 
   setAttribute(attribute: number, value: string | number) {
@@ -132,7 +140,7 @@ class GameCreateParameter {
     }
   }
 
-  createInitialState(): GameState {
+  createState(): GameState {
     if (this.decks[0].characters.length === 0) {
       throw new Error("Deck 0 has no characters");
     }
@@ -148,9 +156,8 @@ class GameCreateParameter {
 }
 
 export class Game {
-  static createParameter() {
-    return new GameCreateParameter();
-  }
+  static CreateParameter = GameCreateParameter;
+
   #game: InternalGame;
   readonly id: number;
 
@@ -244,6 +251,12 @@ export class Game {
     }
   }
 
+  static stateToJson(state: GameState): string {
+    return JSON.stringify(serializeGameStateLog([{ state, canResume: false }]));
+  }
+  static stateFromJson(json: string): GameState {
+    return deserializeGameStateLog(getData, JSON.parse(json))[0]!.state;
+  }
   static queryState(state: GameState, who: 0 | 1, query: string): AnyState[] {
     return executeQueryOnState(state, who, query);
   }

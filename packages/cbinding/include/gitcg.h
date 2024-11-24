@@ -29,8 +29,28 @@ extern "C" {
 #define GITCG_ATTR_CREATEPARAM_MAX_SUMMONS_COUNT 107
 #define GITCG_ATTR_CREATEPARAM_INITIAL_DICE_COUNT 108
 #define GITCG_ATTR_CREATEPARAM_MAX_DICE_COUNT 109
-#define GITCG_ATTR_PLAYER_ALWAYS_OMNI 301
-#define GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE 302
+#define GITCG_ATTR_CREATEPARAM_NO_SHUFFLE_0 2000
+#define GITCG_ATTR_CREATEPARAM_NO_SHUFFLE_1 2001
+#define GITCG_ATTR_PLAYER_ALWAYS_OMNI_0 3010
+#define GITCG_ATTR_PLAYER_ALWAYS_OMNI_1 3011
+#define GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_0 3020
+#define GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_1 3021
+#define GITCG_ATTR_STATE_PHASE 401
+#define GITCG_ATTR_STATE_ROUND_NUMBER 402
+#define GITCG_ATTR_STATE_CURRENT_TURN 403
+#define GITCG_ATTR_STATE_WINNER 404
+#define GITCG_ATTR_STATE_PLAYER_DECLARED_END_0 5010
+#define GITCG_ATTR_STATE_PLAYER_DECLARED_END_1 5011
+#define GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_0 5020
+#define GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_1 5021
+#define GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_0 5030
+#define GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_1 5031
+#define GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_0 5040
+#define GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_1 5041
+#define GITCG_ATTR_STATE_PLAYER_LEGEND_USED_0 5050
+#define GITCG_ATTR_STATE_PLAYER_LEGEND_USED_1 5051
+#define GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_0 5060
+#define GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_1 5061
 #define GITCG_SET_DECK_CHARACTERS 1
 #define GITCG_SET_DECK_CARDS 2
 #define GITCG_GAME_STATUS_NOT_STARTED 0
@@ -130,9 +150,34 @@ int gitcg_state_from_json(gitcg_env_t env, const char* json,
  */
 int gitcg_state_to_json(gitcg_state_t state, char** json);
 
+int gitcg_state_get_attr_int(gitcg_state_t state, int key);
+int gitcg_state_get_dice(gitcg_state_t state, int who, int* result);
+
+typedef struct gitcg_entity* gitcg_entity_t;
+
+/**
+ * @brief Execute query (Entity Query Syntax) on the given game state.
+ *
+ * The result array is allocated by `malloc` and should be freed by `free`.
+ *
+ * @param state The game state
+ * @param who Defines `my` semantics in the query
+ * @param query_string
+ * @param result A pointer to `gitcg_entity_t` that will be set to the result
+ * array
+ * @param result_size A pointer to `size_t` that will be set to the size of the
+ * result array
+ */
+int gitcg_state_query(gitcg_state_t state, int who, const char* query_string,
+                      gitcg_entity_t* result, size_t* result_size);
+
+int gitcg_entity_get_id(gitcg_entity_t entity);
+int gitcg_entity_get_definition_id(gitcg_entity_t entity);
+int gitcg_entity_get_variable(gitcg_entity_t entity, const char* variable_name, int* result);
+
 typedef struct gitcg_game* gitcg_game_t;
 int gitcg_game_new(gitcg_env_t env, gitcg_state_t state, gitcg_game_t* game);
-int gitcg_game_free(gitcg_game_t game);
+void gitcg_game_free(gitcg_game_t game);
 
 typedef void (*gitcg_rpc_handler)(void* player_data, const char* request_data,
                                   size_t request_len, char* response_data,
@@ -166,6 +211,8 @@ int gitcg_game_get_attr_int(gitcg_game_t game, int key);
  */
 int gitcg_game_step(gitcg_game_t game);
 
+int gitcg_game_giveup(gitcg_game_t game, int who);
+
 /**
  * @brief Get current game state of a certain game.
  *
@@ -177,7 +224,7 @@ int gitcg_game_step(gitcg_game_t game);
  */
 gitcg_state_t gitcg_game_get_state(gitcg_game_t game);
 int gitcg_game_get_status(gitcg_game_t game);
-int gitcg_game_resumable(gitcg_game_t game);
+int gitcg_game_is_resumable(gitcg_game_t game);
 int gitcg_game_get_winner(gitcg_game_t game);
 
 /**

@@ -20,6 +20,8 @@
 #include <libplatform/libplatform.h>
 #include <v8.h>
 
+#include "state_createparam.h"
+#include "state.h"
 #include "game.h"
 
 namespace gitcg {
@@ -40,7 +42,16 @@ class Environment {
   std::unordered_map<int, std::unique_ptr<Game>> games;
   int next_game_id = 0;
 
+  friend class StateCreateParam;
+  friend class State;
   friend class Game;
+
+  template <std::size_t N>
+  v8::Local<v8::String> v8_string(const char (&str)[N]) {
+    return v8::String::NewFromUtf8Literal(isolate, str);
+  }
+  void check_trycatch(v8::TryCatch& trycatch);
+  void check_promise(v8::Local<v8::Promise> promise);
 
 public:
   v8::Persistent<v8::Function> game_ctor; // temp workaround
@@ -53,8 +64,14 @@ public:
   static Environment& get_instance();
   static void dispose();
 
-  Game* create_game();
+  Game* new_game();
   Game* get_game(int game_id) noexcept;
+
+  StateCreateParam new_state_createparam();
+
+  State state_from_createparam(const StateCreateParam& param);
+  State state_from_json(const char* json);
+  char* state_to_json(const State& state);
 
   v8::Isolate* get_isolate() {
     return isolate;
