@@ -172,7 +172,7 @@ export function initiativeSkillsOfPlayer(
 }
 
 /**
- * 检索 `state` 中所有响应 `triggerOn` 的技能。包括扩展点。
+ * 检索 `state` 中所有响应 `triggerOn` 的技能。包括扩展点，不含已移除的实体。
  * @param state
  * @param triggerOn
  * @returns
@@ -272,7 +272,7 @@ export function removeEntity(state: Draft<GameState>, id: number) {
     for (const ch of player.characters) {
       const idx = ch.entities.findIndex((e) => e.id === id);
       if (idx !== -1) {
-        ch.entities.splice(idx, 1);
+        player.removedEntities.push(...ch.entities.splice(idx, 1));
         return;
       }
     }

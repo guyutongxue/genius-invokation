@@ -68,10 +68,7 @@ import {
   TargetQuery,
 } from "./card";
 
-export type TriggeredBuilderMetaBase = Omit<
-  ContextMetaBase,
-  "readonly"
-> & {
+export type TriggeredBuilderMetaBase = Omit<ContextMetaBase, "readonly"> & {
   callerType: "character" | EntityType;
 };
 export type BuilderMetaBase = Omit<ContextMetaBase, "readonly">;
@@ -650,6 +647,12 @@ export class TriggeredSkillBuilder<
     super(id);
     this.associatedExtensionId = this.parent._associatedExtensionId;
     const [, filterDescriptor] = detailedEventDictionary[this.triggerOn];
+    // 对于并非响应自身弃置的技能，当实体已经被弃置时，不再响应
+    if (triggerOn !== "selfDispose") {
+      this.filters.push((c, e) => {
+        return c.self.area.type !== "removedEntities";
+      });
+    }
     this.filters.push((c, e) => {
       const { area, state } = c.self;
       return filterDescriptor(c as any, e as any, {
