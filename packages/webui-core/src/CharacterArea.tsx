@@ -117,7 +117,8 @@ export function CharacterArea(props: CharacterAreaProps) {
     }
   };
 
-  const statuses = () => props.data.entity.filter((et) => !et.equipment);
+  const statuses = () =>
+    props.data.entity.filter((et) => typeof et.equipment === "undefined");
   const weapon = () =>
     props.data.entity.find((et) => et.equipment === 1 /* weapon */);
   const artifact = () =>
