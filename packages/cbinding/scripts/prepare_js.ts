@@ -58,7 +58,6 @@ if (chunk.code.includes(D_CHAR_SEQ)) {
   );
 }
 
-// await Bun.write("temp.js", chunk.code);
 await Bun.write(
   OUTPUT_FILEPATH,
   `namespace gitcg {
@@ -72,3 +71,26 @@ ${chunk.code
   }
 }`,
 );
+
+const macros = await Bun.file(
+  `${import.meta.dirname}/../js/constant.ts`,
+).text();
+let output_source = "";
+const regexp = /export const ([A-Z_]+) = (\d+);/g;
+for (
+  let result: RegExpExecArray | null = null;
+  (result = regexp.exec(macros));
+
+) {
+  const [_, name, value] = result;
+  output_source += `#define ${name} ${value}\n`;
+}
+const header = await Bun.file(
+  `${import.meta.dirname}/../include/gitcg.h`,
+).text();
+const updatedHeader = header.replace(
+  /\/\/ >>> generated macros[\s\S]*?\/\/ <<< generated macros/,
+  `// >>> generated macros\n${output_source}// <<< generated macros`,
+);
+
+await Bun.write(`${import.meta.dirname}/../include/gitcg.h`, updatedHeader);

@@ -23,6 +23,11 @@ add_executable(gitcg-cbinding-test
   src/main.cpp
   generated/js_code.cpp)
 
+target_include_directories(gitcg-cbinding-test
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 target_link_libraries(gitcg-cbinding-test
   PRIVATE
   v8_base_without_compiler
@@ -30,4 +35,4 @@ target_link_libraries(gitcg-cbinding-test
   v8_snapshot
   v8_inspector
   v8_libplatform
-  )
+)
