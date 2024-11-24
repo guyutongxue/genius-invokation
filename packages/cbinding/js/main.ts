@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -18,11 +18,18 @@ import "core-js/proposals/iterator-helpers";
 import "core-js/proposals/explicit-resource-management";
 
 import getData from "@gi-tcg/data";
-import { RpcRequest, RpcResponse, Notification } from "@gi-tcg/typings";
 import {
+  RpcRequest,
+  RpcResponse,
+  Notification,
+  PbPhaseType,
+} from "@gi-tcg/typings";
+import {
+  executeQueryOnState,
   GiTcgIoError,
   Game as InternalGame,
   VERSIONS,
+  type AnyState,
   type CreateInitialStateConfig,
   type DeckConfig,
   type GameState,
@@ -59,7 +66,7 @@ class GameCreateParameter {
     this.decks[who].cards = cards;
   }
 
-  setInitAttribute(attribute: number, value: string | number) {
+  setAttribute(attribute: number, value: string | number) {
     switch (attribute) {
       case c.GITCG_ATTR_CREATEPARAM_DATA_VERSION: {
         if (VERSIONS.includes(value as any)) {
@@ -233,6 +240,123 @@ export class Game {
       }
       case c.GITCG_GAME_STATUS_ABORTED: {
         throw new Error("Game got aborted, cannot step");
+      }
+    }
+  }
+
+  static queryState(state: GameState, who: 0 | 1, query: string): AnyState[] {
+    return executeQueryOnState(state, who, query);
+  }
+  static getStateAttribute(state: GameState, attribute: number): number {
+    switch (attribute) {
+      case c.GITCG_ATTR_STATE_PHASE: {
+        switch (state.phase) {
+          case "initActives":
+            return PbPhaseType.PHASE_INIT_ACTIVES;
+          case "initHands":
+            return PbPhaseType.PHASE_INIT_HANDS;
+          case "roll":
+            return PbPhaseType.PHASE_ROLL;
+          case "action":
+            return PbPhaseType.PHASE_ACTION;
+          case "end":
+            return PbPhaseType.PHASE_END;
+          case "gameEnd":
+            return PbPhaseType.PHASE_GAME_END;
+          default:
+            return -1;
+        }
+      }
+      case c.GITCG_ATTR_STATE_ROUND_NUMBER: {
+        return state.roundNumber;
+      }
+      case c.GITCG_ATTR_STATE_CURRENT_TURN: {
+        return state.currentTurn;
+      }
+      case c.GITCG_ATTR_STATE_WINNER: {
+        return state.winner ?? -1;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_DECLARED_END_0: {
+        return +state.players[0].declaredEnd;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_DECLARED_END_1: {
+        return +state.players[1].declaredEnd;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_0: {
+        return +state.players[0].hasDefeated;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_1: {
+        return +state.players[1].hasDefeated;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_0: {
+        return +state.players[0].canCharged;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_1: {
+        return +state.players[1].canCharged;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_0: {
+        return +state.players[0].canPlunging;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_1: {
+        return +state.players[1].canPlunging;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_0: {
+        return +state.players[0].legendUsed;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_1: {
+        return +state.players[1].legendUsed;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_0: {
+        return +state.players[0].skipNextTurn;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_1: {
+        return +state.players[1].skipNextTurn;
+      }
+      default: {
+        throw new Error(`Invalid attribute: ${attribute}`);
+      }
+    }
+  }
+
+  getAttribute(attribute: number): number {
+    switch (attribute) {
+      case c.GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_0: {
+        return +this.#game.players[0].config.allowTuningAnyDice;
+      }
+      case c.GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_1: {
+        return +this.#game.players[1].config.allowTuningAnyDice;
+      }
+      case c.GITCG_ATTR_PLAYER_ALWAYS_OMNI_0: {
+        return +this.#game.players[0].config.alwaysOmni;
+      }
+      case c.GITCG_ATTR_PLAYER_ALWAYS_OMNI_1: {
+        return +this.#game.players[1].config.alwaysOmni;
+      }
+      default: {
+        return Game.getStateAttribute(this.#game.state, attribute);
+      }
+    }
+  }
+  setAttribute(attribute: number, value: number) {
+    switch (attribute) {
+      case c.GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_0: {
+        this.#game.players[0].config.allowTuningAnyDice = !!value;
+        break;
+      }
+      case c.GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_1: {
+        this.#game.players[1].config.allowTuningAnyDice = !!value;
+        break;
+      }
+      case c.GITCG_ATTR_PLAYER_ALWAYS_OMNI_0: {
+        this.#game.players[0].config.alwaysOmni = !!value;
+        break;
+      }
+      case c.GITCG_ATTR_PLAYER_ALWAYS_OMNI_1: {
+        this.#game.players[1].config.alwaysOmni = !!value;
+        break;
+      }
+      default: {
+        throw new Error(`Invalid attribute: ${attribute}`);
       }
     }
   }

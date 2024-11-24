@@ -17,7 +17,13 @@ import { flip } from "@gi-tcg/utils";
 import type { Node, NonterminalNode } from "ohm-js";
 
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
-import { AnyState, CharacterState, EntityState, GameState } from "../base/state";
+import {
+  AnyState,
+  CardState,
+  CharacterState,
+  EntityState,
+  GameState,
+} from "../base/state";
 import { ContextMetaBase, SkillContext } from "../builder/context/skill";
 import { CharacterBase } from "../builder/context/character";
 import {
@@ -76,6 +82,11 @@ function queryCanonical(
     }
     if (typeRes.type !== "any" && typeRes.type !== state.definition.type) {
       continue;
+    }
+    if (typeRes.type === "card" && typeRes.area !== "all") {
+      if (typeRes.area !== area.type) {
+        continue;
+      }
     }
     if (typeRes.type === "character") {
       const chState = state as CharacterState;
@@ -226,9 +237,10 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       const baseRatio = baseIdx - (baseLen / 2 - 0.5);
       const targetWho = flip(baseChCtx.who);
       const targetLen = state.players[targetWho].characters.length;
-      const targetActiveIndex = getActiveCharacterIndex(
-        state.players[targetWho],
-      );
+      let targetActiveIndex = 0;
+      try {
+        targetActiveIndex = getActiveCharacterIndex(state.players[targetWho]);
+      } catch {}
       const targetChs = state.players[targetWho].characters.map((ch, i) => ({
         ...ch,
         index: i,
@@ -327,6 +339,10 @@ type TypeSpecifierResult =
     }
   | {
       type: EntityType | "any";
+    }
+  | {
+      type: "card";
+      area: "hands" | "pile" | "all";
     };
 
 const typeSpecifierDict: QueryLangActionDict<TypeSpecifierResult> = {
@@ -361,6 +377,15 @@ const typeSpecifierDict: QueryLangActionDict<TypeSpecifierResult> = {
   },
   EntitySpecifier_any(_) {
     return { type: "any" };
+  },
+  CardSpecifier_all(_) {
+    return { type: "card", area: "all" };
+  },
+  CardSpecifier_hands(_, _2) {
+    return { type: "card", area: "hands" };
+  },
+  CardSpecifier_pile(_, _2) {
+    return { type: "card", area: "pile" };
   },
 };
 

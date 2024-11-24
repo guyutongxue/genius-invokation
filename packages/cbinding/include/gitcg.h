@@ -152,10 +152,8 @@ void gitcg_game_set_io_error_handler(gitcg_game_t game,
 
 void* gitcg_game_set_player_data(gitcg_game_t game, int who, void* data);
 
-void gitcg_game_set_player_attr_int(gitcg_game_t game, int who, int key,
-                                    int value);
-void gitcg_game_set_player_attr_string(gitcg_game_t game, int who, int key,
-                                       const char* value);
+void gitcg_game_set_attr_int(gitcg_game_t game, int key, int value);
+int gitcg_game_get_attr_int(gitcg_game_t game, int key);
 
 /**
  * @brief Step a game instance to next 'pause point'.

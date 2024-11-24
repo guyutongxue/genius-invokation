@@ -88,7 +88,7 @@ export interface PlayerState {
 export interface CardState {
   readonly id: number;
   readonly definition: CardDefinition;
-  readonly variables: Record<never, never>;
+  readonly variables: Record<string, undefined>;
 }
 
 export interface CharacterState {

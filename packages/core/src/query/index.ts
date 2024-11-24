@@ -17,7 +17,7 @@ import { ContextMetaBase, SkillContext } from "../builder/context/skill";
 import { TypedExEntity } from "../builder/type";
 import { GuessedTypeOfQuery } from "./types";
 import { QueryArgs, doSemanticQueryAction } from "./semantic";
-import { allEntities, getEntityArea } from "../utils";
+import { allEntities, allEntitiesInclPile, getEntityArea } from "../utils";
 import { AnyState, CharacterState, EntityState, GameState } from "../base/state";
 import {
   InitiativeSkillEventArg,
@@ -85,7 +85,7 @@ export function executeQueryOnState(
 ): AnyState[] {
   return doSemanticQueryAction(q, {
     state,
-    candidates: allEntities(state),
+    candidates: allEntitiesInclPile(state),
     callerWho: who,
     externals: {},
   });

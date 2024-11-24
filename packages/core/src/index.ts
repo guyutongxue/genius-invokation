@@ -24,6 +24,7 @@ export { type Player, type PlayerConfig } from "./player";
 export { type GameStateLogEntry, DetailLogType, type DetailLogEntry, serializeGameStateLog, deserializeGameStateLog } from "./log";
 export type * from "./base/state";
 export { type Mutation } from "./base/mutation";
+export { executeQueryOnState } from "./query";
 export { type Version, VERSIONS, CURRENT_VERSION } from "./base/version";
 export { type PlayerIO, exposeState } from "./io";
 export * from "./error";

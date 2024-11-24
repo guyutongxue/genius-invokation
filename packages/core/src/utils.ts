@@ -96,7 +96,10 @@ export function allEntities(state: GameState): AnyState[] {
   const result: AnyState[] = [];
   for (const who of [state.currentTurn, flip(state.currentTurn)]) {
     const player = state.players[who];
-    const activeIdx = getActiveCharacterIndex(player);
+    let activeIdx = 0;
+    try {
+      activeIdx = getActiveCharacterIndex(player);
+    } catch {}
     const [active, ...standby] = player.characters.shiftLeft(activeIdx);
 
     // 游戏实际的响应顺序并非规则书所述，而是
@@ -122,6 +125,14 @@ export function allEntities(state: GameState): AnyState[] {
     result.push(...player.hands);
   }
   return result;
+}
+
+export function allEntitiesInclPile(state: GameState): AnyState[] {
+  return [
+    ...allEntities(state),
+    ...state.players[state.currentTurn].pile,
+    ...state.players[flip(state.currentTurn)].pile,
+  ];
 }
 
 export interface CallerAndTriggeredSkill {
@@ -216,11 +227,12 @@ export function getEntityArea(state: GameState, id: number): EntityArea {
       }
     }
     for (const key of [
-      "hands",
       "combatStatuses",
       "summons",
       "supports",
+      "hands",
       "removedEntities",
+      "pile",
     ] as const) {
       if (player[key].find((e) => e.id === id)) {
         return {
@@ -361,7 +373,10 @@ export function playSkillOfCard(
 }
 
 export function normalizeCost(req: DiceRequirement): DiceRequirement {
-  const emptyDice = req.entries().filter(([k, v]) => v === 0).map(([k, v]) => k);
+  const emptyDice = req
+    .entries()
+    .filter(([k, v]) => v === 0)
+    .map(([k, v]) => k);
   for (const dice of emptyDice) {
     req.delete(dice);
   }

@@ -44,6 +44,7 @@ QueryLang {
   kwSupport = "support" "s"? ~identifierPart
   kwStatus = "status" "es"? ~identifierPart
   kwEquipment = "equipment" "s"? ~identifierPart
+  kwCard = "card" "s"? ~identifierPart
   kwAny = "any" ~identifierPart
   kwActive = "active" ~identifierPart
   kwPrev = "prev" ~identifierPart
@@ -51,6 +52,8 @@ QueryLang {
   kwStandby = "standby" ~identifierPart
   kwIncludes = "include" "s"? ~identifierPart
   kwDefeated = "defeated" ~identifierPart
+  kwHand = "hand" "s"? ~identifierPart
+  kwPile = "pile" ~identifierPart
   kwWeapon = "weapon" ~identifierPart
   kwElement = "element" ~identifierPart
   kwNation = "nation" ~identifierPart
@@ -91,7 +94,7 @@ QueryLang {
   WhoSpecifier = kwAll? kwMy -- my
     | kwAll? kwOpp -- opp
     | kwAll -- all
-  TypeSpecifier = CharacterSpecifier | EntitySpecifier
+  TypeSpecifier = CharacterSpecifier | EntitySpecifier | CardSpecifier
   CharacterSpecifier = kwCharacter (kwIncludes kwDefeated)? -- chIncDeath
     | PositionSpecifier kwCharacter? -- position
     | kwDefeated kwCharacter? -- onlyDeath
@@ -102,6 +105,9 @@ QueryLang {
     | kwSupport -- support
     | kwEquipment -- equipment
     | kwAny -- any
+  CardSpecifier = kwCard -- all
+    | kwHand kwCard? -- hands
+    | kwPile kwCard? -- pile
 
   WithSpecifier = kwWith WithBody
 

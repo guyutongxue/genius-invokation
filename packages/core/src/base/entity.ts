@@ -49,7 +49,7 @@ export interface EntityDefinition {
 
 export type EntityArea =
   | {
-      readonly type: "hands" | "combatStatuses" | "supports" | "summons" | "removedEntities";
+      readonly type: "pile" | "hands" | "combatStatuses" | "supports" | "summons" | "removedEntities";
       readonly who: 0 | 1;
     }
   | {
