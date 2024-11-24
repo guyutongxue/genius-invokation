@@ -20,7 +20,7 @@
 #include "game.h"
 
 namespace gitcg {
-namespace v1_0 {
+inline namespace v1_0 {
 
 void initialize() {
   // v8::V8::InitializeICUDefaultLocation(argv[0]);

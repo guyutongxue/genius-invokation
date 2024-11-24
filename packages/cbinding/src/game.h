@@ -33,8 +33,8 @@ using NotificationHandler = void (*)(void* player_data,
                                      std::size_t notification_len) noexcept;
 
 class Game {
-  Environment* const environment;
-  const int game_id;
+  Environment* environment;
+  int game_id;
   v8::UniquePersistent<v8::Object> instance;
 
   void* player_data[2]{};

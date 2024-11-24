@@ -18,7 +18,7 @@
 #include "environment.h"
 
 namespace gitcg {
-namespace v1_0 {
+inline namespace v1_0 {
 
 // namespace {
 // template <typename T>
