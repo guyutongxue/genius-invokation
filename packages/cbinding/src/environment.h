@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -20,9 +20,10 @@
 #include <libplatform/libplatform.h>
 #include <v8.h>
 
-#include "state_createparam.h"
-#include "state.h"
+#include "entity.h"
 #include "game.h"
+#include "state.h"
+#include "state_createparam.h"
 
 namespace gitcg {
 inline namespace v1_0 {
@@ -33,13 +34,48 @@ void initialize();
 
 void cleanup();
 
+namespace helper {
+
+template <typename T>
+T* get_ptr(T* p) {
+  return p;
+}
+
+template <typename T, typename S>
+T* get_ptr(std::unique_ptr<S> const& p) {
+  return p.get();
+}
+
+template <typename T>
+struct unique_ptr_hash {
+  using is_transparent = void;
+
+  template <typename U>
+  size_t operator()(const U& u) const {
+    return std::hash<T*>{}(get_ptr<T>(u));
+  }
+};
+
+template <typename T>
+struct unique_ptr_cmp {
+  using is_transparent = void;
+
+  template <typename U, typename V>
+  bool operator()(const U& u, const V& v) const {
+    return get_ptr<T>(u) == get_ptr<T>(v);
+  }
+};
+}  // namespace helper
+
 class Environment {
   std::unique_ptr<v8::Platform> platform;
   v8::Isolate::CreateParams create_params;
   v8::Isolate* isolate;
   v8::Persistent<v8::Context> context;
 
-  std::unordered_set<std::unique_ptr<Object>> owning_objects;
+  std::unordered_set<std::unique_ptr<Object>, helper::unique_ptr_hash<Object>,
+                     helper::unique_ptr_cmp<Object>>
+      owning_objects;
   std::unordered_map<int, Game*> games;
   int next_game_id = 0;
 
@@ -55,7 +91,7 @@ class Environment {
   void check_promise(v8::Local<v8::Promise> promise);
 
 public:
-  v8::Persistent<v8::Function> game_ctor; // temp workaround
+  v8::Persistent<v8::Function> game_ctor;  // temp workaround
   Environment();
   ~Environment();
   Environment(const Environment&) = delete;
@@ -74,9 +110,20 @@ public:
   State& state_from_json(const char* json);
   char* state_to_json(const State& state);
 
+  std::vector<Entity*> query_state(const State& state);
+  int get_state_attribute(const State& state, int attribute);
+
   v8::Isolate* get_isolate() {
     return isolate;
   }
+
+  template <typename T>
+  T* own_object(std::unique_ptr<T> object) {
+    auto ptr = object.get();
+    owning_objects.emplace(std::move(object));
+    return ptr;
+  }
+  void free_object(Object* object);
 
   /**
    * Get v8::Local<v8::Context> of current execution context.

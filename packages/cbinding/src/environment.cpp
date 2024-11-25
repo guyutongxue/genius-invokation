@@ -242,9 +242,7 @@ Game& Environment::new_game(const State& state) {
       game_ctor->NewInstance(context, 2, game_ctor_args).ToLocalChecked();
   auto game = std::make_unique<Game>(this, game_id, game_instance);
   auto game_ptr = game.get();
-  owning_objects.emplace(std::move(game));
-  games.emplace(game_id, game_ptr);
-  return *game_ptr;
+  return *own_object(std::move(game));
 }
 
 Game* Environment::get_game(int gameId) noexcept {
@@ -267,9 +265,7 @@ StateCreateParam& Environment::new_state_createparam() {
       create_param_ctor->NewInstance(context, 0, nullptr).ToLocalChecked();
   auto create_param_ptr =
       std::make_unique<StateCreateParam>(this, create_param_instance);
-  auto& create_param = *create_param_ptr;
-  owning_objects.emplace(std::move(create_param_ptr));
-  return create_param;
+  return *own_object(std::move(create_param_ptr));
 }
 
 State& Environment::state_from_createparam(const StateCreateParam& param) {
@@ -285,9 +281,58 @@ State& Environment::state_from_createparam(const StateCreateParam& param) {
   check_trycatch(trycatch);
   auto state_ptr =
       std::make_unique<State>(this, result.ToLocalChecked().As<v8::Object>());
-  auto& state = *state_ptr;
-  owning_objects.emplace(std::move(state_ptr));
-  return state;
+  return *own_object(std::move(state_ptr));
+}
+
+State& Environment::state_from_json(const char* json) {
+  auto handle_scope = v8::HandleScope(isolate);
+  auto context = get_context();
+  auto from_json_str = v8_string("stateFromJson");
+  auto game_ctor = this->game_ctor.Get(isolate);
+  auto from_json_fn = game_ctor->Get(context, from_json_str)
+                          .ToLocalChecked()
+                          .As<v8::Function>();
+  auto trycatch = v8::TryCatch{isolate};
+  auto json_str_maybe = v8::String::NewFromUtf8(isolate, json);
+  v8::Local<v8::String> json_str;
+  if (!json_str_maybe.ToLocal(&json_str)) {
+    throw std::runtime_error("Failed to pass JSON string into v8");
+  }
+  auto undefined = v8::Undefined(isolate);
+  v8::Local<v8::Value> args[1]{json_str};
+  auto result = from_json_fn->Call(context, undefined, 1, args);
+  check_trycatch(trycatch);
+  auto state_ptr =
+      std::make_unique<State>(this, result.ToLocalChecked().As<v8::Object>());
+  return *own_object(std::move(state_ptr));
+}
+
+char* Environment::state_to_json(const State& state) {
+  auto handle_scope = v8::HandleScope(isolate);
+  auto context = get_context();
+  auto to_json_str = v8_string("stateToJson");
+  auto game_ctor = this->game_ctor.Get(isolate);
+  auto to_json_fn = game_ctor->Get(context, to_json_str)
+                          .ToLocalChecked()
+                          .As<v8::Function>();
+  auto trycatch = v8::TryCatch{isolate};
+  auto undefined = v8::Undefined(isolate);
+  auto state_instance = state.get_instance();
+  v8::Local<v8::Value> args[1]{state_instance};
+  auto result = to_json_fn->Call(context, undefined, 1, args);
+  check_trycatch(trycatch);
+  auto json_str = v8::String::Utf8Value{isolate, result.ToLocalChecked()};
+  auto size = json_str.length();
+  auto buf = static_cast<char*>(std::malloc(size));
+  std::memcpy(buf, *json_str, size);
+  return buf;
+}
+
+void Environment::free_object(Object* object) {
+  auto it = owning_objects.find(object);
+  if (it != owning_objects.end()) {
+    owning_objects.erase(it);
+  }
 }
 
 }  // namespace v1_0

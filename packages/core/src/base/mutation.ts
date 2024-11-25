@@ -312,9 +312,9 @@ function doMutation(state: GameState, m: Mutation): GameState {
     }
     case "createEntity": {
       const { where, value } = m;
-      if (where.type === "hands") {
+      if (where.type === "hands" || where.type === "pile") {
         throw new GiTcgCoreInternalError(
-          `Cannot create hand card using createEntity. Use createCard instead.`,
+          `Cannot create card using createEntity. Use createCard instead.`,
         );
       } else if (where.type === "characters") {
         return produce(state, (draft) => {

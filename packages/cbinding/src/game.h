@@ -20,6 +20,7 @@
 #include <v8.h>
 
 #include "gitcg.h"
+#include "state.h"
 #include "object.h"
 
 namespace gitcg {
@@ -61,6 +62,8 @@ public:
   void set_io_error_handler(int who, gitcg_io_error_handler handler) noexcept {
     io_error_handler[who] = handler;
   }
+
+  State& get_state();
 
   void step();
 };

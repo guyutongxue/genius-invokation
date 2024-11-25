@@ -22,9 +22,16 @@ add_executable(gitcg-cbinding-test
   src/object.cpp
   src/state_createparam.cpp
   src/state.cpp
+  src/entity.cpp
   src/game.cpp
   src/main.cpp
   generated/js_code.cpp)
+
+set_target_properties(gitcg-cbinding-test
+  PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+)
 
 target_include_directories(gitcg-cbinding-test
   PRIVATE

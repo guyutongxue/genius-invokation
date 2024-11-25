@@ -36,6 +36,18 @@ Game::Game(Environment* environment, int game_id,
            v8::Local<v8::Object> instance)
     : Object{environment, instance}, game_id{game_id} {}
 
+State& Game::get_state() {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto context = env->get_context();
+  auto instance = this->instance.Get(isolate);
+  auto state_str = env->v8_string("state");
+  auto state_obj =
+      instance->Get(context, state_str).ToLocalChecked().As<v8::Object>();
+  auto state_obj_ptr = std::make_unique<State>(env, state_obj);
+  return *env->own_object(std::move(state_obj_ptr));
+}
+
 void Game::step() {
   std::printf("WE ARE STEPPING!\n");
   auto isolate = env->get_isolate();

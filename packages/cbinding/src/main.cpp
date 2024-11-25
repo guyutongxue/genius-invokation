@@ -91,6 +91,10 @@ int main(int argc, char** argv) {
     *response_len = 20;
   });
   game.step();
+  auto& current_state = game.get_state();
+  auto str = env.state_to_json(current_state);
+  std::printf("%s\n", str);
+  free(str);
   std::printf("22222\n");
   gitcg::Environment::dispose();
   gitcg::cleanup();
