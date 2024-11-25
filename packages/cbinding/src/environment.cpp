@@ -44,61 +44,67 @@ constexpr int ENVIRONMENT_THIS_SLOT = 1;
 constexpr std::size_t MAX_RESPONSE_SIZE = 128;
 
 constexpr v8::FunctionCallback io_fn_callback =
-    [](const v8::FunctionCallbackInfo<v8::Value> &args) {
+    [](const v8::FunctionCallbackInfo<v8::Value>& args) {
       auto isolate = args.GetIsolate();
       auto context = isolate->GetCurrentContext();
       auto data = context->GetEmbedderData(ENVIRONMENT_THIS_SLOT);
       auto environment =
-          static_cast<Environment *>(data.As<v8::External>()->Value());
+          static_cast<Environment*>(data.As<v8::External>()->Value());
       auto gameId = args[0].As<v8::Number>()->Value();
       int ioType = args[1].As<v8::Number>()->Value();
       auto who = args[2].As<v8::Number>()->Value();
       auto request = args[3].As<v8::Uint8Array>()->Buffer();
       auto buf_len = request->ByteLength();
-      auto buf_data = static_cast<char *>(request->Data());
+      auto buf_data = static_cast<char*>(request->Data());
       auto game = environment->get_game(gameId);
+      if (!game) {
+        auto error_message =
+            v8::String::NewFromUtf8Literal(isolate, "Game not found");
+        isolate->ThrowError(error_message);
+        return;
+      }
       auto player_data = game->get_player_data(who);
       switch (ioType) {
-      case GITCG_INTERNAL_IO_RPC: {
-        auto handler = game->get_rpc_handler(who);
-        if (!handler) {
-          auto error_message =
-              v8::String::NewFromUtf8Literal(isolate, "RPC handler not set");
-          isolate->ThrowError(error_message);
-          return;
-        }
-        auto response_buf = v8::ArrayBuffer::New(isolate, MAX_RESPONSE_SIZE);
+        case GITCG_INTERNAL_IO_RPC: {
+          auto handler = game->get_rpc_handler(who);
+          if (!handler) {
+            auto error_message =
+                v8::String::NewFromUtf8Literal(isolate, "RPC handler not set");
+            isolate->ThrowError(error_message);
+            return;
+          }
+          auto response_buf = v8::ArrayBuffer::New(isolate, MAX_RESPONSE_SIZE);
 
-        auto response_len = MAX_RESPONSE_SIZE;
-        handler(player_data, buf_data, buf_len,
-                static_cast<char *>(response_buf->Data()), &response_len);
-        if (response_len > MAX_RESPONSE_SIZE) {
-          auto error_message =
-              v8::String::NewFromUtf8Literal(isolate, "Response too large");
-          isolate->ThrowError(error_message);
-          return;
+          auto response_len = MAX_RESPONSE_SIZE;
+          handler(player_data, buf_data, buf_len,
+                  static_cast<char*>(response_buf->Data()), &response_len);
+          if (response_len > MAX_RESPONSE_SIZE) {
+            auto error_message =
+                v8::String::NewFromUtf8Literal(isolate, "Response too large");
+            isolate->ThrowError(error_message);
+            return;
+          }
+          auto response_array =
+              v8::Uint8Array::New(response_buf, 0, response_len);
+          args.GetReturnValue().Set(response_array);
+          break;
         }
-        auto response_array =
-            v8::Uint8Array::New(response_buf, 0, response_len);
-        args.GetReturnValue().Set(response_array);
-        break;
-      }
-      case GITCG_INTERNAL_IO_NOTIFICATION: {
-        auto handler = game->get_notification_handler(who);
-        if (!handler) {
-          auto error_message = v8::String::NewFromUtf8Literal(
-              isolate, "Notification handler not set");
-          isolate->ThrowError(error_message);
-          return;
+        case GITCG_INTERNAL_IO_NOTIFICATION: {
+          auto handler = game->get_notification_handler(who);
+          if (!handler) {
+            auto error_message = v8::String::NewFromUtf8Literal(
+                isolate, "Notification handler not set");
+            isolate->ThrowError(error_message);
+            return;
+          }
+          handler(player_data, buf_data, buf_len);
         }
-        handler(player_data, buf_data, buf_len);
-      }
-      case GITCG_INTERNAL_IO_ERROR: {
-        auto handler = game->get_io_error_handler(who);
-        if (handler) {
-          handler(player_data, buf_data);
+        case GITCG_INTERNAL_IO_ERROR: {
+          auto handler = game->get_io_error_handler(who);
+          if (handler) {
+            handler(player_data, buf_data);
+          }
         }
-      }
       }
     };
 
@@ -136,9 +142,9 @@ constexpr v8::Module::ResolveModuleCallback resolve_module_callback =
       isolate, specifier, export_names, io_module_eval_callback);
   return io_module;
 };
-} // namespace
+}  // namespace
 
-void Environment::check_trycatch(v8::TryCatch &trycatch) {
+void Environment::check_trycatch(v8::TryCatch& trycatch) {
   if (trycatch.HasCaught()) {
     auto exception = trycatch.Exception();
     auto message = v8::Exception::CreateMessage(isolate, exception);
@@ -149,19 +155,19 @@ void Environment::check_trycatch(v8::TryCatch &trycatch) {
 
 void Environment::check_promise(v8::Local<v8::Promise> promise) {
   switch (promise->State()) {
-  case v8::Promise::PromiseState::kFulfilled: {
-    return;
-  }
-  case v8::Promise::PromiseState::kPending: {
-    throw std::runtime_error(
-        "unreachable: Promise still pending. A microtask bug?");
-  }
-  case v8::Promise::PromiseState::kRejected: {
-    auto rejection = promise->Result();
-    auto message = v8::Exception::CreateMessage(isolate, rejection);
-    auto exception_str = v8::String::Utf8Value{isolate, message->Get()};
-    throw std::runtime_error{*exception_str};
-  }
+    case v8::Promise::PromiseState::kFulfilled: {
+      return;
+    }
+    case v8::Promise::PromiseState::kPending: {
+      throw std::runtime_error(
+          "unreachable: Promise still pending. A microtask bug?");
+    }
+    case v8::Promise::PromiseState::kRejected: {
+      auto rejection = promise->Result();
+      auto message = v8::Exception::CreateMessage(isolate, rejection);
+      auto exception_str = v8::String::Utf8Value{isolate, message->Get()};
+      throw std::runtime_error{*exception_str};
+    }
   }
 }
 
@@ -198,14 +204,14 @@ Environment::Environment() {
 }
 
 Environment::~Environment() {
-  games.clear();
+  owning_objects.clear();
   context.Reset();
   isolate->Exit();
   isolate->Dispose();
   delete create_params.array_buffer_allocator;
 }
 
-Environment &Environment::create() {
+Environment& Environment::create() {
   if (instance) {
     throw std::runtime_error("Context instance already exists on this thread");
   }
@@ -213,7 +219,7 @@ Environment &Environment::create() {
   return *instance;
 }
 
-Environment &Environment::get_instance() {
+Environment& Environment::get_instance() {
   if (!instance) {
     throw std::runtime_error("Context instance does not exist on this thread");
   }
@@ -221,35 +227,35 @@ Environment &Environment::get_instance() {
 }
 
 void Environment::dispose() {
-  auto &_ = get_instance();
+  auto& _ = get_instance();
   instance.reset();
 }
 
-Game *Environment::new_game() {
+Game& Environment::new_game(const State& state) {
   auto handle_scope = v8::HandleScope(isolate);
   auto context = get_context();
   auto game_ctor = this->game_ctor.Get(isolate);
   auto game_id = next_game_id++;
   auto game_id_value = v8::Number::New(isolate, game_id);
-  std::vector<v8::Local<v8::Value>> game_ctor_args = {game_id_value};
+  v8::Local<v8::Value> game_ctor_args[2]{game_id_value, state.get_instance()};
   auto game_instance =
-      game_ctor
-          ->NewInstance(context, game_ctor_args.size(), game_ctor_args.data())
-          .ToLocalChecked();
-  auto [it, _] = games.emplace(
-      game_id, std::make_unique<Game>(this, game_id, game_instance));
-  return it->second.get();
+      game_ctor->NewInstance(context, 2, game_ctor_args).ToLocalChecked();
+  auto game = std::make_unique<Game>(this, game_id, game_instance);
+  auto game_ptr = game.get();
+  owning_objects.emplace(std::move(game));
+  games.emplace(game_id, game_ptr);
+  return *game_ptr;
 }
 
-Game *Environment::get_game(int gameId) noexcept {
+Game* Environment::get_game(int gameId) noexcept {
   auto it = games.find(gameId);
   if (it == games.end()) {
     return nullptr;
   }
-  return it->second.get();
+  return it->second;
 }
 
-StateCreateParam Environment::new_state_createparam() {
+StateCreateParam& Environment::new_state_createparam() {
   auto handle_scope = v8::HandleScope(isolate);
   auto context = get_context();
   auto game_ctor = this->game_ctor.Get(isolate);
@@ -259,10 +265,14 @@ StateCreateParam Environment::new_state_createparam() {
                                .As<v8::Function>();
   auto create_param_instance =
       create_param_ctor->NewInstance(context, 0, nullptr).ToLocalChecked();
-  return StateCreateParam{this, create_param_instance};
+  auto create_param_ptr =
+      std::make_unique<StateCreateParam>(this, create_param_instance);
+  auto& create_param = *create_param_ptr;
+  owning_objects.emplace(std::move(create_param_ptr));
+  return create_param;
 }
 
-State Environment::state_from_createparam(const StateCreateParam &param) {
+State& Environment::state_from_createparam(const StateCreateParam& param) {
   auto handle_scope = v8::HandleScope(isolate);
   auto context = get_context();
   auto param_instance = param.get_instance();
@@ -271,14 +281,14 @@ State Environment::state_from_createparam(const StateCreateParam &param) {
   auto create_state_fn = param_instance->Get(context, create_state_str)
                              .ToLocalChecked()
                              .As<v8::Function>();
-  std::printf("%d\n", create_state_fn->IsFunction());
-  v8::String::Utf8Value what{isolate, create_state_fn};
-  std::printf("%s\n", *what);
   auto result = create_state_fn->Call(context, param_instance, 0, nullptr);
   check_trycatch(trycatch);
-  // throw std::runtime_error("not implemented");
-  return State{this, result.ToLocalChecked().As<v8::Object>()};
+  auto state_ptr =
+      std::make_unique<State>(this, result.ToLocalChecked().As<v8::Object>());
+  auto& state = *state_ptr;
+  owning_objects.emplace(std::move(state_ptr));
+  return state;
 }
 
-} // namespace v1_0
-} // namespace gitcg
+}  // namespace v1_0
+}  // namespace gitcg

@@ -76,31 +76,21 @@ void gitcg_initialize(void);
 void gitcg_cleanup(void);
 
 /**
- * @brief A GI-TCG simulation environment.
- * There should only be one environment per thread.
- *
- * An environment contains a V8 instance, and it can create games.
- */
-typedef struct gitcg_env* gitcg_env_t;
-
-/**
- * @brief Create a GI-TCG simulation envrionment.
- * There should only be one environment per thread.
- * @param env A pointer to `gitcg_env_t` that represents the environment
+ * @brief Create a GI-TCG simulation envrionment on this thread.
+ * A thread must call this function after `gitcg_initialize` and
+ * before any other functions.
  * @return 0 if success, otherwise non-zero
  */
-int gitcg_env_new(gitcg_env_t* env);
+int gitcg_thread_initialize(void);
 
 /**
- * @brief Dispose the GI-TCG simulation environment.
- * @param env The environment
+ * @brief Dispose the GI-TCG simulation environment on this thread.
  */
-void gitcg_env_free(gitcg_env_t env);
+void gitcg_thread_cleanup(void);
 
 typedef struct gitcg_state_createparam* gitcg_state_createparam_t;
 
-int gitcg_state_createparam_new(gitcg_env_t env,
-                                gitcg_state_createparam_t* param);
+int gitcg_state_createparam_new(gitcg_state_createparam_t* param);
 int gitcg_state_createparam_free(gitcg_state_createparam_t param);
 
 int gitcg_state_createparam_set_attr_string(gitcg_state_createparam_t param,
@@ -117,8 +107,7 @@ int gitcg_state_createparam_set_deck(gitcg_state_createparam_t param, int who,
  */
 typedef struct gitcg_state* gitcg_state_t;
 
-int gitcg_state_new(gitcg_env_t env, gitcg_state_createparam_t param,
-                    gitcg_state_t* state);
+int gitcg_state_new(gitcg_state_createparam_t param, gitcg_state_t* state);
 int gitcg_state_free(gitcg_state_t state);
 
 /**
@@ -135,8 +124,7 @@ int gitcg_state_free(gitcg_state_t state);
  * state
  * @return 0 if success, otherwise non-zero
  */
-int gitcg_state_from_json(gitcg_env_t env, const char* json,
-                          gitcg_state_t* state);
+int gitcg_state_from_json(const char* json, gitcg_state_t* state);
 
 /**
  * @brief Serialize the GI-TCG game state into JSON string.
@@ -173,10 +161,11 @@ int gitcg_state_query(gitcg_state_t state, int who, const char* query_string,
 
 int gitcg_entity_get_id(gitcg_entity_t entity);
 int gitcg_entity_get_definition_id(gitcg_entity_t entity);
-int gitcg_entity_get_variable(gitcg_entity_t entity, const char* variable_name, int* result);
+int gitcg_entity_get_variable(gitcg_entity_t entity, const char* variable_name,
+                              int* result);
 
 typedef struct gitcg_game* gitcg_game_t;
-int gitcg_game_new(gitcg_env_t env, gitcg_state_t state, gitcg_game_t* game);
+int gitcg_game_new(gitcg_state_t state, gitcg_game_t* game);
 void gitcg_game_free(gitcg_game_t game);
 
 typedef void (*gitcg_rpc_handler)(void* player_data, const char* request_data,

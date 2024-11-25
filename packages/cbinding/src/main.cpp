@@ -53,48 +53,45 @@ deck:
 
 int main(int argc, char** argv) {
   gitcg::initialize();
-  {
-    auto& env = gitcg::Environment::create();
-    std::printf("11111\n");
-
-    auto create_param = env.new_state_createparam();
-    create_param.set_deck(0, GITCG_SET_DECK_CHARACTERS,
-                          std::vector{1411, 1510, 2103}.data(), 3);
-    create_param.set_deck(
-        0, GITCG_SET_DECK_CARDS,
-        std::vector{214111, 214111, 215101, 311503, 312004, 312004,
-                    312025, 312025, 312029, 312029, 321002, 321011,
-                    321016, 321016, 322002, 322009, 322009, 330008,
-                    332002, 332002, 332004, 332004, 332005, 332005,
-                    332006, 332006, 332018, 332025, 333004, 333004}
-            .data(),
-        30);
-    create_param.set_deck(1, GITCG_SET_DECK_CHARACTERS,
-                          std::vector{1609, 2203, 1608}.data(), 3);
-    create_param.set_deck(
-        1, GITCG_SET_DECK_CARDS,
-        std::vector{
-            216091, 216091, 222031, 312004, 312004, 312021, 312021, 312025,
-            312025, 321002, 321002, 321011, 322025, 323004, 323004, 330005,
-            331601, 331601, 332002, 332003, 332003, 332004, 332004, 332005,
-            332005, 332006, 332025, 332025, 333003, 333003}
-            .data(),
-        30);
-    auto state = env.state_from_createparam(create_param);
-    auto game = env.new_game();
-    game->set_rpc_handler(0, [](void* player_data, const char* request_data,
-                                std::size_t request_len, char* response_data,
-                                std::size_t* response_len) noexcept {
-      for (std::size_t i = 0; i < request_len; ++i) {
-        std::printf("%d ", static_cast<int>(request_data[i]));
-      }
-      std::printf("RPC handler called\n");
-      std::memcpy(response_data, "Hello, I'm response!", 20);
-      *response_len = 20;
-    });
-    game->step();
-    std::printf("22222\n");
-    gitcg::Environment::dispose();
-  }
+  auto& env = gitcg::Environment::create();
+  std::printf("11111\n");
+  auto& create_param = env.new_state_createparam();
+  create_param.set_deck(0, GITCG_SET_DECK_CHARACTERS,
+                        std::vector{1411, 1510, 2103}.data(), 3);
+  create_param.set_deck(
+      0, GITCG_SET_DECK_CARDS,
+      std::vector{214111, 214111, 215101, 311503, 312004, 312004,
+                  312025, 312025, 312029, 312029, 321002, 321011,
+                  321016, 321016, 322002, 322009, 322009, 330008,
+                  332002, 332002, 332004, 332004, 332005, 332005,
+                  332006, 332006, 332018, 332025, 333004, 333004}
+          .data(),
+      30);
+  create_param.set_deck(1, GITCG_SET_DECK_CHARACTERS,
+                        std::vector{1609, 2203, 1608}.data(), 3);
+  create_param.set_deck(
+      1, GITCG_SET_DECK_CARDS,
+      std::vector{216091, 216091, 222031, 312004, 312004, 312021,
+                  312021, 312025, 312025, 321002, 321002, 321011,
+                  322025, 323004, 323004, 330005, 331601, 331601,
+                  332002, 332003, 332003, 332004, 332004, 332005,
+                  332005, 332006, 332025, 332025, 333003, 333003}
+          .data(),
+      30);
+  auto& state = env.state_from_createparam(create_param);
+  auto& game = env.new_game(state);
+  game.set_rpc_handler(0, [](void* player_data, const char* request_data,
+                             std::size_t request_len, char* response_data,
+                             std::size_t* response_len) noexcept {
+    for (std::size_t i = 0; i < request_len; ++i) {
+      std::printf("%d ", static_cast<int>(request_data[i]));
+    }
+    std::printf("RPC handler called\n");
+    std::memcpy(response_data, "Hello, I'm response!", 20);
+    *response_len = 20;
+  });
+  game.step();
+  std::printf("22222\n");
+  gitcg::Environment::dispose();
   gitcg::cleanup();
 }

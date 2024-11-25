@@ -5,12 +5,6 @@
 namespace gitcg {
 inline namespace v1_0 {
 
-StateCreateParam::StateCreateParam(Environment* env,
-                                   v8::Local<v8::Object> instance)
-    : env{env} {
-  this->instance.Reset(env->get_isolate(), instance);
-}
-
 void StateCreateParam::set_attribute(int attribute, int value) {
   auto isolate = env->get_isolate();
   auto handle_scope = v8::HandleScope(isolate);
@@ -61,10 +55,6 @@ void StateCreateParam::set_deck(int who, int character_or_card, const int* deck,
                                deck_array};
   auto ret = set_deck_fn->Call(context, instance, 3, args);
   env->check_trycatch(trycatch);
-}
-
-v8::Local<v8::Object> StateCreateParam::get_instance() const {
-  return instance.Get(env->get_isolate());
 }
 
 }  // namespace v1_0

@@ -39,7 +39,8 @@ class Environment {
   v8::Isolate* isolate;
   v8::Persistent<v8::Context> context;
 
-  std::unordered_map<int, std::unique_ptr<Game>> games;
+  std::unordered_set<std::unique_ptr<Object>> owning_objects;
+  std::unordered_map<int, Game*> games;
   int next_game_id = 0;
 
   friend class StateCreateParam;
@@ -64,13 +65,13 @@ public:
   static Environment& get_instance();
   static void dispose();
 
-  Game* new_game();
+  Game& new_game(const State& state);
   Game* get_game(int game_id) noexcept;
 
-  StateCreateParam new_state_createparam();
+  StateCreateParam& new_state_createparam();
 
-  State state_from_createparam(const StateCreateParam& param);
-  State state_from_json(const char* json);
+  State& state_from_createparam(const StateCreateParam& param);
+  State& state_from_json(const char* json);
   char* state_to_json(const State& state);
 
   v8::Isolate* get_isolate() {

@@ -34,9 +34,7 @@ inline namespace v1_0 {
 
 Game::Game(Environment* environment, int game_id,
            v8::Local<v8::Object> instance)
-    : env{environment}, game_id{game_id} {
-  this->instance.Reset(environment->get_isolate(), instance);
-}
+    : Object{environment, instance}, game_id{game_id} {}
 
 void Game::step() {
   std::printf("WE ARE STEPPING!\n");

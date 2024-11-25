@@ -1,15 +1,15 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -20,16 +20,13 @@
 #include <v8.h>
 
 #include "gitcg.h"
+#include "object.h"
 
 namespace gitcg {
 inline namespace v1_0 {
 
-class Environment;
-
-class Game {
-  Environment* env;
+class Game final : public Object {
   int game_id;
-  v8::UniquePersistent<v8::Object> instance;
 
   void* player_data[2]{};
   gitcg_rpc_handler rpc_handler[2]{};
@@ -38,11 +35,6 @@ class Game {
 
 public:
   Game(Environment* environment, int game_id, v8::Local<v8::Object> instance);
-
-  Game(const Game&) = delete;
-  Game& operator=(const Game&) = delete;
-  Game(Game&&) = default;
-  Game& operator=(Game&&) = default;
 
   void* get_player_data(int who) const noexcept {
     return player_data[who];
@@ -59,7 +51,8 @@ public:
   gitcg_notification_handler get_notification_handler(int who) const noexcept {
     return notification_handler[who];
   }
-  void set_notification_handler(int who, gitcg_notification_handler handler) noexcept {
+  void set_notification_handler(int who,
+                                gitcg_notification_handler handler) noexcept {
     notification_handler[who] = handler;
   }
   gitcg_io_error_handler get_io_error_handler(int who) const noexcept {
@@ -68,7 +61,7 @@ public:
   void set_io_error_handler(int who, gitcg_io_error_handler handler) noexcept {
     io_error_handler[who] = handler;
   }
-  
+
   void step();
 };
 

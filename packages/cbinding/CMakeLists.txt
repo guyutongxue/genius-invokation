@@ -19,6 +19,7 @@ project(gitcg-cbinding)
 
 add_executable(gitcg-cbinding-test
   src/environment.cpp
+  src/object.cpp
   src/state_createparam.cpp
   src/state.cpp
   src/game.cpp
