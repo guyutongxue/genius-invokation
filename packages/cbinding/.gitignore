@@ -1,3 +1,8 @@
 generated
 build
 .vscode
+
+include/gitcg/*.pb.h
+include/gitcg/pb.h
+include/gitcg/pb_*.h
+src/pb

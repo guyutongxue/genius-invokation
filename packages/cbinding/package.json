@@ -20,7 +20,7 @@
     "rollup": "^4.27.4"
   },
   "scripts": {
-    "build:prod": "bun scripts/prepare_js.ts",
+    "build:prod": "bun scripts/prepare.ts",
     "cmake:configure": "cmake -B build -GNinja",
     "cmake:build": "cmake --build build --config RelWithDebInfo",
     "build": "bun run build:prod"

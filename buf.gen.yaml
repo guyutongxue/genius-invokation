@@ -4,8 +4,10 @@ managed:
 plugins:
   - remote: buf.build/community/stephenh-ts-proto:v2.2.0
     # strategy: all
-    out: src/gen
+    out: packages/typings/src/gen
     opt:
       - outputJsonMethods=false
       - unrecognizedEnum=false
       - exportCommonSymbols=false
+  # - remote: buf.build/community/protobuf-c:v1.5.0
+  #   out: packages/cbinding/src/pb

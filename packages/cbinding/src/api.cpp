@@ -18,7 +18,7 @@
 #include "entity.h"
 #include "environment.h"
 #include "game.h"
-#include "gitcg.h"
+#include "gitcg/gitcg.h"
 #include "state.h"
 #include "state_createparam.h"
 

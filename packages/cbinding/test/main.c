@@ -13,8 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <gitcg.h>
 #include <stdio.h>
+
+#include <gitcg/gitcg.h>
+// #include <gitcg/pb_encode.h>
+// #include <gitcg/pb_decode.h>
+// #include <gitcg/rpc.pb.h>
 
 int CHARACTER_0[] = {1411, 1510, 2103};
 int CHARACTER_1[] = {1609, 2203, 1608};
@@ -28,6 +32,31 @@ int CARD_1[] = {216091, 216091, 222031, 312004, 312004, 312021, 312021, 312025,
                 312025, 321002, 321002, 321011, 322025, 323004, 323004, 330005,
                 331601, 331601, 332002, 332003, 332003, 332004, 332004, 332005,
                 332005, 332006, 332025, 332025, 333003, 333003};
+
+void rpc_handler(void* data, const char* req, size_t req_size, char* res, size_t* res_size) {
+  *res_size = 0;
+  // Request request = Request_init_default;
+  // pb_istream_t input = pb_istream_from_buffer((pb_byte_t*)req, req_size);
+  // pb_ostream_t output = pb_ostream_from_buffer((pb_byte_t*)res, *res_size);
+  // pb_decode(&input, Request_fields, &request);
+  // switch (request.which_request) {
+  //   case Request_reroll_dice_tag: {
+  //     RerollDiceResponse response = RerollDiceResponse_init_default;
+  //     pb_encode(&output, RerollDiceResponse_fields, &response);
+  //     *res_size = output.bytes_written;
+  //     break;
+  //   }
+  //   case Request_switch_hands_tag: {
+  //     SwitchHandsResponse response = SwitchHandsResponse_init_default;
+  //     pb_encode(&output, SwitchHandsResponse_fields, &response);
+  //     *res_size = output.bytes_written;
+  //     break;
+  //   }
+  //   case Request_choose_active_tag: {
+  //     request.request.choose_active.candidate_ids
+  //   }
+  // }
+}
 
 void io_error_handler(void* data, const char* message) {
   printf("IO error: %s\n", message);
@@ -55,6 +84,8 @@ int main(int argc, char** argv) {
   gitcg_game_new(state, &game);
   gitcg_state_free(state);
 
+  gitcg_game_set_rpc_handler(game, 0, rpc_handler);
+  gitcg_game_set_rpc_handler(game, 1, rpc_handler);
   gitcg_game_set_io_error_handler(game, 0, io_error_handler);
   gitcg_game_set_io_error_handler(game, 1, io_error_handler);
 

@@ -9,6 +9,7 @@
     "build:prod": "bun scripts/build.ts --prod"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.47.2",
     "@arethetypeswrong/cli": "^0.16.4",
     "@microsoft/api-extractor": "^7.47.9",
     "@types/bun": "^1.1.13",

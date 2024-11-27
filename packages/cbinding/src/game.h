@@ -20,7 +20,7 @@
 #include <optional>
 #include <v8.h>
 
-#include "gitcg.h"
+#include "gitcg/gitcg.h"
 #include "state.h"
 #include "object.h"
 
