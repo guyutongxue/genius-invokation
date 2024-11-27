@@ -15,10 +15,10 @@
 
 #include "environment.h"
 
-#include <cstring>
-
 #include "game.h"
-#include "v8-exception.h"
+#include "state_createparam.h"
+#include "state.h"
+#include "entity.h"
 
 namespace gitcg {
 inline namespace v1_0 {
@@ -305,27 +305,6 @@ State& Environment::state_from_json(const char* json) {
   auto state_ptr =
       std::make_unique<State>(this, result.ToLocalChecked().As<v8::Object>());
   return *own_object(std::move(state_ptr));
-}
-
-char* Environment::state_to_json(const State& state) {
-  auto handle_scope = v8::HandleScope(isolate);
-  auto context = get_context();
-  auto to_json_str = v8_string("stateToJson");
-  auto game_ctor = this->game_ctor.Get(isolate);
-  auto to_json_fn = game_ctor->Get(context, to_json_str)
-                          .ToLocalChecked()
-                          .As<v8::Function>();
-  auto trycatch = v8::TryCatch{isolate};
-  auto undefined = v8::Undefined(isolate);
-  auto state_instance = state.get_instance();
-  v8::Local<v8::Value> args[1]{state_instance};
-  auto result = to_json_fn->Call(context, undefined, 1, args);
-  check_trycatch(trycatch);
-  auto json_str = v8::String::Utf8Value{isolate, result.ToLocalChecked()};
-  auto size = json_str.length();
-  auto buf = static_cast<char*>(std::malloc(size));
-  std::memcpy(buf, *json_str, size);
-  return buf;
 }
 
 void Environment::free_object(Object* object) {

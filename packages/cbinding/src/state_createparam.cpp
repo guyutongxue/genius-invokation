@@ -1,7 +1,5 @@
 #include "state_createparam.h"
 
-#include "environment.h"
-
 namespace gitcg {
 inline namespace v1_0 {
 
@@ -27,10 +25,7 @@ void StateCreateParam::set_attribute(int attribute,
   auto context = env->get_context();
   auto instance = this->instance.Get(isolate);
   auto trycatch = v8::TryCatch{isolate};
-  auto set_attribute_str = env->v8_string("setAttribute");
-  auto set_attribute_fn = instance->Get(context, set_attribute_str)
-                              .ToLocalChecked()
-                              .As<v8::Function>();
+  auto set_attribute_fn = this->get<v8::Function>("setAttribute");
   v8::Local<v8::Value> args[2]{v8::Number::New(isolate, attribute), value};
   auto ret = set_attribute_fn->Call(context, instance, 2, args);
   env->check_trycatch(trycatch);
@@ -43,9 +38,7 @@ void StateCreateParam::set_deck(int who, int character_or_card, const int* deck,
   auto context = env->get_context();
   auto instance = this->instance.Get(isolate);
   auto trycatch = v8::TryCatch{isolate};
-  auto set_deck_str = env->v8_string("setDeck");
-  auto set_deck_fn =
-      instance->Get(context, set_deck_str).ToLocalChecked().As<v8::Function>();
+  auto set_deck_fn = this->get<v8::Function>("setDeck");
   auto deck_array = v8::Array::New(isolate, size);
   for (int i = 0; i < size; ++i) {
     deck_array->Set(context, i, v8::Number::New(isolate, deck[i])).Check();

@@ -1,7 +1,5 @@
 #include "object.h"
 
-#include "environment.h"
-
 namespace gitcg {
 inline namespace v1_0 {
 

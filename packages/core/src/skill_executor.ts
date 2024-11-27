@@ -40,7 +40,7 @@ import {
 } from "./utils";
 import { flip } from "@gi-tcg/utils";
 import { DetailLogType } from "./log";
-import { MutatorConfig as MutatorConfig, StateMutator } from "./mutator";
+import { StateMutator } from "./mutator";
 import { Mutation } from "./base/mutation";
 
 export type GeneralSkillArg = EventArg | InitiativeSkillEventArg;

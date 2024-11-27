@@ -15,22 +15,8 @@
 
 #include "game.h"
 
-#include "environment.h"
-
 namespace gitcg {
 inline namespace v1_0 {
-
-// namespace {
-// template <typename T>
-// [[gnu::always_inline]]
-// v8::Local<T> to_local(v8::MaybeLocal<T> maybe_local) {
-//   v8::Local<T> result;
-//   if (!maybe_local.ToLocal(&result)) {
-//     throw std::runtime_error("Failed to convert MaybeLocal to Local");
-//   }
-//   return result;
-// }
-// }
 
 Game::Game(Environment* environment, int game_id,
            v8::Local<v8::Object> instance)
@@ -41,9 +27,7 @@ State& Game::get_state() {
   auto handle_scope = v8::HandleScope(isolate);
   auto context = env->get_context();
   auto instance = this->instance.Get(isolate);
-  auto state_str = env->v8_string("state");
-  auto state_obj =
-      instance->Get(context, state_str).ToLocalChecked().As<v8::Object>();
+  auto state_obj = this->get<v8::Object>("state");
   auto state_obj_ptr = std::make_unique<State>(env, state_obj);
   return *env->own_object(std::move(state_obj_ptr));
 }
@@ -54,13 +38,11 @@ void Game::step() {
   auto handle_scope = v8::HandleScope(isolate);
   auto context = env->get_context();
   auto instance = this->instance.Get(isolate);
-  auto test_str = env->v8_string("step");
-  auto test_fn =
-      instance->Get(context, test_str).ToLocalChecked().As<v8::Function>();
+  auto test_fn = this->get<v8::Function>("step");
   auto trycatch = v8::TryCatch{isolate};
-  auto call_result =
-      test_fn->Call(context, instance, 0, nullptr).ToLocalChecked();
+  auto call_result_maybe = test_fn->Call(context, instance, 0, nullptr);
   env->check_trycatch(trycatch);
+  auto call_result = call_result_maybe.ToLocalChecked();
   if (!call_result->IsPromise()) {
     throw std::runtime_error("unreachable: step() should return a Promise");
   }

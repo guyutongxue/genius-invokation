@@ -155,6 +155,136 @@ class GameCreateParameter {
   }
 }
 
+class Entity {
+  public readonly entity: AnyState;
+  constructor(entity: AnyState) {
+    this.entity = entity;
+  }
+  get type(): number {
+    switch (this.entity.definition.type) {
+      case "character":
+        return c.GITCG_ENTITY_TYPE_CHARACTER;
+      case "equipment":
+        return c.GITCG_ENTITY_TYPE_EQUIPMENT;
+      case "status":
+        return c.GITCG_ENTITY_TYPE_STATUS;
+      case "combatStatus":
+        return c.GITCG_ENTITY_TYPE_COMBAT_STATUS;
+      case "summon":
+        return c.GITCG_ENTITY_TYPE_SUMMON;
+      case "support":
+        return c.GITCG_ENTITY_TYPE_SUPPORT;
+      case "card":
+        return c.GITCG_ENTITY_TYPE_CARD;
+      default:
+        throw new Error(`Unreachable: invalid entity type`);
+    }
+  }
+
+  get definitionId() {
+    return this.entity.definition.id;
+  }
+
+  get id() {
+    return this.entity.id;
+  }
+
+  getVariable(name: string): number | undefined {
+    return this.entity.variables[name];
+  }
+}
+
+class State {
+  public readonly state: GameState;
+  constructor(state: GameState) {
+    this.state = state;
+  }
+
+  toJson(): string {
+    return JSON.stringify(
+      serializeGameStateLog([{ state: this.state, canResume: false }]),
+    );
+  }
+  static fromJson(json: string): GameState {
+    return deserializeGameStateLog(getData, JSON.parse(json))[0]!.state;
+  }
+  query(who: 0 | 1, query: string): Entity[] {
+    return executeQueryOnState(this.state, who, query).map(
+      (st) => new Entity(st),
+    );
+  }
+  getAttribute(attribute: number): number {
+    switch (attribute) {
+      case c.GITCG_ATTR_STATE_PHASE: {
+        switch (this.state.phase) {
+          case "initActives":
+            return PbPhaseType.PHASE_INIT_ACTIVES;
+          case "initHands":
+            return PbPhaseType.PHASE_INIT_HANDS;
+          case "roll":
+            return PbPhaseType.PHASE_ROLL;
+          case "action":
+            return PbPhaseType.PHASE_ACTION;
+          case "end":
+            return PbPhaseType.PHASE_END;
+          case "gameEnd":
+            return PbPhaseType.PHASE_GAME_END;
+          default:
+            return -1;
+        }
+      }
+      case c.GITCG_ATTR_STATE_ROUND_NUMBER: {
+        return this.state.roundNumber;
+      }
+      case c.GITCG_ATTR_STATE_CURRENT_TURN: {
+        return this.state.currentTurn;
+      }
+      case c.GITCG_ATTR_STATE_WINNER: {
+        return this.state.winner ?? -1;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_DECLARED_END_0: {
+        return +this.state.players[0].declaredEnd;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_DECLARED_END_1: {
+        return +this.state.players[1].declaredEnd;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_0: {
+        return +this.state.players[0].hasDefeated;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_1: {
+        return +this.state.players[1].hasDefeated;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_0: {
+        return +this.state.players[0].canCharged;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_1: {
+        return +this.state.players[1].canCharged;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_0: {
+        return +this.state.players[0].canPlunging;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_1: {
+        return +this.state.players[1].canPlunging;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_0: {
+        return +this.state.players[0].legendUsed;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_1: {
+        return +this.state.players[1].legendUsed;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_0: {
+        return +this.state.players[0].skipNextTurn;
+      }
+      case c.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_1: {
+        return +this.state.players[1].skipNextTurn;
+      }
+      default: {
+        throw new Error(`Invalid attribute: ${attribute}`);
+      }
+    }
+  }
+}
+
 export class Game {
   static CreateParameter = GameCreateParameter;
 
@@ -210,7 +340,7 @@ export class Game {
   #status = c.GITCG_GAME_STATUS_NOT_STARTED;
   #resumable = false;
   get state() {
-    return this.#game.state;
+    return new State(this.#game.state);
   }
   get status() {
     return this.#status;
@@ -251,86 +381,6 @@ export class Game {
     }
   }
 
-  static stateToJson(state: GameState): string {
-    return JSON.stringify(serializeGameStateLog([{ state, canResume: false }]));
-  }
-  static stateFromJson(json: string): GameState {
-    return deserializeGameStateLog(getData, JSON.parse(json))[0]!.state;
-  }
-  static queryState(state: GameState, who: 0 | 1, query: string): AnyState[] {
-    return executeQueryOnState(state, who, query);
-  }
-  static getStateAttribute(state: GameState, attribute: number): number {
-    switch (attribute) {
-      case c.GITCG_ATTR_STATE_PHASE: {
-        switch (state.phase) {
-          case "initActives":
-            return PbPhaseType.PHASE_INIT_ACTIVES;
-          case "initHands":
-            return PbPhaseType.PHASE_INIT_HANDS;
-          case "roll":
-            return PbPhaseType.PHASE_ROLL;
-          case "action":
-            return PbPhaseType.PHASE_ACTION;
-          case "end":
-            return PbPhaseType.PHASE_END;
-          case "gameEnd":
-            return PbPhaseType.PHASE_GAME_END;
-          default:
-            return -1;
-        }
-      }
-      case c.GITCG_ATTR_STATE_ROUND_NUMBER: {
-        return state.roundNumber;
-      }
-      case c.GITCG_ATTR_STATE_CURRENT_TURN: {
-        return state.currentTurn;
-      }
-      case c.GITCG_ATTR_STATE_WINNER: {
-        return state.winner ?? -1;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_DECLARED_END_0: {
-        return +state.players[0].declaredEnd;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_DECLARED_END_1: {
-        return +state.players[1].declaredEnd;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_0: {
-        return +state.players[0].hasDefeated;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_1: {
-        return +state.players[1].hasDefeated;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_0: {
-        return +state.players[0].canCharged;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_1: {
-        return +state.players[1].canCharged;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_0: {
-        return +state.players[0].canPlunging;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_1: {
-        return +state.players[1].canPlunging;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_0: {
-        return +state.players[0].legendUsed;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_1: {
-        return +state.players[1].legendUsed;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_0: {
-        return +state.players[0].skipNextTurn;
-      }
-      case c.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_1: {
-        return +state.players[1].skipNextTurn;
-      }
-      default: {
-        throw new Error(`Invalid attribute: ${attribute}`);
-      }
-    }
-  }
-
   getAttribute(attribute: number): number {
     switch (attribute) {
       case c.GITCG_ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_0: {
@@ -346,7 +396,7 @@ export class Game {
         return +this.#game.players[1].config.alwaysOmni;
       }
       default: {
-        return Game.getStateAttribute(this.#game.state, attribute);
+        return this.state.getAttribute(attribute);
       }
     }
   }

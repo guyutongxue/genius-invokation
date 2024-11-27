@@ -19,6 +19,8 @@
 #include <cstring>
 
 #include "environment.h"
+#include "state_createparam.h"
+#include "state.h"
 #include "game.h"
 
 /*
@@ -92,7 +94,7 @@ int main(int argc, char** argv) {
   });
   game.step();
   auto& current_state = game.get_state();
-  auto str = env.state_to_json(current_state);
+  auto str = current_state.to_json();
   std::printf("%s\n", str);
   free(str);
   std::printf("22222\n");

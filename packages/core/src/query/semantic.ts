@@ -489,7 +489,7 @@ const evalExprDict: QueryLangActionDict<number> = {
   },
   PropertyName(idOrLit) {
     const name = idOrLit.propName;
-    return (this.args.state.variables as Record<string, number>)[name];
+    return this.args.state.variables[name] ?? NaN;
   },
   numericLiteral(_) {
     return Number(this.sourceString);

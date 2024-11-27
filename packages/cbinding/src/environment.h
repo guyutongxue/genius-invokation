@@ -20,11 +20,6 @@
 #include <libplatform/libplatform.h>
 #include <v8.h>
 
-#include "entity.h"
-#include "game.h"
-#include "state.h"
-#include "state_createparam.h"
-
 namespace gitcg {
 inline namespace v1_0 {
 
@@ -67,21 +62,29 @@ struct unique_ptr_cmp {
 };
 }  // namespace helper
 
+class Object;
+class StateCreateParam;
+class State;
+class Game;
+class Entity;
+
 class Environment {
   std::unique_ptr<v8::Platform> platform;
   v8::Isolate::CreateParams create_params;
   v8::Isolate* isolate;
   v8::Persistent<v8::Context> context;
 
+  friend class Object;
+  friend class StateCreateParam;
+  friend class State;
+  friend class Game;
+  friend class Entity;
+
   std::unordered_set<std::unique_ptr<Object>, helper::unique_ptr_hash<Object>,
                      helper::unique_ptr_cmp<Object>>
       owning_objects;
   std::unordered_map<int, Game*> games;
   int next_game_id = 0;
-
-  friend class StateCreateParam;
-  friend class State;
-  friend class Game;
 
   template <std::size_t N>
   v8::Local<v8::String> v8_string(const char (&str)[N]) {
@@ -108,10 +111,6 @@ public:
 
   State& state_from_createparam(const StateCreateParam& param);
   State& state_from_json(const char* json);
-  char* state_to_json(const State& state);
-
-  std::vector<Entity*> query_state(const State& state);
-  int get_state_attribute(const State& state, int attribute);
 
   v8::Isolate* get_isolate() {
     return isolate;
