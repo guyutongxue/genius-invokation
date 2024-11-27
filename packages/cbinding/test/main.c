@@ -29,7 +29,7 @@ int CARD_1[] = {216091, 216091, 222031, 312004, 312004, 312021, 312021, 312025,
                 331601, 331601, 332002, 332003, 332003, 332004, 332004, 332005,
                 332005, 332006, 332025, 332025, 333003, 333003};
 
-void io_error_handler(void*, const char* message) {
+void io_error_handler(void* data, const char* message) {
   printf("IO error: %s\n", message);
 }
 
