@@ -22,11 +22,37 @@ Game::Game(Environment* environment, int game_id,
            v8::Local<v8::Object> instance)
     : Object{environment, instance}, game_id{game_id} {}
 
+int Game::get_status() const {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto status = this->get<v8::Number>("status");
+  return status->Value();
+}
+
+std::optional<std::string> Game::get_error() const {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto error = this->get("error");
+  if (error->IsNull()) {
+    return std::nullopt;
+  }
+  auto message = v8::Exception::CreateMessage(isolate, error);
+  auto exception_str = v8::String::Utf8Value{isolate, message->Get()};
+  return std::string{*exception_str};
+}
+
+bool Game::is_resumable() const {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto resumable = this->get<v8::Boolean>("resumable");
+  return resumable->Value();
+}
+
 State& Game::get_state() {
   auto isolate = env->get_isolate();
   auto handle_scope = v8::HandleScope(isolate);
   auto context = env->get_context();
-  auto instance = this->instance.Get(isolate);
+  auto instance = this->get_instance();
   auto state_obj = this->get<v8::Object>("state");
   auto state_obj_ptr = std::make_unique<State>(env, state_obj);
   return *env->own_object(std::move(state_obj_ptr));
@@ -37,7 +63,7 @@ void Game::step() {
   auto isolate = env->get_isolate();
   auto handle_scope = v8::HandleScope(isolate);
   auto context = env->get_context();
-  auto instance = this->instance.Get(isolate);
+  auto instance = this->get_instance();
   auto test_fn = this->get<v8::Function>("step");
   auto trycatch = v8::TryCatch{isolate};
   auto call_result_maybe = test_fn->Call(context, instance, 0, nullptr);
@@ -63,6 +89,18 @@ void Game::step() {
       throw std::runtime_error{*exception_str};
     }
   }
+}
+
+void Game::giveup(int who) {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto context = env->get_context();
+  auto instance = this->get_instance();
+  auto giveup_fn = this->get<v8::Function>("giveUp");
+  auto trycatch = v8::TryCatch{isolate};
+  auto who_value = v8::Number::New(isolate, who).As<v8::Value>();
+  auto call_result_maybe = giveup_fn->Call(context, instance, 1, &who_value);
+  env->check_trycatch(trycatch);
 }
 
 }  // namespace v1_0

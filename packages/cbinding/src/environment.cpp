@@ -15,10 +15,10 @@
 
 #include "environment.h"
 
-#include "game.h"
-#include "state_createparam.h"
-#include "state.h"
 #include "entity.h"
+#include "game.h"
+#include "state.h"
+#include "state_createparam.h"
 
 namespace gitcg {
 inline namespace v1_0 {
@@ -145,7 +145,7 @@ constexpr v8::Module::ResolveModuleCallback resolve_module_callback =
 }  // namespace
 
 void Environment::check_trycatch(v8::TryCatch& trycatch) {
-  if (trycatch.HasCaught()) {
+  if (trycatch.HasCaught()) [[unlikely]] {
     auto exception = trycatch.Exception();
     auto message = v8::Exception::CreateMessage(isolate, exception);
     auto exception_str = v8::String::Utf8Value{isolate, message->Get()};

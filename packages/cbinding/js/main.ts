@@ -84,42 +84,42 @@ class GameCreateParameter {
         }
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_RANDOM_SEED: {
+      case c.GITCG_ATTR_STATE_CONFIG_RANDOM_SEED: {
         this.#assertNumber(value);
         this.config.randomSeed = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_INITIAL_HANDS_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_INITIAL_HANDS_COUNT: {
         this.#assertNumber(value);
         this.config.initialHandsCount = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_MAX_HANDS_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_HANDS_COUNT: {
         this.#assertNumber(value);
         this.config.maxHandsCount = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_MAX_ROUNDS_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_ROUNDS_COUNT: {
         this.#assertNumber(value);
         this.config.maxRoundsCount = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_MAX_SUPPORTS_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_SUPPORTS_COUNT: {
         this.#assertNumber(value);
         this.config.maxSupportsCount = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_MAX_SUMMONS_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_SUMMONS_COUNT: {
         this.#assertNumber(value);
         this.config.maxSummonsCount = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_INITIAL_DICE_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_INITIAL_DICE_COUNT: {
         this.#assertNumber(value);
         this.config.initialDiceCount = value;
         break;
       }
-      case c.GITCG_ATTR_CREATEPARAM_MAX_DICE_COUNT: {
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT: {
         this.#assertNumber(value);
         this.config.maxDiceCount = value;
         break;
@@ -189,8 +189,12 @@ class Entity {
     return this.entity.id;
   }
 
-  getVariable(name: string): number | undefined {
-    return this.entity.variables[name];
+  getVariable(name: string): number {
+    const result = this.entity.variables[name];
+    if (typeof result !== "number") {
+      throw new Error(`Variable ${name} not found on entity id=${this.id}`);
+    }
+    return result;
   }
 }
 
@@ -215,6 +219,30 @@ class State {
   }
   getAttribute(attribute: number): number {
     switch (attribute) {
+      case c.GITCG_ATTR_STATE_CONFIG_RANDOM_SEED: {
+        return this.state.config.randomSeed;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_INITIAL_HANDS_COUNT: {
+        return this.state.config.initialHandsCount;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_HANDS_COUNT: {
+        return this.state.config.maxHandsCount;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_ROUNDS_COUNT: {
+        return this.state.config.maxRoundsCount;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_SUPPORTS_COUNT: {
+        return this.state.config.maxSupportsCount;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_SUMMONS_COUNT: {
+        return this.state.config.maxSummonsCount;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_INITIAL_DICE_COUNT: {
+        return this.state.config.initialDiceCount;
+      }
+      case c.GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT: {
+        return this.state.config.maxDiceCount;
+      }
       case c.GITCG_ATTR_STATE_PHASE: {
         switch (this.state.phase) {
           case "initActives":
@@ -283,6 +311,9 @@ class State {
       }
     }
   }
+  getDice(who: 0 | 1): readonly number[] {
+    return this.state.players[who].dice;
+  }
 }
 
 export class Game {
@@ -338,12 +369,16 @@ export class Game {
   }
 
   #status = c.GITCG_GAME_STATUS_NOT_STARTED;
+  #error: unknown = null;
   #resumable = false;
   get state() {
     return new State(this.#game.state);
   }
   get status() {
     return this.#status;
+  }
+  get error() {
+    return this.#error;
   }
   get resumable() {
     return this.#resumable;
@@ -364,6 +399,7 @@ export class Game {
           })
           .catch((e) => {
             this.#status = c.GITCG_GAME_STATUS_ABORTED;
+            this.#error = e;
             this.#stepResolvers.reject(e);
           });
       }
@@ -422,5 +458,9 @@ export class Game {
         throw new Error(`Invalid attribute: ${attribute}`);
       }
     }
+  }
+
+  giveUp(who: 0 | 1) {
+    this.#game.giveUp(who);
   }
 }

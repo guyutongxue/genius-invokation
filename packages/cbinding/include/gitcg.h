@@ -20,15 +20,16 @@ extern "C" {
 #endif
 
 // >>> generated macros
+#define GITCG_CORE_VERSION "0.14.3"
 #define GITCG_ATTR_CREATEPARAM_DATA_VERSION 101
-#define GITCG_ATTR_CREATEPARAM_RANDOM_SEED 102
-#define GITCG_ATTR_CREATEPARAM_INITIAL_HANDS_COUNT 103
-#define GITCG_ATTR_CREATEPARAM_MAX_HANDS_COUNT 104
-#define GITCG_ATTR_CREATEPARAM_MAX_ROUNDS_COUNT 105
-#define GITCG_ATTR_CREATEPARAM_MAX_SUPPORTS_COUNT 106
-#define GITCG_ATTR_CREATEPARAM_MAX_SUMMONS_COUNT 107
-#define GITCG_ATTR_CREATEPARAM_INITIAL_DICE_COUNT 108
-#define GITCG_ATTR_CREATEPARAM_MAX_DICE_COUNT 109
+#define GITCG_ATTR_STATE_CONFIG_RANDOM_SEED 102
+#define GITCG_ATTR_STATE_CONFIG_INITIAL_HANDS_COUNT 103
+#define GITCG_ATTR_STATE_CONFIG_MAX_HANDS_COUNT 104
+#define GITCG_ATTR_STATE_CONFIG_MAX_ROUNDS_COUNT 105
+#define GITCG_ATTR_STATE_CONFIG_MAX_SUPPORTS_COUNT 106
+#define GITCG_ATTR_STATE_CONFIG_MAX_SUMMONS_COUNT 107
+#define GITCG_ATTR_STATE_CONFIG_INITIAL_DICE_COUNT 108
+#define GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT 109
 #define GITCG_ATTR_CREATEPARAM_NO_SHUFFLE_0 2000
 #define GITCG_ATTR_CREATEPARAM_NO_SHUFFLE_1 2001
 #define GITCG_ATTR_PLAYER_ALWAYS_OMNI_0 3010
@@ -146,6 +147,15 @@ int gitcg_state_from_json(const char* json, gitcg_state_t* state);
 int gitcg_state_to_json(gitcg_state_t state, char** json);
 
 int gitcg_state_get_attr_int(gitcg_state_t state, int key);
+
+/**
+ * @brief Get the dice of a player of a game state
+ * 
+ * @param state Give game state
+ * @param who whose dice, 0 or 1
+ * @param result Points to a space with at least `GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT` int.
+ * @return Dice count
+ */
 int gitcg_state_get_dice(gitcg_state_t state, int who, int* result);
 
 typedef struct gitcg_entity* gitcg_entity_t;
@@ -158,13 +168,13 @@ typedef struct gitcg_entity* gitcg_entity_t;
  * @param state The game state
  * @param who Defines `my` semantics in the query
  * @param query_string
- * @param result A pointer to `gitcg_entity_t` that will be set to the result
+ * @param result A pointer to `gitcg_entity_t*` that will be set to the result
  * array
  * @param result_size A pointer to `size_t` that will be set to the size of the
  * result array
  */
 int gitcg_state_query(gitcg_state_t state, int who, const char* query_string,
-                      gitcg_entity_t* result, size_t* result_size);
+                      gitcg_entity_t** result, size_t* result_size);
 
 int gitcg_entity_get_id(gitcg_entity_t entity);
 int gitcg_entity_get_definition_id(gitcg_entity_t entity);

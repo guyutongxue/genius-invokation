@@ -17,6 +17,7 @@
 #ifndef GITCG_GAME_H
 #define GITCG_GAME_H
 
+#include <optional>
 #include <v8.h>
 
 #include "gitcg.h"
@@ -63,9 +64,13 @@ public:
     io_error_handler[who] = handler;
   }
 
+  int get_status() const;
+  std::optional<std::string> get_error() const;
+  bool is_resumable() const;
   State& get_state();
 
   void step();
+  void giveup(int who);
 };
 
 }  // namespace v1_0

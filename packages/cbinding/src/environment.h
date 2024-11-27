@@ -94,7 +94,7 @@ class Environment {
   void check_promise(v8::Local<v8::Promise> promise);
 
 public:
-  v8::Persistent<v8::Function> game_ctor;  // temp workaround
+  v8::Persistent<v8::Function> game_ctor;
   Environment();
   ~Environment();
   Environment(const Environment&) = delete;

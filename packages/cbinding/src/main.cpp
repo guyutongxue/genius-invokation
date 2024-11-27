@@ -22,6 +22,7 @@
 #include "state_createparam.h"
 #include "state.h"
 #include "game.h"
+#include "entity.h"
 
 /*
 deck:
@@ -97,6 +98,14 @@ int main(int argc, char** argv) {
   auto str = current_state.to_json();
   std::printf("%s\n", str);
   free(str);
+
+  std::printf("round number: %d\n", current_state.get_attribute(GITCG_ATTR_STATE_ROUND_NUMBER));
+
+  for (auto entity : current_state.query(0, "my characters")) {
+    std::printf("entity def id: %d\n", entity->get_definition_id());
+    std::printf("entity health: %d\n", entity->get_variable("health"));
+  }
+
   std::printf("22222\n");
   gitcg::Environment::dispose();
   gitcg::cleanup();

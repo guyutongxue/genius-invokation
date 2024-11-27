@@ -14,8 +14,10 @@ public:
   using Object::Object;
 
   char* to_json() const;
-  std::vector<Entity*> query(const State& state);
-  int get_attribute(const State& state, int attribute);
+  std::vector<Entity*> query(int who, const std::string& query) const;
+  int get_attribute(int attribute) const;
+
+  std::vector<int> get_dice(int who) const;
 
 };
 

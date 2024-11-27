@@ -5,6 +5,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
+import { CORE_VERSION } from "@gi-tcg/core";
 
 const build = await rollup({
   input: `${import.meta.dirname}/../js/main.ts`,
@@ -75,7 +76,7 @@ ${chunk.code
 const macros = await Bun.file(
   `${import.meta.dirname}/../js/constant.ts`,
 ).text();
-let output_source = "";
+let output_source = `#define GITCG_CORE_VERSION ${JSON.stringify(CORE_VERSION)}\n`;
 const regexp = /export const ([A-Z0-9_]+) = (\d+);/g;
 for (
   let result: RegExpExecArray | null = null;

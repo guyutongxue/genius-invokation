@@ -13,8 +13,11 @@ void StateCreateParam::set_attribute(int attribute, int value) {
 void StateCreateParam::set_attribute(int attribute, const std::string& value) {
   auto isolate = env->get_isolate();
   auto handle_scope = v8::HandleScope(isolate);
-  auto v8_value =
-      v8::String::NewFromUtf8(isolate, value.c_str()).ToLocalChecked();
+  auto value_maybe = v8::String::NewFromUtf8(isolate, value.c_str());
+  v8::Local<v8::String> v8_value;
+  if (!value_maybe.ToLocal(&v8_value)) {
+    throw std::runtime_error("Failed to pass string into v8");
+  }
   set_attribute(attribute, v8_value);
 }
 
