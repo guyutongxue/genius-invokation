@@ -13,6 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#pragma once
+#ifndef GITCG_H
+#define GITCG_H
+
 #include <stdlib.h>
 
 #ifdef _WIN32
@@ -173,6 +177,21 @@ GITCG_API int gitcg_state_get_dice(gitcg_state_t state, int who, int* result);
 
 typedef struct gitcg_entity* gitcg_entity_t;
 
+GITCG_API int gitcg_entity_free(gitcg_entity_t entity);
+
+/**
+ * @brief Free the all entity and list itself that returned by
+ * `gitcg_state_query`.
+ *
+ */
+#define gitcg_entity_list_free(list, len) \
+  do {                                    \
+    for (size_t i = 0; i < len; i++) {    \
+      gitcg_entity_free(list[i]);         \
+    }                                     \
+    free(list);                           \
+  } while (0)
+
 /**
  * @brief Execute query (Entity Query Syntax) on the given game state.
  *
@@ -275,4 +294,6 @@ GITCG_API int gitcg_game_get_error(gitcg_game_t game, char** error);
 
 #ifdef __cplusplus
 }  // extern "C"
+#endif
+
 #endif

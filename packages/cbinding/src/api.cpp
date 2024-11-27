@@ -156,6 +156,16 @@ int gitcg_state_get_dice(gitcg_state_t state, int who, int* dice) try {
   return -1;
 }
 
+int gitcg_entity_free(gitcg_entity_t entity) try {
+  auto entity_obj = reinterpret_cast<gitcg::Entity*>(entity);
+  auto& env = gitcg::Environment::get_instance();
+  env.free_object(entity_obj);
+  return 0;
+} catch (const std::exception& e) {
+  PRINT_ERROR(e.what());
+  return -1;
+}
+
 int gitcg_state_query(gitcg_state_t state, int who, const char* query_string,
                       gitcg_entity_t** result, size_t* result_size) try {
   auto state_obj = reinterpret_cast<gitcg::State*>(state);

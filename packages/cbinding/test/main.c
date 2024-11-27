@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
 
   gitcg_state_t state;
   gitcg_state_new(createparam, &state);
+  gitcg_state_createparam_free(createparam);
   
   gitcg_game_t game;
   gitcg_game_new(state, &game);
@@ -88,6 +89,10 @@ int main(int argc, char** argv) {
     gitcg_entity_get_variable(entities[i], "health", &health);
     printf("entity health: %d\n", health);
   }
+  gitcg_entity_list_free(entities, entity_size);
+
+  gitcg_state_free(state);
+  gitcg_game_free(game);
 
   printf("STOPPED\n");
   gitcg_thread_cleanup();
