@@ -137,23 +137,24 @@ int gitcg_state_from_json(const char* json, gitcg_state_t* state);
 /**
  * @brief Serialize the GI-TCG game state into JSON string.
  *
- * The returned JSON string is null-terminated and allocated by `malloc`.
+ * The written JSON string is null-terminated and allocated by `malloc`.
  * It should be freed by `free`.
  *
  * @param state The GI-TCG game state
- * @param json A pointer to `char*` that will be set to the created JSON string
+ * @param json A pointer will be set to the created JSON string
  * @return 0 if success, otherwise non-zero
  */
 int gitcg_state_to_json(gitcg_state_t state, char** json);
 
-int gitcg_state_get_attr_int(gitcg_state_t state, int key);
+int gitcg_state_get_attr_int(gitcg_state_t state, int key, int* value);
 
 /**
  * @brief Get the dice of a player of a game state
- * 
+ *
  * @param state Give game state
  * @param who whose dice, 0 or 1
- * @param result Points to a space with at least `GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT` int.
+ * @param result Points to a space with at least
+ * `GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT` int.
  * @return Dice count
  */
 int gitcg_state_get_dice(gitcg_state_t state, int who, int* result);
@@ -176,14 +177,14 @@ typedef struct gitcg_entity* gitcg_entity_t;
 int gitcg_state_query(gitcg_state_t state, int who, const char* query_string,
                       gitcg_entity_t** result, size_t* result_size);
 
-int gitcg_entity_get_id(gitcg_entity_t entity);
-int gitcg_entity_get_definition_id(gitcg_entity_t entity);
+int gitcg_entity_get_id(gitcg_entity_t entity, int* id);
+int gitcg_entity_get_definition_id(gitcg_entity_t entity, int* definition_id);
 int gitcg_entity_get_variable(gitcg_entity_t entity, const char* variable_name,
                               int* result);
 
 typedef struct gitcg_game* gitcg_game_t;
 int gitcg_game_new(gitcg_state_t state, gitcg_game_t* game);
-void gitcg_game_free(gitcg_game_t game);
+int gitcg_game_free(gitcg_game_t game);
 
 typedef void (*gitcg_rpc_handler)(void* player_data, const char* request_data,
                                   size_t request_len, char* response_data,
@@ -198,22 +199,22 @@ void gitcg_game_set_notification_handler(gitcg_game_t game, int who,
                                          gitcg_notification_handler handler);
 void gitcg_game_set_rpc_handler(gitcg_game_t game, int who,
                                 gitcg_rpc_handler handler);
-void gitcg_game_set_io_error_handler(gitcg_game_t game,
+void gitcg_game_set_io_error_handler(gitcg_game_t game, int who,
                                      gitcg_io_error_handler handler);
 
 void* gitcg_game_set_player_data(gitcg_game_t game, int who, void* data);
 
-void gitcg_game_set_attr_int(gitcg_game_t game, int key, int value);
-int gitcg_game_get_attr_int(gitcg_game_t game, int key);
+int gitcg_game_set_attr_int(gitcg_game_t game, int key, int value);
+int gitcg_game_get_attr_int(gitcg_game_t game, int key, int* value);
 
 /**
  * @brief Step a game instance to next 'pause point'.
  *
- * If an internal error accoured, the status will be set to
+ * If an internal error occurred, the status will be set to
  * `GITCG_GAME_STATUS_ABORTED`. Use `gitcg_game_get_error` to get the error
  * message.
  * @param game
- * @return 0 if success. 1 if an internal error accoured during this step.
+ * @return 0 if success. 1 if an internal error occurred during this step.
  */
 int gitcg_game_step(gitcg_game_t game);
 
@@ -222,29 +223,39 @@ int gitcg_game_giveup(gitcg_game_t game, int who);
 /**
  * @brief Get current game state of a certain game.
  *
- * Use `gitcg_state_free` to free the returned state.
+ * Use `gitcg_state_free` to free the given state.
  * This state can be passed to `gitcg_game_new` to create a new game,
  * if current game's `gitcg_game_resumable` returns 1.
  * @param game The game instance.
- * @return Current game state.
+ * @param state A pointer to `gitcg_state_t` that will be set to the current game's state
+ * @return 0 if success. 1 if an internal error occurred.
  */
-gitcg_state_t gitcg_game_get_state(gitcg_game_t game);
-int gitcg_game_get_status(gitcg_game_t game);
-int gitcg_game_is_resumable(gitcg_game_t game);
-int gitcg_game_get_winner(gitcg_game_t game);
+int gitcg_game_get_state(gitcg_game_t game, gitcg_state_t* state);
+int gitcg_game_get_status(gitcg_game_t game, int* status);
+int gitcg_game_is_resumable(gitcg_game_t game, int* resumable);
+
+/**
+ * @brief Get the winner of this game.
+ * Winner is determined if and only if the game is at phase "gameEnd".
+ * @param game The game instance.
+ * @return 0 or 1 if winner is determined. -1 if no winner yet.
+ */
+int gitcg_game_get_winner(gitcg_game_t game, int* winner);
 
 /**
  * @brief Get the internal error message of this game.
  *
  * Only valid when `gitcg_game_get_status` returns `GITCG_GAME_STATUS_ABORTED`.
- * Otherwise, this function returns `NULL`.
- *
- * The returned string has same lifetime as the game instance. Do not free it.
- *
+ * Otherwise, this function write `NULL` to `error` argument.
+ * 
+ * The written `error` string is null-terminated and allocated by `malloc`.
+ * It should be freed by `free`.
+ * 
  * @param game The game instance
- * @return Error message. `NULL` if no error.
+ * @param error A pointer to `char*` that will be set to the error message.
+ * @return 0 if success. 1 if no error message.
  */
-const char* gitcg_game_get_error(gitcg_game_t game);
+int gitcg_game_get_error(gitcg_game_t game, char** error);
 
 #ifdef __cplusplus
 }  // extern "C"

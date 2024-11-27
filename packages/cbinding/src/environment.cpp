@@ -235,7 +235,7 @@ Environment& Environment::get_instance() {
 }
 
 void Environment::dispose() {
-  auto& _ = get_instance();
+  // auto& _ = get_instance();
   instance.reset();
 }
 

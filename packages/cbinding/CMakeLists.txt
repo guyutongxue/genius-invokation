@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ### Fetch and configure v8-cmake
 
@@ -17,32 +18,42 @@ FetchContent_MakeAvailable(v8-cmake)
 
 project(gitcg-cbinding)
 
-add_executable(gitcg-cbinding-test
+add_library(gitcg-cbinding
+  SHARED
   src/environment.cpp
   src/object.cpp
   src/state_createparam.cpp
   src/state.cpp
   src/entity.cpp
   src/game.cpp
-  src/main.cpp
+  src/api.cpp
   generated/js_code.cpp)
 
-set_target_properties(gitcg-cbinding-test
+set_target_properties(gitcg-cbinding
   PROPERTIES
   CXX_STANDARD 20
   CXX_STANDARD_REQUIRED ON
 )
 
-target_include_directories(gitcg-cbinding-test
-  PRIVATE
+target_include_directories(gitcg-cbinding
+  PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(gitcg-cbinding-test
+target_link_libraries(gitcg-cbinding
   PRIVATE
   v8_base_without_compiler
   v8_compiler
   v8_snapshot
   v8_inspector
   v8_libplatform
+)
+
+add_executable(gitcg-cbinding-test
+  test/main.c
+)
+
+target_link_libraries(gitcg-cbinding-test
+  PRIVATE
+  gitcg-cbinding
 )

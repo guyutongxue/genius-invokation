@@ -378,6 +378,9 @@ export class Game {
   get state() {
     return new State(this.#game.state);
   }
+  get winner(): number {
+    return this.#game.state.winner ?? -1;
+  }
   get status() {
     return this.#status;
   }

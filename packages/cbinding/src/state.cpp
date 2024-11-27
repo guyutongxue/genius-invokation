@@ -1,3 +1,18 @@
+// Copyright (C) 2024 Guyutongxue
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "state.h"
 
 #include <cstdlib>
@@ -21,6 +36,9 @@ char* State::to_json() const {
   auto json_str = v8::String::Utf8Value{isolate, json_value};
   auto size = json_str.length();
   auto buf = static_cast<char*>(std::malloc(size + 1));
+  if (buf == nullptr) {
+    throw std::runtime_error("Failed to allocate memory");
+  }
   std::memcpy(buf, *json_str, size);
   buf[size] = '\0';
   return buf;

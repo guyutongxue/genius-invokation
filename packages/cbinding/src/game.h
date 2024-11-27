@@ -65,9 +65,13 @@ public:
   }
 
   int get_status() const;
-  std::optional<std::string> get_error() const;
+  char* get_error() const;
   bool is_resumable() const;
   State& get_state();
+  int get_winner() const;
+
+  void set_attribute(int key, int value);
+  int get_attribute(int key) const;
 
   void step();
   void giveup(int who);

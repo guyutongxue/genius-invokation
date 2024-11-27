@@ -15,6 +15,8 @@
 
 #include "game.h"
 
+#include <cstring>
+
 namespace gitcg {
 inline namespace v1_0 {
 
@@ -29,16 +31,22 @@ int Game::get_status() const {
   return status->Value();
 }
 
-std::optional<std::string> Game::get_error() const {
+char* Game::get_error() const {
   auto isolate = env->get_isolate();
   auto handle_scope = v8::HandleScope(isolate);
   auto error = this->get("error");
   if (error->IsNull()) {
-    return std::nullopt;
+    return nullptr;
   }
   auto message = v8::Exception::CreateMessage(isolate, error);
-  auto exception_str = v8::String::Utf8Value{isolate, message->Get()};
-  return std::string{*exception_str};
+  auto str = v8::String::Utf8Value{isolate, message->Get()};
+  auto buffer = static_cast<char*>(std::malloc(str.length() + 1));
+  if (buffer == nullptr) {
+    throw std::runtime_error("Failed to allocate memory");
+  }
+  std::memcpy(buffer, *str, str.length());
+  buffer[str.length()] = '\0';
+  return buffer;
 }
 
 bool Game::is_resumable() const {
@@ -58,8 +66,41 @@ State& Game::get_state() {
   return *env->own_object(std::move(state_obj_ptr));
 }
 
+int Game::get_winner() const {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto winner = this->get<v8::Number>("winner");
+  return winner->Value();
+}
+
+void Game::set_attribute(int key, int value) {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto context = env->get_context();
+  auto instance = this->get_instance();
+  auto set_attribute_fn = this->get<v8::Function>("setAttribute");
+  auto trycatch = v8::TryCatch{isolate};
+  v8::Local<v8::Value> args[2]{v8::Number::New(isolate, key),
+                               v8::Number::New(isolate, value)};
+  auto call_result_maybe = set_attribute_fn->Call(context, instance, 2, args);
+  env->check_trycatch(trycatch);
+}
+
+int Game::get_attribute(int key) const {
+  auto isolate = env->get_isolate();
+  auto handle_scope = v8::HandleScope(isolate);
+  auto context = env->get_context();
+  auto instance = this->get_instance();
+  auto get_attribute_fn = this->get<v8::Function>("getAttribute");
+  auto trycatch = v8::TryCatch{isolate};
+  auto key_value = v8::Number::New(isolate, key).As<v8::Value>();
+  auto call_result_maybe = get_attribute_fn->Call(context, instance, 1, &key_value);
+  env->check_trycatch(trycatch);
+  auto call_result = call_result_maybe.ToLocalChecked().As<v8::Number>();
+  return call_result->Value();
+}
+
 void Game::step() {
-  std::printf("WE ARE STEPPING!\n");
   auto isolate = env->get_isolate();
   auto handle_scope = v8::HandleScope(isolate);
   auto context = env->get_context();
