@@ -18,11 +18,11 @@
 
 #include <cstring>
 
-#include "environment.h"
-#include "state_createparam.h"
-#include "state.h"
-#include "game.h"
 #include "entity.h"
+#include "environment.h"
+#include "game.h"
+#include "state.h"
+#include "state_createparam.h"
 
 /*
 deck:
@@ -83,23 +83,29 @@ int main(int argc, char** argv) {
       30);
   auto& state = env.state_from_createparam(create_param);
   auto& game = env.new_game(state);
-  game.set_rpc_handler(0, [](void* player_data, const char* request_data,
-                             std::size_t request_len, char* response_data,
-                             std::size_t* response_len) noexcept {
-    for (std::size_t i = 0; i < request_len; ++i) {
-      std::printf("%d ", static_cast<int>(request_data[i]));
-    }
-    std::printf("RPC handler called\n");
-    std::memcpy(response_data, "Hello, I'm response!", 20);
-    *response_len = 20;
+  game.set_io_error_handler(0, [](void*, const char* message) {
+    std::printf("IO error: %s\n", message);
   });
-  game.step();
+  // game.set_rpc_handler(0, [](void* player_data, const char* request_data,
+  //                            std::size_t request_len, char* response_data,
+  //                            std::size_t* response_len) noexcept {
+  //   for (std::size_t i = 0; i < request_len; ++i) {
+  //     std::printf("%d ", static_cast<int>(request_data[i]));
+  //   }
+  //   std::printf("RPC handler called\n");
+  //   std::memcpy(response_data, "Hello, I'm response!", 20);
+  //   *response_len = 20;
+  // });
+  do {
+    game.step();
+  } while (game.get_status() == GITCG_GAME_STATUS_RUNNING);
   auto& current_state = game.get_state();
   auto str = current_state.to_json();
   std::printf("%s\n", str);
   free(str);
 
-  std::printf("round number: %d\n", current_state.get_attribute(GITCG_ATTR_STATE_ROUND_NUMBER));
+  std::printf("round number: %d\n",
+              current_state.get_attribute(GITCG_ATTR_STATE_ROUND_NUMBER));
 
   for (auto entity : current_state.query(0, "my characters")) {
     std::printf("entity def id: %d\n", entity->get_definition_id());

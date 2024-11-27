@@ -13,6 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Encoding API is a WHATWG Living Standard.
+// Not included in ECMA-262, so V8 doesn't support it. Add a polyfill for that.
+import "fast-text-encoding";
 import "core-js/es/promise/with-resolvers";
 import "core-js/proposals/iterator-helpers";
 import "core-js/proposals/explicit-resource-management";
@@ -364,8 +367,9 @@ export class Game {
     this.#stepResolvers.resolve();
     await this.#stepDoneResolvers.promise;
   }
+  #encoder = new TextEncoder();
   async #onIoError(e: GiTcgIoError) {
-    io(this.id, c.GITCG_INTERNAL_IO_ERROR, 0, e.message);
+    io(this.id, c.GITCG_INTERNAL_IO_ERROR, e.who, this.#encoder.encode(e.message));
   }
 
   #status = c.GITCG_GAME_STATUS_NOT_STARTED;

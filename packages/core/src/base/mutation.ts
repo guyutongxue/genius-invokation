@@ -350,7 +350,7 @@ function doMutation(state: GameState, m: Mutation): GameState {
     case "modifyEntityVar": {
       const newState = produce(state, (draft) => {
         const entity = getEntityById(draft, m.state.id) as Draft<EntityState>;
-        (entity.variables as Record<string, number>)[m.varName] = m.value;
+        entity.variables[m.varName] = m.value;
       });
       m.state = getEntityById(newState, m.state.id) as EntityState;
       return newState;

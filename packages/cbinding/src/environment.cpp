@@ -15,6 +15,8 @@
 
 #include "environment.h"
 
+#include <cstring>
+
 #include "entity.h"
 #include "game.h"
 #include "state.h"
@@ -26,6 +28,7 @@ inline namespace v1_0 {
 void initialize() {
   // v8::V8::InitializeICUDefaultLocation(argv[0]);
   // v8::V8::InitializeExternalStartupData(argv[0]);
+  // v8::V8::SetFlagsFromString("--max-old-space-size=64");
   static auto platform = v8::platform::NewDefaultPlatform();
   v8::V8::InitializePlatform(platform.get());
   v8::V8::Initialize();
@@ -98,12 +101,17 @@ constexpr v8::FunctionCallback io_fn_callback =
             return;
           }
           handler(player_data, buf_data, buf_len);
+          break;
         }
         case GITCG_INTERNAL_IO_ERROR: {
           auto handler = game->get_io_error_handler(who);
           if (handler) {
-            handler(player_data, buf_data);
+            auto buf_data_copy = std::make_unique_for_overwrite<char[]>(buf_len + 1);
+            std::memcpy(buf_data_copy.get(), buf_data, buf_len);
+            buf_data_copy[buf_len] = '\0';
+            handler(player_data, buf_data_copy.get());
           }
+          break;
         }
       }
     };
@@ -172,7 +180,7 @@ void Environment::check_promise(v8::Local<v8::Promise> promise) {
 }
 
 Environment::Environment() {
-  platform = v8::platform::NewDefaultPlatform();
+  create_params.constraints.set_max_old_generation_size_in_bytes(1 << 27);
   create_params.array_buffer_allocator =
       v8::ArrayBuffer::Allocator::NewDefaultAllocator();
   isolate = v8::Isolate::New(create_params);
@@ -242,6 +250,7 @@ Game& Environment::new_game(const State& state) {
       game_ctor->NewInstance(context, 2, game_ctor_args).ToLocalChecked();
   auto game = std::make_unique<Game>(this, game_id, game_instance);
   auto game_ptr = game.get();
+  games.emplace(game_id, game_ptr);
   return *own_object(std::move(game));
 }
 

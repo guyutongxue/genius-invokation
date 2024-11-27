@@ -18,6 +18,6 @@ declare module "@gi-tcg/cbinding-io" {
     gameId: number,
     ioType: number,
     who: 0 | 1,
-    data: any,
+    data: Uint8Array,
   ): any;
 }
