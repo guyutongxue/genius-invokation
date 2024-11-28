@@ -28,9 +28,9 @@ export const NiwabiEnshou01 = status(113053)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
   .changeDamageType(DamageType.Pyro)
   .on("increaseSkillDamage", (c, e) => e.viaSkillType("normal"))
-  .usage(3)
   .increaseDamage(1)
   .on("useSkill", (c, e) => e.isSkillType("normal"))
+  .usage(3)
   .damage(DamageType.Pyro, 1)
   .done();
 
