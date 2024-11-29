@@ -1,4 +1,3 @@
-
 on:
   push:
     branches: ["main"]
@@ -12,12 +11,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      
+
       - name: Bun run build
         run: |
           bun i
@@ -40,10 +39,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release]
-        include:
-          - os: macos-latest
-            osx_arch: x86_64
-          - os: macos-latest
+        osx_arch: [x86_64, arm64]
+        exclude:
+          - os: windows-latest
+            osx_arch: arm64
+          - os: ubuntu-latest
             osx_arch: arm64
 
     steps:
