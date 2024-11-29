@@ -41,17 +41,10 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release]
         include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            package_manager: choco
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            package_manager: sudo apt
           - os: macos-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+            osx_arch: x86_64
+          - os: macos-latest
+            osx_arch: arm64
 
     steps:
       - uses: actions/checkout@v4
@@ -89,9 +82,8 @@ jobs:
         run: >
           cmake -B ${{ steps.strings.outputs.build-dir }}
           -GNinja
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.osx_arch }}
           -S ${{ steps.strings.outputs.source-dir }}
 
       - name: CMake Build

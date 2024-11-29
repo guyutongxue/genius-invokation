@@ -33,8 +33,11 @@
 extern "C" {
 #endif
 
-// >>> generated macros
 #define GITCG_CORE_VERSION "0.14.3"
+
+// >>> API declarations
+
+// >>> generated macros
 #define GITCG_ATTR_CREATEPARAM_DATA_VERSION 101
 #define GITCG_ATTR_STATE_CONFIG_RANDOM_SEED 102
 #define GITCG_ATTR_STATE_CONFIG_INITIAL_HANDS_COUNT 103
@@ -180,19 +183,6 @@ typedef struct gitcg_entity* gitcg_entity_t;
 GITCG_API int gitcg_entity_free(gitcg_entity_t entity);
 
 /**
- * @brief Free the all entity and list itself that returned by
- * `gitcg_state_query`.
- *
- */
-#define gitcg_entity_list_free(list, len) \
-  do {                                    \
-    for (size_t i = 0; i < len; i++) {    \
-      gitcg_entity_free(list[i]);         \
-    }                                     \
-    free(list);                           \
-  } while (0)
-
-/**
  * @brief Execute query (Entity Query Syntax) on the given game state.
  *
  * The result array is allocated by `malloc` and should be freed by `free`.
@@ -291,6 +281,21 @@ GITCG_API int gitcg_game_get_winner(gitcg_game_t game, int* winner);
  * @return 0 if success. 1 if no error message.
  */
 GITCG_API int gitcg_game_get_error(gitcg_game_t game, char** error);
+
+// <<< API declarations
+
+/**
+ * @brief Free the all entity and list itself that returned by
+ * `gitcg_state_query`.
+ *
+ */
+#define gitcg_entity_list_free(list, len) \
+  do {                                    \
+    for (size_t i = 0; i < len; i++) {    \
+      gitcg_entity_free(list[i]);         \
+    }                                     \
+    free(list);                           \
+  } while (0)
 
 #ifdef __cplusplus
 }  // extern "C"

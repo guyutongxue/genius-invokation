@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 
 ### Fetch and configure v8-cmake
 
@@ -11,7 +10,7 @@ FetchContent_Declare(
   v8-cmake
   # GIT_REPOSITORY https://github.com/guyutongxue/v8-cmake.git
   GIT_REPOSITORY https://git.tencent.xqm32.org/guyutongxue/v8-cmake.git
-  GIT_TAG        578702617aa6cdb6fdfd5a924851c84543df5c45
+  GIT_TAG        28f95d1e91be44ee16abcacfa3b6eb28b87fd008
 )
 FetchContent_MakeAvailable(v8-cmake)
 
