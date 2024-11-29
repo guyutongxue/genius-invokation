@@ -1,5 +1,6 @@
 generated
 build
+install
 .vscode
 
 include/gitcg/*.pb.h

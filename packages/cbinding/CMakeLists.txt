@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 
 ### Fetch and configure v8-cmake
 
@@ -37,11 +38,6 @@ set_target_properties(gitcg
 
 target_compile_definitions(gitcg PRIVATE -DGITCG_API_EXPORTS)
 
-target_include_directories(gitcg
-  PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
 target_link_libraries(gitcg
   PRIVATE
   v8_base_without_compiler
@@ -50,6 +46,16 @@ target_link_libraries(gitcg
   v8_inspector
   v8_libplatform
 )
+
+target_sources(gitcg PUBLIC
+  FILE_SET gitcg_headers
+    TYPE HEADERS
+    BASE_DIRS include
+    FILES include/gitcg/gitcg.h
+)
+
+install(TARGETS gitcg
+  FILE_SET gitcg_headers)
 
 add_executable(gitcg-cbinding-test
   test/main.c

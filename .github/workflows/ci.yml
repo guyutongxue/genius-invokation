@@ -1,6 +1,3 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: "@gi-tcg/cbinding Build"
 
 on:
   push:
@@ -10,6 +7,7 @@ on:
 
 jobs:
   js-build:
+    name: "Core build"
     runs-on: ubuntu-latest
 
     steps:
@@ -20,18 +18,19 @@ jobs:
         with:
           bun-version: latest
       
-      - name: JS part build
+      - name: Bun run build
         run: |
           bun i
           bun run build --prod
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact for C binding
+        uses: actions/upload-artifact@v4
         with:
-          name: cbinding-js-build-output
+          name: cbinding-source
           path: packages/cbinding
 
-  build:
+  c-build:
+    name: "C Binding Build"
     needs: js-build
     runs-on: ${{ matrix.os }}
 
@@ -57,10 +56,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
+      - name: Download artifact for C binding
+        uses: actions/download-artifact@v4
         with:
-          name: cbinding-js-build-output
+          name: cbinding-source
           path: packages/cbinding
 
       - name: Setup CMake
@@ -77,6 +76,7 @@ jobs:
         run: |
           echo "source-dir=${{ github.workspace }}/packages/cbinding" >> "$GITHUB_OUTPUT"
           echo "build-dir=${{ github.workspace }}/packages/cbinding/build" >> "$GITHUB_OUTPUT"
+          echo "install-dir=${{ github.workspace }}/packages/cbinding/install" >> "$GITHUB_OUTPUT"
 
       - name: Setup cache
         id: cache
@@ -94,8 +94,20 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -S ${{ steps.strings.outputs.source-dir }}
 
-      - name: Build
+      - name: CMake Build
         run: cmake --build ${{ steps.strings.outputs.build-dir }} --config ${{ matrix.build_type }}
+
+      - name: CMake Install
+        run: >
+          cmake --install ${{ steps.strings.outputs.build-dir }}
+          --config ${{ matrix.build_type }}
+          --prefix ${{ steps.strings.outputs.install-dir }}
+
+      - name: Upload C binding artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbinding-library-${{ runner.os }}
+          path: ${{ steps.strings.outputs.install-dir }}
 
     # - name: Test
     #   working-directory: ${{ steps.strings.outputs.build-dir }}
