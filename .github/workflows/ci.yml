@@ -84,6 +84,7 @@ jobs:
           -GNinja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
+          -DDCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
           -S ${{ steps.strings.outputs.source-dir }}
 
       - name: CMake Build
@@ -98,7 +99,7 @@ jobs:
       - name: Upload C binding artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cbinding-library-${{ runner.os }}
+          name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
           path: ${{ steps.strings.outputs.install-dir }}
 
     # - name: Test
