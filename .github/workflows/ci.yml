@@ -84,7 +84,7 @@ jobs:
           -GNinja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
-          -DDCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
           -S ${{ steps.strings.outputs.source-dir }}
 
       - name: CMake Build
