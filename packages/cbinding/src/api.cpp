@@ -24,6 +24,10 @@
 
 extern "C" {
 
+const char* gitcg_version() {
+  return GITCG_CORE_VERSION;
+}
+
 void gitcg_initialize() {
   gitcg::initialize();
 }

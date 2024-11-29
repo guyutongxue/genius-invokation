@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.25)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+project(gitcg-cbinding)
+
 ### Fetch and configure v8-cmake
 
 include(FetchContent)
@@ -13,10 +15,6 @@ FetchContent_Declare(
   GIT_TAG        28f95d1e91be44ee16abcacfa3b6eb28b87fd008
 )
 FetchContent_MakeAvailable(v8-cmake)
-
-### My project
-
-project(gitcg-cbinding)
 
 add_library(gitcg
   SHARED

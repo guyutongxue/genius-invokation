@@ -87,6 +87,8 @@ extern "C" {
 #define GITCG_INTERNAL_IO_ERROR 3
 // <<< generated macros
 
+GITCG_API const char* gitcg_version(void);
+
 /**
  * @brief Initialize this library.
  * Should be called before any other functions.
