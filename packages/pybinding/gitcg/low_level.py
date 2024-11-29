@@ -3,6 +3,7 @@ import os
 from gitcg._gitcg_cffi import ffi
 from cffi import FFI
 from typing import Any
+from abc import ABC, abstractmethod
 
 _LIB_PATH = [
     "libgitcg.so",
@@ -44,28 +45,52 @@ def thread_initialize():
 def thread_cleanup():
     C.gitcg_thread_cleanup()
 
+
 def state_createpram_new() -> FFI.CData:
     createparam = ffi.new("gitcg_state_createparam_t[1]")
     assert C.gitcg_state_createparam_new(createparam) == 0
     return createparam[0]
 
+
 def state_createpram_free(createparam: FFI.CData):
     C.gitcg_state_createparam_free(createparam)
 
-def state_createparam_set_attr(createparam: FFI.CData, key: int, value: int | str):
-    raise NotImplementedError
 
-def state_createparam_set_deck(createparam: FFI.CData, who: int, character_or_cards: int, deck: list[int]):
+def state_createparam_set_attr(createparam: FFI.CData, key: int, value: int | str):
+    if isinstance(value, int):
+        assert C.gitcg_state_createparam_set_attr_int(createparam, key, value) == 0
+    elif isinstance(value, str):
+        assert (
+            C.gitcg_state_createparam_set_attr_string(
+                createparam, key, value.encode("utf-8")
+            )
+            == 0
+        )
+    else:
+        raise TypeError("value must be int or str")
+
+
+def state_createparam_set_deck(
+    createparam: FFI.CData, who: int, character_or_cards: int, deck: list[int]
+):
     deck_array = ffi.new("int[]", deck)
-    assert C.gitcg_state_createparam_set_deck(createparam, who, character_or_cards, deck_array, len(deck)) == 0
+    assert (
+        C.gitcg_state_createparam_set_deck(
+            createparam, who, character_or_cards, deck_array, len(deck)
+        )
+        == 0
+    )
+
 
 def gitcg_state_new(createparam: FFI.CData):
     state = ffi.new("gitcg_state_t[1]")
     assert C.gitcg_state_new(createparam, state) == 0
     return state[0]
 
+
 def gitcg_state_free(state: FFI.CData):
     C.gitcg_state_free(state)
+
 
 def gitcg_state_to_json(state: FFI.CData) -> str:
     string_ptr = ffi.new("char*[1]")
@@ -74,7 +99,162 @@ def gitcg_state_to_json(state: FFI.CData) -> str:
     C.free(string_ptr[0])
     return py_string
 
+
 def gitcg_state_from_json(json: str) -> FFI.CData:
     state = ffi.new("gitcg_state_t[1]")
     assert C.gitcg_state_from_json(json.encode("utf-8"), state) == 0
     return state[0]
+
+
+def gitcg_state_get_attr(state: FFI.CData, key: int) -> int:
+    value = ffi.new("int[1]")
+    assert C.gitcg_state_get_attr(state, key, value) == 0
+    return value[0]
+
+
+def gitcg_state_get_dice(state: FFI.CData, who: int) -> list[int]:
+    length = gitcg_state_get_attr(state, C.GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT)
+    dice_array = ffi.new("int[]", length)
+    assert C.gitcg_state_get_dice(state, who, dice_array) == 0
+    return list(dice_array)
+
+
+def gitcg_entity_free(entity: FFI.CData):
+    C.gitcg_entity_free(entity)
+
+
+def gitcg_state_query(state: FFI.CData, who: int, query: str) -> list[FFI.CData]:
+    result = ffi.new("gitcg_entity_t*[1]")
+    length = ffi.new("size_t[1]")
+    assert C.gitcg_state_query(state, who, query.encode("utf-8"), result, length) == 0
+    array: list[FFI.CData] = ffi.unpack(result[0], length[0])  # type: ignore
+    C.free(result[0])
+    return array
+
+
+def gitcg_entity_get_id(entity: FFI.CData) -> int:
+    value = ffi.new("int[1]")
+    assert C.gitcg_entity_get_id(entity, value) == 0
+    return value[0]
+
+
+def gitcg_entity_get_definition_id(entity: FFI.CData) -> int:
+    value = ffi.new("int[1]")
+    assert C.gitcg_entity_get_definition_id(entity, value) == 0
+    return value[0]
+
+
+def gitcg_entity_get_variable(entity: FFI.CData, variable_name: str) -> int:
+    value = ffi.new("int[1]")
+    assert (
+        C.gitcg_entity_get_variable(entity, variable_name.encode("utf-8"), value) == 0
+    )
+    return value[0]
+
+
+def gitcg_game_new(state: FFI.CData) -> FFI.CData:
+    game = ffi.new("gitcg_game_t[1]")
+    assert C.gitcg_game_new(state, game) == 0
+    return game[0]
+
+
+def gitcg_game_free(game: FFI.CData):
+    C.gitcg_game_free(game)
+
+
+class Handlers(ABC):
+    @abstractmethod
+    def on_rpc(self, request: bytes) -> bytes:
+        pass
+
+    @abstractmethod
+    def on_notify(self, notification: bytes):
+        pass
+
+    @abstractmethod
+    def on_io_error(self, error_msg: str):
+        pass
+
+
+def gitcg_game_set_handlers(game: FFI.CData, who: int, handlers: Handlers):
+    data = ffi.new_handle(handlers)
+    C.gitcg_game_set_player_data(game, who, data)
+
+    @ffi.def_extern()
+    def on_rpc_handler(
+        data: FFI.CData,
+        request: FFI.CData,
+        request_length: int,
+        response: FFI.CData,
+        response_length: FFI.CData,
+    ) -> None:
+        handlers = ffi.from_handle(data)
+        request_bytes = ffi.buffer(request, request_length)[:]
+        response_bytes = handlers.on_rpc(request_bytes)
+        response_length[0] = len(response_bytes)
+        ffi.memmove(response, response_bytes, len(response_bytes))
+
+    @ffi.def_extern()
+    def on_notify_handler(
+        data: FFI.CData, notification: FFI.CData, notification_length: int
+    ) -> None:
+        handlers = ffi.from_handle(data)
+        notification_bytes = ffi.buffer(notification, notification_length)[:]
+        handlers.on_notify(notification_bytes)
+
+    @ffi.def_extern()
+    def on_io_error_handler(data: FFI.CData, error_msg: FFI.CData) -> None:
+        handlers = ffi.from_handle(data)
+        handlers.on_io_error(_cdata_to_string(error_msg))
+
+    C.gitcg_game_set_rpc_handler(game, who, on_rpc_handler)
+    C.gitcg_game_set_notification_handler(game, who, on_notify_handler)
+    C.gitcg_game_set_io_error_handler(game, who, on_io_error_handler)
+
+
+def gitcg_game_set_attr(game: FFI.CData, key: int, value: int):
+    assert C.gitcg_game_set_attr_int(game, key, value) == 0
+
+
+def gitcg_game_get_attr(game: FFI.CData, key: int) -> int:
+    value = ffi.new("int[1]")
+    assert C.gitcg_game_get_attr_int(game, key, value) == 0
+    return value[0]
+
+
+def gitcg_game_step(game: FFI.CData):
+    assert C.gitcg_game_step(game) == 0
+
+
+def gitcg_game_get_state(game: FFI.CData) -> FFI.CData:
+    state = ffi.new("gitcg_state_t[1]")
+    assert C.gitcg_game_get_state(game, state) == 0
+    return state[0]
+
+
+def gitcg_game_get_status(game: FFI.CData) -> int:
+    value = ffi.new("int[1]")
+    assert C.gitcg_game_get_status(game, value) == 0
+    return value[0]
+
+
+def gitcg_game_is_resumable(game: FFI.CData) -> bool:
+    value = ffi.new("int[1]")
+    assert C.gitcg_game_is_resumable(game, value) == 0
+    return bool(value[0])
+
+
+def gitcg_game_get_winner(game: FFI.CData) -> int:
+    value = ffi.new("int[1]")
+    assert C.gitcg_game_get_winner(game, value) == 0
+    return value[0]
+
+
+def gitcg_game_get_error(game: FFI.CData) -> str | None:
+    string_ptr = ffi.new("char*[1]")
+    assert C.gitcg_game_get_error(game, string_ptr) == 0
+    if string_ptr[0] == ffi.NULL:
+        return None
+    py_string = _cdata_to_string(string_ptr[0])
+    C.free(string_ptr[0])
+    return py_string

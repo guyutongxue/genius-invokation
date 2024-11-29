@@ -1,6 +1,20 @@
 import unittest
 from gitcg import low_level
 
+class EmptyPlayerHandler(low_level.Handlers):
+    def __init__(self, who: int):
+        self.who = who
+
+    def on_rpc(self, request: bytes) -> bytes:
+        return b""
+
+    def on_notify(self, notification: bytes):
+        pass
+
+    def on_io_error(self, error_msg: str):
+        print(self.who, error_msg)
+        pass
+
 class TestGitcg(unittest.TestCase):
     def test_version(self):
         version = low_level.version()
@@ -32,10 +46,31 @@ class TestGitcg(unittest.TestCase):
         json = low_level.gitcg_state_to_json(state)
         # print(json)
 
+        entities = low_level.gitcg_state_query(state, 0, "my pile cards")
+        self.assertEqual(len(entities), 30)
+        first_def_id = low_level.gitcg_entity_get_definition_id(entities[0])
+        self.assertIsInstance(first_def_id, int)
+        for entity in entities:
+            low_level.gitcg_entity_free(entity)
+
         low_level.gitcg_state_free(state)
 
         state2 = low_level.gitcg_state_from_json(json)
+
+        game = low_level.gitcg_game_new(state2)
         low_level.gitcg_state_free(state2)
+        player0 = EmptyPlayerHandler(0)
+        player1 = EmptyPlayerHandler(1)
+        low_level.gitcg_game_set_handlers(game, 0, player0)
+        low_level.gitcg_game_set_handlers(game, 1, player1)
+
+        low_level.gitcg_game_step(game)
+        status = low_level.gitcg_game_get_status(game)
+        while status != 1: # running
+            low_level.gitcg_game_step(game)
+            status = low_level.gitcg_game_get_status(game)
+
+        low_level.gitcg_game_free(game)        
 
         low_level.thread_cleanup()
         low_level.cleanup()
