@@ -162,7 +162,7 @@ def gitcg_game_free(game: FFI.CData):
     C.gitcg_game_free(game)
 
 
-class Handlers(ABC):
+class ICallback(ABC):
     @abstractmethod
     def on_rpc(self, request: bytes) -> bytes:
         pass
@@ -175,41 +175,57 @@ class Handlers(ABC):
     def on_io_error(self, error_msg: str):
         pass
 
+@ffi.callback("""
+void (*gitcg_rpc_handler)(void* player_data, const char* request_data,
+                          size_t request_len, char* response_data,
+                          size_t* response_len)
+""")
+def _on_rpc_handler(
+    data: FFI.CData,
+    request: FFI.CData,
+    request_length: int,
+    response: FFI.CData,
+    response_length: FFI.CData,
+) -> None:
+    print('A', data)
+    callback_obj = ffi.from_handle(data)
+    request_bytes = ffi.buffer(request, request_length)[:]
+    response_bytes = callback_obj.on_rpc(request_bytes)
+    response_length[0] = len(response_bytes)
+    ffi.memmove(response, response_bytes, len(response_bytes))
 
-def gitcg_game_set_handlers(game: FFI.CData, who: int, handlers: Handlers):
+@ffi.callback("""
+void (*gitcg_notification_handler)(void* player_data,
+                                   const char* notification_data,
+                                   size_t notification_len)     
+""")
+def _on_notify_handler(
+    data: FFI.CData, notification: FFI.CData, notification_length: int
+) -> None:
+    callback_obj = ffi.from_handle(data)
+    notification_bytes = ffi.buffer(notification, notification_length)[:]
+    callback_obj.on_notify(notification_bytes)
+
+@ffi.callback("""
+void (*gitcg_io_error_handler)(void* player_data,
+                               const char* error_message)
+""")
+def _on_io_error_handler(data: FFI.CData, error_msg: FFI.CData) -> None:
+    callback_obj = ffi.from_handle(data)
+    callback_obj.on_io_error(_cdata_to_string(error_msg))
+
+
+def gitcg_game_set_handlers(game: FFI.CData, who: int, handlers: ICallback):
+    """
+    returns the cffi "handle" towards the ICallback object.
+    the "handle" must be long lived until the ICallback object is no longer needed.
+    """
     data = ffi.new_handle(handlers)
     C.gitcg_game_set_player_data(game, who, data)
-
-    @ffi.def_extern()
-    def on_rpc_handler(
-        data: FFI.CData,
-        request: FFI.CData,
-        request_length: int,
-        response: FFI.CData,
-        response_length: FFI.CData,
-    ) -> None:
-        handlers = ffi.from_handle(data)
-        request_bytes = ffi.buffer(request, request_length)[:]
-        response_bytes = handlers.on_rpc(request_bytes)
-        response_length[0] = len(response_bytes)
-        ffi.memmove(response, response_bytes, len(response_bytes))
-
-    @ffi.def_extern()
-    def on_notify_handler(
-        data: FFI.CData, notification: FFI.CData, notification_length: int
-    ) -> None:
-        handlers = ffi.from_handle(data)
-        notification_bytes = ffi.buffer(notification, notification_length)[:]
-        handlers.on_notify(notification_bytes)
-
-    @ffi.def_extern()
-    def on_io_error_handler(data: FFI.CData, error_msg: FFI.CData) -> None:
-        handlers = ffi.from_handle(data)
-        handlers.on_io_error(_cdata_to_string(error_msg))
-
-    C.gitcg_game_set_rpc_handler(game, who, on_rpc_handler)
-    C.gitcg_game_set_notification_handler(game, who, on_notify_handler)
-    C.gitcg_game_set_io_error_handler(game, who, on_io_error_handler)
+    C.gitcg_game_set_rpc_handler(game, who, _on_rpc_handler)
+    C.gitcg_game_set_notification_handler(game, who, _on_notify_handler)
+    C.gitcg_game_set_io_error_handler(game, who, _on_io_error_handler)
+    return data
 
 
 def gitcg_game_set_attr(game: FFI.CData, key: int, value: int):

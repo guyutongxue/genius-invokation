@@ -34,6 +34,7 @@ int CARD_1[] = {216091, 216091, 222031, 312004, 312004, 312021, 312021, 312025,
                 332005, 332006, 332025, 332025, 333003, 333003};
 
 void rpc_handler(void* data, const char* req, size_t req_size, char* res, size_t* res_size) {
+  printf("%zu\n", (size_t)data);
   *res_size = 0;
   // Request request = Request_init_default;
   // pb_istream_t input = pb_istream_from_buffer((pb_byte_t*)req, req_size);
@@ -83,6 +84,9 @@ int main(int argc, char** argv) {
   gitcg_game_t game;
   gitcg_game_new(state, &game);
   gitcg_state_free(state);
+
+  gitcg_game_set_player_data(game, 0, (void*)11111);
+  gitcg_game_set_player_data(game, 1, (void*)22222);
 
   gitcg_game_set_rpc_handler(game, 0, rpc_handler);
   gitcg_game_set_rpc_handler(game, 1, rpc_handler);

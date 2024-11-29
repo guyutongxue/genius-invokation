@@ -1,7 +1,7 @@
 import unittest
 from gitcg import low_level
 
-class EmptyPlayerHandler(low_level.Handlers):
+class EmptyPlayerHandler(low_level.ICallback):
     def __init__(self, who: int):
         self.who = who
 
@@ -61,16 +61,20 @@ class TestGitcg(unittest.TestCase):
         low_level.gitcg_state_free(state2)
         player0 = EmptyPlayerHandler(0)
         player1 = EmptyPlayerHandler(1)
-        low_level.gitcg_game_set_handlers(game, 0, player0)
-        low_level.gitcg_game_set_handlers(game, 1, player1)
+        player0_h = low_level.gitcg_game_set_handlers(game, 0, player0)
+        player1_h = low_level.gitcg_game_set_handlers(game, 1, player1)
 
         low_level.gitcg_game_step(game)
-        status = low_level.gitcg_game_get_status(game)
-        while status != 1: # running
+        status = 1
+        while status == 1: # running
             low_level.gitcg_game_step(game)
             status = low_level.gitcg_game_get_status(game)
 
-        low_level.gitcg_game_free(game)        
+        low_level.gitcg_game_free(game)
+        print(player0_h)
+        print(player1_h)
+        del player0_h
+        del player1_h
 
         low_level.thread_cleanup()
         low_level.cleanup()

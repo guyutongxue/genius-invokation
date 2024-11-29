@@ -37,7 +37,7 @@ import {
   type AnyState,
   type CreateInitialStateConfig,
   type DeckConfig,
-  type GameState,
+  type GameState as InternalState,
   type Mutation,
   type Version,
 } from "@gi-tcg/core";
@@ -204,8 +204,8 @@ class Entity {
 }
 
 class State {
-  public readonly state: GameState;
-  constructor(state: GameState) {
+  public readonly state: InternalState;
+  constructor(state: InternalState) {
     this.state = state;
   }
 
@@ -214,8 +214,10 @@ class State {
       serializeGameStateLog([{ state: this.state, canResume: false }]),
     );
   }
-  static fromJson(json: string): GameState {
-    return deserializeGameStateLog(getData, JSON.parse(json))[0]!.state;
+  static fromJson(json: string): State {
+    return new State(
+      deserializeGameStateLog(getData, JSON.parse(json))[0]!.state,
+    );
   }
   query(who: 0 | 1, query: string): Entity[] {
     return executeQueryOnState(this.state, who, query).map(
@@ -328,9 +330,9 @@ export class Game {
   #game: InternalGame;
   readonly id: number;
 
-  constructor(id: number, state: GameState) {
+  constructor(id: number, state: State) {
     this.id = id;
-    this.#game = new InternalGame(state);
+    this.#game = new InternalGame(state.state);
     this.#game.onPause = (st, m, r) => this.#onPause(st, m, r);
     this.#game.onIoError = (e) => this.#onIoError(e);
     this.#game.players[0].io.notify = (data) => this.#notify(0, data);
@@ -363,7 +365,7 @@ export class Game {
   #stepDoneResolvers = Promise.withResolvers();
 
   #mutations: Mutation[] = [];
-  async #onPause(state: GameState, mutations: Mutation[], resumable: boolean) {
+  async #onPause(state: InternalState, mutations: Mutation[], resumable: boolean) {
     this.#mutations = mutations;
     this.#resumable = resumable;
     this.#stepDoneResolvers = Promise.withResolvers();
