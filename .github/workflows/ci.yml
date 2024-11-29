@@ -37,17 +37,14 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release]
-        include:
-          - os: ubuntu-latest
-            arch: x86_64
+        arch: [x86_64, arm64]
+        exclude:
           - os: windows-latest
-            arch: x86_64
-          - os: macos-latest
             arch: arm64
-          - os: macos-13
-            arch: x86_64
+          - os: ubuntu-latest
+            arch: arm64
 
     steps:
       - uses: actions/checkout@v4
@@ -79,13 +76,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.strings.outputs.build-dir }}
-          key: ${{ runner.os }}-build
+          key: ${{ runner.os }}-${{ matrix.arch }}-build
 
       - name: Configure CMake
         run: >
           cmake -B ${{ steps.strings.outputs.build-dir }}
           -GNinja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
           -S ${{ steps.strings.outputs.source-dir }}
 
       - name: CMake Build
