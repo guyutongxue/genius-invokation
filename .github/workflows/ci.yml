@@ -83,8 +83,7 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-dir }}
           -GNinja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
-          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
+          -DCMAKE_HOST_SYSTEM_PROCESSOR=${{ matrix.arch }}
           -S ${{ steps.strings.outputs.source-dir }}
 
       - name: CMake Build
