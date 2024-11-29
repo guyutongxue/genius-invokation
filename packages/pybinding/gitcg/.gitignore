@@ -1,0 +1,4 @@
+_gitcg_cffi.py
+*.so
+*.dll
+*.dylib

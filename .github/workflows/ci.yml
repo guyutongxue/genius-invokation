@@ -37,14 +37,17 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
         build_type: [Release]
-        arch: [x86_64, arm64]
-        exclude:
-          - os: windows-latest
-            arch: arm64
+        include:
           - os: ubuntu-latest
+            arch: x86_64
+          - os: windows-latest
+            arch: x86_64
+          - os: macos-latest
             arch: arm64
+          - os: macos-13
+            arch: x86_64
 
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +86,6 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-dir }}
           -GNinja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCMAKE_HOST_SYSTEM_PROCESSOR=${{ matrix.arch }}
           -S ${{ steps.strings.outputs.source-dir }}
 
       - name: CMake Build

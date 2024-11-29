@@ -143,18 +143,20 @@ class GameCreateParameter {
     }
   }
 
-  createState(): GameState {
+  createState(): State {
     if (this.decks[0].characters.length === 0) {
       throw new Error("Deck 0 has no characters");
     }
     if (this.decks[1].characters.length === 0) {
       throw new Error("Deck 1 has no characters");
     }
-    return InternalGame.createInitialState({
-      ...this.config,
-      data: getData(this.dataVersion),
-      decks: this.decks,
-    });
+    return new State(
+      InternalGame.createInitialState({
+        ...this.config,
+        data: getData(this.dataVersion),
+        decks: this.decks,
+      }),
+    );
   }
 }
 
@@ -321,6 +323,7 @@ class State {
 
 export class Game {
   static CreateParameter = GameCreateParameter;
+  static stateFromJson = State.fromJson.bind(State);
 
   #game: InternalGame;
   readonly id: number;
@@ -369,7 +372,12 @@ export class Game {
   }
   #encoder = new TextEncoder();
   async #onIoError(e: GiTcgIoError) {
-    io(this.id, c.GITCG_INTERNAL_IO_ERROR, e.who, this.#encoder.encode(e.message));
+    io(
+      this.id,
+      c.GITCG_INTERNAL_IO_ERROR,
+      e.who,
+      this.#encoder.encode(e.message),
+    );
   }
 
   #status = c.GITCG_GAME_STATUS_NOT_STARTED;

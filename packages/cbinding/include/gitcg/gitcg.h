@@ -33,11 +33,10 @@
 extern "C" {
 #endif
 
-#define GITCG_CORE_VERSION "0.14.3"
-
 // >>> API declarations
 
 // >>> generated macros
+#define GITCG_CORE_VERSION "0.14.3"
 #define GITCG_ATTR_CREATEPARAM_DATA_VERSION 101
 #define GITCG_ATTR_STATE_CONFIG_RANDOM_SEED 102
 #define GITCG_ATTR_STATE_CONFIG_INITIAL_HANDS_COUNT 103
@@ -283,6 +282,9 @@ GITCG_API int gitcg_game_get_winner(gitcg_game_t game, int* winner);
  * @return 0 if success. 1 if no error message.
  */
 GITCG_API int gitcg_game_get_error(gitcg_game_t game, char** error);
+
+/** re-export it from libc. */
+GITCG_API void free(void* ptr);
 
 // <<< API declarations
 

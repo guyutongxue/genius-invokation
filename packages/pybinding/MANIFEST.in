@@ -1,0 +1,3 @@
+include gitcg/*.so
+include gitcg/*.dll
+include gitcg/*.dylib
