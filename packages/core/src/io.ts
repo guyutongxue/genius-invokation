@@ -388,7 +388,7 @@ export function exposeEntity(state: GameState, e: EntityState): PbEntityState {
       : void 0,
     variableName: e.definition.visibleVarName ?? void 0,
     hasUsagePerRound,
-    hintIcon: e.variables.hintIcon ?? null,
+    hintIcon: e.variables.hintIcon ?? void 0,
     hintText: e.definition.hintText ?? void 0,
     equipment,
     descriptionDictionary,

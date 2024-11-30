@@ -1,3 +1,6 @@
+_proto/*.py
+_proto/*.pyi
+!_proto/__init__.py
 _gitcg_cffi.py
 *.so
 *.dll

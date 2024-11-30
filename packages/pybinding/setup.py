@@ -15,6 +15,6 @@ setup(
     version=package["version"],
     include_package_data=True,
     packages=find_packages(),
-    install_requires=["cffi"],
+    install_requires=["cffi", "protobuf"],
     distclass=BinaryDistribution
 )

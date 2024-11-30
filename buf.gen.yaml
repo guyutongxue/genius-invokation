@@ -11,3 +11,7 @@ plugins:
       - exportCommonSymbols=false
   # - remote: buf.build/community/protobuf-c:v1.5.0
   #   out: packages/cbinding/src/pb
+  - remote: buf.build/protocolbuffers/python:v28.0
+    out: packages/pybinding/gitcg/_proto
+  - remote: buf.build/protocolbuffers/pyi:v28.0
+    out: packages/pybinding/gitcg/_proto

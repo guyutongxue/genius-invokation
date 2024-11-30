@@ -1,9 +1,10 @@
 from __future__ import annotations
 import os
-from gitcg._gitcg_cffi import ffi
 from cffi import FFI
 from typing import Any
 from abc import ABC, abstractmethod
+
+from ._gitcg_cffi import ffi
 
 _LIB_PATH = [
     "libgitcg.so",
@@ -19,6 +20,31 @@ for lib in _LIB_PATH:
         break
 if C is None:
     raise ImportError("Cannot find libgitcg library file")
+
+SET_DECK_CHARACTERS: int = C.GITCG_SET_DECK_CHARACTERS
+SET_DECK_CARDS: int = C.GITCG_SET_DECK_CARDS
+
+GAME_STATUS_NOT_STARTED: int = C.GITCG_GAME_STATUS_NOT_STARTED
+GAME_STATUS_RUNNING: int = C.GITCG_GAME_STATUS_RUNNING
+GAME_STATUS_FINISHED: int = C.GITCG_GAME_STATUS_FINISHED
+GAME_STATUS_ABORTED: int = C.GITCG_GAME_STATUS_ABORTED
+
+ATTR_STATE_PHASE = C.GITCG_ATTR_STATE_PHASE
+ATTR_STATE_ROUND_NUMBER = C.GITCG_ATTR_STATE_ROUND_NUMBER
+ATTR_STATE_CURRENT_TURN = C.GITCG_ATTR_STATE_CURRENT_TURN
+ATTR_STATE_WINNER = C.GITCG_ATTR_STATE_WINNER
+ATTR_STATE_PLAYER_DECLARED_END_0 = C.GITCG_ATTR_STATE_PLAYER_DECLARED_END_0
+ATTR_STATE_PLAYER_DECLARED_END_1 = C.GITCG_ATTR_STATE_PLAYER_DECLARED_END_1
+ATTR_STATE_PLAYER_HAS_DEFEATED_0 = C.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_0
+ATTR_STATE_PLAYER_HAS_DEFEATED_1 = C.GITCG_ATTR_STATE_PLAYER_HAS_DEFEATED_1
+ATTR_STATE_PLAYER_CAN_CHARGED_0 = C.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_0
+ATTR_STATE_PLAYER_CAN_CHARGED_1 = C.GITCG_ATTR_STATE_PLAYER_CAN_CHARGED_1
+ATTR_STATE_PLAYER_CAN_PLUNGING_0 = C.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_0
+ATTR_STATE_PLAYER_CAN_PLUNGING_1 = C.GITCG_ATTR_STATE_PLAYER_CAN_PLUNGING_1
+ATTR_STATE_PLAYER_LEGEND_USED_0 = C.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_0
+ATTR_STATE_PLAYER_LEGEND_USED_1 = C.GITCG_ATTR_STATE_PLAYER_LEGEND_USED_1
+ATTR_STATE_PLAYER_SKIP_NEXT_TURN_0 = C.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_0
+ATTR_STATE_PLAYER_SKIP_NEXT_TURN_1 = C.GITCG_ATTR_STATE_PLAYER_SKIP_NEXT_TURN_1
 
 
 def _cdata_to_string(cdata: Any) -> str:
@@ -82,17 +108,17 @@ def state_createparam_set_deck(
     )
 
 
-def gitcg_state_new(createparam: FFI.CData):
+def state_new(createparam: FFI.CData):
     state = ffi.new("gitcg_state_t[1]")
     assert C.gitcg_state_new(createparam, state) == 0
     return state[0]
 
 
-def gitcg_state_free(state: FFI.CData):
+def state_free(state: FFI.CData):
     C.gitcg_state_free(state)
 
 
-def gitcg_state_to_json(state: FFI.CData) -> str:
+def state_to_json(state: FFI.CData) -> str:
     string_ptr = ffi.new("char*[1]")
     assert C.gitcg_state_to_json(state, string_ptr) == 0
     py_string = _cdata_to_string(string_ptr[0])
@@ -100,30 +126,30 @@ def gitcg_state_to_json(state: FFI.CData) -> str:
     return py_string
 
 
-def gitcg_state_from_json(json: str) -> FFI.CData:
+def state_from_json(json: str) -> FFI.CData:
     state = ffi.new("gitcg_state_t[1]")
     assert C.gitcg_state_from_json(json.encode("utf-8"), state) == 0
     return state[0]
 
 
-def gitcg_state_get_attr(state: FFI.CData, key: int) -> int:
+def state_get_attr(state: FFI.CData, key: int) -> int:
     value = ffi.new("int[1]")
-    assert C.gitcg_state_get_attr(state, key, value) == 0
+    assert C.gitcg_state_get_attr_int(state, key, value) == 0
     return value[0]
 
 
-def gitcg_state_get_dice(state: FFI.CData, who: int) -> list[int]:
-    length = gitcg_state_get_attr(state, C.GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT)
+def state_get_dice(state: FFI.CData, who: int) -> list[int]:
+    length = state_get_attr(state, C.GITCG_ATTR_STATE_CONFIG_MAX_DICE_COUNT)
     dice_array = ffi.new("int[]", length)
     assert C.gitcg_state_get_dice(state, who, dice_array) == 0
     return list(dice_array)
 
 
-def gitcg_entity_free(entity: FFI.CData):
+def entity_free(entity: FFI.CData):
     C.gitcg_entity_free(entity)
 
 
-def gitcg_state_query(state: FFI.CData, who: int, query: str) -> list[FFI.CData]:
+def state_query(state: FFI.CData, who: int, query: str) -> list[FFI.CData]:
     result = ffi.new("gitcg_entity_t*[1]")
     length = ffi.new("size_t[1]")
     assert C.gitcg_state_query(state, who, query.encode("utf-8"), result, length) == 0
@@ -132,19 +158,19 @@ def gitcg_state_query(state: FFI.CData, who: int, query: str) -> list[FFI.CData]
     return array
 
 
-def gitcg_entity_get_id(entity: FFI.CData) -> int:
+def entity_get_id(entity: FFI.CData) -> int:
     value = ffi.new("int[1]")
     assert C.gitcg_entity_get_id(entity, value) == 0
     return value[0]
 
 
-def gitcg_entity_get_definition_id(entity: FFI.CData) -> int:
+def entity_get_definition_id(entity: FFI.CData) -> int:
     value = ffi.new("int[1]")
     assert C.gitcg_entity_get_definition_id(entity, value) == 0
     return value[0]
 
 
-def gitcg_entity_get_variable(entity: FFI.CData, variable_name: str) -> int:
+def entity_get_variable(entity: FFI.CData, variable_name: str) -> int:
     value = ffi.new("int[1]")
     assert (
         C.gitcg_entity_get_variable(entity, variable_name.encode("utf-8"), value) == 0
@@ -152,13 +178,13 @@ def gitcg_entity_get_variable(entity: FFI.CData, variable_name: str) -> int:
     return value[0]
 
 
-def gitcg_game_new(state: FFI.CData) -> FFI.CData:
+def game_new(state: FFI.CData) -> FFI.CData:
     game = ffi.new("gitcg_game_t[1]")
     assert C.gitcg_game_new(state, game) == 0
     return game[0]
 
 
-def gitcg_game_free(game: FFI.CData):
+def game_free(game: FFI.CData):
     C.gitcg_game_free(game)
 
 
@@ -175,11 +201,14 @@ class ICallback(ABC):
     def on_io_error(self, error_msg: str):
         pass
 
-@ffi.callback("""
+
+@ffi.callback(
+    """
 void (*gitcg_rpc_handler)(void* player_data, const char* request_data,
                           size_t request_len, char* response_data,
                           size_t* response_len)
-""")
+"""
+)
 def _on_rpc_handler(
     data: FFI.CData,
     request: FFI.CData,
@@ -187,18 +216,20 @@ def _on_rpc_handler(
     response: FFI.CData,
     response_length: FFI.CData,
 ) -> None:
-    print('A', data)
     callback_obj = ffi.from_handle(data)
     request_bytes = ffi.buffer(request, request_length)[:]
     response_bytes = callback_obj.on_rpc(request_bytes)
     response_length[0] = len(response_bytes)
     ffi.memmove(response, response_bytes, len(response_bytes))
 
-@ffi.callback("""
+
+@ffi.callback(
+    """
 void (*gitcg_notification_handler)(void* player_data,
                                    const char* notification_data,
                                    size_t notification_len)     
-""")
+"""
+)
 def _on_notify_handler(
     data: FFI.CData, notification: FFI.CData, notification_length: int
 ) -> None:
@@ -206,16 +237,19 @@ def _on_notify_handler(
     notification_bytes = ffi.buffer(notification, notification_length)[:]
     callback_obj.on_notify(notification_bytes)
 
-@ffi.callback("""
+
+@ffi.callback(
+    """
 void (*gitcg_io_error_handler)(void* player_data,
                                const char* error_message)
-""")
+"""
+)
 def _on_io_error_handler(data: FFI.CData, error_msg: FFI.CData) -> None:
     callback_obj = ffi.from_handle(data)
     callback_obj.on_io_error(_cdata_to_string(error_msg))
 
 
-def gitcg_game_set_handlers(game: FFI.CData, who: int, handlers: ICallback):
+def game_set_handlers(game: FFI.CData, who: int, handlers: ICallback):
     """
     returns the cffi "handle" towards the ICallback object.
     the "handle" must be long lived until the ICallback object is no longer needed.
@@ -228,45 +262,45 @@ def gitcg_game_set_handlers(game: FFI.CData, who: int, handlers: ICallback):
     return data
 
 
-def gitcg_game_set_attr(game: FFI.CData, key: int, value: int):
+def game_set_attr(game: FFI.CData, key: int, value: int):
     assert C.gitcg_game_set_attr_int(game, key, value) == 0
 
 
-def gitcg_game_get_attr(game: FFI.CData, key: int) -> int:
+def game_get_attr(game: FFI.CData, key: int) -> int:
     value = ffi.new("int[1]")
     assert C.gitcg_game_get_attr_int(game, key, value) == 0
     return value[0]
 
 
-def gitcg_game_step(game: FFI.CData):
+def game_step(game: FFI.CData):
     assert C.gitcg_game_step(game) == 0
 
 
-def gitcg_game_get_state(game: FFI.CData) -> FFI.CData:
+def game_get_state(game: FFI.CData) -> FFI.CData:
     state = ffi.new("gitcg_state_t[1]")
     assert C.gitcg_game_get_state(game, state) == 0
     return state[0]
 
 
-def gitcg_game_get_status(game: FFI.CData) -> int:
+def game_get_status(game: FFI.CData) -> int:
     value = ffi.new("int[1]")
     assert C.gitcg_game_get_status(game, value) == 0
     return value[0]
 
 
-def gitcg_game_is_resumable(game: FFI.CData) -> bool:
+def game_is_resumable(game: FFI.CData) -> bool:
     value = ffi.new("int[1]")
     assert C.gitcg_game_is_resumable(game, value) == 0
     return bool(value[0])
 
 
-def gitcg_game_get_winner(game: FFI.CData) -> int:
+def game_get_winner(game: FFI.CData) -> int:
     value = ffi.new("int[1]")
     assert C.gitcg_game_get_winner(game, value) == 0
     return value[0]
 
 
-def gitcg_game_get_error(game: FFI.CData) -> str | None:
+def game_get_error(game: FFI.CData) -> str | None:
     string_ptr = ffi.new("char*[1]")
     assert C.gitcg_game_get_error(game, string_ptr) == 0
     if string_ptr[0] == ffi.NULL:
