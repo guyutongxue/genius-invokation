@@ -62,6 +62,86 @@ export type PauseHandler = (
 
 export type IoErrorHandler = (e: GiTcgIoError) => void;
 
+/**
+ * 由于 ts-proto 没有校验功能，所以额外编写校验 rpc 响应的代码
+ *
+ * 抛出的 Error 会被外层 catch 并转换为 GiTcgIoError
+ * @param method rpc 方法
+ * @param response rpc 响应
+ */
+export function verifyRpcResponse<M extends RpcMethod>(
+  method: M,
+  response: unknown,
+): asserts response is Required<RpcResponse>[M] {
+  if (typeof response !== "object" || response === null) {
+    throw new Error(`Invalid response of ${method}`);
+  }
+  switch (method) {
+    case "action": {
+      if (
+        !("chosenActionIndex" in response) ||
+        typeof response.chosenActionIndex !== "number"
+      ) {
+        throw new Error("Invalid response of action: no chosenActionIndex");
+      }
+      if (
+        !("usedDice" in response) ||
+        !Array.isArray(response.usedDice) ||
+        response.usedDice.some((d) => typeof d !== "number")
+      ) {
+        throw new Error("Invalid response of action: no usedDice");
+      }
+      break;
+    }
+    case "chooseActive": {
+      if (
+        !("activeCharacterId" in response) ||
+        typeof response.activeCharacterId !== "number"
+      ) {
+        throw new Error(
+          "Invalid response of chooseActive: no activeCharacterId",
+        );
+      }
+      break;
+    }
+    case "rerollDice": {
+      if (
+        !("rerollIndexes" in response) ||
+        !Array.isArray(response.rerollIndexes) ||
+        response.rerollIndexes.some((d) => typeof d !== "number")
+      ) {
+        throw new Error("Invalid response of rerollDice: no rerollIndexes");
+      }
+      break;
+    }
+    case "selectCard": {
+      if (
+        !("selectedDefinitionId" in response) ||
+        typeof response.selectedDefinitionId !== "number"
+      ) {
+        throw new Error(
+          "Invalid response of selectCard: no selectedDefinitionId",
+        );
+      }
+      break;
+    }
+    case "switchHands": {
+      if (
+        !("removedHandIds" in response) ||
+        !Array.isArray(response.removedHandIds) ||
+        response.removedHandIds.some((d) => typeof d !== "number")
+      ) {
+        throw new Error("Invalid response of switchHands: no removedHandIds");
+      }
+      break;
+    }
+    default: {
+      const _check: never = method;
+      throw new Error(`Unknown method: ${method}`);
+    }
+  }
+}
+
 function exposePhaseType(phase: PhaseType): PbPhaseType {
   switch (phase) {
     case "initActives":
@@ -208,7 +288,8 @@ export function exposeMutation(
       };
     }
     case "createEntity": {
-      let where: PbCreateEntityArea = PbCreateEntityArea.ENTITY_AREA_UNSPECIFIED;
+      let where: PbCreateEntityArea =
+        PbCreateEntityArea.ENTITY_AREA_UNSPECIFIED;
       switch (m.where.type) {
         case "characters":
           where = PbCreateEntityArea.ENTITY_AREA_CHARACTER;

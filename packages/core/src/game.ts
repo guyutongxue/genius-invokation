@@ -39,6 +39,7 @@ import {
   exposeAction,
   exposeMutation,
   exposeState,
+  verifyRpcResponse,
 } from "./io";
 import {
   elementOfCharacter,
@@ -429,7 +430,8 @@ export class Game {
           `Invalid response format: expect ${method} in response`,
         );
       }
-      return resp[method] as Required<RpcResponse>[M];
+      verifyRpcResponse(method, resp[method]);
+      return resp[method];
     } catch (e) {
       if (e instanceof Error) {
         throw new GiTcgIoError(who, e.message, { cause: e?.cause });
