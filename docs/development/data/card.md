@@ -59,6 +59,19 @@ const LeaveItToMe = card(332006)
   .done();
 ```
 
+### `.descriptionOnDraw` 抓到时描述
+
+指示本牌的行动描述并非打出时而是抓到时。
+
+```ts
+/* 激愈水球·小 */
+const SmallBolsteringBubblebalm = card(112133)
+  .descriptionOnDraw()
+  .heal(1, "all my characters")
+  .combatStatus(SourcewaterDroplet)
+  .done();
+```
+
 ### 料理牌
 
 通常情况下，使用 `.food()` 方法就够了。该方法会指定 `.tags("food")`，然后调用 `.addTarget` 为不带饱腹状态的角色，并在所有行动的结尾添加 `.characterStatus` 增加目标角色的饱腹状态。例：

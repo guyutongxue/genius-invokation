@@ -8,16 +8,20 @@
 - **界面部分**
   - `@gi-tcg/webui-core` 基于 Solid 的 Web 用户界面组件
   - `@gi-tcg/webui` 基于 Web Component 的用户界面包装
+  - `@gi-tcg/deck-builder` Web 端组牌器组件
+  - `@gi-tcg/detail-log-viewer` Web 端核心结算细节日志查看组件
   - `@gi-tcg/standalone` 用于调试的集成 Web 用户界面
 - **对战平台相关**
   - `@gi-tcg/server` 对战平台服务器实现
-  - `@gi-tcg/web-client` 对战平台客户端（网页版）实现
-- **程序互通信组件**
-  - `@gi-tcg/raw-server` 基于 WebSocket 的本地游戏核心服务
+  - `@gi-tcg/web-client` 对战平台客户端（Web 版）实现
+- **跨语言绑定**
+  - `@gi-tcg/cbinding` 提供核心模拟器+官方卡牌数据的 C 接口
+  - `@gi-tcg/pybinding` 基于 C 接口的 Python 接口实现
 - **其它**
   - `@gi-tcg/static-data` 官方静态数据源
   - `@gi-tcg/typings` 定义基本数据类型前后端通信格式
   - `@gi-tcg/utils` 实用工具集合
+  - `@gi-tcg/test` 核心与卡牌数据测试框架
 
 下一步……
 - 如果你需要在你的程序中**使用这些项目组件**，请参阅下方[使用接口](#使用接口)以及对应包的 `README.md`了解使用方式；

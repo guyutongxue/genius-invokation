@@ -22,10 +22,12 @@
   - 历史回溯（复盘）和中途继续
   - 对局导入导出
   - 查看结算细节日志
-  - 双人对战模式，但是由于没有服务器支持，很卡
-- 跨程序通信支持（基于 WebSocket/HTTP）
-  - 可用于开发 AI
-- 肯定**有很多 bug**，需要测试
+- [对战平台](https://7shengzhaohuan.online/gi-tcg)（Beta 公开测试版，感谢 @RadiumLS 提供服务器支持）
+- 跨编程语言支持
+  - [C/C++](./packages/cbinding/)
+  - [Python](./packages/pybinding/)
+  - 更多编程语言敬请期待……
+- 目前**仍有很多 bug**，需要更多测试
 
 ## [关于开发](./docs/development/README.md)
 

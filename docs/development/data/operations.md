@@ -121,11 +121,21 @@ interface SkillContext {
   // 从对手的手牌中窃取一张牌到我方手牌
   stealHandCard(card: CardState): void;
 
+  // 终止预览。当此行动在预览语境下时，终止后续的预览计算。
+  // 在非预览语境下是空操作。
+  abortPreview(): void;
+
   // 请求执行“选择任意张手牌切换”
   switchCards(): void;
 
   // 请求执行“重投骰子”
   rerollDice(times: number): void;
+
+  // 请求执行“挑选一张召唤物以召唤”
+  selectAndSummon(summons: (SummonHandle | EntityDefinition)[]): void;
+
+  // 请求执行“挑选一张卡牌加入手牌”
+  selectAndCreateHandCard(cards: (CardHandle | CardDefinition)[]): void;
 
   // 请求执行“执行另一条技能”
   useSkill(skill: SkillHandle | "normal"): void;
@@ -206,6 +216,9 @@ interface SkillContext {
 
   // 获取我方或对方原本元素骰费用最多的手牌列表
   getMaxCostHands(who: "my" | "opp" = "my"): CardState[];
+
+  // 是否是我方初始牌组的卡牌
+  isInInitialPile(card: CardState): boolean;
 }
 ```
 
