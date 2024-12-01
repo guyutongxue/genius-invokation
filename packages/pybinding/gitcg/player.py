@@ -45,6 +45,11 @@ class Player(ABC):
         pass
 
     def on_io_error(self, error_msg: str):
+        """
+        When IO error happens (e.g. wrong response format, wrong dice usage, etc.), you can receive the error message from this handler.
+
+        When you've made an IO error, the opponents would automatically win and the game would step to `gitcg.GameStatus.FINISHED`.
+        """
         pass
 
     def _on_rpc(self, request: Request) -> Response:
