@@ -147,29 +147,29 @@ jobs:
         with:
           name: pybinding-source
           path: packages/pybinding
-      
+
       - name: Set reusable strings
         id: strings
         shell: bash
         run: |
           echo "cbinding-install-dir=${{ github.workspace }}/packages/cbinding/install" >> "$GITHUB_OUTPUT"
           echo "pybinding-cwd=${{ github.workspace }}/packages/pybinding" >> "$GITHUB_OUTPUT"
-      
+
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-          cache: 'pip'
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Pip install
         working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
         run: pip install -r requirements.txt
-       
+
       - name: Download artifact from C binding
         uses: actions/download-artifact@v4
         with:
           name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
           path: ${{ steps.strings.outputs.cbinding-install-dir }}
-      
+
       - name: Build python wheel and docs
         working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
         run: bun run build
@@ -180,11 +180,34 @@ jobs:
           name: pybinding-dist-${{ runner.os }}-${{ matrix.arch }}
           path: ${{ steps.strings.outputs.pybinding-cwd }}/dist
 
-      - name: Upload Python Docs
-        if: ${{ runner.os == 'ubuntu-latest' }}
+      - name: Upload Python docs
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: actions/upload-artifact@v4
         with:
           name: pybinding-docs
           path: ${{ steps.strings.outputs.pybinding-cwd }}/_docs
 
-        
+  py-docs-deploy:
+    name: "Python docs deployment"
+    needs: py-build
+
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID_PYBINDING }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PYBINDING }}
+
+    steps:
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Get pybinding docs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pybinding-docs
+          path: ${{ github.workspace }}
+
+      - name: Vercel deploy
+        run: |
+          bunx vercel deploy --token=${{ secrets.VERCEL_TOKEN }}
