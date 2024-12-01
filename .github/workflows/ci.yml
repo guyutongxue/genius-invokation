@@ -28,6 +28,12 @@ jobs:
           name: cbinding-source
           path: packages/cbinding
 
+      - name: Upload artifact for Python binding
+        uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-source
+          path: packages/pybinding
+
   c-build:
     name: "C Binding Build"
     needs: js-build
@@ -49,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download artifact for C binding
+      - name: Get generated source for C binding
         uses: actions/download-artifact@v4
         with:
           name: cbinding-source
@@ -116,13 +122,16 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        arch: [x86_64, arm64]
-        exclude:
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
+        include:
           - os: windows-latest
-            arch: arm64
+            arch: x86_64
           - os: ubuntu-latest
+            arch: x86_64
+          - os: macos-latest
             arch: arm64
+          - os: macos-13
+            arch: x86_64
 
     steps:
       - uses: actions/checkout@v4
@@ -132,6 +141,12 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
+      - name: Get generated source for Python Binding
+        uses: actions/download-artifact@v4
+        with:
+          name: pybinding-source
+          path: packages/pybinding
       
       - name: Set reusable strings
         id: strings
