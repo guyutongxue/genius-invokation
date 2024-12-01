@@ -13,7 +13,7 @@ from ._gitcg_cffi import ffi
 _LIB_PATH = [
     "libgitcg.so",
     "libgitcg.dylib",
-    "libgitcg.dll",
+    "gitcg.dll",
 ]
 
 C: Any = None
