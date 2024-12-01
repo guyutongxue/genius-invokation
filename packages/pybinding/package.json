@@ -4,6 +4,7 @@
   "version": "0.14.3",
   "scripts": {
     "build:ffi": "python scripts/build_ffi.py",
-    "build:py": "bun run build:ffi && python -m build"
+    "build:py": "bun run build:ffi && python -m build",
+    "build:docs": "pdoc gitcg -o _docs"
   }
 }
