@@ -47,7 +47,7 @@ class GameStatus(Enum):
 
 class Game:
     """
-    A GI-TCG Game instance. It can be created with a State or a CreateParam.
+    A GI-TCG Game instance. It can be created with a `gitcg.State` or a `gitcg.CreateParam`.
     ```py
     game = Game(create_param=CreateParam(deck0=DECK0, deck1=DECK1))
     ```
@@ -68,6 +68,11 @@ class Game:
     def __init__(
         self, /, state: State | None = None, create_param: CreateParam | None = None
     ):
+        """
+        Construct game from an initial `gitcg.State` or from a `gitcg.CreateParam`.
+
+        `Game(create_param=cp)` is a shortcut to `Game(state=State(create_param=cp))`.
+        """
         if state is not None:
             self._game_handle = ll.game_new(state._state_handle)
         elif create_param is not None:

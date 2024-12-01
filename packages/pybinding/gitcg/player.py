@@ -28,7 +28,7 @@ class Player(ABC):
 
     A player can handle 5 types of "requests", which are:
     - `action`, when a player action is requested.
-    - `chooseActive`, when a player is requested to choose an active character. This usually happens on the initialize phase and the previous active character was defeated.
+    - `chooseActive`, when a player is requested to choose an active character. This usually happens on the initialize phase or the previous active character was defeated.
     - `rerollDice`, when a player is requested to reroll dice. This usually happens on the roll phase.
     - `selectCard`, when a player is requested to select a card. This is the effects of some cards / skills like Chiori.
     - `switchHands`, when a player is requested to switch some cards from/to his hands and pile. This happens on the initialize phase.
@@ -37,6 +37,11 @@ class Player(ABC):
     """
 
     def on_notify(self, notification: Notification):
+        """
+        The player receives `Notification` that includes state and mutation info.
+        
+        **Notice**: your dice and hand cards are provided from here as part of state data. You should use them to determine how to response following `rerollDice` and `switchHands` requests. 
+        """
         pass
 
     def on_io_error(self, error_msg: str):
