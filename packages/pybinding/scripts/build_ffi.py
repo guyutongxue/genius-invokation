@@ -35,9 +35,15 @@ def build_ffi_module():
 
 
 def copy_lib_file():
-    lib_dir = os.path.join(INSTALL_DIR, "lib")
-    for filename in os.listdir(lib_dir):
-        shutil.copy(os.path.join(lib_dir, filename), DEST_DIR)
+    LIB_FILE = [
+        "lib/libgitcg.so",
+        "lib/libgitcg.dylib",
+        "bin/gitcg.dll",
+    ]
+    for lib_file in LIB_FILE:
+        src = os.path.join(INSTALL_DIR, lib_file)
+        if os.path.exists(src):
+            shutil.copy(src, DEST_DIR)
 
 def build_all():
     if not os.path.exists(DEST_DIR):
