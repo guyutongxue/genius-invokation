@@ -106,3 +106,70 @@ jobs:
     #   working-directory: ${{ steps.strings.outputs.build-dir }}
     #   # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
     #   run: ctest --build-config ${{ matrix.build_type }}
+
+  py-build:
+    name: "Python Binding Build"
+    needs: c-build
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [x86_64, arm64]
+        exclude:
+          - os: windows-latest
+            arch: arm64
+          - os: ubuntu-latest
+            arch: arm64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        # as a task runner
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "cbinding-install-dir=${{ github.workspace }}/packages/cbinding/install" >> "$GITHUB_OUTPUT"
+          echo "pybinding-cwd=${{ github.workspace }}/packages/pybinding" >> "$GITHUB_OUTPUT"
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Pip install
+        working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
+        run: pip install -r requirements.txt
+       
+      - name: Download artifact from C binding
+        uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
+          path: ${{ steps.strings.outputs.cbinding-install-dir }}
+      
+      - name: Build python wheel and docs
+        working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
+        run: bun run build
+
+      - name: Upload Python binding artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-dist-${{ runner.os }}-${{ matrix.arch }}
+          path: ${{ steps.strings.outputs.pybinding-cwd }}/dist
+
+      - name: Upload Python Docs
+        if: ${{ runner.os == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-docs
+          path: ${{ steps.strings.outputs.pybinding-cwd }}/_docs
+
+        
