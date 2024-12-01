@@ -210,4 +210,4 @@ jobs:
 
       - name: Vercel deploy
         run: |
-          bunx vercel deploy --token=${{ secrets.VERCEL_TOKEN }}
+          bunx vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
