@@ -122,9 +122,12 @@ class TestGitcg(unittest.TestCase):
 
             start_time = time.time()
             game.start()
+            states = []
             while game.is_running():
+                states.append(game.state())
                 game.step()
             print("Time: ", time.time() - start_time)
 
+        print("States: ", len(states))
         self.assertEqual(game.round_number(), 15)
         self.assertEqual(game.winner(), None)

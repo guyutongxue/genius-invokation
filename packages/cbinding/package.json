@@ -22,7 +22,8 @@
   "scripts": {
     "build:prod": "bun scripts/prepare.ts",
     "cmake:configure": "cmake -B build -GNinja",
-    "cmake:build": "cmake --build build --config RelWithDebInfo",
+    "cmake:build": "cmake --build build --config Release",
+    "cmake:install": "cmake --install build --config Release --prefix install",
     "build": "bun run build:prod"
   }
 }

@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { flip } from "@gi-tcg/utils";
-import type { Node, NonterminalNode } from "ohm-js";
+import type { MatchResult, Node, NonterminalNode } from "ohm-js";
 
 import grammar, { QueryLangActionDict } from "./query.ohm-bundle";
 import {
@@ -508,13 +508,19 @@ semantics
   .addOperation("withCheck(ctx, state)", withCheckDict)
   .addOperation("evalExpr(state)", evalExprDict);
 
+const parseCache = new Map<string, MatchResult>();
+
 export function doSemanticQueryAction(
   source: string,
   queryArg: QueryArgs,
 ): AnyState[] {
-  const match = grammar.match(source);
-  if (match.failed()) {
-    throw new GiTcgQueryError(source, queryArg, match.message);
+  let match = parseCache.get(source);
+  if (!match) {
+    match = grammar.match(source);
+    if (match.failed()) {
+      throw new GiTcgQueryError(source, queryArg, match.message);
+    }
+    parseCache.set(source, match);
   }
   try {
     const result: AnyState[] = semantics(match).doQuery(queryArg);
