@@ -36,6 +36,7 @@ jobs:
           path: packages/pybinding
 
   npm-publish:
+    needs: js-build
     name: "Publish to npmjs"
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
@@ -66,16 +67,14 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows-latest, macos-latest]
         build_type: [Release]
         arch: [x86_64, arm64]
         exclude:
           - os: windows-latest
             arch: arm64
-          - os: ubuntu-latest
-            arch: arm64
 
-    steps:
+    steps: &C_BUILD_STEPS
       - uses: actions/checkout@v4
 
       - name: Get generated source for C binding
@@ -135,6 +134,20 @@ jobs:
     #   working-directory: ${{ steps.strings.outputs.build-dir }}
     #   # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
     #   run: ctest --build-config ${{ matrix.build_type }}
+
+  c-build-manylinux:
+    name: "C Binding Build (Manylinux)"
+    needs: js-build
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+
+    strategy:
+      matrix:
+        build_type: [Release]
+        arch: [x86_64]
+
+    steps: *C_BUILD_STEPS
+
 
   py-build:
     name: "Python Binding Build"
