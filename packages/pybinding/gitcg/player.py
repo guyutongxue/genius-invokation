@@ -84,7 +84,7 @@ class Player(ABC):
         Implement the logic of how to `rerollDice`. The returned `RerollDiceResponse` consists a list of `reroll_indexes` that you want to reroll. The dice information is shown on a previous `on_notify` notification.
 
         For example, do not reroll any dice:
-        ```
+        ```py
         def on_reroll_dice(self, request: RerollDiceRequest) -> RerollDiceResponse:
             return RerollDiceResponse() # or RerollDiceResponse(reroll_indexes=[])
         ```

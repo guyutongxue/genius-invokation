@@ -23,7 +23,7 @@ class State:
         """
         Create a state from an `gitcg.CreateParam`, or from a JSON representation.
 
-        **Notice**: The JSON representation is not stable. We only guarantee that the JSON string produced from `gitcg.State.to_json` from the same version of this library is valid. We encourage to use `gitcg.State.query` to extract detailed state data.
+        **Notice**: The JSON representation is not stable. We only guarantee that the JSON string produced from `gitcg.State.json` from the same version of this library is valid. We encourage to use `gitcg.State.query` to extract detailed state data.
         """
         if create_param is not None:
             self._state_handle = ll.state_new(create_param._createparam_handle)
