@@ -2,6 +2,9 @@
 
 **仅记录破坏性改动。**
 
+## 0.15.0
+- 修改了 `ActionRequest` protobuf 的格式。
+
 ## 0.14.0
 - IO 接口完全重写：现使用 Protocol Buffer 兼容的 IO 数据类型。详细变化请参考最新文档。
 

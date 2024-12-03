@@ -1,7 +1,7 @@
 {
   "name": "@gi-tcg/pybinding",
   "private": true,
-  "version": "0.14.3",
+  "version": "0.15.0",
   "scripts": {
     "build:ffi": "python scripts/build_ffi.py",
     "build:setuptools": "bun run build:ffi && python -m build",

@@ -14,11 +14,11 @@ class BinaryDistribution(Distribution):
 with open("package.json", "r") as f:
     package = json.load(f)
 
-version = f"{package['version']}.dev{datetime.now().strftime('%Y%m%d%H%M')}"
+# version = f"{package['version']}.dev{datetime.now().strftime('%Y%m%d%H%M')}"
 
 setup(
     name="gitcg",
-    version=version,
+    version=package['version'],
     include_package_data=True,
     packages=find_packages(),
     install_requires=["cffi", "protobuf"],
