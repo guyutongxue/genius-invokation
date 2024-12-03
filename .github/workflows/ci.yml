@@ -74,7 +74,7 @@ jobs:
           - os: windows-latest
             arch: arm64
 
-    steps: &C_BUILD_STEPS
+    steps:
       - uses: actions/checkout@v4
 
       - name: Get generated source for C binding
@@ -91,7 +91,6 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Set reusable strings
-        # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
         id: strings
         shell: bash
         run: |
@@ -135,18 +134,18 @@ jobs:
     #   # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
     #   run: ctest --build-config ${{ matrix.build_type }}
 
-  c-build-manylinux:
-    name: "C Binding Build (Manylinux)"
-    needs: js-build
-    runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
+  # c-build-manylinux:
+  #   name: "C Binding Build (Manylinux)"
+  #   needs: js-build
+  #   runs-on: ubuntu-latest
+  #   container: quay.io/pypa/manylinux2014_x86_64
 
-    strategy:
-      matrix:
-        build_type: [Release]
-        arch: [x86_64]
+  #   strategy:
+  #     matrix:
+  #       build_type: [Release]
+  #       arch: [x86_64]
 
-    steps: *C_BUILD_STEPS
+  #   steps: *C_BUILD_STEPS
 
 
   py-build:
