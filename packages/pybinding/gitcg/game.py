@@ -6,8 +6,8 @@ from .player import Player
 from .create_param import CreateParam
 from .state import State
 from . import low_level as ll
-from ._proto.rpc_pb2 import Request
-from ._proto.notification_pb2 import Notification
+from .proto.rpc_pb2 import Request
+from .proto.notification_pb2 import Notification
 
 class _GameCallback(ll.ICallback):
     _player: Player

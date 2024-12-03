@@ -5,7 +5,7 @@
   "scripts": {
     "build:ffi": "python scripts/build_ffi.py",
     "build:setuptools": "bun run build:ffi && python -m build",
-    "build:docs": "pdoc gitcg -o _docs",
+    "build:docs": "pdoc gitcg !gitcg.proto -o _docs",
     "build": "bun run build:setuptools && bun run build:docs"
   }
 }

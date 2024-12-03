@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from ._proto.notification_pb2 import Notification
-from ._proto.rpc_pb2 import (
+from .proto.notification_pb2 import Notification
+from .proto.rpc_pb2 import (
     Request,
     Response,
     ChooseActiveRequest,
