@@ -46,7 +46,6 @@ import {
   type PreviewData,
 } from "@gi-tcg/typings";
 import type {
-  Action,
   PbDiceRequirement,
   PbDiceType,
   PlayerIO,
@@ -94,6 +93,7 @@ export const DECLARE_END_ID = 0;
 export const ELEMENTAL_TUNING_OFFSET = -11072100;
 
 type ClickableActionWithIndex = (PlayCardAction | UseSkillAction) & {
+  requiredCost: readonly PbDiceRequirement[];
   index: number;
 };
 type PartialDiceSelectProp = Omit<DiceSelectProps, "value">;
@@ -331,32 +331,40 @@ export function createPlayer(
       for (const [actionObj, i] of actions.map((v, i) => [v, i] as const)) {
         if (actionObj.useSkill) {
           const action = actionObj.useSkill;
-          const energyReq = action.requiredCost.find(
+          const energyReq = actionObj.requiredCost.find(
             ({ type }) => type === 9 /* energy */,
           );
           if (energyReq && currentEnergy < energyReq.count) {
             continue;
           }
-          clickableInfos.push({ ...action, index: i });
-          newAllCosts[action.skillId] = action.requiredCost;
+          clickableInfos.push({
+            ...action,
+            index: i,
+            requiredCost: actionObj.requiredCost,
+          });
+          newAllCosts[action.skillId] = actionObj.requiredCost;
         } else if (actionObj.playCard) {
           const action = actionObj.playCard;
-          const energyReq = action.requiredCost.find(
+          const energyReq = actionObj.requiredCost.find(
             ({ type }) => type === 9 /* energy */,
           );
           if (energyReq && currentEnergy < energyReq.count) {
             continue;
           }
-          clickableInfos.push({ ...action, index: i });
-          newAllCosts[action.cardId] = action.requiredCost;
+          clickableInfos.push({
+            ...action,
+            index: i,
+            requiredCost: actionObj.requiredCost,
+          });
+          newAllCosts[action.cardId] = actionObj.requiredCost;
         } else if (actionObj.switchActive) {
           const action = actionObj.switchActive;
           initialClickable.set(action.characterId, {
             actionIndex: i,
-            required: action.requiredCost,
+            required: actionObj.requiredCost,
             selected: [action.characterId],
           });
-          newAllCosts[action.characterId] = action.requiredCost;
+          newAllCosts[action.characterId] = actionObj.requiredCost;
         } else if (actionObj.elementalTuning) {
           const action = actionObj.elementalTuning;
           initialClickable.set(action.removedCardId + ELEMENTAL_TUNING_OFFSET, {
@@ -406,11 +414,7 @@ export function createPlayer(
         setClickable([...(state.clickable?.keys() ?? [])]);
         setSelected([...state.selected]);
         const chosenActionIndex = state.actionIndex!;
-        setPreviewData(
-          (Object.values(
-            actions[chosenActionIndex],
-          )[0] as Action[keyof Action])!.preview,
-        );
+        setPreviewData(actions[chosenActionIndex].preview);
 
         if (actions[chosenActionIndex].declareEnd) {
           setClickable([]);

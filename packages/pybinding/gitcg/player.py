@@ -134,5 +134,42 @@ class Player(ABC):
             # Because no dice required for declare_end, so just omitting `used_dice=[]` argument.
             return ActionResponse(chosen_action_index=chosen_index)
         ```
+
+        Here is a little bit complex example: omni-only-random-action player. This player will only consume OMNI dice to perform a random action. For better test result, set `low_level.ATTR_PLAYER_ALWAYS_OMNI_0`(`1`) in `gitcg.game.set_attr` to make this player always receive OMNI dice on initial roll.
+        ```py
+        class RandomActionPlayer(Player):
+            who: int
+            omni_dice_count = 0 # record dice count of OMNI
+            def __init__(self, who: int):
+                self.who = who
+
+            def on_notify(self, notification):
+                self.omni_dice_count = len([i for i in notification.state.player[self.who].dice if i == DiceType.DICE_OMNI])
+
+            def on_action(self, request: ActionRequest) -> ActionResponse:
+                chosen_index = 0
+                used_dice: list[DiceType] = []
+                actions = list(enumerate(request.action))
+                random.shuffle(actions)
+                # select the first action (from shuffled list) that can be performed by current OMNI dice.
+                for i, action in actions:
+                    required_count = 0
+                    has_non_dice_requirement = False
+                    if action.HasField("elemental_tuning"):
+                        continue
+                    for req in list(action.required_cost):
+                        if req.type == DiceRequirementType.DICE_REQ_ENERGY or req.type == DiceRequirementType.DICE_REQ_LEGEND:
+                            has_non_dice_requirement = True
+                        else:
+                            required_count += req.count
+                    if has_non_dice_requirement:
+                        continue
+                    if required_count > self.omni_dice_count:
+                        continue
+                    chosen_index = i
+                    used_dice = [DiceType.DICE_OMNI] * required_count
+                    break
+                return ActionResponse(chosen_action_index=chosen_index, used_dice=used_dice)
+        ```
         """
         pass
