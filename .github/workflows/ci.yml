@@ -34,6 +34,13 @@ jobs:
           name: pybinding-source
           path: packages/pybinding
 
+      - name: Publish to npmjs.org
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        env:
+          PUBLISH: 1
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun scripts/publish.ts
+
   c-build:
     name: "C Binding Build"
     needs: js-build
@@ -216,6 +223,7 @@ jobs:
 
   pypi-publish:
     name: "Upload release to PyPI"
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: py-build
     runs-on: ubuntu-latest
 
@@ -229,22 +237,22 @@ jobs:
       - name: Download Python binding artifact (Windows)
         uses: actions/download-artifact@v4
         with:
-          name: cbinding-library-Windows-x86_64
+          name: pybinding-dist-Windows-x86_64
           path: dist
       - name: Download Python binding artifact (Linux)
         uses: actions/download-artifact@v4
         with:
-          name: cbinding-library-Linux-x86_64
+          name: pybinding-dist-Linux-x86_64
           path: dist
       - name: Download Python binding artifact (macOS)
         uses: actions/download-artifact@v4
         with:
-          name: cbinding-library-macOS-x86_64
+          name: pybinding-dist-macOS-x86_64
           path: dist
       - name: Download Python binding artifact (macOS arm64)
         uses: actions/download-artifact@v4
         with:
-          name: cbinding-library-macOS-arm64
+          name: pybinding-dist-macOS-arm64
           path: dist
 
       - name: Remove .tar.gz
