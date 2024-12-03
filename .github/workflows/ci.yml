@@ -40,7 +40,9 @@ jobs:
         env:
           PUBLISH: 1
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: bun scripts/publish.ts
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
+          bun scripts/publish.ts
 
   c-build:
     name: "C Binding Build"
