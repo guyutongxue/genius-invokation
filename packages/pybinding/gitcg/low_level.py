@@ -141,7 +141,7 @@ def state_to_json(state: FFI.CData) -> str:
     string_ptr = ffi.new("char*[1]")
     assert C.gitcg_state_to_json(state, string_ptr) == 0
     py_string = _cdata_to_string(string_ptr[0])
-    C.free(string_ptr[0])
+    C.gitcg_free_buffer(string_ptr[0])
     return py_string
 
 
@@ -173,7 +173,7 @@ def state_query(state: FFI.CData, who: int, query: str) -> list[FFI.CData]:
     length = ffi.new("size_t[1]")
     assert C.gitcg_state_query(state, who, query.encode("utf-8"), result, length) == 0
     array: list[FFI.CData] = ffi.unpack(result[0], length[0])  # type: ignore
-    C.free(result[0])
+    C.gitcg_free_buffer(result[0])
     return array
 
 
@@ -325,5 +325,5 @@ def game_get_error(game: FFI.CData) -> str | None:
     if string_ptr[0] == ffi.NULL:
         return None
     py_string = _cdata_to_string(string_ptr[0])
-    C.free(string_ptr[0])
+    C.gitcg_free_buffer(string_ptr[0])
     return py_string

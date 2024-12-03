@@ -344,4 +344,8 @@ int gitcg_game_get_error(gitcg_game_t game, char** error) try {
   return -1;
 }
 
+void gitcg_free_buffer(void* ptr) {
+  free(ptr);
+}
+
 }  // extern "C"

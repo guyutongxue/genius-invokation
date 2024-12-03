@@ -93,6 +93,18 @@ class Game:
         self._player_callback_handles[who] = handle
         self._players[who] = player
 
+    def set_attr(self, key: int, value: int):
+        """
+        Set some controlling attributes to the game.
+        Available attributes can be found in `gitcg.low_level`:
+        - `gitcg.low_level.ATTR_PLAYER_ALWAYS_OMNI_0`
+        - `gitcg.low_level.ATTR_PLAYER_ALWAYS_OMNI_1`
+        - `gitcg.low_level.ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_0`
+        - `gitcg.low_level.ATTR_PLAYER_ALLOW_TUNING_ANY_DICE_1`
+        """
+        ll.game_set_attr(self._game_handle, key, value)
+
+
     def start(self):
         """
         Start the game. Precondition: `status() == GameStatus.NOT_STARTED`.
