@@ -499,29 +499,29 @@ export function exposeAction(action: ActionInfo): Action {
       return {
         useSkill: {
           skillId: action.skill.definition.id,
-          requiredCost: exposeDiceRequirement(action.cost),
           targetIds: action.targets.map((t) => t.id),
-          preview: action.preview ?? [],
         },
+        requiredCost: exposeDiceRequirement(action.cost),
+        preview: action.preview ?? [],
       };
     }
     case "playCard": {
       return {
         playCard: {
           cardId: action.skill.caller.id,
-          requiredCost: exposeDiceRequirement(action.cost),
           targetIds: action.targets.map((t) => t.id),
-          preview: action.preview ?? [],
         },
+        requiredCost: exposeDiceRequirement(action.cost),
+        preview: action.preview ?? [],
       };
     }
     case "switchActive": {
       return {
         switchActive: {
           characterId: action.to.id,
-          requiredCost: exposeDiceRequirement(action.cost),
-          preview: action.preview ?? [],
         },
+        requiredCost: exposeDiceRequirement(action.cost),
+        preview: action.preview ?? [],
       };
     }
     case "elementalTuning": {
@@ -529,16 +529,17 @@ export function exposeAction(action: ActionInfo): Action {
         elementalTuning: {
           removedCardId: action.card.id,
           targetDice: action.result as PbDiceType,
-          requiredCost: exposeDiceRequirement(action.cost),
-          preview: [],
         },
+        requiredCost: exposeDiceRequirement(action.cost),
+        preview: [],
       };
     }
     case "declareEnd": {
       return {
         declareEnd: {
-          preview: [],
         },
+        requiredCost: [],
+        preview: [],
       };
     }
   }

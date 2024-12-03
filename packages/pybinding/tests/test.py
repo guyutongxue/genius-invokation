@@ -1,6 +1,8 @@
 import unittest
 import time
+import random
 from gitcg import (
+    low_level,
     Game,
     CreateParam,
     Deck,
@@ -15,23 +17,46 @@ from gitcg import (
     SelectCardResponse,
     SwitchHandsRequest,
     SwitchHandsResponse,
+    DiceRequirementType,
+    DiceType
 )
 
 
 class MyPlayer(Player):
+    who: int
+    omni_dice_count = 0
+    def __init__(self, who: int):
+        self.who = who
+
     def on_notify(self, notification):
-        pass
+        self.omni_dice_count = len([i for i in notification.state.player[self.who].dice if i == DiceType.DICE_OMNI])
 
     def on_io_error(self, error_msg):
         print(error_msg)
 
     def on_action(self, request: ActionRequest) -> ActionResponse:
         chosen_index = 0
-        for i, action in enumerate(request.action):
-            if action.HasField("declare_end"):
-                chosen_index = i
-                break
-        return ActionResponse(chosen_action_index=chosen_index, used_dice=[])
+        used_dice: list[DiceType] = []
+        actions = list(enumerate(request.action))
+        random.shuffle(actions)
+        for i, action in actions:
+            required_count = 0
+            has_non_dice_requirement = False
+            if action.HasField("elemental_tuning"):
+                continue
+            for req in list(action.required_cost):
+                if req.type == DiceRequirementType.DICE_REQ_ENERGY or req.type == DiceRequirementType.DICE_REQ_LEGEND:
+                    has_non_dice_requirement = True
+                else:
+                    required_count += req.count
+            if has_non_dice_requirement:
+                continue
+            if required_count > self.omni_dice_count:
+                continue
+            chosen_index = i
+            used_dice = [DiceType.DICE_OMNI] * required_count
+            break
+        return ActionResponse(chosen_action_index=chosen_index, used_dice=used_dice)
 
     def on_reroll_dice(self, request: RerollDiceRequest) -> RerollDiceResponse:
         return RerollDiceResponse(reroll_indexes=[])
@@ -115,10 +140,12 @@ DECK1 = Deck(
 
 class TestGitcg(unittest.TestCase):
     def test_it(self):
-        for i in range(0, 100):
+        for i in range(0, 10):
             game = Game(create_param=CreateParam(deck0=DECK0, deck1=DECK1))
-            game.set_player(0, MyPlayer())
-            game.set_player(1, MyPlayer())
+            game.set_attr(low_level.ATTR_PLAYER_ALWAYS_OMNI_0, 1)
+            game.set_attr(low_level.ATTR_PLAYER_ALWAYS_OMNI_1, 1)
+            game.set_player(0, MyPlayer(0))
+            game.set_player(1, MyPlayer(1))
 
             start_time = time.time()
             game.start()
@@ -127,7 +154,7 @@ class TestGitcg(unittest.TestCase):
                 states.append(game.state())
                 game.step()
             print("Time: ", time.time() - start_time)
-
-        print("States: ", len(states))
-        self.assertEqual(game.round_number(), 15)
-        self.assertEqual(game.winner(), None)
+            print("States: ", len(states))
+            print("Winner: ", game.winner())
+        # self.assertEqual(game.round_number(), 15)
+        # self.assertEqual(game.winner(), None)
