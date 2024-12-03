@@ -74,7 +74,7 @@ export function verifyRpcResponse<M extends RpcMethod>(
   response: unknown,
 ): asserts response is Required<RpcResponse>[M] {
   if (typeof response !== "object" || response === null) {
-    throw new Error(`Invalid response of ${method}`);
+    throw new Error(`Invalid response of ${method}: ${response}`);
   }
   switch (method) {
     case "action": {

@@ -209,5 +209,46 @@ jobs:
           path: ${{ github.workspace }}
 
       - name: Vercel deploy
-        run: |
-          bunx vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: >
+          bunx vercel deploy
+          ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          --token=${{ secrets.VERCEL_TOKEN }}
+
+  pypi-publish:
+    name: "Upload release to PyPI"
+    needs: py-build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/gitcg
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download Python binding artifact (Windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-Windows-x86_64
+          path: dist
+      - name: Download Python binding artifact (Linux)
+        uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-Linux-x86_64
+          path: dist
+      - name: Download Python binding artifact (macOS)
+        uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-macOS-x86_64
+          path: dist
+      - name: Download Python binding artifact (macOS arm64)
+        uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-macOS-arm64
+          path: dist
+
+      - name: Remove .tar.gz
+        run: rm -f dist/*.tar.gz
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
