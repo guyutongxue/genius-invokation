@@ -2,8 +2,6 @@ from setuptools import setup, find_packages
 from setuptools.dist import Distribution
 import json
 from datetime import datetime
-from pathlib import Path
-
 
 class BinaryDistribution(Distribution):
     """Distribution which always forces a binary package with platform name"""
@@ -18,11 +16,11 @@ with open("package.json", "r") as f:
 with open("README.md", "r") as f:
     long_description = f.read()
 
-# version = f"{package['version']}.dev{datetime.now().strftime('%Y%m%d%H%M')}"
+version = f"{package['version']}.dev{datetime.now().strftime('%Y%m%d%H%M')}"
 
 setup(
     name="gitcg",
-    version=package['version'],
+    version=version,
     description="A Python binding of Genius-Invokation TCG",
     long_description=long_description,
     long_description_content_type="text/markdown",
