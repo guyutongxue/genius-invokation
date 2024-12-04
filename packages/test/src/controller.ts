@@ -65,7 +65,7 @@ class IoController {
     if (chosenActionIndex === -1) {
       throw new Error(`You cannot use skill ${id} (with given targets)`);
     }
-    const action = actions[chosenActionIndex].useSkill!;
+    const action = actions[chosenActionIndex];
     const usedDice = this.generateCost(
       action.requiredCost.reduce(
         (a, { type, count }) => (a + type === DiceType.Energy ? 0 : count),
@@ -97,7 +97,7 @@ class IoController {
     if (chosenActionIndex === -1) {
       throw new Error(`You cannot play card ${cardId} (with given targets)`);
     }
-    const action = actions[chosenActionIndex].playCard!;
+    const action = actions[chosenActionIndex];
     const usedDice = this.generateCost(
       action.requiredCost.reduce(
         (a, { type, count }) => (a + type === DiceType.Energy ? 0 : count),
@@ -151,7 +151,7 @@ class IoController {
     if (chosenActionIndex === -1) {
       throw new Error(`You cannot switch to character ${characterId}`);
     }
-    const action = actions[chosenActionIndex].switchActive!;
+    const action = actions[chosenActionIndex];
     const usedDice = this.generateCost(
       action.requiredCost.reduce(
         (a, { type, count }) => (a + type === DiceType.Energy ? 0 : count),

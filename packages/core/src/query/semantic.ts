@@ -346,12 +346,19 @@ type TypeSpecifierResult =
     };
 
 const typeSpecifierDict: QueryLangActionDict<TypeSpecifierResult> = {
-  CharacterSpecifier_chIncDeath(_, kwInc, _kwDeath) {
+  GeneralCharacterSpecifier_mayIncDeath(ch, kwInc, _kwDeath) {
     const defeated = kwInc.numChildren > 0 ? "contains" : "no";
-    return { type: "character", defeated, position: "all" };
+    return { ...ch.typeSpecifier, defeated };
   },
-  CharacterSpecifier_onlyDeath(_kwDeath, _kwCh) {
-    return { type: "character", defeated: "only", position: "all" };
+  GeneralCharacterSpecifier_onlyDeath(_kwDeath, ch) {
+    return { ...ch.typeSpecifier, defeated: "only" };
+  },
+  CharacterSpecifier_plain(_) {
+    return {
+      type: "character",
+      position: "all",
+      defeated: "no",
+    }
   },
   CharacterSpecifier_position(posSpec, _) {
     return {

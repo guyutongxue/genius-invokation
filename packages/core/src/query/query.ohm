@@ -94,10 +94,11 @@ QueryLang {
   WhoSpecifier = kwAll? kwMy -- my
     | kwAll? kwOpp -- opp
     | kwAll -- all
-  TypeSpecifier = CharacterSpecifier | EntitySpecifier | CardSpecifier
-  CharacterSpecifier = kwCharacter (kwIncludes kwDefeated)? -- chIncDeath
+  TypeSpecifier = GeneralCharacterSpecifier | EntitySpecifier | CardSpecifier
+  GeneralCharacterSpecifier = CharacterSpecifier (kwIncludes kwDefeated)? -- mayIncDeath
+    | kwDefeated CharacterSpecifier -- onlyDeath
+  CharacterSpecifier = kwCharacter -- plain
     | PositionSpecifier kwCharacter? -- position
-    | kwDefeated kwCharacter? -- onlyDeath
   PositionSpecifier = kwActive | kwPrev | kwNext | kwStandby
   EntitySpecifier = kwSummon -- summon
     | kwCombat kwStatus -- combatStatus
