@@ -58,7 +58,7 @@ export const RangedStance = status(112041)
 export const Riptide: StatusHandle = status(112043)
   .on("defeated")
   .do((c) => {
-    const active = c.$("my active includes defeated")!;
+    const active = c.$("my active character includes defeated")!;
     if (active.state.variables.alive) {
       active.addStatus(Riptide);
     } else {
