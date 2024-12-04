@@ -48,7 +48,7 @@ const defaultProps: StandaloneChessboardProps = {
   state: EMPTY_GAME_STATE,
   who: 0,
   mutations: [],
-  previewData: [],
+  previewData: null,
   assetApiEndpoint: void 0,
 };
 
