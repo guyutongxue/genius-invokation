@@ -619,7 +619,12 @@ export class Game {
       // 检查骰子
       console.log(actionInfo.cost, usedDice);
       if (!checkDice(actionInfo.cost, usedDice as DiceType[])) {
-        throw new GiTcgIoError(who, `Selected dice doesn't meet requirement`);
+        throw new GiTcgIoError(
+          who,
+          `Selected dice doesn't meet requirement:\nRequired: ${JSON.stringify(
+            Object.fromEntries(actionInfo.cost.entries()),
+          )}, selected: ${JSON.stringify(usedDice)}`,
+        );
       }
       if (
         !this.players[who].config.allowTuningAnyDice &&
