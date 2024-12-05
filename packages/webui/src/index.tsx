@@ -23,7 +23,8 @@ import {
   WebUiOption,
   createPlayer as createPlayerSolid,
 } from "@gi-tcg/webui-core";
-import css from "@gi-tcg/webui-core/style.css?inline";
+import { DetailLogViewer } from "@gi-tcg/detail-log-viewer";
+import webuiCss from "@gi-tcg/webui-core/style.css?inline";
 import { customElement } from "solid-element";
 
 export function createPlayer(
@@ -33,7 +34,7 @@ export function createPlayer(
 ) {
   const shadow = element.attachShadow({ mode: "open" });
   const style = document.createElement("style");
-  style.textContent = css;
+  style.textContent = webuiCss;
   shadow.appendChild(style);
   let io: PlayerIOWithCancellation;
   render(() => {
@@ -44,23 +45,42 @@ export function createPlayer(
   return io!;
 }
 
-const defaultProps: StandaloneChessboardProps = {
+const standaloneChessboardDefaultProps: StandaloneChessboardProps = {
   state: EMPTY_GAME_STATE,
   who: 0,
   mutations: [],
   previewData: null,
   assetApiEndpoint: void 0,
+  assetAltText: void 0,
 };
 
 customElement(
   "gi-tcg-standalone-chessboard",
-  defaultProps,
+  standaloneChessboardDefaultProps,
   (props, { element }) => {
     return (
       <>
-        <style>{css}</style>
+        <style>{webuiCss}</style>
         <StandaloneChessboard {...props} />
       </>
     );
   },
 );
+
+const detailLogViewerDefaultProps: DetailLogViewer.Props = {
+  logs: [],
+  names: void 0,
+}
+
+customElement(
+  "gi-tcg-detail-log-viewer",
+  detailLogViewerDefaultProps,
+  (props, { element }) => {
+    return (
+      <>
+        {/* <style>{css}</style> */}
+        <DetailLogViewer {...props} />
+      </>
+    );
+  },
+)
