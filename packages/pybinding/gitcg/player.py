@@ -86,7 +86,7 @@ class Player(ABC):
         For example, do not reroll any dice:
         ```py
         def on_reroll_dice(self, request: RerollDiceRequest) -> RerollDiceResponse:
-            return RerollDiceResponse() # or RerollDiceResponse(reroll_indexes=[])
+            return RerollDiceResponse() # or RerollDiceResponse(dice_to_reroll=[])
         ```
         """
         pass
