@@ -2,6 +2,9 @@
 
 **仅记录破坏性改动。**
 
+## 0.16.0
+- 修改了 `RerollResponse` protobuf 的格式。
+
 ## 0.15.0
 - 修改了 `ActionRequest` protobuf 的格式。
 
