@@ -59,7 +59,7 @@ class MyPlayer(Player):
         return ActionResponse(chosen_action_index=chosen_index, used_dice=used_dice)
 
     def on_reroll_dice(self, request: RerollDiceRequest) -> RerollDiceResponse:
-        return RerollDiceResponse(reroll_indexes=[])
+        return RerollDiceResponse(dice_to_reroll=[])
 
     def on_switch_hands(self, request: SwitchHandsRequest) -> SwitchHandsResponse:
         return SwitchHandsResponse(removed_hand_ids=[])

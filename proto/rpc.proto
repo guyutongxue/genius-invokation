@@ -46,7 +46,8 @@ message Request {
 }
 
 message RerollDiceResponse {
-  repeated int32 reroll_indexes = 1;
+  reserved 1; // reroll_indexes in previous version
+  repeated int32 dice_to_reroll = 2;
 }
 
 message SwitchHandsResponse {

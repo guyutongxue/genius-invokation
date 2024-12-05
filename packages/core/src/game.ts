@@ -1034,8 +1034,8 @@ export class Game {
   }
 
   private async rpcReroll(who: 0 | 1) {
-    const { rerollIndexes } = await this.rpc(who, "rerollDice", {});
-    return rerollIndexes;
+    const { diceToReroll } = await this.rpc(who, "rerollDice", {});
+    return diceToReroll;
   }
 
   private async rpcSelectCard(who: 0 | 1, candidateDefinitionIds: number[]) {

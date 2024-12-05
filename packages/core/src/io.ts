@@ -106,11 +106,11 @@ export function verifyRpcResponse<M extends RpcMethod>(
     }
     case "rerollDice": {
       if (
-        !("rerollIndexes" in response) ||
-        !Array.isArray(response.rerollIndexes) ||
-        response.rerollIndexes.some((d) => typeof d !== "number")
+        !("diceToReroll" in response) ||
+        !Array.isArray(response.diceToReroll) ||
+        response.diceToReroll.some((d) => typeof d !== "number")
       ) {
-        throw new Error("Invalid response of rerollDice: no rerollIndexes");
+        throw new Error("Invalid response of rerollDice: no diceToReroll");
       }
       break;
     }
@@ -536,8 +536,7 @@ export function exposeAction(action: ActionInfo): Action {
     }
     case "declareEnd": {
       return {
-        declareEnd: {
-        },
+        declareEnd: {},
         requiredCost: [],
         preview: [],
       };

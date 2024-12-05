@@ -220,7 +220,7 @@ class Player implements PlayerIOWithError {
       return { chooseActive: result };
     } else if (request.rerollDice) {
       const result: RerollDiceResponse = {
-        rerollIndexes: [],
+        diceToReroll: [],
       };
       return { rerollDice: result };
     } else if (request.switchHands) {

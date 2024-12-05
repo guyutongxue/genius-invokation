@@ -20,7 +20,7 @@ import { createStore } from "solid-js/store";
 
 export interface RerollViewProps {
   dice: readonly PbDiceType[];
-  onConfirm?: (indexes: number[]) => void;
+  onConfirm?: (dice: PbDiceType[]) => void;
 }
 
 export function RerollView(props: RerollViewProps) {
@@ -69,7 +69,9 @@ export function RerollView(props: RerollViewProps) {
       </ul>
       <button
         class="mt-6 btn btn-green"
-        onClick={() => props.onConfirm?.(chosenIndexes)}
+        onClick={() =>
+          props.onConfirm?.(chosenIndexes.map((i) => props.dice[i]))
+        }
       >
         确定
       </button>

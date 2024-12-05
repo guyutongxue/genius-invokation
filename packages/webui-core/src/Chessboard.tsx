@@ -238,7 +238,8 @@ export function createPlayer(
   const [previewing, setPreviewing] = createSignal(false);
   const [mutations, setMutations] = createSignal<ExposedMutation[]>([]);
   const [giveUp, setGiveUp] = createSignal(false);
-  const [rerolling, waitReroll, notifyRerolled] = createWaitNotify<number[]>();
+  const [rerolling, waitReroll, notifyRerolled] =
+    createWaitNotify<PbDiceType[]>();
   const [handSwitching, waitHandSwitch, notifyHandSwitched] =
     createWaitNotify<number[]>();
   const [cardSelecting, waitCardSelect, notifyCardSelected] =
@@ -281,7 +282,7 @@ export function createPlayer(
       return { removedHandIds: await waitHandSwitch() };
     },
     onRerollDice: async (): Promise<RerollDiceResponse> => {
-      return { rerollIndexes: await waitReroll() };
+      return { diceToReroll: await waitReroll() };
     },
     onSelectCard: async ({
       candidateDefinitionIds,
@@ -471,9 +472,6 @@ export function createPlayer(
         if (
           msg.mutation.filter((mut) => mut.damage || mut.triggered).length > 0
         ) {
-          if (!import.meta.env.DEV) {
-            console.log(msg.mutation);
-          }
           await new Promise<void>((resolve) => setTimeout(resolve, 500));
         }
       });

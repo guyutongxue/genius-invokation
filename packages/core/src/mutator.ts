@@ -9,7 +9,7 @@ import {
 } from "./base/mutation";
 import { EntityState, EntityVariables, stringifyState } from "./base/state";
 import { allEntitiesAtArea, getEntityById, sortDice } from "./utils";
-import { GiTcgCoreInternalError, GiTcgDataError } from "./error";
+import { GiTcgCoreInternalError, GiTcgDataError, GiTcgIoError } from "./error";
 import { EnterEventArg, EventAndRequest, SelectCardInfo } from "./base/skill";
 import {
   EntityArea,
@@ -286,23 +286,27 @@ export class StateMutator {
       throw new GiTcgIoNotProvideError();
     }
     for (let i = 0; i < times; i++) {
-      const dice = this.state.players[who].dice;
-      const rerollIndexes = await howToReroll(who);
-      if (rerollIndexes.length === 0) {
+      const oldDice = [...this.state.players[who].dice];
+      const diceToReroll: readonly number[] = await howToReroll(who);
+      if (diceToReroll.length === 0) {
         return;
       }
-      const controlled: DiceType[] = [];
-      for (let k = 0; k < dice.length; k++) {
-        if (!rerollIndexes.includes(k)) {
-          controlled.push(dice[k]);
+      for (const dice of diceToReroll) {
+        const index = oldDice.indexOf(dice);
+        if (index === -1) {
+          throw new GiTcgIoError(
+            who,
+            `Requested to-be-rerolled dice ${dice} does not exists`,
+          );
         }
+        oldDice.splice(index, 1);
       }
       this.mutate({
         type: "resetDice",
         who,
         value: sortDice(this.state.players[who], [
-          ...controlled,
-          ...this.randomDice(rerollIndexes.length),
+          ...oldDice,
+          ...this.randomDice(diceToReroll.length),
         ]),
       });
       this.notify();
