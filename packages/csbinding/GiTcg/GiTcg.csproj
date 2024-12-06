@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content
+      Include="../../cbinding/install/lib/*.*;../../cbinding/install/bin/*.*"
+    >
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- <Target Name="CopyNativeLibrary" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(NativeLibrary)" DestinationFolder="$(OutDir)" />
+  </Target>
+  <Target Name="CopyNativeLibraryOnPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(NativeLibrary)" DestinationFolder="$(PublishDir)" />
+  </Target> -->
+</Project>
