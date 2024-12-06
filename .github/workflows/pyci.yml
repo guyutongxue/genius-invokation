@@ -19,4 +19,25 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: 12194329386
 
-      - run: ls cbinding
+      - run: |
+          mv cbinding/cbinding-library-Linux-x86_64/include cbinding
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - run: |
+          rm pyproject.toml
+          uv venv
+          uv pip install -r requirements.txt
+          uv run scripts/build_ffi.py
+          mv cbinding/cbinding-library-Linux-x86_64/lib/libgitcg.* gitcg && uv run -m build && rm gitcg/libgitcg.*
+          uv run wheel --remove --platform-tags=manylinux dist/*any.whl
+          mv cbinding/cbinding-library-Windows-x86_64/lib/libgitcg.* gitcg && uv run -m build && rm gitcg/libgitcg.*
+          uv run wheel --remove --platform-tags=windows_x86_64 dist/*any.whl
+          mv cbinding/cbinding-library-macOS-x86_64/lib/libgitcg.* gitcg && uv run -m build && rm gitcg/libgitcg.*
+          uv run wheel --remove --platform-tags=macos_x86_64 dist/*any.whl
+          mv cbinding/cbinding-library-macOS-arm64/lib/libgitcg.* gitcg && uv run -m build && rm gitcg/libgitcg.*
+          uv run wheel --remove --platform-tags=macos_arm_64 dist/*any.whl
+          ls dist
+        working-directory: ./pybinding
