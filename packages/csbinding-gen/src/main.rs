@@ -9,9 +9,6 @@ struct Cli {
     /// Output C# file
     #[arg(short, long)]
     output: String,
-    /// DLL name
-    #[arg(short, long)]
-    dll: String,
 }
 
 fn main() {
@@ -36,8 +33,8 @@ fn main() {
 
     csbindgen::Builder::default()
         .input_bindgen_file(&temp_path)
-        .csharp_dll_name(&cli.dll)
-        .csharp_namespace("gitcg")
+        .csharp_dll_name("gitcg")
+        .csharp_namespace("GiTcg")
         .csharp_class_name("NativeMethods")
         .generate_csharp_file(&cli.output)
         .expect("Unable to generate C# bindings");
