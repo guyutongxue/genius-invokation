@@ -1,7 +1,5 @@
-name: Testing Python CI
-
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   pyci:
