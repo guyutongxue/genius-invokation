@@ -7,8 +7,16 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
+          name: pybinding-source
+          path: pybinding
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 12194329386
+
+      - uses: actions/download-artifact@v4
+        with:
           pattern: cbinding-library-*
           path: cbinding
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: 12194329386
+
       - run: ls cbinding
