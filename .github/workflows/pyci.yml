@@ -20,7 +20,8 @@ jobs:
           run-id: 12194329386
 
       - run: |
-          mv cbinding/cbinding-library-Linux-x86_64/include cbinding
+          mkdir -p cbinding/install
+          mv cbinding/cbinding-library-Linux-x86_64/include cbinding/install
 
       - uses: astral-sh/setup-uv@v4
         with:
