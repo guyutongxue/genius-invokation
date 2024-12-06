@@ -86,7 +86,7 @@ jobs:
           path: packages/cbinding
 
       - name: Setup CMake
-        uses: lukka/get-cmake@latest
+        uses: lukka/get-cmake@v3.31.0
 
       - name: Setup Windows dev command
         if: ${{ runner.os == 'Windows' }}
