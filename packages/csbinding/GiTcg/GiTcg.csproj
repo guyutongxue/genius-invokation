@@ -14,11 +14,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <!-- <Target Name="CopyNativeLibrary" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(NativeLibrary)" DestinationFolder="$(OutDir)" />
-  </Target>
-  <Target Name="CopyNativeLibraryOnPublish" AfterTargets="Publish">
-    <Copy SourceFiles="@(NativeLibrary)" DestinationFolder="$(PublishDir)" />
-  </Target> -->
 </Project>
