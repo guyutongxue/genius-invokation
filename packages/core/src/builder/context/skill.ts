@@ -1263,12 +1263,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
         break;
       case "random":
         for (let i = 0; i < count; i++) {
-          const mut: Mutation = {
-            type: "stepRandom",
-            value: -1,
-          };
-          this.mutate(mut);
-          const index = mut.value % (player.pile.length + 1);
+          const randomValue = this.mutator.stepRandom();
+          const index = randomValue % (player.pile.length + 1);
           this.mutate({
             ...payloads[i],
             who,
@@ -1293,17 +1289,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
         break;
       default: {
         if (strategy.startsWith("topRange")) {
-          const range = Number(strategy.slice(8));
-          if (isNaN(range)) {
+          let range = Number(strategy.slice(8));
+          if (Number.isNaN(range)) {
             throw new GiTcgDataError(`Invalid strategy ${strategy}`);
           }
+          range = Math.min(range, player.pile.length);
           for (let i = 0; i < count; i++) {
-            const mut: Mutation = {
-              type: "stepRandom",
-              value: -1,
-            };
-            this.mutate(mut);
-            const index = mut.value % range;
+            const randomValue = this.mutator.stepRandom();
+            const index = randomValue % range;
             this.mutate({
               ...payloads[i],
               who,
@@ -1311,10 +1304,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
             });
           }
         } else if (strategy.startsWith("topIndex")) {
-          const index = Number(strategy.slice(8));
-          if (isNaN(index)) {
+          let index = Number(strategy.slice(8));
+          if (Number.isNaN(index)) {
             throw new GiTcgDataError(`Invalid strategy ${strategy}`);
           }
+          index = Math.min(index, player.pile.length);
           for (let i = 0; i < count; i++) {
             this.mutate({
               ...payloads[i],
@@ -1516,22 +1510,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
     });
   }
 
-  private getRandomValue() {
-    const mutation: Mutation = {
-      type: "stepRandom",
-      value: -1,
-    };
-    this.mutate(mutation);
-    return mutation.value;
-  }
-
   random<T>(items: readonly T[]): T {
-    return items[this.getRandomValue() % items.length];
+    return items[this.mutator.stepRandom() % items.length];
   }
   private shuffleTail<T>(items: readonly T[], count: number): T[] {
     const itemsCopy = [...items];
     for (let i = itemsCopy.length - 1; i >= itemsCopy.length - count; i--) {
-      const j = this.getRandomValue() % (i + 1);
+      const j = this.mutator.stepRandom() % (i + 1);
       [itemsCopy[i], itemsCopy[j]] = [itemsCopy[j], itemsCopy[i]];
     }
     return itemsCopy;

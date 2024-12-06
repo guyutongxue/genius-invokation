@@ -203,6 +203,15 @@ export class StateMutator {
     return candidate;
   }
 
+  stepRandom(): number {
+    const mut: StepRandomM = {
+      type: "stepRandom",
+      value: 0,
+    };
+    this.mutate(mut);
+    return mut.value;
+  }
+
   async switchHands(who: 0 | 1) {
     if (!this.config.howToSwitchHands) {
       throw new GiTcgIoNotProvideError();
@@ -222,12 +231,8 @@ export class StateMutator {
     const swapInCardIds = swapInCards.map((c) => c.definition.id);
 
     for (const card of swapInCards) {
-      const mutation: Mutation = {
-        type: "stepRandom",
-        value: -1,
-      };
-      this.mutate(mutation);
-      const index = mutation.value % (player().pile.length + 1);
+      const randomValue = this.stepRandom();
+      const index = randomValue % (player().pile.length + 1);
       this.mutate({
         type: "transferCard",
         from: "hands",
@@ -268,14 +273,9 @@ export class StateMutator {
     if (alwaysOmni) {
       return new Array<DiceType>(count).fill(DiceType.Omni);
     }
-    const mut: StepRandomM = {
-      type: "stepRandom",
-      value: 0,
-    };
     const result: DiceType[] = [];
     for (let i = 0; i < count; i++) {
-      this.mutate(mut);
-      result.push((mut.value % 8) + 1);
+      result.push((this.stepRandom() % 8) + 1);
     }
     return result;
   }
