@@ -62,8 +62,8 @@ int gitcg_state_createparam_new(gitcg_state_createparam_t* param) try {
 
 int gitcg_state_createparam_free(gitcg_state_createparam_t param) try {
   auto create_param = reinterpret_cast<gitcg::StateCreateParam*>(param);
-  auto& env = gitcg::Environment::get_instance();
-  env.free_object(create_param);
+  auto env = create_param->get_environment();
+  env->free_object(create_param);
   return 0;
 } catch (const std::exception& e) {
   PRINT_ERROR(e.what());
@@ -114,8 +114,8 @@ int gitcg_state_new(gitcg_state_createparam_t param, gitcg_state_t* state) try {
 
 int gitcg_state_free(gitcg_state_t state) try {
   auto state_obj = reinterpret_cast<gitcg::State*>(state);
-  auto& env = gitcg::Environment::get_instance();
-  env.free_object(state_obj);
+  auto env = state_obj->get_environment();
+  env->free_object(state_obj);
   return 0;
 } catch (const std::exception& e) {
   PRINT_ERROR(e.what());
@@ -162,8 +162,8 @@ int gitcg_state_get_dice(gitcg_state_t state, int who, int* dice) try {
 
 int gitcg_entity_free(gitcg_entity_t entity) try {
   auto entity_obj = reinterpret_cast<gitcg::Entity*>(entity);
-  auto& env = gitcg::Environment::get_instance();
-  env.free_object(entity_obj);
+  auto env = entity_obj->get_environment();
+  env->free_object(entity_obj);
   return 0;
 } catch (const std::exception& e) {
   PRINT_ERROR(e.what());
@@ -229,8 +229,8 @@ int gitcg_game_new(gitcg_state_t state, gitcg_game_t* game) try {
 
 int gitcg_game_free(gitcg_game_t game) try {
   auto game_obj = reinterpret_cast<gitcg::Game*>(game);
-  auto& env = gitcg::Environment::get_instance();
-  env.free_object(game_obj);
+  auto env = game_obj->get_environment();
+  env->free_object(game_obj);
   return 0;
 } catch (const std::exception& e) {
   PRINT_ERROR(e.what());

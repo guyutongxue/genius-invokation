@@ -49,6 +49,10 @@ public:
   Object& operator=(const Object&) = delete;
 
   v8::Local<v8::Object> get_instance() const;
+
+  Environment* get_environment() const {
+    return env;
+  }
 };
 
 }
