@@ -216,6 +216,7 @@ jobs:
 
       - name: Re-tag wheel
         working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
+        shell: bash
         run: |
           wheel tags --platform-tag=${{ matrix.platform }}_${{ matrix.arch }} dist/*.whl
 
