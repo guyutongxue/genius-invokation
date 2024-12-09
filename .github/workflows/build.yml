@@ -90,7 +90,7 @@ jobs:
       - run: |
           cp -r cbinding/cbinding-library-Linux-x86_64/include cbinding/include
           pushd pybinding
-          uv run scripts/build.py
+          uv run scripts/build_ffi.py
           ./scripts/build.sh ${{ runner.os }}-${{ matrix.arch }}
           popd
       - name: Upload Python binding artifact
