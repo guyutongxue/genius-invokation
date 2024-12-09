@@ -217,7 +217,7 @@ jobs:
       - name: Re-tag wheel
         working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
         run: |
-          wheel tags --platform-tag={{ matrix.platform }}_{{ matrix.arch }} dist/*.whl
+          wheel tags --platform-tag=${{ matrix.platform }}_${{ matrix.arch }} dist/*.whl
 
       - name: Upload Python binding artifact
         uses: actions/upload-artifact@v4
