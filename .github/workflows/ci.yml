@@ -161,16 +161,16 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
         include:
           - os: windows-latest
-            platform: windows
+            platform: win_amd64
             arch: x86_64
           - os: ubuntu-latest
-            platform: manylinux_2_34
+            platform: manylinux_2_34_x86_64
             arch: x86_64
           - os: macos-latest
-            platform: macosx_15_0
+            platform: macosx_15_0_arm64
             arch: arm64
           - os: macos-13
-            platform: macosx_13_0
+            platform: macosx_13_0_x86_64
             arch: x86_64
 
     steps:
@@ -217,11 +217,8 @@ jobs:
       - name: Re-tag wheel
         working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
         shell: bash
-        run: >
-          wheel tags
-          dist/*.whl
-          --remove
-          --platform-tag=${{ matrix.platform }}_${{ matrix.arch }}
+        run: |
+          wheel tags dist/*.whl --remove --platform-tag=${{ matrix.platform }}
 
       - name: Upload Python binding artifact
         uses: actions/upload-artifact@v4
@@ -265,7 +262,6 @@ jobs:
 
   pypi-publish:
     name: "Upload release to PyPI"
-    # if: 0
     # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: py-build
     runs-on: ubuntu-latest
@@ -283,12 +279,6 @@ jobs:
           pattern: pybinding-dist-*
           path: dist
           merge-multiple: true
-
-      - name: Upload Merged Python binding artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pybinding
-          path: dist
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
