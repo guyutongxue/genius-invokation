@@ -217,8 +217,11 @@ jobs:
       - name: Re-tag wheel
         working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
         shell: bash
-        run: |
-          wheel tags --platform-tag=${{ matrix.platform }}_${{ matrix.arch }} dist/*.whl
+        run: >
+          wheel tags
+          dist/*.whl
+          --remove
+          --platform-tag=${{ matrix.platform }}_${{ matrix.arch }}
 
       - name: Upload Python binding artifact
         uses: actions/upload-artifact@v4
@@ -287,5 +290,5 @@ jobs:
           name: pybinding
           path: dist
 
-      # - name: Publish package distributions to PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
