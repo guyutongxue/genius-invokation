@@ -44,7 +44,6 @@ jobs:
   js-standalone-deploy:
     name: "Standalone frontend deployment"
     needs: js-build
-
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -69,9 +68,9 @@ jobs:
           --token=${{ secrets.VERCEL_TOKEN }}
 
   js-publish:
-    needs: js-build
     name: "Publish to npmjs"
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs: js-build
     runs-on: ubuntu-latest
 
     steps:
@@ -256,7 +255,6 @@ jobs:
   py-docs-deploy:
     name: "Python docs deployment"
     needs: py-build
-
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
