@@ -1,0 +1,103 @@
+name: 📦 Build Genius Invokation
+run-name: ${{ github.actor }} is building Genius Invokation
+
+on:
+  push:
+    branches: [xqm32/pyci]
+
+jobs:
+  Build-Core:
+    name: "Build Core"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: |
+          bun install
+          bun run build:prod
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cbinding-source
+          path: packages/cbinding
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-source
+          path: packages/pybinding
+
+  Build-C:
+    name: "Build C"
+    needs: Build-Core
+    runs-on: ${{ martrix.os }}
+    env:
+      SOURCE_DIR: ${{ github.workspace }}/packages/cbinding
+      BUILD_DIR: ${{ github.workspace }}/packages/cbinding/build
+      INSTALL_DIR: ${{ github.workspace }}/packages/cbinding/install
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            build_type: Release
+            arch: x86_64
+          - os: windows-2022
+            build_type: Release
+            arch: x86_64
+          - os: macos-15
+            build_type: Release
+            arch: x86_64
+          - os: macos-15
+            build_type: Release
+            arch: arm64
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: cbinding-source
+      - uses: lukka/get-cmake@v3.31.0
+      - if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/packages/cbinding/build
+          key: ${{ runner.os }}-${{ matrix.arch }}-build
+      - run: >
+          cmake -B ${BUILD_DIR}
+          -GNinja
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
+          -S ${SOURCE_DIR}
+      - run: >
+          cmake --install ${INSTALL_DIR}
+          --config ${{ matrix.build_type }}
+          --prefix ${INSTALL_DIR}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
+          path: ${INSTALL_DIR}
+
+  Build-Python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pybinding-source
+          path: pybinding
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cbinding-library-*
+          path: cbinding
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - run: |
+          cp -r cbinding/cbinding-library-Linux-x86_64/include cbinding/include
+          pushd pybinding
+          uv run scripts/build.py
+          ./scripts/build.sh ${{ runner.os }}-${{ matrix.arch }}
+          popd
+      - name: Upload Python binding artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-dist
+          path: pybinding/dist/*.whl
