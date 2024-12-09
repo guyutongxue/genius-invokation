@@ -157,16 +157,16 @@ export const SuperSaturatedSyringing = skill(12133)
 export const DetailedDiagnosisThoroughTreatment01 = skill(12134)
   .type("passive")
   .variable("hasBondOfLife", 0)
-  .on("beforeHealed", (c, e) => c.self.hasStatus(BondOfLife))
+  .on("dispose", (c, e) => e.entity.definition.id === BondOfLife)
   .listenToPlayer()
-  .setVariable("hasBondOfLife", 1)
-  .on("healed", (c) => c.getVariable("hasBondOfLife"))
-  .listenToPlayer()
-  .setVariable("hasBondOfLife", 0)
   .do((c, e) => {
-    const appended = c.of(e.target).hasStatus(DetailedDiagnosisThoroughTreatmentStatus)?.variables.value ?? 0;
+    if (e.area.type !== "characters") {
+      return; // unreachable
+    }
+    const target = c.of<"character">(e.area.characterId);
+    const appended = target.hasStatus(DetailedDiagnosisThoroughTreatmentStatus)?.variables.value ?? 0;
     if (appended < 3) {
-      c.characterStatus(DetailedDiagnosisThoroughTreatmentStatus, e.target);
+      c.characterStatus(DetailedDiagnosisThoroughTreatmentStatus, target.state);
     }
   })
   .done();

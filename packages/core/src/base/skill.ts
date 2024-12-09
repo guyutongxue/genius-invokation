@@ -881,13 +881,15 @@ export const GenericModifyDamageEventArg = mixins(ModifyDamageEventArgBase, [
 ]);
 
 export class EntityEventArg extends EventArg {
+  public readonly area: EntityArea;
   public readonly who: 0 | 1;
   constructor(
     state: GameState,
     public readonly entity: AnyState,
   ) {
     super(state);
-    this.who = getEntityArea(state, entity.id).who;
+    this.area = getEntityArea(state, entity.id);
+    this.who = this.area.who;
   }
   toString(): string {
     return stringifyState(this.entity);
