@@ -38,9 +38,6 @@ jobs:
           - os: ubuntu-22.04
             build_type: Release
             arch: x86_64
-          - os: windows-2022
-            build_type: Release
-            arch: x86_64
           - os: macos-15
             build_type: Release
             arch: x86_64
