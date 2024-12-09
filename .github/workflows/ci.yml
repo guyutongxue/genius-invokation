@@ -262,7 +262,7 @@ jobs:
 
   pypi-publish:
     name: "Upload release to PyPI"
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: py-build
     runs-on: ubuntu-latest
 
