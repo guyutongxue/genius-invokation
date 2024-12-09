@@ -23,6 +23,12 @@ jobs:
           bun i
           bun run build --prod
 
+      - name: Upload artifact for standalone frontend
+        uses: actions/upload-artifact@v4
+        with:
+          name: standalone-frontend
+          path: packages/standalone/dist
+
       - name: Upload artifact for C binding
         uses: actions/upload-artifact@v4
         with:
@@ -35,7 +41,34 @@ jobs:
           name: pybinding-source
           path: packages/pybinding
 
-  npm-publish:
+  js-standalone-deploy:
+    name: "Standalone frontend deployment"
+    needs: js-build
+
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STANDALONE }}
+
+    steps:
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Get standalone frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: standalone-frontend
+          path: ${{ github.workspace }}
+
+      - name: Vercel deploy
+        run: >
+          bunx vercel deploy
+          ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          --token=${{ secrets.VERCEL_TOKEN }}
+
+  js-publish:
     needs: js-build
     name: "Publish to npmjs"
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
@@ -136,19 +169,6 @@ jobs:
     #   # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
     #   run: ctest --build-config ${{ matrix.build_type }}
 
-  # c-build-manylinux:
-  #   name: "C Binding Build (Manylinux)"
-  #   needs: js-build
-  #   runs-on: ubuntu-latest
-  #   container: quay.io/pypa/manylinux2014_x86_64
-
-  #   strategy:
-  #     matrix:
-  #       build_type: [Release]
-  #       arch: [x86_64]
-
-  #   steps: *C_BUILD_STEPS
-
   py-build:
     name: "Python Binding Build"
     needs: c-build
@@ -223,7 +243,7 @@ jobs:
       - name: Upload Python binding artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pybinding-dist-${{ matrix.platform }}_${{ matrix.arch }}
+          name: pybinding-dist-${{ matrix.platform }}
           path: ${{ steps.strings.outputs.pybinding-cwd }}/dist/*.whl
 
       - name: Upload Python docs
@@ -239,7 +259,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID_PYBINDING }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PYBINDING }}
 
     steps:
@@ -260,8 +280,8 @@ jobs:
           ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
           --token=${{ secrets.VERCEL_TOKEN }}
 
-  pypi-publish:
-    name: "Upload release to PyPI"
+  py-publish:
+    name: "Publish to PyPI"
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: py-build
     runs-on: ubuntu-latest
