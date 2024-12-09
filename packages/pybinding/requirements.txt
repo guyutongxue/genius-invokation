@@ -4,7 +4,9 @@ Jinja2==3.1.4
 MarkupSafe==3.0.2
 packaging==24.2
 pdoc==15.0.0
+pip==24.3.1
 protobuf==5.29.0
 pycparser==2.22
 Pygments==2.18.0
 pyproject_hooks==1.2.0
+wheel==0.45.1

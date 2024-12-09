@@ -26,3 +26,5 @@ game.start()
 while game.is_running():
     game.step()
 ```
+
+Here is [a generated API documentation](https://pybinding.gi-tcg.guyutongxue.site).
