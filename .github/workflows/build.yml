@@ -29,9 +29,9 @@ jobs:
     needs: Build-Core
     runs-on: ${{ matrix.os }}
     env:
-      SOURCE_DIR: ${{ github.workspace }}/packages/cbinding
-      BUILD_DIR: ${{ github.workspace }}/packages/cbinding/build
-      INSTALL_DIR: ${{ github.workspace }}/packages/cbinding/install
+      SOURCE_DIR: ${{ github.workspace }}/cbinding
+      BUILD_DIR: ${{ github.workspace }}/cbinding/build
+      INSTALL_DIR: ${{ github.workspace }}/cbinding/install
     strategy:
       matrix:
         include:
@@ -51,12 +51,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: cbinding-source
+          path: cbinding
       - uses: lukka/get-cmake@v3.31.0
       - if: ${{ runner.os == 'Windows' }}
         uses: ilammy/msvc-dev-cmd@v1
       - uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/packages/cbinding/build
+          path: cbinding/build
           key: ${{ runner.os }}-${{ matrix.arch }}-build
       - run: >
           cmake -B ${BUILD_DIR}
