@@ -28,21 +28,17 @@ jobs:
   Build-C:
     needs: Build-Core
     runs-on: ${{ matrix.os }}
-    env:
-      SOURCE_DIR: ${{ github.workspace }}/cbinding
-      BUILD_DIR: ${{ github.workspace }}/cbinding/build
-      INSTALL_DIR: ${{ github.workspace }}/cbinding/install
     strategy:
       matrix:
+        build_type: [Release]
         include:
           - os: ubuntu-22.04
-            build_type: Release
+            arch: x86_64
+          - os: windows-2022
             arch: x86_64
           - os: macos-15
-            build_type: Release
             arch: x86_64
           - os: macos-15
-            build_type: Release
             arch: arm64
     steps:
       - uses: actions/download-artifact@v4
@@ -57,20 +53,20 @@ jobs:
           path: cbinding/build
           key: ${{ runner.os }}-${{ matrix.arch }}-build
       - run: >
-          cmake -B ${BUILD_DIR}
+          cmake -B cbinding/build
           -GNinja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
           -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
-          -S ${SOURCE_DIR}
+          -S cbinding
       - run: >
-          cmake --install ${INSTALL_DIR}
+          cmake --install cbinding/build
           --config ${{ matrix.build_type }}
-          --prefix ${INSTALL_DIR}
+          --prefix cbinding/install
       - uses: actions/upload-artifact@v4
         with:
           name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
-          path: ${INSTALL_DIR}
+          path: cbinding/install
 
   Build-Python:
     needs: Build-C
