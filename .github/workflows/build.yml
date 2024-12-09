@@ -7,7 +7,6 @@ on:
 
 jobs:
   Build-Core:
-    name: "Build Core"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +26,6 @@ jobs:
           path: packages/pybinding
 
   Build-C:
-    name: "Build C"
     needs: Build-Core
     runs-on: ${{ matrix.os }}
     env:
@@ -77,6 +75,7 @@ jobs:
           path: ${INSTALL_DIR}
 
   Build-Python:
+    needs: Build-C
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
