@@ -30,15 +30,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build_type: [Release]
         include:
           - os: ubuntu-22.04
+            build_type: Release
             arch: x86_64
           - os: windows-2022
+            build_type: Release
             arch: x86_64
           - os: macos-15
+            build_type: Release
             arch: x86_64
           - os: macos-15
+            build_type: Release
             arch: arm64
     steps:
       - uses: actions/download-artifact@v4
@@ -59,6 +62,7 @@ jobs:
           -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
           -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
           -S cbinding
+      - run: cmake --build cbinding/build --config ${{ matrix.build_type }}
       - run: >
           cmake --install cbinding/build
           --config ${{ matrix.build_type }}
