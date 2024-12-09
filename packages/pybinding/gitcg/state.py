@@ -11,7 +11,7 @@ class State:
     A readonly state of a GI-TCG game. You can execute `gitcg.State.query` on it.
     """
 
-    _state_handle: FFI.CData
+    _state_handle: FFI.CData = ll.NULL
 
     def __init__(
         self,

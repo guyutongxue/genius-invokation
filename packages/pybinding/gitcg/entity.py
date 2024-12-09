@@ -13,7 +13,7 @@ class Entity:
         - For characters, some common variables are `health`, `maxHealth`, `energy`, `maxEnergy`, `aura` and `alive`.
         - For other entities, some common variables are `usage`, `usagePerRound` and `shield`.
     """
-    _entity_handle: FFI.CData
+    _entity_handle: FFI.CData = ll.NULL
 
     def __init__(self, handle: FFI.CData):
         """

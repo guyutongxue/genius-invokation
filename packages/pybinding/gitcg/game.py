@@ -60,7 +60,7 @@ class Game:
     ```
     """
 
-    _game_handle: FFI.CData
+    _game_handle: FFI.CData = ll.NULL
     _players: list[Player | None] = [None, None]
     _player_callbacks: list[_GameCallback | None] = [None, None]
     _player_callback_handles: list[FFI.CData | None] = [None, None]

@@ -25,6 +25,8 @@ for lib in _LIB_PATH:
 if C is None:
     raise ImportError("Cannot find libgitcg library file")
 
+NULL = ffi.NULL
+
 SET_DECK_CHARACTERS: int = C.GITCG_SET_DECK_CHARACTERS
 SET_DECK_CARDS: int = C.GITCG_SET_DECK_CARDS
 

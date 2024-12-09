@@ -21,7 +21,7 @@ class CreateParam:
     """
     A helper class to create a initial Game State of GI-TCG.
     """
-    _createparam_handle: FFI.CData
+    _createparam_handle: FFI.CData = ll.NULL
 
     def __init__(
         self,
