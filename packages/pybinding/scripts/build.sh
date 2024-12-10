@@ -24,7 +24,7 @@ macOS-arm64)
     ;;
 esac
 
-echo cp $LIB src/gitcg
-echo uv build --wheel
-echo rm src/gitcg $(basename $LIB)
-echo uv run wheel tags --remove --platform-tag=${TAG} dist/*any.whl
+cp $LIB src/gitcg
+uv build --wheel
+rm src/gitcg $(basename $LIB)
+uv run wheel tags --remove --platform-tag=${TAG} dist/*any.whl
