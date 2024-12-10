@@ -1,7 +1,7 @@
 [project]
 name = "gitcg"
 version = "0.16.0"
-description = "Add your description here"
+description = "Genius Invokation TCG (Python binding)"
 readme = "README.md"
 authors = [{ name = "guyutongxue", email = "guyutongxue@163.com" }]
 requires-python = ">=3.13"

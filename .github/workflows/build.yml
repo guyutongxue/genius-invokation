@@ -92,12 +92,40 @@ jobs:
           pushd pybinding
           uv run scripts/build_ffi.py
           bash -ex scripts/build.sh Linux-x86_64
+          uv run pdoc gitcg !gitcg.proto -o _docs
           bash -ex scripts/build.sh Windows-x86_64
           bash -ex scripts/build.sh macOS-x86_64
           bash -ex scripts/build.sh macOS-arm64
           popd
-      - name: Upload Python binding artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: pybinding-dist
           path: pybinding/dist/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-docs
+          path: pybinding/_docs
+      - if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          pushd pybinding
+          uv publish
+          popd
+
+  Deploy-Docs-Python:
+    needs: Build-Python
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PYBINDING }}
+    steps:
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/download-artifact@v4
+        with:
+          name: pybinding-docs
+          path: ${{ github.workspace }}
+      - run: >
+          bunx vercel deploy
+          ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          --token=${{ secrets.VERCEL_TOKEN }}
