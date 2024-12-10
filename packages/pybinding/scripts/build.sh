@@ -11,7 +11,7 @@ Linux-x86_64)
     LIB=../cbinding/cbinding-library-${OS}/lib/libgitcg.so
     ;;
 Windows-x86_64)
-    TAG=windows_x86_64
+    TAG=win_amd64
     LIB=../cbinding/cbinding-library-${OS}/bin/gitcg.dll
     ;;
 macOS-x86_64)
