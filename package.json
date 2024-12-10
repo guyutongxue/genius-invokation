@@ -23,5 +23,8 @@
   },
   "patchedDependencies": {
     "ohm-js@17.1.0": "patches/ohm-js@17.1.0.patch"
+  },
+  "dependencies": {
+    "caniuse-lite": "^1.0.30001687"
   }
 }
