@@ -91,7 +91,7 @@ jobs:
           cp -r cbinding/cbinding-library-Linux-x86_64 cbinding/install
           pushd pybinding
           uv run scripts/build_ffi.py
-          bash -e scripts/build.sh ${{ runner.os }}-${{ matrix.arch }}
+          bash -ex scripts/build.sh ${{ runner.os }}-${{ matrix.arch }}
           popd
       - name: Upload Python binding artifact
         uses: actions/upload-artifact@v4
