@@ -27,4 +27,4 @@ esac
 cp $LIB src/gitcg
 uv build --wheel
 rm src/gitcg/$(basename $LIB)
-uv run wheel tags --remove --platform-tag=${TAG} dist/*any.whl
+uv tool run wheel tags --remove --platform-tag=${TAG} dist/*any.whl
