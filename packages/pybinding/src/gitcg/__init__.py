@@ -1,5 +1,5 @@
 """
-.. include:: ../README.md
+.. include:: ../../README.md
 """
 
 def makeprotobuf_work():
