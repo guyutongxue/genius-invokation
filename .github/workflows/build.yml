@@ -107,12 +107,12 @@ jobs:
         run: >
           cmake
           --build build
+          --parallel 2
           --config ${{ matrix.build_type }}
       - name: CMake Install
         run: >
           cmake
           --install build
-          --parallel 2
           --config ${{ matrix.build_type }}
           --prefix install
       - name: Upload C binding artifact
