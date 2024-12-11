@@ -188,7 +188,7 @@ jobs:
   Publish-Python:
     name: Publish to PyPI
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-    needs: py-build
+    needs: Build-Python
     runs-on: ubuntu-latest
     environment:
       name: pypi
