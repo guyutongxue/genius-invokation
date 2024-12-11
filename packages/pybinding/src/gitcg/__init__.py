@@ -2,18 +2,6 @@
 .. include:: ../../README.md
 """
 
-def makeprotobuf_work():
-    """
-    F**k you, Google
-    See https://github.com/protocolbuffers/protobuf/issues/3430
-    """
-    import sys
-    import os
-    dirname = os.path.abspath(os.path.dirname(__file__))
-    sys.path.append(os.path.join(dirname, "proto"))
-
-makeprotobuf_work()
-
 from . import low_level
 from .env import thread_initialize, thread_cleanup
 from .game import Game, GameStatus
