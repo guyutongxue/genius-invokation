@@ -1,0 +1,206 @@
+on:
+  push:
+    branches: ["xqm32/pyci"]
+
+jobs:
+  Build-Core:
+    name: Build TypeScript Core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Run Build
+        run: |
+          bun install
+          bun run build:prod
+      - uses: actions/upload-artifact@v4
+        with:
+          name: standalone-frontend
+          path: packages/standalone/dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cbinding-source
+          path: packages/cbinding
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-source
+          path: packages/pybinding
+
+  Deploy-Frontend-Core:
+    name: Deploy Standalone Frontend
+    needs: Build-Core
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STANDALONE }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-frontend
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Deploy to Vercel
+        run: >
+          bunx vercel deploy
+          ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          --token=${{ secrets.VERCEL_TOKEN }}
+
+  Publish-Core:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install deps & Publish
+        env:
+          PUBLISH: 1
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          bun install
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          bun scripts/publish.ts
+
+  Build-C:
+    name: Build C Binding
+    needs: Build-Core
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-15]
+        build_type: [Release]
+        arch: [x86_64, arm64]
+        exclude:
+          - os: ubuntu-22.04
+            arch: arm64
+          - os: windows-2022
+            arch: arm64
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: cbinding-source
+      - uses: lukka/get-cmake@v3.31.0
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ runner.os == 'Windows' }}
+      - uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-${{ matrix.arch }}-build
+      - name: Configure CMake
+        run: >
+          cmake
+          -B build
+          -GNinja
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
+      - name: CMake Build
+        run: >
+          cmake
+          --build build
+          --config ${{ matrix.build_type }}
+      - name: CMake Install
+        run: >
+          cmake
+          --install build
+          --config ${{ matrix.build_type }}
+          --prefix install
+      - name: Upload C binding artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
+          path: install
+
+  Build-Python:
+    name: Build Python Binding
+    needs: Build-C
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM_TAG: ${{ matrix.tag }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Windows-x86_64
+            tag: win_amd64
+          - platform: Linux-x86_64
+            tag: manylinux_2_34_x86_64
+          - platform: macOS-arm64
+            tag: macosx_15_0_arm64
+          - platform: macOS-x86_64
+            tag: macosx_13_0_x86_64
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pybinding-source
+          path: ${{ github.workspace }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-${{ matrix.platform }}
+          path: cbinding
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - name: Build Python wheel
+        run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pybinding-dist-${{ matrix.tag }}
+          path: dist/*.whl
+      - name: Build Python docs
+        run: uv run pdoc gitcg '!gitcg.proto' -o docs
+        if: ${{ startsWith(matrix.platform, 'Linux') }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ startsWith(matrix.platform, 'Linux') }}
+        with:
+          name: pybinding-docs
+          path: docs
+
+  Deploy-Docs-Python:
+    name: Deploy Python Docs
+    needs: Build-Python
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PYBINDING }}
+    steps:
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Get pybinding docs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pybinding-docs
+          path: ${{ github.workspace }}
+      - name: Vercel deploy
+        run: >
+          bunx vercel deploy
+          ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          --token=${{ secrets.VERCEL_TOKEN }}
+
+  Publish-Python:
+    name: Publish to PyPI
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs: py-build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/gitcg
+    permissions:
+      id-token: write
+    steps:
+      - name: Download Python binding artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pybinding-dist-*
+          path: dist
+          merge-multiple: true
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
