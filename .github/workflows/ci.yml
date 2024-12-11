@@ -171,86 +171,60 @@ jobs:
   py-build:
     name: "Python Binding Build"
     needs: c-build
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM_TAG: ${{ matrix.tag }}
 
     strategy:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
         include:
-          - os: windows-latest
-            platform: win_amd64
-            arch: x86_64
-          - os: ubuntu-latest
-            platform: manylinux_2_34_x86_64
-            arch: x86_64
-          - os: macos-latest
-            platform: macosx_15_0_arm64
-            arch: arm64
-          - os: macos-13
-            platform: macosx_13_0_x86_64
-            arch: x86_64
+          - platform: Windows-x86_64
+            tag: win_amd64
+          - platform: Linux-x86_64
+            tag: manylinux_2_34_x86_64
+          - platform: macOS-arm64
+            tag: macosx_15_0_arm64
+          - platform: macOS-x86_64
+            tag: macosx_13_0_x86_64
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Bun
-        # as a task runner
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Get generated source for Python Binding
         uses: actions/download-artifact@v4
         with:
           name: pybinding-source
-          path: packages/pybinding
-
-      - name: Set reusable strings
-        id: strings
-        shell: bash
-        run: |
-          echo "cbinding-install-dir=${{ github.workspace }}/packages/cbinding/install" >> "$GITHUB_OUTPUT"
-          echo "pybinding-cwd=${{ github.workspace }}/packages/pybinding" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Pip install
-        working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
-        run: pip install -r requirements.txt
+          path: ${{ github.workspace }}
 
       - name: Download artifact from C binding
         uses: actions/download-artifact@v4
         with:
-          name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
-          path: ${{ steps.strings.outputs.cbinding-install-dir }}
+          name: cbinding-library-${{ matrix.platform }}
+          path: cbinding
 
-      - name: Build python wheel and docs
-        working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
-        run: bun run build
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
 
-      - name: Re-tag wheel
-        working-directory: ${{ steps.strings.outputs.pybinding-cwd }}
-        shell: bash
-        run: |
-          wheel tags dist/*.whl --remove --platform-tag=${{ matrix.platform }}
+      - name: Build Python wheel
+        run: uv build
 
       - name: Upload Python binding artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pybinding-dist-${{ matrix.platform }}
-          path: ${{ steps.strings.outputs.pybinding-cwd }}/dist/*.whl
+          name: pybinding-dist-${{ matrix.tag }}
+          path: dist/*.whl
+
+      - name: Build Python docs
+        if: ${{ startsWith(matrix.platform, 'Linux') }}
+        run: uv run pdoc gitcg '!gitcg.proto' -o docs
 
       - name: Upload Python docs
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ startsWith(matrix.platform, 'Linux') }}
         uses: actions/upload-artifact@v4
         with:
           name: pybinding-docs
-          path: ${{ steps.strings.outputs.pybinding-cwd }}/_docs
+          path: docs
 
   py-docs-deploy:
     name: "Python docs deployment"

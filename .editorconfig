@@ -6,3 +6,6 @@ end_of_line = lf
 indent_style = space
 indent_size = 2
 insert_final_newline = true
+
+[*.py]
+indent_size = 4

@@ -1,4 +1,33 @@
+[project]
+name = "gitcg"
+version = "0.16.1"
+description = "Genius Invokation TCG (Python binding)"
+readme = "README.md"
+authors = [{ name = "guyutongxue", email = "guyutongxue@163.com" }]
+requires-python = ">=3.11"
+dependencies = [
+  "cffi>=1.17.1",
+  "protobuf>=5.29.1",
+]
+
+[dependency-groups]
+dev = [
+  "pdoc>=15.0.0",
+]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "cffi"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+artifacts = [
+  "*.so",
+  "*.dll",
+  "*.dylib",
+]
+
+[tool.hatch.build.targets.sdist.hooks.custom]
+path = "scripts/sdist_hook.py"
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "scripts/wheel_hook.py"
