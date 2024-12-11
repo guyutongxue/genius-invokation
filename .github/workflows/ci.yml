@@ -217,7 +217,7 @@ jobs:
 
       - name: Build Python docs
         if: ${{ startsWith(matrix.platform, 'Linux') }}
-        run: uvx --with dist/*.whl pdoc gitcg !gitcg.proto -o docs
+        run: uv run pdoc gitcg '!gitcg.proto' -o docs
 
       - name: Upload Python docs
         if: ${{ startsWith(matrix.platform, 'Linux') }}
