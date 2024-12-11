@@ -1,3 +1,6 @@
+name: 📦 Build Genius Invokation
+run-name: ${{ github.actor }} is building Genius Invokation
+
 on:
   push:
     branches: ["xqm32/pyci"]
@@ -96,7 +99,8 @@ jobs:
         run: >
           cmake
           -B build
-          -GNinja
+          -G Ninja
+          --parallel 2
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
           -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
