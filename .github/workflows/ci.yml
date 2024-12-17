@@ -1,3 +1,6 @@
+name: 📦 Build Genius Invokation
+run-name: ${{ github.actor }} is building Genius Invokation
+
 on:
   push:
     branches: ["main"]
@@ -6,98 +9,76 @@ on:
     branches: ["main"]
 
 jobs:
-  js-build:
-    name: "Core build"
+  Build-Core:
+    name: Build TypeScript Core
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - name: Bun run build
+      - name: Run Build
         run: |
-          bun i
-          bun run build --prod
-
-      - name: Upload artifact for standalone frontend
-        uses: actions/upload-artifact@v4
+          bun install
+          bun run build:prod
+      - uses: actions/upload-artifact@v4
         with:
           name: standalone-frontend
           path: packages/standalone/dist
-
-      - name: Upload artifact for C binding
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: cbinding-source
           path: packages/cbinding
-
-      - name: Upload artifact for Python binding
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: pybinding-source
           path: packages/pybinding
 
-  js-standalone-deploy:
-    name: "Standalone frontend deployment"
-    needs: js-build
+  Deploy-Frontend:
+    name: Deploy Standalone Frontend
+    needs: Build-Core
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STANDALONE }}
-
     steps:
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Get standalone frontend artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: standalone-frontend
-          path: ${{ github.workspace }}
-
-      - name: Vercel deploy
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Deploy to Vercel
         run: >
           bunx vercel deploy
           ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
           --token=${{ secrets.VERCEL_TOKEN }}
 
-  js-publish:
-    name: "Publish to npmjs"
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-    needs: js-build
+  Publish-Core:
+    name: Publish to npm (Tag Push)
+    needs: Build-Core
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: Install deps & Publish
         env:
           PUBLISH: 1
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          bun i
+          bun install
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           bun scripts/publish.ts
 
-  c-build:
-    name: "C Binding Build"
-    needs: js-build
+  Build-C:
+    name: Build C Binding
+    needs: Build-Core
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
-
       matrix:
         os: [ubuntu-22.04, windows-2022, macos-15]
         build_type: [Release]
@@ -107,77 +88,51 @@ jobs:
             arch: arm64
           - os: windows-2022
             arch: arm64
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Get generated source for C binding
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: cbinding-source
-          path: packages/cbinding
-
-      - name: Setup CMake
-        uses: lukka/get-cmake@v3.31.0
-
-      - name: Setup Windows dev command
+      - uses: lukka/get-cmake@v3.31.0
+      - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Set reusable strings
-        id: strings
-        shell: bash
-        run: |
-          echo "source-dir=${{ github.workspace }}/packages/cbinding" >> "$GITHUB_OUTPUT"
-          echo "build-dir=${{ github.workspace }}/packages/cbinding/build" >> "$GITHUB_OUTPUT"
-          echo "install-dir=${{ github.workspace }}/packages/cbinding/install" >> "$GITHUB_OUTPUT"
-
-      - name: Setup cache
-        id: cache
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
-          path: ${{ steps.strings.outputs.build-dir }}
+          path: build
           key: ${{ runner.os }}-${{ matrix.arch }}-build
-
-      - name: Configure CMake
+          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-build
+      - name: Configure C Binding
         run: >
-          cmake -B ${{ steps.strings.outputs.build-dir }}
-          -GNinja
+          cmake
+          -B build
+          -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_APPLE_SILICON_PROCESSOR=${{ matrix.arch }}
           -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
-          -S ${{ steps.strings.outputs.source-dir }}
-
-      - name: CMake Build
-        run: cmake --build ${{ steps.strings.outputs.build-dir }} --config ${{ matrix.build_type }}
-
-      - name: CMake Install
+      - name: Build C Binding
         run: >
-          cmake --install ${{ steps.strings.outputs.build-dir }}
+          cmake
+          --build build
           --config ${{ matrix.build_type }}
-          --prefix ${{ steps.strings.outputs.install-dir }}
-
+      - name: Install C Binding
+        run: >
+          cmake
+          --install build
+          --prefix install
+          --config ${{ matrix.build_type }}
       - name: Upload C binding artifact
         uses: actions/upload-artifact@v4
         with:
           name: cbinding-library-${{ runner.os }}-${{ matrix.arch }}
-          path: ${{ steps.strings.outputs.install-dir }}
+          path: install
 
-    # - name: Test
-    #   working-directory: ${{ steps.strings.outputs.build-dir }}
-    #   # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-    #   run: ctest --build-config ${{ matrix.build_type }}
-
-  py-build:
-    name: "Python Binding Build"
-    needs: c-build
+  Build-Python:
+    name: Build Python Binding
+    needs: Build-C
     runs-on: ubuntu-latest
     env:
       PLATFORM_TAG: ${{ matrix.tag }}
-
     strategy:
       fail-fast: false
-
       matrix:
         include:
           - platform: Windows-x86_64
@@ -188,82 +143,66 @@ jobs:
             tag: macosx_15_0_arm64
           - platform: macOS-x86_64
             tag: macosx_13_0_x86_64
-
     steps:
-      - name: Get generated source for Python Binding
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: pybinding-source
           path: ${{ github.workspace }}
-
-      - name: Download artifact from C binding
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: cbinding-library-${{ matrix.platform }}
           path: cbinding
-
       - uses: astral-sh/setup-uv@v4
         with:
           version: "latest"
-
-      - name: Build Python wheel
+      - name: Build Wheel
         run: uv build
-
-      - name: Upload Python binding artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: pybinding-dist-${{ matrix.tag }}
           path: dist/*.whl
-
       - name: Build Python docs
-        if: ${{ startsWith(matrix.platform, 'Linux') }}
         run: uv run pdoc gitcg '!gitcg.proto' -o docs
-
-      - name: Upload Python docs
         if: ${{ startsWith(matrix.platform, 'Linux') }}
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
+        if: ${{ startsWith(matrix.platform, 'Linux') }}
         with:
           name: pybinding-docs
           path: docs
 
-  py-docs-deploy:
-    name: "Python docs deployment"
-    needs: py-build
+  Deploy-Python-Docs:
+    name: Deploy Python Docs
+    needs: Build-Python
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PYBINDING }}
-
     steps:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: Get pybinding docs artifact
         uses: actions/download-artifact@v4
         with:
           name: pybinding-docs
           path: ${{ github.workspace }}
-
       - name: Vercel deploy
         run: >
           bunx vercel deploy
           ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
           --token=${{ secrets.VERCEL_TOKEN }}
 
-  py-publish:
-    name: "Publish to PyPI"
+  Publish-Python:
+    name: Publish to PyPI (Tag Push)
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-    needs: py-build
+    needs: Build-Python
     runs-on: ubuntu-latest
-
     environment:
       name: pypi
       url: https://pypi.org/p/gitcg
     permissions:
       id-token: write
-
     steps:
       - name: Download Python binding artifact
         uses: actions/download-artifact@v4
@@ -271,6 +210,5 @@ jobs:
           pattern: pybinding-dist-*
           path: dist
           merge-multiple: true
-
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
