@@ -19,4 +19,3 @@ plugins:
     out: packages/csbinding/GiTcg/Proto
     opt:
       - file_extension=.g.cs
-      - internal_access
