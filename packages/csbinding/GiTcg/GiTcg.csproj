@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content
-      Include="../../cbinding/install/lib/*.*;../../cbinding/install/bin/*.*"
-    >
+    <Content Include="../../cbinding/install/lib/*.*;../../cbinding/install/bin/*.*">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.29.1" />
   </ItemGroup>
 </Project>

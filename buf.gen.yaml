@@ -15,3 +15,8 @@ plugins:
     out: packages/pybinding/src/gitcg/proto
   - remote: buf.build/protocolbuffers/pyi:v28.0
     out: packages/pybinding/src/gitcg/proto
+  - remote: buf.build/protocolbuffers/csharp:v29.1
+    out: packages/csbinding/GiTcg/Proto
+    opt:
+      - file_extension=.g.cs
+      - internal_access
