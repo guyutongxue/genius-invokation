@@ -1,17 +1,23 @@
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 import re
+import os
 import shutil
 from pathlib import Path
 from cffi import FFI
 
 ROOT_PATH = Path(__file__).parent.parent
-CBINDING_PATH = ROOT_PATH / "cbinding"
+CBINDING_PATH = (
+    ROOT_PATH / "cbinding"
+    if os.getenv("CI")
+    else ROOT_PATH.parent / "cbinding" / "install"
+)
 SRC_PATH = ROOT_PATH / "src" / "gitcg"
 DIST_PATH = ROOT_PATH / "dist"
 
+
 def compile_cffi():
     ffi = FFI()
-    header  = CBINDING_PATH / "include" / "gitcg" / "gitcg.h"
+    header = CBINDING_PATH / "include" / "gitcg" / "gitcg.h"
     declarations = header.read_text()
     _, declarations = declarations.split("// >>> API declarations")
     declarations, _ = declarations.split("// <<< API declarations")
@@ -20,6 +26,7 @@ def compile_cffi():
     ffi.cdef(declarations)
     ffi.set_source("_gitcg_cffi", None)  # type: ignore
     ffi.compile(tmpdir=str(SRC_PATH), verbose=True)
+
 
 def copy_lib_file():
     LIB_FILE = [
@@ -31,6 +38,7 @@ def copy_lib_file():
         lib_path = CBINDING_PATH / lib_file
         if lib_path.is_file():
             shutil.copy(lib_path, SRC_PATH)
+
 
 class CustomBuildHook(BuildHookInterface):
     def initialize(self, version, build_data):
