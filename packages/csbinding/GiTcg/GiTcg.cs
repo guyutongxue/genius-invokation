@@ -15,4 +15,8 @@ public class GiTcg
     }
     return result;
   }
+
+  public static void Test() {
+    var action = new Proto.Action();
+  }
 }
