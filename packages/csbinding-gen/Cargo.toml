@@ -1,0 +1,9 @@
+[package]
+name = "csbinding-gen"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+bindgen = "0.70.1"
+csbindgen = "1.9.3"
+clap = { version = "4.5.23", features = ["derive"] }
