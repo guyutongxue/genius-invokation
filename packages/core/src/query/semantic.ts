@@ -233,28 +233,21 @@ const doQueryDict: QueryLangActionDict<AnyState[]> = {
       }
       const baseChCtx = new CharacterBase(this.args.ctx.state, baseState.id);
       const baseIdx = baseChCtx.positionIndex();
-      const baseLen = state.players[baseChCtx.who].characters.length;
-      const baseRatio = baseIdx - (baseLen / 2 - 0.5);
       const targetWho = flip(baseChCtx.who);
-      const targetLen = state.players[targetWho].characters.length;
-      let targetActiveIndex = 0;
-      try {
-        targetActiveIndex = getActiveCharacterIndex(state.players[targetWho]);
-      } catch {}
       const targetChs = state.players[targetWho].characters.map((ch, i) => ({
         ...ch,
         index: i,
       }));
-      const shiftedTargetChs = targetChs.shiftLeft(targetActiveIndex);
+      // 由于“循环”判定距离，第一个也可以以“尾后”位置的方式参与距离计算
+      targetChs.unshift({ ...targetChs[0], index: targetChs.length });
       const orderFn = (ch: CharacterState & { index: number }) => {
         if (!ch.variables.alive) {
           return Infinity;
         }
-        const ratio = ch.index - (targetLen / 2 - 0.5);
-        return Math.abs(ratio - baseRatio);
+        return Math.abs(ch.index - baseIdx);
       };
-      shiftedTargetChs.sort((a, b) => orderFn(a) - orderFn(b));
-      result.push(shiftedTargetChs[0]);
+      targetChs.sort((a, b) => orderFn(a) - orderFn(b));
+      result.push(targetChs[0]);
     }
     return result;
   },

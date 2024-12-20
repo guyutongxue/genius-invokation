@@ -1,7 +1,7 @@
 import { ref, setup, Character, State, Status } from "#test";
 import { test } from "bun:test";
 
-test("basic", async () => {
+test("query: active includes defeated", async () => {
   const c = setup(
     <State>
       <Character my active alive={0} />

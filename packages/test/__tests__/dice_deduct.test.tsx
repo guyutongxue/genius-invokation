@@ -30,7 +30,7 @@ test("klee: dice deduction", async () => {
 
   await c.me.skill(JumpyDumpty);
   await c.opp.end();
-  c.expect("opp active").withVariable("health", 6);
+  c.expect("opp active").toHaveVariable("health", 6);
   expect(c.state.players[0].dice).toBeArrayOfSize(4);
 
   await c.me.skill(Kaboom);
@@ -38,6 +38,6 @@ test("klee: dice deduction", async () => {
   expect(c.state.players[0].dice).toBeArrayOfSize(4);
 
   c.expect(`my equipment with definition id ${ExplosiveSpark}`).toBeArrayOfSize(0);
-  c.expect(`my equipment with definition id ${TulaytullahsRemembrance}`).withVariable("usagePerRound", 1);
-  c.expect(`my equipment with definition id ${VermillionHereafter}`).withVariable("usagePerRound", 1);
+  c.expect(`my equipment with definition id ${TulaytullahsRemembrance}`).toHaveVariable("usagePerRound", 1);
+  c.expect(`my equipment with definition id ${VermillionHereafter}`).toHaveVariable("usagePerRound", 1);
 });

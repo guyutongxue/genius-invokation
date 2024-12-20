@@ -1,7 +1,7 @@
 import { AnyState } from "@gi-tcg/core";
 import { expect, MatcherResult } from "bun:test";
 
-function withVariable(
+function toHaveVariable(
   actual: unknown,
   varName: string,
   expected: number,
@@ -30,10 +30,10 @@ function withVariable(
   };
 }
 
-expect.extend({ withVariable });
+expect.extend({ toHaveVariable });
 
 declare module "bun:test" {
   interface Matchers<T = unknown> {
-    withVariable(varName: string, expected: number): void;
+    toHaveVariable(varName: string, expected: number): void;
   }
 }
