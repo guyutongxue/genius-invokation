@@ -99,7 +99,6 @@ jobs:
         with:
           path: build
           key: ${{ runner.os }}-${{ matrix.arch }}-build
-          restore-keys: ${{ runner.os }}-${{ matrix.arch }}-build
       - name: Configure C Binding
         run: >
           cmake
