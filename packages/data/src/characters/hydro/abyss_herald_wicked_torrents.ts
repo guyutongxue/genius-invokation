@@ -80,6 +80,13 @@ export const WateryRebirthHoned = status(122037)
 export const WateryRebirthStatus = status(122031)
   .on("beforeDefeated")
   .immune(4)
+  .do((c) => {
+    const talent = c.self.master().hasEquipment(SurgingUndercurrent);
+    if (talent) {
+      c.combatStatus(CurseOfTheUndercurrent, "opp");
+    }
+    c.self.master().setVariable("wateryRebirthTriggered", 1);
+  })
   .characterStatus(WateryRebirthHoned, "@master")
   .dispose()
   .done();
@@ -168,7 +175,8 @@ export const BrokenShield = skill(22037)
  */
 export const WateryRebirth01 = skill(22038)
   .type("passive")
-  .reserve();
+  .variable("wateryRebirthTriggered", 0)
+  .done();
 
 /**
  * @id 2203
@@ -181,7 +189,7 @@ export const AbyssHeraldWickedTorrents = character(2203)
   .tags("hydro", "monster")
   .health(6)
   .energy(2)
-  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades)
+  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades, WateryRebirth01)
   .done();
 
 /**
@@ -196,12 +204,8 @@ export const SurgingUndercurrent = card(222031)
   .since("v4.6.0")
   .costHydro(1)
   .talent(AbyssHeraldWickedTorrents, "none")
-  .on("enter")
-  .do((c) => {
-    if (!c.self.master().hasStatus(WateryRebirthStatus)) {
-      c.combatStatus(CurseOfTheUndercurrent, "opp");
-    }
-  })
+  .on("enter", (c) => c.self.master().getVariable("wateryRebirthTriggered"))
+  .combatStatus(CurseOfTheUndercurrent, "opp")
   .on("defeated")
   .combatStatus(CurseOfTheUndercurrent, "opp")
   .done();
