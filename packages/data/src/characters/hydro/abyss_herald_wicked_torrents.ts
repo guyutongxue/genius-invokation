@@ -176,7 +176,7 @@ export const BrokenShield = skill(22037)
 export const WateryRebirth01 = skill(22038)
   .type("passive")
   .variable("wateryRebirthTriggered", 0)
-  .reserve();
+  .done();
 
 /**
  * @id 2203
@@ -189,7 +189,7 @@ export const AbyssHeraldWickedTorrents = character(2203)
   .tags("hydro", "monster")
   .health(6)
   .energy(2)
-  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades)
+  .skills(RipplingSlash, VortexEdge, TorrentialShock, WateryRebirth, RipplingBlades, WateryRebirth01)
   .done();
 
 /**
