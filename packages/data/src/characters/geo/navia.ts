@@ -54,7 +54,7 @@ export const GeoInfusion = status(116084)
   .since("v4.8.0")
   .duration(2)
   .on("modifySkillDamageType", (c, e) => e.type === DamageType.Physical)
-  .changeDamageType(DamageType.Cryo)
+  .changeDamageType(DamageType.Geo)
   .done();
 
 /**
