@@ -40,9 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: csbinding-source
-          path: |
-            packages/csbinding
-            packages/csbinding-gen
+          path: packages/csbinding
 
   Deploy-Frontend:
     name: 🌐 Deploy Standalone Frontend
@@ -221,10 +219,26 @@ jobs:
           merge-multiple: true
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-      
+  
+  Gen-CSharp:
+    name: 🦀 Generate C# Binding Code From C Header
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Generate NativeMethods.cs
+        working-directory: packages/csbinding-gen
+        run: cargo run -- ../cbinding/include/gitcg/gitcg.h -o ../../NativeMethods.cs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: csbinding-source-generated
+          path: NativeMethods.cs
+
   Build-CSharp:
     name: 🎼 Build C# Binding
-    needs: Build-C
+    needs:
+      - Build-C
+      - Gen-CSharp
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -240,22 +254,20 @@ jobs:
           - os: macos-13
             platform: macOS-x86_64
     steps:
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
       - uses: actions/download-artifact@v4
         with:
           name: csbinding-source
-          path: ${{ github.workspace }}
+          path: csbinding
+      - uses: actions/download-artifact@v4
+        with:
+          name: csbinding-source-generated
+          path: csbinding/GiTcg
       - uses: actions/download-artifact@v4
         with:
           name: cbinding-library-${{ matrix.platform }}
           path: cbinding/install
-      - name: Generate NativeMethods.cs
-        run: |
-          pushd ${{ github.workspace }}/csbinding-gen
-          cargo run -- ../cbinding/install/include/gitcg/gitcg.h -o ../csbinding/GiTcg/NativeMethods.cs
-          popd
       - name: Build C# Binding
         run: dotnet build csbinding
