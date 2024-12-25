@@ -78,7 +78,7 @@ public class State : ObjBase, IDisposable
       }
       unsafe
       {
-        int ret = NativeMethods.gitcg_state_free((gitcg_state*)handle);
+        _ = NativeMethods.gitcg_state_free((gitcg_state*)handle);
       }
     }
     disposed = true;

@@ -68,7 +68,7 @@ public class CreateParam : ObjBase, IDisposable
       }
       unsafe
       {
-        int ret = NativeMethods.gitcg_state_createparam_free((gitcg_state_createparam*)handle);
+        _ = NativeMethods.gitcg_state_createparam_free((gitcg_state_createparam*)handle);
       }
     }
     disposed = true;
