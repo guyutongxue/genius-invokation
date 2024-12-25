@@ -40,7 +40,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: csbinding-source
-          path: packages/csbinding
+          path: |
+            packages/csbinding
+            packages/csbinding-gen
 
   Deploy-Frontend:
     name: 🌐 Deploy Standalone Frontend
@@ -219,7 +221,7 @@ jobs:
           merge-multiple: true
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
+      
   Build-CSharp:
     name: 🎼 Build C# Binding
     needs: Build-C
@@ -238,16 +240,22 @@ jobs:
           - os: macos-13
             platform: macOS-x86_64
     steps:
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
       - uses: actions/download-artifact@v4
         with:
           name: csbinding-source
-          path: csbinding
+          path: ${{ github.workspace }}
       - uses: actions/download-artifact@v4
         with:
           name: cbinding-library-${{ matrix.platform }}
           path: cbinding/install
+      - name: Generate NativeMethods.cs
+        run: |
+          pushd ${{ github.workspace }}/csbinding-gen
+          cargo run -- ../cbinding/install/include/gitcg/gitcg.h -o ../csbinding/GiTcg/NativeMethods.cs
+          popd
       - name: Build C# Binding
         run: dotnet build csbinding
