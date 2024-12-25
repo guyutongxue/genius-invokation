@@ -10,7 +10,7 @@ on:
 
 jobs:
   Build-Core:
-    name: Build TypeScript Core
+    name: ⚙️ Build TypeScript Core
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,21 +21,29 @@ jobs:
         run: |
           bun install
           bun run build:prod
-      - uses: actions/upload-artifact@v4
+      - name: "Upload artifact: Standalone frontend"
+        uses: actions/upload-artifact@v4
         with:
           name: standalone-frontend
           path: packages/standalone/dist
-      - uses: actions/upload-artifact@v4
+      - name: "Upload artifact: C binding source"
+        uses: actions/upload-artifact@v4
         with:
           name: cbinding-source
           path: packages/cbinding
-      - uses: actions/upload-artifact@v4
+      - name: "Upload artifact: Python binding source"
+        uses: actions/upload-artifact@v4
         with:
           name: pybinding-source
           path: packages/pybinding
+      - name: "Upload artifact: C# binding source"
+        uses: actions/upload-artifact@v4
+        with:
+          name: csbinding-source
+          path: packages/csbinding
 
   Deploy-Frontend:
-    name: Deploy Standalone Frontend
+    name: 🌐 Deploy Standalone Frontend
     needs: Build-Core
     runs-on: ubuntu-latest
     env:
@@ -55,7 +63,7 @@ jobs:
           --token=${{ secrets.VERCEL_TOKEN }}
 
   Publish-Core:
-    name: Publish to npm (Tag Push)
+    name: 🚀 Publish to npm (Tag Push)
     needs: Build-Core
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
@@ -74,7 +82,7 @@ jobs:
           bun scripts/publish.ts
 
   Build-C:
-    name: Build C Binding
+    name: 💽 Build C Binding
     needs: Build-Core
     runs-on: ${{ matrix.os }}
     strategy:
@@ -125,7 +133,7 @@ jobs:
           path: install
 
   Build-Python:
-    name: Build Python Binding
+    name: 🐍 Build Python Binding
     needs: Build-C
     runs-on: ubuntu-latest
     env:
@@ -170,7 +178,7 @@ jobs:
           path: docs
 
   Deploy-Python-Docs:
-    name: Deploy Python Docs
+    name: 📖 Deploy Python Docs
     needs: Build-Python
     runs-on: ubuntu-latest
     env:
@@ -193,7 +201,7 @@ jobs:
           --token=${{ secrets.VERCEL_TOKEN }}
 
   Publish-Python:
-    name: Publish to PyPI (Tag Push)
+    name: 🚀 Publish to PyPI (Tag Push)
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: Build-Python
     runs-on: ubuntu-latest
@@ -211,3 +219,35 @@ jobs:
           merge-multiple: true
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  Build-CSharp:
+    name: 🎼 Build C# Binding
+    needs: Build-C
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
+        include:
+          - os: ubuntu-latest
+            platform: Linux-x86_64
+          - os: windows-latest
+            platform: Windows-x86_64
+          - os: macos-latest
+            platform: macOS-arm64
+          - os: macos-13
+            platform: macOS-x86_64
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: csbinding-source
+          path: csbinding
+      - uses: actions/download-artifact@v4
+        with:
+          name: cbinding-library-${{ matrix.platform }}
+          path: cbinding/install
+      - name: Build C# Binding
+        run: dotnet build csbinding
