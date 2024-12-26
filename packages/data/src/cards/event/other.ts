@@ -1605,7 +1605,7 @@ export const EremiteTeatime = card(332040)
   .since("v5.1.0")
   .costSame(2)
   .do((c) => {
-    const characters = c.$$("my characters");
+    const characters = c.$$("my characters include defeated");
     const elements = characters.map((ch) => ch.element());
     const weapons = characters.map((ch) => ch.weaponTag());
     const nations = characters.flatMap((ch) => ch.nationTags());
