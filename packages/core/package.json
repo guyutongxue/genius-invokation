@@ -18,6 +18,7 @@
   },
   "scripts": {
     "check": "tsc --noEmit",
+    "test": "bun test",
     "build:ohm": "ohm generateBundles -et src/query/query.ohm",
     "build:ts": "tsup --dts",
     "build:js": "tsup",
