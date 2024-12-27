@@ -26,12 +26,18 @@ export class ExtensionBuilder<ExtStateType extends object> {
   private _skillNo = 0;
   private _skillList: TriggeredSkillDefinition[] = [];
   public readonly id: number;
+  private _description = "";
 
   constructor(
     idHint: number,
     private readonly initialState: ExtStateType,
   ) {
     this.id = idHint + 50_000_000;
+  }
+
+  description(description: string) {
+    this._description = description;
+    return this;
   }
 
   private generateSkillId() {
@@ -79,6 +85,7 @@ export class ExtensionBuilder<ExtStateType extends object> {
       __definition: "extensions",
       type: "extension",
       id: this.id,
+      description: this._description,
       version: DEFAULT_VERSION_INFO,
       initialState: this.initialState,
       skills: this._skillList,

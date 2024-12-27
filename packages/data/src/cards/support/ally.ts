@@ -189,6 +189,7 @@ export const SkillDamageAndReactionExtension = extension(322009, {
   hasNonElementalDamage: false,
   hasReaction: false
 })
+  .description("双方角色使用技能的整个结算流程期间，是否发生了元素伤害、非元素伤害或引发了元素反应")
   .mutateWhen("onBeforeUseSkill", (st, e) => {
     st.hasElementalDamage = false;
     st.hasNonElementalDamage = false;
@@ -474,6 +475,7 @@ export const SandsAndDream = status(302205)
   .done();
 
 export const DisposedSupportCountExtension = extension(322022, { disposedSupportCount: pair(0) })
+  .description("记录本场对局中双方支援区弃置卡牌的数量")
   .mutateWhen("onDispose", (st, e) => {
     if (e.entity.definition.type === "support") {
       st.disposedSupportCount[e.who]++;
@@ -516,6 +518,7 @@ export const Jeht = card(322022)
   .done();
 
 const DamageTypeCountExtension = extension(322023, { damages: pair(new Set<DamageType>()) })
+  .description("记录本场对局中双方角色受到过的元素伤害种类")
   .mutateWhen("onDamageOrHeal", (st, e) => {
     if (e.isDamageTypeDamage() && e.type !== DamageType.Physical && e.type !== DamageType.Piercing) {
       st.damages[e.targetWho].add(e.type);

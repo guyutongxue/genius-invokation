@@ -16,6 +16,7 @@
 import { character, skill, status, card, DamageType, DiceType, CharacterHandle, Aura, extension, pair } from "@gi-tcg/core/builder";
 
 const AbsorbedCountExtension = extension(2602, { absorbed: pair(new Set<DiceType>() )})
+  .description("记录某方若陀龙王已汲取过的元素类型")
   .done();
 
 /**
