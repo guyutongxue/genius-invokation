@@ -68,6 +68,7 @@ export const TrailOfTheQilin = skill(11012)
   .done();
 
 const FrostflakeArrowUsedExtension = extension(11013, { used: pair(false) })
+  .description("本场对局中某方曾经使用过霜华矢")
   .done();
 
 /**

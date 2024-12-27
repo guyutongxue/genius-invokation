@@ -197,10 +197,11 @@ export const ForestRegalia = card(311307)
   .characterStatus(ForestRegaliaInEffect, "@master")
   .done();
 
-const NonInitialPlayedCardExtension = extension(311308, { count: pair(0) })
+const NonInitialPlayedCardExtension = extension(311308, { defIds: pair(new Set<number>()) })
+  .description("记录双方打出过的名称不存在于本局最初牌组中的不同名的行动牌")
   .mutateWhen("onPlayCard", (c, e) => {
     if (e.onTimeState.players[e.who].initialPile.every((card) => card.id !== e.card.definition.id)) {
-      c.count[e.who]++;
+      c.defIds[e.who].add(e.card.definition.id);
     }
   })
   .done();
@@ -221,11 +222,11 @@ export const UltimateOverlordsMegaMagicSword = card(311308)
   .associateExtension(NonInitialPlayedCardExtension)
   .on("enter")
   .do((c) => {
-    c.setVariable("supp", c.getExtensionState().count[c.self.who]);
+    c.setVariable("supp", c.getExtensionState().defIds[c.self.who].size);
   })
   .on("playCard")
   .do((c) => {
-    c.setVariable("supp", c.getExtensionState().count[c.self.who]);
+    c.setVariable("supp", c.getExtensionState().defIds[c.self.who].size);
   })
   .on("increaseSkillDamage")
   .do((c, e) => {

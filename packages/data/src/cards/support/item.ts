@@ -125,6 +125,7 @@ export const SeedDispensary = card(323005)
   .done();
 
 const CardPlayedExtension = extension(323006, { played: pair(new Set<number>()) })
+  .description("记录本场对局中双方曾经打出过的行动牌")
   .mutateWhen("onAction", (st, e) => {
     if (e.isPlayCard()) {
       st.played[e.who].add(e.action.skill.caller.definition.id);
