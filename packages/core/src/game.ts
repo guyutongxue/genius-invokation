@@ -617,7 +617,6 @@ export class Game {
       await this.handleEvent("modifyAction3", actionInfo.eventArg);
 
       // 检查骰子
-      console.log(actionInfo.cost, usedDice);
       if (!checkDice(actionInfo.cost, usedDice as DiceType[])) {
         throw new GiTcgIoError(
           who,

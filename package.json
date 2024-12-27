@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "build": "bun scripts/build.ts",
+    "test": "bun run --filter '**' test",
     "build:prod": "bun scripts/build.ts --prod"
   },
   "devDependencies": {
