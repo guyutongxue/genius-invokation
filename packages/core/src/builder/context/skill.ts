@@ -17,7 +17,6 @@ import {
   DamageType,
   DiceType,
   ExposedMutation,
-  PbDamageType,
   Reaction,
 } from "@gi-tcg/typings";
 
@@ -29,6 +28,7 @@ import {
 } from "../../base/entity";
 import { CreateCardM, Mutation, TransferCardM } from "../../base/mutation";
 import {
+  ConsumeNightsoulInfo,
   DamageInfo,
   DisposeOrTuneMethod,
   EventAndRequest,
@@ -100,6 +100,8 @@ import { nextRandom } from "../../random";
 import { Character, TypedCharacter } from "./character";
 import { Entity, TypedEntity } from "./entity";
 import { Card } from "./card";
+
+export const NIGHTSOUL_BLESSING_ID = 112141 as StatusHandle;
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -1418,6 +1420,30 @@ export class SkillContext<Meta extends ContextMetaBase> {
         oldState: card,
         reason: "disposed",
       });
+    }
+  }
+
+  /**
+   * 消耗 `count` 点夜魂值
+   * @param count
+   */
+  consumeNightsoul(count = 1, target = "@self") {
+    const targets = this.queryCoerceToCharacters(target);
+    for (const t of targets) {
+      const st = t.hasStatus(NIGHTSOUL_BLESSING_ID);
+      if (st) {
+        const oldValue = this.getVariable("nightsoul", t.state);
+        const newValue = Math.max(0, oldValue - count);
+        this.setVariable("nightsoul", newValue, t.state);
+        const info: ConsumeNightsoulInfo = {
+          oldValue,
+          newValue,
+          consumedValue: count,
+        };
+        this.emitEvent("onConsumeNightsoul0", this.state, t.state, info);
+        this.emitEvent("onConsumeNightsoul1", this.state, t.state, info);
+        // 不在此处弃置夜魂加持；在相应特技的 onConsumeNightsoul1 事件中处理
+      }
     }
   }
 

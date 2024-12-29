@@ -45,6 +45,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
   type EntityRawDataWithKind = EntityRawData & { kind: string };
   const mySummons: EntityRawDataWithKind[] = [];
   const myStatuses: EntityRawDataWithKind[] = [];
+  const myCards: EntityRawDataWithKind[] = [];
   const myCombatStatuses: EntityRawDataWithKind[] = [];
   const myUnknownEntities: EntityRawDataWithKind[] = [];
   for (const obj of candidates) {
@@ -61,6 +62,11 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       case "GCG_CARD_ONSTAGE":
         myCombatStatuses.push({ ...obj, kind: "combatStatus" });
         break;
+      case "GCG_CARD_MODIFY":
+      case "GCG_CARD_EVENT":
+      case "GCG_CARD_ASSIST":
+        myCards.push({ ...obj, kind: "card" });
+        break;
       case "GCG_CARD_UNKNOWN":
         // beta data
         myUnknownEntities.push({ ...obj, kind: "unknown" });
@@ -70,6 +76,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
   const items = [
     ...mySummons,
     ...myStatuses,
+    ...myCards,
     ...myCombatStatuses,
     ...myUnknownEntities,
   ].map<SourceInfo>((obj) => {

@@ -40,10 +40,11 @@ import {
 import { AnyState, GameState } from "../base/state";
 import {
   ContextMetaBase,
+  NIGHTSOUL_BLESSING_ID,
   SkillContext,
   TypedSkillContext,
 } from "./context/skill";
-import { ExtensionHandle, SkillHandle } from "./type";
+import { EquipmentHandle, ExtensionHandle, SkillHandle } from "./type";
 import {
   EntityArea,
   EntityType,
@@ -447,6 +448,12 @@ const detailedEventDictionary = {
   }),
   generateDice: defineDescriptor("onGenerateDice", (c, e, r) => {
     return checkRelative(e.onTimeState, { who: e.who }, r);
+  }),
+  consumeNightsoul: defineDescriptor("onConsumeNightsoul0", (c, e, r) => {
+    return checkRelative(e.onTimeState, e.character.id, r);
+  }),
+  consumeNightsoulFinal: defineDescriptor("onConsumeNightsoul1", (c, e, r) => {
+    return checkRelative(e.onTimeState, e.character.id, r);
   }),
 } satisfies Record<string, Descriptor<any>>;
 
@@ -967,6 +974,21 @@ class InitiativeSkillBuilder<
 
   /** 此定义未被使用。 */
   reserve(): void {}
+
+  enterNightsoul(techniqueEquipment: EquipmentHandle, nightsoulValue: number) {
+    this.filters.push((c) => {
+      return !c.self.hasStatus(NIGHTSOUL_BLESSING_ID);
+    });
+    this.do((c) => {
+      c.self.equip(techniqueEquipment);
+      c.characterStatus(NIGHTSOUL_BLESSING_ID, "@self", {
+        overrideVariables: {
+          nightsoul: nightsoulValue,
+        },
+      });
+    });
+    return this;
+  }
 
   done(): SkillHandle {
     registerInitiativeSkill({

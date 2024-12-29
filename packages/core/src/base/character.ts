@@ -44,6 +44,7 @@ export const NATION_TAGS = [
   "inazuma",
   "sumeru",
   "fontaine",
+  "natlan",
   "fatui",
   "eremite",
   "monster",
