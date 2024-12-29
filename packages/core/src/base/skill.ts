@@ -523,7 +523,7 @@ export class ModifyAction0EventArg<
 
 export class ModifyAction1EventArg<
   InfoT extends ActionInfoBase,
-> extends ModifyAction0EventArg<InfoT> {
+> extends ModifyActionEventArgBase<InfoT> {
   deductCost(type: Exclude<DiceType, typeof DiceType.Omni>, count: number) {
     this._log += `${stringifyState(
       this.caller,
@@ -751,6 +751,10 @@ class ModifyHealEventArgBase extends DamageOrHealEventArg<HealInfo> {
   get cancelled() {
     return this._cancelled;
   }
+  cancel() {
+    this._log += `${stringifyState(this.caller)} cancel the heal.\n`;
+    this._cancelled = true;
+  }
 
   override get damageInfo(): HealInfo {
     const healInfo = super.damageInfo;
@@ -789,16 +793,6 @@ export class ModifyHeal1EventArg extends ModifyHealEventArgBase {
 }
 
 export class ModifyHeal0EventArg extends ModifyHealEventArgBase {
-  cancel() {
-    this._log += `${stringifyState(this.caller)} cancel the heal.\n`;
-    this._cancelled = true;
-  }
-  override get damageInfo(): HealInfo {
-    return {
-      ...super.damageInfo,
-      cancelled: this._cancelled,
-    };
-  }
 }
 
 export const GenericModifyHealEventArg = mixins(ModifyHealEventArgBase, [
