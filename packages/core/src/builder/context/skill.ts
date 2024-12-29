@@ -17,7 +17,6 @@ import {
   DamageType,
   DiceType,
   ExposedMutation,
-  PbDamageType,
   Reaction,
 } from "@gi-tcg/typings";
 
@@ -100,6 +99,8 @@ import { nextRandom } from "../../random";
 import { Character, TypedCharacter } from "./character";
 import { Entity, TypedEntity } from "./entity";
 import { Card } from "./card";
+
+export const NIGHTSOUL_BLESSING_ID = 112141 as StatusHandle;
 
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
@@ -1418,6 +1419,28 @@ export class SkillContext<Meta extends ContextMetaBase> {
         oldState: card,
         reason: "disposed",
       });
+    }
+  }
+
+  /**
+   * 消耗 `count` 点夜魂值
+   * @param count
+   */
+  consumeNightsoul(count = 1, target = "@self") {
+    const targets = this.queryCoerceToCharacters(target);
+    for (const t of targets) {
+      const st = t.hasStatus(NIGHTSOUL_BLESSING_ID);
+      if (st) {
+        const oldValue = this.getVariable("nightsoul", t.state);
+        const newValue = Math.max(0, oldValue - count);
+        this.setVariable("nightsoul", newValue, t.state);
+        this.emitEvent("onConsumeNightsoul", this.state, t.state, {
+          oldValue,
+          newValue,
+          consumedValue: count,
+        });
+        // 不在此处弃置夜魂加持；在相应特技的 onConsumeNightsoul 事件中处理
+      }
     }
   }
 

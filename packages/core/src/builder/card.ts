@@ -37,7 +37,7 @@ import {
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { registerCard } from "./registry";
-import { SkillContext } from "./context/skill";
+import { NIGHTSOUL_BLESSING_ID, SkillContext } from "./context/skill";
 import {
   SkillBuilderWithCost,
   enableShortcut,
@@ -223,6 +223,23 @@ class CardBuilder<
   }
   technique() {
     return this.tags("technique").equipment("my characters").tags("technique");
+  }
+
+  /**
+   * 带有夜魂性质的特技： 
+   * 所附属角色「夜魂值」为0时，弃置此牌；此牌被弃置时，所附属角色结束夜魂加持。
+   */
+  nightsoulTechnique() {
+    return this.technique()
+      .on("consumeNightsoul")
+      .do((c) => {
+        const st = c.self.master().hasStatus(NIGHTSOUL_BLESSING_ID);
+        if (st && st.variables.nightsoul <= 0) {
+          c.dispose(st);
+          c.dispose();
+        }
+      })
+      .endOn();
   }
 
   support(type: SupportTag) {
