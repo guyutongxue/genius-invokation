@@ -301,7 +301,8 @@ export class TestController {
     };
   }
 
-  start() {
+  /** @internal */
+  _start() {
     this.game.start().then((winner) => {
       this.stepping?.reject(new Error("Game ended, no more action"));
     });

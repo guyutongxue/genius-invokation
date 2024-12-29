@@ -138,10 +138,10 @@ const ProspectorsDrill = card(311409)
  */
 const BondOfLife = status(122)
   .until("v4.8.0")
-  .on("beforeHealed", (c, e) => e.damageInfo.healKind === "common")
+  .on("decreaseHealed", (c, e) => e.damageInfo.healKind === "common")
   .usageCanAppend(1)
   .do((c, e) => {
-    const deducted = Math.max(c.getVariable("usage"), e.damageInfo.value);
+    const deducted = Math.min(c.getVariable("usage"), e.damageInfo.value);
     e.decreaseHeal(deducted);
     c.consumeUsage(deducted);
   })
