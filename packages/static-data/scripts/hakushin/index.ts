@@ -45,7 +45,7 @@ const skills = (await fetch(
   `https://api.hakush.in/gi/data/zh/gcg/skill.json`,
 ).then((r) => r.json())) as Record<string, any>;
 const skillsEn = (await fetch(
-  `https://api.hakush.in/gi/data/zh/gcg/skill.json`,
+  `https://api.hakush.in/gi/data/en/gcg/skill.json`,
 ).then((r) => r.json())) as Record<string, any>;
 
 let nextShareId = [...oldCharacters, ...oldActionCards]
@@ -309,6 +309,8 @@ for (const [idStr, { type, EN: title }] of Object.entries(cardsAndChars)) {
   }
 }
 
+const eventCards = [...oldActionCards, ...newActionCards].filter((c) => c.type === "GCG_CARD_EVENT");
+
 console.log("Collating entities:");
 for (const [idStr, { Name, Desc }] of Object.entries(entities)) {
   const id = Number(idStr);
@@ -320,7 +322,7 @@ for (const [idStr, { Name, Desc }] of Object.entries(entities)) {
     // WTF is this just skip them!
     continue;
   }
-  const exists = [...oldEntities, ...oldActionCards, ...newActionCards].find(
+  const exists = [...oldEntities, ...eventCards].find(
     (e) => e.id === Number(id),
   );
   if (!exists) {

@@ -19,8 +19,8 @@ import {
   actionCards,
   EntityRawData,
 } from "@gi-tcg/static-data";
-import { pascalCase, snakeCase } from "case-anything";
-import { writeSourceCode, SourceInfo } from "./source";
+import { snakeCase } from "case-anything";
+import { writeSourceCode, SourceInfo, identifier } from "./source";
 import { getCostCode } from "./cost";
 import { getCardCode, getCardTypeAndTags } from "./cards";
 import { NEW_VERSION } from "./config";
@@ -81,7 +81,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       id: obj.id,
       name: obj.name,
       description: description,
-      code: `export const ${pascalCase(obj.englishName)} = ${obj.kind}(${
+      code: `export const ${identifier(obj.englishName)} = ${obj.kind}(${
         obj.id
       })
   .since("${NEW_VERSION}")
@@ -112,7 +112,7 @@ function getTalentCard(id: number, name: string): SourceInfo[] {
       id: card.id,
       name: card.name,
       description: card.description,
-      code: getCardCode(card, `\n  .${methodName}(${pascalCase(name)})`),
+      code: getCardCode(card, `\n  .${methodName}(${identifier(name)})`),
     },
   ];
 }
@@ -149,7 +149,7 @@ export async function generateCharacters() {
           id: sk.id,
           name: sk.name,
           description: sk.description,
-          code: `export const ${pascalCase(sk.englishName)} = skill(${sk.id})
+          code: `export const ${identifier(sk.englishName)} = skill(${sk.id})
   .type("${TYPE_MAP[sk.type]}")${getCostCode(sk.playCost)}
   // TODO
   .done();`,
@@ -167,12 +167,12 @@ export async function generateCharacters() {
       id: ch.id,
       name: ch.name,
       description: ch.storyText ?? "",
-      code: `export const ${pascalCase(ch.englishName)} = character(${ch.id})
+      code: `export const ${identifier(ch.englishName)} = character(${ch.id})
   .since("${NEW_VERSION}")
   .tags(${tagCode})
   .health(${ch.hp})
   .energy(${ch.maxEnergy})
-  .skills(${skills.map((sk) => pascalCase(sk.englishName)).join(", ")})
+  .skills(${skills.map((sk) => identifier(sk.englishName)).join(", ")})
   .done();`,
     });
     items.push(...getTalentCard(ch.id, ch.englishName));

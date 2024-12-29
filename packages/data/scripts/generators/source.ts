@@ -24,6 +24,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile, mkdir, appendFile } from "node:fs/promises";
 import path from "node:path";
 import { BASE_PATH, LICENSE, SAVE_OLD_CODES, OLD_VERSION } from "./config";
+import { pascalCase } from "case-anything";
 
 const config = new TSDocConfiguration();
 const tagDefs = [
@@ -196,6 +197,11 @@ const OLD_VERSION_PATH = path.resolve(BASE_PATH, `old_versions/${OLD_VERSION}.ts
 
 if (SAVE_OLD_CODES && !existsSync(OLD_VERSION_PATH)) {
   await writeFile(OLD_VERSION_PATH, `import { card, skill } from "@gi-tcg/core/builder";\n`);
+}
+
+let untitledId = 1;
+export function identifier(name: string) {
+  return pascalCase(name || `untitled_${untitledId++}`);
 }
 
 export async function writeSourceCode(
