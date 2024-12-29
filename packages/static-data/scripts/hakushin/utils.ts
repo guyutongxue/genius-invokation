@@ -1,0 +1,100 @@
+import { sanitizeDescription } from "../sanitize";
+import { characters, entities, actionCards, keywords } from "../../src";
+
+const allEntities = [...entities, ...actionCards];
+const allSkills = [...entities, ...characters].flatMap((e) => e.skills);
+
+const cachedKeyMap: Record<string, any> = {};
+
+export function getDescriptionReplacedHakushin(
+  description: string,
+  keyMap: Record<string, any> = cachedKeyMap,
+) {
+  let ind = description.indexOf("$[");
+  while (ind !== -1) {
+    const strToReplace = description.substring(
+      ind,
+      description.indexOf("]", ind) + 1,
+    );
+    let replacementText = strToReplace;
+
+    const selectors = strToReplace
+      .substring(2, strToReplace.length - 1)
+      .split("|");
+    if (selectors.length > 2)
+      console.warn(`Tcg description ${strToReplace} has extra pipes`);
+    let selector: string | undefined = selectors[1];
+    if (selector === "nc") selector = undefined;
+
+    let value = keyMap[selectors[0]];
+    if (typeof value === "undefined") {
+      // Manually searching old entries
+      if (selectors[0].startsWith("A")) {
+        const id = Number(selectors[0].substring(1));
+        value = characters.find((e) => e.id === id)?.name;
+      } else if (selectors[0].startsWith("C")) {
+        const id = Number(selectors[0].substring(1));
+        value = allEntities.find((e) => e.id === id)?.name;
+      } else if (selectors[0].startsWith("S")) {
+        const id = Number(selectors[0].substring(1));
+        value = allSkills.find((e) => e.id === id)?.name;
+      } else if (selectors[0].startsWith("K")) {
+        const id = Number(selectors[0].substring(1));
+        value = keywords.find((e) => e.id === id)?.name;
+      }
+    }
+    if (typeof value === "undefined") {
+      console.log(`Tcg description has unhandled replacement ${selectors[0]}`);
+    }
+    if (typeof value === "object" && value !== null) {
+      value = value.Name;
+      if (keyMap !== cachedKeyMap) {
+        cachedKeyMap[selectors[0]] = value;
+      }
+    } else {
+      value = `${value}`;
+    }
+    replacementText = sanitizeDescription(value, true);
+
+    const splitText = replacementText.split("|");
+    if (selector && splitText.find((s) => s.startsWith(selector))) {
+      replacementText = splitText
+        .find((s) => s.startsWith(selector))!
+        .split(":")[1];
+    } else {
+      replacementText = splitText[0];
+    }
+
+    description = description.replaceAll(strToReplace, replacementText);
+
+    ind = description.indexOf("$[", ind + 1);
+  }
+
+  // if (description.indexOf('$') !== -1) console.log(`Tcg description has unreplaced text for:\n  ${description} `);
+  // Replace {PLURAL#1|pt.|pts.}
+  ind = description.indexOf("{PLURAL");
+  while (ind !== -1) {
+    const strToReplace = description.substring(
+      ind,
+      description.indexOf("}", ind) + 1,
+    );
+    let replacementText = strToReplace;
+
+    const values = strToReplace
+      .substring(1, strToReplace.length - 1)
+      .split("|");
+    const number = parseInt(values[0].split("#")[1], 10);
+    if (number === 1) replacementText = values[1];
+    else if (number > 1) replacementText = values[2];
+    else
+      console.log(
+        `Tcg plural has unhandled value ${number} for ${strToReplace}`,
+      );
+
+    description = description.replaceAll(strToReplace, replacementText);
+
+    ind = description.indexOf("{PLURAL", ind + 1);
+  }
+
+  return sanitizeDescription(description, true);
+}
