@@ -275,6 +275,8 @@ for (const [idStr, { Name, Desc }] of Object.entries(entities)) {
   }
 }
 
-// TODO: write data
+await Bun.write(`${import.meta.dirname}/../../src/data/characters.json`, JSON.stringify([...oldCharacters, ...newCharacters], void 0, 2));
+await Bun.write(`${import.meta.dirname}/../../src/data/action_cards.json`, JSON.stringify([...oldActionCards, ...newActionCards], void 0, 2));
+await Bun.write(`${import.meta.dirname}/../../src/data/entities.json`, JSON.stringify([...oldEntities, ...newEntities], void 0, 2));
 
 console.log("done");
