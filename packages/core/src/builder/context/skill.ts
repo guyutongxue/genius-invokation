@@ -28,6 +28,7 @@ import {
 } from "../../base/entity";
 import { CreateCardM, Mutation, TransferCardM } from "../../base/mutation";
 import {
+  ConsumeNightsoulInfo,
   DamageInfo,
   DisposeOrTuneMethod,
   EventAndRequest,
@@ -1434,12 +1435,14 @@ export class SkillContext<Meta extends ContextMetaBase> {
         const oldValue = this.getVariable("nightsoul", t.state);
         const newValue = Math.max(0, oldValue - count);
         this.setVariable("nightsoul", newValue, t.state);
-        this.emitEvent("onConsumeNightsoul", this.state, t.state, {
+        const info: ConsumeNightsoulInfo = {
           oldValue,
           newValue,
           consumedValue: count,
-        });
-        // 不在此处弃置夜魂加持；在相应特技的 onConsumeNightsoul 事件中处理
+        };
+        this.emitEvent("onConsumeNightsoul0", this.state, t.state, info);
+        this.emitEvent("onConsumeNightsoul1", this.state, t.state, info);
+        // 不在此处弃置夜魂加持；在相应特技的 onConsumeNightsoul1 事件中处理
       }
     }
   }

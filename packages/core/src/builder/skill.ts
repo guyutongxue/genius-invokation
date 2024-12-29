@@ -449,7 +449,10 @@ const detailedEventDictionary = {
   generateDice: defineDescriptor("onGenerateDice", (c, e, r) => {
     return checkRelative(e.onTimeState, { who: e.who }, r);
   }),
-  consumeNightsoul: defineDescriptor("onConsumeNightsoul", (c, e, r) => {
+  consumeNightsoul: defineDescriptor("onConsumeNightsoul0", (c, e, r) => {
+    return checkRelative(e.onTimeState, e.character.id, r);
+  }),
+  consumeNightsoulFinal: defineDescriptor("onConsumeNightsoul1", (c, e, r) => {
     return checkRelative(e.onTimeState, e.character.id, r);
   }),
 } satisfies Record<string, Descriptor<any>>;

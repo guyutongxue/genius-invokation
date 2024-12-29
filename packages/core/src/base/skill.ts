@@ -1104,7 +1104,8 @@ export const EVENT_MAP = {
   onReaction: ReactionEventArg,
   onTransformDefinition: TransformDefinitionEventArg,
   onGenerateDice: GenerateDiceEventArg,
-  onConsumeNightsoul: ConsumeNightsoulEventArg,
+  onConsumeNightsoul0: ConsumeNightsoulEventArg,
+  onConsumeNightsoul1: ConsumeNightsoulEventArg,
 
   modifyDamage0: ModifyDamage0EventArg, // 类型
   modifyDamage1: ModifyDamage1EventArg, // 加

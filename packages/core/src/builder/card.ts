@@ -231,7 +231,7 @@ class CardBuilder<
    */
   nightsoulTechnique() {
     return this.technique()
-      .on("consumeNightsoul")
+      .on("consumeNightsoulFinal")
       .do((c) => {
         const st = c.self.master().hasStatus(NIGHTSOUL_BLESSING_ID);
         if (st && st.variables.nightsoul <= 0) {
