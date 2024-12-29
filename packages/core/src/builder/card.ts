@@ -29,7 +29,7 @@ import {
 } from "../base/entity";
 import {
   DisposeOrTuneCardEventArg,
-  DrawCardEventArg,
+  HandCardInsertedEventArg,
   InitiativeSkillDefinition,
   InitiativeSkillEventArg,
   SkillDefinition,
@@ -226,7 +226,7 @@ class CardBuilder<
   }
 
   /**
-   * 带有夜魂性质的特技： 
+   * 带有夜魂性质的特技：
    * 所附属角色「夜魂值」为0时，弃置此牌；此牌被弃置时，所附属角色结束夜魂加持。
    */
   nightsoulTechnique() {
@@ -470,15 +470,15 @@ class CardBuilder<
           reason: "onDrawTriggered",
         });
       });
-      const drawSkillDef: TriggeredSkillDefinition<"onDrawCard"> = {
+      const drawSkillDef: TriggeredSkillDefinition<"onHandCardInserted"> = {
         type: "skill",
         id: this.cardId + 0.03,
-        triggerOn: "onDrawCard",
+        triggerOn: "onHandCardInserted",
         initiativeSkillConfig: null,
         filter: (st, info, arg) => {
           return info.caller.id === arg.card.id;
         },
-        action: this.buildAction<DrawCardEventArg>(),
+        action: this.buildAction<HandCardInsertedEventArg>(),
         usagePerRoundVariableName: null,
       };
       const skillDef: InitiativeSkillDefinition = {

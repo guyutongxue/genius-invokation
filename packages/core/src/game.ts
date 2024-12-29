@@ -58,7 +58,7 @@ import {
   ActionEventArg,
   ActionInfo,
   DisposeOrTuneCardEventArg,
-  DrawCardEventArg,
+  HandCardInsertedEventArg,
   ElementalTuningInfo,
   EventAndRequest,
   EventArg,
@@ -847,8 +847,8 @@ export class Game {
       }
       for (const card of cards) {
         await this.handleEvent(
-          "onDrawCard",
-          new DrawCardEventArg(this.state, who, card),
+          "onHandCardInserted",
+          new HandCardInsertedEventArg(this.state, who, card, "drawn"),
         );
       }
     }
