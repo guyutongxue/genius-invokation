@@ -17,6 +17,7 @@ import type { Deck } from "@gi-tcg/utils";
 import { useLocation, useNavigate } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
 import { For, Show } from "solid-js";
+import { DEFAULT_ASSET_API_ENDPOINT } from "../../../../scripts/config";
 
 export interface DeckInfoProps extends Deck {
   name: string;
@@ -85,7 +86,7 @@ export function DeckBriefInfo(props: DeckInfoProps) {
           {(id) => (
             <img
               class="h-14 w-14 b-2 b-yellow-100 rounded-full"
-              src={`https://gi-tcg-assets.guyutongxue.site/api/v2/images/character_icons/${id}`}
+              src={`${DEFAULT_ASSET_API_ENDPOINT}/images/character_icons/${id}`}
             />
           )}
         </For>
