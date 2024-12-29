@@ -8,15 +8,19 @@ import {
   type SkillRawData,
   type EntityRawData,
 } from "../../src";
+import { IS_BETA, BETA_VERSION } from "@gi-tcg/config";
 import { getDescriptionReplacedHakushin } from "./utils";
 
-// TODO: Must run in BETA mode
+// Must run in BETA mode
+if (!IS_BETA) {
+  throw new Error("This script must run in BETA mode.");
+}
 
 const oldCharacters = originalOldCharacters.filter(
-  (c) => c.sinceVersion !== "v9999.beta",
+  (c) => c.sinceVersion !== BETA_VERSION,
 );
 const oldActionCards = originalOldActionCards.filter(
-  (c) => c.sinceVersion !== "v9999.beta",
+  (c) => c.sinceVersion !== BETA_VERSION,
 );
 const oldEntities = originalOldEntities.filter(
   (c) => c.type !== "GCG_CARD_UNKNOWN",
@@ -179,7 +183,7 @@ const collateCharacter = async (
     id,
     shareId,
     obtainable: true,
-    sinceVersion: "v9999.beta",
+    sinceVersion: BETA_VERSION,
     name: rawJson.Name,
     englishName,
     tags,
@@ -236,7 +240,7 @@ const collateActionCard = async (
     shareId,
     obtainable: true,
     type,
-    sinceVersion: "v9999.beta",
+    sinceVersion: BETA_VERSION,
     name: rawJson.Name,
     englishName,
     tags,

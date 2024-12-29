@@ -30,6 +30,7 @@
     "solid-js": "^1.8.15"
   },
   "devDependencies": {
+    "@gi-tcg/config": "workspace:*",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",

@@ -28,7 +28,7 @@ import { DeckInfoProps } from "./DeckBriefInfo";
 import { roomCodeToId, roomIdToCode } from "../utils";
 import { useNavigate } from "@solidjs/router";
 import { useUserContext } from "../App";
-import { DEFAULT_ASSET_API_ENDPOINT } from "../../../../scripts/config";
+import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 
 function SelectableDeckInfo(
   props: DeckInfoProps & Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "id">,

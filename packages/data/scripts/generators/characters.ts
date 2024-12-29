@@ -42,9 +42,11 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       candidates.push(obj);
     }
   }
-  const mySummons: (EntityRawData & { kind: string })[] = [];
-  const myStatuses: (EntityRawData & { kind: string })[] = [];
-  const myCombatStatuses: (EntityRawData & { kind: string })[] = [];
+  type EntityRawDataWithKind = EntityRawData & { kind: string };
+  const mySummons: EntityRawDataWithKind[] = [];
+  const myStatuses: EntityRawDataWithKind[] = [];
+  const myCombatStatuses: EntityRawDataWithKind[] = [];
+  const myUnknownEntities: EntityRawDataWithKind[] = [];
   for (const obj of candidates) {
     if (obj.hidden) {
       continue;
@@ -59,12 +61,17 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
       case "GCG_CARD_ONSTAGE":
         myCombatStatuses.push({ ...obj, kind: "combatStatus" });
         break;
+      case "GCG_CARD_UNKNOWN":
+        // beta data
+        myUnknownEntities.push({ ...obj, kind: "unknown" });
+        break;
     }
   }
   const items = [
     ...mySummons,
     ...myStatuses,
     ...myCombatStatuses,
+    ...myUnknownEntities,
   ].map<SourceInfo>((obj) => {
     let description = obj.description;
     if (obj.playingDescription && obj.playingDescription.includes("$")) {

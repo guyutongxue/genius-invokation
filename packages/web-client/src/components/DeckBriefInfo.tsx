@@ -17,7 +17,7 @@ import type { Deck } from "@gi-tcg/utils";
 import { useLocation, useNavigate } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
 import { For, Show } from "solid-js";
-import { DEFAULT_ASSET_API_ENDPOINT } from "../../../../scripts/config";
+import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 
 export interface DeckInfoProps extends Deck {
   name: string;

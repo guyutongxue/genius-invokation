@@ -8,7 +8,7 @@ import {
 import { AllCards } from "./AllCards";
 import { CurrentDeck } from "./CurrentDeck";
 import type { Deck } from "@gi-tcg/utils";
-import { DEFAULT_ASSET_API_ENDPOINT } from "../../../scripts/config";
+import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 
 export interface DeckBuilderProps extends JSX.HTMLAttributes<HTMLDivElement> {
   assetApiEndpoint?: string;

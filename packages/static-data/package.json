@@ -24,6 +24,7 @@
     "build:prod": "bun build:js"
   },
   "devDependencies": {
+    "@gi-tcg/config": "workspace:*",
     "lossless-json": "^4.0.1"
   }
 }

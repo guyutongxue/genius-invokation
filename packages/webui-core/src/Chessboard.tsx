@@ -54,7 +54,7 @@ import type {
 
 import { PlayerArea } from "./PlayerArea";
 import { DiceSelect, DiceSelectProps } from "./DiceSelect";
-import { DEFAULT_ASSET_API_ENDPOINT } from "../../../scripts/config";
+import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 import { createStore } from "solid-js/store";
 import { groupBy, createWaitNotify } from "./utils";
 import { RerollView } from "./RerollView";
