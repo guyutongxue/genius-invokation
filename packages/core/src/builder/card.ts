@@ -242,8 +242,11 @@ class CardBuilder<
       .endOn();
   }
 
-  support(type: SupportTag) {
-    this.type("support").tags(type);
+  support(type: SupportTag | null) {
+    this.type("support");
+    if (type !== null) {
+      this.tags(type);
+    }
     this.do((c, e) => {
       // 支援牌的目标是要弃置的支援区卡牌
       const targets = e.targets as readonly EntityState[];
@@ -254,7 +257,10 @@ class CardBuilder<
         withId: c.skillInfo.caller.id,
       });
     }).done();
-    const builder = support(this.cardId).tags(type);
+    const builder = support(this.cardId);
+    if (type !== null) {
+      builder.tags(type);
+    }
     builder._versionInfo = this._versionInfo;
     return builder;
   }
