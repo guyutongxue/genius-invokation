@@ -1170,7 +1170,8 @@ export class SkillContext<Meta extends ContextMetaBase> {
     if (typeof cardDef === "undefined") {
       throw new GiTcgDataError(`Unknown card definition id ${cardId}`);
     }
-    this.mutator.createHandCard(this.callerArea.who, cardDef);
+    const events = this.mutator.createHandCard(this.callerArea.who, cardDef);
+    this.events.push(...events);
   }
 
   drawCards(count: number, opt: DrawCardsOpt = {}) {
@@ -1230,7 +1231,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
       }
     }
     for (const card of cards) {
-      this.emitEvent("onDrawCard", this.state, who, card);
+      this.emitEvent("onHandCardInserted", this.state, who, card, "drawn");
     }
   }
 
@@ -1387,6 +1388,13 @@ export class SkillContext<Meta extends ContextMetaBase> {
       who: flip(this.callerArea.who),
       value: card,
     });
+    this.emitEvent(
+      "onHandCardInserted",
+      this.state,
+      this.callerArea.who,
+      card,
+      "stolen",
+    );
   }
 
   /** 弃置一张行动牌，并触发其“弃置时”效果。 */

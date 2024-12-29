@@ -387,7 +387,10 @@ const detailedEventDictionary = {
       checkRelative(e.onTimeState, e.switchInfo.to.id, r)
     );
   }),
-  drawCard: defineDescriptor("onDrawCard", (c, e, r) => {
+  drawCard: defineDescriptor("onHandCardInserted", (c, e, r) => {
+    return checkRelative(e.onTimeState, { who: e.who }, r) && e.reason === "drawn";
+  }),
+  handCardInserted: defineDescriptor("onHandCardInserted", (c, e, r) => {
     return checkRelative(e.onTimeState, { who: e.who }, r);
   }),
   disposeCard: defineDescriptor("onDisposeOrTuneCard", (c, e, r) => {

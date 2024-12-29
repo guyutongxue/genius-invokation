@@ -25,7 +25,7 @@
 |                         |                                    |
 | `onDamageOrHeal`        | 造成/受到伤害/治疗后；角色倒下后   |
 | `onReaction`            | 发生元素反应后                     |
-| `onDrawCard`            | 抓牌后                             |
+| `onHandCardInserted`    | 获取手牌后                         |
 | `onTransformDefinition` | 角色/实体定义被替换后              |
 | `onGenerateDice`        | 生成骰子后                         |
 | `onConsumeNightsoul0`   | 消耗夜魂后（第一次，燃素充盈）     |
@@ -115,7 +115,8 @@
 | `dispose`                | `onDispose`             | **我方**实体弃置时                          |
 | `selfDispose`            | `onDispose`             | 实体**自身**弃置时                          |
 | `revive`                 | `onRevive`              | **我方**角色复苏时                          |
-| `drawCards`              | `onDrawCards`           | **我方**抓牌时                              |
+| `drawCard`               | `onHandCardInserted`    | **我方**抓牌时                              |
+| `handCardInserted`       | `onHandCardInserted`    | **我方**获取手牌时                          |
 | `disposeCard`            | `onDisposeOrTuneCard`   | **我方**舍弃牌时                            |
 | `disposeOrTuneCard`      | `onDisposeOrTuneCard`   | **我方**舍弃牌或元素调和时                  |
 | `transformDefinition`    | `transformDefinition`   | 我方/所附着实体定义被转换时                 |

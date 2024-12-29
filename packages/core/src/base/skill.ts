@@ -1023,11 +1023,14 @@ export class TransformDefinitionEventArg extends EventArg {
   }
 }
 
-export class DrawCardEventArg extends PlayerEventArg {
+export type HandCardInsertedReason = "drawn" | "stolen" | "created";
+
+export class HandCardInsertedEventArg extends PlayerEventArg {
   constructor(
     state: GameState,
     who: 0 | 1,
     public readonly card: CardState,
+    public readonly reason: HandCardInsertedReason,
   ) {
     super(state, who);
   }
@@ -1100,7 +1103,7 @@ export const EVENT_MAP = {
   onDisposeOrTuneCard: DisposeOrTuneCardEventArg,
 
   onSwitchActive: SwitchActiveEventArg,
-  onDrawCard: DrawCardEventArg,
+  onHandCardInserted: HandCardInsertedEventArg,
   onReaction: ReactionEventArg,
   onTransformDefinition: TransformDefinitionEventArg,
   onGenerateDice: GenerateDiceEventArg,

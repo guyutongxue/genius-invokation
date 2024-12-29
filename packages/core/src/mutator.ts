@@ -10,7 +10,12 @@ import {
 import { EntityState, EntityVariables, stringifyState } from "./base/state";
 import { allEntitiesAtArea, getEntityById, sortDice } from "./utils";
 import { GiTcgCoreInternalError, GiTcgDataError, GiTcgIoError } from "./error";
-import { EnterEventArg, EventAndRequest, SelectCardInfo } from "./base/skill";
+import {
+  EnterEventArg,
+  EventAndRequest,
+  HandCardInsertedEventArg,
+  SelectCardInfo,
+} from "./base/skill";
 import {
   EntityArea,
   EntityDefinition,
@@ -350,8 +355,7 @@ export class StateMutator {
         if (typeof def === "undefined") {
           throw new GiTcgDataError(`Unknown card definition id ${selected}`);
         }
-        this.createHandCard(who, def);
-        return [];
+        return this.createHandCard(who, def);
       }
       case "createEntity": {
         const def = this.state.data.entities.get(selected);
@@ -383,7 +387,7 @@ export class StateMutator {
     }
   }
 
-  createHandCard(who: 0 | 1, definition: CardDefinition) {
+  createHandCard(who: 0 | 1, definition: CardDefinition): EventAndRequest[] {
     using l = this.subLog(
       DetailLogType.Primitive,
       `Create hand card [card:${definition.id}]`,
@@ -409,6 +413,12 @@ export class StateMutator {
         reason: "overflow",
       });
     }
+    return [
+      [
+        "onHandCardInserted",
+        new HandCardInsertedEventArg(this.state, who, cardState, "created"),
+      ],
+    ];
   }
 
   createEntity(
