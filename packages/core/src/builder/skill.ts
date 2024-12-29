@@ -366,6 +366,12 @@ const detailedEventDictionary = {
       commonInitiativeSkillCheck(e.skill)
     );
   }),
+  useTechinque: defineDescriptor("onUseSkill", (c, e, r) => {
+    return (
+      checkRelative(e.onTimeState, e.callerArea, r) &&
+      e.isSkillType("technique")
+    );
+  }),
   useSkillOrTechnique: defineDescriptor("onUseSkill", (c, e, r) => {
     return (
       checkRelative(e.onTimeState, e.callerArea, r) &&

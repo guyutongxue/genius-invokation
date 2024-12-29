@@ -100,6 +100,7 @@
 | `action`                 | `onAction`              | **我方**玩家行动后                          |
 | `playCard`               | `onPlayCard`            | 我方玩家打出手牌后                          |
 | `useSkill`               | `onUseSkill`            | 我方/所附着**角色使用主动技能**后           |
+| `useTechnique`           | `onUseSkill`            | 我方/所附着角色使用特技后                   |
 | `useSkillOrTechnique`    | `onUseSkill`            | 我方/所附着角色使用主动技能**或特技**后     |
 | `declareEnd`             | `onAction`              | 我方玩家宣布回合结束后                      |
 | `switchActive`           | `onSwitchActive`        | 我方/所附着角色被切出/切入后                |
