@@ -8,6 +8,7 @@ import {
 import { AllCards } from "./AllCards";
 import { CurrentDeck } from "./CurrentDeck";
 import type { Deck } from "@gi-tcg/utils";
+import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 
 export interface DeckBuilderProps extends JSX.HTMLAttributes<HTMLDivElement> {
   assetApiEndpoint?: string;
@@ -35,7 +36,7 @@ export function DeckBuilder(props: DeckBuilderProps) {
       value={{
         assetApiEndpoint: () =>
           local.assetApiEndpoint ??
-          "https://gi-tcg-assets.guyutongxue.site/api/v2",
+        DEFAULT_ASSET_API_ENDPOINT,
       }}
     >
       <div class={`gi-tcg-deck-builder ${local.class}`}>

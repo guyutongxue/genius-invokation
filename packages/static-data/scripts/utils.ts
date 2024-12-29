@@ -31,29 +31,7 @@ function getTextMap(langCode: string): Locale {
 export function getLanguage(langCode: string): Locale {
   return getTextMap(langCode.toUpperCase());
 }
-function convertBold(str: string, removeBold?: boolean) {
-  return str.replace(
-    /<color=#FFD780FF>(.*?)<\/color>/gi,
-    removeBold ? "$1" : "**$1**",
-  );
-}
-function stripMarkup(str: string) {
-  return str.replace(/(<([^>]+)>)/gi, "");
-}
-function replaceLayout(str: string) {
-  return str
-    .replace(/{LAYOUT_MOBILE#.*?}{LAYOUT_PC#(.*?)}{LAYOUT_PS#.*?}/gi, "$1")
-    .replace("#", "")
-    .replaceAll("{NON_BREAK_SPACE}", " ");
-}
-function removeSprite(str: string) {
-  return str.replace(/{SPRITE_PRESET.*?}/gi, "");
-}
-export function sanitizeDescription(str: string, removeBold?: boolean) {
-  return removeSprite(
-    replaceNewline(replaceLayout(stripMarkup(convertBold(str, removeBold)))),
-  );
-}
+
 export function getPropNameWithMatch(
   excel: ExcelData,
   idKey: string,
@@ -74,10 +52,6 @@ export function sanitizeName(str: string) {
     str = str.replaceAll("{NON_BREAK_SPACE}", "").substring(1);
   }
   return str;
-}
-
-function replaceNewline(str: string) {
-  return str.replace(/\\n/gi, "\n");
 }
 
 export const xcard = getExcel("GCGCardExcelConfigData");
@@ -278,3 +252,5 @@ export function getDescriptionReplaced(
 
   return description;
 }
+
+export * from "./sanitize";

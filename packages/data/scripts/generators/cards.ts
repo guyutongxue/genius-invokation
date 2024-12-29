@@ -13,10 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { pascalCase } from "case-anything";
-
 import { getCostCode, isLegend } from "./cost";
-import { SourceInfo, writeSourceCode } from "./source";
+import { identifier, SourceInfo, writeSourceCode } from "./source";
 import { ActionCardRawData, actionCards, entities } from "@gi-tcg/static-data";
 import { NEW_VERSION } from "./config";
 
@@ -74,7 +72,7 @@ export function getCardCode(card: ActionCardRawData, extra = ""): string {
   const tagCode =
     tags.length > 0 ? `\n  .tags(${tags.map((t) => `"${t}"`).join(", ")})` : "";
   const cost = getCostCode(card.playCost);
-  return `export const ${pascalCase(card.englishName)} = card(${card.id})
+  return `export const ${identifier(card.englishName)} = card(${card.id})
   .since("${NEW_VERSION}")${cost}${tagCode}${extra}${typeCode}
   // TODO
   .done();`;

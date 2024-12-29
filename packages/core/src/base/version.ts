@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { GiTcgCoreInternalError } from "..";
+import { BETA_VERSION, IS_BETA } from "@gi-tcg/config";
+
+type BetaVersions = typeof IS_BETA extends true ? [typeof BETA_VERSION] : [];
+const BETA_VERSIONS = (IS_BETA ? [BETA_VERSION] : []) as BetaVersions;
 
 export const VERSIONS = [
   "v3.3.0",
@@ -34,7 +37,8 @@ export const VERSIONS = [
   "v4.8.0",
   "v5.0.0",
   "v5.1.0",
-  "v5.2.0"
+  "v5.2.0",
+  ...BETA_VERSIONS,
 ] as const;
 
 export type Version = (typeof VERSIONS)[number];

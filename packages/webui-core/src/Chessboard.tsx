@@ -54,9 +54,9 @@ import type {
 
 import { PlayerArea } from "./PlayerArea";
 import { DiceSelect, DiceSelectProps } from "./DiceSelect";
-import { createWaitNotify } from ".";
+import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 import { createStore } from "solid-js/store";
-import { groupBy } from "./utils";
+import { groupBy, createWaitNotify } from "./utils";
 import { RerollView } from "./RerollView";
 import { Dice } from "./Dice";
 import { SwitchHandsView } from "./SwitchHandsView";
@@ -547,7 +547,7 @@ export function createPlayer(
     setPrepareTuning(false);
   };
   const assetApiEndpoint = () =>
-    opt.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api/v2";
+    opt.assetApiEndpoint ?? DEFAULT_ASSET_API_ENDPOINT;
   const playerContextValue: PlayerContextValue = {
     allClickable,
     allSelected,
@@ -790,7 +790,7 @@ export function StandaloneChessboard(props: StandaloneChessboardProps) {
     allCosts: [],
     allSelected: [],
     assetApiEndpoint: () =>
-      local.assetApiEndpoint ?? "https://gi-tcg-assets.guyutongxue.site/api/v2",
+      local.assetApiEndpoint ?? DEFAULT_ASSET_API_ENDPOINT,
     assetAltText: (id) => local.assetAltText?.(id),
     onClick: () => {},
     setPrepareTuning: () => {},

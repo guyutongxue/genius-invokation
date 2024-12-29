@@ -1,6 +1,7 @@
 {
   "name": "genius-invokation",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],

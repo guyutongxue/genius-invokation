@@ -14,10 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import path from "node:path";
+import { IS_BETA, BETA_VERSION } from "@gi-tcg/config";
 
 export const OLD_VERSION = "v5.1.0";
-export const NEW_VERSION = "v5.2.0";
-export const SAVE_OLD_CODES = true;
+export const NEW_VERSION = IS_BETA ? BETA_VERSION : "v5.2.0";
+export const SAVE_OLD_CODES = !IS_BETA;
 
 export const BASE_PATH = path.resolve(
   import.meta.dirname,
