@@ -1427,7 +1427,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
    * 消耗 `count` 点夜魂值
    * @param count
    */
-  consumeNightsoul(count = 1, target = "@self") {
+  consumeNightsoul(target: CharacterTargetArg, count = 1) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
       const st = t.hasStatus(NIGHTSOUL_BLESSING_ID);
