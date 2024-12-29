@@ -105,7 +105,7 @@ const adjustCost = (costArr: any[]): PlayCost[] => {
 
 const collateSkill = (id: string | number, rawJson: any): SkillRawData => {
   const keyMap: Record<string, any> = {};
-  for (const [key, node] of Object.entries(rawJson)) {
+  for (const [key, node] of Object.entries(rawJson.Child)) {
     if (key.startsWith("D__")) {
       keyMap[key] = node;
     }

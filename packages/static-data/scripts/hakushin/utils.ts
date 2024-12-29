@@ -54,6 +54,32 @@ export function getDescriptionReplacedHakushin(
     } else {
       value = `${value}`;
     }
+    switch (value) {
+      case "GCG_ELEMENT_VOID":
+        value = "物理伤害";
+        break;
+      case "GCG_ELEMENT_CRYO":
+        value = "冰元素伤害";
+        break;
+      case "GCG_ELEMENT_HYDRO":
+        value = "水元素伤害";
+        break;
+      case "GCG_ELEMENT_PYRO":
+        value = "火元素伤害";
+        break;
+      case "GCG_ELEMENT_ELECTRO":
+        value = "雷元素伤害";
+        break;
+      case "GCG_ELEMENT_ANEMO":
+        value = "风元素伤害";
+        break;
+      case "GCG_ELEMENT_GEO":
+        value = "岩元素伤害";
+        break;
+      case "GCG_ELEMENT_DENDRO":
+        value = "草元素伤害";
+        break;
+    }
     replacementText = sanitizeDescription(value, true);
 
     const splitText = replacementText.split("|");
