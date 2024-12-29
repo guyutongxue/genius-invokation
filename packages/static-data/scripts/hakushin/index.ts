@@ -48,7 +48,7 @@ const skillsEn = (await fetch(
   `https://api.hakush.in/gi/data/en/gcg/skill.json`,
 ).then((r) => r.json())) as Record<string, any>;
 
-let nextShareId = [...oldCharacters, ...oldActionCards]
+let maxShareId = [...oldCharacters, ...oldActionCards]
   .map((e) => e.shareId)
   .filter((e) => typeof e === "number")
   .reduce((a, b) => Math.max(a, b), 0);
@@ -294,12 +294,12 @@ for (const [idStr, { type, EN: title }] of Object.entries(cardsAndChars)) {
   if (type === "Character") {
     const exists = oldCharacters.find((c) => c.id === id);
     if (!exists) {
-      newCharacters.push(await collateCharacter(id, title, nextShareId++));
+      newCharacters.push(await collateCharacter(id, title, ++maxShareId));
     }
   } else if (type === "Action") {
     const exists = oldActionCards.find((c) => c.id === id);
     if (!exists) {
-      newActionCards.push(await collateActionCard(id, title, nextShareId++));
+      newActionCards.push(await collateActionCard(id, title, ++maxShareId));
     }
   } else {
     // unreachable
