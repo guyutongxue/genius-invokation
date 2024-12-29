@@ -224,6 +224,7 @@ export class SkillExecutor {
         const healValue = arg._immuneInfo.newHealth;
         const healInfo: HealInfo = {
           type: DamageType.Heal,
+          cancelled: false,
           healKind: "revive",
           source,
           via: arg._immuneInfo.skill,

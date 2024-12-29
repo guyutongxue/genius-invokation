@@ -138,11 +138,21 @@ const ProspectorsDrill = card(311409)
  */
 const BondOfLife = status(122)
   .until("v4.8.0")
-  .on("decreaseHealed", (c, e) => e.damageInfo.healKind === "common")
+  .on("decreaseHealed", (c, e) => e.healInfo.healKind === "common")
   .usageCanAppend(1)
   .do((c, e) => {
-    const deducted = Math.min(c.getVariable("usage"), e.damageInfo.value);
-    e.decreaseHeal(deducted);
-    c.consumeUsage(deducted);
+    const usage = c.getVariable("usage");
+    const healValue = e.healInfo.value;
+    if (usage >= healValue) {
+      // 生命之契 >= 治疗量：
+      // 取消治疗，生命之契被消耗
+      e.cancel();
+      c.consumeUsage(healValue);
+    } else {
+      // 治疗量 > 生命之契：
+      // 治疗量减少，弃置生命之契
+      e.decreaseHeal(usage);
+      c.dispose();
+    }
   })
   .done();
