@@ -1587,6 +1587,7 @@ type SkillContextMutativeProps =
   | "addVariableWithMax"
   | "consumeUsage"
   | "consumeUsagePerRound"
+  | "consumeNightsoul"
   | "transformDefinition"
   | "absorbDice"
   | "convertDice"

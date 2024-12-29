@@ -93,6 +93,9 @@ interface SkillContext {
   // 替换 target 的定义
   transformDefinition(target, newDef: number): void;
 
+  // 消耗 target 的 count 点夜魂值
+  consumeNightsoul(target, count = 1): void;
+
   // 为我方生成 count 个 type 类型骰子。
   // randomElemnt 用以生成不同的基础类型元素骰子
   generateDice(type: DiceType | "randomElement", count: number): void;
