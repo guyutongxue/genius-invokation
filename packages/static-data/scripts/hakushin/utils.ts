@@ -51,8 +51,6 @@ export function getDescriptionReplacedHakushin(
       if (keyMap !== cachedKeyMap) {
         cachedKeyMap[selectors[0]] = value;
       }
-    } else {
-      value = `${value}`;
     }
     switch (value) {
       case "GCG_ELEMENT_VOID":
@@ -80,6 +78,7 @@ export function getDescriptionReplacedHakushin(
         value = "草元素伤害";
         break;
     }
+    value = `${value}`;
     replacementText = sanitizeDescription(value, true);
 
     const splitText = replacementText.split("|");

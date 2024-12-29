@@ -28,6 +28,9 @@ const cardsAndChars = (await fetch(
   `https://api.hakush.in/gi/data/gcg.json`,
 ).then((r) => r.json())) as Record<string, any>;
 
+const keywords = (await fetch(
+  `https://api.hakush.in/gi/data/zh/gcg/keyword.json`,
+).then((r) => r.json())) as Record<string, any>;
 const entities = (await fetch(
   `https://api.hakush.in/gi/data/zh/gcg/card.json`,
 ).then((r) => r.json())) as Record<string, any>;
@@ -112,6 +115,10 @@ const adjustCost = (costArr: any[]): PlayCost[] => {
 const globalReplacementMap = Object.fromEntries([
   ...Object.entries(entities).map(([k, v]) => [`C${k}`, v]),
   ...Object.entries(skills).map(([k, v]) => [`S${k}`, v]),
+  ...Object.entries(keywords).map(([k, v]) => [`K${k}`, v]),
+  ...Object.entries(cardsAndChars)
+    .filter(([k, v]) => v.type === "Character")
+    .map(([k, v]) => [`A${k}`, v.CHS]),
 ]);
 
 const collateSkill = (id: string | number, rawJson: any): SkillRawData => {
@@ -198,6 +205,20 @@ const collateActionCard = async (
   );
   const cardFace: string = rawJson.Icon;
 
+  const replacementMap: Record<string, any> = { ...globalReplacementMap };
+  const addReplacement = (rawJson: any) => {
+    if (typeof rawJson === "object" && rawJson !== null && "Child" in rawJson) {
+      for (const [key, node] of Object.entries(rawJson.Child)) {
+        if (key.startsWith("D__")) {
+          replacementMap[key] = node;
+        }
+        replacementMap[key] = node;
+        addReplacement(node);
+      }
+    }
+  };
+  addReplacement(rawJson.Talent);
+
   let type = "GCG_CARD_EVENT";
   if (cardFace.includes("Modify")) {
     type = "GCG_CARD_MODIFY";
@@ -223,7 +244,7 @@ const collateActionCard = async (
     rawDescription: rawJson.Talent.Desc,
     description: getDescriptionReplacedHakushin(
       rawJson.Talent.Desc,
-      rawJson.Talent.Child,
+      replacementMap,
     ),
     playCost: adjustCost(rawJson.Cost),
     relatedCharacterId,
