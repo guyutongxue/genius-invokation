@@ -51,6 +51,9 @@
 | `modifyDamage2`    | 修改伤害（第三次，乘除伤）                         |
 | `modifyDamage3`    | 修改伤害（第四次，减伤）                           |
 |                    |                                                    |
+| `modifyHeal0`      | 修改治疗（第一次，取消，克洛琳德）                 |
+| `modifyHeal1`      | 修改治疗（第二次，减，生命之契）                   |
+|                    |                                                    |
 | `modifyZeroHealth` | 角色击倒前（免于被击倒）                           |
 
 有副作用事件会在所有实体的响应过程中记录一些信息（如修改的伤害值），供调用方（技能或者游戏流程）使用。
@@ -90,6 +93,8 @@
 | `increaseDamaged`        | `modifyDamage1`         | 增加我方/所附着角色技能受到的伤害           |
 | `multiplySkillDamage`    | `modifyDamage2`         | 对我方/所附着角色技能造成伤害做乘除法       |
 | `decreaseDamaged`        | `modifyDamage3`         | 减少我方/所附着角色受到的伤害               |
+| `cancelHeal`             | `modifyHeal0`           | 取消对我方/所附着角色的治疗                 |
+| `decreaseHeal`           | `modifyHeal1`           | 减少对我方/所附着角色的治疗量               |
 | `beforeDefeated`         | `modifyZeroHealth`      | 我方/所附着角色免于被击倒                   |
 | `battleBegin`            | `onBattleBegin`         | 等价                                        |
 | `roundEnd`               | `onRoundEnd`            | 等价                                        |

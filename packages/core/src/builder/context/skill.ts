@@ -36,10 +36,10 @@ import {
   EventAndRequestNames,
   EventArgOf,
   GenericModifyDamageEventArg,
+  GenericModifyHealEventArg,
   HealInfo,
   HealKind,
   InlineEventNames,
-  ModifyHealEventArg,
   ReactionInfo,
   SkillDescription,
   SkillInfo,
@@ -527,14 +527,10 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const targetInjury =
       targetState.variables.maxHealth - targetState.variables.health;
     const finalValue = Math.min(value, targetInjury);
-    this.mutate({
-      type: "modifyEntityVar",
-      state: targetState,
-      varName: "health",
-      value: targetState.variables.health + finalValue,
-    });
+    
     let healInfo: HealInfo = {
       type: damageType,
+      cancelled: false,
       expectedValue: value,
       value: finalValue,
       healKind: option.kind,
@@ -544,9 +540,19 @@ export class SkillContext<Meta extends ContextMetaBase> {
       causeDefeated: false,
       fromReaction: null,
     };
-    const modifier = new ModifyHealEventArg(this.state, healInfo);
-    this.handleInlineEvent("modifyHeal", modifier);
-    healInfo = modifier.damageInfo;
+    const modifier = new GenericModifyHealEventArg(this.state, healInfo);
+    this.handleInlineEvent("modifyHeal0", modifier);
+    this.handleInlineEvent("modifyHeal1", modifier);
+    if (modifier.cancelled) {
+      return;
+    }
+    healInfo = modifier.healInfo;
+    this.mutate({
+      type: "modifyEntityVar",
+      state: targetState,
+      varName: "health",
+      value: targetState.variables.health + healInfo.value,
+    });
     this.mutator.notify({
       mutations: [
         {

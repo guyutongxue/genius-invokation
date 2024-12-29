@@ -444,6 +444,6 @@ export function setup(state: JSX.Element): TestController {
     players,
   };
   const c = new TestController(gameState);
-  c.start();
+  c._start();
   return c;
 }

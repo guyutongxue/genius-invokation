@@ -13,7 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DamageType, DiceType, Reaction, PreviewData, ReadonlyDiceRequirement, DiceRequirement } from "@gi-tcg/typings";
+import {
+  DamageType,
+  DiceType,
+  Reaction,
+  PreviewData,
+  ReadonlyDiceRequirement,
+  DiceRequirement,
+} from "@gi-tcg/typings";
 import {
   AnyState,
   CardState,
@@ -39,7 +46,14 @@ import {
   UsagePerRoundVariableNames,
 } from "./entity";
 import { MutatorConfig } from "../mutator";
-import { costSize, diceCostOfCard, diceCostSize, getEntityArea, mixins, normalizeCost } from "../utils";
+import {
+  costSize,
+  diceCostOfCard,
+  diceCostSize,
+  getEntityArea,
+  mixins,
+  normalizeCost,
+} from "../utils";
 import { commonInitiativeSkillCheck } from "../builder/skill";
 
 export interface SkillDefinitionBase<Arg> {
@@ -170,6 +184,7 @@ export type HealKind =
 
 export interface HealInfo {
   readonly type: typeof DamageType.Heal;
+  readonly cancelled: boolean;
   readonly expectedValue: number;
   readonly value: number;
   readonly healKind: HealKind;
@@ -722,23 +737,21 @@ export class DamageOrHealEventArg<
   viaPlungingAttack(): boolean {
     return this.via.plunging;
   }
-  log() {
+  get log() {
     return this.damageInfo.log ?? "";
   }
 }
 
-export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
-  private _increased = 0;
-  private _decreased = 0;
-  private _log = super.damageInfo.log ?? "";
-  increaseHeal(value: number) {
-    this._log += `${stringifyState(this.caller)} increase heal by ${value}.\n`;
-    this._increased += value;
+class ModifyHealEventArgBase extends DamageOrHealEventArg<HealInfo> {
+  protected _increased = 0;
+  protected _decreased = 0;
+  protected _cancelled = false;
+  protected _log = super.damageInfo.log ?? "";
+
+  get cancelled() {
+    return this._cancelled;
   }
-  decreaseHeal(value: number) {
-    this._log += `${stringifyState(this.caller)} decrease heal by ${value}.\n`;
-    this._decreased += value;
-  }
+
   override get damageInfo(): HealInfo {
     const healInfo = super.damageInfo;
     const expectedValue = Math.max(
@@ -752,10 +765,46 @@ export class ModifyHealEventArg extends DamageOrHealEventArg<HealInfo> {
       ...healInfo,
       expectedValue,
       value,
+      cancelled: this._cancelled,
       log: this._log,
     };
   }
+  get healInfo() {
+    return this.damageInfo;
+  }
 }
+
+export class ModifyHeal1EventArg extends ModifyHealEventArgBase {
+  // increaseHeal(value: number) {
+  //   this._log += `${stringifyState(this.caller)} increase heal by ${value}.\n`;
+  //   this._increased += value;
+  // }
+  decreaseHeal(value: number) {
+    if (this._cancelled) {
+      return;
+    }
+    this._log += `${stringifyState(this.caller)} decrease heal by ${value}.\n`;
+    this._decreased += value;
+  }
+}
+
+export class ModifyHeal0EventArg extends ModifyHealEventArgBase {
+  cancel() {
+    this._log += `${stringifyState(this.caller)} cancel the heal.\n`;
+    this._cancelled = true;
+  }
+  override get damageInfo(): HealInfo {
+    return {
+      ...super.damageInfo,
+      cancelled: this._cancelled,
+    };
+  }
+}
+
+export const GenericModifyHealEventArg = mixins(ModifyHealEventArgBase, [
+  ModifyHeal0EventArg,
+  ModifyHeal1EventArg,
+]);
 
 export class ModifyDamageEventArgBase extends DamageOrHealEventArg<DamageInfo> {
   protected _newDamageType: Exclude<DamageType, typeof DamageType.Heal> | null =
@@ -1114,7 +1163,8 @@ export const EVENT_MAP = {
   modifyDamage1: ModifyDamage1EventArg, // 加
   modifyDamage2: ModifyDamage2EventArg, // 乘除
   modifyDamage3: ModifyDamage3EventArg, // 减
-  modifyHeal: ModifyHealEventArg,
+  modifyHeal0: ModifyHeal0EventArg,     // 取消（克洛琳德）
+  modifyHeal1: ModifyHeal1EventArg,     // 减（生命之契）
   onDamageOrHeal: DamageOrHealEventArg,
 
   onEnter: EnterEventArg,
@@ -1132,7 +1182,8 @@ export type InlineEventNames =
   | "modifyDamage1"
   | "modifyDamage2"
   | "modifyDamage3"
-  | "modifyHeal";
+  | "modifyHeal0"
+  | "modifyHeal1";
 
 export type EventArgOf<E extends EventNames> = InstanceType<EventMap[E]>;
 
