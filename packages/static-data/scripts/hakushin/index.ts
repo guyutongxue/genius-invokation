@@ -12,9 +12,15 @@ import { getDescriptionReplacedHakushin } from "./utils";
 
 // TODO: Must run in BETA mode
 
-const oldCharacters = originalOldCharacters.filter((c) => c.sinceVersion !== "v9999.beta");
-const oldActionCards = originalOldActionCards.filter((c) => c.sinceVersion !== "v9999.beta");
-const oldEntities = originalOldEntities.filter((c) => c.type === "GCG_CARD_UNKNOWN");
+const oldCharacters = originalOldCharacters.filter(
+  (c) => c.sinceVersion !== "v9999.beta",
+);
+const oldActionCards = originalOldActionCards.filter(
+  (c) => c.sinceVersion !== "v9999.beta",
+);
+const oldEntities = originalOldEntities.filter(
+  (c) => c.type !== "GCG_CARD_UNKNOWN",
+);
 
 console.log("Fetching data...");
 
@@ -103,23 +109,37 @@ const adjustCost = (costArr: any[]): PlayCost[] => {
     });
 };
 
+const globalReplacementMap = Object.fromEntries([
+  ...Object.entries(entities).map(([k, v]) => [`C${k}`, v]),
+  ...Object.entries(skills).map(([k, v]) => [`S${k}`, v]),
+]);
+
 const collateSkill = (id: string | number, rawJson: any): SkillRawData => {
   const keyMap: Record<string, any> = {};
-  for (const [key, node] of Object.entries(rawJson.Child)) {
-    if (key.startsWith("D__")) {
-      keyMap[key] = node;
+
+  const replacementMap: Record<string, any> = { ...globalReplacementMap };
+  const addReplacement = (rawJson: any) => {
+    if (typeof rawJson === "object" && rawJson !== null && "Child" in rawJson) {
+      for (const [key, node] of Object.entries(rawJson.Child)) {
+        if (key.startsWith("D__")) {
+          replacementMap[key] = node;
+        }
+        replacementMap[key] = node;
+        addReplacement(node);
+      }
     }
-  }
+  };
+  addReplacement(rawJson);
 
   return {
     id: Number(id),
-    type: rawJson.Tag,
+    type: rawJson.Tag ?? "GCG_SKILL_TAG_VEHICLE", // 大概只有特技不会提供 Tag
     name: rawJson.Name,
     englishName: skillsEn[id].Name,
     rawDescription: rawJson.Desc,
-    description: getDescriptionReplacedHakushin(rawJson.Desc, rawJson.Child),
+    description: getDescriptionReplacedHakushin(rawJson.Desc, replacementMap),
     playCost: adjustCost(
-      Object.entries(rawJson.Cost).map(([costType, count]) => ({
+      Object.entries(rawJson.Cost ?? {}).map(([costType, count]) => ({
         costType,
         count,
       })),
@@ -217,16 +237,24 @@ const collateEntity = (
   name: string,
   desc: string,
 ): EntityRawData => {
+  let entitySkills: SkillRawData[] = [];
+  if (desc.includes("K58")) {
+    entitySkills = Object.entries(skills)
+      .filter(([skillId]) => Math.floor(Number(skillId) / 10) === id)
+      .map(([skillId, { Name, Desc }]) =>
+        collateSkill(skillId, { Name, Desc }),
+      );
+  }
   return {
     id,
     type: "GCG_CARD_UNKNOWN", // no idea
     name,
     englishName: entitiesEn[id].Name,
     rawDescription: desc,
-    description: getDescriptionReplacedHakushin(desc, {}),
+    description: getDescriptionReplacedHakushin(desc, globalReplacementMap),
+    skills: entitySkills,
     // NO IDEAS !!!
     tags: [],
-    skills: [],
     hidden: false,
   };
 };
@@ -275,8 +303,17 @@ for (const [idStr, { Name, Desc }] of Object.entries(entities)) {
   }
 }
 
-await Bun.write(`${import.meta.dirname}/../../src/data/characters.json`, JSON.stringify([...oldCharacters, ...newCharacters], void 0, 2));
-await Bun.write(`${import.meta.dirname}/../../src/data/action_cards.json`, JSON.stringify([...oldActionCards, ...newActionCards], void 0, 2));
-await Bun.write(`${import.meta.dirname}/../../src/data/entities.json`, JSON.stringify([...oldEntities, ...newEntities], void 0, 2));
+await Bun.write(
+  `${import.meta.dirname}/../../src/data/characters.json`,
+  JSON.stringify([...oldCharacters, ...newCharacters], void 0, 2),
+);
+await Bun.write(
+  `${import.meta.dirname}/../../src/data/action_cards.json`,
+  JSON.stringify([...oldActionCards, ...newActionCards], void 0, 2),
+);
+await Bun.write(
+  `${import.meta.dirname}/../../src/data/entities.json`,
+  JSON.stringify([...oldEntities, ...newEntities], void 0, 2),
+);
 
 console.log("done");
