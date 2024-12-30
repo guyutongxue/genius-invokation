@@ -128,7 +128,7 @@ export const ElegyForTheEnd = card(311205)
  */
 export const KingsSquireStatus = status(301103)
   .oneDuration()
-  .once("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state))
+  .once("deductOmniDice", (c, e) => e.isSkillOrTalentOf(c.self.master().state, "elemental"))
   .deductOmniCost(2)
   .done();
 
