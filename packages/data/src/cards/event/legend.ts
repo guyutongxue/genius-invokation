@@ -208,6 +208,7 @@ export const EdictOfAbsolution = card(330009)
     })
     .mutateWhen("onActionPhase", (st) => {
       const currentSpirits = [...st.spirit];
+      st.win = pair(false);
       if (currentSpirits[0] >= currentSpirits[1]) {
         st.win[0] = true;
         st.spirit[0] = 0;
@@ -257,6 +258,7 @@ export const EdictOfAbsolution = card(330009)
     })
     .on("actionPhase")
     .do((c) => {
+      c.setVariable("spirit", c.getExtensionState().spirit[c.self.who]);
       if (c.getExtensionState().win[c.self.who]) {
         c.characterStatus(FlamesOfWarInEffect, "my active");
       }
