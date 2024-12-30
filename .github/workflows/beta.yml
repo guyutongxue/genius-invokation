@@ -1,0 +1,45 @@
+name: 📦 Build Genius Invokation (Beta version)
+run-name: ${{ github.actor }} is building Genius Invokation (Beta version)
+
+# This CI workflow is expected run at genius-invokation/genius-invokation-beta repository.
+# Do NOT push on `beta` branch on the main repo.
+
+on:
+  push:
+    branches: ["beta"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  Build-Core:
+    name: ⚙️ Build TypeScript Core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Run Build
+        run: |
+          bun install
+          bun run build:prod
+      - name: Run Tests
+        run: bun run test
+      - id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/standalone/dist
+
+  Deploy-Frontend:
+    name: 🌐 Deploy Standalone Frontend
+    needs: Build-Core
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
