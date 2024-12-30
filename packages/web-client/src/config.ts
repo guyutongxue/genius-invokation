@@ -13,4 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export const BACKEND_BASE_URL = import.meta.env.DEV ? "http://localhost:3000/gi-tcg/api" : `${import.meta.env.BASE_URL}/api`;
+import { WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
+
+export const BACKEND_BASE_URL = import.meta.env.DEV
+  ? "http://localhost:3000/gi-tcg/api"
+  : `${import.meta.env.BASE_URL}/api`;
+
+export const GITHUB_AUTH_REDIRECT_URL = `${
+  import.meta.env.DEV
+    ? `http://localhost:3000/gi-tcg`
+    : `https://7shengzhaohuan.online${WEB_CLIENT_BASE_PATH}`
+}/api/auth/github/callback`;

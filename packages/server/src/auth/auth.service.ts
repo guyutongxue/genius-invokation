@@ -18,8 +18,8 @@ import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import axios from "axios";
 
-export const CODE_EXCHANGE_URL = process.env.GH_CODE_EXCHANGE_URL ?? `https://github.com/login/oauth/access_token`;
-export const GET_USER_API_URL = process.env.GH_GET_USER_API_URL ?? `https://api.github.com/user`;
+export const CODE_EXCHANGE_URL = process.env.GH_CODE_EXCHANGE_URL || `https://github.com/login/oauth/access_token`;
+export const GET_USER_API_URL = process.env.GH_GET_USER_API_URL || `https://api.github.com/user`;
 
 @Injectable()
 export class AuthService {

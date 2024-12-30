@@ -97,6 +97,8 @@ export interface SSEWaiting {
 export interface SSEInitialized {
   type: "initialized";
   who: 0 | 1;
+  config: RoomConfig | null;
+  myPlayerInfo: PlayerInfo;
   oppPlayerInfo: PlayerInfo;
 }
 
@@ -289,6 +291,8 @@ class Player implements PlayerIOWithError {
     const initializePayload: SSEPayload = {
       type: "initialized",
       who,
+      config: this._timeoutConfig,
+      myPlayerInfo: this.playerInfo,
       oppPlayerInfo: opp,
     };
     this.notificationSseSource.next(initializePayload);
