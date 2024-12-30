@@ -76,7 +76,7 @@ export const SingerOfManyWaters = summon(112112)
   .usageCanAppend(2, 4)
   .do((c) => {
     if (c.$(`my character with health <= 6`)) {
-      c.damage(DamageType.Hydro, 1, "my characters order by health - maxHealth limit 1");
+      c.heal(1, "my characters order by health - maxHealth limit 1");
     }
   })
   .done();
