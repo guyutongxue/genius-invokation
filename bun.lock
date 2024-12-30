@@ -117,6 +117,7 @@
       "version": "0.16.1",
       "dependencies": {
         "@fastify/static": "^7.0.4",
+        "@gi-tcg/config": "packages/config",
         "@gi-tcg/core": "packages/core",
         "@gi-tcg/data": "packages/data",
         "@gi-tcg/static-data": "packages/static-data",
@@ -155,6 +156,7 @@
       "devDependencies": {
         "@babel/core": "^7.24.4",
         "@babel/preset-env": "^7.24.4",
+        "@gi-tcg/config": "packages/config",
         "@gi-tcg/static-data": "packages/static-data",
         "@rollup/plugin-babel": "^6.0.4",
         "@types/core-js": "^2.5.8",
@@ -715,9 +717,9 @@
 
     "@gi-tcg/detail-log-viewer": ["@gi-tcg/detail-log-viewer@workspace:packages/detail-log-viewer", { "devDependencies": { "@gi-tcg/core": "packages/core", "@gi-tcg/typings": "packages/typings", "@unocss/postcss": "^0.58.5", "rollup-plugin-node-externals": "^7.0.1", "solid-devtools": "^0.29.2", "unocss": "^0.58.3", "vite": "^5.0.10", "vite-plugin-dts": "^3.7.0", "vite-plugin-solid": "^2.8.0" }, "peerDependencies": { "solid-js": "^1.8.15" } }],
 
-    "@gi-tcg/server": ["@gi-tcg/server@workspace:packages/server", { "dependencies": { "@fastify/static": "^7.0.4", "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/static-data": "packages/static-data", "@gi-tcg/typings": "packages/typings", "@gi-tcg/utils": "packages/utils", "@nestjs/common": "^10.3.9", "@nestjs/core": "^10.3.9", "@nestjs/jwt": "^10.2.0", "@nestjs/platform-fastify": "^10.3.9", "@prisma/client": "5.20.0", "axios": "^1.7.7", "class-transformer": "^0.5.1", "class-validator": "^0.14.1", "rxjs": "^7.8.1" }, "devDependencies": { "@nestjs/cli": "^10.3.2", "pm2": "^5.4.0", "prisma": "5.20.0" } }],
+    "@gi-tcg/server": ["@gi-tcg/server@workspace:packages/server", { "dependencies": { "@fastify/static": "^7.0.4", "@gi-tcg/config": "packages/config", "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/static-data": "packages/static-data", "@gi-tcg/typings": "packages/typings", "@gi-tcg/utils": "packages/utils", "@nestjs/common": "^10.3.9", "@nestjs/core": "^10.3.9", "@nestjs/jwt": "^10.2.0", "@nestjs/platform-fastify": "^10.3.9", "@prisma/client": "5.20.0", "axios": "^1.7.7", "class-transformer": "^0.5.1", "class-validator": "^0.14.1", "rxjs": "^7.8.1" }, "devDependencies": { "@nestjs/cli": "^10.3.2", "pm2": "^5.4.0", "prisma": "5.20.0" } }],
 
-    "@gi-tcg/standalone": ["@gi-tcg/standalone@workspace:packages/standalone", { "dependencies": { "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/deck-builder": "packages/deck-builder", "@gi-tcg/detail-log-viewer": "packages/detail-log-viewer", "@gi-tcg/utils": "packages/utils", "@gi-tcg/webui-core": "packages/webui-core", "@vercel/analytics": "^1.2.0", "core-js": "3.38.1", "solid-js": "^1.8.15" }, "devDependencies": { "@babel/core": "^7.24.4", "@babel/preset-env": "^7.24.4", "@gi-tcg/static-data": "packages/static-data", "@rollup/plugin-babel": "^6.0.4", "@types/core-js": "^2.5.8", "@typescript-eslint/eslint-plugin": "^6.21.0", "@typescript-eslint/parser": "^6.21.0", "eslint": "^8.56.0", "eslint-plugin-only-warn": "^1.1.0", "eslint-plugin-solid": "^0.13.1", "postcss-load-config": "^5.0.3", "postcss-preset-env": "^9.3.0", "vite": "^5.0.10", "vite-plugin-solid": "^2.8.0" } }],
+    "@gi-tcg/standalone": ["@gi-tcg/standalone@workspace:packages/standalone", { "dependencies": { "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/deck-builder": "packages/deck-builder", "@gi-tcg/detail-log-viewer": "packages/detail-log-viewer", "@gi-tcg/utils": "packages/utils", "@gi-tcg/webui-core": "packages/webui-core", "@vercel/analytics": "^1.2.0", "core-js": "3.38.1", "solid-js": "^1.8.15" }, "devDependencies": { "@babel/core": "^7.24.4", "@babel/preset-env": "^7.24.4", "@gi-tcg/config": "packages/config", "@gi-tcg/static-data": "packages/static-data", "@rollup/plugin-babel": "^6.0.4", "@types/core-js": "^2.5.8", "@typescript-eslint/eslint-plugin": "^6.21.0", "@typescript-eslint/parser": "^6.21.0", "eslint": "^8.56.0", "eslint-plugin-only-warn": "^1.1.0", "eslint-plugin-solid": "^0.13.1", "postcss-load-config": "^5.0.3", "postcss-preset-env": "^9.3.0", "vite": "^5.0.10", "vite-plugin-solid": "^2.8.0" } }],
 
     "@gi-tcg/static-data": ["@gi-tcg/static-data@workspace:packages/static-data", { "devDependencies": { "@gi-tcg/config": "packages/config", "lossless-json": "^4.0.1" } }],
 

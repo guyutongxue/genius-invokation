@@ -246,7 +246,7 @@ export function StandaloneParent(props: StandaloneParentProps) {
       game?.giveUp(CHILD_WHO);
     }
   };
-  let detailDialog: HTMLDialogElement;
+  let detailDialog!: HTMLDialogElement;
   const [detailLog, setDetailLog] = createSignal<readonly DetailLogEntry[]>([]);
   const showDetail = () => {
     setDetailLog(game?.detailLog ?? []);

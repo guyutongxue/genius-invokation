@@ -24,6 +24,7 @@ import {
 import { StandaloneChild } from "./StandaloneChild";
 import { StandaloneParent } from "./StandaloneParent";
 import { VERSIONS } from "@gi-tcg/core";
+import { IS_BETA, WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
 import { DeckBuilder } from "@gi-tcg/deck-builder";
 import "@gi-tcg/deck-builder/style.css";
 import { Deck, decode, encode } from "@gi-tcg/utils";
@@ -54,7 +55,7 @@ export function App() {
   const [deck0, setDeck0] = createSignal(INIT_DECK0);
   const [deck1, setDeck1] = createSignal(INIT_DECK1);
   const [version, setVersion] = createSignal<Version>(CURRENT_VERSION);
-  const [roomId, setRoomId] = createSignal<string>("");
+
   const importLog = async () => {
     return new Promise<GameStateLogEntry[]>((resolve, reject) => {
       const input = document.createElement("input");
@@ -85,7 +86,7 @@ export function App() {
     });
   };
 
-  let deckBuilderDialog: HTMLDialogElement;
+  let deckBuilderDialog!: HTMLDialogElement;
   const [loadDeckBuilder, setLoadDeckBuilder] = createSignal(false);
   const [deckBuilderValue, setDeckBuilderValue] = createSignal<Deck>({
     characters: [],
@@ -175,6 +176,12 @@ export function App() {
                 点击下方按钮开始对局；先手方棋盘会在弹出窗口显示，后手方棋盘在本页面显示。
                 <br />
                 （若弹窗不显示为浏览器阻止，请允许本页面使用弹出式窗口。）
+                <Show when={IS_BETA}>
+                  <br />
+                  <strong>
+                    请注意：本页面包含未发布的测试版卡牌；包含这些卡牌的分享码仅限在本页面内使用，它们可能是无效的正式版分享码。
+                  </strong>
+                </Show>
               </div>
               <div class="config-panel__button-group">
                 <button onClick={() => setMode(1)}>开始对局</button>
@@ -199,7 +206,10 @@ export function App() {
               disabled
             />
             <label class="tab__header" for="multiplayerInput">
-              <a href="https://7shengzhaohuan.online/gi-tcg" target="_blank">
+              <a
+                href={`https://7shengzhaohuan.online${WEB_CLIENT_BASE_PATH}`}
+                target="_blank"
+              >
                 多人对战
               </a>
             </label>
