@@ -87,7 +87,9 @@ export const HuntersVigil: SkillHandle = skill(14122)
       value = st.variables.usage!;
       c.dispose(st);
     }
-    c.damage(DamageType.Electro, value);
+    if (value > 0) {
+      c.damage(DamageType.Electro, value);
+    }
     c.heal(value, "@self");
   })
   .done();
