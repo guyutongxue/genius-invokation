@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder";
+import { character, skill, status, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
+import { BondOfLife } from "../../commons";
 
 /**
  * @id 114121
@@ -25,7 +26,21 @@ import { character, skill, status, card, DamageType } from "@gi-tcg/core/builder
  */
 export const NightVigil = status(114121)
   .since("v5.3.0")
-  // TODO
+  .duration(1)
+  .on("cancelHealed", (c, e) => e.via.definition.id !== HuntersVigil)
+  .do((c, e) => {
+    const value = e.value;
+    e.cancel();
+    if (value > 0) {
+      c.characterStatus(BondOfLife, "@master", {
+        overrideVariables: {
+          usage: value
+        }
+      });
+    }
+  })
+  .on("deductVoidDiceSkill", (c, e) => e.action.skill.definition.id === OathOfHuntingShadows)
+  .deductVoidCost(1)
   .done();
 
 /**
@@ -37,7 +52,9 @@ export const NightVigil = status(114121)
  */
 export const DarkshatteringFlameInEffect = status(114122)
   .since("v5.3.0")
-  // TODO
+  .on("increaseSkillDamage")
+  .usageCanAppend(1, 3)
+  .increaseDamage(1)
   .done();
 
 /**
@@ -50,7 +67,7 @@ export const OathOfHuntingShadows = skill(14121)
   .type("normal")
   .costElectro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Physical, 1)
   .done();
 
 /**
@@ -59,10 +76,20 @@ export const OathOfHuntingShadows = skill(14121)
  * @description
  * 自身附属夜巡，移除自身所有生命之契。然后根据所移除的层数，造成雷元素伤害，并治疗自身。（伤害和治疗最多4点）
  */
-export const HuntersVigil = skill(14122)
+export const HuntersVigil: SkillHandle = skill(14122)
   .type("elemental")
   .costElectro(2)
-  // TODO
+  .characterStatus(NightVigil, "@self")
+  .do((c) => {
+    const st = c.self.hasStatus(BondOfLife);
+    let value = 0;
+    if (st) {
+      value = st.variables.usage!;
+      c.dispose(st);
+    }
+    c.damage(DamageType.Electro, value);
+    c.heal(value, "@self");
+  })
   .done();
 
 /**
@@ -75,7 +102,12 @@ export const LastLightfall = skill(14123)
   .type("burst")
   .costElectro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Electro, 3)
+  .characterStatus(BondOfLife, "@self", {
+    overrideVariables: {
+      usage: 4
+    }
+  })
   .done();
 
 /**
@@ -105,5 +137,8 @@ export const DarkshatteringFlame = card(214121)
   .since("v5.3.0")
   .costElectro(2)
   .talent(Clorinde)
-  // TODO
+  .on("enter")
+  .useSkill(HuntersVigil)
+  .on("reaction", (c, e) => e.relatedTo(DamageType.Electro))
+  .characterStatus(DarkshatteringFlameInEffect, "@master")
   .done();

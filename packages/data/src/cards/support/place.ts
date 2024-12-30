@@ -585,5 +585,10 @@ export const PeopleOfTheSprings = card(321025)
   .since("v5.3.0")
   .costSame(2)
   .support("place")
-  // TODO
+  .on("enterRelative", (c, e) => e.entity.definition.type === "summon")
+  .usage(3)
+  .do((c, e) => {
+    const target = c.$(`my summons with id ${e.entity.id}`);
+    target?.addVariable("usage", 1);
+  })
   .done();

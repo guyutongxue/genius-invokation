@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { CardHandle, CharacterState, DamageType, DiceType, SkillHandle, SupportHandle, card, combatStatus, extension, flip, pair, status, summon } from "@gi-tcg/core/builder";
+import { NightsoulsBlessing } from "../../characters/hydro/mualani";
 
 /**
  * @id 303211
@@ -1676,6 +1677,23 @@ export const UltimateSurfingBuddy = card(332041)
   .done();
 
 /**
+ * @id 303238
+ * @name 燃素充盈（生效中）
+ * @description
+ * 本回合我方角色下次消耗夜魂值后：该角色获得1点夜魂值。
+ */
+export const AbundantPhlogistonInEffect = combatStatus(303238)
+  .oneDuration()
+  .on("consumeNightsoul")
+  .do((c, e) => {
+    const st = c.of(e.character).hasStatus(NightsoulsBlessing);
+    if (st) {
+      c.addVariable("nightsoul", 1, st);
+    }
+  })
+  .done();
+
+/**
  * @id 332042
  * @name 燃素充盈
  * @description
@@ -1683,5 +1701,5 @@ export const UltimateSurfingBuddy = card(332041)
  */
 export const AbundantPhlogiston = card(332042)
   .since("v5.3.0")
-  // TODO
+  .combatStatus(AbundantPhlogistonInEffect)
   .done();

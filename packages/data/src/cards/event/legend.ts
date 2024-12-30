@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card, flip, status } from "@gi-tcg/core/builder";
+import { DiceType, card, extension, flip, pair, status } from "@gi-tcg/core/builder";
 
 /**
  * @id 330001
@@ -196,6 +196,73 @@ export const EdictOfAbsolution = card(330009)
   .characterStatus(EdictOfAbsolutionInEffect, "@targets.0")
   .done();
 
+  export const FlamesOfWarExtension = extension(300006, {
+    spirit: pair(0),
+    win: pair(false),
+  })
+    .description("记录双方斗争之火的「斗志」，并在行动阶段开始时设置斗争之火的胜者")
+    .mutateWhen("onDamageOrHeal", (st, e) => {
+      if (e.sourceWho !== e.targetWho) {
+        st.spirit[e.sourceWho] += e.damageInfo.value;
+      }
+    })
+    .mutateWhen("onActionPhase", (st) => {
+      const currentSpirits = [...st.spirit];
+      if (currentSpirits[0] >= currentSpirits[1]) {
+        st.win[0] = true;
+        st.spirit[0] = 0;
+      }
+      if (currentSpirits[0] <= currentSpirits[1]) {
+        st.win[1] = true;
+        st.spirit[1] = 0;
+      }
+    })
+    .done();
+  
+  /**
+   * @id 300007
+   * @name 斗争之火（生效中）
+   * @description
+   * 附属角色本回合造成的伤害+1。（可叠加）
+   */
+  export const FlamesOfWarInEffect = status(300007)
+    .oneDuration()
+    .variable("increasedDamage", 1)
+    .on("increaseSkillDamage")
+    .do((c, e) => {
+      e.increaseDamage(c.getVariable("increasedDamage"));
+    })
+    .done();
+  
+  /**
+   * @id 300006
+   * @name 斗争之火
+   * @description
+   * 此牌会记录本回合你对敌方角色造成的伤害，记为「斗志」。
+   * 行动阶段开始时：若此牌是场上「斗志」最高的斗争之火，则清空此牌的「斗志」，使我方出战角色本回合造成的伤害+1。
+   */
+  export const FlamesOfWar = card(300006)
+    .support(null)
+    .variable("spirit", 0)
+    .associateExtension(FlamesOfWarExtension)
+    .on("enter")
+    .do((c) => {
+      c.setExtensionState((st) => {
+        st.spirit[c.self.who] = c.getVariable("spirit");
+      });
+    })
+    .on("dealDamage")
+    .do((c) => {
+      c.setVariable("spirit", c.getExtensionState().spirit[c.self.who]);
+    })
+    .on("actionPhase")
+    .do((c) => {
+      if (c.getExtensionState().win[c.self.who]) {
+        c.characterStatus(FlamesOfWarInEffect, "my active");
+      }
+    })
+    .done();
+
 /**
  * @id 330010
  * @name 归火圣夜巡礼
@@ -206,5 +273,28 @@ export const EdictOfAbsolution = card(330009)
 export const PilgrimageOfTheReturnOfTheSacredFlame = card(330010)
   .since("v5.3.0")
   .legend()
-  // TODO
+  .do((c) => {
+    const myExistsFlame = c.$(`my support with definition id ${FlamesOfWar}`);
+    const oppExistsFlame = c.$(`opp support with definition id ${FlamesOfWar}`);
+    if (myExistsFlame) {
+      myExistsFlame.addVariable("spirit", 1);
+    } else if (c.player.summons.length < c.state.config.maxSummonsCount) {
+      c.createEntity("support", FlamesOfWar, {
+        who: c.self.who,
+        type: "supports"
+      }, {
+        overrideVariables: {
+          spirit: 1
+        }
+      });
+    }
+    if (oppExistsFlame) {
+      // do nothing
+    } else if (c.oppPlayer.summons.length < c.state.config.maxSummonsCount) {
+      c.createEntity("support", FlamesOfWar, {
+        who: flip(c.self.who),
+        type: "supports"
+      });
+    }
+  })
   .done();

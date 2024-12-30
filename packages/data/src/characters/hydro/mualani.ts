@@ -13,19 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, card, DamageType } from "@gi-tcg/core/builder";
-
-/**
- * @id 112144
- * @name 鲨鲨飞弹
- * @description
- * 结束阶段：造成2点水元素伤害。
- * 可用次数：2（可叠加，没有上限）
- */
-export const SharkMissile = summon(112144)
-  .since("v5.3.0")
-  // TODO
-  .done();
+import { character, skill, summon, status, card, DamageType, SkillHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 112141
@@ -35,7 +23,7 @@ export const SharkMissile = summon(112144)
  */
 export const NightsoulsBlessing = status(112141)
   .since("v5.3.0")
-  // TODO
+  .variableCanAppend("nightsoul", 0, 2)
   .done();
 
 /**
@@ -47,7 +35,12 @@ export const NightsoulsBlessing = status(112141)
  */
 export const BiteTarget = status(112143)
   .since("v5.3.0")
-  // TODO
+  .variableCanAppend("count", 1, Infinity)
+  .on("increaseDamaged", (c, e) => e.source.definition.id === Mualani || e.source.definition.id === SharkMissile)
+  .do((c, e) => {
+    e.increaseDamage(2 * c.getVariable("count"));
+  })
+  .dispose()
   .done();
 
 /**
@@ -63,7 +56,31 @@ export const BiteTarget = status(112143)
  */
 export const BiteyShark = card(112142)
   .since("v5.3.0")
-  // TODO
+  .nightsoulTechnique()
+  .on("switchActive", (c) => c.self.master().isActive())
+  .listenToAll()
+  .consumeNightsoul("@master")
+  .characterStatus(BiteTarget, "opp active")
+  .endOn()
+  .provideSkill(1121422)
+  .costHydro(1)
+  .switchActive("my prev")
+  .characterStatus(BiteTarget, "opp active")
+  .if((c) => c.$$(`my standby`).length === 0)
+  .consumeNightsoul("@master")
+  .done();
+
+/**
+ * @id 112144
+ * @name 鲨鲨飞弹
+ * @description
+ * 结束阶段：造成2点水元素伤害。
+ * 可用次数：2（可叠加，没有上限）
+ */
+export const SharkMissile = summon(112144)
+  .since("v5.3.0")
+  .endPhaseDamage(DamageType.Hydro, 2)
+  .usageCanAppend(2, Infinity)
   .done();
 
 /**
@@ -76,7 +93,7 @@ export const CoolingTreatment = skill(12141)
   .type("normal")
   .costHydro(1)
   .costVoid(2)
-  // TODO
+  .damage(DamageType.Hydro, 1)
   .done();
 
 /**
@@ -86,10 +103,10 @@ export const CoolingTreatment = skill(12141)
  * 自身附属咬咬鲨鱼，然后进入夜魂加持，并获得2点「夜魂值」。（角色进入夜魂加持后不可使用此技能）
  * （附属咬咬鲨鱼的角色可以使用特技：鲨鲨冲浪板）
  */
-export const SurfsharkWavebreaker = skill(12142)
+export const SurfsharkWavebreaker: SkillHandle = skill(12142)
   .type("elemental")
   .costHydro(2)
-  // TODO
+  .enterNightsoul(BiteyShark, 2)
   .done();
 
 /**
@@ -102,7 +119,8 @@ export const BoomsharkaLaka = skill(12143)
   .type("burst")
   .costHydro(3)
   .costEnergy(2)
-  // TODO
+  .damage(DamageType.Hydro, 2)
+  .summon(SharkMissile)
   .done();
 
 /**
@@ -129,6 +147,12 @@ export const Mualani = character(1214)
 export const NightRealmsGiftCrestsAndTroughs = card(212141)
   .since("v5.3.0")
   .costHydro(1)
-  .talent(Mualani)
-  // TODO
+  .talent(Mualani, "none")
+  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)
+  .usagePerRound(1)
+  .do((c) => {
+    const summons = c.$$(`my summon`);
+    const targetSummon = c.random(summons);
+    c.triggerEndPhaseSkill(targetSummon.state);
+  })
   .done();
