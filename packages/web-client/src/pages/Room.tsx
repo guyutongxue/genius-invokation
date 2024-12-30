@@ -1,39 +1,47 @@
 // Copyright (C) 2024 Guyutongxue
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { useParams, useSearchParams } from "@solidjs/router";
 import { Layout } from "../layouts/Layout";
 import { roomCodeToId } from "../utils";
-import { useUserContext } from "../App";
-import { Show, createSignal, onMount, JSX, createEffect, onCleanup } from "solid-js";
+import {
+  Show,
+  createSignal,
+  onMount,
+  JSX,
+  createEffect,
+  onCleanup,
+} from "solid-js";
 import axios, { AxiosError } from "axios";
-import { Dynamic } from "solid-js/web";
 import { PlayerIOWithCancellation, createPlayer } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
 import type { Deck } from "@gi-tcg/utils";
 import EventSourceStream from "@server-sent-stream/web";
 import { RpcMethod, RpcRequest } from "@gi-tcg/typings";
-import { BACKEND_BASE_URL } from "../config";
+
+interface PlayerInfo {
+  userId: number;
+  userName: string;
+  deck: Deck;
+}
 
 interface InitializedPayload {
   who: 0 | 1;
-  oppPlayerInfo: {
-    userId: number;
-    userName: string;
-    deck: Deck;
-  };
+  config: any;
+  myPlayerInfo: PlayerInfo;
+  oppPlayerInfo: PlayerInfo;
 }
 
 interface ActionRequestPayload {
@@ -94,7 +102,7 @@ export function Room() {
             console.error(e);
           }
         },
-        assetAltText: (id) => names[id]
+        assetAltText: (id) => names[id],
       });
       setChessboard(<Ui />);
       setPlayerIo(io);
@@ -102,6 +110,7 @@ export function Room() {
   });
 
   const onActionRequested = async (payload: ActionRequestPayload) => {
+    setCurrentTimer(payload.timeout);
     playerIo()?.cancelRpc();
     await new Promise((r) => setTimeout(r, 100)); // wait for UI notifications?
     const response = await playerIo()?.rpc(payload.request);
@@ -121,6 +130,8 @@ export function Room() {
         alert(e.response?.data.message);
       }
       console.error(e);
+    } finally {
+      setCurrentTimer(null);
     }
   };
 
@@ -136,6 +147,33 @@ export function Room() {
         alert(e.response?.data.message);
       }
       console.error(e);
+    }
+  };
+
+  const copyWatchLink = async () => {
+    const url = new URL(location.href);
+    url.searchParams.delete("action");
+    await navigator.clipboard.writeText(url.href);
+    alert("观战链接已复制到剪贴板！");
+  };
+
+  const [currentTimer, setCurrentTimer] = createSignal<number | null>(null);
+  let intervalId: number | null = null;
+  const setTimer = () => {
+    intervalId = window.setInterval(() => {
+      const current = currentTimer();
+      if (typeof current === "number") {
+        setCurrentTimer(current - 1);
+        if (current <= 0) {
+          playerIo()?.cancelRpc();
+          setCurrentTimer(null);
+        }
+      }
+    }, 1000);
+  };
+  const cleanTimer = () => {
+    if (intervalId) {
+      window.clearInterval(intervalId);
     }
   };
 
@@ -209,27 +247,67 @@ export function Room() {
         })
         .catch(reportStreamError);
     }
+    setTimer();
   });
 
   onCleanup(() => {
     setInitialized();
     setPlayerIo();
+    cleanTimer();
   });
 
   return (
     <Layout>
       <div class="container mx-auto flex flex-col">
-        <div class="flex flex-row gap-3 items-center mb-3">
-          <h2 class="text-2xl font-bold">房间号：{code}</h2>
-          <Show when={!loading() && !failed() && !initialized()}>
-            <button class="btn btn-outline-red" onClick={deleteRoom}>
-              <i class="i-mdi-delete" />
-            </button>
-          </Show>
+        <div class="flex flex-row items-center justify-between mb-3">
+          <div class="flex flex-row gap-3 items-center">
+            <h2 class="text-2xl font-bold">房间号：{code}</h2>
+            <Show when={!loading() && !failed() && !initialized()}>
+              <button class="btn btn-outline-red" onClick={deleteRoom}>
+                <i class="i-mdi-delete" />
+              </button>
+            </Show>
+            <Show when={initialized()?.config?.watchable}>
+              <button
+                class="btn btn-outline-primary"
+                title="复制观战链接"
+                onClick={copyWatchLink}
+              >
+                <i class="i-mdi-link-variant" />
+              </button>
+            </Show>
+          </div>
+          <div>
+            <Show when={initialized()}>
+              {(payload) => (
+                <>
+                  <span>{payload().myPlayerInfo.userName}</span>
+                  <span class="font-bold"> VS </span>
+                  <span>{payload().oppPlayerInfo.userName}</span>
+                  <span>（您是：{payload().who === 0 ? "先手" : "后手"}）</span>
+                </>
+              )}
+            </Show>
+          </div>
         </div>
         <Show when={!failed()} fallback={<div>加载房间失败！</div>}>
           <Show when={initialized()} fallback={<div>等待对手加入房间…</div>}>
-            {chessboard()}
+            <div class="relative">
+              <Show when={currentTimer()}>
+                {(time) => (
+                  <div class="absolute top-0 left-[50%] translate-x-[-50%] bg-black text-white opacity-80 p-2 rounded-lb rounded-rb z-29">
+                    {Math.max(Math.floor(time() / 60), 0)
+                      .toString()
+                      .padStart(2, "0")}{" "}
+                    :{" "}
+                    {Math.max(time() % 60, 0)
+                      .toString()
+                      .padStart(2, "0")}
+                  </div>
+                )}
+              </Show>
+              {chessboard()}
+            </div>
           </Show>
         </Show>
       </div>

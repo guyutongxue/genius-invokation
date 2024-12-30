@@ -30,7 +30,7 @@ import { DeckBriefInfo } from "../components/DeckBriefInfo";
 import { RoomDialog } from "../components/RoomDialog";
 import { roomCodeToId } from "../utils";
 import { RoomInfo } from "../components/RoomInfo";
-import { WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
+import { GITHUB_AUTH_REDIRECT_URL } from "../config";
 
 export function Home() {
   const { user, refresh } = useUserContext();
@@ -93,7 +93,7 @@ export function Home() {
   };
 
   const CLIENT_ID = "Iv23liMGX6EkkrfUax8B";
-  const REDIRECT_URL = encodeURIComponent(`https://7shengzhaohuan.online${WEB_CLIENT_BASE_PATH}/api/auth/github/callback`);
+  const REDIRECT_URL = encodeURIComponent(GITHUB_AUTH_REDIRECT_URL);
 
   onMount(async () => {
     if (searchParams.token) {
