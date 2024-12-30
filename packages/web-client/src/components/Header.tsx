@@ -16,6 +16,7 @@
 import { A, useNavigate } from "@solidjs/router";
 import { useUserContext } from "../App";
 import { Show } from "solid-js";
+import { IS_BETA } from "@gi-tcg/config";
 
 export function Header() {
   const navigate = useNavigate();
@@ -32,6 +33,11 @@ export function Header() {
           <A href="/">七圣召唤模拟对战平台</A>
         </h1>
         <span class="text-10px badge badge-soft-warning">Public Beta</span>
+        <Show when={IS_BETA}>
+          <span class="text-10px badge badge-soft-error">
+            Incl. unreleased data
+          </span>
+        </Show>
       </div>
       <Show when={user()}>
         {(info) => (
