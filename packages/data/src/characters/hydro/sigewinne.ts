@@ -151,7 +151,7 @@ export const SuperSaturatedSyringing = skill(12133)
  * @id 12134
  * @name 细致入微的诊疗
  * @description
- * 【被动】我方角色受到治疗，使其所附属的生命之契被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）
+ * 【被动】我方角色所附属的生命之契被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）
  * 我方切换到本角色时：如果我方场上存在源水之滴，则使其可用次数-1，本角色获得1点充能。
  */
 export const DetailedDiagnosisThoroughTreatment01 = skill(12134)

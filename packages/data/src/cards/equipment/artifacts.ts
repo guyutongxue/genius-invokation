@@ -968,3 +968,17 @@ export const MaidensFadingBeauty = card(312031)
   .usagePerRound(2)
   .heal(1, "my characters order by health - maxHealth limit 1")
   .done();
+
+/**
+ * @id 312032
+ * @name 魔战士的羽面
+ * @description
+ * 附属角色使用特技后：获得1点充能。（每回合1次)
+ * （角色最多装备1件「圣遗物」）
+ */
+export const DemonwarriorsFeatherMask = card(312032)
+  .since("v5.3.0")
+  .costVoid(2)
+  .artifact()
+  // TODO
+  .done();

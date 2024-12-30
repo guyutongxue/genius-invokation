@@ -20,13 +20,13 @@ import { character, skill, summon, status, card, DamageType, SummonHandle } from
  * @name 化海月
  * @description
  * 结束阶段：造成1点水元素伤害，治疗我方出战角色1点。
- * 可用次数：2
+ * 可用次数：2（可叠加，最多叠加到4次）
  */
 export const BakeKurage: SummonHandle = summon(112051)
   .hintIcon(DamageType.Hydro)
   .hintText("1")
   .on("endPhase")
-  .usage(2)
+  .usageCanAppend(2, 4)
   .if((c) => c.$(`my equipment with definition id ${TamakushiCasket}`))
   .damage(DamageType.Hydro, 2)
   .else()

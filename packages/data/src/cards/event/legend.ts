@@ -195,3 +195,16 @@ export const EdictOfAbsolution = card(330009)
   .addTarget("my characters")
   .characterStatus(EdictOfAbsolutionInEffect, "@targets.0")
   .done();
+
+/**
+ * @id 330010
+ * @name 归火圣夜巡礼
+ * @description
+ * 在双方场上生成斗争之火，然后我方场上的斗争之火的「斗志」+1。（斗争之火会将各自阵营对对方造成的伤害记录为「斗志」，每回合行动阶段开始时「斗志」较高的一方会清空「斗志」，使当前出战角色在本回合中造成的伤害+1。）
+ * （整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）
+ */
+export const PilgrimageOfTheReturnOfTheSacredFlame = card(330010)
+  .since("v5.3.0")
+  .legend()
+  // TODO
+  .done();

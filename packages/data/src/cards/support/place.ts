@@ -573,3 +573,17 @@ export const ScionsOfTheCanopy = card(321024)
   .generateDice("randomElement", 1)
   .addVariable("point", 1)
   .done();
+
+/**
+ * @id 321025
+ * @name 「流泉之众」
+ * @description
+ * 我方「召唤物」入场时：使其可用次数+1。
+ * 可用次数：3
+ */
+export const PeopleOfTheSprings = card(321025)
+  .since("v5.3.0")
+  .costSame(2)
+  .support("place")
+  // TODO
+  .done();

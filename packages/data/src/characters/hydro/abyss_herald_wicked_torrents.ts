@@ -121,12 +121,12 @@ export const RipplingSlash = skill(22031)
  * @id 22032
  * @name 洄涡锋刃
  * @description
- * 造成2点水元素伤害，然后准备技能：涟锋旋刃。
+ * 造成1点水元素伤害，然后准备技能：涟锋旋刃。
  */
 export const VortexEdge = skill(22032)
   .type("elemental")
   .costHydro(3)
-  .damage(DamageType.Hydro, 2)
+  .damage(DamageType.Hydro, 1)
   .characterStatus(RipplingBladesStatus, "@self")
   .done();
 
