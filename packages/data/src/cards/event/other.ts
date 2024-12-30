@@ -1684,7 +1684,7 @@ export const UltimateSurfingBuddy = card(332041)
  */
 export const AbundantPhlogistonInEffect = combatStatus(303238)
   .oneDuration()
-  .on("consumeNightsoul")
+  .once("consumeNightsoul")
   .do((c, e) => {
     const st = c.of(e.character).hasStatus(NightsoulsBlessing);
     if (st) {

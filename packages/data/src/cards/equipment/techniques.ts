@@ -251,13 +251,15 @@ export const Qucusaurus = card(313006)
   .on("enter")
   .characterStatus(Target, "opp active")
   .on("modifyAction", (c, e) =>
-    e.action.type === "switchActive" &&
-    (!e.isFast() || e.canDeductCost()) &&
-    c.$(`opp active has status with definition id ${Target}`) &&
-    e.action.to.id === c.self.master().id)
+    e.action.type === "switchActive" &&                           // 切换角色行动
+    (!e.isFast() || e.canDeductCost()) &&                         // 可以减费或者尚未速切
+    c.$(`opp active has status with definition id ${Target}`) &&  // 敌方出战角色附属目标
+    e.action.to.id === c.self.master().id &&                      // 附属角色切换为出战角色
+    c.player.hands.length > 0)                                    // 有手牌（“如可能，舍弃”）
   .deductOmniCost(1)
   .setFastAction()
   .do((c) => {
+    c.disposeRandomCard(c.getMaxCostHands());
     for (const st of c.$$(`opp status with definition id ${Target}`)) {
       st.dispose();
     }

@@ -340,10 +340,12 @@ export const GlitteringGemstones = card(333017)
 /**
  * @id 303315
  * @name 咚咚嘭嘭（生效中）
- * 名称不存在于初始牌组中的牌加入我方手牌时：治疗该角色1点。\n可用次数：3
+ * 名称不存在于初始牌组中的牌加入我方手牌时：治疗该角色1点。
+ * 可用次数：3
  */
 export const PuffPopsInEffect = status(303315)
   .on("handCardInserted", (c, e) => !c.isInInitialPile(e.card))
+  .usage(3)
   .heal(1, "@master") 
   .done()
 
@@ -357,5 +359,6 @@ export const PuffPopsInEffect = status(303315)
 export const PuffPops = card(333018)
   .since("v5.3.0")
   .costSame(1)
+  .food()
   .characterStatus(PuffPopsInEffect, "@targets.0")
   .done();
