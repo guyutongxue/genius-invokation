@@ -88,7 +88,7 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
     if (obj.tags.includes("GCG_TAG_VEHICLE")) {
       const et = entities.find((et) => et.id === obj.id)!;
       for (const skill of et.skills) {
-        description += `\n[${skill.id}: ${skill.name}] (${inlineCostDescription(skill.playCost)})${skill.description}`;
+        description += `\n[${skill.id}: ${skill.name}] (${inlineCostDescription(skill.playCost)}) ${skill.description}`;
       }
     }
     return {

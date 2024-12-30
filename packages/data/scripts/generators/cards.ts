@@ -134,7 +134,7 @@ export async function generateCards() {
     if (card.tags.includes("GCG_TAG_VEHICLE")) {
       const et = entities.find((et) => et.id === card.id)!;
       for (const skill of et.skills) {
-        description += `\n[${skill.id}: ${skill.name}] (${inlineCostDescription(skill.playCost)})${skill.description}`;
+        description += `\n[${skill.id}: ${skill.name}] (${inlineCostDescription(skill.playCost)}) ${skill.description}`;
       }
     }
     target.push({

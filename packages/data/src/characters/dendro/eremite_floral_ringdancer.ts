@@ -52,8 +52,8 @@ export const SpiritserpentsBlessing = combatStatus(127033)
  * 特技：藤蔓锋鳞
  * 可用次数：2
  * （角色最多装备1个「特技」）
- * 【1270321: 藤蔓锋鳞】造成1点草元素伤害。
- * 【2270312: 】
+ * [1270321: 藤蔓锋鳞] (1*Void, 1*Energy) 造成1点草元素伤害。
+ * [2270312: ] ()
  */
 export const SpiritOfOmenDendroSpiritserpent = card(127032)
   .since("v5.1.0")
