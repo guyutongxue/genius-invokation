@@ -278,7 +278,7 @@ export const PilgrimageOfTheReturnOfTheSacredFlame = card(330010)
     const oppExistsFlame = c.$(`opp support with definition id ${FlamesOfWar}`);
     if (myExistsFlame) {
       myExistsFlame.addVariable("spirit", 1);
-    } else if (c.player.summons.length < c.state.config.maxSupportsCount) {
+    } else if (c.remainingSupportCount("my") > 0) {
       c.createEntity("support", FlamesOfWar, {
         who: c.self.who,
         type: "supports"
@@ -290,7 +290,7 @@ export const PilgrimageOfTheReturnOfTheSacredFlame = card(330010)
     }
     if (oppExistsFlame) {
       // do nothing
-    } else if (c.oppPlayer.summons.length < c.state.config.maxSupportsCount) {
+    } else if (c.remainingSupportCount("opp") > 0) {
       c.createEntity("support", FlamesOfWar, {
         who: flip(c.self.who),
         type: "supports"

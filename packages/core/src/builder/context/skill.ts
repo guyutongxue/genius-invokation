@@ -385,6 +385,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
     const defId = card.definition.id;
     return this.player.initialPile.some((c) => c.id === defId);
   }
+  /** 我方或对方支援区剩余空位 */
+  remainingSupportCount(who: "my" | "opp" = "my"): number {
+    const player = who === "my" ? this.player : this.oppPlayer;
+    return this.state.config.maxSupportsCount - player.supports.length;
+  }
 
   // MUTATIONS
 

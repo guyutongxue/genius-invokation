@@ -319,7 +319,7 @@ export const KidKujirai = card(322014)
   .on("actionPhase")
   .do((c) => {
     c.generateDice(DiceType.Omni, 1);
-    if (c.oppPlayer.supports.length < c.state.config.maxSupportsCount) {
+    if (c.remainingSupportCount("opp") > 0) {
       c.transferEntity(c.self.state, {
         type: "supports",
         who: flip(c.self.who)
