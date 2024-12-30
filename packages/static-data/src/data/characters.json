@@ -1122,8 +1122,8 @@
         "name": "噬罪的告解",
         "englishName": "Ravaging Confession",
         "type": "GCG_SKILL_TAG_E",
-        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成2层<color=#FFFFFFFF>$[C111131]</color>。（触发$[C111131]的效果时，会生成<color=#FFFFFFFF>$[C111133]</color>。）",
-        "description": "造成1点冰元素伤害，生成2层洞察破绽。（触发洞察破绽的效果时，会生成强攻破绽。）",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，生成1层<color=#FFFFFFFF>$[C111131]</color>。（触发$[C111131]的效果时，会生成<color=#FFFFFFFF>$[C111133]</color>。）",
+        "description": "造成1点冰元素伤害，生成1层洞察破绽。（触发洞察破绽的效果时，会生成强攻破绽。）",
         "playCost": [
           {
             "type": "GCG_COST_DICE_CRYO",
@@ -2396,8 +2396,8 @@
         "name": "细致入微的诊疗",
         "englishName": "Detailed Diagnosis, Thorough Treatment",
         "type": "GCG_SKILL_TAG_PASSIVE",
-        "rawDescription": "【被动】我方角色受到治疗，使其所附属的<color=#FFFFFFFF>$[C122]</color>被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）\\n<color=#FFFFFFFF>我方切换到本角色时：</color>如果我方场上存在<color=#FFFFFFFF>$[C112101]</color>，则使其$[K3]-1，本角色获得1点$[K310]。",
-        "description": "【被动】我方角色受到治疗，使其所附属的生命之契被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）\n我方切换到本角色时：如果我方场上存在源水之滴，则使其可用次数-1，本角色获得1点充能。",
+        "rawDescription": "【被动】我方角色所附属的<color=#FFFFFFFF>$[C122]</color>被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）\\n<color=#FFFFFFFF>我方切换到本角色时：</color>如果我方场上存在<color=#FFFFFFFF>$[C112101]</color>，则使其$[K3]-1，本角色获得1点$[K310]。",
+        "description": "【被动】我方角色所附属的生命之契被完全移除后，该角色获得1点额外最大生命值。（对每名角色最多生效3次）\n我方切换到本角色时：如果我方场上存在源水之滴，则使其可用次数-1，本角色获得1点充能。",
         "playCost": [],
         "keyMap": {},
         "icon": "Skill_S_Sigewinne_02"
@@ -2442,6 +2442,89 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Avatar_Sigewinne",
     "icon": "UI_Gcg_Char_AvatarIcon_Sigewinne"
+  },
+  {
+    "id": 1214,
+    "shareId": 444,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "name": "玛拉妮",
+    "englishName": "Mualani",
+    "tags": [
+      "GCG_TAG_ELEMENT_HYDRO",
+      "GCG_TAG_WEAPON_CATALYST",
+      "GCG_TAG_NATION_NATLAN"
+    ],
+    "storyTitle": "哗啦啦逐浪客·玛拉妮",
+    "storyText": "流泉不息，踏浪前行。",
+    "skills": [
+      {
+        "id": 12141,
+        "name": "降温处理",
+        "englishName": "Cooling Treatment",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。",
+        "description": "造成1点水元素伤害。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_A_Catalyst_MD"
+      },
+      {
+        "id": 12142,
+        "name": "踏鲨破浪",
+        "englishName": "Surfshark Wavebreaker",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "自身附属<color=#FFFFFFFF>$[C112142]</color>，然后进入<color=#FFFFFFFF>$[C112141]</color>，并获得2点<color=#FFFFFFFF>「夜魂值」</color>。（角色进入<color=#FFFFFFFF>$[C112141]</color>后不可使用此技能）\\n（附属<color=#FFFFFFFF>$[C112142]</color>的角色可以使用特技：<color=#FFFFFFFF>$[S1121422]</color>）",
+        "description": "自身附属咬咬鲨鱼，然后进入夜魂加持，并获得2点「夜魂值」。（角色进入夜魂加持后不可使用此技能）\n（附属咬咬鲨鱼的角色可以使用特技：鲨鲨冲浪板）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 2
+          }
+        ],
+        "keyMap": {},
+        "icon": "Skill_S_Mualani_01"
+      },
+      {
+        "id": 12143,
+        "name": "爆瀑飞弹",
+        "englishName": "Boomsharka-laka",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，召唤<color=#FFFFFFFF>$[C112144]</color>。",
+        "description": "造成2点水元素伤害，召唤鲨鲨飞弹。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_HYDRO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
+          "D__KEY__DAMAGE": 2
+        },
+        "icon": "Skill_E_Mualani_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Mualani",
+    "icon": "UI_Gcg_Char_AvatarIcon_Mualani"
   },
   {
     "id": 1301,
@@ -4283,8 +4366,8 @@
         "name": "野干役咒·杀生樱",
         "englishName": "Yakan Evocation: Sesshou Sakura",
         "type": "GCG_SKILL_TAG_E",
-        "rawDescription": "召唤<color=#FFFFFFFF>$[C114081]</color>。",
-        "description": "召唤杀生樱。",
+        "rawDescription": "召唤<color=#FFFFFFFF>$[C114081]</color>。如果场上原本已存在<color=#FFFFFFFF>$[C114081]</color>，则额外使其造成的伤害+1。（最多+1）",
+        "description": "召唤杀生樱。如果场上原本已存在杀生樱，则额外使其造成的伤害+1。（最多+1）",
         "playCost": [
           {
             "type": "GCG_COST_DICE_ELECTRO",
@@ -4575,6 +4658,91 @@
     "maxEnergy": 2,
     "cardFace": "UI_Gcg_CardFace_Char_Avatar_Shinobu",
     "icon": "UI_Gcg_Char_AvatarIcon_Shinobu"
+  },
+  {
+    "id": 1412,
+    "shareId": 445,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "name": "克洛琳德",
+    "englishName": "Clorinde",
+    "tags": [
+      "GCG_TAG_ELEMENT_ELECTRO",
+      "GCG_TAG_WEAPON_SWORD",
+      "GCG_TAG_NATION_FONTAINE",
+      "GCG_TAG_ARKHE_PNEUMA"
+    ],
+    "storyTitle": "秉烛狝影·克洛琳德",
+    "storyText": "洞灭魔影，持护长夜。",
+    "skills": [
+      {
+        "id": 14121,
+        "name": "逐影之誓",
+        "englishName": "Oath of Hunting Shadows",
+        "type": "GCG_SKILL_TAG_A",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]。如果本角色附属<color=#FFFFFFFF>$[C114121]</color>，则此技能少花费1个$[K309]。",
+        "description": "造成1点物理伤害。如果本角色附属夜巡，则此技能少花费1个无色元素。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ELECTRO",
+            "count": 1
+          },
+          {
+            "type": "GCG_COST_DICE_VOID",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__DAMAGE": 1
+        },
+        "icon": "Skill_A_01"
+      },
+      {
+        "id": 14122,
+        "name": "狩夜之巡",
+        "englishName": "Hunter's Vigil",
+        "type": "GCG_SKILL_TAG_E",
+        "rawDescription": "自身附属<color=#FFFFFFFF>$[C114121]</color>，移除自身所有<color=#FFFFFFFF>$[C122]</color>。然后根据所移除的层数，造成$[D__KEY__ELEMENT]，并治疗自身。（伤害和治疗最多4点）",
+        "description": "自身附属夜巡，移除自身所有生命之契。然后根据所移除的层数，造成雷元素伤害，并治疗自身。（伤害和治疗最多4点）",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ELECTRO",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ELECTRO"
+        },
+        "icon": "Skill_S_Clorinde_01"
+      },
+      {
+        "id": 14123,
+        "name": "残光将终",
+        "englishName": "Last Lightfall",
+        "type": "GCG_SKILL_TAG_Q",
+        "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，自身附属4层<color=#FFFFFFFF>$[C122]</color>。",
+        "description": "造成3点雷元素伤害，自身附属4层生命之契。",
+        "playCost": [
+          {
+            "type": "GCG_COST_DICE_ELECTRO",
+            "count": 3
+          },
+          {
+            "type": "GCG_COST_ENERGY",
+            "count": 2
+          }
+        ],
+        "keyMap": {
+          "D__KEY__ELEMENT": "GCG_ELEMENT_ELECTRO",
+          "D__KEY__DAMAGE": 3
+        },
+        "icon": "Skill_E_Clorinde_01_HD"
+      }
+    ],
+    "hp": 10,
+    "maxEnergy": 2,
+    "cardFace": "UI_Gcg_CardFace_Char_Avatar_Clorinde",
+    "icon": "UI_Gcg_Char_AvatarIcon_Clorinde"
   },
   {
     "id": 1501,
@@ -7590,7 +7758,7 @@
         "englishName": "Influx Blast",
         "type": "GCG_SKILL_TAG_E",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，目标角色附属<color=#FFFFFFFF>$[C122021]</color>。",
-        "description": "造成2点水元素伤害，目标角色附属水光破镜。",
+        "description": "造成3点水元素伤害，目标角色附属水光破镜。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_HYDRO",
@@ -7599,7 +7767,7 @@
         ],
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
-          "D__KEY__DAMAGE": 2
+          "D__KEY__DAMAGE": 3
         },
         "icon": "MonsterSkill_S_FatuusMaidenWater_01"
       },
@@ -7675,7 +7843,7 @@
         "englishName": "Vortex Edge",
         "type": "GCG_SKILL_TAG_E",
         "rawDescription": "造成$[D__KEY__DAMAGE]点$[D__KEY__ELEMENT]，然后$[K53]：<color=#FFFFFFFF>$[S22035]</color>。",
-        "description": "造成2点水元素伤害，然后准备技能：涟锋旋刃。",
+        "description": "造成1点水元素伤害，然后准备技能：涟锋旋刃。",
         "playCost": [
           {
             "type": "GCG_COST_DICE_HYDRO",
@@ -7684,7 +7852,7 @@
         ],
         "keyMap": {
           "D__KEY__ELEMENT": "GCG_ELEMENT_HYDRO",
-          "D__KEY__DAMAGE": 2
+          "D__KEY__DAMAGE": 1
         },
         "icon": "MonsterSkill_S_InvokerHeraldWater_01"
       },

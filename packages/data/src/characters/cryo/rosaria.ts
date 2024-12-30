@@ -59,14 +59,18 @@ export const ScopeOutSoftSpots = combatStatus(111131)
  * @id 111132
  * @name 极寒的冰枪
  * @description
- * 结束阶段：造成1点冰元素伤害，生成1层洞察破绽。
+ * 结束阶段：造成1点冰元素伤害，生成2层洞察破绽。
  * 可用次数：2
  */
 export const EvercoldFrostlance = summon(111132)
   .since("v5.2.0")
   .endPhaseDamage(DamageType.Cryo, 1)
   .usage(2)
-  .combatStatus(ScopeOutSoftSpots)
+  .combatStatus(ScopeOutSoftSpots, "my", {
+    overrideVariables: {
+      usage: 2
+    }
+  })
   .done();
 
 /**
@@ -86,17 +90,13 @@ export const SpearOfTheChurch = skill(11131)
  * @id 11132
  * @name 噬罪的告解
  * @description
- * 造成1点冰元素伤害，生成2层洞察破绽。（触发洞察破绽的效果时，会生成强攻破绽。）
+ * 造成1点冰元素伤害，生成1层洞察破绽。（触发洞察破绽的效果时，会生成强攻破绽。）
  */
 export const RavagingConfession = skill(11132)
   .type("elemental")
   .costCryo(3)
   .damage(DamageType.Cryo, 1)
-  .combatStatus(ScopeOutSoftSpots, "my", {
-    overrideVariables: {
-      usage: 2
-    }
-  })
+  .combatStatus(ScopeOutSoftSpots)
   .done();
 
 /**

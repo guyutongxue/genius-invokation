@@ -24,8 +24,15 @@ import { character, skill, summon, status, combatStatus, card, DamageType, DiceT
  * 我方宣布结束时：如果此牌的可用次数至少为4，则造成1点雷元素伤害。（需消耗可用次数）
  */
 export const SesshouSakura = summon(114081)
-  .endPhaseDamage(DamageType.Electro, 1)
+  .variable("atk", 1)
+  .hintIcon(DamageType.Electro)
+  .hintText("[GCG_TOKEN_USR1]")
+  .replaceDescription("[GCG_TOKEN_USR1]", (c, e) => e.variables.atk)
+  .on("endPhase")
   .usageCanAppend(3, 6)
+  .do((c) => {
+    c.damage(DamageType.Electro, c.getVariable("atk"));
+  })
   .on("declareEnd", (c) => c.getVariable("usage") >= 4)
   .damage(DamageType.Electro, 1)
   .consumeUsage()
@@ -73,12 +80,18 @@ export const SpiritfoxSineater = skill(14081)
  * @id 14082
  * @name 野干役咒·杀生樱
  * @description
- * 召唤杀生樱。
+ * 召唤杀生樱。如果场上原本已存在杀生樱，则额外使其造成的伤害+1。（最多+1）
  */
 export const YakanEvocationSesshouSakura = skill(14082)
   .type("elemental")
   .costElectro(3)
   .summon(SesshouSakura)
+  .do((c) => {
+    const sakura = c.$(`my summon with definition id ${SesshouSakura}`);
+    if (sakura && sakura.getVariable("atk") === 1) {
+      sakura.addVariable("atk", 1);
+    }
+  })
   .done();
 
 /**

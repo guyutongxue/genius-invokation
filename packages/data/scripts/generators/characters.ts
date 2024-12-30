@@ -18,10 +18,11 @@ import {
   entities,
   actionCards,
   EntityRawData,
+  PlayCost,
 } from "@gi-tcg/static-data";
 import { snakeCase } from "case-anything";
 import { writeSourceCode, SourceInfo, identifier } from "./source";
-import { getCostCode } from "./cost";
+import { getCostCode, inlineCostDescription } from "./cost";
 import { getCardCode, getCardTypeAndTags } from "./cards";
 import { NEW_VERSION } from "./config";
 
@@ -83,6 +84,12 @@ function getAuxiliaryOfCharacter(id: number): AuxiliaryFound {
     let description = obj.description;
     if (obj.playingDescription && obj.playingDescription.includes("$")) {
       description += "\n【此卡含描述变量】";
+    }
+    if (obj.tags.includes("GCG_TAG_VEHICLE")) {
+      const et = entities.find((et) => et.id === obj.id)!;
+      for (const skill of et.skills) {
+        description += `\n[${skill.id}: ${skill.name}] (${inlineCostDescription(skill.playCost)}) ${skill.description}`;
+      }
     }
     return {
       id: obj.id,

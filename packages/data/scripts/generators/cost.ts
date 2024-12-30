@@ -20,6 +20,10 @@ function costMap(s: string) {
   return s[14] + s.substring(15).toLowerCase();
 }
 
+export function inlineCostDescription(cost: PlayCost[]): string {
+  return cost.map((c) => `${c.count}*${costMap(c.type)}`).join(", ");
+}
+
 export function isLegend(playcost: PlayCost[]) {
   return playcost.find((c) => c.type === "GCG_COST_LEGEND");
 }

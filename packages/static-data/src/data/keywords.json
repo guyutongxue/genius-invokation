@@ -287,6 +287,13 @@
     "description": "融化：本伤害+2\n蒸发：本伤害+2\n超载：本伤害+2，目标强制切换到下一个角色\n燃烧：本伤害+1，生成回合结束时造成1点火元素伤害的[燃烧烈焰]（可用次数1，最多叠加到2）\n结晶（火）：本伤害+1，我方出战角色获得1点护盾（可叠加，最多2点）。\n扩散（火）：对目标以外的所有敌方角色造成1点火元素伤害"
   },
   {
+    "id": 214,
+    "rawName": "<color=#FFACFFFF>{SPRITE_PRESET#2104}雷元素相关反应</color>",
+    "name": "雷元素相关反应",
+    "rawDescription": "{SPRITE_PRESET#2104}{SPRITE_PRESET#2103}<color=#FFFFFFFF>超载</color>：本伤害+2，目标强制切换到下一个角色\\n{SPRITE_PRESET#2104}{SPRITE_PRESET#2101}<color=#FFFFFFFF>超导</color>：本伤害+1，对目标以外的所有敌方角色造成1点穿透伤害\\n{SPRITE_PRESET#2104}{SPRITE_PRESET#2102}<color=#FFFFFFFF>感电</color>：本伤害+1，对目标以外的所有敌方角色造成1点穿透伤害\\n{SPRITE_PRESET#2104}{SPRITE_PRESET#2107}<color=#FFFFFFFF>原激化</color>：本伤害+1，生成使下2次草元素或雷元素伤害+1的[<color=#FFFFFFFF>激化领域</color>]\\n{SPRITE_PRESET#2106}{SPRITE_PRESET#2104}<color=#FFFFFFFF>结晶（雷）</color>：本伤害+1，我方出战角色获得1点护盾（可叠加，最多2点）。\\n{SPRITE_PRESET#2105}{SPRITE_PRESET#2104}<color=#FFFFFFFF>扩散（雷）</color>：对目标以外的所有敌方角色造成1点雷元素伤害",
+    "description": "超载：本伤害+2，目标强制切换到下一个角色\n超导：本伤害+1，对目标以外的所有敌方角色造成1点穿透伤害\n感电：本伤害+1，对目标以外的所有敌方角色造成1点穿透伤害\n原激化：本伤害+1，生成使下2次草元素或雷元素伤害+1的[激化领域]\n结晶（雷）：本伤害+1，我方出战角色获得1点护盾（可叠加，最多2点）。\n扩散（雷）：对目标以外的所有敌方角色造成1点雷元素伤害"
+  },
+  {
     "id": 217,
     "rawName": "<color=#7EC236FF>{SPRITE_PRESET#2107}草元素相关反应</color>",
     "name": "草元素相关反应",
@@ -614,6 +621,13 @@
     "name": "迸发扫描",
     "rawDescription": "<color=#FFFFFFFF>双方选择行动前：</color>如果我方场上存在草原核或丰穰之核，则使其<color=#FFFFFFFF>可用次数</color>-1，并<color=#FFFFFFFF>舍弃</color>我方牌库顶的1张卡牌。然后，造成所<color=#FFFFFFFF>舍弃</color>卡牌的元素骰费用的{SPRITE_PRESET#2107}<color=#7EC236FF>草元素伤害</color>。\\n<color=#FFFFFFFF><color=#FFFFFFFF>可用次数</color>：1</color>（可叠加，最多叠加到3次）",
     "description": "双方选择行动前：如果我方场上存在草原核或丰穰之核，则使其可用次数-1，并舍弃我方牌库顶的1张卡牌。然后，造成所舍弃卡牌的元素骰费用的草元素伤害。\n可用次数：1（可叠加，最多叠加到3次）"
+  },
+  {
+    "id": 1034,
+    "rawName": "<color=#FFFFFFFF>啃咬目标</color>",
+    "name": "啃咬目标",
+    "rawDescription": "<color=#FFFFFFFF>受到玛拉妮或<color=#FFFFFFFF>鲨鲨飞弹</color>伤害时：</color>移除此效果，每层使此伤害+2。\\n（层数可叠加，没有上限）",
+    "description": "受到玛拉妮或鲨鲨飞弹伤害时：移除此效果，每层使此伤害+2。\n（层数可叠加，没有上限）"
   },
   {
     "id": 2001,

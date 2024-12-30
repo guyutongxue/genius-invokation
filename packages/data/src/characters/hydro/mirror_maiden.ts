@@ -67,12 +67,12 @@ export const WaterBall = skill(22021)
  * @id 22022
  * @name 潋波绽破
  * @description
- * 造成2点水元素伤害，目标角色附属水光破镜。
+ * 造成3点水元素伤害，目标角色附属水光破镜。
  */
 export const InfluxBlast: SkillHandle = skill(22022)
   .type("elemental")
   .costHydro(3)
-  .damage(DamageType.Hydro, 2)
+  .damage(DamageType.Hydro, 3)
   .if((c) => c.self.hasEquipment(MirrorCage))
   .characterStatus(Refraction01, "opp active")
   .else()

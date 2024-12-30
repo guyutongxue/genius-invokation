@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { getCostCode, isLegend } from "./cost";
+import { getCostCode, inlineCostDescription, isLegend } from "./cost";
 import { identifier, SourceInfo, writeSourceCode } from "./source";
 import { ActionCardRawData, actionCards, entities } from "@gi-tcg/static-data";
 import { NEW_VERSION } from "./config";
@@ -134,7 +134,7 @@ export async function generateCards() {
     if (card.tags.includes("GCG_TAG_VEHICLE")) {
       const et = entities.find((et) => et.id === card.id)!;
       for (const skill of et.skills) {
-        description += `\n【${skill.id}: ${skill.name}】${skill.description}`;
+        description += `\n[${skill.id}: ${skill.name}] (${inlineCostDescription(skill.playCost)}) ${skill.description}`;
       }
     }
     target.push({

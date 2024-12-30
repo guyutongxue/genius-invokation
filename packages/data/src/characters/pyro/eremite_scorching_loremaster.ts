@@ -39,8 +39,8 @@ export const ScorpionBlessing = combatStatus(123032)
  * 特技：炙烧攻势
  * 可用次数：1
  * （角色最多装备1个「特技」）
- * 【1230311: 炙烧攻势】造成2点火元素伤害。
- * 【1230312: 】
+ * [1230311: 炙烧攻势] (2*Same) 造成2点火元素伤害。
+ * [1230312: ] ()
  */
 export const SpiritOfOmenPyroScorpion = card(123031)
   .since("v5.1.0")

@@ -97,7 +97,7 @@ export const KukiShinobu = character(1411)
  */
 export const ToWardWeakness = card(214111)
   .since("v4.6.0")
-  .costElectro(3)
+  .costElectro(4)
   .costEnergy(2)
   .talent(KukiShinobu)
   .on("enter")

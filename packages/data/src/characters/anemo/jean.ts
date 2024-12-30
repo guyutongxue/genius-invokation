@@ -20,11 +20,11 @@ import { character, skill, summon, card, DamageType, SummonHandle } from "@gi-tc
  * @name 蒲公英领域
  * @description
  * 结束阶段：造成1点风元素伤害，治疗我方出战角色1点。
- * 可用次数：2
+ * 可用次数：3
  */
 export const DandelionField: SummonHandle = summon(115021)
   .endPhaseDamage(DamageType.Anemo, 1)
-  .usage(2)
+  .usage(3)
   .heal(1, "my active")
   .on("increaseDamage", (c, e) => 
     c.$(`my equipment with definition id ${LandsOfDandelion}`) && // 装备有天赋的琴在场时

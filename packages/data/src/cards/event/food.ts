@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DiceType, card, combatStatus } from "@gi-tcg/core/builder";
+import { DiceType, card, combatStatus, status } from "@gi-tcg/core/builder";
 import { Satiated } from "../../commons";
 
 /**
@@ -269,7 +269,6 @@ export const MatsutakeMeatRolls = card(333014)
 export const RainbowMacarons = card(333015)
   .since("v4.6.0")
   .costVoid(2)
-  .tags("food")
   .food({ extraTargetRestraint: "with health < maxHealth" })
   .heal(1, "@targets.0")
   .toStatus("@targets.0", 303313)
@@ -317,7 +316,6 @@ export const DeliciousMacarons = card(133098) // 骗骗花
  */
 export const SaurusCrackers = card(333016)
   .since("v5.1.0")
-  .tags("food")
   .food()
   .toStatus("@targets.0", 303314)
   .oneDuration()
@@ -333,9 +331,34 @@ export const SaurusCrackers = card(333016)
  * （每回合每个角色最多食用1次「料理」）
  */
 export const GlitteringGemstones = card(333017)
-  .since("v5.2.0")
+  .since("v5.3.0")
   .costSame(1)
-  .tags("food")
   .food()
   .increaseMaxHealth(1, "@targets.0")
+  .done();
+
+/**
+ * @id 303315
+ * @name 咚咚嘭嘭（生效中）
+ * 名称不存在于初始牌组中的牌加入我方手牌时：治疗该角色1点。
+ * 可用次数：3
+ */
+export const PuffPopsInEffect = status(303315)
+  .on("handCardInserted", (c, e) => !c.isInInitialPile(e.card))
+  .usage(3)
+  .heal(1, "@master") 
+  .done()
+
+/**
+ * @id 333018
+ * @name 咚咚嘭嘭
+ * @description
+ * 接下来3次名称不存在于初始牌组中的牌加入我方手牌时，目标我方角色治疗自身1点。
+ * （每回合每个角色最多食用1次「料理」）
+ */
+export const PuffPops = card(333018)
+  .since("v5.3.0")
+  .costSame(1)
+  .food()
+  .characterStatus(PuffPopsInEffect, "@targets.0")
   .done();
