@@ -148,11 +148,15 @@ export const NightRealmsGiftCrestsAndTroughs = card(212141)
   .since("v5.3.0")
   .costHydro(1)
   .talent(Mualani, "none")
-  .on("switchActive", (c, e) => e.switchInfo.to.id === c.self.master().id)
+  .on("switchActive", (c, e) =>
+    e.switchInfo.to.id === c.self.master().id &&
+    c.$$(`my summon`).length > 0)
   .usagePerRound(1)
   .do((c) => {
     const summons = c.$$(`my summon`);
-    const targetSummon = c.random(summons);
-    c.triggerEndPhaseSkill(targetSummon.state);
+    if (summons.length > 0) {
+      const targetSummon = c.random(summons);
+      c.triggerEndPhaseSkill(targetSummon.state);
+    }
   })
   .done();
