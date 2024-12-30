@@ -15,6 +15,7 @@
     "@fastify/static": "^7.0.4",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
+    "@gi-tcg/config": "workspace:*",
     "@gi-tcg/static-data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",

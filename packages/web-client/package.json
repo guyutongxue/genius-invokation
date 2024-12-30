@@ -7,7 +7,7 @@
     "check": "tsc --noEmit",
     "dev": "bunx --bun vite",
     "generate_data": "bun scripts/generate_names.ts",
-    "build": "bun generate_data && vite build",
+    "build": "bun generate_data && bunx --bun vite build",
     "build:prod": "bun run build",
     "preview": "vite preview"
   },
