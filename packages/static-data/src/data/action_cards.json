@@ -1181,7 +1181,7 @@
     "sinceVersion": "v5.2.0",
     "obtainable": true,
     "type": "GCG_CARD_MODIFY",
-    "name": "应当有适当的休憩",
+    "name": "应有适当的休憩",
     "englishName": "Requires Appropriate Rest",
     "tags": [
       "GCG_TAG_TALENT",
@@ -1199,7 +1199,7 @@
     ],
     "relatedCharacterId": 1213,
     "relatedCharacterTags": [],
-    "storyTitle": "希格雯·应当有适当的休憩",
+    "storyTitle": "希格雯·应有适当的休憩",
     "storyText": "「别紧张哦，放松。」",
     "playCost": [
       {
@@ -1212,6 +1212,60 @@
     "rawPlayingDescription": "装备有此牌的$[A1213]使用<color=#FFFFFFFF>$[S12132]</color>后，使我方接下来2次「元素战技」或召唤物造成的伤害+1。",
     "playingDescription": "装备有此牌的希格雯使用弹跳水疗法后，使我方接下来2次「元素战技」或召唤物造成的伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Sigewinne"
+  },
+  {
+    "id": 112142,
+    "obtainable": false,
+    "type": "GCG_CARD_MODIFY",
+    "name": "咬咬鲨鱼",
+    "englishName": "Bitey Shark",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>双方切换角色后，且$[A1214]为出战角色时：</color>消耗1点<color=#FFFFFFFF>「夜魂值」</color>，使敌方出战角色附属<color=#FFFFFFFF>$[K1034]</color>。\\n$[K58]：$[S1121422]\\n所附属角色<color=#FFFFFFFF>「夜魂值」</color>为0时，弃置此牌；此牌被弃置时，所附属角色结束<color=#FFFFFFFF>$[C112141]</color>。",
+    "description": "双方切换角色后，且玛拉妮为出战角色时：消耗1点「夜魂值」，使敌方出战角色附属啃咬目标。\n特技：鲨鲨冲浪板\n所附属角色「夜魂值」为0时，弃置此牌；此牌被弃置时，所附属角色结束夜魂加持。",
+    "cardFace": "UI_Gcg_CardFace_Summon_Mualani_1"
+  },
+  {
+    "id": 212141,
+    "shareId": 446,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "夜域赐礼·波涛顶底",
+    "englishName": "Night Realm's Gift: Crests and Troughs",
+    "tags": [
+      "GCG_TAG_TALENT"
+    ],
+    "targetList": [
+      {
+        "id": 11214,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给出战中的<color=#FFD780FF>玛拉妮</color>",
+        "hintText": "装备给出战中的玛拉妮"
+      }
+    ],
+    "relatedCharacterId": 1214,
+    "relatedCharacterTags": [],
+    "storyTitle": "玛拉妮·波涛顶底",
+    "storyText": "「巨浪——哗啦哗啦~」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_HYDRO",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>装备有此牌的$[A1214]切换为「出战角色」时：</color>触发1个随机我方「召唤物」的「结束阶段」效果。（每回合1次）\\n（牌组中包含$[A1214]，才能加入牌组）",
+    "description": "装备有此牌的玛拉妮切换为「出战角色」时：触发1个随机我方「召唤物」的「结束阶段」效果。（每回合1次）\n（牌组中包含玛拉妮，才能加入牌组）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>装备有此牌的$[A1214]被切换为「出战角色」时：</color>触发1个随机我方「召唤物」的「结束阶段」效果。（每回合1次）",
+    "playingDescription": "装备有此牌的玛拉妮被切换为「出战角色」时：触发1个随机我方「召唤物」的「结束阶段」效果。（每回合1次）",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Mualani"
   },
   {
     "id": 213011,
@@ -2205,7 +2259,7 @@
     "playCost": [
       {
         "type": "GCG_COST_DICE_ELECTRO",
-        "count": 3
+        "count": 4
       },
       {
         "type": "GCG_COST_ENERGY",
@@ -2217,6 +2271,44 @@
     "rawPlayingDescription": "装备有此牌的$[A1411]被击倒时：角色免于被击倒，并治疗该角色到1点生命值。（每回合1次）\\n如果装备有此牌的$[A1411]生命值不多于5，则该角色造成的伤害+1。",
     "playingDescription": "装备有此牌的久岐忍被击倒时：角色免于被击倒，并治疗该角色到1点生命值。（每回合1次）\n如果装备有此牌的久岐忍生命值不多于5，则该角色造成的伤害+1。",
     "cardFace": "UI_Gcg_CardFace_Modify_Talent_Shinobu"
+  },
+  {
+    "id": 214121,
+    "shareId": 447,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "破夜的明焰",
+    "englishName": "Dark-Shattering Flame",
+    "tags": [
+      "GCG_TAG_TALENT",
+      "GCG_TAG_SLOWLY"
+    ],
+    "targetList": [
+      {
+        "id": 11412,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "装备给出战中的<color=#FFD780FF>克洛琳德</color>",
+        "hintText": "装备给出战中的克洛琳德"
+      }
+    ],
+    "relatedCharacterId": 1412,
+    "relatedCharacterTags": [],
+    "storyTitle": "克洛琳德·破夜的明焰",
+    "storyText": "「洞见恶孽，逐灭鬼影！」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_ELECTRO",
+        "count": 2
+      }
+    ],
+    "rawDescription": "$[K1]：我方出战角色为<color=#FFFFFFFF>$[A1412]</color>时，装备此牌。\\n$[A1412]装备此牌后，立刻使用一次<color=#FFD780FF>$[S14122]</color>。\\n我方触发$[K214]后:本回合$[A1412]下次造成的伤害+1。(可叠加，最多叠加到+3)\\n（牌组中包含$[A1412]，才能加入牌组）",
+    "description": "战斗行动：我方出战角色为克洛琳德时，装备此牌。\n克洛琳德装备此牌后，立刻使用一次狩夜之巡。\n我方触发雷元素相关反应后:本回合克洛琳德下次造成的伤害+1。(可叠加，最多叠加到+3)\n（牌组中包含克洛琳德，才能加入牌组）",
+    "rawPlayingDescription": "我方触发$[K214]后:本回合$[A1412]下次造成的伤害+1。(可叠加，最多叠加到+3)",
+    "playingDescription": "我方触发雷元素相关反应后:本回合克洛琳德下次造成的伤害+1。(可叠加，最多叠加到+3)",
+    "cardFace": "UI_Gcg_CardFace_Modify_Talent_Clorinde"
   },
   {
     "id": 215011,
@@ -7710,6 +7802,43 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Artifact_XiaoShaoNv"
   },
   {
+    "id": 312032,
+    "shareId": 448,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "魔战士的羽面",
+    "englishName": "Demon-Warrior's Feather Mask",
+    "tags": [
+      "GCG_TAG_ARTIFACT"
+    ],
+    "targetList": [
+      {
+        "id": 110,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>圣遗物</color>的角色",
+        "hintText": "请选择要装备圣遗物的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "勇士标志·魔战士的羽面",
+    "storyText": "「…总是有人要背负起责任，而那些强大之人理应背负的更多。\n在目睹了真正的战争之后，他才第一次感到了命运的重任…」",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_VOID",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>附属角色使用特技后：</color>获得1点充能。（每回合1次)\\n（角色最多装备1件「{SPRITE_PRESET#3004}圣遗物」）",
+    "description": "附属角色使用特技后：获得1点充能。（每回合1次)\n（角色最多装备1件「圣遗物」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>附属角色使用特技后：</color>获得1点充能。（每回合1次)",
+    "playingDescription": "附属角色使用特技后：获得1点充能。（每回合1次)",
+    "cardFace": "UI_Gcg_CardFace_Modify_Artifact_Mozhanshi"
+  },
+  {
     "id": 312101,
     "shareId": 165,
     "sinceVersion": "v3.3.0",
@@ -8408,6 +8537,43 @@
     "cardFace": "UI_Gcg_CardFace_Modify_Vehicle_MingshiLong"
   },
   {
+    "id": 313006,
+    "shareId": 449,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_MODIFY",
+    "name": "绒翼龙",
+    "englishName": "Qucusaurus",
+    "tags": [
+      "GCG_TAG_VEHICLE"
+    ],
+    "targetList": [
+      {
+        "id": 128,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择要装备<color=#FFD780FF>特技</color>的角色",
+        "hintText": "请选择要装备特技的角色"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "绒翼龙·迅疾滑翔",
+    "storyText": "据说绒翼龙的先祖是最接近巨大翼龙形态的龙兽，能够如云一般在天际巡游。",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>入场时：</color>敌方出战角色附属<color=#FFFFFFFF>$[C301302]</color>。\\n<color=#FFFFFFFF>附属角色切换为出战角色，且敌方出战角色附属<color=#FFFFFFFF>$[C301302]</color>时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，将此次切换视为「$[K2]」而非「$[K1]」，少花费1个元素骰，并移除对方所有角色的<color=#FFFFFFFF>$[C301302]</color>。\\n$[K58]：$[S3130063]\\n<color=#FFFFFFFF>$[K3]：2</color>\\n（角色最多装备1个「{SPRITE_PRESET#3008}特技」）",
+    "description": "入场时：敌方出战角色附属目标。\n附属角色切换为出战角色，且敌方出战角色附属目标时：如可能，舍弃原本元素骰费用最高的1张手牌，将此次切换视为「快速行动」而非「战斗行动」，少花费1个元素骰，并移除对方所有角色的目标。\n特技：迅疾滑翔\n可用次数：2\n（角色最多装备1个「特技」）",
+    "rawPlayingDescription": "<color=#FFFFFFFF>入场时：</color>敌方出战角色附属<color=#FFFFFFFF>$[C301302]</color>。\\n<color=#FFFFFFFF>附属角色切换为出战角色，且敌方出战角色附属<color=#FFFFFFFF>$[C301302]</color>时：</color>如可能，$[K56]原本元素骰费用最高的1张手牌，将此次切换视为「$[K2]」而非「$[K1]」，少花费1个元素骰，并移除对方所有角色的<color=#FFFFFFFF>$[C301302]</color>。\\n$[K58]：$[S3130063]\\n<color=#FFFFFFFF>$[K3]：2</color>",
+    "playingDescription": "入场时：敌方出战角色附属目标。\n附属角色切换为出战角色，且敌方出战角色附属目标时：如可能，舍弃原本元素骰费用最高的1张手牌，将此次切换视为「快速行动」而非「战斗行动」，少花费1个元素骰，并移除对方所有角色的目标。\n特技：迅疾滑翔\n可用次数：2",
+    "cardFace": "UI_Gcg_CardFace_Modify_Vehicle_RongyiLong"
+  },
+  {
     "id": 321001,
     "shareId": 179,
     "sinceVersion": "v3.3.0",
@@ -9019,6 +9185,32 @@
     "rawDescription": "<color=#FFFFFFFF>我方打出名称不存在于本局最初牌组的牌时：</color>如果打出的牌原本元素骰费用不低于此牌的<color=#FFFFFFFF>「极限运动点」</color>，则生成1个随机基础元素骰，然后此牌累积1个<color=#FFFFFFFF>「极限运动点」</color>。",
     "description": "我方打出名称不存在于本局最初牌组的牌时：如果打出的牌原本元素骰费用不低于此牌的「极限运动点」，则生成1个随机基础元素骰，然后此牌累积1个「极限运动点」。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_XuanmuRen"
+  },
+  {
+    "id": 321025,
+    "shareId": 450,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_ASSIST",
+    "name": "「流泉之众」",
+    "englishName": "\"People of the Springs\"",
+    "tags": [
+      "GCG_TAG_PLACE"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "「流泉之众」",
+    "storyText": "纳塔最好的度假胜地，鳍游龙与温泉爱好者的快乐之家！",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 2
+      }
+    ],
+    "rawDescription": "<color=#FFFFFFFF>我方「召唤物」入场时：</color>使其$[K3]+1。\\n<color=#FFFFFFFF>$[K3]：3</color>",
+    "description": "我方「召唤物」入场时：使其可用次数+1。\n可用次数：3",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_LiuQuan"
   },
   {
     "id": 322001,
@@ -10390,6 +10582,47 @@
     "rawDescription": "本回合中，目标角色免疫冻结、眩晕、石化等无法使用技能的效果，并且该角色为「出战角色」时不会因效果而切换。\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
     "description": "本回合中，目标角色免疫冻结、眩晕、石化等无法使用技能的效果，并且该角色为「出战角色」时不会因效果而切换。\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
     "cardFace": "UI_Gcg_CardFace_Event_Event_Wuzui"
+  },
+  {
+    "id": 330010,
+    "shareId": 451,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "归火圣夜巡礼",
+    "englishName": "Pilgrimage of the Return of the Sacred Flame",
+    "tags": [
+      "GCG_TAG_LEGEND"
+    ],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "归火圣夜巡礼",
+    "storyText": "「每一位参与者，无论胜利还是失败，都为守护纳塔做出了贡献，参与便是一件光荣的事。」",
+    "playCost": [
+      {
+        "type": "GCG_COST_LEGEND",
+        "count": 1
+      }
+    ],
+    "rawDescription": "在双方场上生成<color=#FFFFFFFF>$[C300006]</color>，然后我方场上的<color=#FFFFFFFF>$[C300006]</color>的<color=#FFFFFFFF>「斗志」</color>+1。（<color=#FFFFFFFF>$[C300006]</color>会将各自阵营对对方造成的伤害记录为<color=#FFFFFFFF>「斗志」</color>，每回合行动阶段开始时<color=#FFFFFFFF>「斗志」</color>较高的一方会清空<color=#FFFFFFFF>「斗志」</color>，使当前出战角色在本回合中造成的伤害+1。）\\n（整局游戏只能打出一张「{SPRITE_PRESET#3007}秘传」卡牌；这张牌一定在你的起始手牌中）",
+    "description": "在双方场上生成斗争之火，然后我方场上的斗争之火的「斗志」+1。（斗争之火会将各自阵营对对方造成的伤害记录为「斗志」，每回合行动阶段开始时「斗志」较高的一方会清空「斗志」，使当前出战角色在本回合中造成的伤害+1。）\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_ShenyeXunli"
+  },
+  {
+    "id": 300006,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "斗争之火",
+    "englishName": "Flames of War",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "此牌会记录本回合你对敌方角色造成的伤害，记为<color=#FFFFFFFF>「斗志」</color>。\\n<color=#FFFFFFFF>行动阶段开始时：</color>若此牌是场上<color=#FFFFFFFF>「斗志」</color>最高的$[C300006]，则清空此牌的<color=#FFFFFFFF>「斗志」</color>，使我方出战角色本回合造成的伤害+1。",
+    "description": "此牌会记录本回合你对敌方角色造成的伤害，记为「斗志」。\n行动阶段开始时：若此牌是场上「斗志」最高的斗争之火，则清空此牌的「斗志」，使我方出战角色本回合造成的伤害+1。",
+    "cardFace": "UI_Gcg_CardFace_Summon_ShenyeXunli"
   },
   {
     "id": 331101,
@@ -11928,6 +12161,25 @@
     "cardFace": "UI_Gcg_CardFace_Event_Event_QiyouLong"
   },
   {
+    "id": 332042,
+    "shareId": 452,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "燃素充盈",
+    "englishName": "Abundant Phlogiston",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "燃素充盈",
+    "storyText": "遍布纳塔的特殊高热能量，有着诸多不同的形态与奇妙用途…\n夜魂值耗竭后，战士们将转而消耗燃素来维持夜魂加持。",
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>本回合我方下次角色消耗「夜魂值」后：</color>该角色获得1点「夜魂值」。",
+    "description": "本回合我方下次角色消耗「夜魂值」后：该角色获得1点「夜魂值」。",
+    "cardFace": "UI_Gcg_CardFace_Event_Event_Ransu"
+  },
+  {
     "id": 333001,
     "shareId": 265,
     "sinceVersion": "v3.3.0",
@@ -12474,6 +12726,41 @@
     "rawDescription": "目标角色获得1点额外最大生命值。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
     "description": "目标角色获得1点额外最大生命值。\n（每回合每个角色最多食用1次「料理」）",
     "cardFace": "UI_Gcg_CardFace_Event_Food_Baoshi"
+  },
+  {
+    "id": 333018,
+    "shareId": 453,
+    "sinceVersion": "v5.3.0",
+    "obtainable": true,
+    "type": "GCG_CARD_EVENT",
+    "name": "咚咚嘭嘭",
+    "englishName": "Puff Pops",
+    "tags": [
+      "GCG_TAG_FOOD"
+    ],
+    "targetList": [
+      {
+        "id": 101,
+        "type": "GCG_CARD_CHARACTER",
+        "camp": "FRIENDLY",
+        "tags": [],
+        "rawHintText": "请选择一个角色食用<color=#FFD780FF>料理</color>",
+        "hintText": "请选择一个角色食用料理"
+      }
+    ],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "storyTitle": "咚咚嘭嘭",
+    "storyText": "味道各异的小零食。闭上眼睛就猜不出下一个的味道，吃的时候心跳会咚咚加速，嘭嘭二字来源于颗粒果在高温下炸开发出的声响。",
+    "playCost": [
+      {
+        "type": "GCG_COST_DICE_SAME",
+        "count": 1
+      }
+    ],
+    "rawDescription": "接下来3次名称不存在于初始牌组中的牌加入我方手牌时，目标我方角色治疗自身1点。\\n（每回合每个角色最多食用1次「{SPRITE_PRESET#3101}料理」）",
+    "description": "接下来3次名称不存在于初始牌组中的牌加入我方手牌时，目标我方角色治疗自身1点。\n（每回合每个角色最多食用1次「料理」）",
+    "cardFace": "UI_Gcg_CardFace_Event_Food_DongDongPengPeng"
   },
   {
     "id": 421001,
@@ -13675,6 +13962,66 @@
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
   },
   {
+    "id": 422066,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·猛攻的代价",
+    "englishName": "Ley Line Disorder: Price of Unrelenting Assault",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>对方打出1张牌后：</color>对敌方出战角色造成3点$[K100]。",
+    "description": "对方打出1张牌后：对敌方出战角色造成3点物理伤害。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422067,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·衰败的锐势",
+    "englishName": "Ley Line Disorder: Diminishing Momentum",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>结束阶段：</color>对所有对方角色造成6点$[K100]。\\n<color=#FFFFFFFF>任意角色受到伤害时：</color>使此牌下次造成的伤害-1。",
+    "description": "结束阶段：对所有对方角色造成6点物理伤害。\n任意角色受到伤害时：使此牌下次造成的伤害-1。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422068,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·倒计时将尽",
+    "englishName": "Ley Line Disorder: Ending Countdown",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>回合2结束时：</color>对方牌手立刻输掉牌局。",
+    "description": "回合2结束时：对方牌手立刻输掉牌局。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
+    "id": 422069,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "地脉异常·精准打击令",
+    "englishName": "Ley Line Disorder: Precision Strike Order",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>战斗开始或完成任务时：</color>创建一个新的任务：单次出招对对方角色正好造成1/2/3/4点伤害。（依次循环）",
+    "description": "战斗开始或完成任务时：创建一个新的任务：单次出招对对方角色正好造成1/2/3/4点伤害。（依次循环）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Yibianzhishi"
+  },
+  {
     "id": 423001,
     "obtainable": false,
     "type": "GCG_CARD_ASSIST",
@@ -14724,6 +15071,96 @@
     "playCost": [],
     "rawDescription": "我方召唤物造成的伤害+2。\\n<color=#FFFFFFFF>我方生成召唤物后：</color>对所有敌方角色造成1点$[K5]。",
     "description": "我方召唤物造成的伤害+2。\n我方生成召唤物后：对所有敌方角色造成1点穿透伤害。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423072,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·反击的气劲",
+    "englishName": "Mastery Talisman: Counterattack Spirit",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "我方剩余生命值不多于7的角色造成的伤害+2，我方剩余生命值不多于4的角色造成的伤害额外+1。",
+    "description": "我方剩余生命值不多于7的角色造成的伤害+2，我方剩余生命值不多于4的角色造成的伤害额外+1。",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423073,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·准确的毁伤·其一",
+    "englishName": "Mastery Talisman: Precise Destruction: I",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方造成刚好1点伤害时：</color>生成4个$[K411]，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "description": "我方造成刚好1点伤害时：生成4个万能元素，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423074,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·准确的毁伤·其二",
+    "englishName": "Mastery Talisman: Precise Destruction: II",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方造成刚好2点伤害时：</color>生成4个$[K411]，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "description": "我方造成刚好2点伤害时：生成4个万能元素，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423075,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·准确的毁伤·其三",
+    "englishName": "Mastery Talisman: Precise Destruction: III",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方造成刚好3点伤害时：</color>生成4个$[K411]，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "description": "我方造成刚好3点伤害时：生成4个万能元素，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423076,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·准确的毁伤·其四",
+    "englishName": "Mastery Talisman: Precise Destruction: IV",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>我方造成刚好4点伤害时：</color>生成4个$[K411]，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "description": "我方造成刚好4点伤害时：生成4个万能元素，然后切换此效果的触发条件。（按1/2/3/4的顺序循环切换）",
+    "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
+  },
+  {
+    "id": 423077,
+    "obtainable": false,
+    "type": "GCG_CARD_ASSIST",
+    "name": "机巧符术·元素的响应",
+    "englishName": "Mastery Talisman: Elemental Response",
+    "tags": [],
+    "targetList": [],
+    "relatedCharacterId": null,
+    "relatedCharacterTags": [],
+    "playCost": [],
+    "rawDescription": "<color=#FFFFFFFF>敌方角色受到元素反应伤害后：</color>生成2个$[K411]。",
+    "description": "敌方角色受到元素反应伤害后：生成2个万能元素。",
     "cardFace": "UI_Gcg_CardFace_Assist_Location_Juelubingji"
   }
 ]
