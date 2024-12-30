@@ -39,6 +39,14 @@ export const NightVigil = status(114121)
       });
     }
   })
+  .on("modifySkillDamageType", (c, e) => e.viaSkillType("normal"))
+  .if((c, e) => e.type === DamageType.Physical)
+  .changeDamageType(DamageType.Electro)
+  .characterStatus(BondOfLife, "@master", {
+    overrideVariables: {
+      usage: 2
+    }
+  })
   .on("deductVoidDiceSkill", (c, e) => e.action.skill.definition.id === OathOfHuntingShadows)
   .deductVoidCost(1)
   .done();
