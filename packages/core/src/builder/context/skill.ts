@@ -1446,9 +1446,9 @@ export class SkillContext<Meta extends ContextMetaBase> {
     for (const t of targets) {
       const st = t.hasStatus(NIGHTSOUL_BLESSING_ID);
       if (st) {
-        const oldValue = this.getVariable("nightsoul", t.state);
+        const oldValue = this.getVariable("nightsoul", st);
         const newValue = Math.max(0, oldValue - count);
-        this.setVariable("nightsoul", newValue, t.state);
+        this.setVariable("nightsoul", newValue, st);
         const info: ConsumeNightsoulInfo = {
           oldValue,
           newValue,
