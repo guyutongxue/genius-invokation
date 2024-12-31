@@ -50,9 +50,12 @@ import {
   concat,
   defer,
   filter,
+  interval,
   map,
+  mergeWith,
   of,
   startWith,
+  takeUntil,
 } from "rxjs";
 import { verifyDeck } from "../utils";
 import type {
@@ -62,6 +65,7 @@ import type {
 import { DecksService } from "../decks/decks.service";
 import { UsersService, type UserInfo } from "../users/users.service";
 import { GamesService } from "../games/games.service";
+import { existsSync, unlinkSync, writeFileSync } from "node:fs";
 import type { User } from "@prisma/client";
 
 interface RoomConfig extends Partial<GameConfig> {
@@ -94,6 +98,10 @@ export interface SSEWaiting {
   type: "waiting";
 }
 
+export interface SSEPing {
+  type: "ping";
+}
+
 export interface SSEInitialized {
   type: "initialized";
   who: 0 | 1;
@@ -110,18 +118,20 @@ export interface SSEError {
   type: "error";
   message: string;
 }
-export type SSEPayload =
-  | SSEWaiting
-  | SSEInitialized
-  | SSENotification
-  | SSEError;
-
 export interface SSERpc {
   type: "rpc";
   id: number;
   timeout: number;
-  request: RpcRequest
+  request: RpcRequest;
 }
+
+export type SSEPayload =
+  | SSEPing
+  | SSERpc
+  | SSEWaiting
+  | SSEInitialized
+  | SSENotification
+  | SSEError;
 
 interface RpcResolver {
   id: number;
@@ -130,17 +140,25 @@ interface RpcResolver {
   resolve: (response: any) => void;
 }
 
+const pingInterval = interval(30 * 1000).pipe(
+  map((): SSEPing => ({ type: "ping" })),
+);
+
 class Player implements PlayerIOWithError {
+  private readonly completeSubject = new Subject<void>();
+
   private readonly notificationSseSource =
     new BehaviorSubject<SSEPayload | null>(null);
   public notificationSse$: Observable<SSEPayload> =
     this.notificationSseSource.pipe(
       filter((data): data is SSEPayload => data !== null),
       startWith<SSEPayload>({ type: "waiting" }),
+      mergeWith(pingInterval),
+      takeUntil(this.completeSubject),
     );
   private readonly rpcSseSource = new Subject<SSERpc>();
-  public rpcSse$: Observable<SSERpc | SSEWaiting> = concat(
-    defer((): Observable<SSERpc | SSEWaiting> => {
+  public rpcSse$: Observable<SSEPayload> = concat(
+    defer((): Observable<SSEPayload> => {
       const currentAction = this.currentAction();
       if (currentAction === null) {
         return of({ type: "waiting" });
@@ -149,6 +167,9 @@ class Player implements PlayerIOWithError {
       }
     }),
     this.rpcSseSource,
+  ).pipe(
+    mergeWith(pingInterval), //
+    takeUntil(this.completeSubject),
   );
   constructor(
     public readonly user: UserInfo,
@@ -233,7 +254,7 @@ class Player implements PlayerIOWithError {
     } else if (request.selectCard) {
       const result: SelectCardResponse = {
         selectedDefinitionId: request.selectCard.candidateDefinitionIds[0]!,
-      }
+      };
       return { selectCard: result };
     } else {
       throw new Error("Unknown rpc request");
@@ -302,8 +323,7 @@ class Player implements PlayerIOWithError {
     );
   }
   complete() {
-    this.notificationSseSource.complete();
-    this.rpcSseSource.complete();
+    this.completeSubject.next();
   }
 }
 
@@ -316,6 +336,29 @@ interface RoomInfo {
   watchable: boolean;
   players: PlayerInfo[];
 }
+
+/** 当存在活跃房间时，创建此文件以通知不要重启服务 */
+const SHUTDOWN_LOCK = "no_shutdown.lock";
+/** 当检测到存在此文件时，禁用创建房间功能 */
+const REQUEST_SHUTDOWN = "request_shutdown";
+
+const createLock = () => {
+  writeFileSync(SHUTDOWN_LOCK, "");
+};
+
+const removeLock = () => {
+  try {
+    unlinkSync(SHUTDOWN_LOCK);
+  } catch {}
+};
+
+const cleanup = () => {
+  removeLock();
+}
+
+process.on("exit", cleanup);
+process.on("SIGINT", cleanup);
+process.on("uncaughtException", cleanup);
 
 class Room {
   public static readonly CORE_VERSION = CORE_VERSION;
@@ -415,11 +458,8 @@ class Room {
         } else {
           throw e;
         }
-      }
-      player0.complete();
-      player1.complete();
-      for (const cb of this.onStopHandlers) {
-        cb(this, game);
+      } finally {
+        this.stop();
       }
     })();
   }
@@ -430,6 +470,16 @@ class Room {
       this.game?.giveUp(1);
     } else {
       throw new NotFoundException(`Player ${userId} not found`);
+    }
+  }
+
+  stop() {
+    this.players[0]?.complete();
+    this.players[1]?.complete();
+    if (this.game) {
+      for (const cb of this.onStopHandlers) {
+        cb(this, this.game);
+      }
     }
   }
 
@@ -458,6 +508,7 @@ export class RoomsService {
     { length: 1_000_000 },
     () => null,
   );
+  private roomsCount = 0;
 
   constructor(
     private users: UsersService,
@@ -491,6 +542,10 @@ export class RoomsService {
       throw new NotFoundException(`Deck ${params.hostDeckId} not found`);
     }
 
+    if (existsSync(REQUEST_SHUTDOWN)) {
+      throw new ConflictException("Creating room is disabled now; we are planning a maintenance");
+    }
+
     const hostWho =
       typeof params.hostFirst === "undefined"
         ? Math.random() > 0.5
@@ -516,15 +571,23 @@ export class RoomsService {
     }
     const room = new Room(roomConfig);
     this.rooms[roomId] = room;
+    this.roomsCount++;
+    createLock();
+
     room.onStop(() => {
       this.rooms[roomId] = null;
+      this.roomsCount--;
+      if (this.roomsCount === 0) {
+        removeLock();
+      }
     });
+
     room.setHost(new Player(user, deck));
     // 闲置五分钟后删除房间
     setTimeout(
       () => {
         if (this.rooms[roomId] === room && !room.started) {
-          this.rooms[roomId] = null;
+          room.stop();
         }
       },
       5 * 60 * 1000,
@@ -543,7 +606,7 @@ export class RoomsService {
     if (room.getHost()?.user.id !== userId) {
       throw new UnauthorizedException(`You are not the host of room ${roomId}`);
     }
-    this.rooms[roomId] = null;
+    room.stop();
   }
 
   async joinRoom(userId: number, roomId: number, deckId: number) {
@@ -645,7 +708,7 @@ export class RoomsService {
   playerAction(
     roomId: number,
     userId: number,
-  ): Observable<{ data: SSERpc | SSEWaiting }> {
+  ): Observable<{ data: SSEPayload }> {
     const room = this.rooms[roomId];
     if (!room) {
       throw new NotFoundException(`Room not found`);

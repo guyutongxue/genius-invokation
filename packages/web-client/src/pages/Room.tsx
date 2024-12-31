@@ -66,7 +66,7 @@ export function Room() {
   const [playerIo, setPlayerIo] = createSignal<PlayerIOWithCancellation>();
   const [initialized, setInitialized] = createSignal<InitializedPayload>();
   const [loading, setLoading] = createSignal(true);
-  const [failed, setFailed] = createSignal(false);
+  const [failed, setFailed] = createSignal<null | string>(null);
   const [chessboard, setChessboard] = createSignal<JSX.Element>();
 
   const reportStreamError = async (e: Error) => {
@@ -75,10 +75,14 @@ export function Room() {
       if (data && "pipeThrough" in data) {
         const reader = data.pipeThrough(new TextDecoderStream()).getReader();
         const { value, done } = await reader.read();
+        let message = `${value}`;
+        try {
+          message = JSON.parse(value ?? "{}").message;
+        } catch {}
         if (initialized()) {
-          alert(JSON.parse(value ?? "{}").message);
+          alert(message);
         } else {
-          setFailed(true);
+          setFailed(message);
         }
         console.error(value);
       }
@@ -289,7 +293,7 @@ export function Room() {
             </Show>
           </div>
         </div>
-        <Show when={!failed()} fallback={<div>加载房间失败！</div>}>
+        <Show when={!failed()} fallback={<div>加载房间失败！{failed()}</div>}>
           <Show when={initialized()} fallback={<div>等待对手加入房间…</div>}>
             <div class="relative">
               <Show when={currentTimer()}>
