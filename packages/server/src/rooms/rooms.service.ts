@@ -495,7 +495,7 @@ export class RoomsService {
   ) {
     const onShutdown = async () => {
       console.log(`Waiting for ${this.roomsCount} rooms to stop...`);
-      if (this.roomsCount !== 0) {
+      if (!this.shutdownResolvers && this.roomsCount !== 0) {
         this.shutdownResolvers = Promise.withResolvers();
       }
       await this.shutdownResolvers?.promise;

@@ -7,10 +7,10 @@
     "dev": "bun --watch ./src/main.ts",
     "check": "tsc",
     "debug": "nest start --debug --watch",
-    "start": "APP_NAME=$(bun app-name) pm2 start pm2.config.cjs",
     "app-name": "bun --print 'require(\"@gi-tcg/config\").IS_BETA?\"gi-tcg-beta\":\"gi-tcg\"'",
-    "stop": "pm2 stop $(bun app-name)",
-    "restart": "pm2 restart $(bun app-name)"
+    "start": "APP_NAME=$(bun app-name) pm2 startOrRestart pm2.config.cjs",
+    "status": "pm2 show $(bun app-name) 2>&1 || true",
+    "stop": "pm2 delete $(bun app-name)"
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
