@@ -9,7 +9,7 @@
     "debug": "nest start --debug --watch",
     "app-name": "bun --print 'require(\"@gi-tcg/config\").IS_BETA?\"gi-tcg-beta\":\"gi-tcg\"'",
     "start": "APP_NAME=$(bun app-name) pm2 startOrRestart pm2.config.cjs",
-    "status": "pm2 show $(bun app-name) 2>&1 || true",
+    "status": "pm2 logs $(bun app-name) --raw --nostream --lines=1000 2>&1 || true",
     "stop": "pm2 delete $(bun app-name)"
   },
   "dependencies": {
