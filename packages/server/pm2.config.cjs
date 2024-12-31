@@ -17,7 +17,7 @@
 
 /** @type {import('pm2').StartOptions} */
 module.exports = {
-  name: "@gi-tcg/server",
+  name: process.env.APP_NAME,
   script: "src/main.ts",
   env: {
     NODE_ENV: "production"
