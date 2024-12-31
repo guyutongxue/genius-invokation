@@ -117,6 +117,7 @@ export function Room() {
     if (!response) {
       return;
     }
+    setCurrentTimer(null);
     try {
       const { data } = await axios.post(
         `rooms/${id}/players/${userId}/actionResponse`,
@@ -130,8 +131,6 @@ export function Room() {
         alert(e.response?.data.message);
       }
       console.error(e);
-    } finally {
-      setCurrentTimer(null);
     }
   };
 
