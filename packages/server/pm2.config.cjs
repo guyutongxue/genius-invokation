@@ -15,13 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-/** @type {import('pm2').StartOptions} */
 module.exports = {
-  name: process.env.APP_NAME,
-  script: "src/main.ts",
-  env: {
-    NODE_ENV: "production",
-  },
-  kill_timeout: 2 * 60 * 60 * 1000, // 2 hours (for continuing game)
-  interpreter: "bun",
+  apps: [
+    {
+      name: process.env.APP_NAME,
+      script: "src/main.ts",
+      env: {
+        NODE_ENV: "production",
+      },
+      interpreter: "bun",
+      kill_timeout: 2 * 60 * 60 * 1000, // 2 hours (for continuing game)
+      out_file: process.env.OUTPUT_PATH,
+      error_file: process.env.ERROR_PATH,
+    }
+  ]
 };
