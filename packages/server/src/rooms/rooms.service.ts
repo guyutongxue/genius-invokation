@@ -337,29 +337,6 @@ interface RoomInfo {
   players: PlayerInfo[];
 }
 
-/** 当存在活跃房间时，创建此文件以通知不要重启服务 */
-const SHUTDOWN_LOCK = "no_shutdown.lock";
-/** 当检测到存在此文件时，禁用创建房间功能 */
-const REQUEST_SHUTDOWN = "request_shutdown";
-
-const createLock = () => {
-  writeFileSync(SHUTDOWN_LOCK, "");
-};
-
-const removeLock = () => {
-  try {
-    unlinkSync(SHUTDOWN_LOCK);
-  } catch {}
-};
-
-const cleanup = () => {
-  removeLock();
-}
-
-process.on("exit", cleanup);
-process.on("SIGINT", cleanup);
-process.on("uncaughtException", cleanup);
-
 class Room {
   public static readonly CORE_VERSION = CORE_VERSION;
   private game: InternalGame | null = null;
@@ -509,12 +486,25 @@ export class RoomsService {
     () => null,
   );
   private roomsCount = 0;
-
+  private shutdownResolvers: PromiseWithResolvers<void> | null = null;
+  
   constructor(
     private users: UsersService,
     private decks: DecksService,
     private games: GamesService,
-  ) {}
+  ) {
+    const onShutdown = async () => {
+      console.log(`Waiting for ${this.roomsCount} rooms to stop...`);
+      if (this.roomsCount !== 0) {
+        this.shutdownResolvers = Promise.withResolvers();
+      }
+      await this.shutdownResolvers?.promise;
+      process.exit();
+    }
+    process.on("SIGINT", onShutdown);
+    process.on("SIGTERM", onShutdown);
+    process.on("SIGQUIT", onShutdown);
+  }
 
   currentRoom(userId: number) {
     for (let i = 0; i < this.rooms.length; i++) {
@@ -542,7 +532,7 @@ export class RoomsService {
       throw new NotFoundException(`Deck ${params.hostDeckId} not found`);
     }
 
-    if (existsSync(REQUEST_SHUTDOWN)) {
+    if (this.shutdownResolvers) {
       throw new ConflictException("Creating room is disabled now; we are planning a maintenance");
     }
 
@@ -572,13 +562,12 @@ export class RoomsService {
     const room = new Room(roomConfig);
     this.rooms[roomId] = room;
     this.roomsCount++;
-    createLock();
 
     room.onStop(() => {
       this.rooms[roomId] = null;
       this.roomsCount--;
       if (this.roomsCount === 0) {
-        removeLock();
+        this.shutdownResolvers?.resolve();
       }
     });
 
