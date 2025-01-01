@@ -40,11 +40,15 @@ import {
 import { AnyState, GameState } from "../base/state";
 import {
   ContextMetaBase,
-  NIGHTSOUL_BLESSING_ID,
   SkillContext,
   TypedSkillContext,
 } from "./context/skill";
-import { EquipmentHandle, ExtensionHandle, SkillHandle } from "./type";
+import {
+  EquipmentHandle,
+  ExtensionHandle,
+  SkillHandle,
+  StatusHandle,
+} from "./type";
 import {
   EntityArea,
   EntityType,
@@ -391,7 +395,9 @@ const detailedEventDictionary = {
     );
   }),
   drawCard: defineDescriptor("onHandCardInserted", (c, e, r) => {
-    return checkRelative(e.onTimeState, { who: e.who }, r) && e.reason === "drawn";
+    return (
+      checkRelative(e.onTimeState, { who: e.who }, r) && e.reason === "drawn"
+    );
   }),
   handCardInserted: defineDescriptor("onHandCardInserted", (c, e, r) => {
     return checkRelative(e.onTimeState, { who: e.who }, r);
@@ -987,13 +993,17 @@ class InitiativeSkillBuilder<
   /** 此定义未被使用。 */
   reserve(): void {}
 
-  enterNightsoul(techniqueEquipment: EquipmentHandle, nightsoulValue: number) {
+  enterNightsoul(
+    techniqueEquipment: EquipmentHandle,
+    nightsoulBlessing: StatusHandle,
+    nightsoulValue: number,
+  ) {
     this.filters.push((c) => {
-      return !c.self.hasStatus(NIGHTSOUL_BLESSING_ID);
+      return !c.self.hasStatus(nightsoulBlessing);
     });
     this.do((c) => {
       c.self.equip(techniqueEquipment);
-      c.characterStatus(NIGHTSOUL_BLESSING_ID, "@self", {
+      c.characterStatus(nightsoulBlessing, "@self", {
         overrideVariables: {
           nightsoul: nightsoulValue,
         },

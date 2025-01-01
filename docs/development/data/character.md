@@ -25,6 +25,9 @@ const Ganyu = character(1101)   // 角色 ID
 - `.costXxx` 指定使用技能消耗的骰子。
 - `.type` 指定技能类型，可为 `"normal"` `"elemental"` 或 `"burst"`。
 - `.noEnergy()` 指定使用此技能不自动积累能量。
+- `.enterNightsoul(techEquipment, nightsoulStatus, nightsoulValue)` 为纳塔角色的夜魂性质技能：
+  - 该技能无法在装备 `techEquipment` 下打出；
+  - 该技能自身装备特技 `techEquipment`，进入 `nightsoulStatus` 指定的夜魂加持，提供 `nightsoulValue` 点夜魂值。
 - `.associateExtension`：参见[扩展点](./extensions.md)。
 
 随后的描述方式参见[操作描述](./operations.md)。

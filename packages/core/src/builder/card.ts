@@ -37,7 +37,7 @@ import {
   TriggeredSkillDefinition,
 } from "../base/skill";
 import { registerCard } from "./registry";
-import { NIGHTSOUL_BLESSING_ID, SkillContext } from "./context/skill";
+import { SkillContext } from "./context/skill";
 import {
   SkillBuilderWithCost,
   enableShortcut,
@@ -233,9 +233,9 @@ class CardBuilder<
     return this.technique()
       .on("consumeNightsoulFinal")
       .do((c) => {
-        const st = c.self.master().hasStatus(NIGHTSOUL_BLESSING_ID);
-        if (st && st.variables.nightsoul <= 0) {
-          c.dispose(st);
+        const st = c.$(`status with tags (nightsoulBlessing) at @master`);
+        if (st && st.getVariable("nightsoul") <= 0) {
+          st.dispose();
           c.dispose();
         }
       })

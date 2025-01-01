@@ -23,7 +23,7 @@ import { character, skill, summon, status, card, DamageType, SkillHandle } from 
  */
 export const NightsoulsBlessing = status(112141)
   .since("v5.3.0")
-  .variableCanAppend("nightsoul", 0, 2)
+  .nightsoulBlessing(2)
   .done();
 
 /**
@@ -106,7 +106,7 @@ export const CoolingTreatment = skill(12141)
 export const SurfsharkWavebreaker: SkillHandle = skill(12142)
   .type("elemental")
   .costHydro(2)
-  .enterNightsoul(BiteyShark, 2)
+  .enterNightsoul(BiteyShark, NightsoulsBlessing, 2)
   .done();
 
 /**

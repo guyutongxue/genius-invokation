@@ -178,7 +178,7 @@ export class Character<Meta extends ContextMetaBase> extends CharacterBase {
   }
 
   $$<const Q extends string>(arg: Q) {
-    return this.skillContext.$(`(${arg}) at (with id ${this._id})`);
+    return this.skillContext.$$(`(${arg}) at (with id ${this._id})`);
   }
 
   // MUTATIONS
