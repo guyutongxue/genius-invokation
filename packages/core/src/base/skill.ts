@@ -751,10 +751,6 @@ class ModifyHealEventArgBase extends DamageOrHealEventArg<HealInfo> {
   get cancelled() {
     return this._cancelled;
   }
-  cancel() {
-    this._log += `${stringifyState(this.caller)} cancel the heal.\n`;
-    this._cancelled = true;
-  }
 
   override get damageInfo(): HealInfo {
     const healInfo = super.damageInfo;
@@ -793,6 +789,10 @@ export class ModifyHeal1EventArg extends ModifyHealEventArgBase {
 }
 
 export class ModifyHeal0EventArg extends ModifyHealEventArgBase {
+  cancel() {
+    this._log += `${stringifyState(this.caller)} cancel the heal.\n`;
+    this._cancelled = true;
+  }
 }
 
 export const GenericModifyHealEventArg = mixins(ModifyHealEventArgBase, [
