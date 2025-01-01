@@ -101,8 +101,6 @@ import { Character, TypedCharacter } from "./character";
 import { Entity, TypedEntity } from "./entity";
 import { Card } from "./card";
 
-export const NIGHTSOUL_BLESSING_ID = 112141 as StatusHandle;
-
 type CharacterTargetArg = CharacterState | CharacterState[] | string;
 type EntityTargetArg = EntityState | EntityState[] | string;
 
@@ -1449,11 +1447,11 @@ export class SkillContext<Meta extends ContextMetaBase> {
   consumeNightsoul(target: CharacterTargetArg, count = 1) {
     const targets = this.queryCoerceToCharacters(target);
     for (const t of targets) {
-      const st = t.hasStatus(NIGHTSOUL_BLESSING_ID);
+      const st = t.$$(`status with tag (nightsoulBlessing)`)[0];
       if (st) {
-        const oldValue = this.getVariable("nightsoul", st);
+        const oldValue = this.getVariable("nightsoul", st.state);
         const newValue = Math.max(0, oldValue - count);
-        this.setVariable("nightsoul", newValue, st);
+        this.setVariable("nightsoul", newValue, st.state);
         const info: ConsumeNightsoulInfo = {
           oldValue,
           newValue,

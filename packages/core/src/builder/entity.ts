@@ -375,6 +375,11 @@ export class EntityBuilder<
       .endOn();
   }
 
+  nightsoulBlessing(maxCount: number, varOpt?: VariableOptions) {
+    return this.tags("nightsoulBlessing")
+      .variableCanAppend("nightsoul", 0, maxCount, varOpt)
+  }
+
   prepare(skill: SkillHandle, hintCount?: number) {
     if (this._type !== "status") {
       throw new GiTcgDataError("Only status can have prepare skill");
