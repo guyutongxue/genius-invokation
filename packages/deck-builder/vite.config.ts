@@ -42,7 +42,7 @@ export default defineConfig({
     //   },
     // }),
     solid(),
-    process.env.ENABLE_DTS &&
+    !process.env.NO_TYPING &&
       dts({
         bundledPackages: ["@gi-tcg/core", "@gi-tcg/typings"],
         rollupTypes: true,

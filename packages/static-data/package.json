@@ -19,10 +19,7 @@
   "scripts": {
     "generate": "bun scripts/index.ts -i $GENSHIN_DATA -o src/data",
     "generate:beta": "bun scripts/hakushin/index.ts",
-    "build:ts": "tsup --dts",
-    "build:js": "tsup",
-    "build": "bun build:ts",
-    "build:prod": "bun build:js"
+    "build": "tsup"
   },
   "devDependencies": {
     "@gi-tcg/config": "workspace:*",

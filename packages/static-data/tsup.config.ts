@@ -15,15 +15,14 @@
 
 import { defineConfig } from "tsup";
 
-export default defineConfig([
-  {
-    entry: {
-      index: "./src/index.ts",
-      buffIconMapping: "./src/buffIconMapping.ts"
-    },
-    format: "esm",
-    clean: true,
-    sourcemap: true,
-    minify: true,
+export default defineConfig({
+  entry: {
+    index: "./src/index.ts",
+    buffIconMapping: "./src/buffIconMapping.ts",
   },
-]);
+  format: "esm",
+  clean: true,
+  sourcemap: true,
+  dts: !process.env.NO_TYPING,
+  minify: true,
+});

@@ -20,5 +20,6 @@ export default defineConfig({
   format: "esm",
   clean: true,
   sourcemap: true,
+  dts: !process.env.NO_TYPING,
   minify: true,
 });

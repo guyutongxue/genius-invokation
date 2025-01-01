@@ -13,10 +13,7 @@
   },
   "scripts": {
     "build:buf": "bun scripts/buf.ts",
-    "build:ts": "tsup --dts",
-    "build:js": "tsup",
-    "build": "bun build:buf && bun build:ts",
-    "build:prod": "bun build:buf && bun build:js"
+    "build": "bun build:buf && tsup"
   },
   "devDependencies": {
     "@types/node": "^20.3.1"

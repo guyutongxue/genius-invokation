@@ -13,10 +13,7 @@
   },
   "scripts": {
     "check": "tsc --noEmit",
-    "build:vite:ts": "ENABLE_DTS=1 vite build",
-    "build:vite:js": "vite build",
-    "build": "bun build:vite:ts",
-    "build:prod": "bun build:vite:js"
+    "build": "vite build"
   },
   "peerDependencies": {
     "solid-js": "^1.8.15"

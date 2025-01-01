@@ -32,7 +32,7 @@ export default defineConfig({
       enforce: "pre",
     },
     solid(),
-    process.env.ENABLE_DTS &&
+    !process.env.NO_TYPING &&
       dts({
         rollupTypes: true,
       }),

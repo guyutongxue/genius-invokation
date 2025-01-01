@@ -20,19 +20,18 @@ import solid from "vite-plugin-solid";
 
 export default defineConfig({
   esbuild: {
-    target: "ES2022"
+    target: "ES2022",
   },
   resolve: {
-    conditions: ["bun"]
+    conditions: ["bun"],
   },
   plugins: [
     solid(),
-    process.env.ENABLE_DTS && dts({
-      rollupTypes: true,
-      bundledPackages: [
-        "@gi-tcg/webui-core"
-      ]
-    }),
+    !process.env.NO_TYPING &&
+      dts({
+        rollupTypes: true,
+        bundledPackages: ["@gi-tcg/webui-core"],
+      }),
   ],
   build: {
     sourcemap: true,

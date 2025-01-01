@@ -24,6 +24,8 @@ module.exports = {
         NODE_ENV: "production",
       },
       interpreter: "bun",
+      min_uptime: "5s",
+      max_restarts: 5,
       kill_timeout: 2 * 60 * 60 * 1000, // 2 hours (for continuing game)
       out_file: process.env.OUTPUT_PATH,
       error_file: process.env.ERROR_PATH,

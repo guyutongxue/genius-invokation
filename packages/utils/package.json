@@ -11,10 +11,7 @@
   },
   "scripts": {
     "build:json": "bun scripts/get_share_id.ts",
-    "build:ts": "tsup --dts",
-    "build:js": "tsup",
-    "build": "bun build:json && bun build:ts",
-    "build:prod": "bun build:json && bun build:js"
+    "build": "bun build:json && tsup"
   },
   "devDependencies": {
     "@gi-tcg/typings": "workspace:*",
