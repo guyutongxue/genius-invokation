@@ -23,7 +23,7 @@ import { existsSync } from "node:fs";
 import { PackageJson } from "type-fest";
 
 const packages = ["static-data", "typings", "utils", "core", "data", "webui-core", "webui"];
-const VERSION = "0.16.3";
+const VERSION = "0.16.4";
 
 const doPublish = !!process.env.PUBLISH;
 if (!doPublish) {
@@ -42,6 +42,7 @@ function transferWorkspaceDeps(deps: Partial<Record<string, string>> = {}) {
     if (key === "@gi-tcg/config") {
       // this is a pseudo package that should be omitted
       delete deps[key];
+      continue;
     }
     if (value?.startsWith("workspace:")) {
       const foundDep = packageInfos.find((info) => info.packageJson.name === key);
