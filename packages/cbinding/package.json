@@ -20,10 +20,9 @@
     "rollup": "^4.27.4"
   },
   "scripts": {
-    "build:prod": "bun scripts/prepare.ts",
+    "build": "bun scripts/prepare.ts",
     "cmake:configure": "cmake -B build -GNinja",
     "cmake:build": "cmake --build build --config Release",
-    "cmake:install": "cmake --install build --config Release --prefix install",
-    "build": "bun run build:prod"
+    "cmake:install": "cmake --install build --config Release --prefix install"
   }
 }

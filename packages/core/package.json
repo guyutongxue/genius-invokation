@@ -20,10 +20,7 @@
     "check": "tsc --noEmit",
     "test": "bun test",
     "build:ohm": "ohm generateBundles -et src/query/query.ohm",
-    "build:ts": "tsup --dts",
-    "build:js": "tsup",
-    "build": "bun build:ohm && bun build:ts",
-    "build:prod": "bun build:ohm && bun build:js"
+    "build": "bun build:ohm && tsup"
   },
   "dependencies": {
     "@gi-tcg/config": "workspace:*",

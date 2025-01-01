@@ -11,11 +11,12 @@
     "build:prod": "bun scripts/build.ts --prod"
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.47.2",
     "@arethetypeswrong/cli": "^0.16.4",
+    "@bufbuild/buf": "^1.47.2",
     "@microsoft/api-extractor": "^7.47.9",
     "@types/bun": "^1.1.14",
     "bun": "^1.1.42",
+    "dependency-graph": "^1.0.0",
     "tsup": "^8.3.0",
     "type-fest": "^4.26.1",
     "typescript": "^5.6.2"

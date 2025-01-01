@@ -18,35 +18,115 @@
  * This file run all build scripts for building standalone target.
  */
 
-import { $, color } from "bun";
+import { $, color, Glob } from "bun";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { parseArgs } from "node:util";
+import type { PackageJson } from "type-fest";
+import { DepGraph } from "dependency-graph";
 
-const { values: { prod } } = parseArgs({
+const {
+  values: { noTyping = false },
+  positionals: targets,
+} = parseArgs({
   args: process.argv.slice(2),
   options: {
-    prod: { type: "boolean" }
+    noTyping: {
+      type: "boolean",
+      short: "n",
+    },
+  },
+  allowPositionals: true,
+});
+
+if (targets.length === 0) {
+  targets.push("ALL");
+}
+
+interface Package {
+  name: string;
+  cwd: string;
+  targetName: string; // no @gi-tcg/ prefix
+  buildCommand?: string;
+  buildNoTypingCommand?: string;
+}
+
+const depGraph = new DepGraph<Package>();
+
+const depGraphEdges: [string, string][] = [];
+
+for await (const pkgPath of new Glob("packages/*").scan()) {
+  const packageJsonPath = path.join(pkgPath, "package.json");
+  if (!existsSync(packageJsonPath)) {
+    continue;
   }
-})
+  const packageJson = await Bun.file(packageJsonPath).json();
+  const { name, scripts, dependencies, devDependencies }: PackageJson =
+    packageJson;
+  if (!name?.startsWith("@gi-tcg/")) {
+    continue;
+  }
+  const targetName = name.slice("@gi-tcg/".length);
+  const buildCommand = scripts?.build;
+  const buildNoTypingCommand = scripts?.["build:noTyping"] ?? buildCommand;
+  const deps = { ...dependencies, ...devDependencies };
+  for (const [depName, depVersion] of Object.entries(deps)) {
+    if (depVersion?.startsWith("workspace:*")) {
+      depGraphEdges.push([name, depName]);
+    }
+  }
+  depGraph.addNode(name, {
+    cwd: pkgPath,
+    name,
+    targetName,
+    buildCommand,
+    buildNoTypingCommand,
+  });
+}
 
-const packages = [
-  "static-data",
-  "typings",
-  "utils",
-  "core",
-  "data",
-  "detail-log-viewer",
-  "webui-core",
-  "deck-builder",
-  "web-client",
-  "standalone",
-  "cbinding",
-];
+for (const [from, to] of depGraphEdges) {
+  depGraph.addDependency(from, to);
+}
 
-for (const pkg of packages) {
-  console.log(color("green", "ansi") + pkg + "\u001b[0m");
-  if (prod) {
-    await $`bun run build:prod`.cwd(`packages/${pkg}`);
+const allPackages: readonly Package[] = depGraph
+  .overallOrder()
+  .map((name) => depGraph.getNodeData(name));
+
+const packagesToBuilt: Package[] = [];
+
+if (targets.includes("ALL")) {
+  packagesToBuilt.push(...allPackages);
+} else {
+  const needs = new Set<Package>();
+  for (const target of targets) {
+    const pkg = allPackages.find((p) => p.targetName === target);
+    if (pkg) {
+      needs.add(pkg);
+      for (const dep of depGraph.dependenciesOf(pkg.name)) {
+        needs.add(depGraph.getNodeData(dep));
+      }
+    } else {
+      throw new Error(`Target ${target} not found`);
+    }
+  }
+  for (const pkg of allPackages) {
+    if (needs.has(pkg)) {
+      packagesToBuilt.push(pkg);
+    }
+  }
+}
+
+for (const pkg of packagesToBuilt) {
+  process.stdout.write(`\x1b[1mBuilding\x1b[31m${pkg.name}\u001b[0m...\n`);
+  if (noTyping) {
+    if (pkg.buildNoTypingCommand) {
+      await $`${{ raw: pkg.buildNoTypingCommand }}`
+        .env({ NO_TPIPNG: "1" })
+        .cwd(pkg.cwd);
+    }
   } else {
-    await $`bun run build`.cwd(`packages/${pkg}`);
+    if (pkg.buildCommand) {
+      await $`${{ raw: pkg.buildCommand }}`.cwd(pkg.cwd);
+    }
   }
 }
