@@ -24,6 +24,7 @@ export async function frontend(app: FastifyInstance) {
   if (process.env.NODE_ENV === "production") {
     await app.register(fastifyStatic, {
       root: path.join(import.meta.dirname, "../../web-client/dist"),
+      index: false,
       prefix: BASE_PATH,
       wildcard: false,
     });
