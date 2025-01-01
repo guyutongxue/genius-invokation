@@ -96,7 +96,7 @@ export const BondOfLife = status(122)
     autoDecrease: false,
   })
   .do((c, e) => {
-    const deducted = Math.max(c.getVariable("usage"), e.damageInfo.value);
+    const deducted = Math.min(c.getVariable("usage"), e.damageInfo.value);
     e.decreaseHeal(deducted);
     c.consumeUsage(deducted);
   })
