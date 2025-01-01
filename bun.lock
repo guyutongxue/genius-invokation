@@ -39,7 +39,7 @@
     },
     "packages/core": {
       "name": "@gi-tcg/core",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "dependencies": {
         "@gi-tcg/config": "packages/config",
         "@gi-tcg/typings": "packages/typings",
@@ -54,7 +54,7 @@
     },
     "packages/data": {
       "name": "@gi-tcg/data",
-      "version": "0.16.2-5-3-0",
+      "version": "0.16.3-5-3-0",
       "devDependencies": {
         "@gi-tcg/config": "packages/config",
         "@gi-tcg/static-data": "packages/static-data",
@@ -67,7 +67,7 @@
     },
     "packages/deck-builder": {
       "name": "@gi-tcg/deck-builder",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "dependencies": {
         "@gi-tcg/utils": "packages/utils",
         "@unocss/reset": "^0.58.3",
@@ -112,7 +112,7 @@
     },
     "packages/server": {
       "name": "@gi-tcg/server",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "dependencies": {
         "@fastify/static": "^7.0.4",
         "@gi-tcg/config": "packages/config",
@@ -171,7 +171,7 @@
     },
     "packages/static-data": {
       "name": "@gi-tcg/static-data",
-      "version": "0.16.2-5-3-0",
+      "version": "0.16.3-5-3-0",
       "devDependencies": {
         "@gi-tcg/config": "packages/config",
         "lossless-json": "^4.0.1",
@@ -187,7 +187,7 @@
     },
     "packages/typings": {
       "name": "@gi-tcg/typings",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "dependencies": {
         "@bufbuild/protobuf": "^2.2.2",
       },
@@ -197,7 +197,7 @@
     },
     "packages/utils": {
       "name": "@gi-tcg/utils",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "devDependencies": {
         "@gi-tcg/static-data": "packages/static-data",
         "@gi-tcg/typings": "packages/typings",
@@ -241,7 +241,7 @@
     },
     "packages/webui": {
       "name": "@gi-tcg/webui",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "devDependencies": {
         "@gi-tcg/detail-log-viewer": "packages/detail-log-viewer",
         "@gi-tcg/webui-core": "packages/webui-core",
@@ -254,7 +254,7 @@
     },
     "packages/webui-core": {
       "name": "@gi-tcg/webui-core",
-      "version": "0.16.2",
+      "version": "0.16.3",
       "dependencies": {
         "@gi-tcg/utils": "packages/utils",
       },
