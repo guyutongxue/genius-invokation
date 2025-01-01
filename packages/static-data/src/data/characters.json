@@ -2424,7 +2424,8 @@
         "rawDescription": "",
         "description": "",
         "playCost": [],
-        "keyMap": {}
+        "keyMap": {},
+        "icon": "Skill_E_Sigewinne_01"
       },
       {
         "id": 12137,

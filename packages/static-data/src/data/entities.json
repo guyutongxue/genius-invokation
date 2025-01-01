@@ -1914,6 +1914,7 @@
     "buffType": "GCG_STATE_BUFF_HYDRO",
     "shownToken": "GCG_TOKEN_NYX_VALUE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Nightsoul_Water",
     "buffIconHash": "17349447189506549639"
   },
   {
@@ -1963,6 +1964,7 @@
     "rawDescription": "<color=#FFFFFFFF>双方切换角色后，且$[A1214]为出战角色时：</color>消耗1点<color=#FFFFFFFF>「夜魂值」</color>，使敌方出战角色附属<color=#FFFFFFFF>$[K1034]</color>。\\n$[K58]：$[S1121422]\\n所附属角色<color=#FFFFFFFF>「夜魂值」</color>为0时，弃置此牌；此牌被弃置时，所附属角色结束<color=#FFFFFFFF>$[C112141]</color>。",
     "description": "双方切换角色后，且玛拉妮为出战角色时：消耗1点「夜魂值」，使敌方出战角色附属啃咬目标。\n特技：鲨鲨冲浪板\n所附属角色「夜魂值」为0时，弃置此牌；此牌被弃置时，所附属角色结束夜魂加持。",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Mualani",
     "buffIconHash": "1897174432279886145"
   },
   {
@@ -1977,6 +1979,7 @@
     "buffType": "GCG_STATE_BUFF_HYDRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Debuff_Mualani_S",
     "buffIconHash": "7580404901287523604"
   },
   {
@@ -3264,6 +3267,7 @@
     "buffType": "GCG_STATE_BUFF_ELECTRO",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Clorinde_S",
     "buffIconHash": "42360170292122356"
   },
   {
@@ -10416,6 +10420,7 @@
     "playingDescription": "入场时：敌方出战角色附属目标。\n附属角色切换为出战角色，且敌方出战角色附属目标时：如可能，舍弃原本元素骰费用最高的1张手牌，将此次切换视为「快速行动」而非「战斗行动」，少花费1个元素骰，并移除对方所有角色的目标。\n特技：迅疾滑翔\n可用次数：2",
     "shownToken": "GCG_TOKEN_LIFE",
     "hidden": false,
+    "buffIcon": "UI_Gcg_Buff_Vehicle_Flamingo",
     "buffIconHash": "19109324153596424"
   },
   {
