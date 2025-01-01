@@ -56,7 +56,6 @@ const depGraph = new DepGraph<Package>();
 const depGraphEdges: [string, string][] = [];
 
 for await (const pkgPath of new Glob("packages/*").scan({ onlyFiles: false })) {
-  console.log(pkgPath);
   const packageJsonPath = path.join(pkgPath, "package.json");
   if (!existsSync(packageJsonPath)) {
     continue;

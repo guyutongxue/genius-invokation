@@ -20,7 +20,7 @@ jobs:
       - name: Run Build
         run: |
           bun install
-          bun run build:prod
+          bun run build -n
       - name: Run Tests
         run: bun run test
       - name: "Upload artifact: Standalone frontend"
