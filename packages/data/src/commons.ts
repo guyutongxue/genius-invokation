@@ -96,19 +96,9 @@ export const BondOfLife = status(122)
     autoDecrease: false,
   })
   .do((c, e) => {
-    const usage = c.getVariable("usage");
-    const healValue = e.healInfo.value;
-    if (usage >= healValue) {
-      // 生命之契 >= 治疗量：
-      // 取消治疗，生命之契被消耗
-      e.cancel();
-      c.consumeUsage(healValue);
-    } else {
-      // 治疗量 > 生命之契：
-      // 治疗量减少，弃置生命之契
-      e.decreaseHeal(usage);
-      c.dispose();
-    }
+    const deducted = Math.min(c.getVariable("usage"), e.damageInfo.value);
+    e.decreaseHeal(deducted);
+    c.consumeUsage(deducted);
   })
   .done();
 
