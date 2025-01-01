@@ -8,7 +8,7 @@
   "scripts": {
     "build": "bun scripts/build.ts",
     "test": "bun run --filter '**' test",
-    "build:prod": "bun scripts/build.ts --prod"
+    "build:prod": "bun scripts/build.ts -n"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.16.4",

@@ -55,7 +55,8 @@ const depGraph = new DepGraph<Package>();
 
 const depGraphEdges: [string, string][] = [];
 
-for await (const pkgPath of new Glob("packages/*").scan()) {
+for await (const pkgPath of new Glob("packages/*").scan({ onlyFiles: false })) {
+  console.log(pkgPath);
   const packageJsonPath = path.join(pkgPath, "package.json");
   if (!existsSync(packageJsonPath)) {
     continue;
@@ -67,8 +68,14 @@ for await (const pkgPath of new Glob("packages/*").scan()) {
     continue;
   }
   const targetName = name.slice("@gi-tcg/".length);
-  const buildCommand = scripts?.build;
-  const buildNoTypingCommand = scripts?.["build:noTyping"] ?? buildCommand;
+  let buildCommand: string | undefined = void 0;
+  let buildNoTypingCommand: string | undefined = void 0;
+  if (scripts?.build) {
+    buildCommand = buildNoTypingCommand = `bun run build`;
+  }
+  if (scripts?.["build:noTyping"]) {
+    buildNoTypingCommand = `bun run build:noTyping`;
+  }
   const deps = { ...dependencies, ...devDependencies };
   for (const [depName, depVersion] of Object.entries(deps)) {
     if (depVersion?.startsWith("workspace:*")) {
@@ -117,7 +124,7 @@ if (targets.includes("ALL")) {
 }
 
 for (const pkg of packagesToBuilt) {
-  process.stdout.write(`\x1b[1mBuilding\x1b[31m${pkg.name}\u001b[0m...\n`);
+  process.stdout.write(`\x1b[1mBuilding \x1b[32m${pkg.name}\u001b[0m...\n`);
   if (noTyping) {
     if (pkg.buildNoTypingCommand) {
       await $`${{ raw: pkg.buildNoTypingCommand }}`

@@ -25,7 +25,7 @@ jobs:
       - name: Run Build
         run: |
           bun install
-          bun run build:prod
+          bun run build -n standalone
       - name: Run Tests
         run: bun run test
       - id: deployment
