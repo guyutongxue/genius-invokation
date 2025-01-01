@@ -24,7 +24,7 @@ import {
 import { StandaloneChild } from "./StandaloneChild";
 import { StandaloneParent } from "./StandaloneParent";
 import { VERSIONS } from "@gi-tcg/core";
-import { IS_BETA, WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
+import { IS_BETA, SERVER_HOST, WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
 import { DeckBuilder } from "@gi-tcg/deck-builder";
 import "@gi-tcg/deck-builder/style.css";
 import { Deck, decode, encode } from "@gi-tcg/utils";
@@ -207,7 +207,7 @@ export function App() {
             />
             <label class="tab__header" for="multiplayerInput">
               <a
-                href={`https://7shengzhaohuan.online${WEB_CLIENT_BASE_PATH}`}
+                href={`${SERVER_HOST}${WEB_CLIENT_BASE_PATH}`}
                 target="_blank"
               >
                 多人对战

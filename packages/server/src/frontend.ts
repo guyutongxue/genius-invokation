@@ -30,7 +30,7 @@ export async function frontend(app: FastifyInstance) {
     app.get(BASE_PATH, (_req, reply) => {
       reply.type("text/html").send(indexHtml);
     });
-    app.get(`${BASE_PATH}/*`, (_req, reply) => {
+    app.get(`${BASE_PATH}*`, (_req, reply) => {
       reply.type("text/html").send(indexHtml);
     });
   }
