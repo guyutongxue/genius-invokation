@@ -127,7 +127,7 @@ for (const pkg of packagesToBuilt) {
   if (noTyping) {
     if (pkg.buildNoTypingCommand) {
       await $`${{ raw: pkg.buildNoTypingCommand }}`
-        .env({ NO_TYPING: "1" })
+        .env({ ...process.env, NO_TYPING: "1" })
         .cwd(pkg.cwd);
     }
   } else {
