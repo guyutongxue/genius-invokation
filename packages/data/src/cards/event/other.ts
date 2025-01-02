@@ -178,6 +178,7 @@ export const ElementalResonanceHighVoltage = card(331402)
   .since("v3.3.0")
   .costElectro(1)
   .tags("resonance")
+  .filter((c) => c.$(`my characters with energy < maxEnergy`))
   .gainEnergy(1, "my character with energy < maxEnergy limit 1")
   .done();
 
@@ -210,7 +211,7 @@ export const ElementalResonanceEnduringRock = card(331602)
   .tags("resonance")
   .toCombatStatus(303162)
   .oneDuration()
-  .once("dealDamage", (c, e) => e.source.definition.type === "character" && e.type === DamageType.Geo)
+  .once("skillDamage", (c, e) => e.type === DamageType.Geo)
   .do((c) => {
     c.$("my combat statuses with tag (shield) limit 1")?.addVariable("shield", 3);
   })
@@ -538,6 +539,7 @@ export const WhenTheCraneReturned = card(332007)
 export const Starsigns = card(332008)
   .since("v3.3.0")
   .costVoid(2)
+  .filter((c) => c.$(`my active with energy < maxEnergy`))
   .do((c) => c.$("my active character")!.gainEnergy(1))
   .done();
 

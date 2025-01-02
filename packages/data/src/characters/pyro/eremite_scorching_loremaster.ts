@@ -104,7 +104,7 @@ export const SpiritOfOmensAwakeningPyroScorpion: SkillHandle = skill(23033)
  */
 export const SpiritOfOmensPower: PassiveSkillHandle = skill(23034)
   .type("passive")
-  .on("damaged", (c) => c.self.health <= 7)
+  .on("damaged", (c) => c.self.health <= 7 && c.self.energy < c.self.maxEnergy)
   .usagePerRound(1, { name: "usagePerRound1" })
   .gainEnergy(1, "@self")
   .on("useSkill", (c, e) => e.skill.definition.id === SpiritOfOmensAwakeningPyroScorpion)

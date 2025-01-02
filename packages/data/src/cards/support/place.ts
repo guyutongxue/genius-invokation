@@ -357,13 +357,9 @@ export const FortressOfMeropide = card(321018)
   .variable("forbidden", 0)
   .on("damagedOrHealed", (c, e) => c.of(e.target).isActive())
   .addVariableWithMax("forbidden", 1, 4)
-  .on("actionPhase")
-  .do((c) => {
-    if (c.getVariable("forbidden") >= 4) {
-      c.combatStatus(StrictProhibited, "opp");
-      c.addVariable("forbidden", -4);
-    }
-  })
+  .on("actionPhase", (c) => c.getVariable("forbidden") >= 4)
+  .combatStatus(StrictProhibited, "opp")
+  .addVariable("forbidden", -4)
   .done();
 
 /**

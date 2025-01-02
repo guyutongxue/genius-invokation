@@ -900,7 +900,7 @@ export class SkillContext<Meta extends ContextMetaBase> {
         DetailLogType.Primitive,
         `Dispose ${stringifyState(entityState)}`,
       );
-      this.emitEvent("onDispose", this.state, entityState);
+      this.emitEvent("onDispose", this.state, entityState as EntityState);
       this.mutate({
         type: "removeEntity",
         oldState: entityState,
