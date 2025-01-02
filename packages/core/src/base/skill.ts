@@ -923,12 +923,12 @@ export const GenericModifyDamageEventArg = mixins(ModifyDamageEventArgBase, [
   ModifyDamage3EventArg,
 ]);
 
-export class EntityEventArg extends EventArg {
+export class EntityEventArg<T extends AnyState = AnyState> extends EventArg {
   public readonly area: EntityArea;
   public readonly who: 0 | 1;
   constructor(
     state: GameState,
-    public readonly entity: AnyState,
+    public readonly entity: T,
   ) {
     super(state);
     this.area = getEntityArea(state, entity.id);
@@ -955,9 +955,9 @@ export class EnterEventArg extends EntityEventArg {
   }
 }
 
-export class DisposeEventArg extends EntityEventArg {}
+export class DisposeEventArg extends EntityEventArg<EntityState> {}
 
-export class DisposeOrTuneCardEventArg extends DisposeEventArg {
+export class DisposeOrTuneCardEventArg extends EntityEventArg<CardState> {
   constructor(
     state: GameState,
     public readonly card: CardState,

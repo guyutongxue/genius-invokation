@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { character, skill, summon, status, combatStatus, card, DamageType, CombatStatusHandle } from "@gi-tcg/core/builder";
+import { character, skill, summon, status, combatStatus, card, DamageType, CombatStatusHandle, StatusHandle } from "@gi-tcg/core/builder";
 
 /**
  * @id 124022
@@ -22,7 +22,7 @@ import { character, skill, summon, status, combatStatus, card, DamageType, Comba
  * 所附属角色受到雷音权现及其召唤物造成的伤害时：移除此状态，使此伤害+1。
  * （同一方场上最多存在一个此状态。雷音权现的部分技能，会以所附属角色为目标。）
  */
-export const LightningRod = status(124022)
+export const LightningRod: StatusHandle = status(124022)
   .unique()
   .on("increaseDamaged", (c, e) => [
       ThunderManifestation as number, 
@@ -30,6 +30,16 @@ export const LightningRod = status(124022)
     ].includes(e.source.definition.id))
   .increaseDamage(1)
   .dispose()
+  .on("selfDispose")
+  // 雷音权现对已带有雷鸣探知的角色造成伤害会弃置雷鸣探知
+  // 但此行为也会触发天赋的抽牌
+  .do((c) => {
+    const oppTalent =c.$(`opp equipment with definition id ${GrievingEcho}`);
+    if (oppTalent && oppTalent.getVariable("usagePerRound")) {
+      c.drawCards(1, { who: "opp" });
+      c.setVariable("usagePerRound", 0, oppTalent.state);
+    }
+  })
   .done();
 
 /**
