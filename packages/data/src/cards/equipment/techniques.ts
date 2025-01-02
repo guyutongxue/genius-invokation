@@ -218,17 +218,18 @@ const BiteyShark = void 0; /* moved to mualani */
  */
 export const Target: StatusHandle = status(301302)
   .variableCanAppend("effect", 1, Infinity)
-  .on("switchActive", (c, e) => {
-    const switchTo = c.of(e.switchInfo.to);
-    return !switchTo.isMine() && switchTo.hasEquipment(Qucusaurus);
-  })
-  .listenToAll()
-  .do((c) => {
-    c.addVariable("effect", -1);
-    if (c.getVariable("effect") <= 0) {
-      c.dispose();
-    }
-  })
+  // 目标本身实际并无效果
+  // .on("switchActive", (c, e) => {
+  //   const switchTo = c.of(e.switchInfo.to);
+  //   return !switchTo.isMine() && switchTo.hasEquipment(Qucusaurus);
+  // })
+  // .listenToAll()
+  // .do((c) => {
+  //   c.addVariable("effect", -1);
+  //   if (c.getVariable("effect") <= 0) {
+  //     c.dispose();
+  //   }
+  // })
   .done();
 
 /**
@@ -250,9 +251,7 @@ export const Qucusaurus = card(313006)
   .technique()
   .on("enter")
   .characterStatus(Target, "opp active")
-  .on("modifyAction", (c, e) =>
-    e.action.type === "switchActive" &&                           // 切换角色行动
-    (!e.isFast() || e.canDeductCost()) &&                         // 可以减费或者尚未速切
+  .on("deductOmniDiceSwitch", (c, e) =>                           // 绒翼龙只在可以减费时生效
     c.$(`opp active has status with definition id ${Target}`) &&  // 敌方出战角色附属目标
     e.action.to.id === c.self.master().id &&                      // 附属角色切换为出战角色
     c.player.hands.length > 0)                                    // 有手牌（“如可能，舍弃”）
