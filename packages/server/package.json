@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
+    "@gi-tcg/config": "workspace:*",
     "@gi-tcg/core": "workspace:*",
     "@gi-tcg/data": "workspace:*",
-    "@gi-tcg/config": "workspace:*",
     "@gi-tcg/static-data": "workspace:*",
     "@gi-tcg/typings": "workspace:*",
     "@gi-tcg/utils": "workspace:*",
@@ -30,7 +30,8 @@
     "axios": "^1.7.7",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "simple-git": "^3.27.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",
