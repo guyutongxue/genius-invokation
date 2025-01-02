@@ -837,7 +837,7 @@ export class Game {
       `In end phase (round ${this.state.roundNumber}, turn ${this.state.currentTurn}):`,
     );
     await this.handleEvent("onEndPhase", new EventArg(this.state));
-    for (const who of [0, 1] as const) {
+    for (const who of [this.state.currentTurn, flip(this.state.currentTurn)]) {
       const cards: CardState[] = [];
       for (let i = 0; i < 2; i++) {
         const card = this.mutator.drawCard(who);
