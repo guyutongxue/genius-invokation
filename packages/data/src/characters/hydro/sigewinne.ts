@@ -100,7 +100,7 @@ export const LargeBolsteringBubblebalm = card(112131)
   .since("v5.2.0")
   .descriptionOnDraw()
   .heal(3, "my active")
-  .createPileCards(MediumBolsteringBubblebalm, 1, "topIndex2", "opp")
+  .createPileCards(MediumBolsteringBubblebalm, 1, "topIndex1", "opp")
   .done();
 
 /**
