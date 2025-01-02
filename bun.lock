@@ -130,6 +130,7 @@
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
         "rxjs": "^7.8.1",
+        "simple-git": "^3.27.0",
       },
       "devDependencies": {
         "@nestjs/cli": "^10.3.2",
@@ -215,6 +216,7 @@
         "@unocss/reset": "^0.58.3",
         "axios": "^1.7.2",
         "core-js": "3.38.1",
+        "dayjs": "^1.11.13",
         "solid-js": "^1.8.15",
       },
       "devDependencies": {
@@ -716,7 +718,7 @@
 
     "@gi-tcg/detail-log-viewer": ["@gi-tcg/detail-log-viewer@workspace:packages/detail-log-viewer", { "devDependencies": { "@gi-tcg/core": "packages/core", "@gi-tcg/typings": "packages/typings", "@unocss/postcss": "^0.58.5", "rollup-plugin-node-externals": "^7.0.1", "solid-devtools": "^0.29.2", "unocss": "^0.58.3", "vite": "^5.0.10", "vite-plugin-dts": "^3.7.0", "vite-plugin-solid": "^2.8.0" }, "peerDependencies": { "solid-js": "^1.8.15" } }],
 
-    "@gi-tcg/server": ["@gi-tcg/server@workspace:packages/server", { "dependencies": { "@fastify/static": "^7.0.4", "@gi-tcg/config": "packages/config", "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/static-data": "packages/static-data", "@gi-tcg/typings": "packages/typings", "@gi-tcg/utils": "packages/utils", "@nestjs/common": "^10.3.9", "@nestjs/core": "^10.3.9", "@nestjs/jwt": "^10.2.0", "@nestjs/platform-fastify": "^10.3.9", "@prisma/client": "5.20.0", "axios": "^1.7.7", "class-transformer": "^0.5.1", "class-validator": "^0.14.1", "rxjs": "^7.8.1" }, "devDependencies": { "@nestjs/cli": "^10.3.2", "pm2": "^5.4.0", "prisma": "5.20.0" } }],
+    "@gi-tcg/server": ["@gi-tcg/server@workspace:packages/server", { "dependencies": { "@fastify/static": "^7.0.4", "@gi-tcg/config": "packages/config", "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/static-data": "packages/static-data", "@gi-tcg/typings": "packages/typings", "@gi-tcg/utils": "packages/utils", "@nestjs/common": "^10.3.9", "@nestjs/core": "^10.3.9", "@nestjs/jwt": "^10.2.0", "@nestjs/platform-fastify": "^10.3.9", "@prisma/client": "5.20.0", "axios": "^1.7.7", "class-transformer": "^0.5.1", "class-validator": "^0.14.1", "rxjs": "^7.8.1", "simple-git": "^3.27.0" }, "devDependencies": { "@nestjs/cli": "^10.3.2", "pm2": "^5.4.0", "prisma": "5.20.0" } }],
 
     "@gi-tcg/standalone": ["@gi-tcg/standalone@workspace:packages/standalone", { "dependencies": { "@gi-tcg/core": "packages/core", "@gi-tcg/data": "packages/data", "@gi-tcg/deck-builder": "packages/deck-builder", "@gi-tcg/detail-log-viewer": "packages/detail-log-viewer", "@gi-tcg/utils": "packages/utils", "@gi-tcg/webui-core": "packages/webui-core", "@vercel/analytics": "^1.2.0", "core-js": "3.38.1", "solid-js": "^1.8.15" }, "devDependencies": { "@babel/core": "^7.24.4", "@babel/preset-env": "^7.24.4", "@gi-tcg/config": "packages/config", "@gi-tcg/static-data": "packages/static-data", "@rollup/plugin-babel": "^6.0.4", "@types/core-js": "^2.5.8", "@typescript-eslint/eslint-plugin": "^6.21.0", "@typescript-eslint/parser": "^6.21.0", "eslint": "^8.56.0", "eslint-plugin-only-warn": "^1.1.0", "eslint-plugin-solid": "^0.13.1", "postcss-load-config": "^5.0.3", "postcss-preset-env": "^9.3.0", "vite": "^5.0.10", "vite-plugin-solid": "^2.8.0" } }],
 
@@ -728,7 +730,7 @@
 
     "@gi-tcg/utils": ["@gi-tcg/utils@workspace:packages/utils", { "devDependencies": { "@gi-tcg/static-data": "packages/static-data", "@gi-tcg/typings": "packages/typings" } }],
 
-    "@gi-tcg/web-client": ["@gi-tcg/web-client@workspace:packages/web-client", { "dependencies": { "@gi-tcg/deck-builder": "packages/deck-builder", "@gi-tcg/webui-core": "packages/webui-core", "@server-sent-stream/web": "^1.0.3", "@solidjs/router": "^0.13.5", "@una-ui/preset": "^0.4.0-beta.5", "@unocss/reset": "^0.58.3", "axios": "^1.7.2", "core-js": "3.38.1", "solid-js": "^1.8.15" }, "devDependencies": { "@babel/core": "^7.24.4", "@babel/preset-env": "^7.24.4", "@gi-tcg/config": "packages/config", "@gi-tcg/static-data": "packages/static-data", "@iconify-json/mdi": "^1.1.66", "@rollup/plugin-babel": "^6.0.4", "@types/core-js": "^2.5.8", "@typescript-eslint/eslint-plugin": "^6.21.0", "@typescript-eslint/parser": "^6.21.0", "@unocss/postcss": "^0.58.3", "@unocss/preset-icons": "^0.58.3", "eslint": "^8.56.0", "eslint-plugin-only-warn": "^1.1.0", "eslint-plugin-solid": "^0.13.1", "postcss-load-config": "^5.0.3", "postcss-preset-env": "^9.3.0", "unocss": "^0.58.3", "vite": "^5.0.10", "vite-plugin-solid": "^2.10.1" } }],
+    "@gi-tcg/web-client": ["@gi-tcg/web-client@workspace:packages/web-client", { "dependencies": { "@gi-tcg/deck-builder": "packages/deck-builder", "@gi-tcg/webui-core": "packages/webui-core", "@server-sent-stream/web": "^1.0.3", "@solidjs/router": "^0.13.5", "@una-ui/preset": "^0.4.0-beta.5", "@unocss/reset": "^0.58.3", "axios": "^1.7.2", "core-js": "3.38.1", "dayjs": "^1.11.13", "solid-js": "^1.8.15" }, "devDependencies": { "@babel/core": "^7.24.4", "@babel/preset-env": "^7.24.4", "@gi-tcg/config": "packages/config", "@gi-tcg/static-data": "packages/static-data", "@iconify-json/mdi": "^1.1.66", "@rollup/plugin-babel": "^6.0.4", "@types/core-js": "^2.5.8", "@typescript-eslint/eslint-plugin": "^6.21.0", "@typescript-eslint/parser": "^6.21.0", "@unocss/postcss": "^0.58.3", "@unocss/preset-icons": "^0.58.3", "eslint": "^8.56.0", "eslint-plugin-only-warn": "^1.1.0", "eslint-plugin-solid": "^0.13.1", "postcss-load-config": "^5.0.3", "postcss-preset-env": "^9.3.0", "unocss": "^0.58.3", "vite": "^5.0.10", "vite-plugin-solid": "^2.10.1" } }],
 
     "@gi-tcg/webui": ["@gi-tcg/webui@workspace:packages/webui", { "devDependencies": { "@gi-tcg/detail-log-viewer": "packages/detail-log-viewer", "@gi-tcg/webui-core": "packages/webui-core", "solid-element": "^1.8.0", "solid-js": "^1.8.15", "vite": "^5.0.10", "vite-plugin-dts": "^3.7.0", "vite-plugin-solid": "^2.10.1" } }],
 
@@ -759,6 +761,10 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.4.15", "", {}, "sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@kwsites/file-exists": ["@kwsites/file-exists@1.1.1", "", { "dependencies": { "debug": "^4.1.1" } }, "sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw=="],
+
+    "@kwsites/promise-deferred": ["@kwsites/promise-deferred@1.1.1", "", {}, "sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw=="],
 
     "@ljharb/through": ["@ljharb/through@2.3.13", "", { "dependencies": { "call-bind": "^1.0.7" } }, "sha512-/gKJun8NNiWGZJkGzI/Ragc53cOdcLNdzjLaIa+GEjguQs0ulsurx8WN0jijdK9yPqDvziX995sMRLyLt1uZMQ=="],
 
@@ -1296,7 +1302,7 @@
 
     "data-uri-to-buffer": ["data-uri-to-buffer@6.0.2", "", {}, "sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw=="],
 
-    "dayjs": ["dayjs@1.11.11", "", {}, "sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg=="],
+    "dayjs": ["dayjs@1.11.13", "", {}, "sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg=="],
 
     "de-indent": ["de-indent@1.0.2", "", {}, "sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg=="],
 
@@ -2054,6 +2060,8 @@
 
     "signal-exit": ["signal-exit@3.0.7", "", {}, "sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ=="],
 
+    "simple-git": ["simple-git@3.27.0", "", { "dependencies": { "@kwsites/file-exists": "^1.1.1", "@kwsites/promise-deferred": "^1.1.1", "debug": "^4.3.5" } }, "sha512-ivHoFS9Yi9GY49ogc6/YAi3Fl9ROnF4VyubNylgCkA+RVqLaKWnDSzXOVzya8csELIaWaYNutsEuAhZrtOjozA=="],
+
     "sirv": ["sirv@2.0.4", "", { "dependencies": { "@polka/url": "^1.0.0-next.24", "mrmime": "^2.0.0", "totalist": "^3.0.0" } }, "sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ=="],
 
     "skin-tone": ["skin-tone@2.0.0", "", { "dependencies": { "unicode-emoji-modifier-base": "^1.0.0" } }, "sha512-kUMbT1oBJCpgrnKoSr0o6wPtvRWT9W9UKvGLwfJYO2WuahZRHOpEyL1ckyMGgMWh0UdpmaoFqKKD29WTomNEGA=="],
@@ -2675,6 +2683,8 @@
     "pm2/chalk": ["chalk@3.0.0", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg=="],
 
     "pm2/commander": ["commander@2.15.1", "", {}, "sha512-VlfT9F3V0v+jr4yxPc5gg9s62/fIVWsd2Bk2iD435um1NlGMYdVCq+MjcXnhYq2icNOizHr1kK+5TI6H0Hy0ag=="],
+
+    "pm2/dayjs": ["dayjs@1.11.11", "", {}, "sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg=="],
 
     "pm2-sysmonit/pidusage": ["pidusage@2.0.21", "", { "dependencies": { "safe-buffer": "^5.2.1" } }, "sha512-cv3xAQos+pugVX+BfXpHsbyz/dLzX+lr44zNMsYiGxUw+kV5sgQCIcLd1z+0vq+KyC7dJ+/ts2PsfgWfSC3WXA=="],
 

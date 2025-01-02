@@ -21,6 +21,7 @@
     "@unocss/reset": "^0.58.3",
     "axios": "^1.7.2",
     "core-js": "3.38.1",
+    "dayjs": "^1.11.13",
     "solid-js": "^1.8.15"
   },
   "devDependencies": {

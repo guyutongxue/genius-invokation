@@ -15,6 +15,7 @@
 
 import { JSX } from "solid-js";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 
 export interface LayoutProps {
   children?: JSX.Element;
@@ -24,9 +25,10 @@ export function Layout(props: LayoutProps) {
   return (
     <div class="w-full h-full flex flex-col">
       <Header />
-      <main class="min-h-0 flex-grow w-full p-8 mt-16">
+      <main class="flex-grow w-full p-8 mt-16">
       {props.children}
       </main>
+      <Footer />
     </div>
   );
 }
