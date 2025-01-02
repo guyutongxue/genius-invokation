@@ -19,13 +19,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import localize from "dayjs/plugin/localizedFormat";
 import "dayjs/locale/zh-cn";
+import { useVersionContext } from "../App";
 
 dayjs.extend(localize).locale("zh-cn");
 
 export function Footer() {
-  const [version] = createResource(() =>
-    axios.get("version").then((r) => r.data),
-  );
+  const { versionInfo } = useVersionContext();
   return (
     <footer class="flex flex-row gap-4 p-4 text-sm text-gray-500">
       <div>© 2024 Guyutongxue</div>
@@ -48,26 +47,26 @@ export function Footer() {
           AGPL-3.0-or-later
         </a>
       </div>
-      <Show when={version()}>
+      <Show when={versionInfo()}>
         <div>
           游戏版本{" "}
           {IS_BETA ? (
             <span class="text-red-300">最新测试版</span>
           ) : (
-            version().currentGameVersion
+            versionInfo().currentGameVersion
           )}
         </div>
         <div>
-          模拟器版本 {version().coreVersion} (
+          模拟器版本 {versionInfo().coreVersion} (
           <a
-            title={version().revision.message}
+            title={versionInfo().revision.message}
             class="text-blue-400"
             href={`https://github.com/genius-invokation/genius-invokation/commit/${
-              version().revision.hash
+              versionInfo().revision.hash
             }`}
             target="_blank"
           >
-            {dayjs(version().revision.date).format("ll HH:mm:ss")}
+            {dayjs(versionInfo().revision.date).format("ll HH:mm:ss")}
           </a>
           )
         </div>
