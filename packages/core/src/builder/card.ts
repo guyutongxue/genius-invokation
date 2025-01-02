@@ -42,12 +42,12 @@ import {
   SkillBuilderWithCost,
   enableShortcut,
   BuilderWithShortcut,
-  SkillOperationFilter,
   SkillOperation,
   WritableMetaOf,
+  StrictInitiativeSkillEventArg,
+  StrictInitiativeSkillFilter,
 } from "./skill";
 import {
-  ExEntityType,
   CardHandle,
   CharacterHandle,
   CombatStatusHandle,
@@ -62,44 +62,12 @@ import { GiTcgDataError } from "../error";
 import { costSize, diceCostSize, normalizeCost, Writable } from "../utils";
 import { Version, VersionInfo, DEFAULT_VERSION_INFO } from "../base/version";
 
-type StateOf<TargetKindTs extends InitiativeSkillTargetKind> =
-  TargetKindTs extends readonly [
-    infer First extends ExEntityType,
-    ...infer Rest extends InitiativeSkillTargetKind,
-  ]
-    ? readonly [
-        First extends "character" ? CharacterState : EntityState,
-        ...StateOf<Rest>,
-      ]
-    : readonly [];
-
-export interface StrictInitiativeSkillEventArg<
-  TargetKindTs extends InitiativeSkillTargetKind,
-> {
-  targets: StateOf<TargetKindTs>;
-}
-
-type InitiativeSkillBuilderMeta<
-  KindTs extends InitiativeSkillTargetKind,
-  AssociatedExt extends ExtensionHandle,
-> = {
-  callerType: "character" | "card";
-  callerVars: never;
-  eventArgType: StrictInitiativeSkillEventArg<KindTs>;
-  associatedExtension: AssociatedExt;
-};
-
 type DisposeCardBuilderMeta<AssociatedExt extends ExtensionHandle> = {
   callerType: "character";
   callerVars: never;
   eventArgType: DisposeOrTuneCardEventArg;
   associatedExtension: AssociatedExt;
 };
-
-type StrictInitiativeSkillFilter<
-  KindTs extends InitiativeSkillTargetKind,
-  AssociatedExt extends ExtensionHandle,
-> = SkillOperationFilter<InitiativeSkillBuilderMeta<KindTs, AssociatedExt>>;
 
 export type TargetQuery =
   | `${string}character${string}`
@@ -266,6 +234,7 @@ class CardBuilder<
   }
 
   /**
+   * @deprecated 由于 `toCombatStatus` 会生成“错误”的 handle id，应尽快移除。
    * 添加“打出后生成出战状态”的操作。
    *
    * 此调用后，卡牌描述结束；接下来的 builder 将描述出战状态。
@@ -282,6 +251,7 @@ class CardBuilder<
     return builder;
   }
   /**
+   * @deprecated 由于 `toStatus` 会生成“错误”的 handle id，应尽快移除。
    * 添加“打出后为某角色附着状态”的操作。
    *
    * 此调用后，卡牌描述结束；接下来的 builder 将描述状态。
@@ -365,7 +335,9 @@ class CardBuilder<
     return this.addTarget(targetQuery);
   }
 
-  filter(pred: StrictInitiativeSkillFilter<KindTs, AssociatedExt>): this {
+  filter(
+    pred: StrictInitiativeSkillFilter<"card", KindTs, AssociatedExt>,
+  ): this {
     this.filters.push(pred);
     return this;
   }

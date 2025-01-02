@@ -37,7 +37,12 @@ import {
   InitiativeSkillTargetGetter,
   SkillInfoOfContextConstruction,
 } from "../base/skill";
-import { AnyState, GameState } from "../base/state";
+import {
+  AnyState,
+  CharacterState,
+  EntityState,
+  GameState,
+} from "../base/state";
 import {
   ContextMetaBase,
   SkillContext,
@@ -45,6 +50,7 @@ import {
 } from "./context/skill";
 import {
   EquipmentHandle,
+  ExEntityType,
   ExtensionHandle,
   SkillHandle,
   StatusHandle,
@@ -67,11 +73,7 @@ import { GiTcgDataError } from "../error";
 import { DEFAULT_VERSION_INFO, Version, VersionInfo } from "../base/version";
 import { registerInitiativeSkill } from "./registry";
 import { InitiativeSkillTargetKind } from "../base/card";
-import {
-  StrictInitiativeSkillEventArg,
-  TargetKindOfQuery,
-  TargetQuery,
-} from "./card";
+import { TargetKindOfQuery, TargetQuery } from "./card";
 
 export type TriggeredBuilderMetaBase = Omit<ContextMetaBase, "readonly"> & {
   callerType: "character" | EntityType;
@@ -93,6 +95,42 @@ export type SkillOperationFilter<Meta extends BuilderMetaBase> = (
   c: TypedSkillContext<ReadonlyMetaOf<Meta>>,
   e: Omit<Meta["eventArgType"], `_${string}`>,
 ) => unknown;
+
+type StateOf<TargetKindTs extends InitiativeSkillTargetKind> =
+  TargetKindTs extends readonly [
+    infer First extends ExEntityType,
+    ...infer Rest extends InitiativeSkillTargetKind,
+  ]
+    ? readonly [
+        First extends "character" ? CharacterState : EntityState,
+        ...StateOf<Rest>,
+      ]
+    : readonly [];
+
+export interface StrictInitiativeSkillEventArg<
+  TargetKindTs extends InitiativeSkillTargetKind,
+> {
+  targets: StateOf<TargetKindTs>;
+}
+
+type InitiativeSkillBuilderMeta<
+  CallerType extends "character" | "card",
+  KindTs extends InitiativeSkillTargetKind,
+  AssociatedExt extends ExtensionHandle,
+> = {
+  callerType: CallerType;
+  callerVars: never;
+  eventArgType: StrictInitiativeSkillEventArg<KindTs>;
+  associatedExtension: AssociatedExt;
+};
+
+export type StrictInitiativeSkillFilter<
+  CallerType extends "character" | "card",
+  KindTs extends InitiativeSkillTargetKind,
+  AssociatedExt extends ExtensionHandle,
+> = SkillOperationFilter<
+  InitiativeSkillBuilderMeta<CallerType, KindTs, AssociatedExt>
+>;
 
 enum ListenTo {
   Myself,
@@ -931,11 +969,12 @@ export abstract class SkillBuilderWithCost<
 }
 
 class InitiativeSkillBuilder<
+  KindTs extends InitiativeSkillTargetKind,
   AssociatedExt extends ExtensionHandle,
 > extends SkillBuilderWithCost<{
   callerType: "character";
   callerVars: never;
-  eventArgType: InitiativeSkillEventArg;
+  eventArgType: StrictInitiativeSkillEventArg<KindTs>;
   associatedExtension: AssociatedExt;
 }> {
   private _skillType: SkillType = "normal";
@@ -963,7 +1002,10 @@ class InitiativeSkillBuilder<
       );
     }
     this.associatedExtensionId = ext;
-    return this as unknown as InitiativeSkillBuilder<ExtensionHandle<NewExtT>>;
+    return this as unknown as InitiativeSkillBuilder<
+      KindTs,
+      ExtensionHandle<NewExtT>
+    >;
   }
 
   prepared(): this {
@@ -993,23 +1035,23 @@ class InitiativeSkillBuilder<
   /** 此定义未被使用。 */
   reserve(): void {}
 
-  enterNightsoul(
-    techniqueEquipment: EquipmentHandle,
-    nightsoulBlessing: StatusHandle,
-    nightsoulValue: number,
-  ) {
-    this.filters.push((c) => {
-      return !c.self.hasStatus(nightsoulBlessing);
-    });
-    this.do((c) => {
-      c.self.equip(techniqueEquipment);
-      c.characterStatus(nightsoulBlessing, "@self", {
-        overrideVariables: {
-          nightsoul: nightsoulValue,
-        },
-      });
-    });
+  filter(
+    pred: StrictInitiativeSkillFilter<"character", KindTs, AssociatedExt>,
+  ): this {
+    this.filters.push(pred);
     return this;
+  }
+
+  addTarget<Q extends TargetQuery>(
+    targetQuery: Q,
+  ): BuilderWithShortcut<
+    InitiativeSkillBuilder<
+      readonly [...KindTs, TargetKindOfQuery<Q>],
+      AssociatedExt
+    >
+  > {
+    this.addTargetImpl(targetQuery);
+    return this as any;
   }
 
   done(): SkillHandle {
