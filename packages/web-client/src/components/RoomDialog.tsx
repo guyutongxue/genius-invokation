@@ -27,7 +27,7 @@ import { ToggleSwitch } from "./ToggleSwitch";
 import { DeckInfoProps } from "./DeckBriefInfo";
 import { roomCodeToId, roomIdToCode } from "../utils";
 import { useNavigate } from "@solidjs/router";
-import { useUserContext } from "../App";
+import { useUserContext, useVersionContext } from "../App";
 import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
 
 function SelectableDeckInfo(
@@ -117,9 +117,7 @@ export function RoomDialog(props: RoomDialogProps) {
   const closeDialog = () => {
     dialogEl.close();
   };
-  const [versionInfo] = createResource(() =>
-    axios.get("version").then((res) => res.data),
-  );
+  const { versionInfo } = useVersionContext();
   const [version, setVersion] = createSignal(-1);
   const [timeConfig, setTimeConfig] = createSignal(TIME_CONFIGS[1]);
   const [isPublic, setIsPublic] = createSignal(false);

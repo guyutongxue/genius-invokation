@@ -13,13 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { A, Route, Router } from "@solidjs/router";
+import { Route, Router } from "@solidjs/router";
 import {
-  Accessor,
   createContext,
   createResource,
-  createSignal,
-  onMount,
   Resource,
   useContext,
 } from "solid-js";
@@ -40,11 +37,18 @@ export interface UserInfo {
 
 export interface UserContextValue {
   user: Resource<UserInfo | null>;
-  refresh: () => unknown;
+  readonly refresh: () => unknown;
 }
 
 const UserContext = createContext<UserContextValue>();
 export const useUserContext = () => useContext(UserContext)!;
+
+export interface VersionContextValue {
+  versionInfo: Resource<any>;
+}
+
+const VersionContext = createContext<VersionContextValue>();
+export const useVersionContext = () => useContext(VersionContext)!;
 
 function App() {
   const [user, { refetch }] = createResource<UserInfo | null>(async () => {
@@ -56,22 +60,30 @@ function App() {
       return null;
     }
   });
+  const [versionInfo] = createResource(() =>
+    axios.get("version").then((res) => res.data),
+  );
   const userContextValue: UserContextValue = {
     user,
     refresh: refetch,
   };
+  const versionContextValue: VersionContextValue = {
+    versionInfo,
+  };
   return (
     <UserContext.Provider value={userContextValue}>
-      <div class="h-full w-full flex flex-row">
-        <Router base={import.meta.env.BASE_URL}>
-          <Route path="/" component={Home} />
-          <Route path="/user/:id" component={User} />
-          <Route path="/decks/:id" component={EditDeck} />
-          <Route path="/decks" component={Decks} />
-          <Route path="/rooms/:code" component={Room} />
-          <Route path="*" component={NotFound} />
-        </Router>
-      </div>
+      <VersionContext.Provider value={versionContextValue}>
+        <div class="h-full w-full flex flex-row">
+          <Router base={import.meta.env.BASE_URL}>
+            <Route path="/" component={Home} />
+            <Route path="/user/:id" component={User} />
+            <Route path="/decks/:id" component={EditDeck} />
+            <Route path="/decks" component={Decks} />
+            <Route path="/rooms/:code" component={Room} />
+            <Route path="*" component={NotFound} />
+          </Router>
+        </div>
+      </VersionContext.Provider>
     </UserContext.Provider>
   );
 }
