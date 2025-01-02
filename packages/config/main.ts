@@ -11,5 +11,5 @@ export const WEB_CLIENT_BASE_PATH = import.meta.env.WEB_CLIENT_BASE_PATH || "/";
 export const SERVER_HOST = import.meta.env.DEV
   ? "//localhost:3000"
   : import.meta.env.SERVER_HOST
-  ? `//${import.meta.env.SERVER_HOST}`
+  ? `https://${import.meta.env.SERVER_HOST}`
   : "";
