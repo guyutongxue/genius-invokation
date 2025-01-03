@@ -1,5 +1,24 @@
-export function getAvatarUrl(id: number) {
-  return `https://avatars.githubusercontent.com/u/${id}?v=4`;
+import { Deck } from "@gi-tcg/utils";
+
+export interface PlayerInfo {
+  isGuest: boolean;
+  id: number | string;
+  name: string;
+  deck: Deck;
+}
+
+export function getAvatarUrl(userId: number) {
+  return `https://avatars.githubusercontent.com/u/${userId}?v=4`;
+}
+
+export function getPlayerAvatarUrl(player: PlayerInfo) {
+  if (player.isGuest) {
+    return `https://placehold.jp/70x120.png?text=${encodeURIComponent(
+      String.fromCodePoint(player.name.codePointAt(0)!),
+    )}`;
+  } else {
+    return getAvatarUrl(player.id as number);
+  }
 }
 
 export async function copyToClipboard(content: string) {

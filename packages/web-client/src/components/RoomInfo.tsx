@@ -1,39 +1,37 @@
 import { For, Show, createResource } from "solid-js";
 import { A } from "@solidjs/router";
 import { useUserContext } from "../App";
-import { getAvatarUrl, roomIdToCode } from "../utils";
+import { getPlayerAvatarUrl, roomIdToCode } from "../utils";
+import type { PlayerInfo } from "../utils";
 
 export interface RoomInfoProps {
   id: number;
   watchable: boolean;
-  players: {
-    userId: number;
-    userName: string;
-  }[];
+  players: PlayerInfo[];
   onJoin?: (roomInfo: RoomInfoProps) => void;
 }
 
 export function RoomInfo(props: RoomInfoProps) {
   const { user } = useUserContext();
-  const insideRoom = () => props.players.some((p) => p.userId === user()?.id);
+  const insideRoom = () => props.players.some((p) => p.id === user()?.id);
   const code = () => roomIdToCode(props.id);
-  const url = (playerId: number) => {
+  const url = (playerId: string | number) => {
     if (insideRoom()) {
-      return `rooms/${code()}?user=${user()!.id}&action=1`;
+      return `rooms/${code()}?player=${user()!.id}&action=1`;
     } else {
-      return `rooms/${code()}?user=${playerId}`;
+      return `rooms/${code()}?player=${playerId}`;
     }
   };
   const [avatarUrl0] = createResource(
     () => props.players,
     (players) => {
-      return players[0] && getAvatarUrl(players[0].userId);
+      return players[0] && getPlayerAvatarUrl(players[0]);
     },
   );
   const [avatarUrl1] = createResource(
     () => props.players,
     (players) => {
-      return players[1] && getAvatarUrl(players[1].userId);
+      return players[1] && getPlayerAvatarUrl(players[1]);
     },
   );
   return (
@@ -50,7 +48,7 @@ export function RoomInfo(props: RoomInfoProps) {
       >
         <Show when={props.players.length > 0}>
           <A
-            href={url(props.players[0].userId)}
+            href={url(props.players[0].id)}
             class="flex flex-row items-center h-6 rounded-r-xl pr-2 bg-yellow-800 text-yellow-100 ml-2 hover:bg-yellow-700 transition-colors group-data-[disabled=true]:pointer-events-none"
           >
             <img
@@ -59,7 +57,7 @@ export function RoomInfo(props: RoomInfoProps) {
               height="30"
               class="rounded-full b-yellow-800 b-1 translate-x--2"
             />
-            {props.players[0].userName}
+            {props.players[0].name}
           </A>
           <span class="text-xl font-bold">VS</span>
           <Show
@@ -79,10 +77,10 @@ export function RoomInfo(props: RoomInfoProps) {
             }
           >
             <A
-              href={url(props.players[1].userId)}
+              href={url(props.players[1].id)}
               class="flex flex-row items-center h-6 rounded-l-xl pl-2 bg-yellow-800 text-yellow-100 mr-2 hover:bg-yellow-700 transition-colors group-data-[disabled=true]:pointer-events-none"
             >
-              {props.players[1].userName}
+              {props.players[1].name}
               <img
                 src={avatarUrl1()}
                 width="30"

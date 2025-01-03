@@ -16,7 +16,7 @@
 import path from "node:path";
 import type { FastifyInstance } from "fastify";
 import { fastifyStatic } from "@fastify/static";
-import { WEB_CLIENT_BASE_PATH as BASE_PATH } from "@gi-tcg/config";
+import { WEB_CLIENT_BASE_PATH } from "@gi-tcg/config";
 
 const indexHtml = await Bun.file(path.join(import.meta.dirname, "../../web-client/dist/index.html")).text();
 
@@ -25,16 +25,14 @@ export async function frontend(app: FastifyInstance) {
     await app.register(fastifyStatic, {
       root: path.join(import.meta.dirname, "../../web-client/dist"),
       index: false,
-      prefix: BASE_PATH,
+      prefix: WEB_CLIENT_BASE_PATH,
       wildcard: false,
     });
-    app.get(BASE_PATH, (_req, reply) => {
+    app.get(WEB_CLIENT_BASE_PATH, (_req, reply) => {
       reply.type("text/html").send(indexHtml);
     });
-    app.get(`${BASE_PATH}*`, (_req, reply) => {
+    app.get(`${WEB_CLIENT_BASE_PATH}*`, (_req, reply) => {
       reply.type("text/html").send(indexHtml);
     });
   }
 }
-
-export { BASE_PATH };

@@ -14,6 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -24,11 +25,24 @@ import {
   Sse,
   UnauthorizedException,
 } from "@nestjs/common";
-import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, Max, Min } from "class-validator";
-import { RoomsService } from "./rooms.service";
-import { User } from "../auth/user.decorator";
+import {
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  Length,
+  Max,
+  Min,
+  ValidateNested,
+} from "class-validator";
+import { RoomsService, type PlayerId } from "./rooms.service";
+import { Guest, User, UserOrGuest } from "../auth/user.decorator";
 import type { RpcMethod, RpcResponse } from "@gi-tcg/typings";
 import { VERSIONS, type Version } from "@gi-tcg/core";
+import { DeckDto } from "../decks/decks.controller";
+import { Public } from "../auth/auth.guard";
+import { validateDto } from "../utils";
 
 export class CreateRoomDto {
   @IsBoolean()
@@ -40,9 +54,6 @@ export class CreateRoomDto {
   @Max(VERSIONS.length - 1)
   @IsOptional()
   gameVersion?: number;
-
-  @IsInt()
-  hostDeckId!: number;
 
   @IsNumber()
   @IsOptional()
@@ -79,9 +90,30 @@ export class CreateRoomDto {
   private?: boolean;
 }
 
-export class JoinRoomDto {
+export class UserCreateRoomDto extends CreateRoomDto {
+  @IsInt()
+  hostDeckId!: number;
+}
+
+export class GuestCreateRoomDto extends CreateRoomDto {
+  @Length(1, 64)
+  name!: string;
+
+  @ValidateNested()
+  deck!: DeckDto;
+}
+
+export class UserJoinRoomDto {
   @IsInt()
   deckId!: number;
+}
+
+export class GuestJoinRoomDto {
+  @Length(1, 64)
+  name!: string;
+
+  @ValidateNested()
+  deck!: DeckDto;
 }
 
 export class PlayerActionResponseDto {
@@ -92,100 +124,121 @@ export class PlayerActionResponseDto {
   response!: RpcResponse[RpcMethod];
 }
 
-
 @Controller("rooms")
+@Public()
 export class RoomsController {
   constructor(private rooms: RoomsService) {}
 
   @Get()
-  getRooms(@User() userId: number) {
+  getRooms() {
     return this.rooms.getAllRooms();
   }
 
   @Post()
-  createRoom(@User() userId: number, @Body() params: CreateRoomDto) {
-    return this.rooms.createRoom(userId, params);
+  async createRoom(
+    @User() userId: number | null,
+    @Guest() guestId: string | null,
+    @Body() params: unknown,
+  ) {
+    if (userId !== null) {
+      const dto = await validateDto(params, UserCreateRoomDto);
+      return this.rooms.createRoomFromUser(userId, dto);
+    } else {
+      const dto = await validateDto(params, GuestCreateRoomDto);
+      return this.rooms.createRoomFromGuest(guestId, dto);
+    }
   }
 
   @Get("current")
-  getCurrentRoom(@User() userId: number) {
-    return this.rooms.currentRoom(userId);
+  getCurrentRoom(@UserOrGuest() playerId: number | string | null) {
+    if (playerId !== null) {
+      return this.rooms.currentRoom(playerId);
+    } else {
+      return null;
+    }
   }
 
   @Get(":roomId")
-  getRoom(
-    @User() userId: number,
-    @Param("roomId", ParseIntPipe) roomId: number,
-  ) {
+  getRoom(@Param("roomId", ParseIntPipe) roomId: number) {
     return this.rooms.getRoom(roomId);
   }
 
   @Delete(":roomId")
   deleteRoom(
-    @User() userId: number,
+    @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
   ) {
-    return this.rooms.deleteRoom(userId, roomId);
+    if (playerId === null) {
+      throw new UnauthorizedException();
+    }
+    return this.rooms.deleteRoom(playerId, roomId);
   }
 
   @Post(":roomId/players")
-  joinRoom(
-    @User() userId: number,
+  async joinRoom(
+    @User() userId: number | null,
+    @Guest() guestId: string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Body() { deckId }: JoinRoomDto,
+    @Body() params: object,
   ) {
-    return this.rooms.joinRoom(userId, roomId, deckId);
+    if (userId !== null) {
+      const dto = await validateDto(params, UserJoinRoomDto);
+      return this.rooms.joinRoomFromUser(userId, roomId, dto.deckId);
+    } else {
+      const dto = await validateDto(params, GuestJoinRoomDto);
+      return this.rooms.joinRoomFromGuest(guestId, roomId, dto);
+    }
   }
 
-  @Sse(":roomId/players/:userId/notification")
+  @Sse(":roomId/players/:targetPlayerId/notification")
   getNotification(
-    @User() userId: number,
+    @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("userId", ParseIntPipe) targetUserId: number,
+    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
   ) {
-    return this.rooms.playerNotification(roomId, userId, targetUserId);
+    return this.rooms.playerNotification(roomId, playerId, targetPlayerId);
   }
 
-  @Sse(":roomId/players/:userId/actionRequest")
+  @Sse(":roomId/players/:targetPlayerId/actionRequest")
   getAction(
-    @User() userId: number,
+    @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("userId", ParseIntPipe) targetUserId: number,
+    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
   ) {
-    if (userId !== targetUserId) {
+    if (playerId !== targetPlayerId) {
       throw new UnauthorizedException(
         `You can only get your own action requests`,
       );
     }
-    return this.rooms.playerAction(roomId, userId);
+    return this.rooms.playerAction(roomId, playerId);
   }
 
-  @Post(":roomId/players/:userId/actionResponse")
+  @Post(":roomId/players/:targetPlayerId/actionResponse")
   postAction(
-    @User() userId: number,
+    @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("userId", ParseIntPipe) targetUserId: number,
+    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
     @Body() action: PlayerActionResponseDto,
   ) {
-    if (userId !== targetUserId) {
+    if (playerId !== targetPlayerId) {
       throw new UnauthorizedException(
         `You can only post your own action responses`,
       );
     }
-    this.rooms.receivePlayerResponse(roomId, userId, action);
+    this.rooms.receivePlayerResponse(roomId, playerId, action);
     return { message: "response received" };
   }
 
-  @Post(":roomId/players/:userId/giveUp")
+  @Post(":roomId/players/:targetPlayerId/giveUp")
   postGiveUp(
-    @User() userId: number,
+    @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("userId", ParseIntPipe) targetUserId: number,
+    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
   ) {
-    if (userId !== targetUserId) {
+    if (playerId !== targetPlayerId) {
       throw new UnauthorizedException(`You can only give up your own game`);
     }
-    this.rooms.receivePlayerGiveUp(roomId, userId);
+    this.rooms.receivePlayerGiveUp(roomId, playerId);
     return { message: "given up" };
   }
 }

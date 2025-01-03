@@ -15,7 +15,7 @@
 
 import { useParams, useSearchParams } from "@solidjs/router";
 import { Layout } from "../layouts/Layout";
-import { roomCodeToId } from "../utils";
+import { PlayerInfo, roomCodeToId } from "../utils";
 import {
   Show,
   createSignal,
@@ -27,15 +27,8 @@ import {
 import axios, { AxiosError } from "axios";
 import { PlayerIOWithCancellation, createPlayer } from "@gi-tcg/webui-core";
 import "@gi-tcg/webui-core/style.css";
-import type { Deck } from "@gi-tcg/utils";
 import EventSourceStream from "@server-sent-stream/web";
 import { RpcMethod, RpcRequest } from "@gi-tcg/typings";
-
-interface PlayerInfo {
-  userId: number;
-  userName: string;
-  deck: Deck;
-}
 
 interface InitializedPayload {
   who: 0 | 1;
@@ -61,7 +54,7 @@ export function Room() {
   const [searchParams, setSearchParams] = useSearchParams();
   const code = params.code;
   const action = !!searchParams.action;
-  const userId = searchParams.user;
+  const playerId = searchParams.player;
   const id = roomCodeToId(code);
   const [playerIo, setPlayerIo] = createSignal<PlayerIOWithCancellation>();
   const [initialized, setInitialized] = createSignal<InitializedPayload>();
@@ -97,7 +90,7 @@ export function Room() {
         onGiveUp: async () => {
           try {
             const { data } = await axios.post(
-              `rooms/${id}/players/${userId}/giveUp`,
+              `rooms/${id}/players/${playerId}/giveUp`,
             );
           } catch (e) {
             if (e instanceof AxiosError) {
@@ -124,7 +117,7 @@ export function Room() {
     setCurrentTimer(null);
     try {
       const { data } = await axios.post(
-        `rooms/${id}/players/${userId}/actionResponse`,
+        `rooms/${id}/players/${playerId}/actionResponse`,
         {
           id: payload.id,
           response,
@@ -182,7 +175,7 @@ export function Room() {
 
   onMount(() => {
     axios
-      .get(`rooms/${id}/players/${userId}/notification`, {
+      .get(`rooms/${id}/players/${playerId}/notification`, {
         headers: {
           Accept: "text/event-stream",
         },
@@ -219,7 +212,7 @@ export function Room() {
       .catch(reportStreamError);
     if (action) {
       axios
-        .get(`rooms/${id}/players/${userId}/actionRequest`, {
+        .get(`rooms/${id}/players/${playerId}/actionRequest`, {
           headers: {
             Accept: "text/event-stream",
           },
@@ -284,9 +277,9 @@ export function Room() {
             <Show when={initialized()}>
               {(payload) => (
                 <>
-                  <span>{payload().myPlayerInfo.userName}</span>
+                  <span>{payload().myPlayerInfo.name}</span>
                   <span class="font-bold"> VS </span>
-                  <span>{payload().oppPlayerInfo.userName}</span>
+                  <span>{payload().oppPlayerInfo.name}</span>
                   <span>（您是：{payload().who === 0 ? "先手" : "后手"}）</span>
                 </>
               )}

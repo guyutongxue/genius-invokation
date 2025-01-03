@@ -14,28 +14,26 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
-  BadRequestException,
-  Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
-  Post,
 } from "@nestjs/common";
 import { UsersService, type UserInfo } from "./users.service";
 import { User } from "../auth/user.decorator";
+import { Public } from "../auth/auth.guard";
 
 @Controller("users")
 export class UsersController {
-  constructor(
-    private users: UsersService,
-  ) {}
+  constructor(private users: UsersService) {}
 
   @Get("me")
-  async me(@User() userId: number): Promise<UserInfo> {
+  @Public()
+  async me(@User() userId: number | null): Promise<UserInfo | null> {
+    if (userId === null) {
+      return null;
+    }
     const user = await this.users.findById(userId);
     if (!user) {
       throw new NotFoundException();

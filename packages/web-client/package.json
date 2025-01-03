@@ -42,7 +42,7 @@
     "postcss-load-config": "^5.0.3",
     "postcss-preset-env": "^9.3.0",
     "unocss": "^0.58.3",
-    "vite": "^5.0.10",
-    "vite-plugin-solid": "^2.10.1"
+    "vite": "^6.0.7",
+    "vite-plugin-solid": "^2.11.0"
   }
 }

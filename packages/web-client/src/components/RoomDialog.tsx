@@ -170,16 +170,16 @@ export function RoomDialog(props: RoomDialogProps) {
           private: !isPublic(),
           watchable: watchable(),
         });
-        const roomId = data.id;
+        const roomId = data.room.id;
         const roomCode = roomIdToCode(roomId);
-        navigate(`/rooms/${roomCode}?user=${user()?.id}&action=1`);
+        navigate(`/rooms/${roomCode}?player=${user()?.id}&action=1`);
       } else {
         const roomId = props.joiningRoomInfo.id;
         const roomCode = roomIdToCode(roomId);
         const { data } = await axios.post(`rooms/${roomId}/players`, {
           deckId: selectedDeck(),
         });
-        navigate(`/rooms/${roomCode}?user=${user()?.id}&action=1`);
+        navigate(`/rooms/${roomCode}?player=${user()?.id}&action=1`);
       }
     } catch (e) {
       if (e instanceof AxiosError) {
