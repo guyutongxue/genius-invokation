@@ -40,11 +40,10 @@ import { DecksService } from "./decks.service";
 import { PaginationDto, parseStringToInt } from "../utils";
 import { VERSIONS, type Version } from "@gi-tcg/core";
 import { Transform } from "class-transformer";
+import type { Deck } from "@gi-tcg/utils";
+import { Public } from "../auth/auth.guard";
 
-export class CreateDeckDto {
-  @Length(1, 64)
-  name!: string;
-
+export class DeckDto implements Deck {
   @IsInt({ each: true })
   @ArrayMinSize(3)
   @ArrayMaxSize(3)
@@ -54,6 +53,11 @@ export class CreateDeckDto {
   @ArrayMinSize(30)
   @ArrayMaxSize(30)
   cards!: number[];
+}
+
+export class CreateDeckDto extends DeckDto {
+  @Length(1, 64)
+  name!: string;
 }
 
 export class UpdateDeckDto {
@@ -95,6 +99,12 @@ export class DecksController {
       id: result.id,
       code: result.code,
     };
+  }
+
+  @Post("version")
+  @Public()
+  verifyVersion(@Body() deck: CreateDeckDto) {
+    return this.decks.deckToCode(deck);
   }
 
   @Get()

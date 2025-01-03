@@ -18,7 +18,6 @@ import {
   type OnModuleInit,
 } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service";
-import { type User as UserModel } from "@prisma/client";
 import axios from "axios";
 import { GET_USER_API_URL } from "../auth/auth.service";
 

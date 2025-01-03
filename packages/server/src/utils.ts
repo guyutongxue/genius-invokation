@@ -18,10 +18,24 @@ import {
   characters as characterData,
   actionCards as actionCardData,
 } from "@gi-tcg/static-data";
-import { IsInt, IsOptional, IsPositive, Max } from "class-validator";
+import {
+  IsInt,
+  IsOptional,
+  IsPositive,
+  Max,
+  validate,
+  ValidationError,
+} from "class-validator";
 import { CURRENT_VERSION, VERSIONS, type Version } from "@gi-tcg/core";
 import { semver } from "bun";
-import { Transform, type TransformFnParams } from "class-transformer";
+import {
+  plainToClass,
+  Transform,
+  type ClassConstructor,
+  type TransformFnParams,
+} from "class-transformer";
+import { createId as createCuid, isCuid } from "@paralleldrive/cuid2";
+import { BadRequestException } from "@nestjs/common";
 
 export enum DeckVerificationErrorCode {
   SizeError = "SizeError",
@@ -164,6 +178,18 @@ export function parseStringToInt({ value }: TransformFnParams): number {
   return typeof value !== "string" || value.trim() === "" ? NaN : Number(value);
 }
 
+export function createGuestId() {
+  return `guest-${createCuid()}`;
+}
+
+export function isGuestId(id: unknown): id is string {
+  if (typeof id !== "string") {
+    return false;
+  }
+  const [tag, cuid] = id.split("-");
+  return tag === "guest" && !!cuid && isCuid(cuid);
+}
+
 export class PaginationDto {
   @IsInt()
   @IsPositive()
@@ -182,4 +208,63 @@ export class PaginationDto {
 export interface PaginationResult<T> {
   count: number;
   data: T[];
+}
+
+type ValidationErrorWithConstraints = ValidationError & {
+  constraints?: Record<string, string>;
+};
+
+// https://github.com/nestjs/nest/blob/b6ea2a1899fe54f289e2c6188c843705c9072698/packages/common/pipes/validation.pipe.ts#L266
+
+function mapChildrenToValidationErrors(
+  error: ValidationError,
+  parentPath?: string,
+): ValidationErrorWithConstraints[] {
+  if (!(error.children && error.children.length)) {
+    return [error];
+  }
+  const validationErrors = [];
+  parentPath = parentPath ? `${parentPath}.${error.property}` : error.property;
+  for (const item of error.children) {
+    if (item.children && item.children.length) {
+      validationErrors.push(...mapChildrenToValidationErrors(item, parentPath));
+    }
+    validationErrors.push(prependConstraintsWithParentProp(parentPath, item));
+  }
+  return validationErrors;
+}
+
+function prependConstraintsWithParentProp(
+  parentPath: string,
+  error: ValidationError,
+): ValidationErrorWithConstraints {
+  const constraints: Record<string, string> = {};
+  for (const key in error.constraints) {
+    constraints[key] = `${parentPath}.${error.constraints[key]}`;
+  }
+  return {
+    ...error,
+    constraints,
+  };
+}
+
+function flattenValidationErrors(
+  validationErrors: ValidationError[],
+): string[] {
+  return validationErrors
+    .flatMap((error) => mapChildrenToValidationErrors(error))
+    .filter((item) => !!item.constraints)
+    .flatMap((item) => Object.values(item.constraints!));
+}
+
+export async function validateDto<T extends object>(
+  value: unknown,
+  type: ClassConstructor<T>,
+): Promise<T> {
+  const dto = plainToClass(type, value);
+  const errors = await validate(dto);
+  if (errors.length > 0) {
+    throw new BadRequestException(flattenValidationErrors(errors));
+  }
+  return dto;
 }

@@ -14,29 +14,26 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Route, Router } from "@solidjs/router";
-import {
-  createContext,
-  createResource,
-  Resource,
-  useContext,
-} from "solid-js";
+import { createContext, createResource, Resource, useContext } from "solid-js";
 import { Home } from "./pages/Home";
 import axios from "axios";
 import { User } from "./pages/User";
-import { Decks } from "./pages/Decks";
+import { DeckInfo, Decks } from "./pages/Decks";
 import { EditDeck } from "./pages/EditDeck";
 import { Room } from "./pages/Room";
 import { NotFound } from "./pages/NotFound";
+import { Deck } from "@gi-tcg/utils";
+import { GuestInfo, useGuestInfo } from "./guest";
 
 export interface UserInfo {
+  isGuest: false;
   id: number;
   login: string;
   name?: string;
-  avatarUrl: string;
 }
 
 export interface UserContextValue {
-  user: Resource<UserInfo | null>;
+  user: Resource<UserInfo | GuestInfo | undefined>;
   readonly refresh: () => unknown;
 }
 
@@ -51,15 +48,26 @@ const VersionContext = createContext<VersionContextValue>();
 export const useVersionContext = () => useContext(VersionContext)!;
 
 function App() {
-  const [user, { refetch }] = createResource<UserInfo | null>(async () => {
-    try {
-      const { data } = await axios.get<UserInfo>("users/me");
-      data.name = data.name ?? data.login;
-      return data;
-    } catch (e) {
-      return null;
-    }
-  });
+  const guestInfo = useGuestInfo();
+  const [user, { refetch }] = createResource<UserInfo | GuestInfo | undefined>(
+    async () => {
+      let result: UserInfo | GuestInfo | undefined = void 0;
+      try {
+        const { data } = await axios.get<UserInfo>("users/me");
+        if (data) {
+          result = {
+            ...data,
+            isGuest: false,
+            name: data.name ?? data.login,
+          };
+        }
+      } catch {}
+      if (!result) {
+        result = guestInfo() ?? void 0;
+      }
+      return result;
+    },
+  );
   const [versionInfo] = createResource(() =>
     axios.get("version").then((res) => res.data),
   );

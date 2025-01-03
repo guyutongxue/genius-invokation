@@ -13,23 +13,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import type { Deck } from "@gi-tcg/utils";
 import { useLocation, useNavigate } from "@solidjs/router";
 import axios, { AxiosError } from "axios";
 import { For, Show } from "solid-js";
 import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
+import { DeckInfo } from "../pages/Decks";
+import { useGuestDecks, useGuestInfo } from "../guest";
 
-export interface DeckInfoProps extends Deck {
-  name: string;
-  code: string;
-  id: number;
-  sinceVersion: string;
-  editable: boolean;
+export interface DeckInfoProps extends DeckInfo {
+  editable?: boolean;
   onDelete?: () => void;
 }
 
 export function DeckBriefInfo(props: DeckInfoProps) {
   const navigate = useNavigate();
+  const guestInfo = useGuestInfo();
+  const [, { removeGuestDeck }] = useGuestDecks();
 
   const viewDeck = (e: MouseEvent) => {
     e.stopPropagation();
@@ -46,7 +45,11 @@ export function DeckBriefInfo(props: DeckInfoProps) {
     e.stopPropagation();
     if (confirm(`确定要删除牌组 ${props.name} 吗？`)) {
       try {
-        const { data } = await axios.delete(`decks/${props.id}`);
+        if (guestInfo()) {
+          await removeGuestDeck(props.id);
+        } else {
+          await axios.delete(`decks/${props.id}`);
+        }
         props.onDelete?.();
       } catch (e) {
         if (e instanceof AxiosError) {

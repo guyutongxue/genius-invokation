@@ -17,11 +17,13 @@ import { A, useNavigate } from "@solidjs/router";
 import { useUserContext } from "../App";
 import { Show } from "solid-js";
 import { IS_BETA } from "@gi-tcg/config";
+import { getAvatarUrl } from "../utils";
 
 export function Header() {
   const navigate = useNavigate();
   const { user, refresh } = useUserContext();
   const logout = async () => {
+    localStorage.removeItem("guestName");
     localStorage.removeItem("accessToken");
     await refresh();
     navigate("/");
@@ -42,14 +44,16 @@ export function Header() {
       <Show when={user()}>
         {(info) => (
           <>
-            <A href={`/user/${info().id}`}>
-              <div class="rounded-full w-12 h-12 b-solid b-1 b-gray-200 flex items-center justify-center">
-                <img
-                  src={info().avatarUrl}
-                  class="w-10 h-10 [clip-path:circle()]"
-                />
-              </div>
-            </A>
+            <Show when={!info().isGuest}>
+              <A href={`/user/${info().id}`}>
+                <div class="rounded-full w-12 h-12 b-solid b-1 b-gray-200 flex items-center justify-center">
+                  <img
+                    src={getAvatarUrl(info().id as number)}
+                    class="w-10 h-10 [clip-path:circle()]"
+                  />
+                </div>
+              </A>
+            </Show>
             <button
               class="btn btn-outline-red text-1em gap-0.5em"
               onClick={logout}
