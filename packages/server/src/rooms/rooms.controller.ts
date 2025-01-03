@@ -43,6 +43,8 @@ import { VERSIONS, type Version } from "@gi-tcg/core";
 import { DeckDto } from "../decks/decks.controller";
 import { Public } from "../auth/auth.guard";
 import { validateDto } from "../utils";
+import { AuthService } from "../auth/auth.service";
+import { IntOrStringPipe } from "./rooms.pipe";
 
 export class CreateRoomDto {
   @IsBoolean()
@@ -127,7 +129,7 @@ export class PlayerActionResponseDto {
 @Controller("rooms")
 @Public()
 export class RoomsController {
-  constructor(private rooms: RoomsService) {}
+  constructor(private rooms: RoomsService, private authService: AuthService) {}
 
   @Get()
   getRooms() {
@@ -145,7 +147,12 @@ export class RoomsController {
       return this.rooms.createRoomFromUser(userId, dto);
     } else {
       const dto = await validateDto(params, GuestCreateRoomDto);
-      return this.rooms.createRoomFromGuest(guestId, dto);
+      const { playerId, room } = await this.rooms.createRoomFromGuest(guestId, dto);
+      return {
+        accessToken: await this.authService.signGuest(playerId),
+        playerId,
+        room,
+      }
     }
   }
 
@@ -186,7 +193,11 @@ export class RoomsController {
       return this.rooms.joinRoomFromUser(userId, roomId, dto.deckId);
     } else {
       const dto = await validateDto(params, GuestJoinRoomDto);
-      return this.rooms.joinRoomFromGuest(guestId, roomId, dto);
+      const { playerId } = await  this.rooms.joinRoomFromGuest(guestId, roomId, dto);
+      return {
+        accessToken: await this.authService.signGuest(playerId),
+        playerId,
+      }
     }
   }
 
@@ -194,7 +205,7 @@ export class RoomsController {
   getNotification(
     @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
+    @Param("targetPlayerId", IntOrStringPipe) targetPlayerId: string | number,
   ) {
     return this.rooms.playerNotification(roomId, playerId, targetPlayerId);
   }
@@ -203,7 +214,7 @@ export class RoomsController {
   getAction(
     @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
+    @Param("targetPlayerId", IntOrStringPipe) targetPlayerId: number | string,
   ) {
     if (playerId !== targetPlayerId) {
       throw new UnauthorizedException(
@@ -217,7 +228,7 @@ export class RoomsController {
   postAction(
     @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
+    @Param("targetPlayerId", IntOrStringPipe) targetPlayerId: number | string,
     @Body() action: PlayerActionResponseDto,
   ) {
     if (playerId !== targetPlayerId) {
@@ -233,7 +244,7 @@ export class RoomsController {
   postGiveUp(
     @UserOrGuest() playerId: number | string | null,
     @Param("roomId", ParseIntPipe) roomId: number,
-    @Param("targetPlayerId", ParseIntPipe) targetPlayerId: number | string,
+    @Param("targetPlayerId", IntOrStringPipe) targetPlayerId: number | string,
   ) {
     if (playerId !== targetPlayerId) {
       throw new UnauthorizedException(`You can only give up your own game`);

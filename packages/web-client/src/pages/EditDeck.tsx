@@ -17,16 +17,16 @@ import { createSignal, createResource, Switch, Match, Show } from "solid-js";
 import { Layout } from "../layouts/Layout";
 import axios, { AxiosError } from "axios";
 import { decode, encode, type Deck } from "@gi-tcg/utils";
-import {
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "@solidjs/router";
+import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { DeckBuilder } from "@gi-tcg/deck-builder";
 import "@gi-tcg/deck-builder/style.css";
+import { useGuestDecks, useGuestInfo } from "../guest";
 
 export function EditDeck() {
   const params = useParams();
+  const guestInfo = useGuestInfo();
+  const [, { addGuestDeck, updateGuestDeck, removeGuestDeck }] =
+    useGuestDecks();
   const [searchParams, setSearchParams] = useSearchParams();
   const isNew = params.id === "new";
   const deckId = Number(params.id);
@@ -148,15 +148,21 @@ export function EditDeck() {
     try {
       setUploading(true);
       if (isNew) {
-        const { data } = await axios.post("decks", {
-          ...deck,
-          name: deckName(),
-        });
+        const deckInfo = { ...deck, name: deckName() };
+        if (guestInfo()) {
+          await addGuestDeck(deckInfo);
+        } else {
+          await axios.post("decks", deckInfo);
+        }
         setDirty(false);
         // navigate(`../${data.id}`);
         navigate("..");
       } else {
-        await axios.patch(`decks/${deckId}`, { ...deck });
+        if (guestInfo()) {
+          await updateGuestDeck(deckId, { ...deck });
+        } else {
+          await axios.patch(`decks/${deckId}`, { ...deck });
+        }
         setDirty(false);
         setUploadDone(true);
         setTimeout(() => setUploadDone(false), 500);

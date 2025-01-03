@@ -15,7 +15,6 @@
 
 import {
   createSignal,
-  createResource,
   Show,
   For,
   createEffect,
@@ -25,10 +24,11 @@ import {
 import axios, { AxiosError } from "axios";
 import { ToggleSwitch } from "./ToggleSwitch";
 import { DeckInfoProps } from "./DeckBriefInfo";
-import { roomCodeToId, roomIdToCode } from "../utils";
+import { roomIdToCode } from "../utils";
 import { useNavigate } from "@solidjs/router";
 import { useUserContext, useVersionContext } from "../App";
 import { DEFAULT_ASSET_API_ENDPOINT } from "@gi-tcg/config";
+import { useGuestDecks, useGuestInfo } from "../guest";
 
 function SelectableDeckInfo(
   props: DeckInfoProps & Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "id">,
@@ -110,7 +110,9 @@ const TIME_CONFIGS: TimeConfig[] = [
 ];
 
 export function RoomDialog(props: RoomDialogProps) {
-  const { user } = useUserContext();
+  const { user, refresh } = useUserContext();
+  const guestInfo = useGuestInfo();
+  const [guestDecks] = useGuestDecks();
   const navigate = useNavigate();
   const editable = () => !props.joiningRoomInfo;
   let dialogEl: HTMLDialogElement;
@@ -128,16 +130,27 @@ export function RoomDialog(props: RoomDialogProps) {
   const [entering, setEntering] = createSignal(false);
 
   createEffect(() => {
-    if (versionInfo()) {
-      setVersion(versionInfo().supportedGameVersions.length - 1);
+    const versions = versionInfo()?.supportedGameVersions ?? [];
+    if (props.joiningRoomInfo?.config.gameVersion) {
+      const ver = versions.indexOf(props.joiningRoomInfo.config.gameVersion);
+      console.log(ver);
+      setVersion(ver);
+    } else {
+      setVersion(versions.length - 1);
     }
   });
 
   const updateAvailableDecks = async (version: number) => {
     setLoadingDecks(true);
     try {
-      const { data } = await axios.get(`decks?requiredVersion=${version}`);
-      setAvailableDecks(data.data);
+      if (guestInfo()) {
+        setAvailableDecks(
+          guestDecks().filter((deck) => deck.requiredVersion <= version),
+        );
+      } else {
+        const { data } = await axios.get(`decks?requiredVersion=${version}`);
+        setAvailableDecks(data.data);
+      }
     } catch (e) {
       setAvailableDecks([]);
       if (e instanceof AxiosError) {
@@ -161,26 +174,54 @@ export function RoomDialog(props: RoomDialogProps) {
 
   const enterRoom = async () => {
     setEntering(true);
+    const guest = guestInfo();
     try {
-      if (typeof props.joiningRoomInfo === "undefined") {
-        const { data } = await axios.post("rooms", {
+      let roomId = props.joiningRoomInfo?.id;
+      let playerId = user()?.id ?? null;
+      let response;
+      if (typeof roomId === "undefined") {
+        const payload: any = {
           gameVersion: version(),
-          hostDeckId: selectedDeck(),
           ...timeConfig(),
           private: !isPublic(),
           watchable: watchable(),
-        });
-        const roomId = data.room.id;
-        const roomCode = roomIdToCode(roomId);
-        navigate(`/rooms/${roomCode}?player=${user()?.id}&action=1`);
+        };
+        if (guest) {
+          payload.name = guest.name;
+          payload.deck = guestDecks().find(
+            (deck) => deck.id === selectedDeck(),
+          );
+        } else {
+          payload.hostDeckId = selectedDeck();
+        }
+        const { data } = await axios.post("rooms", payload);
+        response = data;
+        roomId = response.room.id as number;
       } else {
-        const roomId = props.joiningRoomInfo.id;
-        const roomCode = roomIdToCode(roomId);
-        const { data } = await axios.post(`rooms/${roomId}/players`, {
-          deckId: selectedDeck(),
-        });
-        navigate(`/rooms/${roomCode}?player=${user()?.id}&action=1`);
+        let payload;
+        if (guest) {
+          payload = {
+            deck: guestDecks().find((deck) => deck.id === selectedDeck()),
+            name: guest.name,
+          };
+        } else {
+          payload = {
+            deckId: selectedDeck(),
+          };
+        }
+        const { data } = await axios.post(`rooms/${roomId}/players`, payload);
+        response = data;
       }
+      if (response.accessToken) {
+        localStorage.setItem("accessToken", response.accessToken);
+      }
+      if (response.playerId) {
+        playerId = response.playerId;
+        localStorage.setItem("guestId", response.playerId);
+        refresh();
+      }
+      const roomCode = roomIdToCode(roomId);
+      navigate(`/rooms/${roomCode}?player=${playerId}&action=1`);
     } catch (e) {
       if (e instanceof AxiosError) {
         alert(e.response?.data.message);
@@ -210,11 +251,11 @@ export function RoomDialog(props: RoomDialogProps) {
                 <h4 class="text-lg">游戏版本</h4>
                 <select
                   class="disabled:pointer-events-none"
-                  value={props.joiningRoomInfo?.config.gameVersion ?? version()}
+                  value={version()}
                   onChange={(e) => setVersion(Number(e.target.value))}
                   disabled={!editable()}
                 >
-                  <For each={versionInfo().supportedGameVersions}>
+                  <For each={versionInfo()?.supportedGameVersions ?? []}>
                     {(version, idx) => <option value={idx()}>{version}</option>}
                   </For>
                 </select>

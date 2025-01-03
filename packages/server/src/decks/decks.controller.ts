@@ -41,6 +41,7 @@ import { PaginationDto, parseStringToInt } from "../utils";
 import { VERSIONS, type Version } from "@gi-tcg/core";
 import { Transform } from "class-transformer";
 import type { Deck } from "@gi-tcg/utils";
+import { Public } from "../auth/auth.guard";
 
 export class DeckDto implements Deck {
   @IsInt({ each: true })
@@ -98,6 +99,12 @@ export class DecksController {
       id: result.id,
       code: result.code,
     };
+  }
+
+  @Post("version")
+  @Public()
+  verifyVersion(@Body() deck: CreateDeckDto) {
+    return this.decks.deckToCode(deck);
   }
 
   @Get()

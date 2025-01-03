@@ -73,4 +73,9 @@ export class AuthService {
       accessToken: await this.jwtService.signAsync(payload),
     };
   }
+
+  async signGuest(playerId: string) {
+    const payload = { user: 0, sub: playerId };
+    return await this.jwtService.signAsync(payload);
+  }
 }

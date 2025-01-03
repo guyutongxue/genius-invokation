@@ -39,7 +39,7 @@ export interface DeckWithDeckModel extends DeckWithVersion, DeckModel {}
 export class DecksService {
   constructor(private prisma: PrismaService) {}
 
-  private deckToCode(deck: Deck): DeckWithVersion {
+  deckToCode(deck: Deck): DeckWithVersion {
     try {
       const sinceVersion = verifyDeck(deck);
       const requiredVersion = VERSIONS.indexOf(sinceVersion);

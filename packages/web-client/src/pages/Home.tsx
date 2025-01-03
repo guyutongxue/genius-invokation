@@ -30,15 +30,16 @@ import { DeckBriefInfo } from "../components/DeckBriefInfo";
 import { RoomDialog } from "../components/RoomDialog";
 import { roomCodeToId } from "../utils";
 import { RoomInfo } from "../components/RoomInfo";
-import { GITHUB_AUTH_REDIRECT_URL } from "../config";
+import { useDecks } from "./Decks";
+import { Login } from "../components/Login";
+import { useGuestInfo } from "../guest";
 
 export function Home() {
   const { user, refresh } = useUserContext();
+  const guestInfo = useGuestInfo();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams<{ token: string }>();
-  const [decks] = createResource(() =>
-    axios.get("decks").then((res) => res.data),
-  );
+  const [decks] = useDecks();
 
   const [roomCodeValid, setRoomCodeValid] = createSignal(false);
   let createRoomDialogEl!: HTMLDialogElement;
@@ -92,9 +93,6 @@ export function Home() {
     joinRoomDialogEl.showModal();
   };
 
-  const CLIENT_ID = "Iv23liMGX6EkkrfUax8B";
-  const REDIRECT_URL = encodeURIComponent(GITHUB_AUTH_REDIRECT_URL);
-
   onMount(async () => {
     if (searchParams.token) {
       localStorage.setItem("accessToken", searchParams.token);
@@ -121,7 +119,7 @@ export function Home() {
               <div class="flex flex-col">
                 <div class="flex-shrink-0 mb-8">
                   <h2 class="text-3xl font-light">
-                    {user().name ?? `旅行者 ${user().id}`}，欢迎你！
+                    {user().name}，欢迎你！
                   </h2>
                 </div>
                 <div class="flex flex-row h-120 gap-8">
@@ -229,14 +227,8 @@ export function Home() {
             )}
           </Match>
           <Match when={true}>
-            <div class="flex flex-row gap-1 justify-center text-xl my-8">
-              <a
-                href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URL}`}
-                class="flex flex-row gap-2 btn btn-solid-black text-1em gap-0.5em"
-              >
-                <i class="block i-mdi-github" />
-                <span class="text-sm">Login with GitHub</span>
-              </a>
+            <div class="w-full flex justify-center">
+              <Login />
             </div>
           </Match>
         </Switch>

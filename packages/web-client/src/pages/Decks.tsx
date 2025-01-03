@@ -16,21 +16,47 @@
 import {
   For,
   Match,
-  Show,
   Switch,
   createResource,
-  createEffect,
+  ResourceReturn,
 } from "solid-js";
-import { useUserContext } from "../App";
 import { Layout } from "../layouts/Layout";
 import axios from "axios";
 import { A } from "@solidjs/router";
 import { DeckBriefInfo } from "../components/DeckBriefInfo";
+import { Deck } from "@gi-tcg/utils";
+import { useGuestDecks, useGuestInfo } from "../guest";
+
+export interface DeckInfo extends Deck {
+  id: number;
+  name: string;
+  code: string;
+  requiredVersion: number;
+}
+
+interface DecksResponse {
+  count: number;
+  data: DeckInfo[];
+}
+
+export function useDecks(): ResourceReturn<DecksResponse> {
+  const guestInfo = useGuestInfo();
+  const [guestDeck] = useGuestDecks();
+  return createResource(() => {
+    if (guestInfo()) {
+      const data = guestDeck();
+      return {
+        data,
+        count: data.length,
+      };
+    } else {
+      return axios.get<DecksResponse>("decks").then((res) => res.data);
+    }
+  });
+}
 
 export function Decks() {
-  const [decks, { refetch }] = createResource(() =>
-    axios.get("decks").then((res) => res.data),
-  );
+  const [decks, { refetch }] = useDecks();
   return (
     <Layout>
       <div class="container mx-auto">

@@ -332,7 +332,7 @@ class Player implements PlayerIOWithError {
   }
 }
 
-type GameStopHandler = (room: Room, game: InternalGame) => void;
+type GameStopHandler = (room: Room, game: InternalGame | null) => void;
 
 interface RoomInfo {
   id: number;
@@ -455,10 +455,8 @@ class Room {
   stop() {
     this.players[0]?.complete();
     this.players[1]?.complete();
-    if (this.game) {
-      for (const cb of this.onStopHandlers) {
-        cb(this, this.game);
-      }
+    for (const cb of this.onStopHandlers) {
+      cb(this, this.game);
     }
   }
 
@@ -675,7 +673,7 @@ export class RoomsService {
       deck: params.deck,
     };
     await this.joinRoom(playerInfo, roomId);
-    return { id: playerId };
+    return { playerId };
   }
 
   private async joinRoom(playerInfo: PlayerInfo, roomId: number) {
@@ -713,6 +711,9 @@ export class RoomsService {
     room.setParticipant(new Player(playerInfo));
     // Add to game database when room stopped
     room.onStop((room, game) => {
+      if (!game) {
+        return;
+      }
       const players = room.getPlayers();
       if (players.some((p) => p.playerInfo.isGuest)) {
         return;
